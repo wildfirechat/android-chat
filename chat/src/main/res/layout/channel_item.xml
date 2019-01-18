@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/selector_common_item"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/item_margin_left_and_right"
+        android:paddingRight="@dimen/item_margin_left_and_right">
+
+        <RelativeLayout
+            android:layout_width="46dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/portraitImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/ic_new_friend" />
+
+            <TextView
+                android:id="@+id/unreadCountTextView"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_alignTop="@id/portraitImageView"
+                android:layout_alignRight="@id/portraitImageView"
+                android:layout_marginTop="-6dp"
+                android:layout_marginRight="-6dp"
+                android:background="@mipmap/bg_unread"
+                android:gravity="center"
+                android:text="10"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/channelNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:text="频道"
+            android:textColor="@color/black0"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        style="@style/Line"
+        android:layout_marginLeft="@dimen/item_margin_left_and_right"
+        android:layout_marginRight="@dimen/item_margin_left_and_right" />
+
+</LinearLayout>

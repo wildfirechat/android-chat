@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/contactRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <cn.wildfire.chat.widget.QuickIndexBar
+        android:id="@+id/quickIndexBar"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true" />
+
+    <!--字母对话框-->
+    <TextView
+        android:id="@+id/indexLetterTextView"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/shape_contact_letter_bg"
+        android:gravity="center"
+        android:text="A"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:visibility="gone" />
+</RelativeLayout>

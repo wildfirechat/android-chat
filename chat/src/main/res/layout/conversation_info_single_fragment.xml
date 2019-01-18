@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray5"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/memberRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingLeft="7dp"
+                android:paddingTop="15dp"
+                android:paddingRight="7dp"
+                android:paddingBottom="5dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="5" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/option_item_margin_top"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:layout_weight="1"
+                        android:text="@string/message_free"
+                        android:textColor="@color/black0"
+                        android:textSize="16sp" />
+
+                    <com.kyleduo.switchbutton.SwitchButton
+                        android:id="@+id/silentSwitchButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/option_item_margin_right"
+                        app:kswBackDrawable="@drawable/ios_back_drawable"
+                        app:kswBackMeasureRatio="1.8"
+                        app:kswThumbDrawable="@drawable/ios_thumb_selector"
+                        app:kswThumbMarginBottom="-4dp"
+                        app:kswThumbMarginLeft="-2dp"
+                        app:kswThumbMarginRight="-2dp"
+                        app:kswThumbMarginTop="-0dp"
+                        app:kswThumbWidth="10dp" />
+                </LinearLayout>
+
+                <View
+                    style="@style/Line"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:layout_weight="1"
+                        android:text="@string/set_conversation_to_top"
+                        android:textColor="@color/black0"
+                        android:textSize="16sp" />
+
+                    <com.kyleduo.switchbutton.SwitchButton
+                        android:id="@+id/stickTopSwitchButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/option_item_margin_right"
+                        app:kswBackDrawable="@drawable/ios_back_drawable"
+                        app:kswBackMeasureRatio="1.8"
+                        app:kswThumbDrawable="@drawable/ios_thumb_selector"
+                        app:kswThumbMarginBottom="-4dp"
+                        app:kswThumbMarginLeft="-2dp"
+                        app:kswThumbMarginRight="-2dp"
+                        app:kswThumbMarginTop="-0dp"
+                        app:kswThumbWidth="10dp" />
+                </LinearLayout>
+
+                <View
+                    style="@style/Line"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp" />
+
+            </LinearLayout>
+
+            <com.lqr.optionitemview.OptionItemView
+                android:id="@+id/clearMessagesOptionItemView"
+                style="@style/OptionItem"
+                android:layout_marginTop="@dimen/option_item_margin_top"
+                android:background="@drawable/selector_option_item"
+                app:left_text="@string/clear_chat_log"
+                app:left_text_color="@color/black0"
+                app:left_text_margin_left="@dimen/option_item_margin_left"
+                app:left_text_size="16sp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

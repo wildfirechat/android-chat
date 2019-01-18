@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/chatRoomTextView_0"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/selector_option_item"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:text="聊天室1" />
+
+    <View style="@style/Line" />
+
+    <TextView
+        android:id="@+id/chatRoomTextView_1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/selector_option_item"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:text="聊天室2" />
+
+    <View style="@style/Line" />
+
+    <TextView
+        android:id="@+id/chatRoomTextView_2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/selector_option_item"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:text="聊天室3" />
+
+    <View style="@style/Line" />
+</LinearLayout>

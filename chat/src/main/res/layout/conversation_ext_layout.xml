@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:id="@+id/container_0"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/icon_0"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:tag="icon_0"
+                tools:src="@mipmap/ic_func_pic" />
+
+            <TextView
+                android:id="@+id/title_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/icon_0"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:tag="title_0"
+                android:textSize="12sp"
+                tools:text="@string/album" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/container_1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/icon_1"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:tag="icon_1"
+                tools:src="@mipmap/ic_func_shot" />
+
+            <TextView
+                android:id="@+id/title_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/icon_1"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:tag="title_1"
+                android:textSize="12sp"
+                tools:text="@string/shot" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/container_2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/icon_2"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:tag="icon_2"
+                tools:src="@mipmap/ic_func_location" />
+
+            <TextView
+                android:id="@+id/title_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/icon_2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:tag="title_2"
+                android:textSize="12sp"
+                tools:text="@string/location" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/container_3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/icon_3"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:tag="icon_3"
+                tools:src="@mipmap/ic_func_file" />
+
+            <TextView
+                android:id="@+id/title_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/icon_3"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:tag="title_3"
+                android:textSize="12sp"
+                tools:text="@string/file" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/container_4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:id="@+id/rlCall"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/icon_4"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:tag="icon_4"
+                tools:src="@mipmap/ic_func_video" />
+
+            <TextView
+                android:id="@+id/title_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/icon_4"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:tag="title_4"
+                android:textSize="12sp"
+                tools:text="@string/video" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/container_5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/icon_5"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:tag="icon_5"
+                tools:src="@mipmap/ic_func_video" />
+
+            <TextView
+                android:id="@+id/title_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/icon_5"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:tag="title_5"
+                android:textSize="12sp"
+                tools:text="音频" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/container_6"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/icon_6"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:tag="icon_6"
+                tools:src="@mipmap/ic_func_video" />
+
+            <TextView
+                android:id="@+id/title_6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/icon_6"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:tag="title_6"
+                android:textSize="12sp"
+                tools:text="音频" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/container_7"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/icon_7"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:clickable="false"
+                android:tag="icon_7"
+                tools:src="@mipmap/ic_func_video" />
+
+            <TextView
+                android:id="@+id/title_7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/icon_7"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:tag="title_7"
+                android:textSize="12sp"
+                tools:text="音频" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

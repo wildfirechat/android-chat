@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/containerFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="50dp" />
+
+        <EditText
+            android:id="@+id/searchEditText"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#80ffffff"
+            android:drawableLeft="@mipmap/ic_search1"
+            android:drawablePadding="10dp"
+            android:hint="@string/search"
+            android:paddingLeft="10dp"
+            android:textColorHint="@color/gray2"
+            android:textSize="14sp" />
+    </FrameLayout>
+</LinearLayout>

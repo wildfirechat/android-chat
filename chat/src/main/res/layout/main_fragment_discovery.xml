@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.lqr.optionitemview.OptionItemView
+        android:id="@+id/chatRoomOptionItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_common_item"
+        app:left_image_margin_left="@dimen/option_item_margin_left"
+        app:left_image_margin_right="@dimen/option_item_margin_right"
+        app:left_src="@mipmap/ic_launcher"
+        app:left_text="聊天室"
+        app:left_text_color="@color/black0"
+        app:left_text_size="16sp" />
+
+</LinearLayout>

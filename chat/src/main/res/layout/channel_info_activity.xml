@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray5"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/selector_common_item"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/portraitImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="5dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/default_header" />
+
+
+        <TextView
+            android:id="@+id/channelNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:text="Channel name"
+            android:textColor="@color/gray0"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/channelDescTextView"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:text="Channel desc" />
+
+    <Button
+        android:id="@+id/followChannelButton"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/shape_user_info_send_msg"
+        android:text="收听频道"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+</LinearLayout>
+

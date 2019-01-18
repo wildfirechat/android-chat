@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/videoContentLayout"
+    android:padding="10dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- 图片 -->
+    <cn.wildfire.chat.widget.BubbleImageView
+        android:id="@+id/imageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:adjustViewBounds="true"
+        android:minWidth="80dp"
+        android:scaleType="fitCenter"
+        app:bubble_angle="10dp"
+        app:bubble_arrowHeight="10dp"
+        app:bubble_arrowLocation="right"
+        app:bubble_arrowOffset="-5dp"
+        app:bubble_arrowTop="20dp"
+        app:bubble_arrowWidth="8dp"
+        app:bubble_showShadow="false"
+        app:bubble_showText="false"
+        tools:background="@color/gray" />
+
+    <cn.wildfire.chat.widget.CircularProgressBar
+        android:id="@+id/cpbLoading"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="41dp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/playImageView"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="41dp"
+        android:src="@mipmap/img_video_play_session"
+        android:visibility="gone" />
+
+</RelativeLayout>

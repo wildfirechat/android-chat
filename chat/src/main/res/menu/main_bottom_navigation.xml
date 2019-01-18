@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/conversation_list"
+        android:icon="@drawable/bottom_conversation_menu_selector"
+        android:title="会话"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/contact"
+        android:icon="@drawable/bottom_contact_menu_selector"
+        android:title="联系人" />
+    <item
+        android:id="@+id/discovery"
+        android:icon="@drawable/bottom_discovery_menu_selector"
+        android:title="发现" />
+    <item
+        android:id="@+id/me"
+        android:icon="@drawable/bottom_me_menu_selector"
+        android:title="我" />
+
+</menu>
