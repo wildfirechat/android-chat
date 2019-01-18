@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/selector_common_item"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/item_margin_left_and_right"
+        android:paddingTop="@dimen/item_margin_top_and_bottom"
+        android:paddingRight="@dimen/item_margin_left_and_right"
+        android:paddingBottom="@dimen/item_margin_top_and_bottom">
+
+        <ImageView
+            android:id="@+id/portraitImageView"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/default_header" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/nameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/item_margin_left_and_right"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:textColor="@color/gray0"
+                android:textSize="16sp"
+                tools:text="imndx" />
+
+            <TextView
+                android:id="@+id/descTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/item_margin_left_and_right"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:textColor="@color/gray0"
+                android:textSize="12sp"
+                tools:text="2条记录" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/dividerLine"
+        style="@style/Line"
+        android:layout_marginLeft="@dimen/item_margin_left_and_right"
+        android:layout_marginRight="@dimen/item_margin_left_and_right"
+        android:visibility="visible" />
+
+</LinearLayout>

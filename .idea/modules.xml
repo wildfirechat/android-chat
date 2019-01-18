@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/android-chat.iml" filepath="$PROJECT_DIR$/android-chat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/avenginekit/avenginekit.iml" filepath="$PROJECT_DIR$/avenginekit/avenginekit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chat/chat.iml" filepath="$PROJECT_DIR$/chat/chat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/client/client.iml" filepath="$PROJECT_DIR$/client/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/emojilibrary/emojilibrary.iml" filepath="$PROJECT_DIR$/emojilibrary/emojilibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imagepicker/imagepicker.iml" filepath="$PROJECT_DIR$/imagepicker/imagepicker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mars-core-release/mars-core-release.iml" filepath="$PROJECT_DIR$/mars-core-release/mars-core-release.iml" />
+      <module fileurl="file://$PROJECT_DIR$/push/push.iml" filepath="$PROJECT_DIR$/push/push.iml" />
+    </modules>
+  </component>
+</project>

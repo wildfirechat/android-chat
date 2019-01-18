@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appBarLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:id="@+id/toolbarContainerFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary">
+
+            <ImageView
+                android:id="@+id/backImageView"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:src="@mipmap/ic_back" />
+
+            <View
+                android:id="@+id/backDividerView"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@id/backImageView"
+                android:background="@drawable/shape_vertical_line"
+                android:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/titleLinearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/backDividerView"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/titleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/subTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:visibility="gone"
+                    tools:text="sub title"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+            <!--加号菜单-->
+            <ImageButton
+                android:id="@+id/ibAddMenu"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/item_margin_left_and_right"
+                android:background="@null"
+                android:src="@mipmap/ic_add"
+                android:visibility="gone"
+                tools:visibility="gone" />
+
+            <!--添加朋友-->
+            <LinearLayout
+                android:id="@+id/llToolbarAddFriend"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/backImageView"
+                    android:background="@drawable/shape_vertical_line"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tvToolbarAddFriend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/add_friend"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <!--搜索-->
+            <LinearLayout
+                android:id="@+id/toolbarSearchLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="10dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <EditText
+                    android:id="@+id/searchTextEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:background="@null"
+                    android:drawableLeft="@mipmap/ic_search"
+                    android:drawablePadding="10dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:hint="@string/search"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/gray1"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/shape_bottom_green" />
+            </LinearLayout>
+
+            <!--搜索按钮-->
+            <ImageButton
+                android:id="@+id/btnToolbarSearch"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/item_margin_left_and_right"
+                android:layout_toLeftOf="@id/ibAddMenu"
+                android:background="@null"
+                android:src="@mipmap/ic_search"
+                android:visibility="gone"
+                tools:visibility="gone" />
+
+            <!--发送按钮-->
+            <Button
+                android:id="@+id/confirmButton"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/selector_login_btn"
+                android:text="@string/send"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <!--更多按钮-->
+            <ImageButton
+                android:id="@+id/moreImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="10dp"
+                android:background="@null"
+                android:src="@mipmap/ic_friend_more"
+                android:visibility="gone"
+                tools:visibility="gone" />
+
+        </RelativeLayout>
+    </FrameLayout>
+</com.google.android.material.appbar.AppBarLayout>

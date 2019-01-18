@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/llGroup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/selector_common_item"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/item_margin_left_and_right"
+        android:paddingTop="@dimen/item_margin_top_and_bottom"
+        android:paddingRight="@dimen/item_margin_left_and_right"
+        android:paddingBottom="@dimen/item_margin_top_and_bottom">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/ic_group_cheat" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/item_margin_left_and_right"
+            android:text="所有人"
+            android:textColor="@color/black0"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        style="@style/Line"
+        android:layout_marginLeft="@dimen/item_margin_left_and_right"
+        android:layout_marginRight="@dimen/item_margin_left_and_right" />
+
+</LinearLayout>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="line">#ccc</color>
+    <color name="white">#fff</color>
+    <color name="gray">#D9D9D9</color>
+    <color name="gray10">#EBEFEF</color>
+</resources>

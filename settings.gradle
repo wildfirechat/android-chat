@@ -1,0 +1,7 @@
+include ':client',
+        ':push',
+        ':chat',
+        ':mars-core-release',
+        ':emojilibrary',
+        ':imagepicker',
+        ':avenginekit'

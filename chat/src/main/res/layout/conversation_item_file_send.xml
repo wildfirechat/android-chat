@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.wildfire.chat.widget.BubbleImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/imageView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:adjustViewBounds="true"
+    android:maxHeight="100dp"
+    android:minWidth="60dp"
+    android:minHeight="60dp"
+    android:padding="10dp"
+    android:scaleType="fitCenter"
+    app:bubble_angle="10dp"
+    app:bubble_arrowHeight="10dp"
+    app:bubble_arrowLocation="right"
+    app:bubble_arrowOffset="-5dp"
+    app:bubble_arrowTop="20dp"
+    app:bubble_arrowWidth="8dp" />

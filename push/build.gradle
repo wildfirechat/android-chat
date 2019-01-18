@@ -1,0 +1,71 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders = [
+                APP_ID       : "cn.wildfirechat.chat",
+
+                MI_APP_ID    : "2882303761517722456",
+                MI_APP_KEY   : "5731772292456",
+
+                HMS_APP_ID   : "100221325",
+
+                MEIZU_APP_ID : "113616",
+                MEIZU_APP_KEY: "fcd886f51c144b45b87a67a28e2934d1"
+        ]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.huawei.android.hms:push:2.5.3.305'
+
+    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+    implementation project(':client')
+    implementation 'com.meizu.flyme.internet:push-internal:3.4.2@aar'
+}
+
+//apply plugin: 'com.novoda.bintray-release'
+////设置所有工程编码为UTF-8编码，防止出现编码GBK的不可映射字符
+//allprojects {
+//    tasks.withType(Javadoc) {
+//        options {
+//            encoding "UTF-8"
+//            charSet 'UTF-8'
+//            links "http://docs.oracle.com/javase/7/docs/api"
+//        }
+//    }
+//}
+//
+//publish {
+//    userOrg = 'wfchat'
+//    groupId = 'cn.wildfirechat'
+//    artifactId = 'push'
+//    publishVersion = android.defaultConfig.versionName
+//    desc = 'Oh hi, this is a nice description for a project, right?'
+//    website = 'https://github.com/novoda/bintray-release'
+//}

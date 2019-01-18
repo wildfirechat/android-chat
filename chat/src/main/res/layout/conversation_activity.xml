@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.wildfire.chat.widget.InputAwareLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <!--内容-->
+    <LinearLayout
+        android:id="@+id/contentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/msgRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <View style="@style/Line" />
+
+        <cn.wildfire.chat.conversation.ConversationInputPanel
+            android:id="@+id/inputPanelFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</cn.wildfire.chat.widget.InputAwareLayout>

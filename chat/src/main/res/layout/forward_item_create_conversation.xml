@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/categoryTextView"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="@dimen/item_margin_left_and_right"
+        android:layout_marginRight="@dimen/item_margin_left_and_right"
+        android:background="@drawable/selector_common_item"
+        android:gravity="center_vertical"
+        android:text="创建新聊天"
+        android:textColor="#989898"
+        android:textSize="13sp"
+        android:visibility="visible" />
+
+    <View
+        android:id="@+id/dividerLine"
+        style="@style/Line"
+        android:layout_marginLeft="@dimen/item_margin_left_and_right"
+        android:layout_marginRight="@dimen/item_margin_left_and_right"
+        android:visibility="visible" />
+
+</LinearLayout>
