@@ -5,9 +5,11 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -27,11 +29,7 @@ allprojects {
     configurations {
         all {
             resolutionStrategy {
-                force "android.arch.lifecycle:runtime:1.1.1"
-                force 'com.android.support:recyclerview-v7:27.1.0'
-                force 'android.arch.paging:runtime:1.0.1'
-                force 'android.arch.lifecycle:livedata-core:1.1.1'
-                force 'android.arch.lifecycle:viewmodel:1.1.1'
+                //force "android.arch.lifecycle:runtime:1.1.1"
             }
         }
     }
