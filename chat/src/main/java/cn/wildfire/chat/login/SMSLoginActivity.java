@@ -72,7 +72,7 @@ public class SMSLoginActivity extends WfcBaseActivity {
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
         String authCode = authCodeEditText.getText().toString().trim();
 
-        String url = "http://" + Config.INDEPENDENT_APP_SERVER_HOST + ":" + Config.INDEPENDENT_APP_SERVER_PORT + "/login";
+        String url = "http://" + Config.APP_SERVER_HOST + ":" + Config.APP_SERVER_PORT + "/login";
         Map<String, String> params = new HashMap<>();
         params.put("mobile", phoneNumber);
         params.put("code", authCode);
@@ -135,7 +135,7 @@ public class SMSLoginActivity extends WfcBaseActivity {
 
         Toast.makeText(this, "请求验证码...", Toast.LENGTH_SHORT).show();
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
-        String url = "http://" + Config.INDEPENDENT_APP_SERVER_HOST + ":" + Config.INDEPENDENT_APP_SERVER_PORT + "/send_code";
+        String url = "http://" + Config.APP_SERVER_HOST + ":" + Config.APP_SERVER_PORT + "/send_code";
         Map<String, String> params = new HashMap<>();
         params.put("mobile", phoneNumber);
         OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {

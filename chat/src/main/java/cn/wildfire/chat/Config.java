@@ -8,13 +8,14 @@ import cn.wildfire.chat.third.utils.FileUtils;
 
 public interface Config {
 
-    boolean USE_EMBED_APP_SERVER = true;
+    boolean USE_EMBED_APP_SERVER = false;
 
-    String IM_SERVER_HOST = "192.168.31.113";
-    int IM_SERVER_PORT = 8080;
+    String IM_SERVER_HOST = "wildfirechat.cn";
+    int IM_SERVER_PORT = 80;
 
-    String INDEPENDENT_APP_SERVER_HOST = "192.168.31.113";
-    int INDEPENDENT_APP_SERVER_PORT = 8888;
+    String APP_SERVER_HOST = "wildfirechat.cn";
+    int APP_SERVER_PORT = 8888;
+
 
     String ICE_ADDRESS = "turn:turn.liyufan.win:3478";
     String ICE_USERNAME = "wfchat";

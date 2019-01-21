@@ -5,10 +5,6 @@ import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
-import androidx.lifecycle.ProcessLifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,26 +12,30 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
-import androidx.core.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.lqr.emoji.LQREmotionKit;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.ChatManagerHolder;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
+import cn.wildfire.chat.ChatManagerHolder;
 import cn.wildfire.chat.Config;
 import cn.wildfire.chat.conversation.ConversationActivity;
 import cn.wildfire.chat.main.MainActivity;
 import cn.wildfire.chat.voip.AsyncPlayer;
 import cn.wildfire.chat.voip.SingleVoipCallActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.TextMessageContent;
@@ -191,7 +191,6 @@ public class MyApp extends BaseApp implements AVEngineKit.AVEngineCallback, OnRe
     }
 
     private void handleIMPushMessage(Context context, List<Message> messages) {
-        android.util.Log.d("ddd", "handle push message");
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = "wildfirechat_msg";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -207,11 +206,10 @@ public class MyApp extends BaseApp implements AVEngineKit.AVEngineCallback, OnRe
         }
 
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(android.R.drawable.sym_def_app_icon)
                 .setAutoCancel(true)
                 .setCategory(CATEGORY_MESSAGE)
-                .setChannelId(channelId)
                 .setDefaults(DEFAULT_ALL);
 
 
