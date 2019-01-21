@@ -11,17 +11,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import butterknife.ButterKnife;
-import cn.wildfire.chat.Config;
-import cn.wildfire.chat.login.LoginActivity;
 import cn.wildfire.chat.login.SMSLoginActivity;
 import cn.wildfirechat.chat.R;
 
@@ -136,11 +134,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void showLogin() {
         Intent intent;
-        if (Config.USE_EMBED_APP_SERVER) {
-            intent = new Intent(this, LoginActivity.class);
-        } else {
-            intent = new Intent(this, SMSLoginActivity.class);
-        }
+        intent = new Intent(this, SMSLoginActivity.class);
         startActivity(intent);
         finish();
     }

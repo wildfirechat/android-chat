@@ -3,11 +3,10 @@ package cn.wildfire.chat.conversation.ext;
 import android.content.Context;
 import android.view.View;
 
-import cn.wildfirechat.chat.R;
-
 import cn.wildfire.chat.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.app.MyApp;
 import cn.wildfire.chat.conversation.ext.core.ConversationExt;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 
 public class VoipExt extends ConversationExt {

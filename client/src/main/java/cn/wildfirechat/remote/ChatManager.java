@@ -71,13 +71,6 @@ import static android.content.Context.BIND_AUTO_CREATE;
 
 public class ChatManager {
     private static final String TAG = ChatManager.class.getName();
-    public static final String ACTION_CONNECTION_STATUS_CHANGED = "cn.wildfirechat.client.action_connection_status_changed";
-    //ArrayList<Message>
-    public static final String EXTRAS_RECEIVE_MESSAGE_MESSAGES = "messages";
-    //boolean
-    public static final String EXTRAS_RECEIVE_MESSAGE_HASMORE = "hasMore";
-
-    public static final String EXTRAS_NEW_CONNECTION_STATUS = "connection_status";
 
     private String SERVER_HOST;
     private int SERVER_PORT;
