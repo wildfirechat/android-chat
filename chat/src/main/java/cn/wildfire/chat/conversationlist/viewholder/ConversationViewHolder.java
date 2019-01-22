@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.lqr.emoji.MoonUtils;
 
 import java.util.Arrays;
@@ -18,8 +16,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import cn.wildfire.chat.ChatManagerHolder;
-import cn.wildfire.chat.GlideApp;
 import cn.wildfire.chat.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.conversation.ConversationActivity;
 import cn.wildfire.chat.conversation.Draft;
@@ -29,15 +25,13 @@ import cn.wildfire.chat.third.utils.TimeUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
-import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 @SuppressWarnings("unused")
-public class ConversationViewHolder extends RecyclerView.ViewHolder {
+public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;
     protected View itemView;
     protected ConversationInfo conversationInfo;
@@ -80,42 +74,18 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
         onBind(conversationInfo);
     }
 
+    /**
+     * 设置头像、名称
+     *
+     * @param conversationInfo
+     */
+    protected abstract void onBindConversationInfo(ConversationInfo conversationInfo);
+
     public void onBind(ConversationInfo conversationInfo) {
-        if (conversationInfo.conversation.type == Conversation.ConversationType.Single) {
-            UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversationInfo.conversation.target, false);
-            if (userInfo != null) {
-                GlideApp
-                        .with(fragment)
-                        .load(userInfo.portrait)
-                        .placeholder(R.mipmap.avatar_def)
-                        .transforms(new CenterCrop(), new RoundedCorners(10))
-                        .into(portraitImageView);
-                nameTextView.setText(userInfo.displayName);
-                portraitImageView.setVisibility(View.VISIBLE);
-            }
-        } else if (conversationInfo.conversation.type == Conversation.ConversationType.Group) {
-            GroupInfo groupInfo = ChatManagerHolder.gChatManager.getGroupInfo(conversationInfo.conversation.target, false);
-            if (groupInfo != null) {
-                ImageView ivHeader = getView(R.id.portraitImageView);
-                GlideApp
-                        .with(fragment)
-                        .load(groupInfo.portrait)
-                        .placeholder(R.mipmap.ic_group_cheat)
-                        .transforms(new CenterCrop(), new RoundedCorners(10))
-                        .into(ivHeader);
-                //群昵称
-                nameTextView.setText(groupInfo.name);
-                setViewVisibility(R.id.portraitImageView, View.VISIBLE);
-            }
-        } else if (conversationInfo.conversation.type == Conversation.ConversationType.Channel) {
-            ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversationInfo.conversation.target, false);
-            if (channelInfo != null) {
-                nameTextView.setText(channelInfo.name);
-            }
-        }
+        onBindConversationInfo(conversationInfo);
+
         timeTextView.setText(TimeUtils.getMsgFormatTime(conversationInfo.timestamp));
         silentImageView.setVisibility(conversationInfo.isSilent ? View.VISIBLE : View.GONE);
-
 
         itemView.setBackgroundResource(conversationInfo.isTop ? R.drawable.selector_stick_top_item : R.drawable.selector_common_item);
         if (conversationInfo.unreadCount.unread > 0) {
