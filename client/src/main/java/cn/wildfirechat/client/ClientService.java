@@ -24,7 +24,6 @@ import com.tencent.mars.xlog.Log;
 import com.tencent.mars.xlog.Xlog;
 
 import java.io.File;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -101,7 +100,16 @@ import static com.tencent.mars.comm.PlatformComm.context;
  * Created by heavyrain lee on 2017/11/19.
  */
 
-public class ClientService extends Service implements ProtoLogic.IUserInfoUpdateCallback, ProtoLogic.ISettingUpdateCallback, ProtoLogic.IFriendRequestListUpdateCallback, ProtoLogic.IFriendListUpdateCallback, ProtoLogic.IGroupInfoUpdateCallback, ProtoLogic.IChannelInfoUpdateCallback {
+public class ClientService extends Service implements SdtLogic.ICallBack,
+        AppLogic.ICallBack,
+        ProtoLogic.IConnectionStatusCallback,
+        ProtoLogic.IReceiveMessageCallback,
+        ProtoLogic.IUserInfoUpdateCallback,
+        ProtoLogic.ISettingUpdateCallback,
+        ProtoLogic.IFriendRequestListUpdateCallback,
+        ProtoLogic.IFriendListUpdateCallback,
+        ProtoLogic.IGroupInfoUpdateCallback,
+        ProtoLogic.IChannelInfoUpdateCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
     private int mConnectionStatus;
@@ -119,18 +127,18 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
     private RemoteCallbackList<IOnSettingUpdateListener> onSettingUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnChannelInfoUpdateListener> onChannelInfoUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
 
-    private class ClientServiceStub extends IRemoteClient.Stub implements SdtLogic.ICallBack, AppLogic.ICallBack, ProtoLogic.IConnectionStatusCallback, ProtoLogic.IReceiveMessageCallback {
+    private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
+    //        public final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
+    public String DEVICE_TYPE = "Android";//"android-" + android.os.Build.VERSION.SDK_INT;
+    private AppLogic.DeviceInfo info;
+
+    private int clientVersion = 200;
+
+    private BaseEvent.ConnectionReceiver mConnectionReceiver;
+
+    private class ClientServiceStub extends IRemoteClient.Stub {
         private String mHost;
         private int mPort;
-
-        private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
-        //        public final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
-        public String DEVICE_TYPE = "Android";//"android-" + android.os.Build.VERSION.SDK_INT;
-        private AppLogic.DeviceInfo info;
-
-        private int clientVersion = 200;
-
-        private BaseEvent.ConnectionReceiver mConnectionReceiver;
 
         @Override
         public String getClientId() throws RemoteException {
@@ -147,11 +155,10 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
             accountInfo.userName = userName;
 
             mConnectionStatus = ConnectionStatusUnconnected;
-            Mars.onCreate(true);
             userId = userName;
             token = userPwd;
-            ProtoLogic.setConnectionStatusCallback(this);
-            ProtoLogic.setReceiveMessageCallback(this);
+            ProtoLogic.setConnectionStatusCallback(ClientService.this);
+            ProtoLogic.setReceiveMessageCallback(ClientService.this);
 
             ProtoLogic.setAuthInfo(userName, userPwd);
 
@@ -163,7 +170,6 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
             }
 
             ProtoLogic.connect(mHost, mPort);
-
         }
 
         @Override
@@ -210,7 +216,7 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
             mConnectionStatus = ConnectionStatusLogout;
             onConnectionStatusChanged(ConnectionStatusLogout);
 
-            int protoStatus = ProtoLogic.getConnectionStatus();
+//            int protoStatus = ProtoLogic.getConnectionStatus();
 //            if (mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusConnected && mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusReceiveing) {
 //                [self destroyMars];
 //            }
@@ -219,11 +225,9 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
                 mConnectionReceiver = null;
             }
 
-            if (protoStatus != 1 && protoStatus != 2) {
-                Mars.onDestroy();
-            } else {
-                ProtoLogic.disconnect(clearSession ? 8 : 0);
-            }
+            ProtoLogic.setConnectionStatusCallback(null);
+            ProtoLogic.setReceiveMessageCallback(null);
+            ProtoLogic.disconnect(clearSession ? 8 : 0);
 
         }
 
@@ -235,60 +239,6 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
         @Override
         public void onNetworkChange() {
             BaseEvent.onNetworkChange();
-        }
-
-        @Override
-        public void reportSignalDetectResults(String resultsJson) {
-
-        }
-
-        @Override
-        public String getAppFilePath() {
-            try {
-                File file = new File(ClientService.this.getFilesDir().getAbsolutePath() + "/" + accountInfo.userName);
-                if (!file.exists()) {
-                    file.mkdir();
-                }
-                return file.toString();
-            } catch (Exception e) {
-                Log.e("ddd", "", e);
-            }
-
-            return null;
-        }
-
-        @Override
-        public AppLogic.AccountInfo getAccountInfo() {
-            return accountInfo;
-        }
-
-        @Override
-        public int getClientVersion() {
-            return 0;
-        }
-
-        // TODO
-        @Override
-        public AppLogic.DeviceInfo getDeviceType() {
-            if (info == null) {
-                String imei = PreferenceManager.getDefaultSharedPreferences(context).getString("mars_core_uid", "");
-                if (TextUtils.isEmpty(imei)) {
-                    imei = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    if (TextUtils.isEmpty(imei)) {
-                        imei = UUID.randomUUID().toString();
-                    }
-                    imei += System.currentTimeMillis();
-                    PreferenceManager.getDefaultSharedPreferences(context).edit().putString("mars_core_uid", imei).commit();
-                }
-                info = new AppLogic.DeviceInfo(imei);
-                info.packagename = context.getPackageName();
-                info.carriername = "CMCC";
-                info.device = "小米6";
-                info.deviceversion = "Android8.0";
-                info.language = "ZH_CN";
-                info.phonename = "XXXx的小米6";
-            }
-            return info;
         }
 
         @Override
@@ -1449,80 +1399,6 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
             return out;
         }
 
-        @Override
-        public void onConnectionStatusChanged(int status) {
-            android.util.Log.d("", "status changed :" + status);
-            mConnectionStatus = status;
-            if (status == -4) {
-                status = -1;
-            }
-            int i = onConnectionStatusChangeListenes.beginBroadcast();
-            IOnConnectionStatusChangeListener listener;
-            while (i > 0) {
-                i--;
-                listener = onConnectionStatusChangeListenes.getBroadcastItem(i);
-                try {
-                    listener.onConnectionStatusChange(status);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-            onConnectionStatusChangeListenes.finishBroadcast();
-
-            if (mConnectionStatus == ConnectionStatusConnected && !TextUtils.isEmpty(mBackupDeviceToken)) {
-                try {
-                    ProtoLogic.setDeviceToken(getApplicationContext().getPackageName(), mBackupDeviceToken, mBackupPushType);
-                    mBackupDeviceToken = null;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        @Override
-        public void onRecallMessage(long messageUid) {
-            int receiverCount = onReceiveMessageListeners.beginBroadcast();
-            IOnReceiveMessageListener listener;
-            while (receiverCount > 0) {
-                receiverCount--;
-                listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
-                try {
-                    listener.onRecall(messageUid);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-            onReceiveMessageListeners.finishBroadcast();
-        }
-
-        @Override
-        public void onReceiveMessage(List<ProtoMessage> messages, boolean hasMore) {
-            android.util.Log.d("", "RECEIVE MESSAGES");
-            List<cn.wildfirechat.message.Message> messageList = convertProtoMessages(messages);
-            while (messageList.size() > 0) {
-                ArrayList<cn.wildfirechat.message.Message> tmpList;
-                if (messageList.size() >= 100) {
-                    hasMore = true;
-                    tmpList = new ArrayList<>(messageList.subList(0, 100));
-                    messageList = new ArrayList<>(messageList.subList(100, messageList.size()));
-                } else {
-                    tmpList = new ArrayList<>(messageList);
-                    messageList.clear();
-                }
-                int receiverCount = onReceiveMessageListeners.beginBroadcast();
-                IOnReceiveMessageListener listener;
-                while (receiverCount > 0) {
-                    receiverCount--;
-                    listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
-                    try {
-                        listener.onReceive(tmpList, hasMore);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-                onReceiveMessageListeners.finishBroadcast();
-            }
-        }
     }
 
     private ChannelInfo converProtoChannelInfo(ProtoChannelInfo protoChannelInfo) {
@@ -1678,11 +1554,7 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
     public void onCreate() {
         super.onCreate();
 
-        AppLogic.setCallBack(mBinder);
-        SdtLogic.setCallBack(mBinder);
-
-        // Initialize the Mars PlatformComm
-        Mars.init(getApplicationContext(), new Handler(Looper.getMainLooper()));
+        initProto();
         try {
             mBinder.registerMessageContent(AddGroupMemberNotificationContent.class.getName());
             mBinder.registerMessageContent(CallStartMessageContent.class.getName());
@@ -1708,8 +1580,24 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
 
+    @Override
+    public void onDestroy() {
+        Log.appenderClose();
+        super.onDestroy();
+        resetProto();
+    }
+
+    private void initProto() {
+        AppLogic.setCallBack(this);
+        SdtLogic.setCallBack(this);
+
+        // Initialize the Mars PlatformComm
+        Mars.init(getApplicationContext(), new Handler(Looper.getMainLooper()));
+        Mars.onCreate(true);
         openXlog();
+
         mConnectionStatus = ConnectionStatusLogout;
 
         ProtoLogic.setUserInfoUpdateCallback(this);
@@ -1720,10 +1608,19 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
         ProtoLogic.setFriendRequestListUpdateCallback(this);
     }
 
-    @Override
-    public void onDestroy() {
-        Log.appenderClose();
-        super.onDestroy();
+    private void resetProto() {
+        Mars.onDestroy();
+        AppLogic.setCallBack(null);
+        SdtLogic.setCallBack(null);
+        ProtoLogic.setUserInfoUpdateCallback(null);
+        ProtoLogic.setSettingUpdateCallback(null);
+        ProtoLogic.setFriendListUpdateCallback(null);
+        ProtoLogic.setGroupInfoUpdateCallback(null);
+        ProtoLogic.setChannelInfoUpdateCallback(null);
+        ProtoLogic.setFriendRequestListUpdateCallback(null);
+
+        ProtoLogic.setConnectionStatusCallback(null);
+        ProtoLogic.setReceiveMessageCallback(null);
     }
 
     public void openXlog() {
@@ -1764,33 +1661,141 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
         Log.setLogImp(new Xlog());
     }
 
-    private String MD5(String s) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] bytes = md.digest(s.getBytes("utf-8"));
-            return toHex(bytes);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String toHex(byte[] bytes) {
-
-        final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
-        StringBuilder ret = new StringBuilder(bytes.length * 2);
-        for (int i = 0; i < bytes.length; i++) {
-            ret.append(HEX_DIGITS[(bytes[i] >> 4) & 0x0f]);
-            ret.append(HEX_DIGITS[bytes[i] & 0x0f]);
-        }
-        return ret.toString();
-    }
-
     private class WfcRemoteCallbackList<E extends IInterface> extends RemoteCallbackList<E> {
         @Override
         public void onCallbackDied(E callback, Object cookie) {
             Log.e("ClientService", "main process died");
             Intent intent = new Intent(ClientService.this, RecoverReceiver.class);
             sendBroadcast(intent);
+        }
+    }
+
+    @Override
+    public void reportSignalDetectResults(String resultsJson) {
+
+    }
+
+    @Override
+    public String getAppFilePath() {
+        try {
+            File file = new File(ClientService.this.getFilesDir().getAbsolutePath() + "/" + accountInfo.userName);
+            if (!file.exists()) {
+                file.mkdir();
+            }
+            return file.toString();
+        } catch (Exception e) {
+            Log.e("ddd", "", e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public AppLogic.AccountInfo getAccountInfo() {
+        return accountInfo;
+    }
+
+    @Override
+    public int getClientVersion() {
+        return 0;
+    }
+
+    @Override
+    public AppLogic.DeviceInfo getDeviceType() {
+        if (info == null) {
+            String imei = PreferenceManager.getDefaultSharedPreferences(context).getString("mars_core_uid", "");
+            if (TextUtils.isEmpty(imei)) {
+                imei = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                if (TextUtils.isEmpty(imei)) {
+                    imei = UUID.randomUUID().toString();
+                }
+                imei += System.currentTimeMillis();
+                PreferenceManager.getDefaultSharedPreferences(context).edit().putString("mars_core_uid", imei).commit();
+            }
+            info = new AppLogic.DeviceInfo(imei);
+            info.packagename = context.getPackageName();
+            // TODO 自行处理吧，这些信息不是必须的
+            info.carriername = "CMCC";
+            info.device = "小米6";
+            info.deviceversion = "Android8.0";
+            info.language = "ZH_CN";
+            info.phonename = "XXXx的小米6";
+        }
+        return info;
+    }
+
+    @Override
+    public void onConnectionStatusChanged(int status) {
+        android.util.Log.d("", "status changed :" + status);
+        mConnectionStatus = status;
+        if (status == -4) {
+            status = -1;
+        }
+        int i = onConnectionStatusChangeListenes.beginBroadcast();
+        IOnConnectionStatusChangeListener listener;
+        while (i > 0) {
+            i--;
+            listener = onConnectionStatusChangeListenes.getBroadcastItem(i);
+            try {
+                listener.onConnectionStatusChange(status);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        onConnectionStatusChangeListenes.finishBroadcast();
+
+        if (mConnectionStatus == ConnectionStatusConnected && !TextUtils.isEmpty(mBackupDeviceToken)) {
+            try {
+                ProtoLogic.setDeviceToken(getApplicationContext().getPackageName(), mBackupDeviceToken, mBackupPushType);
+                mBackupDeviceToken = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onRecallMessage(long messageUid) {
+        int receiverCount = onReceiveMessageListeners.beginBroadcast();
+        IOnReceiveMessageListener listener;
+        while (receiverCount > 0) {
+            receiverCount--;
+            listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
+            try {
+                listener.onRecall(messageUid);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        onReceiveMessageListeners.finishBroadcast();
+    }
+
+    @Override
+    public void onReceiveMessage(List<ProtoMessage> messages, boolean hasMore) {
+        android.util.Log.d("", "RECEIVE MESSAGES");
+        List<cn.wildfirechat.message.Message> messageList = convertProtoMessages(messages);
+        while (messageList.size() > 0) {
+            ArrayList<cn.wildfirechat.message.Message> tmpList;
+            if (messageList.size() >= 100) {
+                hasMore = true;
+                tmpList = new ArrayList<>(messageList.subList(0, 100));
+                messageList = new ArrayList<>(messageList.subList(100, messageList.size()));
+            } else {
+                tmpList = new ArrayList<>(messageList);
+                messageList.clear();
+            }
+            int receiverCount = onReceiveMessageListeners.beginBroadcast();
+            IOnReceiveMessageListener listener;
+            while (receiverCount > 0) {
+                receiverCount--;
+                listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
+                try {
+                    listener.onReceive(tmpList, hasMore);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onReceiveMessageListeners.finishBroadcast();
         }
     }
 
@@ -1826,7 +1831,6 @@ public class ClientService extends Service implements ProtoLogic.IUserInfoUpdate
         onFriendUpdateListenerRemoteCallbackList.finishBroadcast();
     }
 
-    // TODO 可能多个groupInfo一起更新?
     @Override
     public void onGroupInfoUpdated(List<ProtoGroupInfo> list) {
         ArrayList<GroupInfo> groups = new ArrayList<>();
