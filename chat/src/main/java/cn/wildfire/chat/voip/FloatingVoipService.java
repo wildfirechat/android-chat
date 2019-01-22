@@ -1,15 +1,17 @@
 package cn.wildfire.chat.voip;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import androidx.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,11 +23,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import cn.wildfirechat.chat.R;
-
 import org.webrtc.StatsReport;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.chat.R;
 
 import static org.webrtc.RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
 
@@ -72,14 +75,31 @@ public class FloatingVoipService extends Service {
         resumeActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resumeActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification notification = new Notification.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
+
+        String channelId = "";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            channelId = "cn.wildfirechat.chat.voip";
+            String channelName = "voip";
+            NotificationChannel chan = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+            chan.setLightColor(Color.BLUE);
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(chan);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
+
+        builder.setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("通话中...")
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .build();
-        startForeground(NOTIFICATION_ID, notification);
-        showFloatingWindow();
+        startForeground(NOTIFICATION_ID, builder.build());
+        try {
+            showFloatingWindow();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return START_STICKY;
     }
 
