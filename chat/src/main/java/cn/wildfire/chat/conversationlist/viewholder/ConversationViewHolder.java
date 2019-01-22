@@ -1,9 +1,6 @@
 package cn.wildfire.chat.conversationlist.viewholder;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.view.View;
@@ -13,13 +10,15 @@ import android.widget.TextView;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.lqr.emoji.MoonUtils;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.ChatManagerHolder;
 
 import java.util.Arrays;
 
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.ChatManagerHolder;
 import cn.wildfire.chat.GlideApp;
 import cn.wildfire.chat.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.conversation.ConversationActivity;
@@ -27,8 +26,10 @@ import cn.wildfire.chat.conversation.Draft;
 import cn.wildfire.chat.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.third.utils.TimeUtils;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -92,7 +93,7 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
                 nameTextView.setText(userInfo.displayName);
                 portraitImageView.setVisibility(View.VISIBLE);
             }
-        } else {
+        } else if (conversationInfo.conversation.type == Conversation.ConversationType.Group) {
             GroupInfo groupInfo = ChatManagerHolder.gChatManager.getGroupInfo(conversationInfo.conversation.target, false);
             if (groupInfo != null) {
                 ImageView ivHeader = getView(R.id.portraitImageView);
@@ -105,6 +106,11 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
                 //群昵称
                 nameTextView.setText(groupInfo.name);
                 setViewVisibility(R.id.portraitImageView, View.VISIBLE);
+            }
+        } else if (conversationInfo.conversation.type == Conversation.ConversationType.Channel) {
+            ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversationInfo.conversation.target, false);
+            if (channelInfo != null) {
+                nameTextView.setText(channelInfo.name);
             }
         }
         timeTextView.setText(TimeUtils.getMsgFormatTime(conversationInfo.timestamp));

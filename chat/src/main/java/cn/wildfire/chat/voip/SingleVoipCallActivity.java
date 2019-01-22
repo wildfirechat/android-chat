@@ -17,20 +17,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.provider.Settings;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager.LayoutParams;
+import android.widget.Toast;
+
+import org.webrtc.StatsReport;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager.LayoutParams;
-
-import cn.wildfirechat.chat.R;
-
-import org.webrtc.StatsReport;
-
 import butterknife.ButterKnife;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.NotInitializedExecption;
 
 /**
@@ -296,6 +297,13 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
     }
 
     public void showFloatingView() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         Intent intent = new Intent(this, FloatingVoipService.class);
         intent.putExtra(EXTRA_TARGET, targetId);
         intent.putExtra(EXTRA_AUDIO_ONLY, isAudioOnly);
