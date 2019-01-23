@@ -1,9 +1,6 @@
 package cn.wildfire.chat.conversation.message.viewholder;
 
 import android.content.Intent;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -15,16 +12,19 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.ChatManagerHolder;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.OnClick;
+import cn.wildfire.chat.ChatManagerHolder;
 import cn.wildfire.chat.GlideApp;
 import cn.wildfire.chat.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.conversation.ConversationActivity;
 import cn.wildfire.chat.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.conversation.message.model.UiMessage;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -151,6 +151,10 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             } else {
                 return true;
             }
+        }
+
+        if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
+            return true;
         }
 
         // 只有channel 主可以发起
