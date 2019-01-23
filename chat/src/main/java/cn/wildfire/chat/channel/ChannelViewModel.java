@@ -98,7 +98,12 @@ public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateLi
         if (channelIds != null && !channelIds.isEmpty()) {
             List<ChannelInfo> channelInfos = new ArrayList<>(channelIds.size());
             for (String channelId : channelIds) {
-                channelInfos.add(ChatManager.Instance().getChannelInfo(channelId, false));
+                ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(channelId, false);
+                if (channelInfo == null) {
+                    channelInfo = new ChannelInfo();
+                    channelInfo.channelId = channelId;
+                }
+                channelInfos.add(channelInfo);
             }
             return channelInfos;
         }
@@ -110,7 +115,12 @@ public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateLi
         if (channelIds != null && !channelIds.isEmpty()) {
             List<ChannelInfo> channelInfos = new ArrayList<>(channelIds.size());
             for (String channelId : channelIds) {
-                channelInfos.add(ChatManager.Instance().getChannelInfo(channelId, false));
+                ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(channelId, false);
+                if (channelInfo == null) {
+                    channelInfo = new ChannelInfo();
+                    channelInfo.channelId = channelId;
+                }
+                channelInfos.add(channelInfo);
             }
             return channelInfos;
         }
