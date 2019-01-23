@@ -1,15 +1,15 @@
 package cn.wildfire.chat.channel.viewholder;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import cn.wildfirechat.chat.R;
 
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ChannelInfo;
 
 public class ChannelViewHolder extends RecyclerView.ViewHolder {
@@ -24,7 +24,7 @@ public class ChannelViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(ChannelInfo channelInfo) {
-        channelNameTextView.setText(channelInfo.name);
+        channelNameTextView.setText(channelInfo.name == null ? "< " + channelInfo.channelId + "> " : channelInfo.name);
         Glide.with(itemView.getContext()).load(channelInfo.portrait).into(portraitImageView);
     }
 }
