@@ -25,7 +25,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerVertical="true"
-                android:src="@mipmap/ic_new_friend" />
+                android:src="@mipmap/ic_group_cheat" />
 
             <TextView
                 android:id="@+id/tvNewGroupUnread"
