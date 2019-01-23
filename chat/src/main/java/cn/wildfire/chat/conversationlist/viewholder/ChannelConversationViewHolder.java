@@ -32,7 +32,7 @@ public class ChannelConversationViewHolder extends ConversationViewHolder {
             GlideApp
                     .with(fragment)
                     .load(channelInfo.portrait)
-                    .placeholder(R.mipmap.ic_group_cheat)
+                    .placeholder(R.mipmap.ic_channel)
                     .transforms(new CenterCrop(), new RoundedCorners(10))
                     .into(portraitImageView);
         }

@@ -6,9 +6,6 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -26,6 +23,9 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import cn.wildfire.chat.GlideApp;
 import cn.wildfire.chat.conversation.message.model.UiMessage;
 import cn.wildfire.chat.third.utils.UIUtils;
@@ -36,7 +36,7 @@ import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 
 /**
- * @author jiangecho
+ * @author imndx
  */
 public class MMPreviewActivity extends Activity {
     private SparseArray<View> views;

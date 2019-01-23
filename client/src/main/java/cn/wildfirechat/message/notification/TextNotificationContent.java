@@ -8,7 +8,7 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 /**
- * Created by jiangecho on 2017/12/19.
+ * Created by imndx on 2017/12/19.
  */
 
 @ContentTag(type = MessageContentType.ContentType_General_Notification, flag = PersistFlag.Persist_And_Count)

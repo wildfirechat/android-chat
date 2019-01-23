@@ -1,7 +1,7 @@
 package cn.wildfire.chat.net.base;
 
 /**
- * Created by jiangecho on 2017/12/15.
+ * Created by imndx on 2017/12/15.
  */
 
 public class ResultWrapper<T> extends StatusResult {

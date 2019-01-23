@@ -26,7 +26,7 @@
                 android:layout_height="40dp"
                 android:layout_centerVertical="true"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/ic_group_cheat" />
+                android:src="@mipmap/ic_channel" />
 
             <TextView
                 android:id="@+id/unreadFriendRequestCountTextView"
