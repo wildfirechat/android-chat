@@ -86,6 +86,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 
         timeTextView.setText(TimeUtils.getMsgFormatTime(conversationInfo.timestamp));
         silentImageView.setVisibility(conversationInfo.isSilent ? View.VISIBLE : View.GONE);
+        statusImageView.setVisibility(View.GONE);
 
         itemView.setBackgroundResource(conversationInfo.isTop ? R.drawable.selector_stick_top_item : R.drawable.selector_common_item);
         if (conversationInfo.unreadCount.unread > 0) {
@@ -122,7 +123,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                     case Sending:
                         statusImageView.setVisibility(View.VISIBLE);
                         // TODO update sending image resource
-                        statusImageView.setImageResource(R.mipmap.ic_add);
+                        statusImageView.setImageResource(R.mipmap.ic_sending);
                         break;
                     case Send_Failure:
                         statusImageView.setVisibility(View.VISIBLE);

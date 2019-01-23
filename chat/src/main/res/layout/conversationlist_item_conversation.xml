@@ -95,7 +95,7 @@
                     android:maxLines="1"
                     android:text="@string/draft"
                     android:textColor="@color/red7"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:visibility="gone"
                     tools:visibility="visible" />
 
@@ -114,6 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
+                    android:layout_gravity="center"
                     android:maxLines="1"
                     android:text="xxx"
                     android:textColor="@color/gray1"
