@@ -28,16 +28,6 @@
     </style>
 
     <!--圆角Dialog-->
-    <style name="MyDialog" parent="@android:style/Theme.Dialog">
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:backgroundDimAmount">0.6</item>
-    </style>
 
     <!--自定义CheckBox样式-->
     <style name="CustomCheckboxTheme" parent="@android:style/Widget.CompoundButton.CheckBox">
@@ -58,9 +48,4 @@
         <item name="android:background">@color/white</item>
     </style>
 
-    <style name="CallActivityTheme" parent="android:Theme.Black">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowNoTitle">true</item>
-    </style>
 </resources>
