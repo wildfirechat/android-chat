@@ -78,7 +78,7 @@
     <string name="exit">退出</string>
 
     <!--关于-->
-    <string name="app_name_in_about">火信</string>
+    <string name="app_name_in_about">野火即时通讯</string>
     <string name="function_introduction">功能介绍</string>
     <string name="complaint">投诉</string>
     <string name="check_update">检查更新</string>
