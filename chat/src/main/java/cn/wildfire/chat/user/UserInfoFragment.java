@@ -1,12 +1,8 @@
 package cn.wildfire.chat.user;
 
 import android.app.Activity;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,19 +16,23 @@ import com.bumptech.glide.request.RequestOptions;
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
 import com.lqr.optionitemview.OptionItemView;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.app.MyApp;
-import cn.wildfire.chat.third.utils.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.WfcUIKit;
 import cn.wildfire.chat.contact.ContactViewModel;
 import cn.wildfire.chat.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.conversation.ConversationActivity;
+import cn.wildfire.chat.third.utils.UIUtils;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.ModifyMyInfoType;
@@ -138,7 +138,7 @@ public class UserInfoFragment extends Fragment {
 
     @OnClick(R.id.voipChatButton)
     void voipChat() {
-        MyApp.onCall(getActivity(), userInfo.uid, true, false);
+        WfcUIKit.onCall(getActivity(), userInfo.uid, true, false);
     }
 
     @OnClick(R.id.aliasOptionItemView)

@@ -1,21 +1,20 @@
 package cn.wildfire.chat.conversation.message.viewholder;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import cn.wildfirechat.chat.R;
-
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.WfcUIKit;
 import cn.wildfire.chat.annotation.EnableContextMenu;
 import cn.wildfire.chat.annotation.MessageContentType;
 import cn.wildfire.chat.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.annotation.SendLayoutRes;
-import cn.wildfire.chat.app.MyApp;
 import cn.wildfire.chat.conversation.message.model.UiMessage;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.CallStartMessageContent;
 
 @MessageContentType(CallStartMessageContent.class)
@@ -59,7 +58,6 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
         if (((CallStartMessageContent) message.message.content).getStatus() == 1) {
             return;
         }
-        // TODO call the method through viewModel
-        MyApp.onCall(context, message.message.conversation.target, true, false);
+        WfcUIKit.onCall(context, message.message.conversation.target, true, false);
     }
 }
