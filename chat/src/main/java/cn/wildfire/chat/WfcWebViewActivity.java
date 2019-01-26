@@ -43,6 +43,8 @@ public class WfcWebViewActivity extends WfcBaseActivity {
                     }
                 }
             });
+        } else {
+            setTitle(title);
         }
     }
 }

@@ -4,12 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.ChatManagerHolder;
-
 import butterknife.OnClick;
+import cn.wildfire.chat.ChatManagerHolder;
 import cn.wildfire.chat.WfcBaseActivity;
 import cn.wildfire.chat.main.SplashActivity;
+import cn.wildfirechat.chat.R;
 
 public class SettingActivity extends WfcBaseActivity {
 
@@ -33,5 +32,11 @@ public class SettingActivity extends WfcBaseActivity {
     @OnClick(R.id.newMsgNotifyOptionItemView)
     void notifySetting() {
 
+    }
+
+    @OnClick(R.id.aboutOptionItemView)
+    void about() {
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
     }
 }

@@ -107,6 +107,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.setting.AboutActivity"
+            android:label="关于"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.third.location.ui.activity.ShowLocationActivity"
