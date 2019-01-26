@@ -68,9 +68,7 @@ public class MeizuPushReceiver extends MzPushMessageReceiver {
 
     @Override
     public void onNotificationClicked(Context context, String title, String content, String selfDefineContentString) {
-        super.onNotificationClicked(context, title, content, selfDefineContentString);
-        Log.e(TAG, "onNC");
-        // do nothing, will start app
+        PushService.showMainActivity(context);
     }
 
     @Override

@@ -2,6 +2,7 @@ package cn.wildfirechat.push;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -43,7 +44,7 @@ public class PushService {
 
     public static void init(Context gContext) {
         String sys = getSystem();
-        if(SYS_EMUI.equals(sys) &&INST.isHMSConfigured(gContext)) {
+        if (SYS_EMUI.equals(sys) && INST.isHMSConfigured(gContext)) {
             INST.pushServiceType = PushServiceType.HMS;
             INST.initHMS(gContext);
         } else if (/*SYS_FLYME.equals(sys) && INST.isMZConfigured(gContext)*/MzSystemUtils.isBrandMeizu()) {
@@ -54,7 +55,21 @@ public class PushService {
             INST.pushServiceType = PushServiceType.Xiaomi;
             INST.initXiaomi(gContext);
         }
+    }
 
+    public static void clearNotification(Context context) {
+        if (INST.pushServiceType == PushServiceType.Xiaomi) {
+            MiPushClient.clearNotification(context);
+        } else {
+            // TODO
+        }
+    }
+
+    public static void showMainActivity(Context context) {
+        String action = "cn.wildfirechat.chat.main";
+        Intent intent = new Intent(action);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
     public static void didReceiveIMPushMessage(Context context, AndroidPushMessage pushMessage, PushServiceType pushServiceType) {

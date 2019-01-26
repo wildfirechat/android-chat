@@ -73,6 +73,7 @@ public class MyApp extends BaseApp implements AVEngineKit.AVEngineCallback, OnRe
             ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
                 @OnLifecycleEvent(Lifecycle.Event.ON_START)
                 public void onForeground() {
+                    PushService.clearNotification(MyApp.this);
                     isBackground = false;
                 }
 
