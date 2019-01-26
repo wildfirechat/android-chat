@@ -183,6 +183,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name="cn.wildfire.chat.WfcWebViewActivity" />
 
         <provider
             android:name="cn.wildfire.chat.third.utils.FilePickerProvider"

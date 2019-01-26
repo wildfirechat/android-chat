@@ -1,12 +1,7 @@
 package cn.wildfire.chat.main;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,16 +12,21 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.lqr.optionitemview.OptionItemView;
-import cn.wildfirechat.chat.R;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.setting.SettingActivity;
 import cn.wildfire.chat.user.UserInfoActivity;
 import cn.wildfire.chat.user.UserViewModel;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
 public class MeFragment extends Fragment {
@@ -104,7 +104,5 @@ public class MeFragment extends Fragment {
     void setting() {
         Intent intent = new Intent(getActivity(), SettingActivity.class);
         startActivity(intent);
-//        Intent intent = new Intent(getActivity(), CreateChannelActivity.class);
-//        startActivity(intent);
     }
 }
