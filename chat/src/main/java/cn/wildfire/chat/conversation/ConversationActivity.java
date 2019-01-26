@@ -182,6 +182,7 @@ public class ConversationActivity extends WfcBaseActivity implements
             finish();
         }
         setupConversation(conversation);
+        conversationViewModel.clearUnreadStatus(conversation);
     }
 
     @Override
