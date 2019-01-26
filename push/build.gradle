@@ -48,24 +48,3 @@ dependencies {
     implementation project(':client')
     implementation 'com.meizu.flyme.internet:push-internal:3.4.2@aar'
 }
-
-//apply plugin: 'com.novoda.bintray-release'
-////设置所有工程编码为UTF-8编码，防止出现编码GBK的不可映射字符
-//allprojects {
-//    tasks.withType(Javadoc) {
-//        options {
-//            encoding "UTF-8"
-//            charSet 'UTF-8'
-//            links "http://docs.oracle.com/javase/7/docs/api"
-//        }
-//    }
-//}
-//
-//publish {
-//    userOrg = 'wfchat'
-//    groupId = 'cn.wildfirechat'
-//    artifactId = 'push'
-//    publishVersion = android.defaultConfig.versionName
-//    desc = 'Oh hi, this is a nice description for a project, right?'
-//    website = 'https://github.com/novoda/bintray-release'
-//}

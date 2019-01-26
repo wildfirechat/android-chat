@@ -56,14 +56,7 @@ public class MiMessageReceiver extends PushMessageReceiver {
 
     @Override
     public void onNotificationMessageClicked(Context context, MiPushMessage message) {
-        mMessage = message.getContent();
-        if (!TextUtils.isEmpty(message.getTopic())) {
-            mTopic = message.getTopic();
-        } else if (!TextUtils.isEmpty(message.getAlias())) {
-            mAlias = message.getAlias();
-        } else if (!TextUtils.isEmpty(message.getUserAccount())) {
-            mUserAccount = message.getUserAccount();
-        }
+        PushService.showMainActivity(context);
     }
 
     @Override

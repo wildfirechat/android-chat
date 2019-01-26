@@ -12,7 +12,7 @@
     <!-- the following 2 com.xiaomi.mipushdemo should be changed to your package name -->
     <permission
         android:name="${APP_ID}.permission.MIPUSH_RECEIVE"
-        android:protectionLevel="signature" />
+        android:protectionLevel="signatureOrSystem" />
 
     <uses-permission android:name="${APP_ID}.permission.MIPUSH_RECEIVE" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -31,21 +31,10 @@
     <uses-permission android:name="com.meizu.c2dm.permission.RECEIVE" />
     <permission
         android:name="${APP_ID}.permission.C2D_MESSAGE"
-        android:protectionLevel="signature"/>
+        android:protectionLevel="signature" />
     <uses-permission android:name="${APP_ID}.permission.C2D_MESSAGE" />
 
     <application>
-        <!--getui -->
-        <!-- 用户自定义服务继承自GTIntentService,作为SDK与APP桥梁服务,用来接收各种消息和命令回复-->
-        <!-- 主进程-->
-        <service android:name="cn.wildfirechat.push.getui.GetuiIntentService" />
-
-        <!-- 配置SDK核心服务 -->
-        <service
-            android:name="cn.wildfirechat.push.getui.GetuiPushService"
-            android:exported="true"
-            android:label="PushService"
-            android:process=":pushservice" />
 
         <!--huawei-->
         <!-- value的值“xxx”用实际申请的应用ID替换，来源于开发者联盟网站应用的服务详情。-->
@@ -153,6 +142,7 @@
             </intent-filter>
         </receiver>
 
+        <!--meizu-->
         <receiver android:name=".meizu.MeizuPushReceiver">
             <intent-filter>
                 <!-- 接收push消息 -->
