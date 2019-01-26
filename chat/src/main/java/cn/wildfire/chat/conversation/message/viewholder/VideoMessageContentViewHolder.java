@@ -1,15 +1,13 @@
 package cn.wildfire.chat.conversation.message.viewholder;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
-
-import cn.wildfirechat.chat.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.annotation.EnableContextMenu;
@@ -19,6 +17,7 @@ import cn.wildfire.chat.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.conversation.message.model.UiMessage;
 import cn.wildfire.chat.preview.MMPreviewActivity;
 import cn.wildfire.chat.widget.BubbleImageView;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.VideoMessageContent;
 
 @MessageContentType(VideoMessageContent.class)
@@ -68,5 +67,14 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
             }
         }
         MMPreviewActivity.startActivity(context, mmMessages, current);
+    }
+
+    @Override
+    public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
+        if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
+            return true;
+        } else {
+            return super.contextMenuItemFilter(uiMessage, tag);
+        }
     }
 }
