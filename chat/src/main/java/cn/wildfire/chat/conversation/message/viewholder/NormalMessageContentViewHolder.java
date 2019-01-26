@@ -29,6 +29,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -153,7 +154,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             }
         }
 
-        if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
+        if (uiMessage.message.content instanceof NotificationMessageContent && MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
             return true;
         }
 
