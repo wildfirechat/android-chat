@@ -1,18 +1,17 @@
 package cn.wildfire.chat.conversation.message.viewholder;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import cn.wildfirechat.chat.R;
-
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import cn.wildfire.chat.annotation.EnableContextMenu;
 import cn.wildfire.chat.annotation.MessageContentType;
 import cn.wildfire.chat.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.annotation.SendLayoutRes;
 import cn.wildfire.chat.conversation.message.model.UiMessage;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 
 @MessageContentType(NotificationMessageContent.class)

@@ -1,18 +1,17 @@
 package cn.wildfire.chat.contact.newfriend;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.annotation.Nullable;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cn.wildfirechat.chat.R;
-
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.WfcBaseActivity;
 import cn.wildfire.chat.contact.ContactViewModel;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
 public class InviteFriendActivity extends WfcBaseActivity {

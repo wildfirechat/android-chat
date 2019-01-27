@@ -1,13 +1,12 @@
 package cn.wildfire.chat.contact.newfriend;
 
-import androidx.appcompat.widget.SearchView;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import cn.wildfirechat.chat.R;
-
+import androidx.appcompat.widget.SearchView;
 import cn.wildfire.chat.WfcBaseActivity;
+import cn.wildfirechat.chat.R;
 
 public class SearchUserActivity extends WfcBaseActivity {
 

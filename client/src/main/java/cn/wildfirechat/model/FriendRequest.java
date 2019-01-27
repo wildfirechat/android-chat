@@ -7,11 +7,11 @@ import android.os.Parcelable;
  * Created by heavyrainlee on 14/12/2017.
  */
 
-public class FriendRequest implements Parcelable{
+public class FriendRequest implements Parcelable {
     public int direction;
     public String target;
     public String reason;
-//    RequestStatus_Sent = 0,
+    //    RequestStatus_Sent = 0,
 //    RequestStatus_Accepted = 1,
 //    RequestStatus_Rejected = 3
     public int status;

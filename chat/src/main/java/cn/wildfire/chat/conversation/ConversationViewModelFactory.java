@@ -1,9 +1,8 @@
 package cn.wildfire.chat.conversation;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.annotation.NonNull;
-
 import cn.wildfirechat.model.Conversation;
 
 public class ConversationViewModelFactory extends ViewModelProvider.NewInstanceFactory {

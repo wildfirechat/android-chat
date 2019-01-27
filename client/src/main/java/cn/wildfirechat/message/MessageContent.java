@@ -14,7 +14,9 @@ import cn.wildfirechat.message.core.PersistFlag;
 
 public abstract class MessageContent implements Parcelable {
     public abstract MessagePayload encode();
+
     public abstract void decode(MessagePayload payload);
+
     public abstract String digest();
 
     //0 普通消息, 1 部分提醒, 2 提醒全部
@@ -25,7 +27,7 @@ public abstract class MessageContent implements Parcelable {
 
     public int getType() {
         ContentTag tag = getClass().getAnnotation(ContentTag.class);
-        if(tag != null) {
+        if (tag != null) {
             return tag.type();
         }
         return -1;
@@ -33,7 +35,7 @@ public abstract class MessageContent implements Parcelable {
 
     public PersistFlag getPersistFlag() {
         ContentTag tag = getClass().getAnnotation(ContentTag.class);
-        if(tag != null) {
+        if (tag != null) {
             return tag.flag();
         }
         return PersistFlag.No_Persist;

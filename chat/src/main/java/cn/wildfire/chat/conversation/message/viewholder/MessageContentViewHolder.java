@@ -1,19 +1,18 @@
 package cn.wildfire.chat.conversation.message.viewholder;
 
-import androidx.lifecycle.ViewModelProviders;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import cn.wildfirechat.chat.R;
-
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.conversation.ConversationViewModel;
 import cn.wildfire.chat.conversation.message.model.UiMessage;
 import cn.wildfire.chat.third.utils.TimeUtils;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 
 public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {

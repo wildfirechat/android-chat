@@ -1,7 +1,8 @@
 package cn.wildfire.chat.conversation.forward.viewholder;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class CategoryViewHolder extends RecyclerView.ViewHolder {
     public CategoryViewHolder(View itemView) {

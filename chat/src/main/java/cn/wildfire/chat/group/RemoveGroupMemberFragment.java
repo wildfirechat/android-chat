@@ -1,19 +1,18 @@
 package cn.wildfire.chat.group;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.contact.ContactAdapter;
 import cn.wildfire.chat.contact.ContactViewModel;
 import cn.wildfire.chat.contact.model.UIUserInfo;
 import cn.wildfire.chat.contact.pick.CheckableContactAdapter;
 import cn.wildfire.chat.contact.pick.PickContactFragment;
 import cn.wildfire.chat.contact.pick.PickContactViewModel;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 

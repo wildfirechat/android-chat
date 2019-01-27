@@ -5,8 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -14,11 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.location.ui.base.BaseActivity;
-import cn.wildfire.chat.third.location.ui.presenter.MyLocationAtPresenter;
-import cn.wildfire.chat.third.location.ui.view.IMyLocationAtView;
-import cn.wildfire.chat.third.utils.UIUtils;
 import com.tencent.lbssearch.TencentSearch;
 import com.tencent.lbssearch.httpresponse.BaseObject;
 import com.tencent.lbssearch.httpresponse.HttpResponseListener;
@@ -39,7 +32,14 @@ import com.tencent.mapsdk.raster.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
+import cn.wildfire.chat.third.location.ui.base.BaseActivity;
+import cn.wildfire.chat.third.location.ui.presenter.MyLocationAtPresenter;
+import cn.wildfire.chat.third.location.ui.view.IMyLocationAtView;
+import cn.wildfire.chat.third.utils.UIUtils;
+import cn.wildfirechat.chat.R;
 
 /**
  * @创建者 CSDN_LQR

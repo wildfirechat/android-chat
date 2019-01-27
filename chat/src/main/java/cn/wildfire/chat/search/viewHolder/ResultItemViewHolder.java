@@ -1,8 +1,9 @@
 package cn.wildfire.chat.search.viewHolder;
 
+import android.view.View;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
 
 public abstract class ResultItemViewHolder<R> extends RecyclerView.ViewHolder {
     protected Fragment fragment;

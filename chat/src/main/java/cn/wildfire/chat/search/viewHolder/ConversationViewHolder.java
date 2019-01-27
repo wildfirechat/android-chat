@@ -1,19 +1,19 @@
 package cn.wildfire.chat.search.viewHolder;
 
-import androidx.lifecycle.ViewModelProviders;
-import androidx.fragment.app.Fragment;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import cn.wildfirechat.chat.R;
 
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.group.GroupViewModel;
 import cn.wildfire.chat.user.UserViewModel;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationSearchResult;
 import cn.wildfirechat.model.GroupInfo;

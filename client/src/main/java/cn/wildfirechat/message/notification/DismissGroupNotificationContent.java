@@ -54,7 +54,7 @@ public class DismissGroupNotificationContent extends NotificationMessageContent 
     @Override
     public void decode(MessagePayload payload) {
         try {
-            if(payload.binaryContent != null) {
+            if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 operator = jsonObject.optString("o");
             }

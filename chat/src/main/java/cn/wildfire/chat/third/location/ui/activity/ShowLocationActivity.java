@@ -3,23 +3,23 @@ package cn.wildfire.chat.third.location.ui.activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.location.ui.base.BaseActivity;
-import cn.wildfire.chat.third.location.ui.presenter.MyLocationAtPresenter;
-import cn.wildfire.chat.third.location.ui.view.IMyLocationAtView;
 import com.tencent.map.geolocation.TencentLocation;
 import com.tencent.map.geolocation.TencentLocationListener;
 import com.tencent.mapsdk.raster.model.LatLng;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
+import cn.wildfire.chat.third.location.ui.base.BaseActivity;
+import cn.wildfire.chat.third.location.ui.presenter.MyLocationAtPresenter;
+import cn.wildfire.chat.third.location.ui.view.IMyLocationAtView;
+import cn.wildfirechat.chat.R;
 
 /**
  * @创建者 CSDN_LQR

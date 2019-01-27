@@ -1,8 +1,7 @@
 package cn.wildfire.chat.user;
 
-import cn.wildfirechat.chat.R;
-
 import cn.wildfire.chat.WfcBaseActivity;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
 public class UserInfoActivity extends WfcBaseActivity {

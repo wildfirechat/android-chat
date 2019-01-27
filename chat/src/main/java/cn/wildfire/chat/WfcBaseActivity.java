@@ -2,20 +2,19 @@ package cn.wildfire.chat;
 
 import android.app.Activity;
 import android.os.Bundle;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.MenuRes;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import cn.wildfirechat.chat.R;
-
+import androidx.annotation.LayoutRes;
+import androidx.annotation.MenuRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfirechat.chat.R;
 
 public abstract class WfcBaseActivity extends AppCompatActivity {
     @Bind(R.id.toolbar)

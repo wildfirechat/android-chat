@@ -12,9 +12,9 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import cn.wildfirechat.chat.R;
-
 import java.io.File;
+
+import cn.wildfirechat.chat.R;
 
 public class AudioRecorderPanel implements View.OnTouchListener {
     private int maxDuration = 60 * 1000;

@@ -1,7 +1,5 @@
 package cn.wildfire.chat.conversation;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
@@ -14,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import cn.wildfire.chat.app.MyApp;
 import cn.wildfire.chat.audio.AudioPlayManager;
 import cn.wildfire.chat.audio.IAudioPlayListener;

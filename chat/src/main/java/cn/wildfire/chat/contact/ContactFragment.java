@@ -1,13 +1,13 @@
 package cn.wildfire.chat.contact;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.channel.ChannelListActivity;
 import cn.wildfire.chat.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.contact.model.FriendRequestValue;

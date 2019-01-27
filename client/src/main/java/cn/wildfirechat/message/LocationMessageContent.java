@@ -90,7 +90,7 @@ public class LocationMessageContent extends MessageContent {
         }
         title = payload.searchableContent;
         try {
-            if(payload.content != null) {
+            if (payload.content != null) {
                 JSONObject jsonObject = new JSONObject(payload.content);
                 location.setLatitude(jsonObject.optDouble("lat"));
                 location.setLongitude(jsonObject.optDouble("long"));

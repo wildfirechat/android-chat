@@ -4,12 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.location.data.LocationData;
-import cn.wildfire.chat.third.location.ui.activity.MyLocationActivity;
-
 import cn.wildfire.chat.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.conversation.ext.core.ConversationExt;
+import cn.wildfire.chat.third.location.data.LocationData;
+import cn.wildfire.chat.third.location.ui.activity.MyLocationActivity;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 

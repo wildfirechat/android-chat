@@ -2,6 +2,7 @@ package cn.wildfire.chat.app;
 
 import android.content.Context;
 import android.os.Handler;
+
 import androidx.multidex.MultiDexApplication;
 
 public class BaseApp extends MultiDexApplication {

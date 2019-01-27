@@ -1,21 +1,20 @@
 package cn.wildfire.chat.conversationlist.viewholder;
 
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import cn.wildfirechat.chat.R;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.conversationlist.notification.StatusNotification;
+import cn.wildfirechat.chat.R;
 
 public class StatusNotificationViewHolder extends RecyclerView.ViewHolder {
     @Bind(R.id.notificationContainerLayout)

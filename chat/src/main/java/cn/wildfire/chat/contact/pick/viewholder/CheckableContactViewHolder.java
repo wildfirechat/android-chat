@@ -1,15 +1,14 @@
 package cn.wildfire.chat.contact.pick.viewholder;
 
-import androidx.fragment.app.Fragment;
 import android.view.View;
 import android.widget.CheckBox;
 
-import cn.wildfirechat.chat.R;
+import androidx.fragment.app.Fragment;
+import butterknife.Bind;
 import cn.wildfire.chat.contact.model.UIUserInfo;
 import cn.wildfire.chat.contact.pick.CheckableContactAdapter;
 import cn.wildfire.chat.contact.viewholder.ContactViewHolder;
-
-import butterknife.Bind;
+import cn.wildfirechat.chat.R;
 
 public class CheckableContactViewHolder extends ContactViewHolder {
     @Bind(R.id.checkbox)

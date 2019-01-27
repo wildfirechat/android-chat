@@ -8,8 +8,6 @@ import android.os.Parcelable;
  */
 
 
-
-
 public class GroupMember implements Parcelable {
     public enum GroupMemberType {
         Normal(0),

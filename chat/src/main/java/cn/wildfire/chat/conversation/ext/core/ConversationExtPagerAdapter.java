@@ -1,12 +1,13 @@
 package cn.wildfire.chat.conversation.ext.core;
 
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.PagerAdapter;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
 
 public class ConversationExtPagerAdapter extends PagerAdapter {
     private SparseArray<ConversationExtPageView> pagers = new SparseArray<>();

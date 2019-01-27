@@ -8,7 +8,7 @@ import android.os.Parcelable;
  */
 
 
-public class ChannelInfo implements Parcelable{
+public class ChannelInfo implements Parcelable {
     public enum ChannelStatus {
         //member can add quit change group name and portrait, owner can do all the operations
         Public(0),
@@ -35,6 +35,7 @@ public class ChannelInfo implements Parcelable{
             throw new IllegalArgumentException("GroupType " + type + " is invalid");
         }
     }
+
     public String channelId;
     public String name;
     public String portrait;

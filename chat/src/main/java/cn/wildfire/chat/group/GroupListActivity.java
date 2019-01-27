@@ -1,13 +1,11 @@
 package cn.wildfire.chat.group;
 
 import android.content.Intent;
-import androidx.appcompat.widget.Toolbar;
-
-import cn.wildfirechat.chat.R;
 
 import java.util.ArrayList;
 
 import cn.wildfire.chat.WfcBaseActivity;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupInfo;
 
 public class GroupListActivity extends WfcBaseActivity {

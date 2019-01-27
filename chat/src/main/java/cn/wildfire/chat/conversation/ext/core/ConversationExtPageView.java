@@ -3,7 +3,6 @@ package cn.wildfire.chat.conversation.ext.core;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +10,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import cn.wildfirechat.chat.R;
-
 import java.util.List;
+
+import androidx.annotation.Nullable;
+import cn.wildfirechat.chat.R;
 
 public class ConversationExtPageView extends LinearLayout implements View.OnClickListener {
     private OnExtViewClickListener listener;

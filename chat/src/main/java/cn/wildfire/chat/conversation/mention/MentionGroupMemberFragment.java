@@ -1,21 +1,20 @@
 package cn.wildfire.chat.conversation.mention;
 
 import android.app.Activity;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.contact.BaseContactFragment;
 import cn.wildfire.chat.contact.ContactAdapter;
 import cn.wildfire.chat.contact.ContactViewModel;
 import cn.wildfire.chat.contact.model.HeaderValue;
 import cn.wildfire.chat.contact.model.UIUserInfo;
 import cn.wildfire.chat.group.GroupViewModel;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 

@@ -3,11 +3,11 @@ package cn.wildfire.chat.contact.pick;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import cn.wildfire.chat.contact.model.GroupValue;
 import cn.wildfire.chat.contact.pick.viewholder.PickGroupViewHolder;
 import cn.wildfire.chat.group.GroupListActivity;

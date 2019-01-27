@@ -1,7 +1,8 @@
 package cn.wildfire.chat.search;
 
-import androidx.fragment.app.Fragment;
 import android.view.View;
+
+import androidx.fragment.app.Fragment;
 
 public interface OnResultItemClickListener<R> {
     /**

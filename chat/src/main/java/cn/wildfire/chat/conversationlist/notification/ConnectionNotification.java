@@ -5,10 +5,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import cn.wildfirechat.chat.R;
-
 import butterknife.Bind;
 import butterknife.OnClick;
+import cn.wildfirechat.chat.R;
 
 public class ConnectionNotification extends StatusNotification {
     public ConnectionNotification(Fragment fragment) {

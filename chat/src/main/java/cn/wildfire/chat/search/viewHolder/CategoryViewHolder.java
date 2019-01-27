@@ -1,13 +1,12 @@
 package cn.wildfire.chat.search.viewHolder;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import cn.wildfirechat.chat.R;
-
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfirechat.chat.R;
 
 public class CategoryViewHolder extends RecyclerView.ViewHolder {
     @Bind(R.id.categoryTextView)

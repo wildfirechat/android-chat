@@ -5,11 +5,12 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import cn.wildfire.chat.conversation.mention.Mention;
-import cn.wildfire.chat.conversation.mention.MentionSpan;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.wildfire.chat.conversation.mention.Mention;
+import cn.wildfire.chat.conversation.mention.MentionSpan;
 
 public class Draft {
     private String content;

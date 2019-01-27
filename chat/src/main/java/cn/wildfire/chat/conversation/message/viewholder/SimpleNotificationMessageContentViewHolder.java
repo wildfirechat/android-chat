@@ -1,20 +1,17 @@
 package cn.wildfire.chat.conversation.message.viewholder;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import cn.wildfirechat.chat.R;
-
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import cn.wildfire.chat.annotation.LayoutRes;
 import cn.wildfire.chat.annotation.MessageContentType;
 import cn.wildfire.chat.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.RecallMessageContent;
-import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
@@ -23,6 +20,8 @@ import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
+import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
+import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
 
 @MessageContentType(value = {

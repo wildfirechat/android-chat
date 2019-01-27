@@ -95,7 +95,7 @@ public class ImageTextMessageContent extends MessageContent {
         }
 
         try {
-            if(payload.content != null) {
+            if (payload.content != null) {
                 JSONObject jsonObject = new JSONObject(payload.content);
                 content = jsonObject.optString("c");
                 url = jsonObject.optString("u");

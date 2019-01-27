@@ -2,7 +2,6 @@ package cn.wildfire.chat.chatroom;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import cn.wildfire.chat.common.OperateResult;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;

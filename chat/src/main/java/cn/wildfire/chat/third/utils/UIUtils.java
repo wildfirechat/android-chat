@@ -7,8 +7,8 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.Toast;
 
-import cn.wildfire.chat.app.MyApp;
 import cn.wildfire.chat.app.BaseApp;
+import cn.wildfire.chat.app.MyApp;
 
 //import static io.rong.imlib.statistics.Statistics.TAG;
 

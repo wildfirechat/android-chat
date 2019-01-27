@@ -1,7 +1,7 @@
 package cn.wildfirechat.remote;
 
-import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.ConversationInfo;
+import cn.wildfirechat.model.UnreadCount;
 
 public interface OnConversationInfoUpdateListener {
 
