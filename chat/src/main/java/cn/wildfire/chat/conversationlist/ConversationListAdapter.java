@@ -118,8 +118,8 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
             notifyItemChanged(headerCount() + targetPosition);
         } else {
             if (currentPosition >= 0) {
-                notifyItemChanged(headerCount() + currentPosition);
-                notifyItemChanged(headerCount() + targetPosition);
+                notifyItemRemoved(headerCount() + currentPosition);
+                notifyItemInserted(headerCount() + targetPosition);
             } else {
                 notifyItemInserted(headerCount() + targetPosition);
             }

@@ -27,15 +27,22 @@ public class ChannelConversationViewHolder extends ConversationViewHolder {
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
         ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversationInfo.conversation.target, false);
+        String name;
+        String portrait;
         if (channelInfo != null) {
-            nameTextView.setText(channelInfo.name);
-            GlideApp
-                    .with(fragment)
-                    .load(channelInfo.portrait)
-                    .placeholder(R.mipmap.ic_channel)
-                    .transforms(new CenterCrop(), new RoundedCorners(10))
-                    .into(portraitImageView);
+            name = channelInfo.name;
+            portrait = channelInfo.portrait;
+        } else {
+            name = "Channel<" + conversationInfo.conversation.target + ">";
+            portrait = null;
         }
+        nameTextView.setText(name);
+        GlideApp
+                .with(fragment)
+                .load(portrait)
+                .placeholder(R.mipmap.ic_channel)
+                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .into(portraitImageView);
     }
 
 }
