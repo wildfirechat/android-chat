@@ -69,7 +69,7 @@ public abstract class SearchableModule<R, V extends RecyclerView.ViewHolder> {
     }
 
     /**
-     * @return true, 可展开；false，不可展开
+     * @return true, 只展示4项，其他收起；false，不可展开, 全部直接展开
      * <p>
      * 可展示时，默认展示4项，其他的需要点击显示更多，才展示
      */

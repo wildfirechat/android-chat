@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/create"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/more"
         android:icon="@mipmap/ic_add"
-        android:title="创建"
-        app:showAsAction="always" />
+        android:title="更多"
+        app:showAsAction="always">
+        <menu>
+            <item xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/create"
+                android:icon="@mipmap/ic_add"
+                android:orderInCategory="100"
+                android:title="创建"
+                app:iconTint="@color/colorPrimary"
+                app:showAsAction="always" />
 
+
+            <item
+                android:id="@+id/subscribe"
+                android:icon="@mipmap/ic_subscribe_chanel"
+                android:orderInCategory="101"
+                android:title="收听"
+                app:iconTint="@color/colorPrimary" />
+        </menu>
+    </item>
 </menu>
