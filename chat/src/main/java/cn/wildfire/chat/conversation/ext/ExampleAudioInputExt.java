@@ -5,10 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import cn.wildfirechat.chat.R;
-
 import cn.wildfire.chat.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.conversation.ext.core.ConversationExt;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 
 //用来演示类似微信语音输入那种扩展

@@ -3,10 +3,9 @@ package cn.wildfire.chat.contact.newfriend;
 import android.content.Intent;
 import android.view.MenuItem;
 
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.utils.UIUtils;
-
 import cn.wildfire.chat.WfcBaseActivity;
+import cn.wildfire.chat.third.utils.UIUtils;
+import cn.wildfirechat.chat.R;
 
 public class FriendRequestListActivity extends WfcBaseActivity {
 

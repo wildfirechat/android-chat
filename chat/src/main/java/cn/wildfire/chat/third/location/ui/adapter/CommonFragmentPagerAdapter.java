@@ -1,10 +1,10 @@
 package cn.wildfire.chat.third.location.ui.adapter;
 
+import java.util.List;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-
-import java.util.List;
 
 
 /**

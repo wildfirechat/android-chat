@@ -1,22 +1,22 @@
 package cn.wildfire.chat.group;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.utils.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.WfcBaseActivity;
 import cn.wildfire.chat.contact.model.UIUserInfo;
 import cn.wildfire.chat.contact.pick.PickContactViewModel;
+import cn.wildfire.chat.third.utils.UIUtils;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupInfo;
 
 public class AddGroupMemberActivity extends WfcBaseActivity {

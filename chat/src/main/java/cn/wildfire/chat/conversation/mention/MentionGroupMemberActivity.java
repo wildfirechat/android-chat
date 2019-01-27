@@ -1,8 +1,7 @@
 package cn.wildfire.chat.conversation.mention;
 
-import cn.wildfirechat.chat.R;
-
 import cn.wildfire.chat.WfcBaseActivity;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupInfo;
 
 public class MentionGroupMemberActivity extends WfcBaseActivity {

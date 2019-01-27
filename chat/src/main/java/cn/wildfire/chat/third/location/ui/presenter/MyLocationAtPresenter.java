@@ -7,15 +7,16 @@ import android.view.View;
 
 import com.lqr.adapter.LQRAdapterForRecyclerView;
 import com.lqr.adapter.LQRViewHolderForRecyclerView;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.location.data.LocationData;
-import cn.wildfire.chat.third.location.ui.base.BaseActivity;
-import cn.wildfire.chat.third.location.ui.base.BasePresenter;
-import cn.wildfire.chat.third.location.ui.view.IMyLocationAtView;
 import com.tencent.lbssearch.object.result.Geo2AddressResultObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.wildfire.chat.third.location.data.LocationData;
+import cn.wildfire.chat.third.location.ui.base.BaseActivity;
+import cn.wildfire.chat.third.location.ui.base.BasePresenter;
+import cn.wildfire.chat.third.location.ui.view.IMyLocationAtView;
+import cn.wildfirechat.chat.R;
 
 public class MyLocationAtPresenter extends BasePresenter<IMyLocationAtView> {
 

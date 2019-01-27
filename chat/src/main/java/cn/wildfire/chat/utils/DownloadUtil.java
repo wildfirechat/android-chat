@@ -1,7 +1,6 @@
 package cn.wildfire.chat.utils;
 
 import android.os.Environment;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -9,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import androidx.annotation.NonNull;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;

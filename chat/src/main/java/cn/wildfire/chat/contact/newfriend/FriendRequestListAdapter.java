@@ -1,15 +1,14 @@
 package cn.wildfire.chat.contact.newfriend;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import cn.wildfirechat.chat.R;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.FriendRequest;
 
 public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequestViewHolder> {

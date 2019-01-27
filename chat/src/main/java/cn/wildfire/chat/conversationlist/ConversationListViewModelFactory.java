@@ -1,11 +1,10 @@
 package cn.wildfire.chat.conversationlist;
 
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.annotation.NonNull;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import cn.wildfirechat.model.Conversation;
 
 public class ConversationListViewModelFactory extends ViewModelProvider.NewInstanceFactory {

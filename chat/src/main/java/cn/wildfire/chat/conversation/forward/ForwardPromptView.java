@@ -2,7 +2,6 @@ package cn.wildfire.chat.conversation.forward;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +12,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.utils.UIUtils;
 
+import androidx.annotation.Nullable;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.third.utils.UIUtils;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.VideoMessageContent;

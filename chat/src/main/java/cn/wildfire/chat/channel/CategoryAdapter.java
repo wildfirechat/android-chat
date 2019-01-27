@@ -1,8 +1,9 @@
 package cn.wildfire.chat.channel;
 
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.ViewGroup;
 
 public abstract class CategoryAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 

@@ -1,8 +1,8 @@
 package cn.wildfire.chat.conversation;
 
-import androidx.fragment.app.Fragment;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.WfcBaseActivity;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ConversationInfo;

@@ -32,7 +32,7 @@ public class TextNotificationContent extends NotificationMessageContent {
     public MessagePayload encode() {
         MessagePayload payload = new MessagePayload();
         payload.content = notification;
-         return payload;
+        return payload;
     }
 
     @Override

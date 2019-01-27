@@ -1,9 +1,6 @@
 package cn.wildfire.chat.group;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +9,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.contact.pick.PickContactFragment;
 import cn.wildfire.chat.contact.pick.PickContactViewModel;
 import cn.wildfirechat.model.GroupInfo;

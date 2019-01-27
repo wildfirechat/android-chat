@@ -1,9 +1,10 @@
 package cn.wildfire.chat.conversation.mention;
 
-import androidx.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 public class MentionSpan extends ClickableSpan {
     private boolean isMentionAll;

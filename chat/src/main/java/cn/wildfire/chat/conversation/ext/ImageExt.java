@@ -7,14 +7,14 @@ import android.view.View;
 
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.utils.ImageUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import cn.wildfire.chat.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.conversation.ext.core.ConversationExt;
+import cn.wildfire.chat.third.utils.ImageUtils;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 

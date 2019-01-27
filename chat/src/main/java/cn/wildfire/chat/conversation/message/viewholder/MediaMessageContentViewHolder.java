@@ -1,14 +1,13 @@
 package cn.wildfire.chat.conversation.message.viewholder;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import cn.wildfirechat.chat.R;
-
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import cn.wildfire.chat.conversation.message.model.UiMessage;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;

@@ -1,15 +1,15 @@
 package cn.wildfire.chat.conversation.forward;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.annotation.Nullable;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.common.OperateResult;
 import cn.wildfire.chat.contact.model.UIUserInfo;
 import cn.wildfire.chat.contact.pick.PickConversationTargetActivity;

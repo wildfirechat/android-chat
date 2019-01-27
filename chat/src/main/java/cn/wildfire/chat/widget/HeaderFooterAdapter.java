@@ -1,21 +1,21 @@
 package cn.wildfire.chat.widget;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.annotation.LayoutRes;
 import cn.wildfire.chat.contact.model.FooterValue;
 import cn.wildfire.chat.contact.model.HeaderValue;
 import cn.wildfire.chat.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.contact.viewholder.header.HeaderViewHolder;
-
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class HeaderFooterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_CONTENT = 1024;

@@ -1,10 +1,10 @@
 package cn.wildfire.chat.contact.viewholder.footer;
 
-import androidx.lifecycle.ViewModelProviders;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.contact.ContactAdapter;
 import cn.wildfire.chat.contact.ContactViewModel;
 import cn.wildfire.chat.contact.model.FooterValue;

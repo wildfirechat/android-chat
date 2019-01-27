@@ -4,9 +4,8 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import cn.wildfire.chat.annotation.MessageContentType;
-
-import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.core.ContentTag;
 
 public class MessageViewHolderManager {
     private static MessageViewHolderManager instance = new MessageViewHolderManager();

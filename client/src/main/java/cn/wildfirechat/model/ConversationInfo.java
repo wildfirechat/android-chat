@@ -36,7 +36,7 @@ public class ConversationInfo implements Parcelable {
         dest.writeString(this.draft);
         dest.writeParcelable(this.unreadCount, flags);
         dest.writeByte(this.isTop ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.isSilent ? (byte)1 : (byte)0);
+        dest.writeByte(this.isSilent ? (byte) 1 : (byte) 0);
     }
 
     protected ConversationInfo(Parcel in) {

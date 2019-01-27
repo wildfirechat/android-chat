@@ -6,13 +6,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 
-import cn.wildfirechat.chat.R;
-
 import java.io.File;
 
 import cn.wildfire.chat.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.utils.FilePathUtil;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 

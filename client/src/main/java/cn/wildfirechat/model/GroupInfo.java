@@ -8,7 +8,7 @@ import android.os.Parcelable;
  */
 
 
-public class GroupInfo implements Parcelable{
+public class GroupInfo implements Parcelable {
     public enum GroupType {
         //member can add quit change group name and portrait, owner can do all the operations
         Normal(0),
@@ -35,6 +35,7 @@ public class GroupInfo implements Parcelable{
             throw new IllegalArgumentException("GroupType " + type + " is invalid");
         }
     }
+
     public String target;
     public String name;
     public String portrait;

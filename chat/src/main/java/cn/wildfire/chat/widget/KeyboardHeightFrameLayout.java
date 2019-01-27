@@ -3,11 +3,12 @@ package cn.wildfire.chat.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class KeyboardHeightFrameLayout extends FrameLayout implements InputAwareLayout.InputView {
     public KeyboardHeightFrameLayout(@NonNull Context context) {

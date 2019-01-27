@@ -1,16 +1,14 @@
 package cn.wildfire.chat.conversation.message.viewholder;
 
 import android.graphics.drawable.BitmapDrawable;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
-
-import cn.wildfirechat.chat.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.GlideApp;
@@ -23,6 +21,7 @@ import cn.wildfire.chat.conversation.message.model.UiMessage;
 import cn.wildfire.chat.preview.MMPreviewActivity;
 import cn.wildfire.chat.third.utils.UIUtils;
 import cn.wildfire.chat.widget.BubbleImageView;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;

@@ -25,7 +25,7 @@ public enum MessageContentMediaType {
 
     public static MessageContentMediaType mediaType(int mediaType) {
         MessageContentMediaType type = null;
-        if (mediaType >=0 && mediaType < MessageContentMediaType.values().length) {
+        if (mediaType >= 0 && mediaType < MessageContentMediaType.values().length) {
             return MessageContentMediaType.values()[mediaType];
         }
         return null;

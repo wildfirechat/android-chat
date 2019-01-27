@@ -1,17 +1,16 @@
 package cn.wildfire.chat.channel;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import cn.wildfirechat.chat.R;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.channel.viewholder.CategoryViewHolder;
 import cn.wildfire.chat.channel.viewholder.ChannelViewHolder;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ChannelInfo;
 
 public class ChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

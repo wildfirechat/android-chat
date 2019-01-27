@@ -1,12 +1,6 @@
 package cn.wildfire.chat.contact.pick;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,10 +9,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
-import cn.wildfirechat.chat.R;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
@@ -27,6 +25,7 @@ import cn.wildfire.chat.contact.ContactAdapter;
 import cn.wildfire.chat.contact.ContactViewModel;
 import cn.wildfire.chat.contact.model.UIUserInfo;
 import cn.wildfire.chat.widget.QuickIndexBar;
+import cn.wildfirechat.chat.R;
 
 public class PickContactFragment extends BaseContactFragment implements QuickIndexBar.OnLetterUpdateListener {
     private SearchAndPickContactFragment searchAndPickContactFragment;

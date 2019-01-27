@@ -1,11 +1,7 @@
 package cn.wildfire.chat.channel;
 
 import android.app.Activity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputEditText;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -15,18 +11,22 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.textfield.TextInputEditText;
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
-import cn.wildfirechat.chat.R;
 
 import java.util.ArrayList;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.WfcBaseActivity;
 import cn.wildfire.chat.common.OperateResult;
 import cn.wildfire.chat.conversation.ConversationActivity;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 
 public class CreateChannelActivity extends WfcBaseActivity {

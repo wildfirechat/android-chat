@@ -1,13 +1,13 @@
 package cn.wildfire.chat.conversation.mention;
 
-import androidx.fragment.app.Fragment;
 import android.view.View;
 
-import cn.wildfirechat.chat.R;
+import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.annotation.LayoutRes;
 import cn.wildfire.chat.contact.ContactAdapter;
 import cn.wildfire.chat.contact.model.HeaderValue;
 import cn.wildfire.chat.contact.viewholder.header.HeaderViewHolder;
+import cn.wildfirechat.chat.R;
 
 @LayoutRes(resId = R.layout.conversation_header_mention_all)
 public class MentionAllHeaderViewHolder extends HeaderViewHolder<HeaderValue> {

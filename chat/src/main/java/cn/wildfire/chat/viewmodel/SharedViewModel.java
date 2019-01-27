@@ -1,8 +1,8 @@
 package cn.wildfire.chat.viewmodel;
 
-import androidx.lifecycle.ViewModel;
-
 import java.util.concurrent.atomic.AtomicInteger;
+
+import androidx.lifecycle.ViewModel;
 
 public abstract class SharedViewModel extends ViewModel {
 

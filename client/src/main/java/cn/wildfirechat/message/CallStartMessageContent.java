@@ -96,11 +96,11 @@ public class CallStartMessageContent extends MessageContent {
                 objWrite.put("c", connectTime);
             }
 
-            if(endTime > 0) {
+            if (endTime > 0) {
                 objWrite.put("e", endTime);
             }
 
-            if(status > 0) {
+            if (status > 0) {
                 objWrite.put("s", status);
             }
 
@@ -120,7 +120,7 @@ public class CallStartMessageContent extends MessageContent {
         callId = payload.content;
 
         try {
-            if(payload.binaryContent != null) {
+            if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 connectTime = jsonObject.optLong("c", 0);
                 endTime = jsonObject.optLong("e", 0);

@@ -56,7 +56,7 @@ public class TransferGroupOwnerNotificationContent extends NotificationMessageCo
     @Override
     public void decode(MessagePayload payload) {
         try {
-            if(payload.content != null) {
+            if (payload.content != null) {
                 JSONObject jsonObject = new JSONObject(payload.content);
                 operator = jsonObject.optString("o");
                 newOwner = jsonObject.optString("m");

@@ -1,17 +1,17 @@
 package cn.wildfire.chat.conversation;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import cn.wildfirechat.chat.R;
 
 import java.util.List;
 
+import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.contact.model.UIUserInfo;
 import cn.wildfire.chat.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.group.GroupViewModel;
 import cn.wildfire.chat.third.utils.UIUtils;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 

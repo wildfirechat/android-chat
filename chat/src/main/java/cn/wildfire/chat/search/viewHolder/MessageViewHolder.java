@@ -1,8 +1,5 @@
 package cn.wildfire.chat.search.viewHolder;
 
-import androidx.lifecycle.ViewModelProviders;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,12 +7,15 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.utils.TimeUtils;
 
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.third.utils.TimeUtils;
 import cn.wildfire.chat.user.UserViewModel;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.UserInfo;
 

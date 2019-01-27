@@ -1,16 +1,15 @@
 package cn.wildfire.chat.contact.viewholder.footer;
 
-import androidx.fragment.app.Fragment;
 import android.view.View;
 import android.widget.TextView;
 
-import cn.wildfirechat.chat.R;
+import androidx.fragment.app.Fragment;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import cn.wildfire.chat.annotation.LayoutRes;
 import cn.wildfire.chat.contact.ContactAdapter;
 import cn.wildfire.chat.contact.model.ContactCountFooterValue;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import cn.wildfirechat.chat.R;
 
 @LayoutRes(resId = R.layout.contact_item_footer)
 public class ContactCountViewHolder extends FooterViewHolder<ContactCountFooterValue> {

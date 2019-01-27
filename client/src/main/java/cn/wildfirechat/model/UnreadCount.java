@@ -3,8 +3,6 @@ package cn.wildfirechat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import cn.wildfirechat.model.ProtoUnreadCount;
-
 public class UnreadCount implements Parcelable {
     public UnreadCount(ProtoUnreadCount protocolUnreadCount) {
         this.unread = protocolUnreadCount.getUnread();

@@ -1,8 +1,6 @@
 package cn.wildfire.chat.conversation.ext.core;
 
 import android.content.Intent;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.ViewPager;
 import android.widget.FrameLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -12,6 +10,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager.widget.ViewPager;
 import cn.wildfire.chat.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.conversation.ConversationViewModel;
 import cn.wildfirechat.model.Conversation;

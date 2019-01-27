@@ -1,15 +1,15 @@
 package cn.wildfire.chat.search.viewHolder;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import cn.wildfirechat.chat.R;
 
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ChannelInfo;
 
 public class ChannelViewHolder extends RecyclerView.ViewHolder {

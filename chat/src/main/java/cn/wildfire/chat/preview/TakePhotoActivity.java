@@ -5,18 +5,19 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.cjt2325.cameralibrary.JCameraView;
 import com.cjt2325.cameralibrary.listener.JCameraListener;
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.Config;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import cn.wildfire.chat.Config;
+import cn.wildfirechat.chat.R;
 
 public class TakePhotoActivity extends AppCompatActivity {
     private JCameraView mJCameraView;

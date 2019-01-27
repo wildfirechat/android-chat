@@ -1,19 +1,18 @@
 package cn.wildfire.chat.conversation.forward;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import cn.wildfirechat.chat.R;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.conversation.forward.viewholder.CategoryViewHolder;
 import cn.wildfire.chat.conversation.forward.viewholder.ConversationViewHolder;
 import cn.wildfire.chat.conversation.forward.viewholder.CreateConversationViewHolder;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ConversationInfo;
 
 public class ForwardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

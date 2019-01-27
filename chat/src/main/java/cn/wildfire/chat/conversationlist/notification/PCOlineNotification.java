@@ -1,8 +1,8 @@
 package cn.wildfire.chat.conversationlist.notification;
 
-import androidx.fragment.app.Fragment;
 import android.view.View;
 
+import androidx.fragment.app.Fragment;
 import cn.wildfirechat.chat.R;
 
 public class PCOlineNotification extends StatusNotification {

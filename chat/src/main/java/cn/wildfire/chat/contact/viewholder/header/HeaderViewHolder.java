@@ -1,9 +1,9 @@
 package cn.wildfire.chat.contact.viewholder.header;
 
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.contact.ContactAdapter;
 import cn.wildfire.chat.contact.model.HeaderValue;
 
