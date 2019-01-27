@@ -1,7 +1,5 @@
 package cn.wildfire.chat.conversation;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,14 +8,16 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import cn.wildfirechat.chat.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
 public class ConversationMemberAdapter extends RecyclerView.Adapter<ConversationMemberAdapter.MemberViewHolder> {
@@ -116,6 +116,9 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
 
         @OnClick(R.id.portraitImageView)
         void onClick() {
+            if (userInfo == null) {
+                return;
+            }
             if (onMemberClickListener == null) {
                 return;
             }
@@ -140,6 +143,11 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
         }
 
         public void bindUserInfo(UserInfo userInfo) {
+            if (userInfo == null) {
+                nameTextView.setText("");
+                portraitImageView.setImageResource(R.mipmap.default_header);
+                return;
+            }
             this.userInfo = userInfo;
             this.type = TYPE_USER;
             nameTextView.setVisibility(View.VISIBLE);

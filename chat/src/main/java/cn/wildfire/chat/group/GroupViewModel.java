@@ -1,15 +1,11 @@
 package cn.wildfire.chat.group;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import com.bumptech.glide.Glide;
-import cn.wildfire.chat.third.utils.FileUtils;
-import cn.wildfire.chat.ChatManagerHolder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,16 +15,21 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+import cn.wildfire.chat.ChatManagerHolder;
 import cn.wildfire.chat.common.OperateResult;
 import cn.wildfire.chat.contact.model.UIUserInfo;
+import cn.wildfire.chat.third.utils.FileUtils;
 import cn.wildfire.chat.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.message.MessageContentMediaType;
-import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.CreateGroupNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
+import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.ModifyGroupInfoType;
@@ -101,8 +102,8 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            byte[] content = FileUtils.readFile(groupPortrait);
-            if (content != null) {
+            if (groupPortrait != null) {
+                byte[] content = FileUtils.readFile(groupPortrait);
                 ChatManager.Instance().uploadMedia(content, MessageContentMediaType.PORTRAIT.getValue(), new GeneralCallback2() {
                     @Override
                     public void onSuccess(String result) {
@@ -125,7 +126,17 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
                     }
                 });
             } else {
-                groupLiveData.setValue(new OperateResult<>("生成群头像失败", -1));
+                ChatManager.Instance().createGroup(null, notifyCnt.groupName, null, selectedIds, Arrays.asList(0), notifyCnt, new GeneralCallback2() {
+                    @Override
+                    public void onSuccess(String groupId) {
+                        groupLiveData.setValue(new OperateResult<>(groupId, 0));
+                    }
+
+                    @Override
+                    public void onFailure(int errorCode) {
+                        groupLiveData.setValue(new OperateResult<>(errorCode));
+                    }
+                });
             }
         });
         return groupLiveData;
@@ -279,15 +290,23 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return result;
     }
 
-    private String generateGroupPortrait(Context context, List<UIUserInfo> userInfos) throws Exception {
+    private @Nullable
+    String generateGroupPortrait(Context context, List<UIUserInfo> userInfos) throws Exception {
         List<Bitmap> bitmaps = new ArrayList<>();
         for (UIUserInfo userInfo : userInfos) {
-            Drawable drawable = Glide.with(context).load(userInfo.getUserInfo().portrait).submit(60, 60).get();
-            if (drawable instanceof BitmapDrawable) {
-                bitmaps.add(((BitmapDrawable) drawable).getBitmap());
+            try {
+                Drawable drawable = Glide.with(context).load(userInfo.getUserInfo().portrait).submit(60, 60).get();
+                if (drawable instanceof BitmapDrawable) {
+                    bitmaps.add(((BitmapDrawable) drawable).getBitmap());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         Bitmap bitmap = CombineBitmapTools.combimeBitmap(context, 60, 60, bitmaps);
+        if (bitmap == null) {
+            return null;
+        }
         //create a file to write bitmap data
         File f = new File(context.getCacheDir(), System.currentTimeMillis() + ".png");
         f.createNewFile();
