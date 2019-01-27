@@ -87,6 +87,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.user.SetAliasActivity"
+            android:label="设置用户备注"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.user.ChangeMyNameActivity"
@@ -101,9 +102,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.group.SetGroupNameActivity"
+            android:label="修改群名称"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.setting.SettingActivity"
+            android:label="设置"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.setting.AboutActivity"

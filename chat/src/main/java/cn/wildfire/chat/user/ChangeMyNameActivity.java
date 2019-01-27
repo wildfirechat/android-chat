@@ -1,31 +1,27 @@
 package cn.wildfire.chat.user;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import cn.wildfirechat.chat.R;
 
 import java.util.Collections;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.WfcBaseActivity;
 import cn.wildfire.chat.common.OperateResult;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.UserInfo;
 
 import static cn.wildfirechat.model.ModifyMyInfoType.Modify_DisplayName;
 
-/**
- * @创建者 CSDN_LQR
- * @描述 更改名字界面
- */
 public class ChangeMyNameActivity extends WfcBaseActivity {
 
     private MenuItem confirmMenuItem;
@@ -81,10 +77,12 @@ public class ChangeMyNameActivity extends WfcBaseActivity {
 
     @OnTextChanged(value = R.id.nameEditText, callback = OnTextChanged.Callback.TEXT_CHANGED)
     void inputNewName(CharSequence s, int start, int before, int count) {
-        if (nameEditText.getText().toString().trim().length() > 0) {
-            confirmMenuItem.setEnabled(true);
-        } else {
-            confirmMenuItem.setEnabled(false);
+        if (confirmMenuItem != null) {
+            if (nameEditText.getText().toString().trim().length() > 0) {
+                confirmMenuItem.setEnabled(true);
+            } else {
+                confirmMenuItem.setEnabled(false);
+            }
         }
     }
 
