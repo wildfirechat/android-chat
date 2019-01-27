@@ -26,16 +26,22 @@ public class SingleConversationViewHolder extends ConversationViewHolder {
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
         UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversationInfo.conversation.target, false);
+        String name;
+        String portrait;
         if (userInfo != null) {
-            GlideApp
-                    .with(fragment)
-                    .load(userInfo.portrait)
-                    .placeholder(R.mipmap.avatar_def)
-                    .transforms(new CenterCrop(), new RoundedCorners(10))
-                    .into(portraitImageView);
-            nameTextView.setText(userInfo.displayName);
-            portraitImageView.setVisibility(View.VISIBLE);
+            name = userInfo.displayName;
+            portrait = userInfo.portrait;
+        } else {
+            name = "User<" + conversationInfo.conversation.target + ">";
+            portrait = null;
         }
+        GlideApp
+                .with(fragment)
+                .load(portrait)
+                .placeholder(R.mipmap.avatar_def)
+                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .into(portraitImageView);
+        nameTextView.setText(name);
     }
 
 }

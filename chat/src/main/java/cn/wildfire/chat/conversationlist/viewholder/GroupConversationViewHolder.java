@@ -27,16 +27,22 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
         GroupInfo groupInfo = ChatManagerHolder.gChatManager.getGroupInfo(conversationInfo.conversation.target, false);
+        String name;
+        String portrait;
         if (groupInfo != null) {
-            GlideApp
-                    .with(fragment)
-                    .load(groupInfo.portrait)
-                    .placeholder(R.mipmap.ic_group_cheat)
-                    .transforms(new CenterCrop(), new RoundedCorners(10))
-                    .into(portraitImageView);
-            //群昵称
-            nameTextView.setText(groupInfo.name);
+            name = groupInfo.name;
+            portrait = groupInfo.portrait;
+        } else {
+            name = "Group<" + conversationInfo.conversation.target + ">";
+            portrait = null;
         }
+        GlideApp
+                .with(fragment)
+                .load(portrait)
+                .placeholder(R.mipmap.ic_group_cheat)
+                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .into(portraitImageView);
+        nameTextView.setText(name);
     }
 
 }

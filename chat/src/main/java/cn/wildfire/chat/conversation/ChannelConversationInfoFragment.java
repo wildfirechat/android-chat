@@ -1,11 +1,7 @@
 package cn.wildfire.chat.conversation;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +11,20 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.lqr.optionitemview.OptionItemView;
-import cn.wildfirechat.chat.R;
 
 import java.util.Arrays;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.channel.ChannelViewModel;
 import cn.wildfire.chat.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.conversationlist.ConversationListViewModelFactory;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -101,7 +101,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     }
 
     private void initChannel(ChannelInfo channelInfo) {
-        channelDescOptionItemView.setRightText(channelInfo.name);
+        channelNameOptionItemView.setRightText(channelInfo.name);
         channelDescOptionItemView.setRightText(channelInfo.desc);
         Glide.with(this).load(channelInfo.portrait).into(portraitImageView);
     }
