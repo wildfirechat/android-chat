@@ -12,7 +12,7 @@
         android:background="@drawable/selector_common_item"
         app:left_image_margin_left="@dimen/option_item_margin_left"
         app:left_image_margin_right="@dimen/option_item_margin_right"
-        app:left_src="@mipmap/ic_launcher"
+        app:left_src="@mipmap/ic_chatroom"
         app:left_text="聊天室"
         app:left_text_color="@color/black0"
         app:left_text_size="16sp" />

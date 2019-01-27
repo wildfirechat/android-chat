@@ -26,7 +26,7 @@ import cn.wildfire.chat.WfcBaseActivity;
 import cn.wildfire.chat.common.OperateResult;
 import cn.wildfire.chat.group.GroupViewModel;
 import cn.wildfire.chat.search.OnResultItemClickListener;
-import cn.wildfire.chat.search.SearchPortalFragment;
+import cn.wildfire.chat.search.SearchFragment;
 import cn.wildfire.chat.search.SearchableModule;
 import cn.wildfire.chat.search.module.ContactSearchModule;
 import cn.wildfire.chat.search.module.GroupSearchViewModule;
@@ -41,7 +41,7 @@ import cn.wildfirechat.model.UserInfo;
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
 public class ForwardActivity extends WfcBaseActivity {
-    private SearchPortalFragment searchPortalFragment;
+    private SearchFragment searchFragment;
     private List<SearchableModule> searchableModules;
     private Message message;
     private ForwardViewModel forwardViewModel;
@@ -99,14 +99,14 @@ public class ForwardActivity extends WfcBaseActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (!TextUtils.isEmpty(keyword)) {
             if (fragmentManager.findFragmentByTag("search") == null) {
-                searchPortalFragment = new SearchPortalFragment();
+                searchFragment = new SearchFragment();
                 fragmentManager.beginTransaction()
-                        .add(R.id.containerFrameLayout, searchPortalFragment, "search")
+                        .add(R.id.containerFrameLayout, searchFragment, "search")
                         .addToBackStack("search-back")
                         .commit();
             }
             new Handler().post(() -> {
-                searchPortalFragment.search(keyword, searchableModules);
+                searchFragment.search(keyword, searchableModules);
             });
         } else {
             getSupportFragmentManager().popBackStackImmediate();

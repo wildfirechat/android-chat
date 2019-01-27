@@ -8,8 +8,6 @@ import cn.wildfire.chat.third.utils.FileUtils;
 
 public interface Config {
 
-    boolean USE_EMBED_APP_SERVER = false;
-
     String IM_SERVER_HOST = "wildfirechat.cn";
     int IM_SERVER_PORT = 80;
 

@@ -1,21 +1,20 @@
 package cn.wildfire.chat.search.module;
 
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import cn.wildfirechat.chat.R;
-
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.conversation.ConversationActivity;
-import cn.wildfire.chat.search.SearchMessageActivity;
 import cn.wildfire.chat.search.SearchableModule;
+import cn.wildfire.chat.search.SearchMessageActivity;
 import cn.wildfire.chat.search.viewHolder.ConversationViewHolder;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ConversationSearchResult;
 import cn.wildfirechat.remote.ChatManager;
 

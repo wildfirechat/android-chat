@@ -18,13 +18,15 @@
                 android:icon="@mipmap/ic_create_group_cheat"
                 android:orderInCategory="100"
                 android:title="发起聊天"
+                app:iconTint="@color/colorPrimary"
                 app:showAsAction="never" />
 
             <item
                 android:id="@+id/add_contact"
-                android:icon="@mipmap/ic_create_group_cheat"
+                android:icon="@mipmap/ic_add"
                 android:orderInCategory="101"
-                android:title="添加朋友" />
+                android:title="添加朋友"
+                app:iconTint="@color/colorPrimary" />
         </menu>
     </item>
 </menu>

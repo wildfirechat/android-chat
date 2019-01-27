@@ -154,9 +154,6 @@
             android:name="cn.wildfire.chat.search.SearchPortalActivity"
             android:label="搜索中心" />
         <activity
-            android:name="cn.wildfire.chat.search.SearchMessageActivity"
-            android:label="消息搜索" />
-        <activity
             android:name="cn.wildfire.chat.conversation.forward.ForwardActivity"
             android:label="转发" />
         <activity
@@ -185,6 +182,8 @@
             </intent-filter>
         </activity>
         <activity android:name="cn.wildfire.chat.WfcWebViewActivity" />
+        <activity android:name="cn.wildfire.chat.search.SearchMessageActivity" />
+        <activity android:name="cn.wildfire.chat.channel.SearchChannelActivity" />
 
         <provider
             android:name="cn.wildfire.chat.third.utils.FilePickerProvider"

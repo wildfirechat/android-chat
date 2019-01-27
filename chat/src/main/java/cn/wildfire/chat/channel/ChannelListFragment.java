@@ -1,26 +1,25 @@
 package cn.wildfire.chat.channel;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import cn.wildfirechat.chat.R;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.conversation.ConversationActivity;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 
@@ -29,6 +28,7 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
     private ChannelViewModel channelViewModel;
+    private ChannelListAdapter channelListAdapter;
 
     @Nullable
     @Override
@@ -39,18 +39,27 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshChannel();
+    }
+
     private void init() {
         channelViewModel = ViewModelProviders.of(getActivity()).get(ChannelViewModel.class);
+
+        channelListAdapter = new ChannelListAdapter();
+        channelListAdapter.setOnChannelClickListener(this);
+
+        recyclerView.setAdapter(channelListAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    private void refreshChannel() {
         List<ChannelInfo> myChannels = channelViewModel.getMyChannels();
         List<ChannelInfo> followedChannels = channelViewModel.getListenedChannels();
-
-        ChannelListAdapter adapter = new ChannelListAdapter();
-        adapter.setOnChannelClickListener(this);
-        adapter.setCreatedChannels(myChannels);
-        adapter.setFollowedChannels(followedChannels);
-
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        channelListAdapter.setCreatedChannels(myChannels);
+        channelListAdapter.setFollowedChannels(followedChannels);
     }
 
     @Override

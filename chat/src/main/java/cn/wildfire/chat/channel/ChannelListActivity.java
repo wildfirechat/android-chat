@@ -3,9 +3,8 @@ package cn.wildfire.chat.channel;
 import android.content.Intent;
 import android.view.MenuItem;
 
-import cn.wildfirechat.chat.R;
-
 import cn.wildfire.chat.WfcBaseActivity;
+import cn.wildfirechat.chat.R;
 
 public class ChannelListActivity extends WfcBaseActivity {
 
@@ -18,6 +17,9 @@ public class ChannelListActivity extends WfcBaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.create) {
             createChannel();
+            return true;
+        } else if (item.getItemId() == R.id.subscribe) {
+            subscribe();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -39,5 +41,10 @@ public class ChannelListActivity extends WfcBaseActivity {
         Intent intent = new Intent(this, CreateChannelActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    void subscribe() {
+        Intent intent = new Intent(this, SearchChannelActivity.class);
+        startActivity(intent);
     }
 }
