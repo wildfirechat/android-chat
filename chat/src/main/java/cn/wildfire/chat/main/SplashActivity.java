@@ -64,15 +64,9 @@ public class SplashActivity extends AppCompatActivity {
         token = sharedPreferences.getString("token", null);
 
         if (checkPermission()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(this)) {
-                    Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_SHORT).show();
-                    startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), REQUEST_CODE_DRAW_OVERLAY);
-                    return;
-                }
+            if (checkOverlayPermission()) {
+                new Handler().postDelayed(this::showNextScreen, 1000);
             }
-
-            new Handler().postDelayed(this::showNextScreen, 1000);
         } else {
             requestPermissions(permissions, 100);
         }
@@ -100,7 +94,20 @@ public class SplashActivity extends AppCompatActivity {
                 return;
             }
         }
-        showNextScreen();
+        if (checkOverlayPermission()) {
+            showNextScreen();
+        }
+    }
+
+    private boolean checkOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_SHORT).show();
+                startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), REQUEST_CODE_DRAW_OVERLAY);
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
