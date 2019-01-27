@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="3dp"
                 android:singleLine="true"
-                android:text="沧晓"
+                android:text="wfc"
                 android:textColor="@color/gray0"
                 android:textSize="15sp" />
 

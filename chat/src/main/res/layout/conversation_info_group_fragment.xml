@@ -240,7 +240,6 @@
                     app:left_text_color="@color/black0"
                     app:left_text_margin_left="@dimen/option_item_margin_left"
                     app:left_text_size="16sp"
-                    app:right_text="沧晓"
                     app:right_text_color="@color/gray2"
                     app:right_text_margin_right="@dimen/option_item_margin_right"
                     app:right_text_size="14sp" />

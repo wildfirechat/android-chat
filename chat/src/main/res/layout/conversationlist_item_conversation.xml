@@ -113,12 +113,12 @@
                     android:id="@+id/contentTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
                     android:layout_gravity="center"
-                    android:maxLines="1"
-                    android:text="xxx"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
                     android:textColor="@color/gray1"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:text="content" />
 
             </LinearLayout>
 

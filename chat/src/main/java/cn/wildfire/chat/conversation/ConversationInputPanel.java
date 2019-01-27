@@ -1,16 +1,11 @@
 package cn.wildfire.chat.conversation;
 
 import android.annotation.TargetApi;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.ViewPager;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
@@ -32,6 +27,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -276,7 +276,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             return;
         }
 
-        TextMessageContent txtContent = new TextMessageContent(content.toString());
+        TextMessageContent txtContent = new TextMessageContent(content.toString().trim());
         if (conversation.type == Conversation.ConversationType.Group) {
             MentionSpan[] mentions = content.getSpans(0, content.length(), MentionSpan.class);
             if (mentions != null && mentions.length > 0) {
@@ -320,7 +320,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     public void onActivityPause() {
         Editable editable = editText.getText();
-        if (TextUtils.isEmpty(editable)) {
+        if (TextUtils.isEmpty(editable.toString().trim())) {
             return;
         }
         String draftString = Draft.toDraftJson(editable);
