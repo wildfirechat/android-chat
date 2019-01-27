@@ -5,18 +5,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import cn.wildfirechat.chat.R;
 
-/**
- * @创建者 CSDN_LQR
- * @描述 快速导航条
- */
 public class QuickIndexBar extends View {
 
     private Paint mPaint;

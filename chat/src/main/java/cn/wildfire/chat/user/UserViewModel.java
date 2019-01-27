@@ -1,10 +1,9 @@
 package cn.wildfire.chat.user;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
 import java.util.List;
 
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import cn.wildfire.chat.common.OperateResult;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.UserInfo;

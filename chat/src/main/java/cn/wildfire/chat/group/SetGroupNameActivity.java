@@ -1,22 +1,22 @@
 package cn.wildfire.chat.group;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import cn.wildfirechat.chat.R;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.WfcBaseActivity;
 import cn.wildfire.chat.common.OperateResult;
 import cn.wildfire.chat.user.UserViewModel;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.ModifyGroupInfoType;
@@ -57,7 +57,11 @@ public class SetGroupNameActivity extends WfcBaseActivity {
     @Override
     protected void afterMenus(Menu menu) {
         confirmMenuItem = menu.findItem(R.id.confirm);
-        confirmMenuItem.setEnabled(false);
+        if (nameEditText.getText().toString().trim().length() > 0) {
+            confirmMenuItem.setEnabled(true);
+        } else {
+            confirmMenuItem.setEnabled(false);
+        }
     }
 
     @Override
@@ -71,7 +75,9 @@ public class SetGroupNameActivity extends WfcBaseActivity {
 
     @OnTextChanged(R.id.nameEditText)
     void onTextChanged() {
-        confirmMenuItem.setEnabled(nameEditText.getText().toString().trim().length() > 0);
+        if (confirmMenuItem != null) {
+            confirmMenuItem.setEnabled(nameEditText.getText().toString().trim().length() > 0);
+        }
     }
 
     private void setGroupName() {

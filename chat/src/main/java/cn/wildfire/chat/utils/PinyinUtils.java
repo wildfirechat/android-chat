@@ -7,10 +7,6 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
-/**
- * @创建者 CSDN_LQR
- * @描述 拼音工具（需要pinyin4j-2.5.0.jar）
- */
 public class PinyinUtils {
 
     /**

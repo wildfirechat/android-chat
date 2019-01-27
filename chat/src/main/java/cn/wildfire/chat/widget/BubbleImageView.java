@@ -21,10 +21,6 @@ import android.widget.ImageView;
 
 import cn.wildfirechat.chat.R;
 
-/**
- * @创建者 CSDN_LQR
- * @描述 气泡型ImageView
- */
 public class BubbleImageView extends ImageView {
 
     private static final int LOCATION_LEFT = 0;

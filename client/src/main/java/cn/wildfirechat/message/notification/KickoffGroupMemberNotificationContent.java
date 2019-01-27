@@ -13,6 +13,7 @@ import java.util.List;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_KICKOF_GROUP_MEMBER;
@@ -41,7 +42,12 @@ public class KickoffGroupMemberNotificationContent extends NotificationMessageCo
 
         for (String member : kickedMembers) {
             sb.append(" ");
-            sb.append(ChatManager.Instance().getUserInfo(member, false).displayName);
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(member, false);
+            if (userInfo != null) {
+                sb.append(userInfo.displayName);
+            } else {
+                sb.append(member);
+            }
         }
 
         sb.append(" 移出了群组");

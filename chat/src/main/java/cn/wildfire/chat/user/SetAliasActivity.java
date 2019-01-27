@@ -1,22 +1,17 @@
 package cn.wildfire.chat.user;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import cn.wildfirechat.chat.R;
-import cn.wildfire.chat.third.utils.UIUtils;
-
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.WfcBaseActivity;
+import cn.wildfire.chat.third.utils.UIUtils;
+import cn.wildfirechat.chat.R;
 
-/**
- * @创建者 CSDN_LQR
- * @描述 设备备注界面
- */
 
 public class SetAliasActivity extends WfcBaseActivity {
 
