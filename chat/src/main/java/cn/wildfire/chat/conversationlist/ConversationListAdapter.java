@@ -63,6 +63,9 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     public void clearStatusNotification(Class<? extends StatusNotification> holderClazz) {
+        if (!statusNotifications.containsKey(holderClazz)) {
+            return;
+        }
         statusNotifications.remove(holderClazz);
         if (statusNotifications.size() > 0) {
             notifyItemChanged(0);
