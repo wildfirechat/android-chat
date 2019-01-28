@@ -13,6 +13,7 @@ import java.util.List;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_ADD_GROUP_MEMBER;
@@ -32,17 +33,20 @@ public class AddGroupMemberNotificationContent extends NotificationMessageConten
     @Override
     public String formatNotification() {
         StringBuilder sb = new StringBuilder();
+        UserInfo userInfo;
         if (fromSelf) {
             sb.append("您邀请");
         } else {
-            sb.append(ChatManager.Instance().getUserInfo(invitor, false).displayName);
+            userInfo = ChatManager.Instance().getUserInfo(invitor, false);
+            sb.append(userInfo != null ? userInfo.displayName : "<" + invitor + ">");
             sb.append("邀请");
         }
 
         if (invitees != null) {
             for (String member : invitees) {
                 sb.append(" ");
-                sb.append(ChatManager.Instance().getUserInfo(member, false).displayName);
+                userInfo = ChatManager.Instance().getUserInfo(member, false);
+                sb.append(userInfo != null ? userInfo.displayName : "<" + member + ">");
             }
         }
 
