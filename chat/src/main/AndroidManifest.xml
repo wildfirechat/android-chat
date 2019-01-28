@@ -91,6 +91,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.user.ChangeMyNameActivity"
+            android:label="修改昵称"
             android:screenOrientation="portrait" />
 
         <activity
