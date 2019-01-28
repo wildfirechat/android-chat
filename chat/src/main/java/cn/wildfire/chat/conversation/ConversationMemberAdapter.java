@@ -116,15 +116,14 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
 
         @OnClick(R.id.portraitImageView)
         void onClick() {
-            if (userInfo == null) {
-                return;
-            }
             if (onMemberClickListener == null) {
                 return;
             }
             switch (type) {
                 case TYPE_USER:
-                    onMemberClickListener.onUserMemberClick(userInfo);
+                    if (userInfo != null){
+                        onMemberClickListener.onUserMemberClick(userInfo);
+                    }
                     break;
                 case TYPE_ADD:
                     onMemberClickListener.onAddMemberClick();
