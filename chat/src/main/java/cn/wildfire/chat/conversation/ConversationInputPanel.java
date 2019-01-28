@@ -230,14 +230,16 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @OnTextChanged(value = R.id.editText, callback = OnTextChanged.Callback.TEXT_CHANGED)
     void onInputTextChanged(CharSequence s, int start, int before, int count) {
-        if (conversation.type == Conversation.ConversationType.Group) {
-            if (count == 1 && s.charAt(start) == '@') {
-                if (start == 0 || s.charAt(start - 1) == ' ') {
-                    Intent intent = new Intent(activity, MentionGroupMemberActivity.class);
-                    GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
-                    GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-                    intent.putExtra("groupInfo", groupInfo);
-                    activity.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
+        if (activity.getCurrentFocus() == editText) {
+            if (conversation.type == Conversation.ConversationType.Group) {
+                if (count == 1 && s.charAt(start) == '@') {
+                    if (start == 0 || s.charAt(start - 1) == ' ') {
+                        Intent intent = new Intent(activity, MentionGroupMemberActivity.class);
+                        GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
+                        GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
+                        intent.putExtra("groupInfo", groupInfo);
+                        activity.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
+                    }
                 }
             }
         }
@@ -314,13 +316,15 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
         draftString = draft == null ? "" : draft.getContent();
 
-        // FIXME: 2019/1/2 表情符号
         editText.setText(draftString);
     }
 
     public void onActivityPause() {
         Editable editable = editText.getText();
         if (TextUtils.isEmpty(editable.toString().trim())) {
+            if (this.draftString != null) {
+                conversationViewModel.saveDraft(conversation, null);
+            }
             return;
         }
         String draftString = Draft.toDraftJson(editable);
