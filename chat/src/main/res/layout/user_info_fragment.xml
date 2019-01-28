@@ -62,15 +62,6 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/accountTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:text="@string/my_chat_account"
-                    android:textColor="@color/gray2"
-                    android:textSize="12sp" />
-
-                <TextView
                     android:id="@+id/nickyName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -80,6 +71,17 @@
                     android:textColor="@color/gray2"
                     android:textSize="12sp" />
 
+                <TextView
+                    android:id="@+id/mobileTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@string/my_chat_account"
+                    android:textColor="@color/gray2"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+
             </LinearLayout>
         </LinearLayout>
 
@@ -88,7 +90,7 @@
             style="@style/OptionItem"
             android:layout_marginTop="20dp"
             android:background="@drawable/selector_common_item"
-            app:left_text="@string/set_alias_and_tag" />
+            app:left_text="设置昵称或别名" />
 
 
         <Button

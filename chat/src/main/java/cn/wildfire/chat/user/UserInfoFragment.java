@@ -31,20 +31,20 @@ import cn.wildfire.chat.WfcUIKit;
 import cn.wildfire.chat.contact.ContactViewModel;
 import cn.wildfire.chat.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.conversation.ConversationActivity;
-import cn.wildfire.chat.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.ModifyMyInfoType;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class UserInfoFragment extends Fragment {
     @Bind(R.id.portraitImageView)
     ImageView portraitImageView;
     @Bind(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.accountTextView)
-    TextView accountTextView;
+    @Bind(R.id.mobileTextView)
+    TextView mobileTextView;
     @Bind(R.id.nickyName)
     TextView nickyNameTextView;
     @Bind(R.id.chatButton)
@@ -123,8 +123,12 @@ public class UserInfoFragment extends Fragment {
     private void setUserInfo(UserInfo userInfo) {
         Glide.with(this).load(userInfo.portrait).apply(new RequestOptions().placeholder(R.mipmap.avatar_def).centerCrop()).into(portraitImageView);
         nameTextView.setText(userInfo.name);
+        nameTextView.setVisibility(View.GONE);
         nickyNameTextView.setText(userInfo.displayName);
-        accountTextView.setText(UIUtils.getString(R.string.my_chat_account, userInfo.uid));
+        if (ChatManager.Instance().isMyFriend(userInfo.uid)) {
+            mobileTextView.setText("电话:" + userInfo.mobile);
+            mobileTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     @OnClick(R.id.chatButton)

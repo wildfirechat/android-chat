@@ -1,9 +1,14 @@
 package cn.wildfire.chat.main;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -11,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
@@ -24,8 +30,11 @@ import cn.wildfire.chat.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.search.SearchPortalActivity;
 import cn.wildfire.chat.third.location.ui.adapter.CommonFragmentPagerAdapter;
 import cn.wildfire.chat.third.utils.UIUtils;
+import cn.wildfire.chat.user.ChangeMyNameActivity;
+import cn.wildfire.chat.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.UserInfo;
 import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageChangeListener {
@@ -83,6 +92,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 unreadFriendRequestBadgeView.setBadgeNumber(count);
             }
         });
+        checkDisplayName();
     }
 
     public void hideUnreadFriendRequestBadgeView() {
@@ -207,5 +217,32 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         } else {
             FragmentFactory.getInstance().getContactsFragment().showQuickIndexBar(true);
         }
+    }
+
+    private void checkDisplayName() {
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+        UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
+        if (TextUtils.equals(userInfo.displayName, userInfo.mobile)) {
+            if (!sp.getBoolean("updatedDisplayName", false)) {
+                sp.edit().putBoolean("updatedDisplayName", true).apply();
+                updateDisplayName();
+            }
+        }
+    }
+
+    private void updateDisplayName() {
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .content("修改个人昵称？")
+                .positiveText("修改")
+                .negativeText("取消")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent intent = new Intent(MainActivity.this, ChangeMyNameActivity.class);
+                        startActivity(intent);
+                    }
+                }).build();
+        dialog.show();
     }
 }

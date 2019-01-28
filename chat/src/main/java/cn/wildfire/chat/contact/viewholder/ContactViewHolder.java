@@ -43,6 +43,7 @@ public class ContactViewHolder extends RecyclerView.ViewHolder {
         if (userInfo.getUserInfo().displayName != null) {
             nameTextView.setText(userInfo.getUserInfo().displayName);
         } else {
+            //nameTextView.setText(userInfo.getUserInfo().mobile);
             nameTextView.setText("<" + userInfo.getUserInfo().uid + ">");
         }
         GlideApp.with(fragment).load(userInfo.getUserInfo().portrait).error(R.mipmap.default_header).into(portraitImageView);
