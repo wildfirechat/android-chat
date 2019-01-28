@@ -71,7 +71,7 @@ public class MessagePayload implements Parcelable {
         out.setMentionedType(mentionedType);
         String[] targets;
         if (mentionedTargets != null && mentionedTargets.size() > 0) {
-            targets = (String[]) mentionedTargets.toArray();
+            targets = mentionedTargets.toArray(new String[0]);
         } else {
             targets = new String[0];
         }
@@ -92,6 +92,8 @@ public class MessagePayload implements Parcelable {
         dest.writeString(this.pushContent);
         dest.writeString(this.content);
         dest.writeByteArray(this.binaryContent);
+        dest.writeInt(this.mentionedType);
+        dest.writeStringList(this.mentionedTargets);
         dest.writeInt(this.mediaType == null ? -1 : this.mediaType.ordinal());
         dest.writeString(this.remoteMediaUrl);
         dest.writeString(this.localMediaPath);
@@ -104,6 +106,8 @@ public class MessagePayload implements Parcelable {
         this.pushContent = in.readString();
         this.content = in.readString();
         this.binaryContent = in.createByteArray();
+        this.mentionedType = in.readInt();
+        this.mentionedTargets = in.createStringArrayList();
         int tmpMediaType = in.readInt();
         this.mediaType = tmpMediaType == -1 ? null : MessageContentMediaType.values()[tmpMediaType];
         this.remoteMediaUrl = in.readString();
