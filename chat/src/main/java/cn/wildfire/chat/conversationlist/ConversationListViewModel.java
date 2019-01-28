@@ -53,6 +53,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addSettingUpdateListener(this);
         ChatManager.Instance().addRecallMessageListener(this);
         ChatManager.Instance().addConnectionChangeListener(this);
+        ChatManager.Instance().addRemoveMessageListener(this);
     }
 
     @Override
@@ -64,6 +65,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeSettingUpdateListener(this);
         ChatManager.Instance().removeConnectionChangeListener(this);
         ChatManager.Instance().removeRecallMessageListener(this);
+        ChatManager.Instance().removeRemoveMessageListener(this);
     }
 
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
