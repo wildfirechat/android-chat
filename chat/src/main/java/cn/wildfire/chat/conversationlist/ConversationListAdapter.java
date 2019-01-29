@@ -109,23 +109,21 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         int currentPosition, targetPosition;
         currentPosition = currentPosition(conversationInfo);
-
-        // 如果存在，则先删除，再算target
-        if (currentPosition > -1) {
-            conversationInfos.remove(currentPosition);
-        }
         targetPosition = targetPosition(conversationInfo);
-        conversationInfos.add(targetPosition, conversationInfo);
 
-        if (currentPosition == targetPosition && targetPosition != -1) {
-            notifyItemChanged(headerCount() + targetPosition);
-        } else {
-            if (currentPosition >= 0) {
+        if (currentPosition >= 0) {
+            if (currentPosition == targetPosition) {
+                conversationInfos.set(targetPosition, conversationInfo);
+                notifyItemChanged(headerCount() + targetPosition);
+            } else {
+                conversationInfos.remove(currentPosition);
+                conversationInfos.add(targetPosition, conversationInfo);
                 notifyItemRemoved(headerCount() + currentPosition);
                 notifyItemInserted(headerCount() + targetPosition);
-            } else {
-                notifyItemInserted(headerCount() + targetPosition);
             }
+        } else {
+            conversationInfos.add(targetPosition, conversationInfo);
+            notifyItemInserted(headerCount() + targetPosition);
         }
     }
 
@@ -363,7 +361,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
             for (int i = 0; i < conversationInfos.size(); i++) {
                 info = conversationInfos.get(i);
                 if (info.isTop) {
-                    if (conversationInfo.timestamp > info.timestamp) {
+                    if (conversationInfo.timestamp >= info.timestamp) {
                         position = i;
                         break;
                     }
@@ -380,7 +378,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     position = i + 1;
                     continue;
                 } else {
-                    if (conversationInfo.timestamp > info.timestamp) {
+                    if (conversationInfo.timestamp >= info.timestamp) {
                         position = i;
                         break;
                     }
