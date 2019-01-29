@@ -3,8 +3,6 @@ package com.lqr.emoji;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
-import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -16,6 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * CSDN_LQR
@@ -195,6 +196,7 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
         setEmotionSettingVisiable(mEmotionSettingVisiable);
 
         selectTab(0);
+        fillVpEmotioin(0);
     }
 
     private void initListener() {
@@ -244,12 +246,14 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
     }
 
     private void setCurPageCommon(int position) {
+        mTabPosi = adapter.positionToCategoryTabIndex(position);
         if (mTabPosi == 0)
-            setCurPage(position, (int) Math.ceil(EmojiManager.getDisplayCount() / (float) EmotionLayout.EMOJI_PER_PAGE));
+            setCategoryPageIndexIndicator(position, (int) Math.ceil(EmojiManager.getDisplayCount() / (float) EmotionLayout.EMOJI_PER_PAGE));
         else {
             StickerCategory category = StickerManager.getInstance().getStickerCategories().get(mTabPosi - 1);
-            setCurPage(position, (int) Math.ceil(category.getStickers().size() / (float) EmotionLayout.STICKER_PER_PAGE));
+            setCategoryPageIndexIndicator(position, (int) Math.ceil(category.getStickers().size() / (float) EmotionLayout.STICKER_PER_PAGE));
         }
+        selectTab(mTabPosi);
     }
 
 
@@ -257,6 +261,9 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
     public void onClick(View v) {
         mTabPosi = (int) v.getTag();
         selectTab(mTabPosi);
+        int position = adapter.categoryTabIndexToPagePosition(mTabPosi);
+        mLlPageNumber.removeAllViews();
+        mVpEmotioin.setCurrentItem(position);
     }
 
     private void selectTab(int tabPosi) {
@@ -269,13 +276,16 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
         }
         mTabViewArray.get(tabPosi).setBackgroundResource(R.drawable.shape_tab_press);
 
-        //显示表情内容
-        fillVpEmotioin(tabPosi);
     }
 
+    private EmotionViewPagerAdapter adapter;
+
     private void fillVpEmotioin(int tabPosi) {
-        EmotionViewPagerAdapter adapter = new EmotionViewPagerAdapter(mMeasuredWidth, mMeasuredHeight, tabPosi, mEmotionSelectedListener);
-        mVpEmotioin.setAdapter(adapter);
+        if (adapter == null) {
+            adapter = new EmotionViewPagerAdapter(mMeasuredWidth, mMeasuredHeight, mEmotionSelectedListener);
+            mVpEmotioin.setAdapter(adapter);
+            mVpEmotioin.setOffscreenPageLimit(1);
+        }
         mLlPageNumber.removeAllViews();
         setCurPageCommon(0);
         if (tabPosi == 0) {
@@ -283,19 +293,21 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
         }
     }
 
-    private void setCurPage(int page, int pageCount) {
+    private void setCategoryPageIndexIndicator(int position, int pageCount) {
         int hasCount = mLlPageNumber.getChildCount();
-        int forMax = Math.max(hasCount, pageCount);
+
+        int categoryPageIndex = adapter.positionToCategoryPageIndex(position);
 
         ImageView ivCur = null;
-        for (int i = 0; i < forMax; i++) {
+        if (hasCount > pageCount) {
+            for (int i = pageCount; i < hasCount; i++) {
+                // 循环删除index是pageCount的view
+                mLlPageNumber.removeViewAt(pageCount);
+            }
+        }
+        for (int i = 0; i < pageCount; i++) {
             if (pageCount <= hasCount) {
-                if (i >= pageCount) {
-                    mLlPageNumber.getChildAt(i).setVisibility(View.GONE);
-                    continue;
-                } else {
-                    ivCur = (ImageView) mLlPageNumber.getChildAt(i);
-                }
+                ivCur = (ImageView) mLlPageNumber.getChildAt(i);
             } else {
                 if (i < hasCount) {
                     ivCur = (ImageView) mLlPageNumber.getChildAt(i);
@@ -311,7 +323,7 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
             }
 
             ivCur.setId(i);
-            ivCur.setSelected(i == page);
+            ivCur.setSelected(i == categoryPageIndex);
             ivCur.setVisibility(View.VISIBLE);
         }
     }
