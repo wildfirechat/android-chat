@@ -233,13 +233,13 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (activity.getCurrentFocus() == editText) {
             if (conversation.type == Conversation.ConversationType.Group) {
                 if (count == 1 && s.charAt(start) == '@') {
-                    if (start == 0 || s.charAt(start - 1) == ' ') {
-                        Intent intent = new Intent(activity, MentionGroupMemberActivity.class);
-                        GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
-                        GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-                        intent.putExtra("groupInfo", groupInfo);
-                        activity.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
-                    }
+//                    if (start == 0 || s.charAt(start - 1) == ' ') {
+                    Intent intent = new Intent(activity, MentionGroupMemberActivity.class);
+                    GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
+                    GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
+                    intent.putExtra("groupInfo", groupInfo);
+                    activity.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
+//                    }
                 }
             }
         }
@@ -248,7 +248,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     @OnTextChanged(value = R.id.editText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void afterInputTextChanged(Editable editable) {
         if (editText.getText().toString().trim().length() > 0) {
-            notifyTyping(TypingMessageContent.TYPING_TEXT);
+            if (activity.getCurrentFocus() == editText) {
+                notifyTyping(TypingMessageContent.TYPING_TEXT);
+            }
             sendButton.setVisibility(View.VISIBLE);
             extImageView.setVisibility(View.GONE);
         } else {
@@ -322,7 +324,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     public void onActivityPause() {
         Editable editable = editText.getText();
         if (TextUtils.isEmpty(editable.toString().trim())) {
-            if (this.draftString != null) {
+            if (!TextUtils.isEmpty(draftString)) {
                 conversationViewModel.saveDraft(conversation, null);
             }
             return;
