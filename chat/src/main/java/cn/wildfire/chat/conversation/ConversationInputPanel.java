@@ -329,11 +329,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             }
             return;
         }
-        String draftString = Draft.toDraftJson(editable);
-        if (this.draftString.equals(draftString)) {
+        if (TextUtils.equals(this.draftString, editable)) {
             return;
         }
-        conversationViewModel.saveDraft(conversation, draftString);
+        String draft = Draft.toDraftJson(editable);
+        conversationViewModel.saveDraft(conversation, draft);
     }
 
     private void showAudioButton() {

@@ -1432,6 +1432,9 @@ public class ChatManager {
 
         try {
             UnreadCount unreadCount = getUnreadCount(conversation);
+            if (unreadCount.unread == 0 && unreadCount.unreadMention == 0 && unreadCount.unreadMentionAll == 0) {
+                return;
+            }
             mClient.clearUnreadStatus(conversation.type.ordinal(), conversation.target, conversation.line);
             ConversationInfo conversationInfo = getConversation(conversation);
             conversationInfo.unreadCount = new UnreadCount();

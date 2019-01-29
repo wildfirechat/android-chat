@@ -223,7 +223,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
-        if (TextUtils.equals(userInfo.displayName, userInfo.mobile)) {
+        if (userInfo != null && TextUtils.equals(userInfo.displayName, userInfo.mobile)) {
             if (!sp.getBoolean("updatedDisplayName", false)) {
                 sp.edit().putBoolean("updatedDisplayName", true).apply();
                 updateDisplayName();
