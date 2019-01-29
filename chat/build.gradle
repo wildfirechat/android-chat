@@ -113,4 +113,7 @@ dependencies {
     implementation project(':avenginekit')
     implementation project(':emojilibrary')
     implementation project(':imagepicker')
+
+    implementation 'com.tencent.bugly:crashreport:latest.release'
+    implementation 'com.tencent.bugly:nativecrashreport:latest.release'
 }
