@@ -41,12 +41,14 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
     public void onBind(Message message) {
         UserInfo sender = userViewModel.getUserInfo(message.sender, false);
-        if (!TextUtils.isEmpty(sender.displayName)) {
-            nameTextView.setText(sender.displayName);
-        } else {
-            nameTextView.setText("<" + sender.uid + ">");
+        if (sender != null) {
+            if (!TextUtils.isEmpty(sender.displayName)) {
+                nameTextView.setText(sender.displayName);
+            } else {
+                nameTextView.setText("<" + sender.uid + ">");
+            }
+            Glide.with(fragment).load(sender.portrait).apply(new RequestOptions().placeholder(R.mipmap.default_header)).into(portraitImageView);
         }
-        Glide.with(fragment).load(sender.portrait).apply(new RequestOptions().placeholder(R.mipmap.default_header)).into(portraitImageView);
         contentTextView.setText(message.content.digest());
         timeTextView.setText(TimeUtils.getMsgFormatTime(message.serverTime));
     }
