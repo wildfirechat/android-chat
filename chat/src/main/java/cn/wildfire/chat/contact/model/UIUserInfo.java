@@ -3,7 +3,7 @@ package cn.wildfire.chat.contact.model;
 import cn.wildfirechat.model.UserInfo;
 
 public class UIUserInfo {
-    private String category;
+    private String category = "";
     // 用来排序的字段
     private String sortName;
     private boolean showCategory;
