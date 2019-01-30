@@ -73,10 +73,10 @@ public class EmotionViewPagerAdapter extends PagerAdapter {
         gridView.setLayoutParams(params);
         gridView.setGravity(Gravity.CENTER);
 
-        gridView.setTag(position);//标记自己是第几页
-
-
         int tabPosition = positionToCategoryTabIndex(position);
+
+        gridView.setTag((tabPosition & 0xFFF) << 12 | (position & 0xFFF)); // category index | pageIndex
+
         if (tabPosition == 0) {
             gridView.setOnItemClickListener(emojiListener);
             gridView.setAdapter(new EmojiAdapter(context, mEmotionLayoutWidth, mEmotionLayoutHeight, position * EMOJI_PER_PAGE));
@@ -188,11 +188,16 @@ public class EmotionViewPagerAdapter extends PagerAdapter {
     public AdapterView.OnItemClickListener stickerListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            int tabPosition = positionToCategoryTabIndex(position);
-            StickerCategory category = StickerManager.getInstance().getStickerCategories().get(tabPosition - 1);
+            int tag = (int) parent.getTag();
+            int pagePosition = tag & 0xFFF;
+            int categoryIndex = (tag >> 12) & 0xFFF;
+            int index = position;
+            if (pagePosition > 0) {
+                int categoryStartPagePosition = categoryTabIndexToPagePosition(categoryIndex);
+                index += (pagePosition - categoryStartPagePosition) * EmotionLayout.STICKER_PER_PAGE;
+            }
+            StickerCategory category = StickerManager.getInstance().getStickerCategories().get(categoryIndex - 1);
             List<StickerItem> stickers = category.getStickers();
-            int index = position + (Integer) parent.getTag() * EmotionLayout.STICKER_PER_PAGE;
 
             if (index >= stickers.size()) {
                 Log.i("CSDN_LQR", "index " + index + " larger than size " + stickers.size());
