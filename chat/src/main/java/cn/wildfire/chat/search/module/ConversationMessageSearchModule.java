@@ -44,7 +44,7 @@ public class ConversationMessageSearchModule extends SearchableModule<Message, M
     public void onClick(Fragment fragment, MessageViewHolder holder, View view, Message message) {
         Intent intent = new Intent(fragment.getContext(), ConversationActivity.class);
         intent.putExtra("conversation", message.conversation);
-        intent.putExtra("toFocusMessageUid", message.messageUid);
+        intent.putExtra("toFocusMessageId", message.messageId);
         fragment.startActivity(intent);
         fragment.getActivity().finish();
     }

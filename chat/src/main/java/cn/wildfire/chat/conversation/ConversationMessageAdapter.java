@@ -421,12 +421,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         notifyItemRemoved(position);
     }
 
-    public int getMessagePosition(long messageUid) {
+    public int getMessagePosition(long messageId) {
         if (messages == null) {
             return -1;
         }
         for (int i = 0; i < messages.size(); i++) {
-            if (messages.get(i).message.messageUid == messageUid) {
+            if (messages.get(i).message.messageId == messageId) {
                 return i;
             }
         }
