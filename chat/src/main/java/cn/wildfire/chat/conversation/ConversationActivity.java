@@ -84,7 +84,7 @@ public class ConversationActivity extends WfcBaseActivity implements
     private ChatRoomViewModel chatRoomViewModel;
 
     private Handler handler;
-    private long initialFocusedMessageId;
+    private long initialFocusedMessageUid;
     // 用户channel主发起，针对某个用户的会话
     private String channelPrivateChatUser;
     private String conversationTitle = "";
@@ -177,7 +177,7 @@ public class ConversationActivity extends WfcBaseActivity implements
         Intent intent = getIntent();
         conversation = intent.getParcelableExtra("conversation");
         conversationTitle = intent.getStringExtra("conversationTitle");
-        initialFocusedMessageId = intent.getLongExtra("toFocusMessageUid", -1);
+        initialFocusedMessageUid = intent.getLongExtra("toFocusMessageUid", -1);
         if (conversation == null) {
             finish();
         }
@@ -216,7 +216,7 @@ public class ConversationActivity extends WfcBaseActivity implements
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         conversation = intent.getParcelableExtra("conversation");
-        initialFocusedMessageId = intent.getLongExtra("toFocusMessageUid", -1);
+        initialFocusedMessageUid = intent.getLongExtra("toFocusMessageUid", -1);
         channelPrivateChatUser = intent.getStringExtra("channelPrivateChatUser");
         setupConversation(conversation);
     }
@@ -244,7 +244,7 @@ public class ConversationActivity extends WfcBaseActivity implements
                 }
                 if (!recyclerView.canScrollVertically(1)) {
                     moveToBottom = true;
-                    if (initialFocusedMessageId != -1 && !loadingNewMessage && shouldContinueLoadNewMessage) {
+                    if (initialFocusedMessageUid != -1 && !loadingNewMessage && shouldContinueLoadNewMessage) {
                         int lastVisibleItem = linearLayoutManager.findLastCompletelyVisibleItemPosition();
                         if (lastVisibleItem > adapter.getItemCount() - 3) {
                             loadMoreNewMessages();
@@ -279,9 +279,9 @@ public class ConversationActivity extends WfcBaseActivity implements
         inputPanel.setupConversation(conversationViewModel, conversation);
 
         MutableLiveData<List<UiMessage>> messages;
-        if (initialFocusedMessageId != -1) {
+        if (initialFocusedMessageUid != -1) {
             shouldContinueLoadNewMessage = true;
-            messages = conversationViewModel.loadAroundMessages(initialFocusedMessageId, MESSAGE_LOAD_AROUND);
+            messages = conversationViewModel.loadAroundMessages(initialFocusedMessageUid, MESSAGE_LOAD_AROUND);
         } else {
             messages = conversationViewModel.getMessages();
         }
@@ -295,8 +295,8 @@ public class ConversationActivity extends WfcBaseActivity implements
 
             if (adapter.getItemCount() > 1) {
                 int initialMessagePosition;
-                if (initialFocusedMessageId != -1) {
-                    initialMessagePosition = adapter.getMessagePosition(initialFocusedMessageId);
+                if (initialFocusedMessageUid != -1) {
+                    initialMessagePosition = adapter.getMessagePosition(initialFocusedMessageUid);
                     if (initialMessagePosition != -1) {
                         recyclerView.scrollToPosition(initialMessagePosition);
                         adapter.highlightFocusMessage(initialMessagePosition);
