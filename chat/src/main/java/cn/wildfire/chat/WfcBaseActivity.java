@@ -45,15 +45,19 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-            View view = getCurrentFocus();
-            if (view != null) {
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
+            hideInputMethod();
             onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void hideInputMethod() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = getCurrentFocus();
+        if (view != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     /**
@@ -67,7 +71,6 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
      */
     protected @MenuRes
     int menu() {
-
         return 0;
     }
 
@@ -94,6 +97,12 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
      */
     protected void afterMenus(Menu menu) {
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hideInputMethod();
     }
 
     protected boolean showHomeMenuItem() {

@@ -50,7 +50,7 @@ public class ConversationSearchModule extends SearchableModule<ConversationSearc
             // TODO hide fragment
             Intent intent = new Intent(fragment.getActivity(), ConversationActivity.class);
             intent.putExtra("conversation", conversationSearchResult.conversation);
-            intent.putExtra("toFocusMessageUid", conversationSearchResult.marchedMessage.messageId);
+            intent.putExtra("toFocusMessageUid", conversationSearchResult.marchedMessage.messageUid);
             fragment.startActivity(intent);
             fragment.getActivity().finish();
         } else {
