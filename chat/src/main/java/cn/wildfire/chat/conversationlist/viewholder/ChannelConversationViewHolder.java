@@ -8,6 +8,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.GlideApp;
+import cn.wildfire.chat.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.annotation.ConversationInfoType;
 import cn.wildfire.chat.annotation.EnableContextMenu;
 import cn.wildfirechat.chat.R;
@@ -45,4 +46,12 @@ public class ChannelConversationViewHolder extends ConversationViewHolder {
                 .into(portraitImageView);
     }
 
+    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_UNSUBSCRIBE,
+            title = "取消收听",
+            confirm = true,
+            confirmPrompt = "确认取消订阅频道？",
+            priority = 0)
+    public void unSubscribeChannel(View itemView, ConversationInfo conversationInfo) {
+        conversationListViewModel.unSubscribeChannel(conversationInfo);
+    }
 }

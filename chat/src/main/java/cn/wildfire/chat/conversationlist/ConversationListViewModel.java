@@ -14,6 +14,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
 import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
@@ -207,6 +208,20 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
             conversationRemovedLiveData.setValue(conversationInfo.conversation);
         }
         ChatManager.Instance().removeConversation(conversationInfo.conversation, false);
+    }
+
+    public void unSubscribeChannel(ConversationInfo conversationInfo) {
+        ChatManager.Instance().listenChannel(conversationInfo.conversation.target, false, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                removeConversation(conversationInfo);
+            }
+
+            @Override
+            public void onFailure(int errorCode) {
+                // do nothing
+            }
+        });
     }
 
     public void setConversationTop(ConversationInfo conversationInfo, boolean top) {
