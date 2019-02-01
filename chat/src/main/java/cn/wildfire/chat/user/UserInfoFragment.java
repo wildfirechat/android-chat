@@ -18,23 +18,23 @@ import com.lqr.imagepicker.bean.ImageItem;
 import com.lqr.optionitemview.OptionItemView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.WfcUIKit;
+import cn.wildfire.chat.common.OperateResult;
 import cn.wildfire.chat.contact.ContactViewModel;
 import cn.wildfire.chat.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.conversation.ConversationActivity;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ModifyMyInfoEntry;
-import cn.wildfirechat.model.ModifyMyInfoType;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -170,13 +170,15 @@ public class UserInfoFragment extends Fragment {
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
             String imagePath = images.get(0).path;
-            List<ModifyMyInfoEntry> entries = new ArrayList<>();
-            entries.add(new ModifyMyInfoEntry(ModifyMyInfoType.Modify_Portrait, imagePath));
-            userViewModel.modifyMyInfo(entries).observe(this, booleanOperateResult -> {
-                if (booleanOperateResult.isSuccess()) {
-                    Toast.makeText(getActivity(), "修改成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getActivity(), "修改失败", Toast.LENGTH_SHORT).show();
+            MutableLiveData<OperateResult<Boolean>> result = userViewModel.updateUserPortrait(imagePath);
+            result.observe(this, new Observer<OperateResult<Boolean>>() {
+                @Override
+                public void onChanged(OperateResult<Boolean> booleanOperateResult) {
+                    if (booleanOperateResult.isSuccess()) {
+                        Toast.makeText(getActivity(), "更新头像成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "更新头像失败", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         } else {
