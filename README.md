@@ -6,6 +6,32 @@
 
 ![野火IM](http://static.wildfirechat.cn/download_qrcode.png)
 
+#### 应用截图
+![ios-demo1](http://static.wildfirechat.cn/android-deomo1.gif)
+
+![ios-demo2](http://static.wildfirechat.cn/android-deomo1.gif)
+
+<img src="http://static.wildfirechat.cn/android-view1.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view2.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view3.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view4.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view5.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view6.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view7.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view8.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view9.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view10.png" width = 50% height = 50% />
+
+<img src="http://static.wildfirechat.cn/android-view11.png" width = 50% height = 50% />
 
 ### 协议栈的编译
 工程中已经包括了编译好的协议栈，你也可以自己编译协议栈，编译方法请参考协议栈工程。
