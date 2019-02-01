@@ -1,14 +1,19 @@
 package cn.wildfire.chat.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import cn.wildfire.chat.common.OperateResult;
+import cn.wildfire.chat.third.utils.FileUtils;
+import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
+import cn.wildfirechat.model.ModifyMyInfoType;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.OnUserInfoUpdateListener;
 
@@ -41,6 +46,37 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
             settingUpdatedLiveData = new MutableLiveData<>();
         }
         return settingUpdatedLiveData;
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> updateUserPortrait(String localImagePath) {
+        MutableLiveData<OperateResult<Boolean>> resultLiveData = new MutableLiveData<>();
+        byte[] content = FileUtils.readFile(localImagePath);
+        if (content != null) {
+            ChatManager.Instance().uploadMedia(content, MessageContentMediaType.PORTRAIT.getValue(), new GeneralCallback2() {
+                @Override
+                public void onSuccess(String result) {
+                    List<ModifyMyInfoEntry> entries = new ArrayList<>();
+                    entries.add(new ModifyMyInfoEntry(ModifyMyInfoType.Modify_Portrait, result));
+                    ChatManager.Instance().modifyMyInfo(entries, new GeneralCallback() {
+                        @Override
+                        public void onSuccess() {
+                            resultLiveData.setValue(new OperateResult<Boolean>(true, 0));
+                        }
+
+                        @Override
+                        public void onFailure(int errorCode) {
+                            resultLiveData.setValue(new OperateResult<>(errorCode));
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(int errorCode) {
+                    resultLiveData.setValue(new OperateResult<>(errorCode));
+                }
+            });
+        }
+        return resultLiveData;
     }
 
     public MutableLiveData<OperateResult<Boolean>> modifyMyInfo(List<ModifyMyInfoEntry> values) {
