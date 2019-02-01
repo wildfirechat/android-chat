@@ -93,23 +93,22 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     public ConversationInputPanel(@NonNull Context context) {
         super(context);
-        init();
     }
 
     public ConversationInputPanel(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+
     }
 
     public ConversationInputPanel(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public ConversationInputPanel(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+
     }
 
     public void setOnConversationInputPanelStateChangeListener(OnConversationInputPanelStateChangeListener onConversationInputPanelStateChangeListener) {
@@ -117,10 +116,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     public void bind(FragmentActivity activity, InputAwareLayout rootInputAwareLayout) {
-        this.activity = activity;
-        this.rootLinearLayout = rootInputAwareLayout;
 
-        this.extension = new ConversationExtension(activity, this, extViewPager);
     }
 
     public void setupConversation(ConversationViewModel conversationViewModel, Conversation conversation) {
@@ -131,9 +127,15 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         setDraft();
     }
 
-    private void init() {
+    public void init(FragmentActivity activity, InputAwareLayout rootInputAwareLayout) {
         LayoutInflater.from(getContext()).inflate(R.layout.conversation_input_panel, this, true);
         ButterKnife.bind(this, this);
+
+        this.activity = activity;
+        this.rootLinearLayout = rootInputAwareLayout;
+
+        this.extension = new ConversationExtension(activity, this, extViewPager);
+
 
         sharedPreferences = getContext().getSharedPreferences("sticker", Context.MODE_PRIVATE);
 

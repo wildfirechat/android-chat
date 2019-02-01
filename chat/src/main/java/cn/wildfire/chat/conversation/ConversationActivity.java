@@ -256,7 +256,7 @@ public class ConversationActivity extends WfcBaseActivity implements
             }
         });
 
-        inputPanel.bind(this, rootLinearLayout);
+        inputPanel.init(this, rootLinearLayout);
         inputPanel.setOnConversationInputPanelStateChangeListener(this);
     }
 
