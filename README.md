@@ -1,6 +1,11 @@
 ## 说明
 本系统有4部分组成，[服务器](https://github.com/wildfirechat/server)/[iOS客户端](https://github.com/wildfirechat/ios-chat)/[Android客户端](https://github.com/wildfirechat/android-chat)/[协议栈库](https://github.com/wildfirechat/proto)。其中iOS和Android都依赖于协议栈库。此为Android工程。
 
+#### 体验Demo
+我们提供了体验demo，请使用微信扫码下载安装体验
+
+![野火IM](http://cdn2.wildfirechat.cn/download_qrcode.png)
+
 
 ### 协议栈的编译
 工程中已经包括了编译好的协议栈，你也可以自己编译协议栈，编译方法请参考协议栈工程。
