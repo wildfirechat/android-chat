@@ -91,7 +91,7 @@
 
         <View style="@style/Line" />
 
-        <cn.wildfire.chat.widget.KeyboardHeightFrameLayout
+        <cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout
             android:id="@+id/emotionContainerFrameLayout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_custom_keyboard_size"
@@ -103,9 +103,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone" />
-        </cn.wildfire.chat.widget.KeyboardHeightFrameLayout>
+        </cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout>
 
-        <cn.wildfire.chat.widget.KeyboardHeightFrameLayout
+        <cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout
             android:id="@+id/extContainerContainerLayout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_custom_keyboard_size"
@@ -118,6 +118,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-        </cn.wildfire.chat.widget.KeyboardHeightFrameLayout>
+        </cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout>
     </LinearLayout>
 </merge>

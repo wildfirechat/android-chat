@@ -22,6 +22,8 @@ public class UserInfo implements Parcelable, Comparable<UserInfo> {
     public String social;
     public String extra;
     public long updateDt;
+    //0 normal; 1 robot; 2 thing;
+    public int type;
 
     public UserInfo() {
     }
@@ -52,6 +54,7 @@ public class UserInfo implements Parcelable, Comparable<UserInfo> {
         dest.writeString(this.social);
         dest.writeString(this.extra);
         dest.writeLong(this.updateDt);
+        dest.writeInt(this.type);
     }
 
     protected UserInfo(Parcel in) {
@@ -67,6 +70,7 @@ public class UserInfo implements Parcelable, Comparable<UserInfo> {
         this.social = in.readString();
         this.extra = in.readString();
         this.updateDt = in.readLong();
+        this.type = in.readInt();
     }
 
     public static final Creator<UserInfo> CREATOR = new Creator<UserInfo>() {

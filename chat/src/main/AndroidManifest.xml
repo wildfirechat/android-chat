@@ -70,7 +70,7 @@
             android:value="TYQBZ-MRBKU-K7FVL-4JBW5-DOG5O-SZB4A" />
 
         <activity
-            android:name="cn.wildfire.chat.main.SplashActivity"
+            android:name="cn.wildfire.chat.app.main.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen">
             <intent-filter>
@@ -79,118 +79,118 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="cn.wildfire.chat.conversation.ConversationActivity"
+            android:name="cn.wildfire.chat.kit.conversation.ConversationActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.login.LoginActivity"
+            android:name="cn.wildfire.chat.app.login.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.user.SetAliasActivity"
+            android:name="cn.wildfire.chat.kit.user.SetAliasActivity"
             android:label="设置用户备注"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.user.ChangeMyNameActivity"
+            android:name="cn.wildfire.chat.kit.user.ChangeMyNameActivity"
             android:label="修改昵称"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="cn.wildfire.chat.preview.TakePhotoActivity"
+            android:name="cn.wildfire.chat.kit.preview.TakePhotoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
-            android:name="cn.wildfire.chat.third.location.ui.activity.MyLocationActivity"
+            android:name="cn.wildfire.chat.kit.third.location.ui.activity.MyLocationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.group.SetGroupNameActivity"
+            android:name="cn.wildfire.chat.kit.group.SetGroupNameActivity"
             android:label="修改群名称"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.setting.SettingActivity"
+            android:name="cn.wildfire.chat.kit.setting.SettingActivity"
             android:label="设置"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.setting.AboutActivity"
+            android:name="cn.wildfire.chat.kit.setting.AboutActivity"
             android:label="关于"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.third.location.ui.activity.ShowLocationActivity"
+            android:name="cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="cn.wildfire.chat.preview.MMPreviewActivity"
+            android:name="cn.wildfire.chat.kit.preview.MMPreviewActivity"
             android:theme="@style/AppTheme.FullScreen" />
-        <activity android:name="cn.wildfire.chat.voip.SingleVoipCallActivity" />
+        <activity android:name="cn.wildfire.chat.kit.voip.SingleVoipCallActivity" />
         <activity
-            android:name="cn.wildfire.chat.conversation.CreateConversationActivity"
+            android:name="cn.wildfire.chat.kit.conversation.CreateConversationActivity"
             android:label="创建会话" />
         <activity
-            android:name="cn.wildfire.chat.group.AddGroupMemberActivity"
+            android:name="cn.wildfire.chat.kit.group.AddGroupMemberActivity"
             android:label="添加新成员" />
         <activity
-            android:name="cn.wildfire.chat.group.RemoveGroupMemberActivity"
+            android:name="cn.wildfire.chat.kit.group.RemoveGroupMemberActivity"
             android:label="删除群成员" />
         <activity
-            android:name="cn.wildfire.chat.conversation.mention.MentionGroupMemberActivity"
+            android:name="cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity"
             android:label="选择群成员" />
         <activity
-            android:name="cn.wildfire.chat.group.GroupListActivity"
+            android:name="cn.wildfire.chat.kit.group.GroupListActivity"
             android:label="群列表" />
         <activity
-            android:name="cn.wildfire.chat.contact.newfriend.FriendRequestListActivity"
+            android:name="cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity"
             android:label="好友请求" />
         <activity
-            android:name="cn.wildfire.chat.contact.newfriend.SearchUserActivity"
+            android:name="cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity"
             android:label="搜索用户" />
         <activity
-            android:name="cn.wildfire.chat.contact.newfriend.InviteFriendActivity"
+            android:name="cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity"
             android:label="邀请好友" />
         <activity
-            android:name="cn.wildfire.chat.user.UserInfoActivity"
+            android:name="cn.wildfire.chat.kit.user.UserInfoActivity"
             android:label="用户信息" />
         <activity
-            android:name="cn.wildfire.chat.conversation.ConversationInfoActivity"
+            android:name="cn.wildfire.chat.kit.conversation.ConversationInfoActivity"
             android:label="会话详情" />
         <activity
-            android:name="cn.wildfire.chat.chatroom.ChatRoomListActivity"
+            android:name="cn.wildfire.chat.kit.chatroom.ChatRoomListActivity"
             android:label="聊天室列表" />
         <activity
-            android:name="cn.wildfire.chat.search.SearchPortalActivity"
+            android:name="cn.wildfire.chat.kit.search.SearchPortalActivity"
             android:label="搜索中心" />
         <activity
-            android:name="cn.wildfire.chat.conversation.forward.ForwardActivity"
+            android:name="cn.wildfire.chat.kit.conversation.forward.ForwardActivity"
             android:label="转发" />
         <activity
-            android:name="cn.wildfire.chat.conversation.forward.PickConversationTargetToForwardActivity"
+            android:name="cn.wildfire.chat.kit.conversation.forward.PickConversationTargetToForwardActivity"
             android:label="选取会话" />
         <activity
-            android:name="cn.wildfire.chat.login.SMSLoginActivity"
+            android:name="cn.wildfire.chat.app.login.SMSLoginActivity"
             android:label="登录" />
         <activity
-            android:name="cn.wildfire.chat.channel.ChannelListActivity"
+            android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"
             android:label="频道列表" />
 
         <activity
-            android:name="cn.wildfire.chat.channel.CreateChannelActivity"
+            android:name="cn.wildfire.chat.kit.channel.CreateChannelActivity"
             android:label="创建频道"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan|stateHidden|adjustResize" />
 
-        <activity android:name="cn.wildfire.chat.channel.ChannelInfoActivity" />
+        <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
         <activity
-            android:name="cn.wildfire.chat.main.MainActivity"
+            android:name="cn.wildfire.chat.app.main.MainActivity"
             android:label="火信">
             <intent-filter>
                 <action android:name="cn.wildfirechat.chat.main" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="cn.wildfire.chat.WfcWebViewActivity" />
-        <activity android:name="cn.wildfire.chat.search.SearchMessageActivity" />
-        <activity android:name="cn.wildfire.chat.channel.SearchChannelActivity" />
+        <activity android:name="cn.wildfire.chat.kit.WfcWebViewActivity" />
+        <activity android:name="cn.wildfire.chat.kit.search.SearchMessageActivity" />
+        <activity android:name="cn.wildfire.chat.kit.channel.SearchChannelActivity" />
 
         <provider
-            android:name="cn.wildfire.chat.third.utils.FilePickerProvider"
+            android:name="cn.wildfire.chat.kit.third.utils.FilePickerProvider"
             android:authorities="${applicationId}.droidninja.filepicker.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -198,6 +198,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-        <service android:name="cn.wildfire.chat.voip.FloatingVoipService" />
+        <service android:name="cn.wildfire.chat.kit.voip.FloatingVoipService" />
     </application>
 </manifest>

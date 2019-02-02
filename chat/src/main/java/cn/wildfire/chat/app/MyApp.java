@@ -5,7 +5,7 @@ import android.content.Context;
 
 import com.tencent.bugly.crashreport.CrashReport;
 
-import cn.wildfire.chat.WfcUIKit;
+import cn.wildfire.chat.kit.WfcUIKit;
 
 
 public class MyApp extends BaseApp {

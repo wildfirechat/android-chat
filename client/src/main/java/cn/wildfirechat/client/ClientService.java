@@ -494,7 +494,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             setUserSetting(ConversationSilent, conversationType + "-" + line + "-" + target, silent ? "1" : "0", null);
         }
 
-
         @Override
         public void searchUser(String keyword, final ISearchUserCallback callback) throws RemoteException {
             ProtoLogic.searchUser(keyword, new ProtoLogic.ISearchUserCallback() {
@@ -1482,6 +1481,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         userInfo.social = protoUserInfo.getSocial();
         userInfo.extra = protoUserInfo.getExtra();
         userInfo.updateDt = protoUserInfo.getUpdateDt();
+//        userInfo.type = protoUserInfo.getType();
         return userInfo;
     }
 

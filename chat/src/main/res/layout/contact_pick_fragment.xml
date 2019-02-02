@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             android:paddingTop="70dp" />
 
-        <cn.wildfire.chat.widget.QuickIndexBar
+        <cn.wildfire.chat.kit.widget.QuickIndexBar
             android:id="@+id/quickIndexBar"
             android:layout_width="20dp"
             android:layout_height="match_parent"

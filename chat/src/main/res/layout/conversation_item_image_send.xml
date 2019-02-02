@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cn.wildfire.chat.widget.BubbleImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<cn.wildfire.chat.kit.widget.BubbleImageView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/imageView"
     android:layout_width="wrap_content"
