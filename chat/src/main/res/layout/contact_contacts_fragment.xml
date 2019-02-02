@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <cn.wildfire.chat.widget.QuickIndexBar
+    <cn.wildfire.chat.kit.widget.QuickIndexBar
         android:id="@+id/quickIndexBar"
         android:layout_width="20dp"
         android:layout_height="match_parent"

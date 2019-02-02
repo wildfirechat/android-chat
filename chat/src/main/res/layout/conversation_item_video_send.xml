@@ -8,7 +8,7 @@
     android:layout_height="wrap_content">
 
     <!-- 图片 -->
-    <cn.wildfire.chat.widget.BubbleImageView
+    <cn.wildfire.chat.kit.widget.BubbleImageView
         android:id="@+id/imageView"
         android:layout_width="150dp"
         android:layout_height="150dp"
@@ -25,7 +25,7 @@
         app:bubble_showText="false"
         tools:background="@color/gray" />
 
-    <cn.wildfire.chat.widget.CircularProgressBar
+    <cn.wildfire.chat.kit.widget.CircularProgressBar
         android:id="@+id/cpbLoading"
         android:layout_width="30dp"
         android:layout_height="30dp"
