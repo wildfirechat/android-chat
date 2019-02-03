@@ -1,12 +1,12 @@
 ## 说明
 本系统有4部分组成，[服务器](https://github.com/wildfirechat/server)/[iOS客户端](https://github.com/wildfirechat/ios-chat)/[Android客户端](https://github.com/wildfirechat/android-chat)/[协议栈库](https://github.com/wildfirechat/proto)。其中iOS和Android都依赖于协议栈库。此为Android工程。
 
-#### 体验Demo
+## 体验Demo
 我们提供了体验demo，请使用微信扫码下载安装体验
 
 ![野火IM](http://static.wildfirechat.cn/download_qrcode.png)
 
-#### 应用截图
+## 应用截图
 ![ios-demo1](http://static.wildfirechat.cn/android-deomo1.gif)
 
 ![ios-demo2](http://static.wildfirechat.cn/android-deomo1.gif)
@@ -33,16 +33,18 @@
 
 <img src="http://static.wildfirechat.cn/android-view11.png" width = 50% height = 50% />
 
-### 协议栈的编译
+## 协议栈的编译
 工程中已经包括了编译好的协议栈，你也可以自己编译协议栈，编译方法请参考协议栈工程。
 
-### 集成
+## 集成
 1. client部分，支持快速集成，具体参考[jitpack-wildfire.chat](https://jitpack.io/#wildfirechat/android-chat/)
 2. UI(chat)部分，目前不支持快速集成，需要你自行下载，并将代码移动到你自己的项目，且必须是application module，不能作为library module引入的原因是注解中使用了R.xx.yyyy，
 而library module中，R.xx.yyy并不是一个常量。后续会采用butterKnife的方式，引入R2.xx.yyyy。
 
+## 贡献
+欢迎提交pull request，一起打造一个更好的开源IM。
 
-#### 鸣谢
+## 鸣谢
 1. [LQRWeChat](https://github.com/GitLqr/LQRWeChat) 本项目中图片选择器、表情基于此开发
 2. [butterKnife](https://github.com/JakeWharton/butterknife)
 3. OKHttp等一些其他优秀的开源项目
