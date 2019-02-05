@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import cn.wildfire.chat.GlideApp;
+import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.contact.ContactAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.chat.R;
