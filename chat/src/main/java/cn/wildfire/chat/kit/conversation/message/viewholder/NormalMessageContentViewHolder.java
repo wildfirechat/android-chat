@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.GlideApp;
+import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
