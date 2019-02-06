@@ -1,5 +1,6 @@
 ## 说明
-本系统有4部分组成，[服务器](https://github.com/wildfirechat/server)/[iOS客户端](https://github.com/wildfirechat/ios-chat)/[Android客户端](https://github.com/wildfirechat/android-chat)/[协议栈库](https://github.com/wildfirechat/proto)。其中iOS和Android都依赖于协议栈库。此为Android工程。
+本工程为野火IM Android平台的SDK和Demo。野火IM作为一个通用的即时通讯SDK，可以集成到各种应用中。详情可以阅读[docs](http://docs.wildfirechat.cn).
+
 
 ## 体验Demo
 我们提供了体验demo，请使用微信扫码下载安装体验
@@ -34,7 +35,7 @@
 <img src="http://static.wildfirechat.cn/android-view11.png" width = 50% height = 50% />
 
 ## 协议栈的编译
-工程中已经包括了编译好的协议栈，你也可以自己编译协议栈，编译方法请参考协议栈工程。
+工程中已经包括了编译好的协议栈，你也可以自己编译[协议栈](https://github.com/wildfirechat/proto)，编译方法请参考协议栈工程。
 
 ## 集成
 1. client部分，支持快速集成，具体参考[jitpack-wildfire.chat](https://jitpack.io/#wildfirechat/android-chat/)
