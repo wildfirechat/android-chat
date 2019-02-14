@@ -1985,7 +1985,15 @@ public class ChatManager {
     }
 
 
-    public UserInfo getUserInfo(String userId, boolean refresh) {
+    /**
+     * 当对应用户，本地不存在时，返回的{@link UserInfo}为null
+     *
+     * @param userId
+     * @param refresh
+     * @return
+     */
+    public @Nullable
+    UserInfo getUserInfo(String userId, boolean refresh) {
         if (userSource != null) {
             return userSource.getUser(userId);
         }
@@ -2001,6 +2009,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 返回的list里面的元素可能为null
+     *
+     * @param userIds
+     * @return
+     */
     public List<UserInfo> getUserInfos(List<String> userIds) {
         if (userIds == null || userIds.isEmpty()) {
             return null;

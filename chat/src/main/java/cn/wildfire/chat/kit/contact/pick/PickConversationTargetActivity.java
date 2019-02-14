@@ -91,14 +91,10 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
         pickContactViewModel.contactCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
     }
 
-    /**
-     * @param newlyCheckedUserInfos   新选中的
-     * @param initialCheckedUserInfos 初始选中的，可能为空
-     */
-    protected abstract void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, @Nullable List<UIUserInfo> initialCheckedUserInfos);
+    protected abstract void onContactPicked(List<UIUserInfo> checkedUserInfos);
 
     protected void onConfirmClick() {
         List<UIUserInfo> uiUserInfos = pickContactViewModel.getCheckedContacts();
-        onContactPicked(uiUserInfos, pickContactViewModel.getInitialCheckedContacts());
+        onContactPicked(uiUserInfos);
     }
 }
