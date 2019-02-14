@@ -900,7 +900,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public List<UserInfo> getUserInfos(List<String> userIds) throws RemoteException {
             List<UserInfo> userInfos = new ArrayList<>();
             for (String userId : userIds) {
-                userInfos.add(convertProtoUserInfo(ProtoLogic.getUserInfo(userId, false)));
+                ProtoUserInfo protoUserInfo = ProtoLogic.getUserInfo(userId, false);
+                if (protoUserInfo == null) {
+                    protoUserInfo = new ProtoUserInfo();
+                    protoUserInfo.setUid(userId);
+                }
+                userInfos.add(convertProtoUserInfo(protoUserInfo));
             }
             return userInfos;
         }
@@ -1481,7 +1486,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         userInfo.social = protoUserInfo.getSocial();
         userInfo.extra = protoUserInfo.getExtra();
         userInfo.updateDt = protoUserInfo.getUpdateDt();
-//        userInfo.type = protoUserInfo.getType();
+        userInfo.type = protoUserInfo.getType();
         return userInfo;
     }
 
