@@ -285,6 +285,11 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         if (settingUpdateLiveData != null) {
             UIUtils.postTaskSafely(() -> settingUpdateLiveData.setValue(new Object()));
         }
+
+        // 会话同步
+        if (unreadCountLiveData != null) {
+            loadUnreadCount();
+        }
     }
 
     @Override
