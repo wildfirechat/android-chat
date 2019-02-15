@@ -79,10 +79,10 @@ public class WfcNotificationManager {
     }
 
     public void handleRecallMessage(Context context, Message message) {
-        handleIReceiveMessage(context, Collections.singletonList(message));
+        handleReceiveMessage(context, Collections.singletonList(message));
     }
 
-    public void handleIReceiveMessage(Context context, List<Message> messages) {
+    public void handleReceiveMessage(Context context, List<Message> messages) {
 
         if (messages == null || messages.isEmpty()) {
             return;
