@@ -36,18 +36,15 @@ public class KickoffGroupMemberNotificationContent extends NotificationMessageCo
         if (fromSelf) {
             sb.append("您把");
         } else {
-            sb.append(ChatManager.Instance().getUserInfo(operator, false).displayName);
+            UserInfo userInfo = ChatManager.Instance().getUserInfox(operator, false);
+            sb.append(userInfo.displayName);
             sb.append("把");
         }
 
         for (String member : kickedMembers) {
             sb.append(" ");
-            UserInfo userInfo = ChatManager.Instance().getUserInfo(member, false);
-            if (userInfo != null) {
-                sb.append(userInfo.displayName);
-            } else {
-                sb.append(member);
-            }
+            UserInfo userInfo = ChatManager.Instance().getUserInfox(member, false);
+            sb.append(userInfo.displayName);
         }
 
         sb.append(" 移出了群组");

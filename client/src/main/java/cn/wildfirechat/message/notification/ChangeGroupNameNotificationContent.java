@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_CHANGE_GROUP_NAME;
@@ -31,7 +32,8 @@ public class ChangeGroupNameNotificationContent extends NotificationMessageConte
         if (fromSelf) {
             sb.append("您");
         } else {
-            sb.append(ChatManager.Instance().getUserInfo(operateUser, false).displayName);
+            UserInfo userInfo = ChatManager.Instance().getUserInfox(operateUser, false);
+            sb.append(userInfo.displayName);
         }
         sb.append("修改群名为");
         sb.append(name);
