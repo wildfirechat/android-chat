@@ -60,6 +60,7 @@ import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.ModifyChannelInfoType;
 import cn.wildfirechat.model.ModifyGroupInfoType;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
+import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 
@@ -1883,7 +1884,8 @@ public class ChatManager {
     }
 
 
-    public GroupInfo getGroupInfo(String groupId, boolean refresh) {
+    public @Nullable
+    GroupInfo getGroupInfo(String groupId, boolean refresh) {
         if (!checkRemoteService()) {
             return null;
         }
@@ -1992,8 +1994,7 @@ public class ChatManager {
      * @param refresh
      * @return
      */
-    public @Nullable
-    UserInfo getUserInfo(String userId, boolean refresh) {
+    public UserInfo getUserInfox(String userId, boolean refresh) {
         if (userSource != null) {
             return userSource.getUser(userId);
         }
@@ -2002,7 +2003,12 @@ public class ChatManager {
         }
 
         try {
-            return mClient.getUserInfo(userId, refresh);
+            UserInfo userInfo = mClient.getUserInfo(userId, refresh);
+            if (userInfo != null) {
+                return userInfo;
+            } else {
+                return new NullUserInfo(userId);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -2108,7 +2114,7 @@ public class ChatManager {
                             }
                         });
                     }
-                    UserInfo userInfo = getUserInfo(userId, false);
+                    UserInfo userInfo = getUserInfox(userId, false);
                     onUserInfoUpdated(Collections.singletonList(userInfo));
                 }
 

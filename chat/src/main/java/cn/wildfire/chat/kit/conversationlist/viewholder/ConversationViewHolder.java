@@ -112,8 +112,8 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                 String content;
                 Message lastMessage = conversationInfo.lastMessage;
                 if (conversationInfo.conversation.type == Conversation.ConversationType.Group && lastMessage.direction == MessageDirection.Receive) {
-                    UserInfo userInfo = ChatManager.Instance().getUserInfo(conversationInfo.lastMessage.sender, false);
-                    content = (userInfo == null ? "<" + conversationInfo.lastMessage.sender + ">" : userInfo.displayName) + ":" + lastMessage.content.digest();
+                    UserInfo userInfo = ChatManager.Instance().getUserInfox(conversationInfo.lastMessage.sender, false);
+                    content = userInfo.displayName + ":" + lastMessage.content.digest();
                 } else {
                     content = lastMessage.content.digest();
                 }

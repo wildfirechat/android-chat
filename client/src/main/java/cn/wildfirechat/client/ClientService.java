@@ -73,6 +73,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
+import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.ProtoChannelInfo;
 import cn.wildfirechat.model.ProtoChatRoomInfo;
 import cn.wildfirechat.model.ProtoChatRoomMembersInfo;
@@ -902,10 +903,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (String userId : userIds) {
                 ProtoUserInfo protoUserInfo = ProtoLogic.getUserInfo(userId, false);
                 if (protoUserInfo == null) {
-                    protoUserInfo = new ProtoUserInfo();
-                    protoUserInfo.setUid(userId);
+                    userInfos.add(new NullUserInfo(userId));
+                } else {
+                    userInfos.add(convertProtoUserInfo(protoUserInfo));
                 }
-                userInfos.add(convertProtoUserInfo(protoUserInfo));
             }
             return userInfos;
         }
