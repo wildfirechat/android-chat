@@ -47,6 +47,7 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -285,6 +286,13 @@ public class ChatManager {
      * @param hasMore  是否还有更多消息待收取
      */
     private void onReceiveMessage(final List<Message> messages, final boolean hasMore) {
+        workHandler.post(() -> {
+            for (Message message : messages) {
+                if (message.content instanceof ChangeGroupNameNotificationContent) {
+                    getGroupInfo(message.conversation.target, true);
+                }
+            }
+        });
         mainHandler.post(() -> {
             Iterator<OnReceiveMessageListener> iterator = onReceiveMessageListeners.iterator();
             OnReceiveMessageListener listener;
@@ -2466,6 +2474,9 @@ public class ChatManager {
             mClient.modifyGroupInfo(groupId, modifyType.ordinal(), newValue, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
+                    GroupInfo groupInfo = getGroupInfo(groupId, false);
+                    onGroupInfoUpdated(Collections.singletonList(groupInfo));
+
                     if (callback != null) {
                         mainHandler.post(new Runnable() {
                             @Override
