@@ -317,6 +317,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     private void setDraft() {
         ConversationInfo conversationInfo = conversationViewModel.getConversationInfo(conversation);
+        if (conversationInfo == null) {
+            return;
+        }
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
         draftString = draft == null ? "" : draft.getContent();
 
