@@ -18,7 +18,7 @@ import butterknife.Bind;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;

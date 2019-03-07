@@ -1,32 +1,43 @@
 package cn.wildfire.chat.app.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.king.zxing.CaptureActivity;
+import com.king.zxing.Intents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.Bind;
+import cn.wildfire.chat.app.Config;
+import cn.wildfire.chat.app.login.model.PcSession;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
+import cn.wildfire.chat.kit.net.OKHttpHelper;
+import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.third.location.ui.adapter.CommonFragmentPagerAdapter;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -48,6 +59,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private QBadgeView unreadMessageUnreadBadgeView;
     private QBadgeView unreadFriendRequestBadgeView;
+
+    private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
 
     @Override
     protected int contentLayout() {
@@ -158,6 +171,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             case R.id.add_contact:
                 searchUser();
                 break;
+            case R.id.scan_qrcode:
+                startActivityForResult(new Intent(this, CaptureActivity.class), REQUEST_CODE_SCAN_QR_CODE);
             default:
                 break;
         }
@@ -217,6 +232,93 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         } else {
             FragmentFactory.getInstance().getContactsFragment().showQuickIndexBar(true);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_SCAN_QR_CODE && data != null) {
+            String result = data.getStringExtra(Intents.Scan.RESULT);
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            onScanPcQrCode(result);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void onScanPcQrCode(String token) {
+        scanPcLogin(token);
+    }
+
+    private void showPCLoginConfirmDialog(String token, long expire) {
+        new MaterialDialog.Builder(this)
+                .title("允许PC登录")
+                .content("是否允许PC登录")
+                .onPositive((dialog, which) -> {
+                    if (System.currentTimeMillis() > expire) {
+                        Toast.makeText(MainActivity.this, "已过期", Toast.LENGTH_SHORT).show();
+                    } else {
+                        UserViewModel userViewModel = ViewModelProviders.of(MainActivity.this).get(UserViewModel.class);
+                        confirmPcLogin(token, userViewModel.getUserId());
+                    }
+                })
+                .build()
+                .show();
+    }
+
+    // TODO 这时候，应当就把user_id给服务端
+    private void scanPcLogin(String token) {
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .content("处理中")
+                .progress(true, 100)
+                .build();
+        dialog.show();
+        String url = "http://" + Config.IM_SERVER_HOST + ":" + Config.IM_SERVER_PORT + "/api/scan_pc";
+        url += "/" + token;
+        OKHttpHelper.get(url, null, new SimpleCallback<PcSession>() {
+            @Override
+            public void onUiSuccess(PcSession pcSession) {
+                if (isFinishing()) {
+                    return;
+                }
+                dialog.dismiss();
+                if (pcSession.getStatus() == 0) {
+                    showPCLoginConfirmDialog(token, pcSession.getExpired());
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (isFinishing()) {
+                    return;
+                }
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void confirmPcLogin(String token, String userId) {
+        String url = "http://" + Config.IM_SERVER_HOST + ":" + Config.IM_SERVER_PORT + "/api/confirm_pc";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("user_id", userId);
+        params.put("token", token);
+        OKHttpHelper.post(url, params, new SimpleCallback<PcSession>() {
+            @Override
+            public void onUiSuccess(PcSession pcSession) {
+                if (isFinishing()) {
+                    return;
+                }
+                Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (isFinishing()) {
+                    return;
+                }
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void checkDisplayName() {

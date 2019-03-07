@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
