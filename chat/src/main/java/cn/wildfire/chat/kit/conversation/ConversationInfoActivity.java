@@ -28,6 +28,7 @@ public class ConversationInfoActivity extends WfcBaseActivity {
                 fragment = GroupConversationInfoFragment.newInstance(conversationInfo);
                 break;
             case ChatRoom:
+                // TODO
                 break;
             case Channel:
                 fragment = ChannelConversationInfoFragment.newInstance(conversationInfo);
@@ -38,6 +39,7 @@ public class ConversationInfoActivity extends WfcBaseActivity {
         if (fragment == null) {
             Toast.makeText(this, "todo", Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.containerFrameLayout, fragment)

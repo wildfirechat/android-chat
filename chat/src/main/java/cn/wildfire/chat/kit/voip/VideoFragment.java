@@ -298,6 +298,10 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
             }
         }
         UserInfo userInfo = ChatManager.Instance().getUserInfox(targetId, false);
+        if (userInfo == null) {
+            getActivity().finish();
+            return;
+        }
         Glide.with(this).load(userInfo.portrait).into(portraitImageView);
         nameTextView.setText(userInfo.displayName);
 
