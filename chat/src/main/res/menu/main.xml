@@ -27,6 +27,12 @@
                 android:orderInCategory="101"
                 android:title="添加朋友"
                 app:iconTint="@color/colorPrimary" />
+            <item
+                android:id="@+id/scan_qrcode"
+                android:icon="@mipmap/ic_add"
+                android:orderInCategory="101"
+                android:title="扫一扫"
+                app:iconTint="@color/colorPrimary" />
         </menu>
     </item>
 </menu>
