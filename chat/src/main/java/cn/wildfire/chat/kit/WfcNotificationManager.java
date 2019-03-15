@@ -18,7 +18,7 @@ import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.RecallMessageContent;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;

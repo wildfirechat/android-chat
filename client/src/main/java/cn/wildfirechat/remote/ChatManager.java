@@ -42,7 +42,7 @@ import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.RecallMessageContent;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -2506,6 +2506,8 @@ public class ChatManager {
         }
     }
 
+    // Attention
+    // 回调成功只表示服务器修改成功了，本地可能还没更新，等本地将服务器端的改动拉下来之后，会有更新通知回调
     public void modifyGroupAlias(String groupId, String alias, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
