@@ -18,9 +18,7 @@ import com.king.zxing.Intents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,15 +27,12 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.Bind;
 import cn.wildfire.chat.app.Config;
-import cn.wildfire.chat.app.login.model.PcSession;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
-import cn.wildfire.chat.kit.net.OKHttpHelper;
-import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.third.location.ui.adapter.CommonFragmentPagerAdapter;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -245,80 +240,27 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         }
     }
 
-    private void onScanPcQrCode(String token) {
-        scanPcLogin(token);
+    private void onScanPcQrCode(String qrcode) {
+        String prefix = qrcode.substring(0, qrcode.lastIndexOf('/'));
+        String value = qrcode.substring(qrcode.lastIndexOf("/") + 1);
+        switch (prefix) {
+            case Config.QR_CODE_PREFIX_PC_SESSION:
+                pcLogin(value);
+                break;
+            case Config.QR_CODE_PREFIX_USER:
+                break;
+            case Config.QR_CODE_PREFIX_GROUP:
+                break;
+            default:
+                Toast.makeText(this, "qrcode: " + qrcode, Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
-    private void showPCLoginConfirmDialog(String token, long expire) {
-        new MaterialDialog.Builder(this)
-                .title("允许PC登录")
-                .content("是否允许PC登录")
-                .onPositive((dialog, which) -> {
-                    if (System.currentTimeMillis() > expire) {
-                        Toast.makeText(MainActivity.this, "已过期", Toast.LENGTH_SHORT).show();
-                    } else {
-                        UserViewModel userViewModel = ViewModelProviders.of(MainActivity.this).get(UserViewModel.class);
-                        confirmPcLogin(token, userViewModel.getUserId());
-                    }
-                })
-                .build()
-                .show();
-    }
-
-    // TODO 这时候，应当就把user_id给服务端
-    private void scanPcLogin(String token) {
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("处理中")
-                .progress(true, 100)
-                .build();
-        dialog.show();
-        String url = "http://" + Config.IM_SERVER_HOST + ":" + Config.IM_SERVER_PORT + "/api/scan_pc";
-        url += "/" + token;
-        OKHttpHelper.get(url, null, new SimpleCallback<PcSession>() {
-            @Override
-            public void onUiSuccess(PcSession pcSession) {
-                if (isFinishing()) {
-                    return;
-                }
-                dialog.dismiss();
-                if (pcSession.getStatus() == 0) {
-                    showPCLoginConfirmDialog(token, pcSession.getExpired());
-                }
-            }
-
-            @Override
-            public void onUiFailure(int code, String msg) {
-                if (isFinishing()) {
-                    return;
-                }
-                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void confirmPcLogin(String token, String userId) {
-        String url = "http://" + Config.IM_SERVER_HOST + ":" + Config.IM_SERVER_PORT + "/api/confirm_pc";
-
-        Map<String, String> params = new HashMap<>();
-        params.put("user_id", userId);
-        params.put("token", token);
-        OKHttpHelper.post(url, params, new SimpleCallback<PcSession>() {
-            @Override
-            public void onUiSuccess(PcSession pcSession) {
-                if (isFinishing()) {
-                    return;
-                }
-                Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onUiFailure(int code, String msg) {
-                if (isFinishing()) {
-                    return;
-                }
-                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void pcLogin(String token) {
+        Intent intent = new Intent(this, PCLoginActivity.class);
+        intent.putExtra("token", token);
+        startActivity(intent);
     }
 
     private void checkDisplayName() {

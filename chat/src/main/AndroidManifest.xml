@@ -190,6 +190,10 @@
         <activity android:name="cn.wildfire.chat.kit.channel.SearchChannelActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.PickGroupMemberActivity" />
 
+        <activity
+            android:name="cn.wildfire.chat.app.main.PCLoginActivity"
+            android:label="PC登录" />
+
         <provider
             android:name="cn.wildfire.chat.kit.third.utils.FilePickerProvider"
             android:authorities="${applicationId}.droidninja.filepicker.provider"
