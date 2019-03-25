@@ -1,6 +1,6 @@
 package cn.wildfire.chat.app.login.model;
 
-public class PcSession {
+public class PCSession {
     private String token;
     private int status;
     private long expired;
