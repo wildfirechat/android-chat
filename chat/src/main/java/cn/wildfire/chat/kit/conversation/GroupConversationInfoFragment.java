@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
@@ -38,6 +39,7 @@ import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.RemoveGroupMemberActivity;
 import cn.wildfire.chat.kit.group.SetGroupNameActivity;
+import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
@@ -54,6 +56,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     LinearLayout groupLinearLayout_0;
     @Bind(R.id.groupNameOptionItemView)
     OptionItemView groupNameOptionItemView;
+    @Bind(R.id.groupQRCodeOptionItemView)
+    OptionItemView groupQRCodeOptionItemView;
     @Bind(R.id.groupNoticeLinearLayout)
     LinearLayout noticeLinearLayout;
     @Bind(R.id.groupNoticeTextView)
@@ -226,6 +230,13 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @OnClick(R.id.clearMessagesOptionItemView)
     void clearMessage() {
         conversationViewModel.clearConversationMessage(conversationInfo.conversation);
+    }
+
+    @OnClick(R.id.groupQRCodeOptionItemView)
+    void showGroupQRCode() {
+        String qrCodeValue = Config.QR_CODE_PREFIX_GROUP + groupInfo.target;
+        Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "群二维码", groupInfo.portrait, qrCodeValue);
+        startActivity(intent);
     }
 
 
