@@ -29,7 +29,7 @@
                 app:iconTint="@color/colorPrimary" />
             <item
                 android:id="@+id/scan_qrcode"
-                android:icon="@mipmap/ic_add"
+                android:icon="@mipmap/qr_code"
                 android:orderInCategory="101"
                 android:title="扫一扫"
                 app:iconTint="@color/colorPrimary" />

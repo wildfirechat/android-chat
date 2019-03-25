@@ -1,6 +1,5 @@
 package cn.wildfire.chat.app.main;
 
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.Toast;
@@ -10,7 +9,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -29,8 +27,7 @@ public class PCLoginActivity extends WfcBaseActivity {
     Button confirmButton;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void beforeViews() {
         token = getIntent().getStringExtra("token");
         if (TextUtils.isEmpty(token)) {
             finish();
