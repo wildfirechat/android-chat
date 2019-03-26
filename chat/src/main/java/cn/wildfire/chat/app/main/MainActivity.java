@@ -233,7 +233,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_SCAN_QR_CODE && data != null) {
             String result = data.getStringExtra(Intents.Scan.RESULT);
-            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
             onScanPcQrCode(result);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -241,15 +240,17 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     }
 
     private void onScanPcQrCode(String qrcode) {
-        String prefix = qrcode.substring(0, qrcode.lastIndexOf('/'));
+        String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);
         String value = qrcode.substring(qrcode.lastIndexOf("/") + 1);
         switch (prefix) {
             case Config.QR_CODE_PREFIX_PC_SESSION:
                 pcLogin(value);
                 break;
             case Config.QR_CODE_PREFIX_USER:
+                addFriend(value);
                 break;
             case Config.QR_CODE_PREFIX_GROUP:
+                joinGroup(value);
                 break;
             default:
                 Toast.makeText(this, "qrcode: " + qrcode, Toast.LENGTH_SHORT).show();
@@ -261,6 +262,14 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         Intent intent = new Intent(this, PCLoginActivity.class);
         intent.putExtra("token", token);
         startActivity(intent);
+    }
+
+    private void addFriend(String uid) {
+
+    }
+
+    private void joinGroup(String groupId) {
+
     }
 
     private void checkDisplayName() {
