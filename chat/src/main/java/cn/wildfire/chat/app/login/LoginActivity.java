@@ -17,15 +17,19 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
-import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.app.Config;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfirechat.chat.R;
 
+/**
+ * use {@link SMSLoginActivity} instead
+ */
+@Deprecated
 public class LoginActivity extends WfcBaseActivity {
     @Bind(R.id.loginButton)
     Button loginButton;
@@ -68,7 +72,7 @@ public class LoginActivity extends WfcBaseActivity {
         String account = accountEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
-        String url = "http://" + Config.IM_SERVER_HOST + ":" + Config.IM_SERVER_PORT + "/api/login";
+        String url = "http://" + Config.APP_SERVER_HOST + ":" + Config.APP_SERVER_PORT + "/api/login";
         Map<String, String> params = new HashMap<>();
         params.put("name", account);
         params.put("password", password);

@@ -46,12 +46,8 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     @OnClick(R.id.confirmButton)
     void confirmPCLogin() {
-        if (System.currentTimeMillis() > this.pcSession.getExpired()) {
-            Toast.makeText(PCLoginActivity.this, "已过期", Toast.LENGTH_SHORT).show();
-        } else {
-            UserViewModel userViewModel = ViewModelProviders.of(PCLoginActivity.this).get(UserViewModel.class);
-            confirmPCLogin(token, userViewModel.getUserId());
-        }
+        UserViewModel userViewModel = ViewModelProviders.of(PCLoginActivity.this).get(UserViewModel.class);
+        confirmPCLogin(token, userViewModel.getUserId());
     }
 
     private void scanPCLogin(String token) {
@@ -60,9 +56,9 @@ public class PCLoginActivity extends WfcBaseActivity {
                 .progress(true, 100)
                 .build();
         dialog.show();
-        String url = "http://" + Config.IM_SERVER_HOST + ":" + Config.IM_SERVER_PORT + "/api/scan_pc";
+        String url = "http://" + Config.APP_SERVER_HOST + ":" + Config.APP_SERVER_PORT + "/scan_pc";
         url += "/" + token;
-        OKHttpHelper.get(url, null, new SimpleCallback<PCSession>() {
+        OKHttpHelper.post(url, null, new SimpleCallback<PCSession>() {
             @Override
             public void onUiSuccess(PCSession pcSession) {
                 if (isFinishing()) {
@@ -70,7 +66,7 @@ public class PCLoginActivity extends WfcBaseActivity {
                 }
                 dialog.dismiss();
                 PCLoginActivity.this.pcSession = pcSession;
-                if (pcSession.getStatus() == 0) {
+                if (pcSession.getStatus() == 1) {
                     confirmButton.setEnabled(true);
                 } else {
                     Toast.makeText(PCLoginActivity.this, "status: " + pcSession.getStatus(), Toast.LENGTH_SHORT).show();
@@ -90,7 +86,7 @@ public class PCLoginActivity extends WfcBaseActivity {
     }
 
     private void confirmPCLogin(String token, String userId) {
-        String url = "http://" + Config.IM_SERVER_HOST + ":" + Config.IM_SERVER_PORT + "/api/confirm_pc";
+        String url = "http://" + Config.APP_SERVER_HOST + ":" + Config.APP_SERVER_PORT + "/confirm_pc";
 
         Map<String, String> params = new HashMap<>(2);
         params.put("user_id", userId);
