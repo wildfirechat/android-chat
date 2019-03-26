@@ -1,6 +1,8 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.GlideRequest;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
@@ -44,8 +47,9 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
     @Override
     public void onBind(UiMessage message) {
         ImageMessageContent imageMessage = (ImageMessageContent) message.message.content;
-        int width = imageMessage.getThumbnail().getWidth();
-        int height = imageMessage.getThumbnail().getHeight();
+        Bitmap thumbnail = imageMessage.getThumbnail();
+        int width = thumbnail != null ? thumbnail.getWidth() : 200;
+        int height = thumbnail != null ? thumbnail.getHeight() : 200;
         imageView.getLayoutParams().width = UIUtils.dip2Px(width > 200 ? 200 : width);
         imageView.getLayoutParams().height = UIUtils.dip2Px(height > 200 ? 200 : height);
 
@@ -55,10 +59,14 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
                     .centerCrop()
                     .into(imageView);
         } else {
-            GlideApp.with(context)
-                    .load(imageMessage.remoteUrl)
-                    .placeholder(new BitmapDrawable(context.getResources(), imageMessage.getThumbnail()))
-                    .centerCrop()
+            GlideRequest<Drawable> request = GlideApp.with(context)
+                    .load(imageMessage.remoteUrl);
+            if (thumbnail != null) {
+                request = request.placeholder(new BitmapDrawable(context.getResources(), imageMessage.getThumbnail()));
+            } else {
+                request = request.placeholder(R.mipmap.img_error);
+            }
+            request.centerCrop()
                     .into(imageView);
         }
     }
