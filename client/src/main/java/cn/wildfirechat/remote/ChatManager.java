@@ -2007,7 +2007,7 @@ public class ChatManager {
             return userSource.getUser(userId);
         }
         if (!checkRemoteService()) {
-            return null;
+            return new NullUserInfo(userId);
         }
 
         try {
@@ -2019,7 +2019,7 @@ public class ChatManager {
             }
         } catch (RemoteException e) {
             e.printStackTrace();
-            return null;
+            return new NullUserInfo(userId);
         }
     }
 
