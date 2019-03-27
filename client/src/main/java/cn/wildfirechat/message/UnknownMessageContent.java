@@ -23,6 +23,10 @@ public class UnknownMessageContent extends MessageContent {
         return orignalPayload;
     }
 
+    public void setOrignalPayload(MessagePayload payload) {
+        this.orignalPayload = payload;
+    }
+
     @Override
     public MessagePayload encode() {
         return orignalPayload;

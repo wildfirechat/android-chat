@@ -194,7 +194,8 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return result;
     }
 
-    public GroupInfo getGroupInfo(String groupId, boolean refresh) {
+    public @Nullable
+    GroupInfo getGroupInfo(String groupId, boolean refresh) {
         return ChatManager.Instance().getGroupInfo(groupId, refresh);
     }
 

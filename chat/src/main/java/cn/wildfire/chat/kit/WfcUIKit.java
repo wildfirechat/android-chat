@@ -21,6 +21,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.SingleVoipCallActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -139,7 +140,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                     iterator.remove();
                 }
             }
-            WfcNotificationManager.getInstance().handleIReceiveMessage(application, messages);
+            WfcNotificationManager.getInstance().handleReceiveMessage(application, messages);
         } else {
             // do nothing
         }

@@ -92,6 +92,15 @@
             android:background="@drawable/selector_common_item"
             app:left_text="设置昵称或别名" />
 
+        <com.lqr.optionitemview.OptionItemView
+            android:id="@+id/qrCodeOptionItemView"
+            style="@style/OptionItem"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/selector_common_item"
+            android:visibility="gone"
+            app:left_text="二维码"
+            app:right_src="@mipmap/qr_code" />
+
 
         <Button
             android:id="@+id/chatButton"

@@ -1,26 +1,32 @@
 package cn.wildfire.chat.app.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.king.zxing.CaptureActivity;
+import com.king.zxing.Intents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.Bind;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
@@ -48,6 +54,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private QBadgeView unreadMessageUnreadBadgeView;
     private QBadgeView unreadFriendRequestBadgeView;
+
+    private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
 
     @Override
     protected int contentLayout() {
@@ -158,6 +166,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             case R.id.add_contact:
                 searchUser();
                 break;
+            case R.id.scan_qrcode:
+                startActivityForResult(new Intent(this, CaptureActivity.class), REQUEST_CODE_SCAN_QR_CODE);
             default:
                 break;
         }
@@ -217,6 +227,49 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         } else {
             FragmentFactory.getInstance().getContactsFragment().showQuickIndexBar(true);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_SCAN_QR_CODE && data != null) {
+            String result = data.getStringExtra(Intents.Scan.RESULT);
+            onScanPcQrCode(result);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void onScanPcQrCode(String qrcode) {
+        String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);
+        String value = qrcode.substring(qrcode.lastIndexOf("/") + 1);
+        switch (prefix) {
+            case Config.QR_CODE_PREFIX_PC_SESSION:
+                pcLogin(value);
+                break;
+            case Config.QR_CODE_PREFIX_USER:
+                addFriend(value);
+                break;
+            case Config.QR_CODE_PREFIX_GROUP:
+                joinGroup(value);
+                break;
+            default:
+                Toast.makeText(this, "qrcode: " + qrcode, Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    private void pcLogin(String token) {
+        Intent intent = new Intent(this, PCLoginActivity.class);
+        intent.putExtra("token", token);
+        startActivity(intent);
+    }
+
+    private void addFriend(String uid) {
+
+    }
+
+    private void joinGroup(String groupId) {
+
     }
 
     private void checkDisplayName() {

@@ -16,7 +16,7 @@ import java.io.IOException;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.app.Config;
 import cn.wildfirechat.chat.R;
 
 public class TakePhotoActivity extends AppCompatActivity {

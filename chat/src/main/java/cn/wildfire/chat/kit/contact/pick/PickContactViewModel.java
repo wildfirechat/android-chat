@@ -14,6 +14,7 @@ public class PickContactViewModel extends ViewModel {
     private List<String> uncheckableIds;
     private List<String> initialCheckedIds;
     private MutableLiveData<UIUserInfo> contactCheckStatusUpdateLiveData;
+    private int maxPickCount = Integer.MAX_VALUE;
 
     public PickContactViewModel() {
         super();
@@ -24,6 +25,14 @@ public class PickContactViewModel extends ViewModel {
             contactCheckStatusUpdateLiveData = new MutableLiveData<>();
         }
         return contactCheckStatusUpdateLiveData;
+    }
+
+    public void setMaxPickCount(int maxPickCount) {
+        this.maxPickCount = maxPickCount;
+    }
+
+    public int getMaxPickCount() {
+        return maxPickCount;
     }
 
     public void setUncheckableIds(List<String> uncheckableIds) {
@@ -90,24 +99,6 @@ public class PickContactViewModel extends ViewModel {
     }
 
     /**
-     * only include uncheckable contacts
-     *
-     * @return
-     */
-    public List<UIUserInfo> getInitialCheckedContacts() {
-        if (contacts == null || initialCheckedIds == null || initialCheckedIds.isEmpty()) {
-            return null;
-        }
-        List<UIUserInfo> checkedContacts = new ArrayList<>();
-        for (UIUserInfo info : contacts) {
-            if (initialCheckedIds.contains(info.getUserInfo().uid)) {
-                checkedContacts.add(info);
-            }
-        }
-        return checkedContacts;
-    }
-
-    /**
      * not include initial checked contacts
      *
      * @return
@@ -125,11 +116,20 @@ public class PickContactViewModel extends ViewModel {
         return checkedContacts;
     }
 
-    public void checkContact(UIUserInfo userInfo, boolean checked) {
+    /**
+     * @param userInfo
+     * @param checked
+     * @return 选择成功，则返回true；否则，失败
+     */
+    public boolean checkContact(UIUserInfo userInfo, boolean checked) {
+        if (checked && getCheckedContacts() != null && getCheckedContacts().size() >= maxPickCount) {
+            return false;
+        }
         userInfo.setChecked(checked);
         if (contactCheckStatusUpdateLiveData != null) {
             contactCheckStatusUpdateLiveData.setValue(userInfo);
         }
+        return true;
     }
 
     @Override

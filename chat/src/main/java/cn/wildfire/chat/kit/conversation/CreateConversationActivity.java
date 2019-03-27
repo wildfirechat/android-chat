@@ -30,10 +30,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
     }
 
     @Override
-    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<UIUserInfo> initialCheckedUserInfos) {
-        if (initialCheckedUserInfos != null) {
-            newlyCheckedUserInfos.addAll(initialCheckedUserInfos);
-        }
+    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos) {
         if (newlyCheckedUserInfos.size() == 1) {
 
             Intent intent = new Intent(this, ConversationActivity.class);

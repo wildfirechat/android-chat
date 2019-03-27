@@ -14,16 +14,17 @@ import java.util.Collections;
 import java.util.List;
 
 import androidx.core.app.NotificationCompat;
-import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.RecallMessageContent;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -79,10 +80,10 @@ public class WfcNotificationManager {
     }
 
     public void handleRecallMessage(Context context, Message message) {
-        handleIReceiveMessage(context, Collections.singletonList(message));
+        handleReceiveMessage(context, Collections.singletonList(message));
     }
 
-    public void handleIReceiveMessage(Context context, List<Message> messages) {
+    public void handleReceiveMessage(Context context, List<Message> messages) {
 
         if (messages == null || messages.isEmpty()) {
             return;
@@ -113,8 +114,8 @@ public class WfcNotificationManager {
 
             String title = "";
             if (message.conversation.type == Single) {
-                UserInfo userInfo = ChatManager.Instance().getUserInfo(message.conversation.target, false);
-                title = (userInfo == null ? "新消息" : userInfo.displayName);
+                UserInfo userInfo = ChatManager.Instance().getUserInfox(message.conversation.target, false);
+                title = (userInfo instanceof NullUserInfo ? "新消息" : userInfo.displayName);
             } else if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.conversation.target, false);
                 title = groupInfo == null ? "群聊" : groupInfo.name;

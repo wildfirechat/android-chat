@@ -2,12 +2,17 @@ package cn.wildfire.chat.kit.contact;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
@@ -20,7 +25,6 @@ import cn.wildfire.chat.kit.contact.viewholder.header.ChannelViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.FriendRequestViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
-import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
@@ -50,15 +54,17 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
         contactAdapter.updateContacts(userInfoToUIUserInfo(userInfos));
     };
 
-
+    @Nullable
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+
         contactViewModel.contactListUpdatedLiveData().observeForever(contactListUpdateLiveDataObserver);
         contactViewModel.friendRequestUpdatedLiveData().observeForever(friendRequestUpdateLiveDataObserver);
 
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
+        return view;
     }
 
     @Override
