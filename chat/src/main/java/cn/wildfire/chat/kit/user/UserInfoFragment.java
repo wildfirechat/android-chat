@@ -27,11 +27,13 @@ import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
@@ -54,6 +56,9 @@ public class UserInfoFragment extends Fragment {
     Button inviteButton;
     @Bind(R.id.aliasOptionItemView)
     OptionItemView aliasOptionItemView;
+
+    @Bind(R.id.qrCodeOptionItemView)
+    OptionItemView qrCodeOptionItemView;
 
     private UserInfo userInfo;
     private UserViewModel userViewModel;
@@ -93,6 +98,7 @@ public class UserInfoFragment extends Fragment {
             chatButton.setVisibility(View.GONE);
             voipChatButton.setVisibility(View.GONE);
             inviteButton.setVisibility(View.GONE);
+            qrCodeOptionItemView.setVisibility(View.VISIBLE);
         } else if (contactViewModel.isFriend(userInfo.uid)) {
             // friend
             chatButton.setVisibility(View.VISIBLE);
@@ -188,5 +194,12 @@ public class UserInfoFragment extends Fragment {
         intent.putExtra("userInfo", userInfo);
         startActivity(intent);
         getActivity().finish();
+    }
+
+    @OnClick(R.id.qrCodeOptionItemView)
+    void showMyQRCode() {
+        UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
+        String qrCodeValue = Config.QR_CODE_PREFIX_USER + userInfo.uid;
+        startActivity(QRCodeActivity.buildQRCodeIntent(getActivity(), "二维码", userInfo.portrait, qrCodeValue));
     }
 }

@@ -16,13 +16,13 @@ import cn.wildfire.chat.kit.contact.pick.PickContactViewModel;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 
-public class RemoveGroupMemberFragment extends PickContactFragment {
+public class PickGroupMemberFragment extends PickContactFragment {
     private GroupInfo groupInfo;
 
-    public static RemoveGroupMemberFragment newInstance(GroupInfo groupInfo) {
+    public static PickGroupMemberFragment newInstance(GroupInfo groupInfo) {
         Bundle args = new Bundle();
         args.putParcelable("groupInfo", groupInfo);
-        RemoveGroupMemberFragment fragment = new RemoveGroupMemberFragment();
+        PickGroupMemberFragment fragment = new PickGroupMemberFragment();
         fragment.setArguments(args);
         return fragment;
     }

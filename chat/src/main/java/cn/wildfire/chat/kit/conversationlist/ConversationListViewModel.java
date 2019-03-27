@@ -12,11 +12,13 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
+import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
 import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
+import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
@@ -34,6 +36,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         OnRecallMessageListener,
         RemoveMessageListener,
         OnSettingUpdateListener,
+        OnGroupInfoUpdateListener,
         OnConversationInfoUpdateListener, OnConnectionStatusChangeListener {
     private MutableLiveData<ConversationInfo> conversationInfoLiveData;
     private MutableLiveData<Conversation> conversationRemovedLiveData;
@@ -55,6 +58,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addRecallMessageListener(this);
         ChatManager.Instance().addConnectionChangeListener(this);
         ChatManager.Instance().addRemoveMessageListener(this);
+        ChatManager.Instance().addGroupInfoUpdateListener(this);
     }
 
     @Override
@@ -67,6 +71,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeConnectionChangeListener(this);
         ChatManager.Instance().removeRecallMessageListener(this);
         ChatManager.Instance().removeRemoveMessageListener(this);
+        ChatManager.Instance().removeGroupInfoUpdateListener(this);
     }
 
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
@@ -285,10 +290,29 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         if (settingUpdateLiveData != null) {
             UIUtils.postTaskSafely(() -> settingUpdateLiveData.setValue(new Object()));
         }
+
+        // 会话同步
+        if (unreadCountLiveData != null) {
+            loadUnreadCount();
+        }
     }
 
     @Override
     public void onConnectionStatusChange(int status) {
         connectionStatusLiveData.postValue(status);
+    }
+
+    @Override
+    public void onGroupInfoUpdate(List<GroupInfo> groupInfos) {
+        if (!types.contains(Conversation.ConversationType.Group)) {
+            return;
+        }
+        if (groupInfos != null) {
+            for (GroupInfo groupInfo : groupInfos) {
+                Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupInfo.target);
+                ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
+                postConversationInfo(conversationInfo);
+            }
+        }
     }
 }

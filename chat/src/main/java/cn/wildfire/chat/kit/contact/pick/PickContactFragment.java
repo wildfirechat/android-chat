@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -133,7 +134,9 @@ public class PickContactFragment extends BaseContactFragment implements QuickInd
     @Override
     public void onContactClick(UIUserInfo userInfo) {
         if (userInfo.isCheckable()) {
-            pickContactViewModel.checkContact(userInfo, !userInfo.isChecked());
+            if (!pickContactViewModel.checkContact(userInfo, !userInfo.isChecked())) {
+                Toast.makeText(getActivity(), "选人超限", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

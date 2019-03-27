@@ -42,11 +42,12 @@ import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.RecallMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -60,6 +61,7 @@ import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.ModifyChannelInfoType;
 import cn.wildfirechat.model.ModifyGroupInfoType;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
+import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 
@@ -284,6 +286,13 @@ public class ChatManager {
      * @param hasMore  是否还有更多消息待收取
      */
     private void onReceiveMessage(final List<Message> messages, final boolean hasMore) {
+        workHandler.post(() -> {
+            for (Message message : messages) {
+                if (message.content instanceof ChangeGroupNameNotificationContent) {
+                    getGroupInfo(message.conversation.target, true);
+                }
+            }
+        });
         mainHandler.post(() -> {
             Iterator<OnReceiveMessageListener> iterator = onReceiveMessageListeners.iterator();
             OnReceiveMessageListener listener;
@@ -1883,7 +1892,8 @@ public class ChatManager {
     }
 
 
-    public GroupInfo getGroupInfo(String groupId, boolean refresh) {
+    public @Nullable
+    GroupInfo getGroupInfo(String groupId, boolean refresh) {
         if (!checkRemoteService()) {
             return null;
         }
@@ -1985,22 +1995,40 @@ public class ChatManager {
     }
 
 
-    public UserInfo getUserInfo(String userId, boolean refresh) {
+    /**
+     * 当对应用户，本地不存在时，返回的{@link UserInfo}为null
+     *
+     * @param userId
+     * @param refresh
+     * @return
+     */
+    public UserInfo getUserInfox(String userId, boolean refresh) {
         if (userSource != null) {
             return userSource.getUser(userId);
         }
         if (!checkRemoteService()) {
-            return null;
+            return new NullUserInfo(userId);
         }
 
         try {
-            return mClient.getUserInfo(userId, refresh);
+            UserInfo userInfo = mClient.getUserInfo(userId, refresh);
+            if (userInfo != null) {
+                return userInfo;
+            } else {
+                return new NullUserInfo(userId);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
-            return null;
+            return new NullUserInfo(userId);
         }
     }
 
+    /**
+     * 返回的list里面的元素可能为null
+     *
+     * @param userIds
+     * @return
+     */
     public List<UserInfo> getUserInfos(List<String> userIds) {
         if (userIds == null || userIds.isEmpty()) {
             return null;
@@ -2094,7 +2122,7 @@ public class ChatManager {
                             }
                         });
                     }
-                    UserInfo userInfo = getUserInfo(userId, false);
+                    UserInfo userInfo = getUserInfox(userId, false);
                     onUserInfoUpdated(Collections.singletonList(userInfo));
                 }
 
@@ -2446,6 +2474,9 @@ public class ChatManager {
             mClient.modifyGroupInfo(groupId, modifyType.ordinal(), newValue, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
+                    GroupInfo groupInfo = getGroupInfo(groupId, false);
+                    onGroupInfoUpdated(Collections.singletonList(groupInfo));
+
                     if (callback != null) {
                         mainHandler.post(new Runnable() {
                             @Override
@@ -2475,6 +2506,8 @@ public class ChatManager {
         }
     }
 
+    // Attention
+    // 回调成功只表示服务器修改成功了，本地可能还没更新，等本地将服务器端的改动拉下来之后，会有更新通知回调
     public void modifyGroupAlias(String groupId, String alias, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)

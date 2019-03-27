@@ -12,9 +12,9 @@ import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.kit.annotation.SendLayoutRes;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.message.notification.NotificationMessageContent;
+import cn.wildfirechat.message.UnknownMessageContent;
 
-@MessageContentType(NotificationMessageContent.class)
+@MessageContentType(UnknownMessageContent.class)
 @SendLayoutRes(resId = R.layout.conversation_item_unknown_send)
 @ReceiveLayoutRes(resId = R.layout.conversation_item_unknown_receive)
 @EnableContextMenu
@@ -28,6 +28,6 @@ public class UnkownMessageContentViewHolder extends NormalMessageContentViewHold
 
     @Override
     public void onBind(UiMessage message) {
-        contentTextView.setText("unknown");
+        contentTextView.setText("unknown message");
     }
 }

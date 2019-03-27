@@ -25,16 +25,11 @@ public class SingleConversationViewHolder extends ConversationViewHolder {
 
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
-        UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversationInfo.conversation.target, false);
+        UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfox(conversationInfo.conversation.target, false);
         String name;
         String portrait;
-        if (userInfo != null) {
-            name = userInfo.displayName;
-            portrait = userInfo.portrait;
-        } else {
-            name = "User<" + conversationInfo.conversation.target + ">";
-            portrait = null;
-        }
+        name = userInfo.displayName;
+        portrait = userInfo.portrait;
         GlideApp
                 .with(fragment)
                 .load(portrait)

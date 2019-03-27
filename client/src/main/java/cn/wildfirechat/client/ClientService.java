@@ -40,7 +40,6 @@ import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.RecallMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
@@ -60,6 +59,7 @@ import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationConten
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
@@ -73,6 +73,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
+import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.ProtoChannelInfo;
 import cn.wildfirechat.model.ProtoChatRoomInfo;
 import cn.wildfirechat.model.ProtoChatRoomMembersInfo;
@@ -900,7 +901,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public List<UserInfo> getUserInfos(List<String> userIds) throws RemoteException {
             List<UserInfo> userInfos = new ArrayList<>();
             for (String userId : userIds) {
-                userInfos.add(convertProtoUserInfo(ProtoLogic.getUserInfo(userId, false)));
+                ProtoUserInfo protoUserInfo = ProtoLogic.getUserInfo(userId, false);
+                if (protoUserInfo == null) {
+                    userInfos.add(new NullUserInfo(userId));
+                } else {
+                    userInfos.add(convertProtoUserInfo(protoUserInfo));
+                }
             }
             return userInfos;
         }
@@ -1481,7 +1487,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         userInfo.social = protoUserInfo.getSocial();
         userInfo.extra = protoUserInfo.getExtra();
         userInfo.updateDt = protoUserInfo.getUpdateDt();
-//        userInfo.type = protoUserInfo.getType();
+        userInfo.type = protoUserInfo.getType();
         return userInfo;
     }
 
@@ -1522,11 +1528,17 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         msg.to = TextUtils.isEmpty(protoMessage.getTo()) ? null : protoMessage.getTo();
 
         msg.content = contentOfType(protoMessage.getContent().getType());
-        msg.content.decode(new MessagePayload(protoMessage.getContent()));
-        if (msg.content instanceof NotificationMessageContent) {
-            if (msg.sender.equals(userId)) {
-                ((NotificationMessageContent) msg.content).fromSelf = true;
+        MessagePayload payload = new MessagePayload(protoMessage.getContent());
+        try {
+            msg.content.decode(payload);
+            if (msg.content instanceof NotificationMessageContent) {
+                if (msg.sender.equals(userId)) {
+                    ((NotificationMessageContent) msg.content).fromSelf = true;
+                }
             }
+        } catch (Exception e) {
+            msg.content = new UnknownMessageContent();
+            ((UnknownMessageContent) msg.content).setOrignalPayload(payload);
         }
 
         msg.direction = MessageDirection.values()[protoMessage.getDirection()];
