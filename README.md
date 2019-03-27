@@ -2,6 +2,15 @@
 本工程为野火IM Android平台的SDK和Demo。野火IM作为一个通用的即时通讯SDK，可以集成到各种应用中。详情可以阅读[docs](http://docs.wildfirechat.cn).
 
 
+开发一套IM系统真的很艰辛，请路过的朋友们给点个star，支持我们坚持下去🙏🙏🙏🙏🙏
+
+
+### 联系我们
+问题讨论请加群：822762829
+
+<img src="http://static.wildfirechat.cn/qr_qqgroup.jpeg" width = 50% height = 50% />
+
+
 ## 体验Demo
 我们提供了体验demo，请使用微信扫码下载安装体验
 
