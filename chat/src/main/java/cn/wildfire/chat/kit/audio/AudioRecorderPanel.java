@@ -97,6 +97,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
                 if (isToCancel) {
                     cancelRecord();
                 } else if (isRecording) {
@@ -106,7 +107,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             default:
                 break;
         }
-        return false;
+        return true;
     }
 
     private void startRecord() {
