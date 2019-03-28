@@ -34,6 +34,7 @@ import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
+import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
@@ -174,13 +175,13 @@ public class UserInfoFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-            String imagePath = images.get(0).path;
+            String imagePath = ImageUtils.genThumbImgFile(images.get(0).path).getAbsolutePath();
             MutableLiveData<OperateResult<Boolean>> result = userViewModel.updateUserPortrait(imagePath);
             result.observe(this, booleanOperateResult -> {
                 if (booleanOperateResult.isSuccess()) {
                     Toast.makeText(getActivity(), "更新头像成功", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getActivity(), "更新头像失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "更新头像失败: " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
