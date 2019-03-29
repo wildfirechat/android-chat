@@ -1,7 +1,6 @@
 package cn.wildfire.chat.kit.audio;
 
 import android.content.Context;
-import android.os.Environment;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -280,7 +279,11 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     }
 
     private String genAudioFile() {
-        File file = new File(Environment.getExternalStorageDirectory(), "audio" + File.separator + System.currentTimeMillis());
+        File dir = new File(context.getFilesDir(), "audio");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        File file = new File(dir, System.currentTimeMillis() + "");
         return file.getAbsolutePath();
     }
 
