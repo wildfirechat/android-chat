@@ -74,6 +74,9 @@ public class PickContactFragment extends BaseContactFragment implements QuickInd
 
     @OnFocusChange(R.id.searchEditText)
     void onSearchEditTextFocusChange(View view, boolean focus) {
+        if (getActivity() == null || getActivity().isFinishing()) {
+            return;
+        }
         if (focus) {
             showSearchContactFragment();
         } else {
