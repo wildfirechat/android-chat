@@ -2003,6 +2003,9 @@ public class ChatManager {
      * @return
      */
     public UserInfo getUserInfox(String userId, boolean refresh) {
+        if (TextUtils.isEmpty(userId)) {
+            return null;
+        }
         if (userSource != null) {
             return userSource.getUser(userId);
         }
