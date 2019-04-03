@@ -37,6 +37,7 @@ import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.third.location.ui.adapter.CommonFragmentPagerAdapter;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
+import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
@@ -247,7 +248,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 pcLogin(value);
                 break;
             case Config.QR_CODE_PREFIX_USER:
-                addFriend(value);
+                showUser(value);
                 break;
             case Config.QR_CODE_PREFIX_GROUP:
                 joinGroup(value);
@@ -264,8 +265,16 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         startActivity(intent);
     }
 
-    private void addFriend(String uid) {
+    private void showUser(String uid) {
 
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserInfo userInfo = userViewModel.getUserInfo(uid, true);
+        if (userInfo == null) {
+            return;
+        }
+        Intent intent = new Intent(this, UserInfoActivity.class);
+        intent.putExtra("userInfo", userInfo);
+        startActivity(intent);
     }
 
     private void joinGroup(String groupId) {
