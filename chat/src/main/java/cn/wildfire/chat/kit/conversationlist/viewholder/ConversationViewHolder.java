@@ -109,13 +109,18 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             }
             setViewVisibility(R.id.contentTextView, View.VISIBLE);
             if (conversationInfo.lastMessage != null && conversationInfo.lastMessage.content != null) {
-                String content;
+                String content = "";
                 Message lastMessage = conversationInfo.lastMessage;
-                if (conversationInfo.conversation.type == Conversation.ConversationType.Group && lastMessage.direction == MessageDirection.Receive) {
-                    UserInfo userInfo = ChatManager.Instance().getUserInfox(conversationInfo.lastMessage.sender, false);
-                    content = userInfo.displayName + ":" + lastMessage.content.digest();
-                } else {
-                    content = lastMessage.content.digest();
+                // the message maybe invalid
+                try {
+                    if (conversationInfo.conversation.type == Conversation.ConversationType.Group && lastMessage.direction == MessageDirection.Receive) {
+                        UserInfo userInfo = ChatManager.Instance().getUserInfox(conversationInfo.lastMessage.sender, false);
+                        content = userInfo.displayName + ":" + lastMessage.content.digest();
+                    } else {
+                        content = lastMessage.content.digest();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
 
