@@ -3,7 +3,6 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
@@ -11,7 +10,6 @@ import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
@@ -21,6 +19,7 @@ import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationConten
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
 
@@ -47,7 +46,6 @@ import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationConten
  */
 public class SimpleNotificationMessageContentViewHolder extends MessageContentViewHolder {
 
-    @Nullable
     @Bind(R.id.notificationTextView)
     TextView notificationTextView;
 
@@ -67,7 +65,11 @@ public class SimpleNotificationMessageContentViewHolder extends MessageContentVi
     }
 
     protected void onBind(UiMessage message) {
-        String notification = ((NotificationMessageContent) message.message.content).formatNotification();
-        notificationTextView.setText(notification);
+        try {
+            String notification = ((NotificationMessageContent) message.message.content).formatNotification();
+            notificationTextView.setText(notification);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
