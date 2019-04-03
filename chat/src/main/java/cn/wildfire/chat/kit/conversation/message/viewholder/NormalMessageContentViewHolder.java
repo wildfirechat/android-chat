@@ -58,7 +58,11 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         setSenderAvatar(message.message);
         setSenderName(message.message);
         setSendStatus(message.message);
-        onBind(message);
+        try {
+            onBind(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if (message.isFocus) {
             highlightItem(itemView, message);
