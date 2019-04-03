@@ -197,7 +197,7 @@
 
         <provider
             android:name="cn.wildfire.chat.kit.third.utils.FilePickerProvider"
-            android:authorities="${applicationId}.droidninja.filepicker.provider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
