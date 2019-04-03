@@ -1909,6 +1909,7 @@ public class ChatManager {
     public void joinChatRoom(String chatRoomId, GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFailure(-1000);
+            return;
         }
         try {
             mClient.joinChatRoom(chatRoomId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
@@ -1930,6 +1931,7 @@ public class ChatManager {
     public void quitChatRoom(String chatRoomId, GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFailure(-1000);
+            return;
         }
         try {
             mClient.quitChatRoom(chatRoomId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
@@ -1952,6 +1954,7 @@ public class ChatManager {
     public void getChatRoomInfo(String chatRoomId, long updateDt, GetChatRoomInfoCallback callback) {
         if (!checkRemoteService()) {
             callback.onFailure(-1000);
+            return;
         }
 
         try {
@@ -1975,6 +1978,7 @@ public class ChatManager {
     public void getChatRoomMembersInfo(String chatRoomId, int maxCount, GetChatRoomMembersInfoCallback callback) {
         if (!checkRemoteService()) {
             callback.onFailure(-1000);
+            return;
         }
         try {
             mClient.getChatRoomMembersInfo(chatRoomId, maxCount, new cn.wildfirechat.client.IGetChatRoomMembersInfoCallback.Stub() {
