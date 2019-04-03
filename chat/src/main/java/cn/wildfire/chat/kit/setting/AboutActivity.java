@@ -1,15 +1,42 @@
 package cn.wildfire.chat.kit.setting;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.widget.TextView;
+
+import butterknife.Bind;
 import butterknife.OnClick;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfirechat.chat.R;
 
 public class AboutActivity extends WfcBaseActivity {
 
+    @Bind(R.id.infoTextView)
+    TextView infoTextView;
+
     @Override
     protected int contentLayout() {
         return R.layout.activity_about;
+    }
+
+    @Override
+    protected void afterViews() {
+        PackageManager packageManager = getPackageManager();
+        try {
+            PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), PackageManager.GET_CONFIGURATIONS);
+            String info = packageInfo.packageName + "\n"
+                    + packageInfo.versionCode + " " + packageInfo.versionName + "\n"
+                    + Config.IM_SERVER_HOST + " " + Config.IM_SERVER_PORT + "\n"
+                    + Config.APP_SERVER_HOST + " " + Config.APP_SERVER_PORT + "\n"
+                    + Config.ICE_ADDRESS + " " + Config.ICE_USERNAME + " " + Config.ICE_PASSWORD + "\n";
+
+            infoTextView.setText(info);
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick(R.id.introOptionItemView)
