@@ -115,6 +115,8 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         if (recorder == null) {
             recorder = new AudioRecorder(context);
             handler = new Handler();
+        } else {
+            handler.removeCallbacks(this::hideRecording);
         }
         currentAudioFile = genAudioFile();
         recorder.startRecord(currentAudioFile);
@@ -188,6 +190,9 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     }
 
     private void hideRecording() {
+        if (recordingWindow == null) {
+            return;
+        }
         recordingWindow.dismiss();
         recordingWindow = null;
     }
