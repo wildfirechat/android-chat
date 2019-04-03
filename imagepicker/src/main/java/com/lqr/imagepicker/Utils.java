@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import androidx.core.content.FileProvider;
+
 public class Utils {
 
     /**
@@ -76,11 +78,7 @@ public class Utils {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
-            // 默认情况下，即不需要指定intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-            // 照相机有自己默认的存储路径，拍摄的照片将返回一个缩略图。如果想访问原始图片，
-            // 可以通过dat extra能够得到原始图片位置。即，如果指定了目标uri，data就没有数据，
-            // 如果没有指定uri，则data就返回有数据！
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse("file://" + outputPath));
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", new File(outputPath)));
         }
         activity.startActivityForResult(takePictureIntent, requestCode);
     }

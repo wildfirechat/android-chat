@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -26,6 +25,8 @@ import com.lqr.imagepicker.bean.ImageItem;
 import com.lqr.imagepicker.view.FolderPopUpWindow;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 public class ImageGridActivity extends ImageBaseActivity implements ImageDataSource.OnImageLoadListener, ImageGridAdapter.OnImageItemClickListener, View.OnClickListener {
 
