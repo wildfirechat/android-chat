@@ -39,7 +39,7 @@ public class FileExt extends ConversationExt {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
-            String path = FilePathUtil.getRealPath(context, uri);
+            String path = FilePathUtil.getPathFromUri(context, uri);
             conversationViewModel.sendFileMsg(new File(path));
         }
     }
