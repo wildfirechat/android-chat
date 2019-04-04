@@ -50,6 +50,7 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
@@ -119,7 +120,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private boolean logined;
     private String userId;
-    private String token;
     private RemoteCallbackList<IOnReceiveMessageListener> onReceiveMessageListeners = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnConnectionStatusChangeListener> onConnectionStatusChangeListenes = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnFriendUpdateListener> onFriendUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
@@ -134,6 +134,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private AppLogic.DeviceInfo info;
 
     private int clientVersion = 200;
+    private static final String TAG = "ClientService";
 
     private BaseEvent.ConnectionReceiver mConnectionReceiver;
 
@@ -157,7 +158,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             mConnectionStatus = ConnectionStatusUnconnected;
             userId = userName;
-            token = userPwd;
             ProtoLogic.setConnectionStatusCallback(ClientService.this);
             ProtoLogic.setReceiveMessageCallback(ClientService.this);
 
@@ -412,7 +412,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             List<cn.wildfirechat.message.Message> out = new ArrayList<>();
             for (ProtoMessage protoMessage : protoMessages) {
                 cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
-                out.add(msg);
+                if (msg != null) {
+                    out.add(msg);
+                }
             }
             return out;
         }
@@ -430,8 +432,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public cn.wildfirechat.message.Message insertMessage(cn.wildfirechat.message.Message message, boolean notify) throws RemoteException {
             ProtoMessage protoMessage = convertMessage(message);
-            long messageId = ProtoLogic.insertMessage(protoMessage);
-            message.messageId = messageId;
+            message.messageId = ProtoLogic.insertMessage(protoMessage);
             return message;
         }
 
@@ -985,7 +986,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     result.timestamp = protoResult.getTimestamp();
                     result.marchedCount = protoResult.getMarchedCount();
 
-                    output.add(result);
+                    if (result.marchedMessage != null) {
+                        output.add(result);
+                    }
+
                 }
             }
 
@@ -998,9 +1002,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             List<cn.wildfirechat.message.Message> out = new ArrayList<>();
 
             if (protoMessages != null) {
-                for (ProtoMessage protoMsg : protoMessages
-                ) {
-                    out.add(convertProtoMessage(protoMsg));
+                for (ProtoMessage protoMsg : protoMessages) {
+                    Message msg = convertProtoMessage(protoMsg);
+                    if (msg != null) {
+                        out.add(convertProtoMessage(protoMsg));
+                    }
                 }
             }
 
@@ -1511,8 +1517,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         List<cn.wildfirechat.message.Message> out = new ArrayList<>();
         for (ProtoMessage protoMessage : protoMessages) {
             cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
-            out.add(msg);
-
+            if (msg != null) {
+                out.add(msg);
+            }
         }
         return out;
     }
@@ -1537,8 +1544,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
         } catch (Exception e) {
-            msg.content = new UnknownMessageContent();
-            ((UnknownMessageContent) msg.content).setOrignalPayload(payload);
+            e.printStackTrace();
+            if (msg.content.getPersistFlag() == PersistFlag.Persist || msg.content.getPersistFlag() == PersistFlag.Persist_And_Count) {
+                msg.content = new UnknownMessageContent();
+                ((UnknownMessageContent) msg.content).setOrignalPayload(payload);
+            } else {
+                return null;
+            }
         }
 
         msg.direction = MessageDirection.values()[protoMessage.getDirection()];
