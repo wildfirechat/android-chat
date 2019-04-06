@@ -39,14 +39,17 @@ import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetGroupsCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
+import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
 import cn.wildfirechat.remote.UserSettingScope;
 
-public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener {
+public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;
+    private MutableLiveData<List<GroupMember>> groupMembersUpdateLiveData;
 
     public GroupViewModel() {
         super();
         ChatManager.Instance().addGroupInfoUpdateListener(this);
+        ChatManager.Instance().addGroupMembersUpdateListener(this);
     }
 
     public MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData() {
@@ -54,6 +57,13 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             groupInfoUpdateLiveData = new MutableLiveData<>();
         }
         return groupInfoUpdateLiveData;
+    }
+
+    public MutableLiveData<List<GroupMember>> groupMembersUpdateLiveData() {
+        if (groupMembersUpdateLiveData == null) {
+            groupMembersUpdateLiveData = new MutableLiveData<>();
+        }
+        return groupMembersUpdateLiveData;
     }
 
     @Override
@@ -325,5 +335,12 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         fos.close();
 
         return f.getAbsolutePath();
+    }
+
+    @Override
+    public void onGroupMembersUpdate(String groupId, List<GroupMember> groupMembers) {
+        if (groupMembersUpdateLiveData != null) {
+            groupMembersUpdateLiveData.setValue(groupMembers);
+        }
     }
 }

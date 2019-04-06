@@ -33,6 +33,7 @@ import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
+import cn.wildfirechat.client.IOnGroupMembersUpdateListener;
 import cn.wildfirechat.client.IOnReceiveMessageListener;
 import cn.wildfirechat.client.IOnSettingUpdateListener;
 import cn.wildfirechat.client.IOnUserInfoUpdateListener;
@@ -99,6 +100,7 @@ public class ChatManager {
     private List<OnConnectionStatusChangeListener> onConnectionStatusChangeListeners = new ArrayList<>();
     private List<OnSendMessageListener> sendMessageListeners = new ArrayList<>();
     private List<OnGroupInfoUpdateListener> groupInfoUpdateListeners = new ArrayList<>();
+    private List<OnGroupMembersUpdateListener> groupMembersUpdateListeners = new ArrayList<>();
     private List<OnUserInfoUpdateListener> userInfoUpdateListeners = new ArrayList<>();
     private List<OnSettingUpdateListener> settingUpdateListeners = new ArrayList<>();
     private List<OnFriendUpdateListener> friendUpdateListeners = new ArrayList<>();
@@ -322,11 +324,25 @@ public class ChatManager {
      * @param groupInfos
      */
     private void onGroupInfoUpdated(List<GroupInfo> groupInfos) {
+        if (groupInfos == null || groupInfos.isEmpty()) {
+            return;
+        }
         mainHandler.post(() -> {
             for (OnGroupInfoUpdateListener listener : groupInfoUpdateListeners) {
                 listener.onGroupInfoUpdate(groupInfos);
             }
 
+        });
+    }
+
+    private void onGroupMembersUpdate(String groupId, List<GroupMember> groupMembers) {
+        if (groupMembers == null || groupMembers.isEmpty()) {
+            return;
+        }
+        mainHandler.post(() -> {
+            for (OnGroupMembersUpdateListener listener : groupMembersUpdateListeners) {
+                listener.onGroupMembersUpdate(groupId, groupMembers);
+            }
         });
     }
 
@@ -452,6 +468,16 @@ public class ChatManager {
      */
     public void removeGroupInfoUpdateListener(OnGroupInfoUpdateListener listener) {
         groupInfoUpdateListeners.remove(listener);
+    }
+
+    public void addGroupMembersUpdateListener(OnGroupMembersUpdateListener listener) {
+        if (listener != null) {
+            groupMembersUpdateListeners.add(listener);
+        }
+    }
+
+    public void removeGroupMembersUpdateListener(OnGroupMembersUpdateListener listener) {
+        groupMembersUpdateListeners.remove(listener);
     }
 
     /**
@@ -2861,6 +2887,12 @@ public class ChatManager {
                     @Override
                     public void onGroupInfoUpdated(List<GroupInfo> groupInfos) throws RemoteException {
                         ChatManager.this.onGroupInfoUpdated(groupInfos);
+                    }
+                });
+                mClient.setOnGroupMembersUpdateListener(new IOnGroupMembersUpdateListener.Stub() {
+                    @Override
+                    public void onGroupMembersUpdated(String groupId, List<GroupMember> members) throws RemoteException {
+                        ChatManager.this.onGroupMembersUpdate(groupId, members);
                     }
                 });
                 mClient.setOnFriendUpdateListener(new IOnFriendUpdateListener.Stub() {
