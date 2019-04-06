@@ -33,6 +33,7 @@ import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
+import cn.wildfire.chat.kit.group.GroupInfoActivity;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.third.location.ui.adapter.CommonFragmentPagerAdapter;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -278,7 +279,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     }
 
     private void joinGroup(String groupId) {
-
+        Intent intent = new Intent(this, GroupInfoActivity.class);
+        intent.putExtra("groupId", groupId);
+        startActivity(intent);
     }
 
     private void checkDisplayName() {

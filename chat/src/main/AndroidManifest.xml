@@ -194,6 +194,9 @@
             android:name="cn.wildfire.chat.app.main.PCLoginActivity"
             android:label="PC登录" />
         <activity android:name="cn.wildfire.chat.kit.qrcode.QRCodeActivity" />
+        <activity
+            android:name="cn.wildfire.chat.kit.group.GroupInfoActivity"
+            android:label="群信息" />
 
         <provider
             android:name="cn.wildfire.chat.kit.third.utils.FilePickerProvider"
