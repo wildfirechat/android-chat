@@ -111,7 +111,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.IFriendRequestListUpdateCallback,
         ProtoLogic.IFriendListUpdateCallback,
         ProtoLogic.IGroupInfoUpdateCallback,
-        ProtoLogic.IChannelInfoUpdateCallback {
+        ProtoLogic.IChannelInfoUpdateCallback, ProtoLogic.IGroupMembersUpdateCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
     private int mConnectionStatus;
@@ -127,6 +127,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private RemoteCallbackList<IOnGroupInfoUpdateListener> onGroupInfoUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnSettingUpdateListener> onSettingUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnChannelInfoUpdateListener> onChannelInfoUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
+    private RemoteCallbackList<IOnGroupMembersUpdateListener> onGroupMembersUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
 
     private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
     //        public final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
@@ -210,10 +211,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setOnGroupMembersUpdateListener(IOnGroupMembersUpdateListener listener) throws RemoteException {
+            onGroupMembersUpdateListenerRemoteCallbackList.register(listener);
+        }
+
+        @Override
         public void disconnect(boolean clearSession) throws RemoteException {
             logined = false;
             userId = null;
-            token = null;
             mConnectionStatus = ConnectionStatusLogout;
             onConnectionStatusChanged(ConnectionStatusLogout);
 
@@ -1237,16 +1242,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public GroupMember getGroupMember(String groupId, String memberId) throws RemoteException {
             ProtoGroupMember protoGroupMember = ProtoLogic.getGroupMember(groupId, memberId);
-            if (protoGroupMember != null && memberId.equals(protoGroupMember.getMemberId())) {
-                GroupMember member = new GroupMember();
-                member.groupId = groupId;
-                member.memberId = protoGroupMember.getMemberId();
-                member.alias = protoGroupMember.getAlias();
-                member.type = GroupMember.GroupMemberType.type(protoGroupMember.getType());
-                member.updateDt = protoGroupMember.getUpdateDt();
-                return member;
-            }
-            return null;
+            return covertProtoGroupMember(protoGroupMember);
         }
 
         @Override
@@ -1445,6 +1441,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         return groupInfo;
     }
 
+    private GroupMember covertProtoGroupMember(ProtoGroupMember protoGroupMember) {
+        if (protoGroupMember == null) {
+            return null;
+        }
+        GroupMember member = new GroupMember();
+        member.groupId = protoGroupMember.getGroupId();
+        member.memberId = protoGroupMember.getMemberId();
+        member.alias = protoGroupMember.getAlias();
+        member.type = GroupMember.GroupMemberType.type(protoGroupMember.getType());
+        member.updateDt = protoGroupMember.getUpdateDt();
+        return member;
+
+    }
+
     private ChatRoomInfo converProtoChatRoomInfo(ProtoChatRoomInfo protoChatRoomInfo) {
         if (protoChatRoomInfo == null) {
             return null;
@@ -1629,6 +1639,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setFriendListUpdateCallback(this);
         ProtoLogic.setGroupInfoUpdateCallback(this);
         ProtoLogic.setChannelInfoUpdateCallback(this);
+        ProtoLogic.setGroupMembersUpdateCallback(this);
         ProtoLogic.setFriendRequestListUpdateCallback(this);
     }
 
@@ -1877,6 +1888,30 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
         onGroupInfoUpdateListenerRemoteCallbackList.finishBroadcast();
     }
+
+    @Override
+    public void onGroupMembersUpdated(String groupId, List<ProtoGroupMember> members) {
+        ArrayList<GroupMember> groupMembers = new ArrayList<>();
+        for (int i = 0; i < members.size(); i++) {
+            GroupMember gm = covertProtoGroupMember(members.get(i));
+            if (gm != null) {
+                groupMembers.add(gm);
+            }
+        }
+        int i = onGroupMembersUpdateListenerRemoteCallbackList.beginBroadcast();
+        IOnGroupMembersUpdateListener listener;
+        while (i > 0) {
+            i--;
+            listener = onGroupMembersUpdateListenerRemoteCallbackList.getBroadcastItem(i);
+            try {
+                listener.onGroupMembersUpdated(groupId, groupMembers);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        onGroupMembersUpdateListenerRemoteCallbackList.finishBroadcast();
+    }
+
 
     @Override
     public void onChannelInfoUpdated(List<ProtoChannelInfo> list) {
