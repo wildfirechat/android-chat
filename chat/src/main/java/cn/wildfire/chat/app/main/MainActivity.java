@@ -28,14 +28,15 @@ import androidx.viewpager.widget.ViewPager;
 import butterknife.Bind;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.contact.ContactFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
+import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupInfoActivity;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
-import cn.wildfire.chat.kit.third.location.ui.adapter.CommonFragmentPagerAdapter;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
@@ -58,6 +59,11 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private QBadgeView unreadFriendRequestBadgeView;
 
     private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
+
+    private ConversationListFragment conversationListFragment;
+    private ContactFragment contactFragment;
+    private DiscoveryFragment discoveryFragment;
+    private MeFragment meFragment;
 
     @Override
     protected int contentLayout() {
@@ -128,11 +134,15 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         //设置ViewPager的最大缓存页面
         mVpContent.setOffscreenPageLimit(3);
 
-        mFragmentList.add(FragmentFactory.getInstance().getRecentMessageFragment());
-        mFragmentList.add(FragmentFactory.getInstance().getContactsFragment());
-        mFragmentList.add(FragmentFactory.getInstance().getDiscoveryFragment());
-        mFragmentList.add(FragmentFactory.getInstance().getMeFragment());
-        mVpContent.setAdapter(new CommonFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
+        conversationListFragment = new ConversationListFragment();
+        contactFragment = new ContactFragment();
+        discoveryFragment = new DiscoveryFragment();
+        meFragment = new MeFragment();
+        mFragmentList.add(conversationListFragment);
+        mFragmentList.add(contactFragment);
+        mFragmentList.add(discoveryFragment);
+        mFragmentList.add(meFragment);
+        mVpContent.setAdapter(new HomeFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
         mVpContent.setOnPageChangeListener(this);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
@@ -213,21 +223,16 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             default:
                 break;
         }
-        if (position == 1) {
-            //如果是“通讯录”页被选中，则显示快速导航条
-            FragmentFactory.getInstance().getContactsFragment().showQuickIndexBar(true);
-        } else {
-            FragmentFactory.getInstance().getContactsFragment().showQuickIndexBar(false);
-        }
+        contactFragment.showQuickIndexBar(position == 1);
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
         if (state != ViewPager.SCROLL_STATE_IDLE) {
             //滚动过程中隐藏快速导航条
-            FragmentFactory.getInstance().getContactsFragment().showQuickIndexBar(false);
+            contactFragment.showQuickIndexBar(false);
         } else {
-            FragmentFactory.getInstance().getContactsFragment().showQuickIndexBar(true);
+            contactFragment.showQuickIndexBar(true);
         }
     }
 

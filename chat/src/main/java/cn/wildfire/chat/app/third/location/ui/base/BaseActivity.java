@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.third.location.ui.base;
+package cn.wildfire.chat.app.third.location.ui.base;
 
 import android.content.Intent;
 import android.os.Build;

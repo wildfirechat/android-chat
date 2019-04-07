@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.third.location.ui.presenter;
+package cn.wildfire.chat.app.third.location.ui.presenter;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,10 +12,10 @@ import com.tencent.lbssearch.object.result.Geo2AddressResultObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.third.location.data.LocationData;
-import cn.wildfire.chat.kit.third.location.ui.base.BaseActivity;
-import cn.wildfire.chat.kit.third.location.ui.base.BasePresenter;
-import cn.wildfire.chat.kit.third.location.ui.view.IMyLocationAtView;
+import cn.wildfire.chat.app.third.location.data.LocationData;
+import cn.wildfire.chat.app.third.location.ui.base.BaseActivity;
+import cn.wildfire.chat.app.third.location.ui.base.BasePresenter;
+import cn.wildfire.chat.app.third.location.ui.view.IMyLocationAtView;
 import cn.wildfirechat.chat.R;
 
 public class MyLocationAtPresenter extends BasePresenter<IMyLocationAtView> {

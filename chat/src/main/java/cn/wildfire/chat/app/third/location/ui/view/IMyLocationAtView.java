@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.third.location.ui.view;
+package cn.wildfire.chat.app.third.location.ui.view;
 
 
 import androidx.recyclerview.widget.RecyclerView;

@@ -99,7 +99,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
-            android:name="cn.wildfire.chat.kit.third.location.ui.activity.MyLocationActivity"
+            android:name="cn.wildfire.chat.app.third.location.ui.activity.MyLocationActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.kit.group.SetGroupNameActivity"
@@ -114,7 +114,7 @@
             android:label="关于"
             android:screenOrientation="portrait" />
         <activity
-            android:name="cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity"
+            android:name="cn.wildfire.chat.app.third.location.ui.activity.ShowLocationActivity"
             android:screenOrientation="portrait" />
 
         <activity
@@ -199,7 +199,7 @@
             android:label="群信息" />
 
         <provider
-            android:name="cn.wildfire.chat.kit.third.utils.FilePickerProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">

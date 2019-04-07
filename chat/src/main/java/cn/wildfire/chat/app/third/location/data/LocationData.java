@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.third.location.data;
+package cn.wildfire.chat.app.third.location.data;
 
 
 import android.graphics.Bitmap;

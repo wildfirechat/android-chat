@@ -19,7 +19,7 @@ import cn.wildfire.chat.kit.audio.AudioPlayManager;
 import cn.wildfire.chat.kit.audio.IAudioPlayListener;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.message.viewholder.AudioMessageContentViewHolder;
-import cn.wildfire.chat.kit.third.location.data.LocationData;
+import cn.wildfire.chat.app.third.location.data.LocationData;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadUtil;
 import cn.wildfirechat.message.FileMessageContent;
