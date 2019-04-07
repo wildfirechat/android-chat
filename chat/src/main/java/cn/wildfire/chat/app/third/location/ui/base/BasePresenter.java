@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.third.location.ui.base;
+package cn.wildfire.chat.app.third.location.ui.base;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;

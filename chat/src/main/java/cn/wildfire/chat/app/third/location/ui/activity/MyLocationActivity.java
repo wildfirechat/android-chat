@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.third.location.ui.activity;
+package cn.wildfire.chat.app.third.location.ui.activity;
 
 import android.graphics.Bitmap;
 import android.hardware.Sensor;
@@ -35,9 +35,9 @@ import com.tencent.tencentmap.mapsdk.map.TencentMap;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
-import cn.wildfire.chat.kit.third.location.ui.base.BaseActivity;
-import cn.wildfire.chat.kit.third.location.ui.presenter.MyLocationAtPresenter;
-import cn.wildfire.chat.kit.third.location.ui.view.IMyLocationAtView;
+import cn.wildfire.chat.app.third.location.ui.base.BaseActivity;
+import cn.wildfire.chat.app.third.location.ui.presenter.MyLocationAtPresenter;
+import cn.wildfire.chat.app.third.location.ui.view.IMyLocationAtView;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 
