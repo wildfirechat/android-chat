@@ -105,6 +105,7 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
             if (isSend) {
                 MessageStatus sentStatus = item.status;
                 if (sentStatus == MessageStatus.Sending) {
+                    imageView.setPercent(message.progress);
                     imageView.setProgressVisible(true);
                     imageView.showShadow(true);
                 } else if (sentStatus == MessageStatus.Send_Failure) {

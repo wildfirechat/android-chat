@@ -1,19 +1,26 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.io.File;
+
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
+import butterknife.OnClick;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.FileMessageContent;
@@ -26,6 +33,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
 
     @Bind(R.id.imageView)
     BubbleImageView imageView;
+    private FileMessageContent fileMessageContent;
 
     public FileMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
         super(context, adapter, itemView);
@@ -34,9 +42,9 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
     @Override
     public void onBind(UiMessage message) {
         super.onBind(message);
-        FileMessageContent fileMessageContent = (FileMessageContent) message.message.content;
-        if (message.message.status != MessageStatus.Sent) {
-            imageView.setPercent(0);
+        fileMessageContent = (FileMessageContent) message.message.content;
+        if (message.message.status != MessageStatus.Sent || message.isDownloading) {
+            imageView.setPercent(message.progress);
             imageView.setProgressVisible(true);
         } else {
             imageView.setProgressVisible(false);
@@ -46,8 +54,21 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
                 .apply(new RequestOptions().override(UIUtils.dip2Px(150), UIUtils.dip2Px(150)).centerCrop()).into(imageView);
     }
 
+    @OnClick(R.id.imageView)
     public void onClick(View view) {
-        //FileOpenUtils.openFile(context, fileMessage.localPath);
-        Toast.makeText(context, "file message", Toast.LENGTH_SHORT).show();
+        if (message.isDownloading) {
+            return;
+        }
+        if (!TextUtils.isEmpty(fileMessageContent.localPath)) {
+            Intent intent = FileUtils.getViewIntent(context, new File(fileMessageContent.localPath));
+            ComponentName cn = intent.resolveActivity(context.getPackageManager());
+            if (cn == null) {
+                Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            context.startActivity(intent);
+        } else {
+            conversationViewModel.downloadMedia(message);
+        }
     }
 }

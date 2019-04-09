@@ -19,19 +19,19 @@ import okhttp3.Response;
  * Created by heavyrainlee on 20/02/2018.
  */
 
-public class DownloadUtil {
+public class DownloadManager {
 
-    private static DownloadUtil downloadUtil;
+    private static DownloadManager downloadManager;
     private final OkHttpClient okHttpClient;
 
-    public static DownloadUtil get() {
-        if (downloadUtil == null) {
-            downloadUtil = new DownloadUtil();
+    public static DownloadManager get() {
+        if (downloadManager == null) {
+            downloadManager = new DownloadManager();
         }
-        return downloadUtil;
+        return downloadManager;
     }
 
-    private DownloadUtil() {
+    private DownloadManager() {
         okHttpClient = new OkHttpClient();
     }
 
@@ -45,7 +45,7 @@ public class DownloadUtil {
             @Override
             public void onFailure(Call call, IOException e) {
                 // 下载失败
-                listener.onDownloadFailed();
+                listener.onFail();
             }
 
             @Override
@@ -56,10 +56,10 @@ public class DownloadUtil {
                 FileOutputStream fos = null;
                 // 储存下载文件的目录
                 String savePath = isExistDir(saveDir);
+                String fileName = TextUtils.isEmpty(name) ? getNameFromUrl(url) : name;
                 try {
                     is = response.body().byteStream();
                     long total = response.body().contentLength();
-                    String fileName = TextUtils.isEmpty(name) ? getNameFromUrl(url) : name;
                     File file = new File(savePath, fileName);
                     fos = new FileOutputStream(file);
                     long sum = 0;
@@ -68,13 +68,17 @@ public class DownloadUtil {
                         sum += len;
                         int progress = (int) (sum * 1.0f / total * 100);
                         // 下载中
-                        listener.onDownloading(progress);
+                        listener.onProgress(progress);
                     }
                     fos.flush();
                     // 下载完成
-                    listener.onSuccess(file.getPath());
+                    listener.onSuccess(file);
                 } catch (Exception e) {
-                    listener.onDownloadFailed();
+                    File file = new File(savePath, fileName);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    listener.onFail();
                 } finally {
                     try {
                         if (is != null) {
@@ -100,12 +104,11 @@ public class DownloadUtil {
      */
     private String isExistDir(String saveDir) throws IOException {
         // 下载位置
-        File downloadFile = new File(Environment.getExternalStorageDirectory(), saveDir);
+        File downloadFile = new File(Environment.getExternalStorageDirectory(), "wfc" + saveDir);
         if (!downloadFile.mkdirs()) {
             downloadFile.createNewFile();
         }
-        String savePath = downloadFile.getAbsolutePath();
-        return savePath;
+        return downloadFile.getAbsolutePath();
     }
 
     /**
@@ -121,16 +124,16 @@ public class DownloadUtil {
         /**
          * 下载成功
          */
-        void onSuccess(String fileName);
+        void onSuccess(File file);
 
         /**
          * @param progress 下载进度
          */
-        void onDownloading(int progress);
+        void onProgress(int progress);
 
         /**
          * 下载失败
          */
-        void onDownloadFailed();
+        void onFail();
     }
 }

@@ -15,19 +15,20 @@ import java.util.Map;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import cn.wildfire.chat.app.MyApp;
+import cn.wildfire.chat.app.third.location.data.LocationData;
 import cn.wildfire.chat.kit.audio.AudioPlayManager;
 import cn.wildfire.chat.kit.audio.IAudioPlayListener;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.message.viewholder.AudioMessageContentViewHolder;
-import cn.wildfire.chat.app.third.location.data.LocationData;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfire.chat.kit.utils.DownloadUtil;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
@@ -269,7 +270,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         if (path != null) {
             playAudio(message, path);
         } else {
-            downloadAudio(message);
+            downloadMedia(message);
         }
     }
 
@@ -385,27 +386,58 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         });
     }
 
-    private void downloadAudio(UiMessage message) {
-        SoundMessageContent content = (SoundMessageContent) message.message.content;
-        DownloadUtil.get().download(content.remoteUrl, audioDir, message.message.messageUid + "", new DownloadUtil.OnDownloadListener() {
+    public void downloadMedia(UiMessage message) {
+        MessageContent content = message.message.content;
+        if (!(content instanceof MediaMessageContent)) {
+            return;
+        }
+
+        if (message.isDownloading) {
+            return;
+        }
+
+        String dir = null;
+        MessageContentMediaType type = MessageContentMediaType.mediaType(content.getType());
+        if (type == null) {
+            return;
+        }
+        switch (type) {
+            case VOICE:
+                dir = "voice";
+                break;
+            case FILE:
+                dir = "file";
+                break;
+            case VIDEO:
+                dir = "video";
+                break;
+            default:
+                break;
+        }
+
+        if (TextUtils.isEmpty(dir)) {
+            return;
+        }
+
+        DownloadManager.get().download(((MediaMessageContent) content).remoteUrl, dir, message.message.messageUid + "", new DownloadManager.OnDownloadListener() {
             @Override
-            public void onSuccess(String fileName) {
+            public void onSuccess(File file) {
                 message.isDownloading = false;
                 message.progress = 100;
                 postMessageUpdate(message);
 
-                playAudio(message, new File(Environment.getExternalStorageDirectory(), audioDir + File.separator + message.message.messageUid).getAbsolutePath());
+                playAudio(message, file.getAbsolutePath());
             }
 
             @Override
-            public void onDownloading(int progress) {
+            public void onProgress(int percent) {
                 message.isDownloading = true;
-                message.progress = progress;
+                message.progress = percent;
                 postMessageUpdate(message);
             }
 
             @Override
-            public void onDownloadFailed() {
+            public void onFail() {
                 message.isDownloading = false;
                 message.progress = 0;
                 postMessageUpdate(message);

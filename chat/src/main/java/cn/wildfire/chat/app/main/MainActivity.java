@@ -249,6 +249,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void onScanPcQrCode(String qrcode) {
         String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);
         String value = qrcode.substring(qrcode.lastIndexOf("/") + 1);
+//        Uri uri = Uri.parse(value);
+//        uri.getAuthority();
+//        uri.getQuery()
         switch (prefix) {
             case Config.QR_CODE_PREFIX_PC_SESSION:
                 pcLogin(value);

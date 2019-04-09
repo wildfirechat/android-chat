@@ -19,7 +19,6 @@ public class FileMessageContent extends MediaMessageContent {
     private String name;
     private int size;
 
-
     public FileMessageContent() {
     }
 
@@ -42,6 +41,13 @@ public class FileMessageContent extends MediaMessageContent {
         return payload;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getSize() {
+        return size;
+    }
 
     @Override
     public void decode(MessagePayload payload) {
