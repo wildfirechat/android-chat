@@ -455,9 +455,18 @@ public class FileUtils {
      * @return The intent for viewing file
      */
     public static Intent getViewIntent(Context context, File file) {
-        //Uri uri = Uri.fromFile(file);
-        Uri uri = FileProvider.getUriForFile(context, AUTHORITY, file);
         Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //判断版本是否在7.0以上
+            uri = FileProvider.getUriForFile(context,
+                    context.getPackageName() + ".provider",
+                    file);
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(file);
+        }
         String url = file.toString();
         if (url.contains(".doc") || url.contains(".docx")) {
             // Word document
