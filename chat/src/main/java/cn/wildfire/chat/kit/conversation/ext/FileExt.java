@@ -10,7 +10,7 @@ import java.io.File;
 
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
-import cn.wildfire.chat.kit.utils.FilePathUtil;
+import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
@@ -22,12 +22,8 @@ public class FileExt extends ConversationExt {
      * @param conversation
      */
     @ExtContextMenuItem(title = "文件")
-    public void image(View containerView, Conversation conversation) {
+    public void pickFile(View containerView, Conversation conversation) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        //intent.setType(“image/*”);//选择图片
-        //intent.setType(“audio/*”); //选择音频
-        //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
-        //intent.setType(“video/*;image/*”);//同时选择视频和图片
         intent.setType("*/*");//无类型限制
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(intent, 100);
@@ -39,7 +35,7 @@ public class FileExt extends ConversationExt {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
-            String path = FilePathUtil.getPathFromUri(context, uri);
+            String path = FileUtils.getPath(context, uri);
             conversationViewModel.sendFileMsg(new File(path));
         }
     }

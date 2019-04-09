@@ -21,7 +21,7 @@ public class LocationExt extends ConversationExt {
      * @param conversation
      */
     @ExtContextMenuItem(title = "位置")
-    public void image(View containerView, Conversation conversation) {
+    public void pickLocation(View containerView, Conversation conversation) {
         Intent intent = new Intent(context, MyLocationActivity.class);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_LOCATION);

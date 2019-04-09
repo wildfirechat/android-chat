@@ -25,7 +25,7 @@ public class ImageExt extends ConversationExt {
      * @param conversation
      */
     @ExtContextMenuItem(title = "照片")
-    public void image(View containerView, Conversation conversation) {
+    public void pickImage(View containerView, Conversation conversation) {
         Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(context);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);

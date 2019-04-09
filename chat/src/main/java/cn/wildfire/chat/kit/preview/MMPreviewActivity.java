@@ -29,7 +29,7 @@ import androidx.viewpager.widget.ViewPager;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfire.chat.kit.utils.DownloadUtil;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
@@ -157,26 +157,26 @@ public class MMPreviewActivity extends Activity {
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
                         final WeakReference<View> viewWeakReference = new WeakReference<>(view);
-                        DownloadUtil.get().download(content.remoteUrl, "video", message.message.messageUid + "", new DownloadUtil.OnDownloadListener() {
+                        DownloadManager.get().download(content.remoteUrl, "video", message.message.messageUid + "", new DownloadManager.OnDownloadListener() {
                             @Override
-                            public void onSuccess(String fileName) {
+                            public void onSuccess(File file) {
                                 UIUtils.postTaskSafely(() -> {
                                     View targetView = viewWeakReference.get();
                                     if (targetView != null && (message.message.messageUid + "").equals(targetView.getTag())) {
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
-                                        playVideo(targetView, videoFile.getAbsolutePath());
+                                        playVideo(targetView, file.getAbsolutePath());
                                     }
                                 });
                             }
 
                             @Override
-                            public void onDownloading(int progress) {
+                            public void onProgress(int progress) {
                                 // TODO update progress
                                 Log.e(MMPreviewActivity.class.getSimpleName(), "video downloading progress: " + progress);
                             }
 
                             @Override
-                            public void onDownloadFailed() {
+                            public void onFail() {
                                 View targetView = viewWeakReference.get();
                                 UIUtils.postTaskSafely(() -> {
                                     if (targetView != null && (message.message.messageUid + "").equals(targetView.getTag())) {
