@@ -1535,7 +1535,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     private cn.wildfirechat.message.Message convertProtoMessage(ProtoMessage protoMessage) {
-        if (protoMessage == null || protoMessage.getMessageId() < 0) {
+        if (protoMessage.getMessageId() < 0) {
             return null;
         }
         cn.wildfirechat.message.Message msg = new cn.wildfirechat.message.Message();
@@ -1807,6 +1807,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onReceiveMessage(List<ProtoMessage> messages, boolean hasMore) {
+        if (messages.isEmpty()) {
+            return;
+        }
+        
         android.util.Log.d("", "RECEIVE MESSAGES");
         List<cn.wildfirechat.message.Message> messageList = convertProtoMessages(messages);
         while (messageList.size() > 0) {
