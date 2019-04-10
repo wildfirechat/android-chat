@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -200,9 +201,15 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 viewStub.setLayoutResource(receiveResId > 0 ? receiveResId : R.layout.conversation_item_unknown_receive);
             }
         }
-        View view = viewStub.inflate();
-        if (view instanceof ImageView) {
-            ((ImageView) view).setImageDrawable(null);
+        try {
+            View view = viewStub.inflate();
+            if (view instanceof ImageView) {
+                ((ImageView) view).setImageDrawable(null);
+            }
+        } catch (Exception e) {
+            if (e.getMessage() != null && e.getMessage().contains("webview")) {
+                Toast.makeText(mContext, "请安装: Android System WebView", Toast.LENGTH_SHORT).show();
+            }
         }
 
         try {
