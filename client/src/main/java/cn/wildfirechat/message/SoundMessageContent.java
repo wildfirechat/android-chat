@@ -18,12 +18,12 @@ import cn.wildfirechat.message.core.PersistFlag;
 public class SoundMessageContent extends MediaMessageContent {
     private int duration;
 
-
     public SoundMessageContent() {
     }
 
-    public SoundMessageContent(String content) {
-
+    public SoundMessageContent(String audioPath) {
+        this.localPath = audioPath;
+        this.mediaType = MessageContentMediaType.VOICE;
     }
 
     public int getDuration() {
@@ -36,9 +36,8 @@ public class SoundMessageContent extends MediaMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.searchableContent = "[语音]";
-        payload.mediaType = MessageContentMediaType.VOICE;
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -47,15 +46,13 @@ public class SoundMessageContent extends MediaMessageContent {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        payload.remoteMediaUrl = remoteUrl;
-        payload.localMediaPath = localPath;
         return payload;
     }
 
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         try {
             if (payload.content != null) {
                 JSONObject jsonObject = new JSONObject(payload.content);
@@ -64,9 +61,6 @@ public class SoundMessageContent extends MediaMessageContent {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        remoteUrl = payload.remoteMediaUrl;
-        localPath = payload.localMediaPath;
     }
 
     @Override
@@ -85,12 +79,19 @@ public class SoundMessageContent extends MediaMessageContent {
         dest.writeInt(this.duration);
         dest.writeString(this.localPath);
         dest.writeString(this.remoteUrl);
+        dest.writeInt(this.mediaType == null ? -1 : this.mediaType.ordinal());
+        dest.writeInt(this.mentionedType);
+        dest.writeStringList(this.mentionedTargets);
     }
 
     protected SoundMessageContent(Parcel in) {
         this.duration = in.readInt();
         this.localPath = in.readString();
         this.remoteUrl = in.readString();
+        int tmpMediaType = in.readInt();
+        this.mediaType = tmpMediaType == -1 ? null : MessageContentMediaType.values()[tmpMediaType];
+        this.mentionedType = in.readInt();
+        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<SoundMessageContent> CREATOR = new Creator<SoundMessageContent>() {

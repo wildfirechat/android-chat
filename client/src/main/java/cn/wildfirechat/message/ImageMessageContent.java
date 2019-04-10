@@ -19,12 +19,11 @@ import cn.wildfirechat.message.core.PersistFlag;
 public class ImageMessageContent extends MediaMessageContent {
     private Bitmap thumbnail;
 
-
     public ImageMessageContent() {
     }
 
-    public ImageMessageContent(String content) {
-
+    public ImageMessageContent(String path) {
+        mediaType = MessageContentMediaType.IMAGE;
     }
 
     public Bitmap getThumbnail() {
@@ -38,25 +37,21 @@ public class ImageMessageContent extends MediaMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.searchableContent = "[图片]";
-        payload.mediaType = MessageContentMediaType.IMAGE;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
         payload.binaryContent = baos.toByteArray();
-        payload.remoteMediaUrl = remoteUrl;
-        payload.localMediaPath = localPath;
         return payload;
     }
 
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         if (payload.binaryContent != null) {
             thumbnail = BitmapFactory.decodeByteArray(payload.binaryContent, 0, payload.binaryContent.length);
         }
-        remoteUrl = payload.remoteMediaUrl;
-        localPath = payload.localMediaPath;
     }
 
     @Override
@@ -75,12 +70,19 @@ public class ImageMessageContent extends MediaMessageContent {
         dest.writeParcelable(this.thumbnail, flags);
         dest.writeString(this.localPath);
         dest.writeString(this.remoteUrl);
+        dest.writeInt(this.mediaType == null ? -1 : this.mediaType.ordinal());
+        dest.writeInt(this.mentionedType);
+        dest.writeStringList(this.mentionedTargets);
     }
 
     protected ImageMessageContent(Parcel in) {
         this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
         this.localPath = in.readString();
         this.remoteUrl = in.readString();
+        int tmpMediaType = in.readInt();
+        this.mediaType = tmpMediaType == -1 ? null : MessageContentMediaType.values()[tmpMediaType];
+        this.mentionedType = in.readInt();
+        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<ImageMessageContent> CREATOR = new Creator<ImageMessageContent>() {

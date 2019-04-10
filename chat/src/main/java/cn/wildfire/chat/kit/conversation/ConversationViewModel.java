@@ -28,7 +28,6 @@ import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
@@ -302,9 +301,8 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     }
 
     public void sendImgMsg(Uri imageFileThumbUri, Uri imageFileSourceUri) {
-        ImageMessageContent imgContent = new ImageMessageContent();
+        ImageMessageContent imgContent = new ImageMessageContent(imageFileSourceUri.getEncodedPath());
         imgContent.setThumbnail(BitmapFactory.decodeFile(imageFileThumbUri.getEncodedPath()));
-        imgContent.localPath = imageFileSourceUri.getEncodedPath();
         sendMessage(imgContent);
     }
 
@@ -348,9 +346,8 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
                 Log.e("ConversationViewModel", "send audio file fail");
                 return;
             }
-            SoundMessageContent soundContent = new SoundMessageContent();
+            SoundMessageContent soundContent = new SoundMessageContent(file.getAbsolutePath());
             soundContent.setDuration(duration);
-            soundContent.localPath = file.getAbsolutePath();
             sendMessage(soundContent);
         }
     }
@@ -397,11 +394,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         }
 
         String dir = null;
-        MessageContentMediaType type = MessageContentMediaType.mediaType(content.getType());
-        if (type == null) {
-            return;
-        }
-        switch (type) {
+        switch (((MediaMessageContent) content).mediaType) {
             case VOICE:
                 dir = "voice";
                 break;
@@ -426,6 +419,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
                 message.progress = 100;
                 postMessageUpdate(message);
 
+                // TODO remove the following line
                 playAudio(message, file.getAbsolutePath());
             }
 
