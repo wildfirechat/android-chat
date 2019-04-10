@@ -259,6 +259,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 Class cls = Class.forName(msgContentCls);
                 ContentTag tag = (ContentTag) cls.getAnnotation(ContentTag.class);
                 if (tag != null) {
+                    Class curClazz = contentMapper.get(tag.type());
+                    if (curClazz != null && !curClazz.equals(cls)) {
+                        throw new IllegalArgumentException("messageContent type duplicate");
+                    }
                     contentMapper.put(tag.type(), cls);
                     ProtoLogic.registerMessageFlag(tag.type(), tag.flag().getValue());
                 } else {
@@ -1810,7 +1814,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (messages.isEmpty()) {
             return;
         }
-        
+
         android.util.Log.d("", "RECEIVE MESSAGES");
         List<cn.wildfirechat.message.Message> messageList = convertProtoMessages(messages);
         while (messageList.size() > 0) {
