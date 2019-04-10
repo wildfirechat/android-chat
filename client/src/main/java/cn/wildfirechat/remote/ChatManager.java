@@ -14,6 +14,8 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -970,12 +972,31 @@ public class ChatManager {
         messageUpdateListeners.remove(listener);
     }
 
+    private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
+        try {
+            Constructor c = msgContentClazz.getConstructor();
+            if (c.getModifiers() != Modifier.PUBLIC) {
+                throw new IllegalArgumentException("the default constructor of messageContent class should be public");
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("messageContent class must have a default constructor");
+        }
+        ContentTag tag = msgContentClazz.getAnnotation(ContentTag.class);
+        if (tag == null) {
+            throw new IllegalArgumentException("messageContent class must have a ContentTag annotation");
+        }
+
+    }
+
     /**
      * 注册自自定义消息
      *
      * @param msgContentCls 自定义消息实现类，可参考自定义消息文档
      */
     public void registerMessageContent(Class<? extends MessageContent> msgContentCls) {
+
+        validateMessageContent(msgContentCls);
         msgList.add(msgContentCls.getName());
         if (!checkRemoteService()) {
             return;
