@@ -25,6 +25,7 @@ public class StickerMessageContent extends MediaMessageContent {
 
     public StickerMessageContent(String localPath) {
         this.localPath = localPath;
+        this.mediaType = MessageContentMediaType.FILE;
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -36,12 +37,8 @@ public class StickerMessageContent extends MediaMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.searchableContent = "[动态表情]";
-        payload.mediaType = MessageContentMediaType.FILE;
-
-        payload.remoteMediaUrl = remoteUrl;
-        payload.localMediaPath = localPath;
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -58,8 +55,7 @@ public class StickerMessageContent extends MediaMessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
-        remoteUrl = payload.remoteMediaUrl;
-        localPath = payload.localMediaPath;
+        super.decode(payload);
 
         try {
             if (payload.binaryContent != null) {
@@ -77,7 +73,6 @@ public class StickerMessageContent extends MediaMessageContent {
         return "[动态表情]";
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -85,17 +80,24 @@ public class StickerMessageContent extends MediaMessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.localPath != null ? this.localPath : "");
-        dest.writeString(this.remoteUrl != null ? this.remoteUrl : "");
         dest.writeInt(this.width);
         dest.writeInt(this.height);
+        dest.writeString(this.localPath);
+        dest.writeString(this.remoteUrl);
+        dest.writeInt(this.mediaType == null ? -1 : this.mediaType.ordinal());
+        dest.writeInt(this.mentionedType);
+        dest.writeStringList(this.mentionedTargets);
     }
 
     protected StickerMessageContent(Parcel in) {
-        this.localPath = in.readString();
-        this.remoteUrl = in.readString();
         this.width = in.readInt();
         this.height = in.readInt();
+        this.localPath = in.readString();
+        this.remoteUrl = in.readString();
+        int tmpMediaType = in.readInt();
+        this.mediaType = tmpMediaType == -1 ? null : MessageContentMediaType.values()[tmpMediaType];
+        this.mentionedType = in.readInt();
+        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<StickerMessageContent> CREATOR = new Creator<StickerMessageContent>() {

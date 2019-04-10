@@ -27,16 +27,14 @@ public class FileMessageContent extends MediaMessageContent {
         this.name = filePath.substring(filePath.lastIndexOf("/") + 1);
         this.size = (int) file.length();
         this.localPath = filePath;
+        this.mediaType = MessageContentMediaType.FILE;
     }
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.searchableContent = name;
-        payload.mediaType = MessageContentMediaType.FILE;
         payload.content = size + "";
-        payload.localMediaPath = localPath;
-        payload.remoteMediaUrl = remoteUrl;
 
         return payload;
     }
@@ -51,10 +49,9 @@ public class FileMessageContent extends MediaMessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         name = payload.searchableContent;
         size = Integer.parseInt(payload.content);
-        remoteUrl = payload.remoteMediaUrl;
-        localPath = payload.localMediaPath;
     }
 
     @Override
@@ -71,9 +68,12 @@ public class FileMessageContent extends MediaMessageContent {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.name);
-        dest.writeInt(size);
+        dest.writeInt(this.size);
         dest.writeString(this.localPath);
         dest.writeString(this.remoteUrl);
+        dest.writeInt(this.mediaType == null ? -1 : this.mediaType.ordinal());
+        dest.writeInt(this.mentionedType);
+        dest.writeStringList(this.mentionedTargets);
     }
 
     protected FileMessageContent(Parcel in) {
@@ -81,6 +81,10 @@ public class FileMessageContent extends MediaMessageContent {
         this.size = in.readInt();
         this.localPath = in.readString();
         this.remoteUrl = in.readString();
+        int tmpMediaType = in.readInt();
+        this.mediaType = tmpMediaType == -1 ? null : MessageContentMediaType.values()[tmpMediaType];
+        this.mentionedType = in.readInt();
+        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<FileMessageContent> CREATOR = new Creator<FileMessageContent>() {

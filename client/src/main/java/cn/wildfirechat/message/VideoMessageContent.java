@@ -21,16 +21,17 @@ import cn.wildfirechat.message.core.PersistFlag;
 public class VideoMessageContent extends MediaMessageContent {
     private Bitmap thumbnail;
 
-
+    // 所有消息都需要一个默认构造函数
     public VideoMessageContent() {
     }
 
-    public VideoMessageContent(String path) {
-        this.localPath = path;
+    public VideoMessageContent(String videoPath) {
+        this.localPath = videoPath;
 
-        this.thumbnail = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Video.Thumbnails.MICRO_KIND);
-        this.thumbnail = ThumbnailUtils.extractThumbnail(this.thumbnail, 240, 240,
+        this.thumbnail = ThumbnailUtils.createVideoThumbnail(videoPath, MediaStore.Video.Thumbnails.MICRO_KIND);
+        this.thumbnail = ThumbnailUtils.extractThumbnail(this.thumbnail, 320, 240,
                 ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        this.mediaType = MessageContentMediaType.VIDEO;
     }
 
     public Bitmap getThumbnail() {
@@ -44,25 +45,21 @@ public class VideoMessageContent extends MediaMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.searchableContent = "[视频]";
-        payload.mediaType = MessageContentMediaType.VIDEO;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
         payload.binaryContent = baos.toByteArray();
-        payload.remoteMediaUrl = remoteUrl;
-        payload.localMediaPath = localPath;
         return payload;
     }
 
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         if (payload.binaryContent != null) {
             thumbnail = BitmapFactory.decodeByteArray(payload.binaryContent, 0, payload.binaryContent.length);
         }
-        remoteUrl = payload.remoteMediaUrl;
-        localPath = payload.localMediaPath;
     }
 
     @Override
@@ -81,12 +78,19 @@ public class VideoMessageContent extends MediaMessageContent {
         dest.writeParcelable(this.thumbnail, flags);
         dest.writeString(this.localPath);
         dest.writeString(this.remoteUrl);
+        dest.writeInt(this.mediaType == null ? -1 : this.mediaType.ordinal());
+        dest.writeInt(this.mentionedType);
+        dest.writeStringList(this.mentionedTargets);
     }
 
     protected VideoMessageContent(Parcel in) {
         this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
         this.localPath = in.readString();
         this.remoteUrl = in.readString();
+        int tmpMediaType = in.readInt();
+        this.mediaType = tmpMediaType == -1 ? null : MessageContentMediaType.values()[tmpMediaType];
+        this.mentionedType = in.readInt();
+        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<VideoMessageContent> CREATOR = new Creator<VideoMessageContent>() {

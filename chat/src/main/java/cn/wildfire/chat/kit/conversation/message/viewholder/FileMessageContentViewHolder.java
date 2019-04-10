@@ -43,7 +43,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
     public void onBind(UiMessage message) {
         super.onBind(message);
         fileMessageContent = (FileMessageContent) message.message.content;
-        if (message.message.status != MessageStatus.Sent || message.isDownloading) {
+        if (message.message.status == MessageStatus.Sending || message.isDownloading) {
             imageView.setPercent(message.progress);
             imageView.setProgressVisible(true);
         } else {
