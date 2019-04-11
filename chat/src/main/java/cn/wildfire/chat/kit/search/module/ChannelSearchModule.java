@@ -71,7 +71,7 @@ public class ChannelSearchModule extends SearchableModule<ChannelInfo, ChannelVi
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 Log.e(ChannelSearchModule.class.getSimpleName(), "search failure: " + errorCode);
                 latch.countDown();
             }

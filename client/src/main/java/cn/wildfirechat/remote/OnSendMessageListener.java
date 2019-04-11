@@ -10,7 +10,7 @@ import cn.wildfirechat.message.Message;
 public interface OnSendMessageListener {
     void onSendSuccess(Message message);
 
-    void onSendFailure(Message message, int errorCode);
+    void onSendFail(Message message, int errorCode);
 
     /**
      * 消息已插入本地数据库
@@ -18,7 +18,7 @@ public interface OnSendMessageListener {
      * @param message
      * @param savedTime
      */
-    void onSendPrepared(Message message, long savedTime);
+    void onSendPrepare(Message message, long savedTime);
 
     /**
      * 发送进度，media类型消息，且媒体大于100k时，才有进度回调
@@ -36,6 +36,6 @@ public interface OnSendMessageListener {
      * @param message
      * @param remoteUrl
      */
-    default void onMediaUploaded(Message message, String remoteUrl) {
+    default void onMediaUpload(Message message, String remoteUrl) {
     }
 }

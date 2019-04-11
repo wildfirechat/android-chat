@@ -64,14 +64,14 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
                         }
 
                         @Override
-                        public void onFailure(int errorCode) {
+                        public void onFail(int errorCode) {
                             resultLiveData.setValue(new OperateResult<>(errorCode));
                         }
                     });
                 }
 
                 @Override
-                public void onFailure(int errorCode) {
+                public void onFail(int errorCode) {
                     resultLiveData.setValue(new OperateResult<>(errorCode));
                 }
             });
@@ -88,7 +88,7 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(false, errorCode));
             }
         });
@@ -96,7 +96,7 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
     }
 
     public UserInfo getUserInfo(String userId, boolean refresh) {
-        return ChatManager.Instance().getUserInfox(userId, refresh);
+        return ChatManager.Instance().getUserInfo(userId, refresh);
     }
 
     public List<UserInfo> getUserInfos(List<String> userIds) {
@@ -108,14 +108,14 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
     }
 
     @Override
-    public void onUserInfoUpdated(List<UserInfo> userInfos) {
+    public void onUserInfoUpdate(List<UserInfo> userInfos) {
         if (userInfoLiveData != null) {
             userInfoLiveData.setValue(userInfos);
         }
     }
 
     @Override
-    public void onSettingUpdated() {
+    public void onSettingUpdate() {
         if (settingUpdatedLiveData != null) {
             settingUpdatedLiveData.setValue(new Object());
         }

@@ -145,7 +145,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     @Override
-    public void onReceive(List<Message> messages, boolean hasMore) {
+    public void onReceiveMessage(List<Message> messages, boolean hasMore) {
         if (messages != null && messages.size() > 0) {
             for (Message message : messages) {
                 if (message.messageId == 0) {
@@ -182,7 +182,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     @Override
-    public void onSendFailure(Message message, int errorCode) {
+    public void onSendFail(Message message, int errorCode) {
         Conversation conversation = message.conversation;
         if (types.contains(conversation.type) && lines.contains(conversation.line)) {
             if (message.messageId > 0) {
@@ -193,7 +193,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     @Override
-    public void onSendPrepared(Message message, long savedTime) {
+    public void onSendPrepare(Message message, long savedTime) {
         Conversation conversation = message.conversation;
         if (types.contains(conversation.type) && lines.contains(conversation.line)) {
             if (message.messageId > 0) {
@@ -223,7 +223,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 // do nothing
             }
         });
@@ -260,7 +260,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     @Override
-    public void onMessagedRemoved(Message message) {
+    public void onMessagedRemove(Message message) {
         ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
         postConversationInfo(conversationInfo);
     }
@@ -286,7 +286,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     @Override
-    public void onSettingUpdated() {
+    public void onSettingUpdate() {
         if (settingUpdateLiveData != null) {
             UIUtils.postTaskSafely(() -> settingUpdateLiveData.setValue(new Object()));
         }

@@ -61,14 +61,14 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
     }
 
     @Override
-    public void onFriendListUpdated() {
+    public void onFriendListUpdate() {
         if (contactListUpdatedLiveData != null) {
             contactListUpdatedLiveData.setValue(new Object());
         }
     }
 
     @Override
-    public void onFriendRequestUpdated() {
+    public void onFriendRequestUpdate() {
         if (friendRequestUpdatedLiveData != null) {
             friendRequestUpdatedLiveData.setValue(getUnreadFriendRequestCount());
         }
@@ -96,7 +96,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(false);
             }
         });
@@ -112,7 +112,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(null);
             }
         });
@@ -133,7 +133,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(false);
             }
         });

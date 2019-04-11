@@ -3,5 +3,5 @@ package cn.wildfirechat.remote;
 import cn.wildfirechat.message.Message;
 
 public interface RemoveMessageListener {
-    void onMessagedRemoved(Message message);
+    void onMessagedRemove(Message message);
 }

@@ -37,7 +37,7 @@ public class AddGroupMemberNotificationContent extends NotificationMessageConten
         if (fromSelf) {
             sb.append("您邀请");
         } else {
-            userInfo = ChatManager.Instance().getUserInfox(invitor, false);
+            userInfo = ChatManager.Instance().getUserInfo(invitor, false);
             sb.append(userInfo.displayName);
             sb.append("邀请");
         }
@@ -45,7 +45,7 @@ public class AddGroupMemberNotificationContent extends NotificationMessageConten
         if (invitees != null) {
             for (String member : invitees) {
                 sb.append(" ");
-                userInfo = ChatManager.Instance().getUserInfox(member, false);
+                userInfo = ChatManager.Instance().getUserInfo(member, false);
                 sb.append(userInfo.displayName);
             }
         }

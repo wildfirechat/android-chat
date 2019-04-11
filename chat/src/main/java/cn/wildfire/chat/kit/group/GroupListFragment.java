@@ -67,7 +67,7 @@ public class GroupListFragment extends Fragment implements OnGroupItemClickListe
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 groupsLinearLayout.setVisibility(View.GONE);
                 tipTextView.setVisibility(View.VISIBLE);
                 tipTextView.setText("error: " + errorCode);
