@@ -50,14 +50,14 @@ public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateLi
                         }
 
                         @Override
-                        public void onFailure(int errorCode) {
+                        public void onFail(int errorCode) {
                             resultLiveData.setValue(new OperateResult<String>(errorCode));
                         }
                     });
                 }
 
                 @Override
-                public void onFailure(int errorCode) {
+                public void onFail(int errorCode) {
                     resultLiveData.setValue(new OperateResult<>(errorCode));
 
                 }
@@ -86,7 +86,7 @@ public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateLi
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(errorCode));
             }
         });
@@ -128,7 +128,7 @@ public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateLi
     }
 
     @Override
-    public void onChannelInfoUpdated(List<ChannelInfo> channelInfos) {
+    public void onChannelInfoUpdate(List<ChannelInfo> channelInfos) {
         if (channelInfoLiveData != null) {
             channelInfoLiveData.setValue(channelInfos);
         }

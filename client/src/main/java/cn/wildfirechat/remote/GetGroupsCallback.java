@@ -8,5 +8,5 @@ public interface GetGroupsCallback {
 
     void onSuccess(List<GroupInfo> groupInfos);
 
-    void onFailure(int errorCode);
+    void onFail(int errorCode);
 }

@@ -188,7 +188,7 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
             }
         }
         String targetId = ((SingleVoipCallActivity) getActivity()).getTargetId();
-        UserInfo userInfo = ChatManager.Instance().getUserInfox(targetId, false);
+        UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
         Glide.with(this).load(userInfo.portrait).into(portraitImageView);
         nameTextView.setText(userInfo.displayName);
         muteImageView.setSelected(!micEnabled);

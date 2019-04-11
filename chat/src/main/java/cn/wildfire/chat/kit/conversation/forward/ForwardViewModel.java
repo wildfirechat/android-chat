@@ -35,14 +35,14 @@ public class ForwardViewModel extends ViewModel {
                 }
 
                 @Override
-                public void onFailure(int errorCode) {
+                public void onFail(int errorCode) {
                     if (count.decrementAndGet() == 0) {
                         resultMutableLiveData.postValue(new OperateResult<>(errorCode));
                     }
                 }
 
                 @Override
-                public void onPrepared(long messageId, long savedTime) {
+                public void onPrepare(long messageId, long savedTime) {
 
                 }
             });

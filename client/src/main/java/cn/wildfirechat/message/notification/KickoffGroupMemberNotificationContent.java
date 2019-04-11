@@ -36,7 +36,7 @@ public class KickoffGroupMemberNotificationContent extends NotificationMessageCo
         if (fromSelf) {
             sb.append("您把");
         } else {
-            UserInfo userInfo = ChatManager.Instance().getUserInfox(operator, false);
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(operator, false);
             sb.append(userInfo.displayName);
             sb.append("把");
         }
@@ -44,7 +44,7 @@ public class KickoffGroupMemberNotificationContent extends NotificationMessageCo
         if (kickedMembers != null) {
             for (String member : kickedMembers) {
                 sb.append(" ");
-                UserInfo userInfo = ChatManager.Instance().getUserInfox(member, false);
+                UserInfo userInfo = ChatManager.Instance().getUserInfo(member, false);
                 sb.append(userInfo.displayName);
             }
         }

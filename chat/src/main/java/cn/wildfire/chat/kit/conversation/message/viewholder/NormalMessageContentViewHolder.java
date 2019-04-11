@@ -176,7 +176,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     private void setSenderAvatar(Message item) {
         // TODO get user info from viewModel
-        UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfox(item.sender, false);
+        UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(item.sender, false);
         if (userInfo != null && !TextUtils.isEmpty(userInfo.portrait) && portraitImageView != null) {
             GlideApp
                     .with(context)

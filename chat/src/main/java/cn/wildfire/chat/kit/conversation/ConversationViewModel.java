@@ -87,7 +87,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     }
 
     @Override
-    public void onReceive(List<Message> messages, boolean hasMore) {
+    public void onReceiveMessage(List<Message> messages, boolean hasMore) {
         if (messageLiveData != null && messages != null) {
             for (Message msg : messages) {
                 if (isMessageInCurrentConversation(msg)) {
@@ -215,7 +215,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 Log.e(ConversationViewModel.class.getSimpleName(), "撤回失败: " + errorCode);
                 // TODO 撤回失败
             }
@@ -460,14 +460,14 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     }
 
     @Override
-    public void onSendFailure(Message message, int errorCode) {
+    public void onSendFail(Message message, int errorCode) {
         if (isMessageInCurrentConversation(message)) {
             postMessageUpdate(new UiMessage(message));
         }
     }
 
     @Override
-    public void onSendPrepared(Message message, long savedTime) {
+    public void onSendPrepare(Message message, long savedTime) {
         if (isMessageInCurrentConversation(message)) {
             postNewMessage(new UiMessage(message));
         }
@@ -483,7 +483,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     }
 
     @Override
-    public void onMediaUploaded(Message message, String remoteUrl) {
+    public void onMediaUpload(Message message, String remoteUrl) {
         if (mediaUploadedLiveData != null) {
             if (isMessageInCurrentConversation(message)) {
                 Map<String, String> map = new HashMap<>();

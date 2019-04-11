@@ -372,7 +372,7 @@ public class ConversationActivity extends WfcBaseActivity implements
         }
 
         if (conversation.type == Conversation.ConversationType.Single) {
-            UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfox(conversation.target, false);
+            UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversation.target, false);
             conversationTitle = userInfo.displayName;
         } else if (conversation.type == Conversation.ConversationType.Group) {
             GroupInfo groupInfo = ChatManagerHolder.gChatManager.getGroupInfo(conversation.target, false);

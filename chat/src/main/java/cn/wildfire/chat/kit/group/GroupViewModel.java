@@ -124,14 +124,14 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
                             }
 
                             @Override
-                            public void onFailure(int errorCode) {
+                            public void onFail(int errorCode) {
                                 groupLiveData.setValue(new OperateResult<>(errorCode));
                             }
                         });
                     }
 
                     @Override
-                    public void onFailure(int errorCode) {
+                    public void onFail(int errorCode) {
                         groupLiveData.setValue(new OperateResult<>("上传群头像失败", errorCode));
                     }
                 });
@@ -143,7 +143,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
                     }
 
                     @Override
-                    public void onFailure(int errorCode) {
+                    public void onFail(int errorCode) {
                         groupLiveData.setValue(new OperateResult<>(errorCode));
                     }
                 });
@@ -170,7 +170,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(false);
             }
         });
@@ -196,7 +196,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(false);
             }
         });
@@ -226,7 +226,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(null, 0));
             }
         });
@@ -242,7 +242,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(false, errorCode));
             }
         });
@@ -261,7 +261,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(errorCode));
             }
         });
@@ -277,7 +277,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(errorCode));
             }
         });
@@ -295,7 +295,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(false);
             }
         });

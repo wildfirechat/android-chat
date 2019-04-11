@@ -21,7 +21,7 @@ public class ChatRoomViewModel extends ViewModel {
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(false, errorCode));
             }
         });
@@ -37,7 +37,7 @@ public class ChatRoomViewModel extends ViewModel {
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(false, 0));
             }
         });
@@ -53,7 +53,7 @@ public class ChatRoomViewModel extends ViewModel {
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(null, errorCode));
 
             }
@@ -70,7 +70,7 @@ public class ChatRoomViewModel extends ViewModel {
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFail(int errorCode) {
                 result.setValue(new OperateResult<>(null, errorCode));
             }
         });

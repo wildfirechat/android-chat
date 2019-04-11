@@ -114,7 +114,7 @@ public class WfcNotificationManager {
 
             String title = "";
             if (message.conversation.type == Single) {
-                UserInfo userInfo = ChatManager.Instance().getUserInfox(message.conversation.target, false);
+                UserInfo userInfo = ChatManager.Instance().getUserInfo(message.conversation.target, false);
                 title = (userInfo instanceof NullUserInfo ? "新消息" : userInfo.displayName);
             } else if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.conversation.target, false);

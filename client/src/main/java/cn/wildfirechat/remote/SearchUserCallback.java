@@ -7,5 +7,5 @@ import cn.wildfirechat.model.UserInfo;
 public interface SearchUserCallback {
     void onSuccess(List<UserInfo> userInfos);
 
-    void onFailure(int errorCode);
+    void onFail(int errorCode);
 }

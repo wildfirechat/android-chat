@@ -31,7 +31,7 @@ public class ChangeGroupPortraitNotificationContent extends NotificationMessageC
         if (fromSelf) {
             sb.append("您");
         } else {
-            UserInfo userInfo = ChatManager.Instance().getUserInfox(operateUser, false);
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(operateUser, false);
             sb.append(userInfo.displayName);
         }
         sb.append("更新了群头像");

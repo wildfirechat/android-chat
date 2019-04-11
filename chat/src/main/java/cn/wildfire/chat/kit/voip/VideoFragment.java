@@ -297,7 +297,7 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
                 descTextView.setText(R.string.av_video_invite);
             }
         }
-        UserInfo userInfo = ChatManager.Instance().getUserInfox(targetId, false);
+        UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
         if (userInfo == null) {
             getActivity().finish();
             return;

@@ -263,7 +263,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 int position = viewHolder.getAdapterPosition();
                 UiMessage message = getItem(position);
                 // FIXME: 2019/2/15 getUserInfo可能返回null
-                onPortraitClickListener.onPortraitClick(ChatManager.Instance().getUserInfox(message.message.sender, false));
+                onPortraitClickListener.onPortraitClick(ChatManager.Instance().getUserInfo(message.message.sender, false));
             }
         });
     }
@@ -273,7 +273,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                     if (onPortraitLongClickListener != null) {
                         int position = viewHolder.getAdapterPosition();
                         UiMessage message = getItem(position);
-                        onPortraitLongClickListener.onPortraitLongClick(ChatManager.Instance().getUserInfox(message.message.sender, false));
+                        onPortraitLongClickListener.onPortraitLongClick(ChatManager.Instance().getUserInfo(message.message.sender, false));
                         return true;
                     }
                     return false;

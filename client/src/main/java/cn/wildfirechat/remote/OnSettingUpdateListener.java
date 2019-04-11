@@ -1,5 +1,5 @@
 package cn.wildfirechat.remote;
 
 public interface OnSettingUpdateListener {
-    void onSettingUpdated();
+    void onSettingUpdate();
 }

@@ -7,5 +7,5 @@ import cn.wildfirechat.model.ChannelInfo;
 public interface SearchChannelCallback {
     void onSuccess(List<ChannelInfo> channelInfos);
 
-    void onFailure(int errorCode);
+    void onFail(int errorCode);
 }
