@@ -23,6 +23,7 @@ public class ImageMessageContent extends MediaMessageContent {
     }
 
     public ImageMessageContent(String path) {
+        this.localPath = path;
         mediaType = MessageContentMediaType.IMAGE;
     }
 
