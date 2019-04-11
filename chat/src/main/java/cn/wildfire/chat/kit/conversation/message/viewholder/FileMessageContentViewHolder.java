@@ -2,7 +2,6 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.content.ComponentName;
 import android.content.Intent;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -59,7 +58,12 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         if (message.isDownloading) {
             return;
         }
-        if (!TextUtils.isEmpty(fileMessageContent.localPath)) {
+        File file = conversationViewModel.mediaMessageContentFile(message);
+        if (file == null) {
+            return;
+        }
+
+        if (file.exists()) {
             Intent intent = FileUtils.getViewIntent(context, new File(fileMessageContent.localPath));
             ComponentName cn = intent.resolveActivity(context.getPackageManager());
             if (cn == null) {
@@ -68,7 +72,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
             }
             context.startActivity(intent);
         } else {
-            conversationViewModel.downloadMedia(message);
+            conversationViewModel.downloadMedia(message, file);
         }
     }
 }

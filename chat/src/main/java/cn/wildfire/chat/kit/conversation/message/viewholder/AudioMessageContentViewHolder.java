@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.File;
+
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
@@ -64,11 +66,30 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
                 ivAudio.setBackgroundResource(R.drawable.audio_animation_left_list);
             }
         }
+
+        // 下载完成，开始播放
+        if (message.progress == 100) {
+            message.progress = 0;
+            itemView.post(() -> {
+                conversationViewModel.playAudioMessage(message);
+            });
+        }
     }
 
     @OnClick(R.id.audioContentLayout)
     public void onClick(View view) {
-        conversationViewModel.playAudioMessage(message);
+        File file = conversationViewModel.mediaMessageContentFile(message);
+        if (file == null) {
+            return;
+        }
+        if (file.exists()) {
+            conversationViewModel.playAudioMessage(message);
+        } else {
+            if (message.isDownloading) {
+                return;
+            }
+            conversationViewModel.downloadMedia(message, file);
+        }
     }
 
 }

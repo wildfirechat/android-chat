@@ -1,6 +1,5 @@
 package cn.wildfire.chat.kit.utils;
 
-import android.os.Environment;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -104,7 +103,7 @@ public class DownloadManager {
      */
     private String isExistDir(String saveDir) throws IOException {
         // 下载位置
-        File downloadFile = new File(Environment.getExternalStorageDirectory(), "wfc" + saveDir);
+        File downloadFile = new File(saveDir);
         if (!downloadFile.mkdirs()) {
             downloadFile.createNewFile();
         }

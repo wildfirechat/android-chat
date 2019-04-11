@@ -26,6 +26,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -157,7 +158,7 @@ public class MMPreviewActivity extends Activity {
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
                         final WeakReference<View> viewWeakReference = new WeakReference<>(view);
-                        DownloadManager.get().download(content.remoteUrl, "video", message.message.messageUid + "", new DownloadManager.OnDownloadListener() {
+                        DownloadManager.get().download(content.remoteUrl, Config.VIDEO_SAVE_DIR, message.message.messageUid + ".mp4", new DownloadManager.OnDownloadListener() {
                             @Override
                             public void onSuccess(File file) {
                                 UIUtils.postTaskSafely(() -> {
