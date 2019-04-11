@@ -1,6 +1,6 @@
 package cn.wildfire.chat.app;
 
-import cn.wildfire.chat.kit.third.utils.FileUtils;
+import android.os.Environment;
 
 /**
  * Created by heavyrain lee on 2017/11/24.
@@ -23,7 +23,9 @@ public interface Config {
     String QR_CODE_PREFIX_GROUP = "wildfirechat://group/";
 
     int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 120;
-    String VIDEO_SAVE_DIR = FileUtils.getDir("video");
-    String PHOTO_SAVE_DIR = FileUtils.getDir("photo");
-    String HEADER_SAVE_DIR = FileUtils.getDir("header");
+
+    String VIDEO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/video";
+    String AUDIO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/audio";
+    String PHOTO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/photo";
+    String FILE_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/file";
 }

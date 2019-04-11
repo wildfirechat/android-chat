@@ -2,7 +2,6 @@ package cn.wildfire.chat.kit.conversation;
 
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -14,6 +13,7 @@ import java.util.Map;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.MyApp;
 import cn.wildfire.chat.app.third.location.data.LocationData;
 import cn.wildfire.chat.kit.audio.AudioPlayManager;
@@ -55,8 +55,8 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
 
     private Message toPlayAudioMessage;
 
-    private static final String audioDir = "audio";
-    private static final String videoDir = "video";
+    private static final String audioDir = "wfc/audio";
+    private static final String videoDir = "wfc/video";
 
     public ConversationViewModel(Conversation conversation, String channelPrivateChatUser) {
         this.conversation = conversation;
@@ -251,25 +251,18 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
             toPlayAudioMessage = null;
             return;
         }
-        AudioPlayManager.getInstance().stopPlay();
 
         toPlayAudioMessage = message.message;
-        SoundMessageContent content = (SoundMessageContent) message.message.content;
 
-        String path = null;
-        if (!TextUtils.isEmpty(content.localPath)) {
-            path = content.localPath;
-        } else {
-            File file = new File(Environment.getExternalStorageDirectory(), audioDir + File.separator + message.message.messageUid + "");
-            if (file.exists()) {
-                path = file.getAbsolutePath();
-            }
+        File file = mediaMessageContentFile(message);
+
+        if (file == null) {
+            return;
         }
-
-        if (path != null) {
-            playAudio(message, path);
+        if (file.exists()) {
+            playAudio(message, file);
         } else {
-            downloadMedia(message);
+            Log.e("ConversationViewHolder", "audio not exist");
         }
     }
 
@@ -352,8 +345,8 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         }
     }
 
-    private void playAudio(UiMessage message, String audioPath) {
-        Uri uri = Uri.parse(audioPath);
+    private void playAudio(UiMessage message, File file) {
+        Uri uri = Uri.fromFile(file);
         AudioPlayManager.getInstance().startPlay(MyApp.getContext(), uri, new IAudioPlayListener() {
             @Override
             public void onStart(Uri var1) {
@@ -383,7 +376,40 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         });
     }
 
-    public void downloadMedia(UiMessage message) {
+    public File mediaMessageContentFile(UiMessage message) {
+
+        String dir = null;
+        String name = null;
+        MessageContent content = message.message.content;
+        if (!(content instanceof MediaMessageContent)) {
+            return null;
+        }
+        if (!TextUtils.isEmpty(((MediaMessageContent) content).localPath)) {
+            return new File(((MediaMessageContent) content).localPath);
+        }
+
+        switch (((MediaMessageContent) content).mediaType) {
+            case VOICE:
+                name = message.message.messageUid + ".mp3";
+                dir = Config.AUDIO_SAVE_DIR;
+                break;
+            case FILE:
+                name = message.message.messageUid + "-" + ((FileMessageContent) message.message.content).getName();
+                dir = Config.FILE_SAVE_DIR;
+                break;
+            case VIDEO:
+                name = message.message.messageUid + ".mp4";
+                dir = Config.VIDEO_SAVE_DIR;
+                break;
+            default:
+        }
+        if (TextUtils.isEmpty(dir) || TextUtils.isEmpty(name)) {
+            return null;
+        }
+        return new File(dir, name);
+    }
+
+    public void downloadMedia(UiMessage message, File targetFile) {
         MessageContent content = message.message.content;
         if (!(content instanceof MediaMessageContent)) {
             return;
@@ -392,40 +418,21 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         if (message.isDownloading) {
             return;
         }
+        message.isDownloading = true;
+        postMessageUpdate(message);
 
-        String dir = null;
-        switch (((MediaMessageContent) content).mediaType) {
-            case VOICE:
-                dir = "voice";
-                break;
-            case FILE:
-                dir = "file";
-                break;
-            case VIDEO:
-                dir = "video";
-                break;
-            default:
-                break;
-        }
-
-        if (TextUtils.isEmpty(dir)) {
-            return;
-        }
-
-        DownloadManager.get().download(((MediaMessageContent) content).remoteUrl, dir, message.message.messageUid + "", new DownloadManager.OnDownloadListener() {
+        DownloadManager.get().download(((MediaMessageContent) content).remoteUrl, targetFile.getParent(), targetFile.getName() + ".tmp", new DownloadManager.OnDownloadListener() {
             @Override
             public void onSuccess(File file) {
+                file.renameTo(targetFile);
+
                 message.isDownloading = false;
                 message.progress = 100;
                 postMessageUpdate(message);
-
-                // TODO remove the following line
-                playAudio(message, file.getAbsolutePath());
             }
 
             @Override
             public void onProgress(int percent) {
-                message.isDownloading = true;
                 message.progress = percent;
                 postMessageUpdate(message);
             }
