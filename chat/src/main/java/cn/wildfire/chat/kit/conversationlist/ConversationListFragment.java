@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -97,6 +98,7 @@ public class ConversationListFragment extends Fragment {
         recyclerView.addItemDecoration(itemDecor);
         adapter.setConversationInfos(conversationInfos);
         recyclerView.setAdapter(adapter);
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         conversationListViewModel.conversationInfoLiveData().observeForever(conversationInfoObserver);
         conversationListViewModel.conversationRemovedLiveData().observeForever(conversationRemovedObserver);
