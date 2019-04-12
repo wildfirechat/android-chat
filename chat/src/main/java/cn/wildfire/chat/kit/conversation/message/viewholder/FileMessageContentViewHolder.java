@@ -45,6 +45,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         if (message.message.status == MessageStatus.Sending || message.isDownloading) {
             imageView.setPercent(message.progress);
             imageView.setProgressVisible(true);
+            imageView.showShadow(false);
         } else {
             imageView.setProgressVisible(false);
             imageView.showShadow(false);
