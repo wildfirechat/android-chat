@@ -648,7 +648,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
 
             ProtoLogic.setDeviceToken(getApplicationContext().getPackageName(), token, pushType);
-            mBackupDeviceToken = null;
         }
 
         private FriendRequest convertProtoFriendRequest(ProtoFriendRequest protoRequest) {
