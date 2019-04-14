@@ -32,7 +32,6 @@ import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -50,13 +49,10 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     private MutableLiveData<UiMessage> messageRemovedLiveData;
     private MutableLiveData<Map<String, String>> mediaUploadedLiveData;
     private Conversation conversation;
-    // channel主发起和某个channel听众的私聊会话时，才有效
+    //仅限于在Channel内使用。Channel的owner对订阅Channel单个用户发起一对一私聊
     private String channelPrivateChatUser;
 
     private Message toPlayAudioMessage;
-
-    private static final String audioDir = "wfc/audio";
-    private static final String videoDir = "wfc/video";
 
     public ConversationViewModel(Conversation conversation, String channelPrivateChatUser) {
         this.conversation = conversation;
@@ -271,6 +267,9 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         Message msg = new Message();
         msg.conversation = conversation;
         msg.content = content;
+        if (!TextUtils.isEmpty(channelPrivateChatUser)) {
+            msg.toUsers = new String[]{channelPrivateChatUser};
+        }
         sendMessage(msg);
     }
 
@@ -448,12 +447,18 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     }
 
     private void postMessageUpdate(UiMessage message) {
+        if (message == null || message.message == null) {
+            return;
+        }
         if (messageUpdateLiveData != null) {
             UIUtils.postTaskSafely(() -> messageUpdateLiveData.setValue(message));
         }
     }
 
     private void postNewMessage(UiMessage message) {
+        if (message == null || message.message == null) {
+            return;
+        }
         if (messageLiveData != null) {
             UIUtils.postTaskSafely(() -> messageLiveData.setValue(message));
         }
@@ -509,20 +514,6 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     }
 
     private boolean isMessageInCurrentConversation(Message message) {
-        if (!message.conversation.equals(conversation)) {
-            return false;
-        }
-        if (message.conversation.type == Conversation.ConversationType.Channel && !TextUtils.isEmpty(channelPrivateChatUser)) {
-            if (message.direction == MessageDirection.Receive && message.sender.equals(channelPrivateChatUser)) {
-                return true;
-            } else if (message.direction == MessageDirection.Send && (message.to == null || message.to.equals(channelPrivateChatUser))) {
-                return true;
-            } else {
-                return false;
-            }
-
-        } else {
-            return true;
-        }
+        return message.conversation.equals(conversation);
     }
 }

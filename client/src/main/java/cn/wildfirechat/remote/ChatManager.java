@@ -1123,11 +1123,28 @@ public class ChatManager {
     /**
      * 发送消息
      *
+     * @param conversation
+     * @param content
+     * @param toUsers        定向发送给会话中的某些用户；为空，则发给所有人
+     * @param expireDuration
+     * @param callback
+     */
+    public void sendMessage(Conversation conversation, MessageContent content, String[] toUsers, int expireDuration, SendMessageCallback callback) {
+        Message msg = new Message();
+        msg.conversation = conversation;
+        msg.content = content;
+        msg.toUsers = toUsers;
+        sendMessage(msg, expireDuration, callback);
+    }
+
+    /**
+     * 发送消息
+     *
      * @param msg
      * @param callback 发送消息状态回调
      */
     public void sendMessage(final Message msg, final SendMessageCallback callback) {
-        sendMessage(msg, callback, 0);
+        sendMessage(msg, 0, callback);
     }
 
     /**
@@ -1137,7 +1154,7 @@ public class ChatManager {
      * @param callback       发送状态回调
      * @param expireDuration 0, 永不过期；否则，规定时间内，对方未收到，则丢弃；单位是毫秒
      */
-    public void sendMessage(final Message msg, final SendMessageCallback callback, final int expireDuration) {
+    public void sendMessage(final Message msg, final int expireDuration, final SendMessageCallback callback) {
         msg.direction = MessageDirection.Send;
         msg.status = MessageStatus.Sending;
         msg.sender = userId;
