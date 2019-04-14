@@ -168,6 +168,14 @@ public class UserInfoFragment extends Fragment {
 
     @OnClick(R.id.portraitImageView)
     void portrait() {
+        if (userInfo.uid.equals(userViewModel.getUserId())) {
+            updatePortrait();
+        } else {
+            // TODO show big portrait
+        }
+    }
+
+    private void updatePortrait() {
         ImagePicker.picker().pick(this, REQUEST_CODE_PICK_IMAGE);
     }
 

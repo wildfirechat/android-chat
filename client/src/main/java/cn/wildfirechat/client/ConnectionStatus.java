@@ -8,7 +8,7 @@ public interface ConnectionStatus {
     int ConnectionStatusRejected = -3;
     int ConnectionStatusLogout = -2;
     int ConnectionStatusUnconnected = -1;
-    int ConnectionStatusConnectiong = 0;
+    int ConnectionStatusConnecting = 0;
     int ConnectionStatusConnected = 1;
     int ConnectionStatusReceiveing = 2;
 }
