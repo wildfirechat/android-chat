@@ -109,7 +109,7 @@ public class ConversationListFragment extends Fragment {
 
         conversationListViewModel.connectionStatusLiveData().observe(this, status -> {
             switch (status) {
-                case ConnectionStatus.ConnectionStatusConnectiong:
+                case ConnectionStatus.ConnectionStatusConnecting:
                     showNotification(ConnectionNotification.class, "正在连接...");
                     break;
                 case ConnectionStatus.ConnectionStatusConnected:
