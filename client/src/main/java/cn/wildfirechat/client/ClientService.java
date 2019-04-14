@@ -287,7 +287,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 protoMessage.setLine(msg.conversation.line);
             }
             protoMessage.setFrom(msg.sender);
-            protoMessage.setTo(TextUtils.isEmpty(msg.to) ? "" : msg.to);
+            protoMessage.setTos(msg.toUsers);
             MessagePayload payload = msg.content.encode();
             payload.contentType = msg.content.getClass().getAnnotation(ContentTag.class).type();
             protoMessage.setContent(payload.toProtoContent());
@@ -1530,7 +1530,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         List<cn.wildfirechat.message.Message> out = new ArrayList<>();
         for (ProtoMessage protoMessage : protoMessages) {
             cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
-            if (msg != null) {
+            if (msg != null && msg.content != null) {
                 out.add(msg);
             }
         }
@@ -1545,7 +1545,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         msg.messageId = protoMessage.getMessageId();
         msg.conversation = new Conversation(Conversation.ConversationType.values()[protoMessage.getConversationType()], protoMessage.getTarget(), protoMessage.getLine());
         msg.sender = protoMessage.getFrom();
-        msg.to = TextUtils.isEmpty(protoMessage.getTo()) ? null : protoMessage.getTo();
+        msg.toUsers = protoMessage.getTos();
 
         msg.content = contentOfType(protoMessage.getContent().getType());
         MessagePayload payload = new MessagePayload(protoMessage.getContent());
