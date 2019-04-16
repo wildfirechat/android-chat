@@ -139,9 +139,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private BaseEvent.ConnectionReceiver mConnectionReceiver;
 
+    private String mHost;
+    private int mPort;
+
     private class ClientServiceStub extends IRemoteClient.Stub {
-        private String mHost;
-        private int mPort;
 
         @Override
         public String getClientId() throws RemoteException {
@@ -159,19 +160,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             mConnectionStatus = ConnectionStatusUnconnected;
             userId = userName;
-            ProtoLogic.setConnectionStatusCallback(ClientService.this);
-            ProtoLogic.setReceiveMessageCallback(ClientService.this);
+            initProto(userName, userPwd);
 
-            ProtoLogic.setAuthInfo(userName, userPwd);
-
-            if (mConnectionReceiver == null) {
-                mConnectionReceiver = new BaseEvent.ConnectionReceiver();
-                IntentFilter filter = new IntentFilter();
-                filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-                registerReceiver(mConnectionReceiver, filter);
-            }
-
-            ProtoLogic.connect(mHost, mPort);
         }
 
         @Override
@@ -226,15 +216,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 //            if (mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusConnected && mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusReceiveing) {
 //                [self destroyMars];
 //            }
-            if (mConnectionReceiver != null) {
-                unregisterReceiver(mConnectionReceiver);
-                mConnectionReceiver = null;
-            }
 
-            ProtoLogic.setConnectionStatusCallback(null);
-            ProtoLogic.setReceiveMessageCallback(null);
             ProtoLogic.disconnect(clearSession ? 8 : 0);
 
+            resetProto();
         }
 
         @Override
@@ -1584,7 +1569,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.e("ddd", "unbinded");
         return super.onUnbind(intent);
     }
 
@@ -1592,7 +1576,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     public void onCreate() {
         super.onCreate();
 
-        initProto();
+        // Initialize the Mars PlatformComm
+        Mars.init(getApplicationContext(), new Handler(Looper.getMainLooper()));
+        if (mConnectionReceiver == null) {
+            mConnectionReceiver = new BaseEvent.ConnectionReceiver();
+            IntentFilter filter = new IntentFilter();
+            filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+            registerReceiver(mConnectionReceiver, filter);
+        }
+
         try {
             mBinder.registerMessageContent(AddGroupMemberNotificationContent.class.getName());
             mBinder.registerMessageContent(CallStartMessageContent.class.getName());
@@ -1625,14 +1617,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         Log.appenderClose();
         super.onDestroy();
         resetProto();
+        if (mConnectionReceiver != null) {
+            unregisterReceiver(mConnectionReceiver);
+            mConnectionReceiver = null;
+        }
     }
 
-    private void initProto() {
+    private void initProto(String userName, String userPwd) {
         AppLogic.setCallBack(this);
         SdtLogic.setCallBack(this);
 
-        // Initialize the Mars PlatformComm
-        Mars.init(getApplicationContext(), new Handler(Looper.getMainLooper()));
         Mars.onCreate(true);
         openXlog();
 
@@ -1645,12 +1639,19 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setChannelInfoUpdateCallback(this);
         ProtoLogic.setGroupMembersUpdateCallback(this);
         ProtoLogic.setFriendRequestListUpdateCallback(this);
+
+        ProtoLogic.setConnectionStatusCallback(ClientService.this);
+        ProtoLogic.setReceiveMessageCallback(ClientService.this);
+        ProtoLogic.setAuthInfo(userName, userPwd);
+        ProtoLogic.connect(mHost, mPort);
     }
 
     private void resetProto() {
         Mars.onDestroy();
         AppLogic.setCallBack(null);
         SdtLogic.setCallBack(null);
+        // Receiver may not registered
+//        Alarm.resetAlarm(this);
         ProtoLogic.setUserInfoUpdateCallback(null);
         ProtoLogic.setSettingUpdateCallback(null);
         ProtoLogic.setFriendListUpdateCallback(null);
