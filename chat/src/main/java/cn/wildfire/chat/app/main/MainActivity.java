@@ -128,6 +128,11 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         return false;
     }
 
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
     private void initView() {
         setTitle(UIUtils.getString(R.string.app_name));
 
