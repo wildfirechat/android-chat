@@ -41,7 +41,7 @@ public class AboutActivity extends WfcBaseActivity {
 
     @OnClick(R.id.introOptionItemView)
     public void intro() {
-        WfcWebViewActivity.loadUrl(this, "野火IM用户协议", "http://docs.wildfirechat.cn/");
+        WfcWebViewActivity.loadUrl(this, "野火IM功能介绍", "http://docs.wildfirechat.cn/");
     }
 
     @OnClick(R.id.agreementOptionItemView)

@@ -1,9 +1,12 @@
 package cn.wildfire.chat.app.main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,6 +62,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private QBadgeView unreadFriendRequestBadgeView;
 
     private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
+    private static final int REQUEST_IGNORE_BATTERY_CODE = 101;
 
     private ConversationListFragment conversationListFragment;
     private ContactFragment contactFragment;
@@ -108,7 +112,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 unreadFriendRequestBadgeView.setBadgeNumber(count);
             }
         });
-        checkDisplayName();
+        if (checkDisplayName()) {
+            ignoreBatteryOption();
+        }
     }
 
     public void hideUnreadFriendRequestBadgeView() {
@@ -243,11 +249,21 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_SCAN_QR_CODE && data != null) {
-            String result = data.getStringExtra(Intents.Scan.RESULT);
-            onScanPcQrCode(result);
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CODE_SCAN_QR_CODE:
+                if (resultCode == RESULT_OK) {
+                    String result = data.getStringExtra(Intents.Scan.RESULT);
+                    onScanPcQrCode(result);
+                }
+                break;
+            case REQUEST_IGNORE_BATTERY_CODE:
+                if (resultCode == RESULT_CANCELED) {
+                    Toast.makeText(this, "允许野火IM后台运行，更能保证消息的实时性", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
     }
 
@@ -297,7 +313,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         startActivity(intent);
     }
 
-    private void checkDisplayName() {
+    private boolean checkDisplayName() {
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
@@ -305,8 +321,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             if (!sp.getBoolean("updatedDisplayName", false)) {
                 sp.edit().putBoolean("updatedDisplayName", true).apply();
                 updateDisplayName();
+                return false;
             }
         }
+        return true;
     }
 
     private void updateDisplayName() {
@@ -322,5 +340,23 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                     }
                 }).build();
         dialog.show();
+    }
+
+
+    private void ignoreBatteryOption() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                Intent intent = new Intent();
+                String packageName = getPackageName();
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                    intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + packageName));
+                    startActivityForResult(intent, REQUEST_IGNORE_BATTERY_CODE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
