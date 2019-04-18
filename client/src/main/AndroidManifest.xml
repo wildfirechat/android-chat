@@ -15,10 +15,10 @@
     <application>
         <service
             android:name="cn.wildfirechat.client.ClientService"
-            android:process=":marsservice"></service>
+            android:process=":marsservice" />
         <receiver
             android:name="com.tencent.mars.BaseEvent$ConnectionReceiver"
-            android:process=":marsservice"></receiver>
+            android:process=":marsservice" />
 
         <!--must run in th main process-->
         <receiver android:name="cn.wildfirechat.remote.RecoverReceiver" />
