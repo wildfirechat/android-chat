@@ -18,10 +18,10 @@ import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
@@ -59,7 +59,7 @@ public class WfcNotificationManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
                     "wildfire chat message",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationManager.IMPORTANCE_HIGH);
 
             channel.enableLights(true); //是否在桌面icon右上角展示小红点
             channel.setLightColor(Color.GREEN); //小红点颜色
@@ -76,6 +76,7 @@ public class WfcNotificationManager {
         builder.setContentIntent(pendingIntent);
         builder.setContentTitle(title);
         builder.setContentText(content);
+
         notificationManager.notify(tag, id, builder.build());
     }
 
