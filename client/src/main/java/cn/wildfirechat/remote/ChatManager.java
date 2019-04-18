@@ -14,6 +14,12 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -23,11 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
-import androidx.lifecycle.ProcessLifecycleOwner;
 import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ICreateChannelCallback;
@@ -111,6 +112,8 @@ public class ChatManager {
     private List<RemoveMessageListener> removeMessageListeners = new ArrayList<>();
     private List<OnChannelInfoUpdateListener> channelInfoUpdateListeners = new ArrayList<>();
     private List<OnMessageUpdateListener> messageUpdateListeners = new ArrayList<>();
+
+    private List<IMServiceStatusListener> imServiceStatusListeners = new ArrayList<>();
 
     public enum PushType {
         Xiaomi(1),
@@ -970,6 +973,17 @@ public class ChatManager {
      */
     public void removeOnMessageUpdateListener(OnMessageUpdateListener listener) {
         messageUpdateListeners.remove(listener);
+    }
+
+    public void addIMServiceStatusListener(IMServiceStatusListener listener) {
+        if (listener == null) {
+            return;
+        }
+        imServiceStatusListeners.add(listener);
+    }
+
+    public void removeIMServiceStatusListener(IMServiceStatusListener listener) {
+        imServiceStatusListeners.remove(listener);
     }
 
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
@@ -2963,6 +2977,12 @@ public class ChatManager {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+
+            mainHandler.post(() -> {
+                for (IMServiceStatusListener listener : imServiceStatusListeners) {
+                    listener.onServiceConnected();
+                }
+            });
         }
 
         @Override
@@ -2970,6 +2990,11 @@ public class ChatManager {
             Log.e("chatManager", "onServiceDisconnected");
             mClient = null;
             checkRemoteService();
+            mainHandler.post(() -> {
+                for (IMServiceStatusListener listener : imServiceStatusListeners) {
+                    listener.onServiceConnected();
+                }
+            });
         }
     };
 }

@@ -2,17 +2,20 @@ package cn.wildfire.chat.kit.contact;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import java.util.List;
+
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
@@ -32,6 +35,7 @@ import cn.wildfirechat.model.UserInfo;
 
 public class ContactFragment extends BaseContactFragment implements QuickIndexBar.OnLetterUpdateListener {
     private UserViewModel userViewModel;
+    private IMServiceStatusViewModel imServiceStatusViewModel;
 
     private Observer<Integer> friendRequestUpdateLiveDataObserver = count -> {
         FriendRequestValue requestValue = new FriendRequestValue(count == null ? 0 : count);
@@ -39,6 +43,17 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
     };
 
     private Observer<Object> contactListUpdateLiveDataObserver = o -> {
+        loadContacts();
+    };
+
+    private Observer<Boolean> imStatusLiveDataObserver = status -> {
+        Log.e("imndx", "helllllllllll");
+        if (status && (contactAdapter != null && (contactAdapter.contacts == null || contactAdapter.contacts.size() == 0))) {
+            loadContacts();
+        }
+    };
+
+    private void loadContacts() {
         List<UserInfo> userInfos = contactViewModel.getContacts(false);
         contactAdapter.setContacts(userInfoToUIUserInfo(userInfos));
         contactAdapter.notifyDataSetChanged();
@@ -48,7 +63,7 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
                 userViewModel.getUserInfo(info.uid, true);
             }
         }
-    };
+    }
 
     private Observer<List<UserInfo>> userInfoLiveDataObserver = userInfos -> {
         contactAdapter.updateContacts(userInfoToUIUserInfo(userInfos));
@@ -64,6 +79,8 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
 
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
+        imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
+        imServiceStatusViewModel.imServiceStatusLiveData().observeForever(imStatusLiveDataObserver);
         return view;
     }
 
@@ -73,6 +90,7 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
         contactViewModel.contactListUpdatedLiveData().removeObserver(contactListUpdateLiveDataObserver);
         contactViewModel.friendRequestUpdatedLiveData().removeObserver(friendRequestUpdateLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoLiveDataObserver);
+        imServiceStatusViewModel.imServiceStatusLiveData().removeObserver(imStatusLiveDataObserver);
     }
 
     @Override

@@ -2,12 +2,13 @@ package cn.wildfire.chat.kit.conversationlist;
 
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
