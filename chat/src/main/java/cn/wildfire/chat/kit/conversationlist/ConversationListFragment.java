@@ -5,9 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Arrays;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -18,6 +15,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
+
+import java.util.Arrays;
+import java.util.List;
+
+import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -36,6 +38,7 @@ public class ConversationListFragment extends Fragment {
     private static final List<Integer> lines = Arrays.asList(0);
 
     private ConversationListViewModel conversationListViewModel;
+    private IMServiceStatusViewModel imServiceStatusViewModel;
     private UserViewModel userViewModel;
     private Observer<ConversationInfo> conversationInfoObserver = new Observer<ConversationInfo>() {
         @Override
@@ -62,17 +65,17 @@ public class ConversationListFragment extends Fragment {
     };
 
     // 会话同步
-    private Observer<Object> settingUpdateObserver = new Observer<Object>() {
-        @Override
-        public void onChanged(@Nullable Object o) {
-            reloadConversations();
-        }
+    private Observer<Object> settingUpdateObserver = o -> reloadConversations();
+
+    private Observer<List<UserInfo>> userInfoLiveDataObserver = (userInfos) -> {
+        adapter.updateUserInfos(userInfos);
     };
 
-    private Observer<List<UserInfo>> userInfoLiveDataObserver = new Observer<List<UserInfo>>() {
-        @Override
-        public void onChanged(@Nullable List<UserInfo> userInfos) {
-            adapter.updateUserInfos(userInfos);
+    private Observer<Boolean> imStatusLiveDataObserver = (connected) -> {
+        if (connected) {
+            if (adapter != null && (adapter.getConversationInfos() == null || adapter.getConversationInfos().size() == 0)) {
+                reloadConversations();
+            }
         }
     };
 
@@ -103,6 +106,9 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel.conversationInfoLiveData().observeForever(conversationInfoObserver);
         conversationListViewModel.conversationRemovedLiveData().observeForever(conversationRemovedObserver);
         conversationListViewModel.settingUpdateLiveData().observeForever(settingUpdateObserver);
+
+        imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
+        imServiceStatusViewModel.imServiceStatusLiveData().observeForever(imStatusLiveDataObserver);
 
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
@@ -144,6 +150,7 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel.conversationInfoLiveData().removeObserver(conversationInfoObserver);
         conversationListViewModel.conversationRemovedLiveData().removeObserver(conversationRemovedObserver);
         conversationListViewModel.settingUpdateLiveData().removeObserver(settingUpdateObserver);
+        imServiceStatusViewModel.imServiceStatusLiveData().removeObserver(imStatusLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoLiveDataObserver);
     }
 
