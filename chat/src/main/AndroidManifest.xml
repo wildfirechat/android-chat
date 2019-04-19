@@ -124,7 +124,13 @@
         <activity
             android:name="cn.wildfire.chat.kit.preview.MMPreviewActivity"
             android:theme="@style/AppTheme.FullScreen" />
-        <activity android:name="cn.wildfire.chat.kit.voip.SingleVoipCallActivity" />
+        <activity android:name="cn.wildfire.chat.kit.voip.SingleVoipCallActivity">
+            <intent-filter>
+                <action android:name="cn.wildfirechat.kit.chat.voip.single" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
         <activity
             android:name="cn.wildfire.chat.kit.conversation.CreateConversationActivity"
             android:label="创建会话" />
