@@ -6,5 +6,5 @@ public interface WfcIntent {
     String ACTION_CONTACT = "cn.wildfirechat.chat.contact";
     String ACTION_USER_INFO = "cn.wildfirechat.chat.user.info";
     String ACTION_GROUP_INFO = "cn.wildfirechat.chat.group.info";
-    String ACTION_VOIP = "cn.wildfirechat.chat.voip";
+    String ACTION_VOIP_SINGLE = "cn.wildfirechat.kit.chat.voip.single";
 }
