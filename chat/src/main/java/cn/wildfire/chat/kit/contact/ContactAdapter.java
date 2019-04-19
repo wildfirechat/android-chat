@@ -4,14 +4,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
@@ -51,12 +52,18 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void updateContacts(List<UIUserInfo> userInfos) {
+        if (contacts == null) {
+            return;
+        }
         for (UIUserInfo info : userInfos) {
             updateContact(info);
         }
     }
 
     public void updateContact(UIUserInfo userInfo) {
+        if (contacts == null) {
+            return;
+        }
         int originalPosition = -1;
         for (int i = 0; i < contacts.size(); i++) {
             if (contacts.get(i).getUserInfo().uid.equals(userInfo.getUserInfo().uid)) {
