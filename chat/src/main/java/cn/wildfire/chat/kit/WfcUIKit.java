@@ -2,12 +2,18 @@ package cn.wildfire.chat.kit;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.text.TextUtils;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -17,10 +23,6 @@ import com.lqr.emoji.LQREmotionKit;
 import java.util.Iterator;
 import java.util.List;
 
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
-import androidx.lifecycle.ProcessLifecycleOwner;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.SingleVoipCallActivity;
@@ -109,16 +111,26 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         ringPlayer.stop();
     }
 
+    // pls refer to https://stackoverflow.com/questions/11124119/android-starting-new-activity-from-application-class
     public static void onCall(Context context, String targetId, boolean isMo, boolean isAudioOnly) {
-        Intent intent = new Intent(context, SingleVoipCallActivity.class);
-        intent.putExtra(SingleVoipCallActivity.EXTRA_MO, isMo);
-        intent.putExtra(SingleVoipCallActivity.EXTRA_TARGET, targetId);
-        intent.putExtra(SingleVoipCallActivity.EXTRA_AUDIO_ONLY, isAudioOnly);
+        Intent voip = new Intent(WfcIntent.ACTION_VOIP_SINGLE);
+        voip.putExtra(SingleVoipCallActivity.EXTRA_MO, isMo);
+        voip.putExtra(SingleVoipCallActivity.EXTRA_TARGET, targetId);
+        voip.putExtra(SingleVoipCallActivity.EXTRA_AUDIO_ONLY, isAudioOnly);
 
-        if (!(context instanceof Activity)) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (context instanceof Activity) {
+            context.startActivity(voip);
+        } else {
+            Intent main = new Intent(WfcIntent.ACTION_MAIN);
+            voip.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivities(context, 100, new Intent[]{main, voip}, 0);
+            try {
+                pendingIntent.send();
+            } catch (PendingIntent.CanceledException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-        context.startActivity(intent);
     }
 
     @Override
