@@ -15,6 +15,8 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.tencent.mars.BaseEvent;
 import com.tencent.mars.Mars;
 import com.tencent.mars.app.AppLogic;
@@ -31,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import androidx.annotation.Nullable;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -117,6 +118,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private int mConnectionStatus;
     private String mBackupDeviceToken;
     private int mBackupPushType;
+
+    private Handler handler;
 
     private boolean logined;
     private String userId;
@@ -1577,7 +1580,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         super.onCreate();
 
         // Initialize the Mars PlatformComm
-        Mars.init(getApplicationContext(), new Handler(Looper.getMainLooper()));
+        handler = new Handler(Looper.getMainLooper());
+        Mars.init(getApplicationContext(), handler);
         if (mConnectionReceiver == null) {
             mConnectionReceiver = new BaseEvent.ConnectionReceiver();
             IntentFilter filter = new IntentFilter();
@@ -1771,18 +1775,21 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (status == -4) {
             status = -1;
         }
-        int i = onConnectionStatusChangeListenes.beginBroadcast();
-        IOnConnectionStatusChangeListener listener;
-        while (i > 0) {
-            i--;
-            listener = onConnectionStatusChangeListenes.getBroadcastItem(i);
-            try {
-                listener.onConnectionStatusChange(status);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        int finalStatus = status;
+        handler.post(() -> {
+            int i = onConnectionStatusChangeListenes.beginBroadcast();
+            IOnConnectionStatusChangeListener listener;
+            while (i > 0) {
+                i--;
+                listener = onConnectionStatusChangeListenes.getBroadcastItem(i);
+                try {
+                    listener.onConnectionStatusChange(finalStatus);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        onConnectionStatusChangeListenes.finishBroadcast();
+            onConnectionStatusChangeListenes.finishBroadcast();
+        });
 
         if (mConnectionStatus == ConnectionStatusConnected && !TextUtils.isEmpty(mBackupDeviceToken)) {
             try {
@@ -1796,18 +1803,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onRecallMessage(long messageUid) {
-        int receiverCount = onReceiveMessageListeners.beginBroadcast();
-        IOnReceiveMessageListener listener;
-        while (receiverCount > 0) {
-            receiverCount--;
-            listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
-            try {
-                listener.onRecall(messageUid);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        handler.post(() -> {
+            int receiverCount = onReceiveMessageListeners.beginBroadcast();
+            IOnReceiveMessageListener listener;
+            while (receiverCount > 0) {
+                receiverCount--;
+                listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
+                try {
+                    listener.onRecall(messageUid);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        onReceiveMessageListeners.finishBroadcast();
+            onReceiveMessageListeners.finishBroadcast();
+        });
     }
 
     @Override
@@ -1828,160 +1837,178 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 tmpList = new ArrayList<>(messageList);
                 messageList.clear();
             }
-            int receiverCount = onReceiveMessageListeners.beginBroadcast();
-            IOnReceiveMessageListener listener;
-            while (receiverCount > 0) {
-                receiverCount--;
-                listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
-                try {
-                    listener.onReceive(tmpList, hasMore);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+            boolean finalHasMore = hasMore;
+            handler.post(() -> {
+                int receiverCount = onReceiveMessageListeners.beginBroadcast();
+                IOnReceiveMessageListener listener;
+                while (receiverCount > 0) {
+                    receiverCount--;
+                    listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
+                    try {
+                        listener.onReceive(tmpList, finalHasMore);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-            onReceiveMessageListeners.finishBroadcast();
+                onReceiveMessageListeners.finishBroadcast();
+            });
         }
+        ;
     }
 
     @Override
     public void onFriendListUpdated() {
-        int i = onFriendUpdateListenerRemoteCallbackList.beginBroadcast();
-        IOnFriendUpdateListener listener;
-        while (i > 0) {
-            i--;
-            listener = onFriendUpdateListenerRemoteCallbackList.getBroadcastItem(i);
-            try {
-                listener.onFriendListUpdated();
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        handler.post(() -> {
+            int i = onFriendUpdateListenerRemoteCallbackList.beginBroadcast();
+            IOnFriendUpdateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onFriendUpdateListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onFriendListUpdated();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        onFriendUpdateListenerRemoteCallbackList.finishBroadcast();
+            onFriendUpdateListenerRemoteCallbackList.finishBroadcast();
+        });
     }
 
     @Override
     public void onFriendRequestUpdated() {
-        int i = onFriendUpdateListenerRemoteCallbackList.beginBroadcast();
-        IOnFriendUpdateListener listener;
-        while (i > 0) {
-            i--;
-            listener = onFriendUpdateListenerRemoteCallbackList.getBroadcastItem(i);
-            try {
-                listener.onFriendRequestUpdated();
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        handler.post(() -> {
+            int i = onFriendUpdateListenerRemoteCallbackList.beginBroadcast();
+            IOnFriendUpdateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onFriendUpdateListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onFriendRequestUpdated();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        onFriendUpdateListenerRemoteCallbackList.finishBroadcast();
+            onFriendUpdateListenerRemoteCallbackList.finishBroadcast();
+        });
     }
 
     @Override
     public void onGroupInfoUpdated(List<ProtoGroupInfo> list) {
-        ArrayList<GroupInfo> groups = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            GroupInfo gi = convertProtoGroupInfo(list.get(i));
-            if (gi != null) {
-                groups.add(gi);
+        handler.post(() -> {
+            ArrayList<GroupInfo> groups = new ArrayList<>();
+            for (int i = 0; i < list.size(); i++) {
+                GroupInfo gi = convertProtoGroupInfo(list.get(i));
+                if (gi != null) {
+                    groups.add(gi);
+                }
             }
-        }
-        int i = onGroupInfoUpdateListenerRemoteCallbackList.beginBroadcast();
-        IOnGroupInfoUpdateListener listener;
-        while (i > 0) {
-            i--;
-            listener = onGroupInfoUpdateListenerRemoteCallbackList.getBroadcastItem(i);
-            try {
-                listener.onGroupInfoUpdated(groups);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            int i = onGroupInfoUpdateListenerRemoteCallbackList.beginBroadcast();
+            IOnGroupInfoUpdateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onGroupInfoUpdateListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onGroupInfoUpdated(groups);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        onGroupInfoUpdateListenerRemoteCallbackList.finishBroadcast();
+            onGroupInfoUpdateListenerRemoteCallbackList.finishBroadcast();
+        });
     }
 
     @Override
     public void onGroupMembersUpdated(String groupId, List<ProtoGroupMember> members) {
-        ArrayList<GroupMember> groupMembers = new ArrayList<>();
-        for (int i = 0; i < members.size(); i++) {
-            GroupMember gm = covertProtoGroupMember(members.get(i));
-            if (gm != null) {
-                groupMembers.add(gm);
+        handler.post(() -> {
+            ArrayList<GroupMember> groupMembers = new ArrayList<>();
+            for (int i = 0; i < members.size(); i++) {
+                GroupMember gm = covertProtoGroupMember(members.get(i));
+                if (gm != null) {
+                    groupMembers.add(gm);
+                }
             }
-        }
-        int i = onGroupMembersUpdateListenerRemoteCallbackList.beginBroadcast();
-        IOnGroupMembersUpdateListener listener;
-        while (i > 0) {
-            i--;
-            listener = onGroupMembersUpdateListenerRemoteCallbackList.getBroadcastItem(i);
-            try {
-                listener.onGroupMembersUpdated(groupId, groupMembers);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            int i = onGroupMembersUpdateListenerRemoteCallbackList.beginBroadcast();
+            IOnGroupMembersUpdateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onGroupMembersUpdateListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onGroupMembersUpdated(groupId, groupMembers);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        onGroupMembersUpdateListenerRemoteCallbackList.finishBroadcast();
+            onGroupMembersUpdateListenerRemoteCallbackList.finishBroadcast();
+        });
     }
 
 
     @Override
     public void onChannelInfoUpdated(List<ProtoChannelInfo> list) {
-        ArrayList<ChannelInfo> channels = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            ChannelInfo gi = converProtoChannelInfo(list.get(i));
-            if (gi != null) {
-                channels.add(gi);
+        handler.post(() -> {
+            ArrayList<ChannelInfo> channels = new ArrayList<>();
+            for (int i = 0; i < list.size(); i++) {
+                ChannelInfo gi = converProtoChannelInfo(list.get(i));
+                if (gi != null) {
+                    channels.add(gi);
+                }
             }
-        }
-        int i = onChannelInfoUpdateListenerRemoteCallbackList.beginBroadcast();
-        IOnChannelInfoUpdateListener listener;
-        while (i > 0) {
-            i--;
-            listener = onChannelInfoUpdateListenerRemoteCallbackList.getBroadcastItem(i);
-            try {
-                listener.onChannelInfoUpdated(channels);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            int i = onChannelInfoUpdateListenerRemoteCallbackList.beginBroadcast();
+            IOnChannelInfoUpdateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onChannelInfoUpdateListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onChannelInfoUpdated(channels);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        onChannelInfoUpdateListenerRemoteCallbackList.finishBroadcast();
+            onChannelInfoUpdateListenerRemoteCallbackList.finishBroadcast();
+        });
     }
 
     // 参数里面直接带上scope, key, value
     @Override
     public void onSettingUpdated() {
-        int i = onSettingUpdateListenerRemoteCallbackList.beginBroadcast();
-        IOnSettingUpdateListener listener;
-        while (i > 0) {
-            i--;
-            listener = onSettingUpdateListenerRemoteCallbackList.getBroadcastItem(i);
-            try {
-                listener.onSettingUpdated();
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        handler.post(() -> {
+            int i = onSettingUpdateListenerRemoteCallbackList.beginBroadcast();
+            IOnSettingUpdateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onSettingUpdateListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onSettingUpdated();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        onSettingUpdateListenerRemoteCallbackList.finishBroadcast();
+            onSettingUpdateListenerRemoteCallbackList.finishBroadcast();
+        });
     }
 
     @Override
     public void onUserInfoUpdated(List<ProtoUserInfo> list) {
-        ArrayList<UserInfo> users = new ArrayList<>();
-        for (int j = 0; j < list.size(); j++) {
-            UserInfo userInfo = convertProtoUserInfo(list.get(j));
-            if (userInfo != null) {
-                users.add(userInfo);
+        handler.post(() -> {
+            ArrayList<UserInfo> users = new ArrayList<>();
+            for (int j = 0; j < list.size(); j++) {
+                UserInfo userInfo = convertProtoUserInfo(list.get(j));
+                if (userInfo != null) {
+                    users.add(userInfo);
+                }
             }
-        }
-        int i = onUserInfoUpdateListenerRemoteCallbackList.beginBroadcast();
-        IOnUserInfoUpdateListener listener;
-        while (i > 0) {
-            i--;
-            listener = onUserInfoUpdateListenerRemoteCallbackList.getBroadcastItem(i);
-            try {
-                listener.onUserInfoUpdated(users);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            int i = onUserInfoUpdateListenerRemoteCallbackList.beginBroadcast();
+            IOnUserInfoUpdateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onUserInfoUpdateListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onUserInfoUpdated(users);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        onUserInfoUpdateListenerRemoteCallbackList.finishBroadcast();
+            onUserInfoUpdateListenerRemoteCallbackList.finishBroadcast();
+        });
     }
 }
