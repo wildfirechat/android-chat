@@ -2,7 +2,9 @@ package cn.wildfire.chat.kit.conversation.ext;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -34,6 +36,10 @@ public class ShootExt extends ConversationExt {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             String path = data.getStringExtra("path");
+            if (TextUtils.isEmpty(path)) {
+                Toast.makeText(context, "拍照错误, 请像我们反馈", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (data.getBooleanExtra("take_photo", true)) {
                 //照片
                 conversationViewModel.sendImgMsg(ImageUtils.genThumbImgFile(path), new File(path));
