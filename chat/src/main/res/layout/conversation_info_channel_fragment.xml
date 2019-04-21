@@ -57,6 +57,16 @@
                     app:left_text_size="16sp"
                     app:right_text="channel desc" />
 
+                <com.lqr.optionitemview.OptionItemView
+                    android:id="@+id/channelQRCodeOptionItemView"
+                    style="@style/OptionItem"
+                    android:background="@drawable/selector_option_item"
+                    app:left_text="二维码"
+                    app:left_text_color="@color/black0"
+                    app:left_text_margin_left="@dimen/option_item_margin_left"
+                    app:left_text_size="16sp"
+                    app:right_src="@mipmap/qr_code" />
+
             </LinearLayout>
 
             <LinearLayout
