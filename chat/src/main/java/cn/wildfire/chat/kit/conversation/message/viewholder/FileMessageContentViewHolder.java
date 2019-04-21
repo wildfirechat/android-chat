@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -65,7 +66,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         }
 
         if (file.exists()) {
-            Intent intent = FileUtils.getViewIntent(context, new File(fileMessageContent.localPath));
+            Intent intent = FileUtils.getViewIntent(context, file);
             ComponentName cn = intent.resolveActivity(context.getPackageManager());
             if (cn == null) {
                 Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
