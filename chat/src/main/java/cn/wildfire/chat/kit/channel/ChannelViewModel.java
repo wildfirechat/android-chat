@@ -1,10 +1,11 @@
 package cn.wildfire.chat.kit.channel;
 
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfirechat.message.MessageContentMediaType;
@@ -43,7 +44,7 @@ public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateLi
             ChatManager.Instance().uploadMedia(content, MessageContentMediaType.PORTRAIT.getValue(), new GeneralCallback2() {
                 @Override
                 public void onSuccess(String result) {
-                    ChatManager.Instance().createChannel(channelId, channelName, channelPortrait, desc, extra, new GeneralCallback2() {
+                    ChatManager.Instance().createChannel(channelId, channelName, result, desc, extra, new GeneralCallback2() {
                         @Override
                         public void onSuccess(String result) {
                             resultLiveData.setValue(new OperateResult<String>(result, 0));

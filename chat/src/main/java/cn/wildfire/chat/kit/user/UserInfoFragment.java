@@ -11,6 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.lqr.imagepicker.ImagePicker;
@@ -19,15 +25,10 @@ import com.lqr.optionitemview.OptionItemView;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.app.Config;
+import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -208,7 +209,7 @@ public class UserInfoFragment extends Fragment {
     @OnClick(R.id.qrCodeOptionItemView)
     void showMyQRCode() {
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
-        String qrCodeValue = Config.QR_CODE_PREFIX_USER + userInfo.uid;
+        String qrCodeValue = WfcScheme.QR_CODE_PREFIX_USER + userInfo.uid;
         startActivity(QRCodeActivity.buildQRCodeIntent(getActivity(), "二维码", userInfo.portrait, qrCodeValue));
     }
 }

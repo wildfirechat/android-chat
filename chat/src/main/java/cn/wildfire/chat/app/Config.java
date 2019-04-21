@@ -18,10 +18,6 @@ public interface Config {
     String ICE_USERNAME = "wfchat";
     String ICE_PASSWORD = "wfchat";
 
-    String QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
-    String QR_CODE_PREFIX_USER = "wildfirechat://user/";
-    String QR_CODE_PREFIX_GROUP = "wildfirechat://group/";
-
     int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 120;
 
     String VIDEO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/video";

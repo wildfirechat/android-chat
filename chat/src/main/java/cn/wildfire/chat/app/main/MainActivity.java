@@ -12,6 +12,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
+
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
@@ -23,14 +29,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 import butterknife.Bind;
-import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcScheme;
+import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.contact.ContactFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
@@ -274,14 +276,17 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 //        uri.getAuthority();
 //        uri.getQuery()
         switch (prefix) {
-            case Config.QR_CODE_PREFIX_PC_SESSION:
+            case WfcScheme.QR_CODE_PREFIX_PC_SESSION:
                 pcLogin(value);
                 break;
-            case Config.QR_CODE_PREFIX_USER:
+            case WfcScheme.QR_CODE_PREFIX_USER:
                 showUser(value);
                 break;
-            case Config.QR_CODE_PREFIX_GROUP:
+            case WfcScheme.QR_CODE_PREFIX_GROUP:
                 joinGroup(value);
+                break;
+            case WfcScheme.QR_CODE_PREFIX_CHANNEL:
+                subscribeChannel(value);
                 break;
             default:
                 Toast.makeText(this, "qrcode: " + qrcode, Toast.LENGTH_SHORT).show();
@@ -310,6 +315,12 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void joinGroup(String groupId) {
         Intent intent = new Intent(this, GroupInfoActivity.class);
         intent.putExtra("groupId", groupId);
+        startActivity(intent);
+    }
+
+    private void subscribeChannel(String channelId) {
+        Intent intent = new Intent(this, ChannelInfoActivity.class);
+        intent.putExtra("channelId", channelId);
         startActivity(intent);
     }
 
