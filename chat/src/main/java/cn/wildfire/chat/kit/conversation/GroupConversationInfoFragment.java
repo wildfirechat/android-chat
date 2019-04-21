@@ -11,6 +11,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.lqr.optionitemview.OptionItemView;
@@ -20,17 +28,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.app.Config;
+import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
@@ -234,11 +235,10 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @OnClick(R.id.groupQRCodeOptionItemView)
     void showGroupQRCode() {
-        String qrCodeValue = Config.QR_CODE_PREFIX_GROUP + groupInfo.target;
+        String qrCodeValue = WfcScheme.QR_CODE_PREFIX_GROUP + groupInfo.target;
         Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "群二维码", groupInfo.portrait, qrCodeValue);
         startActivity(intent);
     }
-
 
     @Override
     public void onUserMemberClick(UserInfo userInfo) {

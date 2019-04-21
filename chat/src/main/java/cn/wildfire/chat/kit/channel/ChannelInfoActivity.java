@@ -10,15 +10,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -65,6 +66,14 @@ public class ChannelInfoActivity extends AppCompatActivity {
     private void init() {
         Intent intent = getIntent();
         channelInfo = intent.getParcelableExtra("channelInfo");
+        channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
+
+        if (channelInfo == null) {
+            String channelId = intent.getStringExtra("channelId");
+            if (!TextUtils.isEmpty(channelId)) {
+                channelInfo = channelViewModel.getChannelInfo(channelId, true);
+            }
+        }
         if (channelInfo == null) {
             finish();
             return;
@@ -75,7 +84,6 @@ public class ChannelInfoActivity extends AppCompatActivity {
         channelTextView.setText(channelInfo.name);
         channelDescTextView.setText(TextUtils.isEmpty(channelInfo.desc) ? "频道主什么也没写" : channelInfo.desc);
 
-        channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
 
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         if (channelInfo.owner.equals(userViewModel.getUserId())) {

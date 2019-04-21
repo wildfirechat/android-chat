@@ -65,6 +65,8 @@ import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.ModifyChannelInfoType;
 import cn.wildfirechat.model.ModifyGroupInfoType;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
+import cn.wildfirechat.model.NullChannelInfo;
+import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
@@ -660,11 +662,15 @@ public class ChatManager {
     public @Nullable
     ChannelInfo getChannelInfo(String channelId, boolean refresh) {
         if (!checkRemoteService()) {
-            return null;
+            return new NullChannelInfo(channelId);
         }
 
         try {
-            return mClient.getChannelInfo(channelId, refresh);
+            ChannelInfo channelInfo = mClient.getChannelInfo(channelId, refresh);
+            if (channelInfo == null) {
+                channelInfo = new NullChannelInfo(channelId);
+            }
+            return channelInfo;
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -1973,11 +1979,15 @@ public class ChatManager {
     public @Nullable
     GroupInfo getGroupInfo(String groupId, boolean refresh) {
         if (!checkRemoteService()) {
-            return null;
+            return new NullGroupInfo(groupId);
         }
 
         try {
-            return mClient.getGroupInfo(groupId, refresh);
+            GroupInfo groupInfo = mClient.getGroupInfo(groupId, refresh);
+            if (groupInfo == null) {
+                groupInfo = new NullGroupInfo(groupId);
+            }
+            return groupInfo;
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;

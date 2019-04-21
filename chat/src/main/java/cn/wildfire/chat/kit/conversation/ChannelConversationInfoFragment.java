@@ -8,22 +8,25 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.bumptech.glide.Glide;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.lqr.optionitemview.OptionItemView;
 
 import java.util.Arrays;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
+import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
@@ -47,6 +50,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     private ConversationInfo conversationInfo;
     private ConversationViewModel conversationViewModel;
     private ChannelViewModel channelViewModel;
+    private ChannelInfo channelInfo;
 
     public static ChannelConversationInfoFragment newInstance(ConversationInfo conversationInfo) {
         ChannelConversationInfoFragment fragment = new ChannelConversationInfoFragment();
@@ -77,7 +81,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     private void init() {
         conversationViewModel = ViewModelProviders.of(this, new ConversationViewModelFactory(conversationInfo.conversation)).get(ConversationViewModel.class);
         channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
-        ChannelInfo channelInfo = channelViewModel.getChannelInfo(conversationInfo.conversation.target, true);
+        channelInfo = channelViewModel.getChannelInfo(conversationInfo.conversation.target, true);
 
         if (channelInfo != null) {
             initChannel(channelInfo);
@@ -109,6 +113,13 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     @OnClick(R.id.clearMessagesOptionItemView)
     void clearMessage() {
         conversationViewModel.clearConversationMessage(conversationInfo.conversation);
+    }
+
+    @OnClick(R.id.channelQRCodeOptionItemView)
+    void showChannelQRCode() {
+        String qrCodeValue = WfcScheme.QR_CODE_PREFIX_CHANNEL + channelInfo.channelId;
+        Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "频道二维码", channelInfo.portrait, qrCodeValue);
+        startActivity(intent);
     }
 
     @Override
