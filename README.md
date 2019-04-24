@@ -83,8 +83,10 @@
 1. [LQRWeChat](https://github.com/GitLqr/LQRWeChat) 本项目中图片选择器、表情基于此开发
 2. [butterKnife](https://github.com/JakeWharton/butterknife)
 3. OKHttp等一些其他优秀的开源项目
+4. 本工程使用的Icon全部来源于[icons8](https://icons8.com)，对他们表示感谢。
+5. Gif动态图来源于网络，对网友的制作表示感谢。
 
-***对以上项目的作者衷心的感谢，世界因你们的分享变得更美好。***
+如果有什么地方侵犯了您的权益，请联系我们删除🙏🙏🙏
 
 ## 案例参考
 
@@ -94,4 +96,3 @@ todo
 
 1. Under the MIT license. See the [LICENSE](https://github.com/wildfirechat/mars/blob/firechat/LICENSE) file for details.
 2. Under the 996ICU License. See the [LICENSE](https://github.com/996icu/996.ICU/blob/master/LICENSE) file for details.
-
