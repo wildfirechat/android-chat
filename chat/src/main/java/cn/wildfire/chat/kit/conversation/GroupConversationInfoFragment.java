@@ -144,7 +144,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         quitGroupButton.setVisibility(View.VISIBLE);
 
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
-        List<GroupMember> groupMembers = groupViewModel.getGroupMembers(conversationInfo.conversation.target, false);
+        List<GroupMember> groupMembers = groupViewModel.getGroupMembers(conversationInfo.conversation.target, true);
         List<String> memberIds = new ArrayList<>();
         for (GroupMember member : groupMembers) {
             if (member.memberId.equals(userId)) {
@@ -153,6 +153,11 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             memberIds.add(member.memberId);
         }
         groupInfo = groupViewModel.getGroupInfo(conversationInfo.conversation.target, false);
+
+        if (groupMember == null || groupInfo == null) {
+            Toast.makeText(getActivity(), "你不在群组或发生错误, 请稍后再试", Toast.LENGTH_SHORT).show();
+            getActivity().finish();
+        }
 
         boolean enableRemoveMember = false;
         if (groupMember.type != GroupMember.GroupMemberType.Normal || userId.equals(groupInfo.owner)) {

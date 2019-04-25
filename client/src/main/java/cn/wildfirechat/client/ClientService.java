@@ -75,6 +75,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
+import cn.wildfirechat.model.NullGroupMember;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.ProtoChannelInfo;
 import cn.wildfirechat.model.ProtoChatRoomInfo;
@@ -1219,14 +1220,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembers(groupId, forceUpdate);
             List<GroupMember> out = new ArrayList<>();
             for (ProtoGroupMember protoMember : protoGroupMembers) {
-                GroupMember member = new GroupMember();
-                member.groupId = groupId;
-                member.memberId = protoMember.getMemberId();
-                member.alias = protoMember.getAlias();
-                member.type = GroupMember.GroupMemberType.type(protoMember.getType());
-                member.updateDt = protoMember.getUpdateDt();
+                if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
+                    GroupMember member = new GroupMember();
+                    member.groupId = groupId;
+                    member.memberId = protoMember.getMemberId();
+                    member.alias = protoMember.getAlias();
+                    member.type = GroupMember.GroupMemberType.type(protoMember.getType());
+                    member.updateDt = protoMember.getUpdateDt();
 
-                out.add(member);
+                    out.add(member);
+                }
             }
             return out;
         }
@@ -1234,7 +1237,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public GroupMember getGroupMember(String groupId, String memberId) throws RemoteException {
             ProtoGroupMember protoGroupMember = ProtoLogic.getGroupMember(groupId, memberId);
-            return covertProtoGroupMember(protoGroupMember);
+            if (protoGroupMember == null || TextUtils.isEmpty(protoGroupMember.getMemberId())) {
+                return new NullGroupMember(groupId, memberId);
+            } else {
+                return covertProtoGroupMember(protoGroupMember);
+            }
         }
 
         @Override
