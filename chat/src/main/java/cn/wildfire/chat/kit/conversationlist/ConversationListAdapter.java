@@ -4,6 +4,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -17,9 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
@@ -109,7 +110,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         int currentPosition, targetPosition;
         currentPosition = currentPosition(conversationInfo);
-        targetPosition = targetPosition(conversationInfo);
+        targetPosition = targetPosition(conversationInfo, currentPosition);
 
         if (currentPosition >= 0) {
             if (currentPosition == targetPosition) {
@@ -347,7 +348,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         return position;
     }
 
-    private int targetPosition(ConversationInfo conversationInfo) {
+    private int targetPosition(ConversationInfo conversationInfo, int currentPosition) {
         if (conversationInfos == null) {
             return -1;
         }
@@ -370,13 +371,13 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     break;
                 }
             }
+            position = position > currentPosition ? position - 1 : position;
             return position;
         } else {
             for (int i = 0; i < conversationInfos.size(); i++) {
                 info = conversationInfos.get(i);
                 if (info.isTop) {
-                    position = i + 1;
-                    continue;
+                    // do nothing, just continue
                 } else {
                     if (conversationInfo.timestamp >= info.timestamp) {
                         position = i;
@@ -384,6 +385,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     }
                 }
             }
+            position = position > currentPosition ? position - 1 : position;
             return position;
         }
     }
