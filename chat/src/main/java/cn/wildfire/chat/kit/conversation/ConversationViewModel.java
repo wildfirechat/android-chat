@@ -5,14 +5,15 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.MyApp;
 import cn.wildfire.chat.app.third.location.data.LocationData;
@@ -58,6 +59,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         this.conversation = conversation;
         this.channelPrivateChatUser = channelPrivateChatUser;
         ChatManager.Instance().addOnReceiveMessageListener(this);
+        ChatManager.Instance().addRecallMessageListener(this);
         ChatManager.Instance().addSendMessageListener(this);
         ChatManager.Instance().addOnMessageUpdateListener(this);
     }
@@ -78,6 +80,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     @Override
     protected void onCleared() {
         ChatManager.Instance().removeOnReceiveMessageListener(this);
+        ChatManager.Instance().removeRecallMessageListener(this);
         ChatManager.Instance().removeSendMessageListener(this);
         ChatManager.Instance().removeOnMessageUpdateListener(this);
     }
