@@ -371,8 +371,6 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     break;
                 }
             }
-            position = position > currentPosition ? position - 1 : position;
-            return position;
         } else {
             for (int i = 0; i < conversationInfos.size(); i++) {
                 info = conversationInfos.get(i);
@@ -385,8 +383,10 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     }
                 }
             }
-            position = position > currentPosition ? position - 1 : position;
-            return position;
         }
+        if (currentPosition >= 0 && position > currentPosition) {
+            position = position - 1;
+        }
+        return position;
     }
 }
