@@ -1,6 +1,7 @@
 package cn.wildfire.chat.kit;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import androidx.annotation.MenuRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfirechat.chat.R;
@@ -23,6 +25,7 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         beforeViews();
         setContentView(contentLayout());
         ButterKnife.bind(this);
