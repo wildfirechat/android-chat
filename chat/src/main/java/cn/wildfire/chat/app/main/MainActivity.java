@@ -46,6 +46,7 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
@@ -58,7 +59,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     @Bind(R.id.bottomNavigationView)
     BottomNavigationView bottomNavigationView;
     @Bind(R.id.vpContent)
-    ViewPager mVpContent;
+    ViewPagerFixed mVpContent;
 
     private QBadgeView unreadMessageUnreadBadgeView;
     private QBadgeView unreadFriendRequestBadgeView;

@@ -37,7 +37,7 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
 
     private int mTabPosi = 0;
     private Context mContext;
-    private ViewPager mVpEmotioin;
+    private ViewPagerFixed mVpEmotioin;
     private LinearLayout mLlPageNumber;
     private LinearLayout mLlTabContainer;
     private RelativeLayout mRlEmotionAdd;
