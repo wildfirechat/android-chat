@@ -19,6 +19,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
+
 import com.lqr.emoji.EmotionLayout;
 import com.lqr.emoji.IEmotionExtClickListener;
 import com.lqr.emoji.IEmotionSelectedListener;
@@ -27,11 +33,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -213,6 +214,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     @OnClick(R.id.extImageView)
     void onExtImageViewClick() {
         if (rootLinearLayout.getCurrentInput() == extContainerFrameLayout) {
+            rootLinearLayout.showSoftkey(editText);
             hideConversationExtension();
         } else {
             emotionImageView.setImageResource(R.mipmap.ic_cheat_emo);
@@ -268,9 +270,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             editText.requestFocus();
             rootLinearLayout.showSoftkey(editText);
         } else {
-            editText.clearFocus();
+//            editText.clearFocus();
             showAudioButton();
             hideEmotionLayout();
+            rootLinearLayout.hideSoftkey(editText, null);
             hideConversationExtension();
         }
     }
@@ -373,7 +376,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     private void hideEmotionLayout() {
         emotionImageView.setImageResource(R.mipmap.ic_cheat_emo);
-        rootLinearLayout.showSoftkey(editText);
         if (onConversationInputPanelStateChangeListener != null) {
             onConversationInputPanelStateChangeListener.onInputPanelCollapsed();
         }
@@ -390,7 +392,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     private void hideConversationExtension() {
-        rootLinearLayout.showSoftkey(editText);
         if (onConversationInputPanelStateChangeListener != null) {
             onConversationInputPanelStateChangeListener.onInputPanelCollapsed();
         }
