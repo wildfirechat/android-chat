@@ -13,10 +13,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import java.util.List;
-
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
+
+import java.util.List;
 
 /**
  * CSDN_LQR
@@ -259,11 +259,15 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
-        mTabPosi = (int) v.getTag();
+        int targetTabIndex = (int) v.getTag();
+        if (targetTabIndex == mTabPosi) {
+            return;
+        }
+        mTabPosi = targetTabIndex;
         selectTab(mTabPosi);
         int position = adapter.categoryTabIndexToPagePosition(mTabPosi);
         mLlPageNumber.removeAllViews();
-        mVpEmotioin.setCurrentItem(position);
+        mVpEmotioin.setCurrentItem(position, false);
     }
 
     private void selectTab(int tabPosi) {
