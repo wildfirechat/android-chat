@@ -2,7 +2,6 @@ package cn.wildfire.chat.kit.contact;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +46,6 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
     };
 
     private Observer<Boolean> imStatusLiveDataObserver = status -> {
-        Log.e("imndx", "helllllllllll");
         if (status && (contactAdapter != null && (contactAdapter.contacts == null || contactAdapter.contacts.size() == 0))) {
             loadContacts();
         }
@@ -55,6 +53,9 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
 
     private void loadContacts() {
         List<UserInfo> userInfos = contactViewModel.getContacts(false);
+        if (userInfos == null || userInfos.isEmpty()) {
+            return;
+        }
         contactAdapter.setContacts(userInfoToUIUserInfo(userInfos));
         contactAdapter.notifyDataSetChanged();
 
