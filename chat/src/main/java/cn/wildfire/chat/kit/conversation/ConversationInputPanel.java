@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 
 import com.lqr.emoji.EmotionLayout;
 import com.lqr.emoji.IEmotionExtClickListener;
@@ -44,6 +43,7 @@ import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
+import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
@@ -77,7 +77,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     @Bind(R.id.inputPanelFrameLayout)
     FrameLayout inputContainerFrameLayout;
     @Bind(R.id.conversationExtViewPager)
-    ViewPager extViewPager;
+    ViewPagerFixed extViewPager;
 
     ConversationExtension extension;
     private Conversation conversation;

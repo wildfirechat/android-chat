@@ -17,20 +17,22 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
+import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
@@ -239,7 +241,7 @@ public class MMPreviewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mm_preview);
         views = new SparseArray<>(3);
-        final ViewPager viewPager = findViewById(R.id.viewPager);
+        final ViewPagerFixed viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOffscreenPageLimit(1);
         viewPager.addOnPageChangeListener(pageChangeListener);
