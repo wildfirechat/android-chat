@@ -3,6 +3,8 @@ package cn.wildfire.chat.kit.conversation.ext.core;
 import android.content.Intent;
 import android.widget.FrameLayout;
 
+import androidx.fragment.app.FragmentActivity;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,17 +12,16 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.ViewPager;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationViewModel;
+import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.model.Conversation;
 
 public class ConversationExtension {
     private FragmentActivity activity;
     private Conversation conversation;
     private FrameLayout containerLayout;
-    private ViewPager extViewPager;
+    private ViewPagerFixed extViewPager;
     private List<ConversationExt> exts;
 
     private boolean hideOnScroll = true;
@@ -30,7 +31,7 @@ public class ConversationExtension {
      * @param inputContainerLayout 包含整个输入区域的framelayout
      * @param extViewPager         用于展示{@link ConversationExtPageView}, 每个ConversationExtPageView包含8个{@link ConversationExt}
      */
-    public ConversationExtension(FragmentActivity activity, FrameLayout inputContainerLayout, ViewPager extViewPager) {
+    public ConversationExtension(FragmentActivity activity, FrameLayout inputContainerLayout, ViewPagerFixed extViewPager) {
         this.activity = activity;
         this.containerLayout = inputContainerLayout;
         this.extViewPager = extViewPager;
@@ -84,7 +85,7 @@ public class ConversationExtension {
         }
     }
 
-    private void setupExtViewPager(ViewPager viewPager) {
+    private void setupExtViewPager(ViewPagerFixed viewPager) {
         exts = ConversationExtManager.getInstance().getConversationExts(conversation);
         if (exts.isEmpty()) {
             return;
