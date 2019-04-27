@@ -1,16 +1,19 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
+import butterknife.OnClick;
+import cn.wildfire.chat.app.third.location.ui.activity.ShowLocationActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -50,7 +53,13 @@ public class LocationMessageContentViewHolder extends NormalMessageContentViewHo
         }
     }
 
+    @OnClick(R.id.locationLinearLayout)
     public void onClick(View view) {
-        Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(context, ShowLocationActivity.class);
+        LocationMessageContent content = (LocationMessageContent) message.message.content;
+        intent.putExtra("Lat", content.getLocation().getLatitude());
+        intent.putExtra("Long", content.getLocation().getLongitude());
+        intent.putExtra("title", content.getTitle());
+        context.startActivity(intent);
     }
 }
