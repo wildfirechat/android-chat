@@ -231,7 +231,6 @@ public class MMPreviewActivity extends Activity {
         PhotoView photoView = view.findViewById(R.id.photoView);
         GlideApp.with(MMPreviewActivity.this).load(path)
                 .placeholder(new BitmapDrawable(getResources(), content.getThumbnail()))
-                .centerCrop()
                 .into(photoView);
     }
 
