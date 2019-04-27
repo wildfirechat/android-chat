@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -154,7 +153,7 @@ public class MMPreviewActivity extends Activity {
             public void onClick(View v) {
                 btn.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(content.localPath)) {
-                    File videoFile = new File(Environment.getExternalStorageDirectory(), "video/" + message.message.messageUid);
+                    File videoFile = new File(Config.VIDEO_SAVE_DIR, message.message.messageUid + ".mp4");
                     if (!videoFile.exists()) {
                         view.setTag(message.message.messageUid + "");
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);

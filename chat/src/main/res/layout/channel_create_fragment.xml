@@ -26,7 +26,9 @@
             android:id="@+id/channelNameTextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="频道名称" />
+            android:hint="频道名称"
+            android:maxLength="20"
+            android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -39,7 +41,9 @@
             android:id="@+id/channelDescTextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="频道描述" />
+            android:maxLength="50"
+            android:hint="频道描述"
+            android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox

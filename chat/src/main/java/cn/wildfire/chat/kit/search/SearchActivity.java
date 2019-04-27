@@ -4,10 +4,11 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.widget.SearchView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.widget.SearchView;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.chat.R;
 
