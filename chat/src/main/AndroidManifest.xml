@@ -71,7 +71,7 @@
         <!--地图-->
         <meta-data
             android:name="TencentMapSDK"
-            android:value="TYQBZ-MRBKU-K7FVL-4JBW5-DOG5O-SZB4A" />
+            android:value="TOEBZ-67IR4-ZDHUV-DSDXX-TJZU7-UYFE7" />
 
         <activity
             android:name="cn.wildfire.chat.app.main.SplashActivity"
