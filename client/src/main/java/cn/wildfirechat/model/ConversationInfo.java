@@ -3,8 +3,6 @@ package cn.wildfirechat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Objects;
-
 import cn.wildfirechat.message.Message;
 
 /**
@@ -69,15 +67,16 @@ public class ConversationInfo implements Parcelable {
         return timestamp == that.timestamp &&
                 isTop == that.isTop &&
                 isSilent == that.isSilent &&
-                Objects.equals(conversation, that.conversation) &&
-                Objects.equals(lastMessage, that.lastMessage) &&
-                Objects.equals(draft, that.draft) &&
-                Objects.equals(unreadCount, that.unreadCount);
+                Conversation.equals(conversation, that.conversation) &&
+                Conversation.equals(lastMessage, that.lastMessage) &&
+                Conversation.equals(draft, that.draft) &&
+                Conversation.equals(unreadCount, that.unreadCount);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(conversation, lastMessage, timestamp, draft, unreadCount, isTop, isSilent);
+        return Conversation.hashCode(conversation, lastMessage, timestamp, draft, unreadCount, isTop, isSilent);
     }
+
 }
