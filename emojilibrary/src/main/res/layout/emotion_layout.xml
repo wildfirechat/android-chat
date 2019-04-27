@@ -5,7 +5,7 @@
               android:orientation="vertical">
 
     <!--内容显示区-->
-    <androidx.viewpager.widget.ViewPager
+    <com.lqr.emoji.ViewPagerFixed
         android:id="@+id/vpEmotioin"
         android:layout_width="match_parent"
         android:layout_height="0dp"
