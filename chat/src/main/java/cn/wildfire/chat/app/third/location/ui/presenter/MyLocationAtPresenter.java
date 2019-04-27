@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.View;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+
 import com.lqr.adapter.LQRAdapterForRecyclerView;
 import com.lqr.adapter.LQRViewHolderForRecyclerView;
 import com.tencent.lbssearch.object.result.Geo2AddressResultObject;
@@ -44,6 +46,7 @@ public class MyLocationAtPresenter extends BasePresenter<IMyLocationAtView> {
                 }
             };
             getView().getRvPOI().setAdapter(mAdapter);
+            getView().getRvPOI().setLayoutManager(new GridLayoutManager(mContext, 1));
             mAdapter.setOnItemClickListener((helper, parent, itemView, position) -> {
                 mSelectedPosi = position;
                 setAdapter();

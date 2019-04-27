@@ -8,13 +8,21 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.tencent.map.geolocation.TencentLocation;
 import com.tencent.map.geolocation.TencentLocationListener;
+import com.tencent.map.geolocation.TencentLocationManager;
+import com.tencent.map.geolocation.TencentLocationRequest;
+import com.tencent.mapsdk.raster.model.BitmapDescriptorFactory;
+import com.tencent.mapsdk.raster.model.Circle;
+import com.tencent.mapsdk.raster.model.CircleOptions;
 import com.tencent.mapsdk.raster.model.LatLng;
+import com.tencent.mapsdk.raster.model.Marker;
+import com.tencent.mapsdk.raster.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import cn.wildfire.chat.app.third.location.ui.base.BaseActivity;
 import cn.wildfire.chat.app.third.location.ui.presenter.MyLocationAtPresenter;
@@ -39,6 +47,10 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
     MapView mMap;
     @Bind(R.id.ibShowLocation)
     ImageButton mIbShowLocation;
+    private Marker myLocation;
+    private Circle accuracy;
+    private TencentLocationManager mLocationManager;
+    private TencentLocationRequest mLocationRequest;
 
     @Override
     public void initView() {
@@ -54,6 +66,18 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
         String title = getIntent().getStringExtra("title");
         setToolbarTitle(title);
         mTencentMap.setCenter(new LatLng(mLat, mLong));
+        mTencentMap.setZoom(20);
+        mLocationManager = TencentLocationManager.getInstance(this);
+        mLocationRequest = TencentLocationRequest.create();
+
+        Marker marker = mTencentMap.addMarker(new MarkerOptions()
+                .position(new LatLng(mLat, mLong))
+                .title(title)
+                .anchor(0.5f, 0.5f)
+                .icon(BitmapDescriptorFactory
+                        .defaultMarker())
+                .draggable(false));
+        marker.showInfoWindow();
     }
 
     @Override
@@ -64,7 +88,25 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
 
             }
         });
+        mIbShowLocation.setOnClickListener(v -> requestLocationUpdate());
 
+    }
+
+    private void requestLocationUpdate() {
+        //开启定位
+        int error = mLocationManager.requestLocationUpdates(mLocationRequest, ShowLocationActivity.this);
+        switch (error) {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -79,6 +121,23 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
 
     @Override
     public void onLocationChanged(TencentLocation tencentLocation, int i, String s) {
+        if (i == tencentLocation.ERROR_OK) {
+            LatLng latLng = new LatLng(tencentLocation.getLatitude(), tencentLocation.getLongitude());
+            if (myLocation == null) {
+                myLocation = mTencentMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.mipmap.arm)).anchor(0.5f, 0.8f));
+            }
+            if (accuracy == null) {
+                accuracy = mTencentMap.addCircle(new CircleOptions().center(latLng).radius(tencentLocation.getAccuracy()).fillColor(0x440000ff).strokeWidth(0f));
+            }
+            myLocation.setPosition(latLng);
+            accuracy.setCenter(latLng);
+            accuracy.setRadius(tencentLocation.getAccuracy());
+            mTencentMap.animateTo(latLng);
+            mTencentMap.setZoom(16);
+            //取消定位
+            mLocationManager.removeUpdates(this);
+        } else {
+        }
 
     }
 
