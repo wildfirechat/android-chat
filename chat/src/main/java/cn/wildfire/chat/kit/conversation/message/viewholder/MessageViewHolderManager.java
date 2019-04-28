@@ -25,7 +25,6 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(StickerMessageContentViewHolder.class);
         registerMessageViewHolder(TextMessageContentViewHolder.class);
         registerMessageViewHolder(VideoMessageContentViewHolder.class);
-        registerMessageViewHolder(LocationMessageContentViewHolder.class);
         registerMessageViewHolder(VoipMessageViewHolder.class);
         registerMessageViewHolder(SimpleNotificationMessageContentViewHolder.class);
     }
