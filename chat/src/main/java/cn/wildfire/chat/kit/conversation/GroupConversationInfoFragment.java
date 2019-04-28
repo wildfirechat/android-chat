@@ -157,6 +157,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         if (groupMember == null || groupInfo == null) {
             Toast.makeText(getActivity(), "你不在群组或发生错误, 请稍后再试", Toast.LENGTH_SHORT).show();
             getActivity().finish();
+            return;
         }
 
         boolean enableRemoveMember = false;
