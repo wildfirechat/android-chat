@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.conversation.message.viewholder;
+package cn.wildfire.chat.app.third.location.viewholder;
 
 import android.content.Intent;
 import android.view.View;
@@ -18,6 +18,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.LocationMessageContent;

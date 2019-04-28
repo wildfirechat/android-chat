@@ -5,7 +5,9 @@ import android.content.Context;
 
 import com.tencent.bugly.crashreport.CrashReport;
 
+import cn.wildfire.chat.app.third.location.viewholder.LocationMessageContentViewHolder;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 
 
 public class MyApp extends BaseApp {
@@ -22,6 +24,7 @@ public class MyApp extends BaseApp {
         if (getCurProcessName(this).equals("cn.wildfirechat.chat")) {
             wfcUIKit = new WfcUIKit();
             wfcUIKit.init(this);
+            MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class);
         }
     }
 
