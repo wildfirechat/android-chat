@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import butterknife.ButterKnife;
 import cn.wildfire.chat.app.login.SMSLoginActivity;
 import cn.wildfirechat.chat.R;
@@ -89,7 +90,7 @@ public class SplashActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int grantResult : grantResults) {
             if (grantResult != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "需要相关权限才能正常使用", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "需要悬浮窗等权限才能正常使用", Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
@@ -102,7 +103,7 @@ public class SplashActivity extends AppCompatActivity {
     private boolean checkOverlayPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_LONG).show();
                 startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), REQUEST_CODE_DRAW_OVERLAY);
                 return false;
             }
@@ -115,7 +116,7 @@ public class SplashActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_DRAW_OVERLAY) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (!Settings.canDrawOverlays(this)) {
-                    Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "授权失败", Toast.LENGTH_LONG).show();
                     finish();
                 } else {
                     showNextScreen();
