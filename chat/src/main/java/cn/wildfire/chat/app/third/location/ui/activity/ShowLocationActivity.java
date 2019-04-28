@@ -66,7 +66,7 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
         String title = getIntent().getStringExtra("title");
         setToolbarTitle(title);
         mTencentMap.setCenter(new LatLng(mLat, mLong));
-        mTencentMap.setZoom(20);
+        mTencentMap.setZoom(16);
         mLocationManager = TencentLocationManager.getInstance(this);
         mLocationRequest = TencentLocationRequest.create();
 
