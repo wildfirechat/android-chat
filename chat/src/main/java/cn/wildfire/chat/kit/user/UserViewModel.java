@@ -1,10 +1,12 @@
 package cn.wildfire.chat.kit.user;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfirechat.message.MessageContentMediaType;
@@ -93,6 +95,15 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
             }
         });
         return result;
+    }
+
+    public LiveData<UserInfo> getUserInfoAsync(String userId, boolean refresh) {
+        MutableLiveData<UserInfo> data = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(userId, refresh);
+            data.postValue(userInfo);
+        });
+        return data;
     }
 
     public UserInfo getUserInfo(String userId, boolean refresh) {

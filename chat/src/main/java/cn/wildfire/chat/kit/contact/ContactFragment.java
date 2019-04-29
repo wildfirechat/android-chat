@@ -52,18 +52,20 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
     };
 
     private void loadContacts() {
-        List<UserInfo> userInfos = contactViewModel.getContacts(false);
-        if (userInfos == null || userInfos.isEmpty()) {
-            return;
-        }
-        contactAdapter.setContacts(userInfoToUIUserInfo(userInfos));
-        contactAdapter.notifyDataSetChanged();
+        contactViewModel.getContactsAsync(false)
+                .observe(this, userInfos -> {
+                    if (userInfos == null || userInfos.isEmpty()) {
+                        return;
+                    }
+                    contactAdapter.setContacts(userInfoToUIUserInfo(userInfos));
+                    contactAdapter.notifyDataSetChanged();
 
-        for (UserInfo info : userInfos) {
-            if (info.name == null || info.displayName == null) {
-                userViewModel.getUserInfo(info.uid, true);
-            }
-        }
+                    for (UserInfo info : userInfos) {
+                        if (info.name == null || info.displayName == null) {
+                            userViewModel.getUserInfo(info.uid, true);
+                        }
+                    }
+                });
     }
 
     private Observer<List<UserInfo>> userInfoLiveDataObserver = userInfos -> {
