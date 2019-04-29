@@ -37,6 +37,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.OnClearMessageListener;
 import cn.wildfirechat.remote.OnMessageUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
@@ -44,11 +45,12 @@ import cn.wildfirechat.remote.OnSendMessageListener;
 
 public class ConversationViewModel extends ViewModel implements OnReceiveMessageListener,
         OnSendMessageListener,
-        OnRecallMessageListener, OnMessageUpdateListener {
+        OnRecallMessageListener, OnMessageUpdateListener, OnClearMessageListener {
     private MutableLiveData<UiMessage> messageLiveData;
     private MutableLiveData<UiMessage> messageUpdateLiveData;
     private MutableLiveData<UiMessage> messageRemovedLiveData;
     private MutableLiveData<Map<String, String>> mediaUploadedLiveData;
+    private MutableLiveData<Object> clearMessageLiveData;
     private Conversation conversation;
     //仅限于在Channel内使用。Channel的owner对订阅Channel单个用户发起一对一私聊
     private String channelPrivateChatUser;
@@ -62,6 +64,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         ChatManager.Instance().addRecallMessageListener(this);
         ChatManager.Instance().addSendMessageListener(this);
         ChatManager.Instance().addOnMessageUpdateListener(this);
+        ChatManager.Instance().addClearMessageListener(this);
     }
 
     public void setConversation(Conversation conversation, String withUser) {
@@ -83,6 +86,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         ChatManager.Instance().removeRecallMessageListener(this);
         ChatManager.Instance().removeSendMessageListener(this);
         ChatManager.Instance().removeOnMessageUpdateListener(this);
+        ChatManager.Instance().removeClearMessageListener(this);
     }
 
     @Override
@@ -123,6 +127,13 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
             mediaUploadedLiveData = new MutableLiveData<>();
         }
         return mediaUploadedLiveData;
+    }
+
+    public MutableLiveData<Object> clearMessageLiveData() {
+        if (clearMessageLiveData == null) {
+            clearMessageLiveData = new MutableLiveData<>();
+        }
+        return clearMessageLiveData;
     }
 
     public MutableLiveData<List<UiMessage>> loadOldMessages(long fromIndex, int count) {
@@ -233,7 +244,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     }
 
     public void clearConversationMessage(Conversation conversation) {
-        // TODO
+        ChatManager.Instance().clearMessages(conversation);
     }
 
     public ConversationInfo getConversationInfo(Conversation conversation) {
@@ -518,5 +529,12 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
 
     private boolean isMessageInCurrentConversation(Message message) {
         return message.conversation.equals(conversation);
+    }
+
+    @Override
+    public void onClearMessage(Conversation conversation) {
+        if (clearMessageLiveData != null) {
+            clearMessageLiveData.postValue(new Object());
+        }
     }
 }
