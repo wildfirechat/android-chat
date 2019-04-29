@@ -7,13 +7,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.lqr.emoji.MoonUtils;
 
 import java.util.Arrays;
 
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
@@ -159,6 +160,15 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             priority = 0)
     public void removeConversation(View itemView, ConversationInfo conversationInfo) {
         conversationListViewModel.removeConversation(conversationInfo);
+    }
+
+    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_REMOVE,
+            title = "清空会话",
+            confirm = true,
+            confirmPrompt = "确认清空会话？",
+            priority = 0)
+    public void clearMessages(View itemView, ConversationInfo conversationInfo) {
+        conversationListViewModel.clearMessages(conversationInfo.conversation);
     }
 
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_TOP, title = "置顶", priority = 1)
