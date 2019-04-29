@@ -17,6 +17,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.OnClearMessageListener;
 import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
 import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
@@ -38,7 +39,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         RemoveMessageListener,
         OnSettingUpdateListener,
         OnGroupInfoUpdateListener,
-        OnConversationInfoUpdateListener, OnConnectionStatusChangeListener {
+        OnConversationInfoUpdateListener, OnConnectionStatusChangeListener, OnClearMessageListener {
     private MutableLiveData<ConversationInfo> conversationInfoLiveData;
     private MutableLiveData<Conversation> conversationRemovedLiveData;
     private MutableLiveData<UnreadCount> unreadCountLiveData;
@@ -60,6 +61,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addConnectionChangeListener(this);
         ChatManager.Instance().addRemoveMessageListener(this);
         ChatManager.Instance().addGroupInfoUpdateListener(this);
+        ChatManager.Instance().addClearMessageListener(this);
     }
 
     @Override
@@ -73,6 +75,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeRecallMessageListener(this);
         ChatManager.Instance().removeRemoveMessageListener(this);
         ChatManager.Instance().removeGroupInfoUpdateListener(this);
+        ChatManager.Instance().removeClearMessageListener(this);
     }
 
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
@@ -216,6 +219,10 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeConversation(conversationInfo.conversation, false);
     }
 
+    public void clearMessages(Conversation conversation) {
+        ChatManager.Instance().clearMessages(conversation);
+    }
+
     public void unSubscribeChannel(ConversationInfo conversationInfo) {
         ChatManager.Instance().listenChannel(conversationInfo.conversation.target, false, new GeneralCallback() {
             @Override
@@ -315,5 +322,11 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
                 postConversationInfo(conversationInfo);
             }
         }
+    }
+
+    @Override
+    public void onClearMessage(Conversation conversation) {
+        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
+        postConversationInfo(conversationInfo);
     }
 }

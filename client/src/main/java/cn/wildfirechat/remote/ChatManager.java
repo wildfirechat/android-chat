@@ -114,6 +114,7 @@ public class ChatManager {
     private List<RemoveMessageListener> removeMessageListeners = new ArrayList<>();
     private List<OnChannelInfoUpdateListener> channelInfoUpdateListeners = new ArrayList<>();
     private List<OnMessageUpdateListener> messageUpdateListeners = new ArrayList<>();
+    private List<OnClearMessageListener> clearMessageListeners = new ArrayList<>();
 
     private List<IMServiceStatusListener> imServiceStatusListeners = new ArrayList<>();
 
@@ -981,6 +982,18 @@ public class ChatManager {
         messageUpdateListeners.remove(listener);
     }
 
+    public void addClearMessageListener(OnClearMessageListener listener) {
+        if (listener == null) {
+            return;
+        }
+
+        clearMessageListeners.add(listener);
+    }
+
+    public void removeClearMessageListener(OnClearMessageListener listener) {
+        clearMessageListeners.remove(listener);
+    }
+
     public void addIMServiceStatusListener(IMServiceStatusListener listener) {
         if (listener == null) {
             return;
@@ -1528,7 +1541,7 @@ public class ChatManager {
             if (unreadCount.unread == 0 && unreadCount.unreadMention == 0 && unreadCount.unreadMentionAll == 0) {
                 return;
             }
-            mClient.clearUnreadStatus(conversation.type.ordinal(), conversation.target, conversation.line);
+            mClient.clearUnreadStatus(conversation.type.getValue(), conversation.target, conversation.line);
             ConversationInfo conversationInfo = getConversation(conversation);
             conversationInfo.unreadCount = new UnreadCount();
             for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
@@ -1566,6 +1579,22 @@ public class ChatManager {
 
         try {
             mClient.clearAllUnreadStatus();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearMessages(Conversation conversation) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.clearMessages(conversation.type.getValue(), conversation.target, conversation.line);
+
+            for (OnClearMessageListener listener : clearMessageListeners) {
+                listener.onClearMessage(conversation);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -14,9 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import java.util.List;
-import java.util.Map;
-
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -25,6 +22,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import java.util.List;
+import java.util.Map;
+
 import butterknife.Bind;
 import butterknife.OnTouch;
 import cn.wildfire.chat.kit.ChatManagerHolder;
@@ -164,6 +165,11 @@ public class ConversationActivity extends WfcBaseActivity implements
         }
     };
 
+    private Observer<Object> clearMessageLiveDataObserver = (obj) -> {
+        adapter.setMessages(null);
+        adapter.notifyDataSetChanged();
+    };
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -271,6 +277,7 @@ public class ConversationActivity extends WfcBaseActivity implements
             conversationViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
             conversationViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
             conversationViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
+            conversationViewModel.clearMessageLiveData().observeForever(clearMessageLiveDataObserver);
 
             userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
             userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
@@ -503,6 +510,7 @@ public class ConversationActivity extends WfcBaseActivity implements
         conversationViewModel.messageUpdateLiveData().removeObserver(messageUpdateLiveDatObserver);
         conversationViewModel.messageRemovedLiveData().removeObserver(messageRemovedLiveDataObserver);
         conversationViewModel.mediaUpdateLiveData().removeObserver(mediaUploadedLiveDataObserver);
+        conversationViewModel.clearMessageLiveData().removeObserver(clearMessageLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoUpdateLiveDataObserver);
     }
 
