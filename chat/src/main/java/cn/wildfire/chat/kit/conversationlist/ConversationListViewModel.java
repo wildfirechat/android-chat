@@ -2,6 +2,7 @@ package cn.wildfire.chat.kit.conversationlist;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -76,6 +77,15 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeRemoveMessageListener(this);
         ChatManager.Instance().removeGroupInfoUpdateListener(this);
         ChatManager.Instance().removeClearMessageListener(this);
+    }
+
+    public LiveData<List<ConversationInfo>> getConversationListAsync(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
+        MutableLiveData<List<ConversationInfo>> data = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<ConversationInfo> conversationInfos = ChatManager.Instance().getConversationList(conversationTypes, lines);
+            data.postValue(conversationInfos);
+        });
+        return data;
     }
 
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {

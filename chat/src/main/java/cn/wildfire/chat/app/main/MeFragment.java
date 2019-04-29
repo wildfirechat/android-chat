@@ -80,12 +80,14 @@ public class MeFragment extends Fragment {
 
     private void init() {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), true);
+        userViewModel.getUserInfoAsync(userViewModel.getUserId(), true)
+                .observe(this, info -> {
+                    userInfo = info;
+                    if (userInfo != null) {
+                        updateUserInfo(userInfo);
+                    }
+                });
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
-        if (userInfo != null) {
-            updateUserInfo(userInfo);
-        }
-
     }
 
     @Override
