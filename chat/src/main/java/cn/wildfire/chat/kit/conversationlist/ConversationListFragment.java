@@ -93,13 +93,16 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel = ViewModelProviders
                 .of(this, new ConversationListViewModelFactory(types, lines))
                 .get(ConversationListViewModel.class);
-        List<ConversationInfo> conversationInfos = conversationListViewModel.getConversationList(types, lines);
+        conversationListViewModel.getConversationListAsync(types, lines)
+                .observe(this, conversationInfos -> {
+                    adapter.setConversationInfos(conversationInfos);
+                    adapter.notifyDataSetChanged();
+                });
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         DividerItemDecoration itemDecor = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
         itemDecor.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.recyclerview_horizontal_divider));
         recyclerView.addItemDecoration(itemDecor);
-        adapter.setConversationInfos(conversationInfos);
         recyclerView.setAdapter(adapter);
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
@@ -139,9 +142,11 @@ public class ConversationListFragment extends Fragment {
     }
 
     private void reloadConversations() {
-        List<ConversationInfo> conversationInfos = conversationListViewModel.getConversationList(types, lines);
-        adapter.setConversationInfos(conversationInfos);
-        adapter.notifyDataSetChanged();
+        conversationListViewModel.getConversationListAsync(types, lines)
+                .observe(this, conversationInfos -> {
+                    adapter.setConversationInfos(conversationInfos);
+                    adapter.notifyDataSetChanged();
+                });
     }
 
     @Override

@@ -1,9 +1,11 @@
 package cn.wildfire.chat.kit.contact;
 
-import java.util.List;
-
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import java.util.List;
+
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -42,6 +44,15 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
 
     public List<String> getFriends(boolean refresh) {
         return ChatManager.Instance().getMyFriendList(refresh);
+    }
+
+    public LiveData<List<UserInfo>> getContactsAsync(boolean refresh) {
+        MutableLiveData<List<UserInfo>> data = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<UserInfo> userInfos = ChatManager.Instance().getMyFriendListInfo(refresh);
+            data.postValue(userInfos);
+        });
+        return data;
     }
 
     public List<UserInfo> getContacts(boolean refresh) {
