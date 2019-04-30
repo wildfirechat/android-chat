@@ -23,6 +23,7 @@ import com.bumptech.glide.request.RequestOptions;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
@@ -85,7 +86,7 @@ public class ChannelInfoActivity extends AppCompatActivity {
         channelDescTextView.setText(TextUtils.isEmpty(channelInfo.desc) ? "频道主什么也没写" : channelInfo.desc);
 
 
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         if (channelInfo.owner.equals(userViewModel.getUserId())) {
             followChannelButton.setVisibility(View.GONE);
             return;

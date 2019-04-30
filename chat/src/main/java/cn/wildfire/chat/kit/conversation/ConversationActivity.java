@@ -29,7 +29,9 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.OnTouch;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.ConfigEventViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
 import cn.wildfire.chat.kit.chatroom.ChatRoomViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -279,11 +281,16 @@ public class ConversationActivity extends WfcBaseActivity implements
             conversationViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
             conversationViewModel.clearMessageLiveData().observeForever(clearMessageLiveDataObserver);
 
-            userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+            userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
             userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
         } else {
             conversationViewModel.setConversation(conversation, channelPrivateChatUser);
         }
+
+        ConfigEventViewModel configEventViewModel = WfcUIKit.getAppScopeViewModel(ConfigEventViewModel.class);
+        configEventViewModel.showGroupAliasLiveData().observe(this, (event) -> {
+            adapter.notifyDataSetChanged();
+        });
 
         inputPanel.setupConversation(conversationViewModel, conversation);
 

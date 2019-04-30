@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -110,10 +111,10 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel.conversationRemovedLiveData().observeForever(conversationRemovedObserver);
         conversationListViewModel.settingUpdateLiveData().observeForever(settingUpdateObserver);
 
-        imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
+        imServiceStatusViewModel = WfcUIKit.getAppScopeViewModel(IMServiceStatusViewModel.class);
         imServiceStatusViewModel.imServiceStatusLiveData().observeForever(imStatusLiveDataObserver);
 
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
 
         conversationListViewModel.connectionStatusLiveData().observe(this, status -> {

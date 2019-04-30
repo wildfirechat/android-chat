@@ -32,6 +32,7 @@ import java.util.List;
 import butterknife.Bind;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.contact.ContactFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -303,7 +304,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private void showUser(String uid) {
 
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(uid, true);
         if (userInfo == null) {
             return;
@@ -326,7 +327,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     }
 
     private boolean checkDisplayName() {
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         if (userInfo != null && TextUtils.equals(userInfo.displayName, userInfo.mobile)) {
