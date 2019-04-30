@@ -114,6 +114,10 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
         return ChatManager.Instance().getUserInfos(userIds);
     }
 
+    public void setAlias(UserInfo userInfo, String alias) {
+        // TODO
+    }
+
     public String getUserId() {
         return ChatManager.Instance().getUserId();
     }
