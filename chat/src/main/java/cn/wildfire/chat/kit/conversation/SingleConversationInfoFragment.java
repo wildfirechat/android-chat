@@ -7,6 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.kyleduo.switchbutton.SwitchButton;
 
 import java.util.ArrayList;
@@ -14,15 +21,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
@@ -80,7 +82,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
 
     private void init() {
         conversationViewModel = ViewModelProviders.of(this, new ConversationViewModelFactory(conversationInfo.conversation)).get(ConversationViewModel.class);
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         String userId = userViewModel.getUserId();
         conversationMemberAdapter = new ConversationMemberAdapter(true, false);

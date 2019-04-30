@@ -25,6 +25,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
@@ -211,15 +212,16 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             return;
         }
         nameTextView.setVisibility(View.VISIBLE);
-        if (Conversation.equals(nameTextView.getTag(), sender)) {
-            return;
-        }
+        // TODO optimize 缓存userInfo吧
+//        if (Conversation.equals(nameTextView.getTag(), sender)) {
+//            return;
+//        }
         GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
         GroupMember groupMember = groupViewModel.getGroupMember(conversation.target, sender);
         if (groupMember != null && !TextUtils.isEmpty(groupMember.alias)) {
             nameTextView.setText(groupMember.alias);
         } else {
-            UserViewModel userViewModel = ViewModelProviders.of(context).get(UserViewModel.class);
+            UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
             UserInfo userInfo = userViewModel.getUserInfo(sender, false);
             nameTextView.setText(!TextUtils.isEmpty(userInfo.displayName) ? userInfo.displayName : "<" + userInfo.uid + ">");
         }

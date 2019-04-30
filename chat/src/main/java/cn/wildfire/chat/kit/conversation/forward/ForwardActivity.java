@@ -7,21 +7,23 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.search.OnResultItemClickListener;
@@ -60,7 +62,7 @@ public class ForwardActivity extends WfcBaseActivity {
                 .add(R.id.containerFrameLayout, new ForwardFragment())
                 .commit();
         forwardViewModel = ViewModelProviders.of(this).get(ForwardViewModel.class);
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         initSearch();
     }

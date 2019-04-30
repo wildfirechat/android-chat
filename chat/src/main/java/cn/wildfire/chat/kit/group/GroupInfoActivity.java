@@ -15,6 +15,7 @@ import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
@@ -59,7 +60,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
             showGroupInfo(groupInfo);
         }
         List<GroupMember> groupMembers = groupViewModel.getGroupMembers(groupId, true);
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userId = userViewModel.getUserId();
         if (groupMembers == null || groupMembers.isEmpty()) {
             showLoading();

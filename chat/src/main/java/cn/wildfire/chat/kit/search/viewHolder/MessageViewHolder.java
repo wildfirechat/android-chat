@@ -6,7 +6,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -14,6 +13,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
@@ -36,7 +36,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public MessageViewHolder(Fragment fragment, View itemView) {
         super(itemView);
         this.fragment = fragment;
-        this.userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
+        this.userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         ButterKnife.bind(this, itemView);
     }
 
