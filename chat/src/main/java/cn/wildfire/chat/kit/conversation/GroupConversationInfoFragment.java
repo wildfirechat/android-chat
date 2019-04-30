@@ -35,7 +35,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
+import cn.wildfire.chat.kit.ConfigEventViewModel;
 import cn.wildfire.chat.kit.WfcScheme;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
@@ -138,7 +140,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     private void init() {
         conversationViewModel = ViewModelProviders.of(this, new ConversationViewModelFactory(conversationInfo.conversation)).get(ConversationViewModel.class);
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         String userId = userViewModel.getUserId();
         groupLinearLayout_0.setVisibility(View.VISIBLE);
@@ -171,6 +173,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             sp.edit()
                     .putBoolean(showAliasKey, isChecked)
                     .apply();
+            ConfigEventViewModel configEventViewModel = WfcUIKit.getAppScopeViewModel(ConfigEventViewModel.class);
+            configEventViewModel.postGroupAliasEvent(groupInfo.target, isChecked);
         });
 
         boolean enableRemoveMember = false;
@@ -227,6 +231,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                             .observe(GroupConversationInfoFragment.this, new Observer<OperateResult>() {
                                 @Override
                                 public void onChanged(@Nullable OperateResult operateResult) {
+                                    ConfigEventViewModel configEventViewModel = WfcUIKit.getAppScopeViewModel(ConfigEventViewModel.class);
+                                    configEventViewModel.postGroupAliasEvent(groupInfo.target, true);
                                     if (operateResult.isSuccess()) {
                                         myGroupNickNameOptionItemView.setRightText(input.toString().trim());
                                     } else {

@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
@@ -34,7 +35,7 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
         this.fragment = fragment;
         ButterKnife.bind(this, itemView);
 
-        userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
     }
 

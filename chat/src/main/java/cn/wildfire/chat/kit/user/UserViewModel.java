@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfirechat.message.MessageContentMediaType;
@@ -20,7 +21,7 @@ import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.OnUserInfoUpdateListener;
 
 // FIXME: 2019/1/4 应该是个单例的
-public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener, OnSettingUpdateListener {
+public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUserInfoUpdateListener, OnSettingUpdateListener {
     private MutableLiveData<List<UserInfo>> userInfoLiveData;
     private MutableLiveData<Object> settingUpdatedLiveData;
 

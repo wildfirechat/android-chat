@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -48,7 +49,7 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
 
         pickContactViewModel = ViewModelProviders.of(this).get(PickContactViewModel.class);
         pickContactViewModel.contactCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         pickContactViewModel.setUncheckableIds(Collections.singletonList(userViewModel.getUserId()));
         pickContactViewModel.setMaxPickCount(maxPickCount);
 

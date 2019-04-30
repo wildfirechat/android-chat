@@ -5,10 +5,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 
@@ -68,7 +68,7 @@ public class SetAliasActivity extends WfcBaseActivity {
             UIUtils.showToast(UIUtils.getString(R.string.alias_no_empty));
             return;
         }
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
     }
 
     private void changeError(Throwable throwable) {

@@ -101,11 +101,13 @@ public class UserInfoFragment extends Fragment {
             voipChatButton.setVisibility(View.GONE);
             inviteButton.setVisibility(View.GONE);
             qrCodeOptionItemView.setVisibility(View.VISIBLE);
+            aliasOptionItemView.setVisibility(View.VISIBLE);
         } else if (contactViewModel.isFriend(userInfo.uid)) {
             // friend
             chatButton.setVisibility(View.VISIBLE);
             voipChatButton.setVisibility(View.VISIBLE);
             inviteButton.setVisibility(View.GONE);
+            aliasOptionItemView.setVisibility(View.GONE);
         } else {
             // stranger
             chatButton.setVisibility(View.GONE);

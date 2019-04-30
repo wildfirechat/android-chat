@@ -15,6 +15,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.login.model.PCSession;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -46,7 +47,7 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     @OnClick(R.id.confirmButton)
     void confirmPCLogin() {
-        UserViewModel userViewModel = ViewModelProviders.of(PCLoginActivity.this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         confirmPCLogin(token, userViewModel.getUserId());
     }
 
