@@ -91,6 +91,7 @@ public class ConversationActivity extends WfcBaseActivity implements
     private String channelPrivateChatUser;
     private String conversationTitle = "";
     private SharedPreferences sharedPreferences;
+    private boolean showGroupMemberAlias = false;
 
     private Observer<UiMessage> messageLiveDataObserver = new Observer<UiMessage>() {
         @Override
@@ -269,7 +270,6 @@ public class ConversationActivity extends WfcBaseActivity implements
     }
 
     private void setupConversation(Conversation conversation) {
-        // FIXME: 2018/11/24 崩溃，重启之后，conversation是null
         if (conversationViewModel == null) {
             conversationViewModel = ViewModelProviders.of(this, new ConversationViewModelFactory(conversation, channelPrivateChatUser)).get(ConversationViewModel.class);
 

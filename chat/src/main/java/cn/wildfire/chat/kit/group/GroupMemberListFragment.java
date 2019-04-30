@@ -3,18 +3,21 @@ package cn.wildfire.chat.kit.group;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.kit.contact.BaseContactFragment;
 import cn.wildfire.chat.kit.contact.ContactAdapter;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
+import cn.wildfirechat.model.UserInfo;
 
 public class GroupMemberListFragment extends BaseContactFragment {
     private GroupInfo groupInfo;
@@ -44,7 +47,16 @@ public class GroupMemberListFragment extends BaseContactFragment {
             memberIds.add(member.memberId);
         }
         ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
-        List<UIUserInfo> contacts = userInfoToUIUserInfo(contactViewModel.getContacts(memberIds));
+        List<UserInfo> userInfos = contactViewModel.getContacts(memberIds);
+        for (GroupMember member : members) {
+            for (UserInfo userInfo : userInfos) {
+                if (!TextUtils.isEmpty(member.alias) && member.memberId.equals(userInfo.uid)) {
+                    userInfo.displayName = member.alias;
+                    break;
+                }
+            }
+        }
+        List<UIUserInfo> contacts = userInfoToUIUserInfo(userInfos);
         contactAdapter.setContacts(contacts);
 
         return contactAdapter;

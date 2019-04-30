@@ -6,6 +6,7 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;

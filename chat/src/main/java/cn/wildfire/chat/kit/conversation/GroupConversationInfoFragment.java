@@ -1,7 +1,10 @@
 package cn.wildfire.chat.kit.conversation;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +34,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -72,7 +76,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     LinearLayout groupLinearLayout_1;
     @Bind(R.id.myGroupNickNameOptionItemView)
     OptionItemView myGroupNickNameOptionItemView;
-    @Bind(R.id.showGroupNickNameSwitchButton)
+    @Bind(R.id.showGroupMemberAliasSwitchButton)
     SwitchButton showGroupMemberNickNameSwitchButton;
 
     @Bind(R.id.quitButton)
@@ -160,12 +164,30 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             return;
         }
 
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.SP_NAME, Context.MODE_PRIVATE);
+        String showAliasKey = String.format(Config.SP_KEY_SHOW_GROUP_MEMBER_ALIAS, groupInfo.target);
+        showGroupMemberNickNameSwitchButton.setChecked(sp.getBoolean(showAliasKey, false));
+        showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sp.edit()
+                    .putBoolean(showAliasKey, isChecked)
+                    .apply();
+        });
+
         boolean enableRemoveMember = false;
         if (groupMember.type != GroupMember.GroupMemberType.Normal || userId.equals(groupInfo.owner)) {
             enableRemoveMember = true;
         }
         conversationMemberAdapter = new ConversationMemberAdapter(true, enableRemoveMember);
         List<UserInfo> members = contactViewModel.getContacts(memberIds);
+
+        for (GroupMember member : groupMembers) {
+            for (UserInfo userInfo : members) {
+                if (!TextUtils.isEmpty(member.alias) && member.memberId.equals(userInfo.uid)) {
+                    userInfo.displayName = member.alias;
+                    break;
+                }
+            }
+        }
         myGroupNickNameOptionItemView.setRightText(groupMember.alias);
         groupNameOptionItemView.setRightText(groupInfo.name);
 

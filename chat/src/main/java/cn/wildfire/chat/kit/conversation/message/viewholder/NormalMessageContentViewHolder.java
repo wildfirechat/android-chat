@@ -1,6 +1,8 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -9,21 +11,26 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.OnClick;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
@@ -31,6 +38,7 @@ import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -189,10 +197,33 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     private void setSenderName(Message item) {
         if (item.conversation.type == Conversation.ConversationType.Single) {
             nameTextView.setVisibility(View.GONE);
+        } else if (item.conversation.type == Conversation.ConversationType.Group) {
+            showGroupMemberAlias(message.message.conversation, message.message.sender);
         } else {
-//            itemView.findViewById(R.id.tvName).setVisibility(View.VISIBLE);
-            // TODO
+            // todo
         }
+    }
+
+    private void showGroupMemberAlias(Conversation conversation, String sender) {
+        SharedPreferences sp = context.getSharedPreferences(Config.SP_NAME, Context.MODE_PRIVATE);
+        if (!sp.getBoolean(String.format(Config.SP_KEY_SHOW_GROUP_MEMBER_ALIAS, conversation.target), false)) {
+            nameTextView.setVisibility(View.GONE);
+            return;
+        }
+        nameTextView.setVisibility(View.VISIBLE);
+        if (Conversation.equals(nameTextView.getTag(), sender)) {
+            return;
+        }
+        GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
+        GroupMember groupMember = groupViewModel.getGroupMember(conversation.target, sender);
+        if (groupMember != null && !TextUtils.isEmpty(groupMember.alias)) {
+            nameTextView.setText(groupMember.alias);
+        } else {
+            UserViewModel userViewModel = ViewModelProviders.of(context).get(UserViewModel.class);
+            UserInfo userInfo = userViewModel.getUserInfo(sender, false);
+            nameTextView.setText(!TextUtils.isEmpty(userInfo.displayName) ? userInfo.displayName : "<" + userInfo.uid + ">");
+        }
+        nameTextView.setTag(sender);
     }
 
     protected void setSendStatus(Message item) {
