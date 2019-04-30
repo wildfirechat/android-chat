@@ -276,11 +276,11 @@
                         android:textSize="16sp" />
 
                     <com.kyleduo.switchbutton.SwitchButton
-                        android:id="@+id/showGroupNickNameSwitchButton"
+                        android:id="@+id/showGroupMemberAliasSwitchButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/option_item_margin_right"
-                        android:clickable="false"
+                        android:clickable="true"
                         app:kswBackDrawable="@drawable/ios_back_drawable"
                         app:kswBackMeasureRatio="1.8"
                         app:kswThumbDrawable="@drawable/ios_thumb_selector"
