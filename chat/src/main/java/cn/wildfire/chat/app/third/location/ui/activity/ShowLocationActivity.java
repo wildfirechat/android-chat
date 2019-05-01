@@ -121,6 +121,9 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
 
     @Override
     public void onLocationChanged(TencentLocation tencentLocation, int i, String s) {
+        if (isFinishing()) {
+            return;
+        }
         if (i == tencentLocation.ERROR_OK) {
             LatLng latLng = new LatLng(tencentLocation.getLatitude(), tencentLocation.getLongitude());
             if (myLocation == null) {
@@ -143,6 +146,9 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
 
     @Override
     public void onStatusUpdate(String s, int i, String s1) {
+        if (isFinishing()) {
+            return;
+        }
         String desc = "";
         switch (i) {
             case STATUS_DENIED:
