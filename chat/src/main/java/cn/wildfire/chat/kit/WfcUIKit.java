@@ -24,6 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.lqr.emoji.LQREmotionKit;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -161,9 +162,11 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             if (messages == null) {
                 return;
             }
+
+            List<Message> msgs = new ArrayList<>(messages);
             long now = System.currentTimeMillis();
             long delta = ChatManager.Instance().getServerDeltaTime();
-            Iterator<Message> iterator = messages.iterator();
+            Iterator<Message> iterator = msgs.iterator();
             while (iterator.hasNext()) {
                 Message message = iterator.next();
                 if (message.content.getPersistFlag() == PersistFlag.No_Persist
@@ -171,7 +174,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                     iterator.remove();
                 }
             }
-            WfcNotificationManager.getInstance().handleReceiveMessage(application, messages);
+            WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
         } else {
             // do nothing
         }
