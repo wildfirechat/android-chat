@@ -1428,6 +1428,14 @@ public class ChatManager {
         return null;
     }
 
+    public void getRemoteMessages(Conversation conversation, long beforeMessageId, int count, GetRemoteMessageCallback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+
+    }
+
     /**
      * 根据消息id，获取消息
      *
