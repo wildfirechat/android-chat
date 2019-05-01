@@ -125,7 +125,7 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
 
     @Override
     public void onUserInfoUpdate(List<UserInfo> userInfos) {
-        if (userInfoLiveData != null) {
+        if (userInfoLiveData != null && userInfos != null && !userInfos.isEmpty()) {
             userInfoLiveData.setValue(userInfos);
         }
     }

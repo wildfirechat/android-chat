@@ -12,6 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.tencent.lbssearch.TencentSearch;
 import com.tencent.lbssearch.httpresponse.BaseObject;
 import com.tencent.lbssearch.httpresponse.HttpResponseListener;
@@ -32,8 +35,6 @@ import com.tencent.mapsdk.raster.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import cn.wildfire.chat.app.third.location.ui.base.BaseActivity;
 import cn.wildfire.chat.app.third.location.ui.presenter.MyLocationAtPresenter;
@@ -170,6 +171,9 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
 
     @Override
     public void onLocationChanged(TencentLocation tencentLocation, int i, String s) {
+        if (isFinishing()) {
+            return;
+        }
         if (i == tencentLocation.ERROR_OK) {
             LatLng latLng = new LatLng(tencentLocation.getLatitude(), tencentLocation.getLongitude());
             if (myLocation == null) {
@@ -192,6 +196,9 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
 
     @Override
     public void onStatusUpdate(String s, int i, String s1) {
+        if (isFinishing()) {
+            return;
+        }
         String desc = "";
         switch (i) {
             case STATUS_DENIED:
@@ -243,6 +250,9 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
 
             @Override
             public void onSuccess(int arg0, BaseObject arg1) {
+                if (isFinishing()) {
+                    return;
+                }
                 mPb.setVisibility(View.GONE);
                 mRvPOI.setVisibility(View.VISIBLE);
                 if (arg1 == null) {
@@ -253,6 +263,9 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
 
             @Override
             public void onFailure(int arg0, String arg1, Throwable arg2) {
+                if (isFinishing()) {
+                    return;
+                }
                 mPb.setVisibility(View.GONE);
                 mRvPOI.setVisibility(View.VISIBLE);
             }

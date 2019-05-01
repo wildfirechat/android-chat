@@ -10,14 +10,15 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
@@ -86,6 +87,10 @@ public class PickContactFragment extends BaseContactFragment implements QuickInd
 
     @OnTextChanged(value = R.id.searchEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void search(Editable editable) {
+        // restore view state
+        if (searchAndPickContactFragment == null) {
+            return;
+        }
         String key = editable.toString();
         if (!TextUtils.isEmpty(key)) {
             searchAndPickContactFragment.search(key);
