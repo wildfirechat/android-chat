@@ -418,6 +418,36 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void getRemoteMessages(Conversation conversation, long beforeMessageUid, int count, IGetRemoteMessageCallback callback) throws RemoteException {
+            ProtoLogic.getRemoteMessages(conversation.type.ordinal(), conversation.target, conversation.line, beforeMessageUid, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(List<ProtoMessage> list) {
+                    List<cn.wildfirechat.message.Message> out = new ArrayList<>();
+                    for (ProtoMessage protoMessage : list) {
+                        cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
+                        if (msg != null) {
+                            out.add(msg);
+                        }
+                    }
+                    try {
+                        callback.onSuccess(out);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public cn.wildfirechat.message.Message getMessage(long messageId) throws RemoteException {
             return convertProtoMessage(ProtoLogic.getMessage(messageId));
         }
