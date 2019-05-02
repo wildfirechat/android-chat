@@ -14,6 +14,7 @@ import cn.wildfirechat.client.IGetChatRoomMembersInfoCallback;
 import cn.wildfirechat.client.IGetGroupInfoCallback;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ISearchChannelCallback;
+import cn.wildfirechat.client.IGetRemoteMessageCallback;
 
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
@@ -72,6 +73,8 @@ interface IRemoteClient {
     List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines);
     ConversationInfo getConversation(in int conversationType, in String target, in int line);
     List<Message> getMessages(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser);
+    void getRemoteMessages(in Conversation conversation, in long beforeMessageUid, in int count, in IGetRemoteMessageCallback callback);
+
     Message getMessage(in long messageId);
     Message getMessageByUid(in long messageUid);
 
