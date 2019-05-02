@@ -32,6 +32,7 @@ import java.util.Map;
 import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ICreateChannelCallback;
+import cn.wildfirechat.client.IGetRemoteMessageCallback;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
 import cn.wildfirechat.client.IOnFriendUpdateListener;
@@ -1426,6 +1427,28 @@ public class ChatManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void getRemoteMessages(Conversation conversation, long beforeMessageId, int count, GetRemoteMessageCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.getRemoteMessages(conversation, beforeMessageId, count, new IGetRemoteMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages) throws RemoteException {
+                    callback.onSuccess(messages);
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    callback.onFail(errorCode);
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
