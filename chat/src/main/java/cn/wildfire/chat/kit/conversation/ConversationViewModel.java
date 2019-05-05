@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -37,6 +38,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.GetRemoteMessageCallback;
 import cn.wildfirechat.remote.OnClearMessageListener;
 import cn.wildfirechat.remote.OnMessageUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
@@ -136,19 +138,55 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         return clearMessageLiveData;
     }
 
-    public MutableLiveData<List<UiMessage>> loadOldMessages(long fromIndex, int count) {
+    public MutableLiveData<List<UiMessage>> loadOldMessages(long fromMessageId, long fromMessageUid, int count) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<Message> messageList = ChatManager.Instance().getMessages(conversation, fromIndex, true, count, channelPrivateChatUser);
-            List<UiMessage> messages = new ArrayList<>();
-            if (messageList != null) {
+            List<Message> messageList = ChatManager.Instance().getMessages(conversation, fromMessageId, true, count, channelPrivateChatUser);
+            if (messageList != null && !messageList.isEmpty()) {
+                List<UiMessage> messages = new ArrayList<>();
                 for (Message msg : messageList) {
                     messages.add(new UiMessage(msg));
                 }
+                result.postValue(messages);
+            } else {
+                ChatManager.Instance().getRemoteMessages(conversation, fromMessageUid, count, new GetRemoteMessageCallback() {
+                    @Override
+                    public void onSuccess(List<Message> messages) {
+                        if (messages != null && !messages.isEmpty()) {
+                            List<UiMessage> msgs = new ArrayList<>();
+                            for (Message msg : messages) {
+                                msgs.add(new UiMessage(msg));
+                            }
+                            result.postValue(msgs);
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode) {
+
+                    }
+                });
             }
-            result.postValue(messages);
         });
         return result;
+    }
+
+    public LiveData<List<Message>> loadRemoteHistoryMessage(long fromMessageUid, int count) {
+        MutableLiveData<List<Message>> data = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            ChatManager.Instance().getRemoteMessages(conversation, fromMessageUid, count, new GetRemoteMessageCallback() {
+                @Override
+                public void onSuccess(List<Message> messages) {
+                    data.setValue(messages);
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    // do nothing
+                }
+            });
+        });
+        return data;
     }
 
     public MutableLiveData<List<UiMessage>> loadAroundMessages(long focusIndex, int count) {
@@ -198,7 +236,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     }
 
     public MutableLiveData<List<UiMessage>> getMessages() {
-        return loadOldMessages(0, 20);
+        return loadOldMessages(0, 0, 20);
     }
 
     // TODO 参数里面直接带上conversation相关信息，会更方便

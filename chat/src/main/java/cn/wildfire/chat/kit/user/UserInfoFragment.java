@@ -107,7 +107,6 @@ public class UserInfoFragment extends Fragment {
             chatButton.setVisibility(View.VISIBLE);
             voipChatButton.setVisibility(View.VISIBLE);
             inviteButton.setVisibility(View.GONE);
-            aliasOptionItemView.setVisibility(View.GONE);
         } else {
             // stranger
             chatButton.setVisibility(View.GONE);

@@ -421,7 +421,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void getRemoteMessages(Conversation conversation, long beforeMessageUid, int count, IGetRemoteMessageCallback callback) throws RemoteException {
             ProtoLogic.getRemoteMessages(conversation.type.ordinal(), conversation.target, conversation.line, beforeMessageUid, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
                 @Override
-                public void onSuccess(List<ProtoMessage> list) {
+                public void onSuccess(ProtoMessage[] list) {
                     List<cn.wildfirechat.message.Message> out = new ArrayList<>();
                     for (ProtoMessage protoMessage : list) {
                         cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
@@ -698,6 +698,38 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
             return out;
+        }
+
+        @Override
+        public String getFriendAlias(String userId) throws RemoteException {
+            return ProtoLogic.getFriendAlias(userId);
+        }
+
+        @Override
+        public void setFriendAlias(String userId, String alias, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.setFriendAlias(userId, alias, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    if (callback != null){
+                        try {
+                            callback.onSuccess();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    if (callback != null){
+                        try {
+                            callback.onFailure(i);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
         }
 
         @Override

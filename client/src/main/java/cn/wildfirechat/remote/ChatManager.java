@@ -32,6 +32,7 @@ import java.util.Map;
 import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ICreateChannelCallback;
+import cn.wildfirechat.client.IGeneralCallback;
 import cn.wildfirechat.client.IGetRemoteMessageCallback;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
@@ -1391,7 +1392,8 @@ public class ChatManager {
      * @param conversation
      * @return
      */
-    public @Nullable ConversationInfo getConversation(Conversation conversation) {
+    public @Nullable
+    ConversationInfo getConversation(Conversation conversation) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
             return null;
@@ -1438,12 +1440,20 @@ public class ChatManager {
             mClient.getRemoteMessages(conversation, beforeMessageId, count, new IGetRemoteMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages) throws RemoteException {
-                    callback.onSuccess(messages);
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess(messages);
+                        });
+                    }
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
                 }
             });
         } catch (RemoteException e) {
@@ -1764,6 +1774,49 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public String getFriendAlias(String userId) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        try {
+            return mClient.getFriendAlias(userId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setFriendAlias(String userId, String alias, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(-1001);
+            }
+        }
+
+        try {
+            mClient.setFriendAlias(userId, alias, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(callback::onSuccess);
+                    }
+
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
