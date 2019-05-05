@@ -4,24 +4,29 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.lifecycle.Observer;
 
 import butterknife.Bind;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 
 
 public class SetAliasActivity extends WfcBaseActivity {
 
-    private String mFriendId;
+    private String userId;
 //    private Friend mFriend;
 
     @Bind(R.id.aliasEditText)
     EditText aliasEditText;
 
     private MenuItem menuItem;
+    private UserViewModel userViewModel;
 
     @Override
     protected int contentLayout() {
@@ -30,10 +35,15 @@ public class SetAliasActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        mFriendId = getIntent().getStringExtra("userId");
-        if (TextUtils.isEmpty(mFriendId)) {
+        userId = getIntent().getStringExtra("userId");
+        if (TextUtils.isEmpty(userId)) {
             finish();
             return;
+        }
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        String alias = userViewModel.getFriendAlias(userId);
+        if (!TextUtils.isEmpty(alias)) {
+            aliasEditText.setHint(alias);
         }
     }
 
@@ -68,11 +78,16 @@ public class SetAliasActivity extends WfcBaseActivity {
             UIUtils.showToast(UIUtils.getString(R.string.alias_no_empty));
             return;
         }
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        userViewModel.setFriendAlias(userId, displayName).observe(this, new Observer<OperateResult<Integer>>() {
+            @Override
+            public void onChanged(OperateResult<Integer> integerOperateResult) {
+                if (integerOperateResult.isSuccess()) {
+                    Toast.makeText(SetAliasActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(SetAliasActivity.this, "修改别名错误：" + integerOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
-
-    private void changeError(Throwable throwable) {
-        UIUtils.showToast(throwable.getLocalizedMessage());
-    }
-
 }

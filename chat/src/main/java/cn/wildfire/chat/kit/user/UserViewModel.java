@@ -115,8 +115,24 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
         return ChatManager.Instance().getUserInfos(userIds);
     }
 
-    public void setAlias(UserInfo userInfo, String alias) {
-        // TODO
+    public MutableLiveData<OperateResult<Integer>> setFriendAlias(String userId, String alias) {
+        MutableLiveData<OperateResult<Integer>> data = new MutableLiveData<>();
+        ChatManager.Instance().setFriendAlias(userId, alias, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                data.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                data.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return data;
+    }
+
+    public String getFriendAlias(String userId) {
+        return ChatManager.Instance().getFriendAlias(userId);
     }
 
     public String getUserId() {
@@ -136,4 +152,5 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
             settingUpdatedLiveData.setValue(new Object());
         }
     }
+
 }
