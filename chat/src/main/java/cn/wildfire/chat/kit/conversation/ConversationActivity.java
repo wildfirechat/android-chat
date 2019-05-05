@@ -235,7 +235,7 @@ public class ConversationActivity extends WfcBaseActivity implements
         handler = new Handler();
         rootLinearLayout.addOnKeyboardShownListener(this);
 
-        swipeRefreshLayout.setOnRefreshListener(() -> loadMoreOldMessages());
+        swipeRefreshLayout.setOnRefreshListener(this::loadMoreOldMessages);
 
         // message list
         adapter = new ConversationMessageAdapter(this);
@@ -347,6 +347,7 @@ public class ConversationActivity extends WfcBaseActivity implements
                                 content.tip = String.format(welcome, "<" + userId + ">");
                             }
                             conversationViewModel.sendMessage(content);
+                            loadMoreOldMessages();
                             setChatRoomConversationTitle();
 
                         } else {
@@ -550,11 +551,13 @@ public class ConversationActivity extends WfcBaseActivity implements
     }
 
     private void loadMoreOldMessages() {
-        long fromIndex = Long.MAX_VALUE;
+        long fromMessageId = 0;
+        long fromMessageUid = 0;
         if (adapter.getMessages() != null && !adapter.getMessages().isEmpty()) {
-            fromIndex = adapter.getItem(0).message.messageId;
+            fromMessageId = adapter.getItem(0).message.messageId;
+            fromMessageUid = adapter.getItem(0).message.messageUid;
         }
-        conversationViewModel.loadOldMessages(fromIndex, MESSAGE_LOAD_COUNT_PER_TIME)
+        conversationViewModel.loadOldMessages(fromMessageId, fromMessageUid, MESSAGE_LOAD_COUNT_PER_TIME)
                 .observe(this, uiMessages -> {
                     adapter.addMessagesAtHead(uiMessages);
 
