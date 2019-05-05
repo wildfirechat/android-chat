@@ -1391,7 +1391,7 @@ public class ChatManager {
      * @param conversation
      * @return
      */
-    public ConversationInfo getConversation(Conversation conversation) {
+    public @Nullable ConversationInfo getConversation(Conversation conversation) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
             return null;
@@ -1688,6 +1688,9 @@ public class ChatManager {
         // 2. 这儿强制置一个值
         // 这儿采用第二种方案
         ConversationInfo conversationInfo = getConversation(conversation);
+        if (conversationInfo == null) {
+            return;
+        }
         conversationInfo.draft = draft;
         for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
             listener.onConversationDraftUpdate(conversationInfo, draft);

@@ -17,11 +17,11 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
-import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.app.Config;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
@@ -114,6 +114,7 @@ public class SMSLoginActivity extends WfcBaseActivity {
                 if (isFinishing()) {
                     return;
                 }
+                Toast.makeText(SMSLoginActivity.this, "登录失败：" + code + " " + msg, Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });

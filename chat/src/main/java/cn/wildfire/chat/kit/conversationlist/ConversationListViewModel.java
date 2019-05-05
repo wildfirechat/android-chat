@@ -267,6 +267,9 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     private void postConversationInfo(ConversationInfo conversationInfo) {
+        if (conversationInfo == null) {
+            return;
+        }
         if (conversationInfoLiveData != null) {
             UIUtils.postTaskSafely(() -> conversationInfoLiveData.setValue(conversationInfo));
         }
