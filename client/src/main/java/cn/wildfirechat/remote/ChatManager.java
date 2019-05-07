@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.LruCache;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
@@ -119,6 +120,9 @@ public class ChatManager {
     private List<OnClearMessageListener> clearMessageListeners = new ArrayList<>();
 
     private List<IMServiceStatusListener> imServiceStatusListeners = new ArrayList<>();
+
+    private LruCache<String, UserInfo> userInfoCache;
+    private LruCache<String, String> friendAliasStore;
 
     public enum PushType {
         Xiaomi(1),
@@ -321,6 +325,9 @@ public class ChatManager {
      * @param userInfos
      */
     private void onUserInfoUpdated(List<UserInfo> userInfos) {
+        for (UserInfo info : userInfos) {
+            userInfoCache.remove(info.uid);
+        }
         mainHandler.post(() -> {
             for (OnUserInfoUpdateListener listener : userInfoUpdateListeners) {
                 listener.onUserInfoUpdate(userInfos);
@@ -356,7 +363,10 @@ public class ChatManager {
         });
     }
 
-    private void onFriendListUpdated() {
+    private void onFriendListUpdated(List<String> friendList) {
+        for (String friendId : friendList) {
+            friendAliasStore.remove(friendId);
+        }
         mainHandler.post(() -> {
             for (OnFriendUpdateListener listener : friendUpdateListeners) {
                 listener.onFriendListUpdate();
@@ -1120,6 +1130,8 @@ public class ChatManager {
         }
         this.userId = userId;
         this.token = token;
+        this.userInfoCache = new LruCache<>(1 * 1024 * 1024);
+        this.friendAliasStore = new LruCache<>(1 * 1024 * 1024);
 
         if (mClient != null) {
             try {
@@ -1781,8 +1793,15 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return null;
         }
+        String alias = friendAliasStore.get(userId);
+        if (alias != null) {
+            return alias;
+        }
+
         try {
-            return mClient.getFriendAlias(userId);
+            alias = mClient.getFriendAlias(userId);
+            friendAliasStore.put(userId, TextUtils.isEmpty(alias) ? "" : alias);
+            return alias;
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -1795,6 +1814,7 @@ public class ChatManager {
                 callback.onFail(-1001);
             }
         }
+        friendAliasStore.remove(userId);
 
         try {
             mClient.setFriendAlias(userId, alias, new IGeneralCallback.Stub() {
@@ -2206,20 +2226,30 @@ public class ChatManager {
         if (TextUtils.isEmpty(userId)) {
             return null;
         }
-        if (userSource != null) {
-            return userSource.getUser(userId);
+        UserInfo userInfo = userInfoCache.get(userId);
+        if (userInfo != null) {
+            return userInfo;
         }
+        if (userSource != null) {
+            userInfo = userSource.getUser(userId);
+            if (userInfo == null) {
+                userInfo = new NullUserInfo(userId);
+            }
+            userInfoCache.put(userId, userInfo);
+            return userInfo;
+        }
+
         if (!checkRemoteService()) {
             return new NullUserInfo(userId);
         }
 
         try {
-            UserInfo userInfo = mClient.getUserInfo(userId, refresh);
-            if (userInfo != null) {
-                return userInfo;
-            } else {
-                return new NullUserInfo(userId);
+            userInfo = mClient.getUserInfo(userId, refresh);
+            if (userInfo == null) {
+                userInfo = new NullUserInfo(userId);
             }
+            userInfoCache.put(userId, userInfo);
+            return userInfo;
         } catch (RemoteException e) {
             e.printStackTrace();
             return new NullUserInfo(userId);
@@ -3067,7 +3097,7 @@ public class ChatManager {
                 });
                 mClient.setOnFriendUpdateListener(new IOnFriendUpdateListener.Stub() {
                     @Override
-                    public void onFriendListUpdated() throws RemoteException {
+                    public void onFriendListUpdated(List<String> friendList) throws RemoteException {
                         ChatManager.this.onFriendListUpdated();
                     }
 
