@@ -3098,7 +3098,7 @@ public class ChatManager {
                 mClient.setOnFriendUpdateListener(new IOnFriendUpdateListener.Stub() {
                     @Override
                     public void onFriendListUpdated(List<String> friendList) throws RemoteException {
-                        ChatManager.this.onFriendListUpdated();
+                        ChatManager.this.onFriendListUpdated(friendList);
                     }
 
                     @Override
