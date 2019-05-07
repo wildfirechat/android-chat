@@ -710,7 +710,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ProtoLogic.setFriendAlias(userId, alias, new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
-                    if (callback != null){
+                    if (callback != null) {
                         try {
                             callback.onSuccess();
                         } catch (RemoteException e) {
@@ -721,7 +721,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
                 @Override
                 public void onFailure(int i) {
-                    if (callback != null){
+                    if (callback != null) {
                         try {
                             callback.onFailure(i);
                         } catch (RemoteException e) {
@@ -1931,7 +1931,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     @Override
-    public void onFriendListUpdated() {
+    public void onFriendListUpdated(String[] friendList) {
         handler.post(() -> {
             int i = onFriendUpdateListenerRemoteCallbackList.beginBroadcast();
             IOnFriendUpdateListener listener;
@@ -1939,7 +1939,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 i--;
                 listener = onFriendUpdateListenerRemoteCallbackList.getBroadcastItem(i);
                 try {
-                    listener.onFriendListUpdated();
+                    listener.onFriendListUpdated(Arrays.asList(friendList));
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
