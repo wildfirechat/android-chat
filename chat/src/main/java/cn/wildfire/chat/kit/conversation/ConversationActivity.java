@@ -390,7 +390,7 @@ public class ConversationActivity extends WfcBaseActivity implements
 
         if (conversation.type == Conversation.ConversationType.Single) {
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversation.target, false);
-            conversationTitle = userInfo.displayName;
+            conversationTitle = userViewModel.getUserDisplayName(userInfo);
         } else if (conversation.type == Conversation.ConversationType.Group) {
             GroupInfo groupInfo = ChatManagerHolder.gChatManager.getGroupInfo(conversation.target, false);
             if (groupInfo != null) {
@@ -406,7 +406,7 @@ public class ConversationActivity extends WfcBaseActivity implements
             if (!TextUtils.isEmpty(channelPrivateChatUser)) {
                 UserInfo channelPrivateChatUserInfo = userViewModel.getUserInfo(channelPrivateChatUser, false);
                 if (channelPrivateChatUserInfo != null) {
-                    conversationTitle += "@" + channelPrivateChatUserInfo.displayName;
+                    conversationTitle += "@" + userViewModel.getUserDisplayName(channelPrivateChatUserInfo);
                 } else {
                     conversationTitle += "@<" + channelPrivateChatUser + ">";
                 }
@@ -461,7 +461,7 @@ public class ConversationActivity extends WfcBaseActivity implements
             SpannableString spannableString = mentionSpannable(userInfo);
             inputPanel.editText.getEditableText().insert(position, spannableString);
         } else {
-            inputPanel.editText.getEditableText().insert(position, userInfo.displayName);
+            inputPanel.editText.getEditableText().insert(position, userViewModel.getUserDisplayName(userInfo));
         }
     }
 
@@ -476,7 +476,8 @@ public class ConversationActivity extends WfcBaseActivity implements
             if (isMentionAll) {
                 spannableString = mentionAllSpannable();
             } else {
-                UserInfo userInfo = data.getParcelableExtra("contact");
+                String userId = data.getStringExtra("userId");
+                UserInfo userInfo = userViewModel.getUserInfo(userId, false);
                 spannableString = mentionSpannable(userInfo);
             }
             int position = inputPanel.editText.getSelectionEnd();

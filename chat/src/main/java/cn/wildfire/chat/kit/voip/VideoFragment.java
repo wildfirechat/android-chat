@@ -12,22 +12,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
 
 import org.webrtc.Logging;
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
 
 public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
 
@@ -297,13 +299,14 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
                 descTextView.setText(R.string.av_video_invite);
             }
         }
-        UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserInfo userInfo = userViewModel.getUserInfo(targetId, false);
         if (userInfo == null) {
             getActivity().finish();
             return;
         }
         Glide.with(this).load(userInfo.portrait).into(portraitImageView);
-        nameTextView.setText(userInfo.displayName);
+        nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
 
         updateCallDuration();
     }

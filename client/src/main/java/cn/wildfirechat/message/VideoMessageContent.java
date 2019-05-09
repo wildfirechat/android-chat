@@ -63,7 +63,7 @@ public class VideoMessageContent extends MediaMessageContent {
     }
 
     @Override
-    public String digest() {
+    public String digest(Message message) {
         return "[视频]";
     }
 

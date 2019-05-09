@@ -47,7 +47,7 @@ public class ConversationViewHolder extends ResultItemViewHolder<ConversationSea
             UserInfo userInfo = userViewModel.getUserInfo(conversation.target, false);
             if (userInfo != null) {
                 Glide.with(fragment).load(userInfo.portrait).apply(new RequestOptions().centerCrop().placeholder(R.mipmap.avatar_def)).into(portraitImageView);
-                nameTextView.setText(userInfo.displayName);
+                nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
             }
         } else {
             GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
@@ -58,7 +58,7 @@ public class ConversationViewHolder extends ResultItemViewHolder<ConversationSea
         }
 
         if (conversationSearchResult.marchedMessage != null) {
-            descTextView.setText(conversationSearchResult.marchedMessage.content.digest());
+            descTextView.setText(conversationSearchResult.marchedMessage.content.digest(conversationSearchResult.marchedMessage));
         } else {
             descTextView.setText(conversationSearchResult.marchedCount + "条记录");
         }

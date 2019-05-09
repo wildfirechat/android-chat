@@ -10,10 +10,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_KICKOF_GROUP_MEMBER;
@@ -31,21 +31,19 @@ public class KickoffGroupMemberNotificationContent extends NotificationMessageCo
     }
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
             sb.append("您把");
         } else {
-            UserInfo userInfo = ChatManager.Instance().getUserInfo(operator, false);
-            sb.append(userInfo.displayName);
+            sb.append(ChatManager.Instance().getGroupMemberDisplayName(message.conversation.target, operator));
             sb.append("把");
         }
 
         if (kickedMembers != null) {
             for (String member : kickedMembers) {
                 sb.append(" ");
-                UserInfo userInfo = ChatManager.Instance().getUserInfo(member, false);
-                sb.append(userInfo.displayName);
+                sb.append(ChatManager.Instance().getGroupMemberDisplayName(message.conversation.target, member));
             }
         }
 
@@ -93,8 +91,8 @@ public class KickoffGroupMemberNotificationContent extends NotificationMessageCo
     }
 
     @Override
-    public String digest() {
-        return formatNotification();
+    public String digest(Message message) {
+        return formatNotification(message);
     }
 
     @Override

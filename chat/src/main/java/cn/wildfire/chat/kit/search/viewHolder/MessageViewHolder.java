@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -14,10 +15,12 @@ import com.bumptech.glide.request.RequestOptions;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 
 public class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -48,9 +51,14 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             } else {
                 nameTextView.setText("<" + sender.uid + ">");
             }
+            String name;
+            if (message.conversation.type == Conversation.ConversationType.Group) {
+                GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
+                name = groupViewModel.getGroupMemberDisplayName(message.conversation.target, message.sender);
+            }
             Glide.with(fragment).load(sender.portrait).apply(new RequestOptions().placeholder(R.mipmap.default_header)).into(portraitImageView);
         }
-        contentTextView.setText(message.content.digest());
+        contentTextView.setText(message.content.digest(message));
         timeTextView.setText(TimeUtils.getMsgFormatTime(message.serverTime));
     }
 }

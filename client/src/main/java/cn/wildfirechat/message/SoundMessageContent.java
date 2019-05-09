@@ -64,7 +64,7 @@ public class SoundMessageContent extends MediaMessageContent {
     }
 
     @Override
-    public String digest() {
+    public String digest(Message message) {
         return "[语音]";
     }
 

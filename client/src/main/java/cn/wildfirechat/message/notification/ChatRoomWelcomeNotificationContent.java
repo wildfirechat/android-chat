@@ -2,6 +2,7 @@ package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessagePayload;
 
 public class ChatRoomWelcomeNotificationContent extends NotificationMessageContent {
@@ -9,7 +10,7 @@ public class ChatRoomWelcomeNotificationContent extends NotificationMessageConte
     private String welcome;
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         return welcome;
     }
 
@@ -24,7 +25,7 @@ public class ChatRoomWelcomeNotificationContent extends NotificationMessageConte
     }
 
     @Override
-    public String digest() {
+    public String digest(Message message) {
         return null;
     }
 
