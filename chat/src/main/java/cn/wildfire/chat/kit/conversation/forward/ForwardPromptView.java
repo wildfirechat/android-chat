@@ -80,7 +80,7 @@ public class ForwardPromptView extends LinearLayout {
         } else {
             contentImageView.setVisibility(GONE);
             contentTextView.setVisibility(VISIBLE);
-            contentTextView.setText(message.content.digest());
+            contentTextView.setText(message.content.digest(message));
         }
         invalidate();
     }

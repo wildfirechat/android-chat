@@ -10,16 +10,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
 
 import org.webrtc.StatsReport;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
@@ -190,7 +193,8 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
         String targetId = ((SingleVoipCallActivity) getActivity()).getTargetId();
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
         Glide.with(this).load(userInfo.portrait).into(portraitImageView);
-        nameTextView.setText(userInfo.displayName);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
         muteImageView.setSelected(!micEnabled);
         updateCallDuration();
     }

@@ -121,7 +121,11 @@ public class ChatManager {
 
     private List<IMServiceStatusListener> imServiceStatusListeners = new ArrayList<>();
 
+    // fixme
+    // TODO 目前alias和userInfo是分开的，考虑合在一起，故alias更新的时候，先不通知用户信息更新了
     private LruCache<String, UserInfo> userInfoCache;
+    // key = memberId@groupId
+    private LruCache<String, GroupMember> groupMemberCache;
     private LruCache<String, String> friendAliasStore;
 
     public enum PushType {
@@ -324,7 +328,7 @@ public class ChatManager {
      *
      * @param userInfos
      */
-    private void onUserInfoUpdated(List<UserInfo> userInfos) {
+    private void onUserInfoUpdate(List<UserInfo> userInfos) {
         for (UserInfo info : userInfos) {
             userInfoCache.remove(info.uid);
         }
@@ -355,6 +359,9 @@ public class ChatManager {
     private void onGroupMembersUpdate(String groupId, List<GroupMember> groupMembers) {
         if (groupMembers == null || groupMembers.isEmpty()) {
             return;
+        }
+        for (GroupMember member : groupMembers) {
+            groupMemberCache.remove(groupMemberCacheKey(groupId, member.memberId));
         }
         mainHandler.post(() -> {
             for (OnGroupMembersUpdateListener listener : groupMembersUpdateListeners) {
@@ -1130,8 +1137,9 @@ public class ChatManager {
         }
         this.userId = userId;
         this.token = token;
-        this.userInfoCache = new LruCache<>(1 * 1024 * 1024);
-        this.friendAliasStore = new LruCache<>(1 * 1024 * 1024);
+        this.userInfoCache = new LruCache<>(1024);
+        this.friendAliasStore = new LruCache<>(1024);
+        this.groupMemberCache = new LruCache<>(1024);
 
         if (mClient != null) {
             try {
@@ -1789,6 +1797,39 @@ public class ChatManager {
         }
     }
 
+    public String getGroupMemberDisplayName(String groupId, String memberId) {
+        GroupMember groupMember = getGroupMember(groupId, memberId);
+        if (groupMember != null && !TextUtils.isEmpty(groupMember.alias)) {
+            return groupMember.alias;
+        }
+
+        String alias = getFriendAlias(memberId);
+        if (!TextUtils.isEmpty(alias)) {
+            return alias;
+        }
+        UserInfo userInfo = getUserInfo(memberId, false);
+        if (userInfo != null && !TextUtils.isEmpty(userInfo.displayName)) {
+            return userInfo.displayName;
+        }
+        return "<" + memberId + ">";
+    }
+
+    public String getUserDisplayName(UserInfo userInfo) {
+        if (userInfo == null) {
+            return null;
+        }
+        String alias = ChatManager.Instance().getFriendAlias(userInfo.uid);
+        if (!TextUtils.isEmpty(alias)) {
+            return alias;
+        }
+        return TextUtils.isEmpty(userInfo.displayName) ? "<" + userInfo.uid + ">" : userInfo.displayName;
+    }
+
+    public String getUserDisplayName(String userId) {
+        UserInfo userInfo = getUserInfo(userId, false);
+        return getUserDisplayName(userInfo);
+    }
+
     public String getFriendAlias(String userId) {
         if (!checkRemoteService()) {
             return null;
@@ -2356,7 +2397,7 @@ public class ChatManager {
                         });
                     }
                     UserInfo userInfo = getUserInfo(userId, false);
-                    onUserInfoUpdated(Collections.singletonList(userInfo));
+                    onUserInfoUpdate(Collections.singletonList(userInfo));
                 }
 
                 @Override
@@ -2760,6 +2801,7 @@ public class ChatManager {
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
+                                groupMemberCache.remove(groupMemberCacheKey(groupId, userId));
                                 callback.onSuccess();
                             }
                         });
@@ -2798,13 +2840,28 @@ public class ChatManager {
         }
     }
 
+    private String groupMemberCacheKey(String groupId, String memberId) {
+        return memberId + "@" + groupId;
+    }
+
     public GroupMember getGroupMember(String groupId, String memberId) {
+        if (TextUtils.isEmpty(groupId) || TextUtils.isEmpty(memberId)) {
+            return null;
+        }
+        String key = groupMemberCacheKey(groupId, memberId);
+        GroupMember groupMember = groupMemberCache.get(key);
+        if (groupMember != null) {
+            return groupMember;
+        }
+
         if (!checkRemoteService()) {
             return null;
         }
 
         try {
-            return mClient.getGroupMember(groupId, memberId);
+            groupMember = mClient.getGroupMember(groupId, memberId);
+            groupMemberCache.put(key, groupMember);
+            return groupMember;
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -3080,7 +3137,7 @@ public class ChatManager {
                 mClient.setOnUserInfoUpdateListener(new IOnUserInfoUpdateListener.Stub() {
                     @Override
                     public void onUserInfoUpdated(List<UserInfo> userInfos) throws RemoteException {
-                        ChatManager.this.onUserInfoUpdated(userInfos);
+                        ChatManager.this.onUserInfoUpdate(userInfos);
                     }
                 });
                 mClient.setOnGroupInfoUpdateListener(new IOnGroupInfoUpdateListener.Stub() {

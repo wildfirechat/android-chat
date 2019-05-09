@@ -6,11 +6,14 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 
 public class ContactViewHolder extends RecyclerView.ViewHolder {
@@ -40,12 +43,8 @@ public class ContactViewHolder extends RecyclerView.ViewHolder {
         } else {
             categoryTextView.setVisibility(View.GONE);
         }
-        if (userInfo.getUserInfo().displayName != null) {
-            nameTextView.setText(userInfo.getUserInfo().displayName);
-        } else {
-            //nameTextView.setText(userInfo.getUserInfo().mobile);
-            nameTextView.setText("<" + userInfo.getUserInfo().uid + ">");
-        }
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        nameTextView.setText(userViewModel.getUserDisplayName(userInfo.getUserInfo()));
         GlideApp.with(fragment).load(userInfo.getUserInfo().portrait).error(R.mipmap.default_header).into(portraitImageView);
     }
 

@@ -22,14 +22,13 @@ import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.Draft;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
+import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
 
 @SuppressWarnings("unused")
 public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
@@ -115,10 +114,11 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                 // the message maybe invalid
                 try {
                     if (conversationInfo.conversation.type == Conversation.ConversationType.Group && lastMessage.direction == MessageDirection.Receive) {
-                        UserInfo userInfo = ChatManager.Instance().getUserInfo(conversationInfo.lastMessage.sender, false);
-                        content = userInfo.displayName + ":" + lastMessage.content.digest();
+                        GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
+                        String senderDisplayName = groupViewModel.getGroupMemberDisplayName(conversationInfo.conversation.target, conversationInfo.lastMessage.sender);
+                        content = senderDisplayName + ":" + lastMessage.content.digest(lastMessage);
                     } else {
-                        content = lastMessage.content.digest();
+                        content = lastMessage.content.digest(lastMessage);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

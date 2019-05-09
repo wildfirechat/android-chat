@@ -56,7 +56,7 @@ public class ImageMessageContent extends MediaMessageContent {
     }
 
     @Override
-    public String digest() {
+    public String digest(Message message) {
         return "[图片]";
     }
 

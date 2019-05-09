@@ -132,7 +132,7 @@ public class UserInfoFragment extends Fragment {
         Glide.with(this).load(userInfo.portrait).apply(new RequestOptions().placeholder(R.mipmap.avatar_def).centerCrop()).into(portraitImageView);
         nameTextView.setText(userInfo.name);
         nameTextView.setVisibility(View.GONE);
-        nickyNameTextView.setText(userInfo.displayName);
+        nickyNameTextView.setText(userViewModel.getUserDisplayName(userInfo));
         if (ChatManager.Instance().isMyFriend(userInfo.uid)) {
             mobileTextView.setText("电话:" + userInfo.mobile);
             mobileTextView.setVisibility(View.VISIBLE);

@@ -25,13 +25,11 @@ import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
@@ -39,7 +37,6 @@ import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -217,14 +214,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 //            return;
 //        }
         GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
-        GroupMember groupMember = groupViewModel.getGroupMember(conversation.target, sender);
-        if (groupMember != null && !TextUtils.isEmpty(groupMember.alias)) {
-            nameTextView.setText(groupMember.alias);
-        } else {
-            UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-            UserInfo userInfo = userViewModel.getUserInfo(sender, false);
-            nameTextView.setText(!TextUtils.isEmpty(userInfo.displayName) ? userInfo.displayName : "<" + userInfo.uid + ">");
-        }
+        nameTextView.setText(groupViewModel.getGroupMemberDisplayName(conversation.target, sender));
         nameTextView.setTag(sender);
     }
 
