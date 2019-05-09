@@ -3,8 +3,6 @@ package cn.wildfire.chat.app;
 import android.app.ActivityManager;
 import android.content.Context;
 
-import com.tencent.bugly.crashreport.CrashReport;
-
 import cn.wildfire.chat.app.third.location.viewholder.LocationMessageContentViewHolder;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
@@ -18,8 +16,6 @@ public class MyApp extends BaseApp {
     public void onCreate() {
         super.onCreate();
 
-        // bugly，务必替换为你自己的!!!
-        CrashReport.initCrashReport(getApplicationContext(), "34490ba79f", false);
         // 只在主进程初始化
         if (getCurProcessName(this).equals("cn.wildfirechat.chat")) {
             wfcUIKit = new WfcUIKit();
