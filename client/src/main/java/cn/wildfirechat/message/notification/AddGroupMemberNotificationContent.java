@@ -10,10 +10,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_ADD_GROUP_MEMBER;
@@ -31,22 +31,19 @@ public class AddGroupMemberNotificationContent extends NotificationMessageConten
     }
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
-        UserInfo userInfo;
         if (fromSelf) {
             sb.append("您邀请");
         } else {
-            userInfo = ChatManager.Instance().getUserInfo(invitor, false);
-            sb.append(userInfo.displayName);
+            sb.append(ChatManager.Instance().getGroupMemberDisplayName(message.conversation.target, invitor));
             sb.append("邀请");
         }
 
         if (invitees != null) {
             for (String member : invitees) {
                 sb.append(" ");
-                userInfo = ChatManager.Instance().getUserInfo(member, false);
-                sb.append(userInfo.displayName);
+                sb.append(ChatManager.Instance().getUserDisplayName(member));
             }
         }
 
@@ -93,12 +90,6 @@ public class AddGroupMemberNotificationContent extends NotificationMessageConten
             e.printStackTrace();
         }
     }
-
-    @Override
-    public String digest() {
-        return formatNotification();
-    }
-
 
     @Override
     public int describeContents() {

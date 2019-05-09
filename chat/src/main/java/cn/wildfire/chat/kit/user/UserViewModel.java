@@ -111,6 +111,14 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
         return ChatManager.Instance().getUserInfo(userId, refresh);
     }
 
+    public String getUserDisplayName(UserInfo userInfo) {
+        return ChatManager.Instance().getUserDisplayName(userInfo);
+    }
+
+    public String getUserDisplayName(String userId) {
+        return ChatManager.Instance().getUserDisplayName(userId);
+    }
+
     public List<UserInfo> getUserInfos(List<String> userIds) {
         return ChatManager.Instance().getUserInfos(userIds);
     }

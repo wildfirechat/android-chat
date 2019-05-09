@@ -238,15 +238,19 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             if (conversation.type == Conversation.ConversationType.Group) {
                 if (count == 1 && s.charAt(start) == '@') {
 //                    if (start == 0 || s.charAt(start - 1) == ' ') {
-                    Intent intent = new Intent(activity, MentionGroupMemberActivity.class);
-                    GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
-                    GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-                    intent.putExtra("groupInfo", groupInfo);
-                    activity.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
+                    mentionGroupMember();
 //                    }
                 }
             }
         }
+    }
+
+    private void mentionGroupMember() {
+        Intent intent = new Intent(activity, MentionGroupMemberActivity.class);
+        GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
+        GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
+        intent.putExtra("groupInfo", groupInfo);
+        activity.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
     }
 
     @OnTextChanged(value = R.id.editText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)

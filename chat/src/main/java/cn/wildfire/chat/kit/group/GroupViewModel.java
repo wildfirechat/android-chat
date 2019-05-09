@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -216,6 +217,25 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
 
     public GroupMember getGroupMember(String groupId, String memberId) {
         return ChatManager.Instance().getGroupMember(groupId, memberId);
+    }
+
+    // 优先级如下：
+    // 1. 群备注 2. 好友备注 3. 用户displayName 4. <uid>
+    public String getGroupMemberDisplayName(String groupId, String memberId) {
+        GroupMember groupMember = ChatManager.Instance().getGroupMember(groupId, memberId);
+        if (groupMember != null && !TextUtils.isEmpty(groupMember.alias)) {
+            return groupMember.alias;
+        }
+
+        String alias = ChatManager.Instance().getFriendAlias(memberId);
+        if (!TextUtils.isEmpty(alias)) {
+            return alias;
+        }
+        UserInfo userInfo = ChatManager.Instance().getUserInfo(memberId, false);
+        if (userInfo != null && !TextUtils.isEmpty(userInfo.displayName)) {
+            return userInfo.displayName;
+        }
+        return "<" + memberId + ">";
     }
 
     public MutableLiveData<OperateResult<List<GroupInfo>>> getMyGroups() {

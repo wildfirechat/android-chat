@@ -65,7 +65,7 @@ public class GroupMemberListFragment extends BaseContactFragment {
     @Override
     public void onContactClick(UIUserInfo userInfo) {
         Intent intent = new Intent();
-        intent.putExtra("contact", userInfo.getUserInfo());
+        intent.putExtra("userId", userInfo.getUserInfo().uid);
         getActivity().setResult(Activity.RESULT_OK, intent);
         getActivity().finish();
     }

@@ -9,11 +9,12 @@ import android.graphics.Color;
 import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.core.app.NotificationCompat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.core.app.NotificationCompat;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.chat.R;
@@ -24,8 +25,6 @@ import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.NullUserInfo;
-import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 import static androidx.core.app.NotificationCompat.CATEGORY_MESSAGE;
@@ -115,8 +114,8 @@ public class WfcNotificationManager {
 
             String title = "";
             if (message.conversation.type == Single) {
-                UserInfo userInfo = ChatManager.Instance().getUserInfo(message.conversation.target, false);
-                title = (userInfo instanceof NullUserInfo ? "新消息" : userInfo.displayName);
+                String name = ChatManager.Instance().getUserDisplayName(message.conversation.target);
+                title = TextUtils.isEmpty(name) ? "新消息" : name;
             } else if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.conversation.target, false);
                 title = groupInfo == null ? "群聊" : groupInfo.name;

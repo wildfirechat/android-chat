@@ -20,11 +20,13 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.chat.R;
@@ -177,8 +179,10 @@ public abstract class BaseContactFragment extends Fragment implements QuickIndex
     private UIUserInfo userInfoToUIUserInfo(UserInfo userInfo) {
         UIUserInfo info = new UIUserInfo(userInfo);
         String indexLetter;
-        if (!TextUtils.isEmpty(userInfo.displayName)) {
-            String pinyin = PinyinUtils.getPinyin(userInfo.displayName);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        String displayName = userViewModel.getUserDisplayName(userInfo);
+        if (!TextUtils.isEmpty(displayName)) {
+            String pinyin = PinyinUtils.getPinyin(displayName);
             char c = pinyin.toUpperCase().charAt(0);
             if (c >= 'A' && c <= 'Z') {
                 indexLetter = c + "";
