@@ -381,7 +381,7 @@ public class ChatManager {
         });
     }
 
-    private void onFriendRequestUpdated() {
+    private void onFriendReqeustUpdated() {
         mainHandler.post(() -> {
             for (OnFriendUpdateListener listener : friendUpdateListeners) {
                 listener.onFriendRequestUpdate();
@@ -3157,7 +3157,7 @@ public class ChatManager {
 
                     @Override
                     public void onFriendRequestUpdated() throws RemoteException {
-                        ChatManager.this.onFriendRequestUpdated();
+                        ChatManager.this.onFriendReqeustUpdated();
                     }
                 });
                 mClient.setOnSettingUpdateListener(new IOnSettingUpdateListener.Stub() {
