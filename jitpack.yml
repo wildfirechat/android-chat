@@ -1,3 +1,0 @@
-install:
-  - FILE="-Dfile=mars-core-release/mars-core-release.aar"
-  - mvn install:install-file $FILE -DgroupId=com.github.wildfirechat -DartifactId=repo -Dversion=0.5 -Dpackaging=aar -DgeneratePom=true
