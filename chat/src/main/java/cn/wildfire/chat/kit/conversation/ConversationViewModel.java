@@ -163,7 +163,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
 
                     @Override
                     public void onFail(int errorCode) {
-
+                        result.postValue(new ArrayList<UiMessage>());
                     }
                 });
             }
@@ -182,7 +182,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
 
                 @Override
                 public void onFail(int errorCode) {
-                    // do nothing
+                    data.setValue(new ArrayList<>());
                 }
             });
         });
