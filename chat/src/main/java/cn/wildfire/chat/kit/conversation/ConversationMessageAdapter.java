@@ -90,11 +90,17 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     public void addMessagesAtHead(List<UiMessage> newMessages) {
+        if (newMessages == null || newMessages.isEmpty()) {
+            return;
+        }
         this.messages.addAll(0, newMessages);
         notifyItemRangeInserted(0, newMessages.size());
     }
 
     public void addMessagesAtTail(List<UiMessage> newMessages) {
+        if (newMessages == null || newMessages.isEmpty()) {
+            return;
+        }
         int insertStartPosition = this.messages.size();
         this.messages.addAll(newMessages);
         notifyItemRangeInserted(insertStartPosition, newMessages.size());
