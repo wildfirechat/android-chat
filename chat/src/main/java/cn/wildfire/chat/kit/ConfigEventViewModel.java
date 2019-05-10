@@ -16,8 +16,6 @@ public class ConfigEventViewModel extends ViewModel implements AppScopeViewModel
     }
 
     public void postGroupAliasEvent(String groupId, boolean show) {
-        // TODO
-
         if (showGroupAliasLiveData != null) {
             showGroupAliasLiveData.setValue(new Event<>(show));
         }

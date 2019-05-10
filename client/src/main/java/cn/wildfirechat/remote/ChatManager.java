@@ -2748,9 +2748,6 @@ public class ChatManager {
             mClient.modifyGroupInfo(groupId, modifyType.ordinal(), newValue, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    GroupInfo groupInfo = getGroupInfo(groupId, false);
-                    onGroupInfoUpdated(Collections.singletonList(groupInfo));
-
                     if (callback != null) {
                         mainHandler.post(new Runnable() {
                             @Override
