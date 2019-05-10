@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.third.utils.FileUtils;
@@ -44,7 +45,7 @@ import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
 import cn.wildfirechat.remote.UserSettingScope;
 
-public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
+public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;
     private MutableLiveData<List<GroupMember>> groupMembersUpdateLiveData;
 
@@ -52,6 +53,12 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         super();
         ChatManager.Instance().addGroupInfoUpdateListener(this);
         ChatManager.Instance().addGroupMembersUpdateListener(this);
+    }
+
+    @Override
+    protected void onCleared() {
+        ChatManager.Instance().removeGroupInfoUpdateListener(this);
+        ChatManager.Instance().removeGroupMembersUpdateListener(this);
     }
 
     public MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData() {
@@ -66,12 +73,6 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             groupMembersUpdateLiveData = new MutableLiveData<>();
         }
         return groupMembersUpdateLiveData;
-    }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        ChatManager.Instance().removeGroupInfoUpdateListener(this);
     }
 
     @Override
