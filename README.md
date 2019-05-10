@@ -75,8 +75,8 @@
 工程中已经包括了编译好的协议栈，你也可以自己编译[协议栈](https://github.com/wildfirechat/proto)，编译方法请参考协议栈工程。
 
 ## 集成
-1. client部分，支持快速集成，具体参考[jitpack-wildfire.chat](https://jitpack.io/#wildfirechat/android-chat/)
-2. UI(chat)部分，目前不支持快速集成，需要你自行下载，并将代码移动到你自己的项目，且必须是application module，不能作为library module引入的原因是注解中使用了R.xx.yyyy，
+1. client部分，自行下载代码，并将client module引入你们自己的项目。
+2. UI(chat)部分，需要你自行下载，并将代码移动到你自己的项目，且必须是application module，不能作为library module引入的原因是注解中使用了R.xx.yyyy，
 而library module中，R.xx.yyy并不是一个常量。后续会采用butterKnife的方式，引入R2.xx.yyyy。
 
 ## 贡献
