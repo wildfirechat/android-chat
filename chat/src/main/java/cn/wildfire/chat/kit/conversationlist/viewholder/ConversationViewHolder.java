@@ -116,9 +116,9 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                     if (conversationInfo.conversation.type == Conversation.ConversationType.Group && lastMessage.direction == MessageDirection.Receive) {
                         GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
                         String senderDisplayName = groupViewModel.getGroupMemberDisplayName(conversationInfo.conversation.target, conversationInfo.lastMessage.sender);
-                        content = senderDisplayName + ":" + lastMessage.content.digest(lastMessage);
+                        content = senderDisplayName + ":" + lastMessage.content.digest();
                     } else {
-                        content = lastMessage.content.digest(lastMessage);
+                        content = lastMessage.content.digest();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

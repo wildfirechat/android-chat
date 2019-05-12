@@ -2,7 +2,6 @@ package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
 
-import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -43,8 +42,8 @@ public class RecallMessageContent extends NotificationMessageContent {
     }
 
     @Override
-    public String digest(Message message) {
-        return formatNotification(message);
+    public String digest() {
+        return formatNotification();
     }
 
     public String getOperatorId() {
@@ -92,7 +91,7 @@ public class RecallMessageContent extends NotificationMessageContent {
     };
 
     @Override
-    public String formatNotification(Message message) {
+    public String formatNotification() {
         String notification = "%s撤回了一条消息";
         if (fromSelf) {
             notification = String.format(notification, "您");

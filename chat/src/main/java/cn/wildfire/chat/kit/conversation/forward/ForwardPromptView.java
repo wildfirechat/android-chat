@@ -10,10 +10,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import androidx.annotation.Nullable;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -80,7 +81,7 @@ public class ForwardPromptView extends LinearLayout {
         } else {
             contentImageView.setVisibility(GONE);
             contentTextView.setVisibility(VISIBLE);
-            contentTextView.setText(message.content.digest(message));
+            contentTextView.setText(message.content.digest());
         }
         invalidate();
     }

@@ -27,12 +27,7 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.message.MessageContentMediaType;
-import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
-import cn.wildfirechat.message.notification.CreateGroupNotificationContent;
-import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
-import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
-import cn.wildfirechat.message.notification.NotificationMessageContent;
-import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
+import cn.wildfirechat.message.notification.GroupNotificationMessageContent;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.ModifyGroupInfoType;
@@ -88,26 +83,21 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
             selectedIds.add(userInfo.getUserInfo().uid);
         }
         selectedIds.add(ChatManager.Instance().getUserId());
-        String mGroupName = "";
+        String groupName = "";
         if (checkedUsers.size() > 3) {
             for (int i = 0; i < 3; i++) {
                 UserInfo friend = checkedUsers.get(i).getUserInfo();
-                mGroupName += friend.displayName + "、";
+                groupName += friend.displayName + "、";
             }
         } else {
             for (UIUserInfo friend : checkedUsers) {
-                mGroupName += friend.getUserInfo().displayName + "、";
+                groupName += friend.getUserInfo().displayName + "、";
             }
         }
-        mGroupName = mGroupName.substring(0, mGroupName.length() - 1);
-
-
-        CreateGroupNotificationContent notifyCnt = new CreateGroupNotificationContent();
-        notifyCnt.creator = ChatManager.Instance().getUserId();
-        notifyCnt.groupName = mGroupName;
-        notifyCnt.fromSelf = true;
+        groupName = groupName.substring(0, groupName.length() - 1);
 
         MutableLiveData<OperateResult<String>> groupLiveData = new MutableLiveData<>();
+        String finalGroupName = groupName;
         ChatManager.Instance().getWorkHandler().post(() -> {
             String groupPortrait = null;
             try {
@@ -120,7 +110,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
                 ChatManager.Instance().uploadMedia(content, MessageContentMediaType.PORTRAIT.getValue(), new GeneralCallback2() {
                     @Override
                     public void onSuccess(String result) {
-                        ChatManager.Instance().createGroup(null, notifyCnt.groupName, result, selectedIds, Arrays.asList(0), notifyCnt, new GeneralCallback2() {
+                        ChatManager.Instance().createGroup(null, finalGroupName, result, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
                             @Override
                             public void onSuccess(String groupId) {
                                 groupLiveData.setValue(new OperateResult<>(groupId, 0));
@@ -139,7 +129,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
                     }
                 });
             } else {
-                ChatManager.Instance().createGroup(null, notifyCnt.groupName, null, selectedIds, Arrays.asList(0), notifyCnt, new GeneralCallback2() {
+                ChatManager.Instance().createGroup(null, finalGroupName, null, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
                     @Override
                     public void onSuccess(String groupId) {
                         groupLiveData.setValue(new OperateResult<>(groupId, 0));
@@ -156,13 +146,9 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
     }
 
     public MutableLiveData<Boolean> addGroupMember(GroupInfo groupInfo, List<String> memberIds) {
-        AddGroupMemberNotificationContent notificationContent = new AddGroupMemberNotificationContent();
-        notificationContent.fromSelf = true;
-        notificationContent.invitor = ChatManager.Instance().getUserId();
-        notificationContent.invitees = memberIds;
         MutableLiveData<Boolean> result = new MutableLiveData<>();
         // TODO need update group portrait or not?
-        ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, Arrays.asList(0), notificationContent, new GeneralCallback() {
+        ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, Arrays.asList(0), null, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 if (groupInfoUpdateLiveData != null) {
@@ -182,13 +168,8 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
     }
 
     public MutableLiveData<Boolean> removeGroupMember(GroupInfo groupInfo, List<String> memberIds) {
-        KickoffGroupMemberNotificationContent notifyCnt = new KickoffGroupMemberNotificationContent();
-        notifyCnt.operator = ChatManager.Instance().getUserId();
-        notifyCnt.kickedMembers = memberIds;
-        notifyCnt.fromSelf = true;
-
         MutableLiveData<Boolean> result = new MutableLiveData<>();
-        ChatManagerHolder.gChatManager.removeGroupMembers(groupInfo.target, memberIds, Arrays.asList(0), notifyCnt, new GeneralCallback() {
+        ChatManagerHolder.gChatManager.removeGroupMembers(groupInfo.target, memberIds, Arrays.asList(0), null, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 if (groupInfoUpdateLiveData != null) {
@@ -255,7 +236,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         return result;
     }
 
-    public MutableLiveData<OperateResult<Boolean>> modifyGroupInfo(String groupId, ModifyGroupInfoType modifyType, String newValue, NotificationMessageContent notifyMsg) {
+    public MutableLiveData<OperateResult<Boolean>> modifyGroupInfo(String groupId, ModifyGroupInfoType modifyType, String newValue, GroupNotificationMessageContent notifyMsg) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
         ChatManager.Instance().modifyGroupInfo(groupId, modifyType, newValue, Collections.singletonList(0), null, new GeneralCallback() {
             @Override
@@ -273,10 +254,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
 
     public MutableLiveData<OperateResult> modifyMyGroupAlias(String groupId, String alias) {
         MutableLiveData<OperateResult> result = new MutableLiveData<>();
-        ModifyGroupAliasNotificationContent content = new ModifyGroupAliasNotificationContent();
-        content.fromSelf = true;
-        content.alias = alias;
-        ChatManager.Instance().modifyGroupAlias(groupId, alias, Collections.singletonList(0), content, new GeneralCallback() {
+        ChatManager.Instance().modifyGroupAlias(groupId, alias, Collections.singletonList(0), null, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 result.setValue(new OperateResult<>(0));
@@ -307,10 +285,8 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
     }
 
     public MutableLiveData<Boolean> quitGroup(String groupId, List<Integer> lines) {
-        QuitGroupNotificationContent notifyCnt = new QuitGroupNotificationContent();
-        notifyCnt.operator = ChatManagerHolder.gChatManager.getUserId();
         MutableLiveData<Boolean> result = new MutableLiveData<>();
-        ChatManager.Instance().quitGroup(groupId, lines, notifyCnt, new GeneralCallback() {
+        ChatManager.Instance().quitGroup(groupId, lines, null, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 result.setValue(true);

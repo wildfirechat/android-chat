@@ -1,12 +1,10 @@
 package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -19,19 +17,19 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_DISMIS
  */
 
 @ContentTag(type = ContentType_DISMISS_GROUP, flag = PersistFlag.Persist)
-public class DismissGroupNotificationContent extends NotificationMessageContent {
+public class DismissGroupNotificationContent extends GroupNotificationMessageContent {
     public String operator;
 
     public DismissGroupNotificationContent() {
     }
 
     @Override
-    public String formatNotification(Message message) {
+    public String formatNotification() {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
             sb.append("您解散了群组 ");
         } else {
-            sb.append(ChatManager.Instance().getGroupMemberDisplayName(message.conversation.target, operator));
+            sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, operator));
             sb.append("解散了群组 ");
         }
 
@@ -44,6 +42,7 @@ public class DismissGroupNotificationContent extends NotificationMessageContent 
 
         try {
             JSONObject objWrite = new JSONObject();
+            objWrite.put("g", groupId);
             objWrite.put("o", operator);
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
@@ -58,6 +57,7 @@ public class DismissGroupNotificationContent extends NotificationMessageContent 
         try {
             if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
+                groupId = jsonObject.optString("g");
                 operator = jsonObject.optString("o");
             }
         } catch (JSONException e) {
@@ -66,10 +66,9 @@ public class DismissGroupNotificationContent extends NotificationMessageContent 
     }
 
     @Override
-    public String digest(Message message) {
-        return formatNotification(message);
+    public String digest() {
+        return formatNotification();
     }
-
 
     @Override
     public int describeContents() {
@@ -79,15 +78,21 @@ public class DismissGroupNotificationContent extends NotificationMessageContent 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.operator);
+        dest.writeString(this.groupId);
         dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.mentionedType);
+        dest.writeStringList(this.mentionedTargets);
     }
 
     protected DismissGroupNotificationContent(Parcel in) {
         this.operator = in.readString();
+        this.groupId = in.readString();
         this.fromSelf = in.readByte() != 0;
+        this.mentionedType = in.readInt();
+        this.mentionedTargets = in.createStringArrayList();
     }
 
-    public static final Parcelable.Creator<DismissGroupNotificationContent> CREATOR = new Parcelable.Creator<DismissGroupNotificationContent>() {
+    public static final Creator<DismissGroupNotificationContent> CREATOR = new Creator<DismissGroupNotificationContent>() {
         @Override
         public DismissGroupNotificationContent createFromParcel(Parcel source) {
             return new DismissGroupNotificationContent(source);
