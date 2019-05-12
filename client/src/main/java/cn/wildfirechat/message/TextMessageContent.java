@@ -49,7 +49,7 @@ public class TextMessageContent extends MessageContent {
     }
 
     @Override
-    public String digest(Message message) {
+    public String digest() {
         return content;
     }
 

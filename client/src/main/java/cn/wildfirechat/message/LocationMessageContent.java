@@ -101,7 +101,7 @@ public class LocationMessageContent extends MessageContent {
     }
 
     @Override
-    public String digest(Message message) {
+    public String digest() {
         return "位置";
     }
 

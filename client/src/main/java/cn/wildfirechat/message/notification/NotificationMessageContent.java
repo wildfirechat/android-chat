@@ -1,6 +1,5 @@
 package cn.wildfirechat.message.notification;
 
-import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 
 /**
@@ -16,10 +15,10 @@ public abstract class NotificationMessageContent extends MessageContent {
      */
     public boolean fromSelf;
 
-    public abstract String formatNotification(Message message);
+    public abstract String formatNotification();
 
     @Override
-    public String digest(Message message) {
-        return formatNotification(message);
+    public String digest() {
+        return formatNotification();
     }
 }

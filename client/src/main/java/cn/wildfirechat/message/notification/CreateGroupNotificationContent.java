@@ -1,12 +1,10 @@
 package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -19,7 +17,7 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_CREATE
  */
 
 @ContentTag(type = ContentType_CREATE_GROUP, flag = PersistFlag.Persist)
-public class CreateGroupNotificationContent extends NotificationMessageContent {
+public class CreateGroupNotificationContent extends GroupNotificationMessageContent {
     public String creator;
     public String groupName;
 
@@ -27,7 +25,7 @@ public class CreateGroupNotificationContent extends NotificationMessageContent {
     }
 
     @Override
-    public String formatNotification(Message message) {
+    public String formatNotification() {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
             sb.append("您创建了群组 ");
@@ -46,6 +44,7 @@ public class CreateGroupNotificationContent extends NotificationMessageContent {
 
         try {
             JSONObject objWrite = new JSONObject();
+            objWrite.put("g", groupId);
             objWrite.put("o", creator);
             objWrite.put("n", groupName);
             payload.binaryContent = objWrite.toString().getBytes();
@@ -61,6 +60,7 @@ public class CreateGroupNotificationContent extends NotificationMessageContent {
         try {
             if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
+                groupId = jsonObject.optString("g");
                 creator = jsonObject.optString("o");
                 groupName = jsonObject.optString("n");
             }
@@ -70,10 +70,9 @@ public class CreateGroupNotificationContent extends NotificationMessageContent {
     }
 
     @Override
-    public String digest(Message message) {
-        return formatNotification(message);
+    public String digest() {
+        return formatNotification();
     }
-
 
     @Override
     public int describeContents() {
@@ -84,16 +83,22 @@ public class CreateGroupNotificationContent extends NotificationMessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.creator);
         dest.writeString(this.groupName);
+        dest.writeString(this.groupId);
         dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.mentionedType);
+        dest.writeStringList(this.mentionedTargets);
     }
 
     protected CreateGroupNotificationContent(Parcel in) {
         this.creator = in.readString();
         this.groupName = in.readString();
+        this.groupId = in.readString();
         this.fromSelf = in.readByte() != 0;
+        this.mentionedType = in.readInt();
+        this.mentionedTargets = in.createStringArrayList();
     }
 
-    public static final Parcelable.Creator<CreateGroupNotificationContent> CREATOR = new Parcelable.Creator<CreateGroupNotificationContent>() {
+    public static final Creator<CreateGroupNotificationContent> CREATOR = new Creator<CreateGroupNotificationContent>() {
         @Override
         public CreateGroupNotificationContent createFromParcel(Parcel source) {
             return new CreateGroupNotificationContent(source);
