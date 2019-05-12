@@ -43,6 +43,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
+    // fixme display name
     public void onBind(Message message) {
         UserInfo sender = userViewModel.getUserInfo(message.sender, false);
         if (sender != null) {
@@ -58,7 +59,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             }
             Glide.with(fragment).load(sender.portrait).apply(new RequestOptions().placeholder(R.mipmap.default_header)).into(portraitImageView);
         }
-        contentTextView.setText(message.content.digest(message));
+        contentTextView.setText(message.content.digest());
         timeTextView.setText(TimeUtils.getMsgFormatTime(message.serverTime));
     }
 }

@@ -1,7 +1,6 @@
 package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,7 +9,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -23,7 +21,7 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_ADD_GR
  */
 
 @ContentTag(type = ContentType_ADD_GROUP_MEMBER, flag = PersistFlag.Persist)
-public class AddGroupMemberNotificationContent extends NotificationMessageContent {
+public class AddGroupMemberNotificationContent extends GroupNotificationMessageContent {
     public String invitor;
     public List<String> invitees;
 
@@ -31,12 +29,12 @@ public class AddGroupMemberNotificationContent extends NotificationMessageConten
     }
 
     @Override
-    public String formatNotification(Message message) {
+    public String formatNotification() {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
             sb.append("您邀请");
         } else {
-            sb.append(ChatManager.Instance().getGroupMemberDisplayName(message.conversation.target, invitor));
+            sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, invitor));
             sb.append("邀请");
         }
 
@@ -56,6 +54,7 @@ public class AddGroupMemberNotificationContent extends NotificationMessageConten
         MessagePayload payload = new MessagePayload();
         try {
             JSONObject objWrite = new JSONObject();
+            objWrite.put("g", groupId);
             objWrite.put("o", invitor);
             JSONArray objArray = new JSONArray();
             for (int i = 0; i < invitees.size(); i++) {
@@ -78,6 +77,7 @@ public class AddGroupMemberNotificationContent extends NotificationMessageConten
             if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 invitor = jsonObject.optString("o");
+                groupId = jsonObject.optString("g");
                 JSONArray jsonArray = jsonObject.optJSONArray("ms");
                 invitees = new ArrayList<>();
                 if (jsonArray != null) {
@@ -100,16 +100,22 @@ public class AddGroupMemberNotificationContent extends NotificationMessageConten
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.invitor);
         dest.writeStringList(this.invitees);
+        dest.writeString(this.groupId);
         dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.mentionedType);
+        dest.writeStringList(this.mentionedTargets);
     }
 
     protected AddGroupMemberNotificationContent(Parcel in) {
         this.invitor = in.readString();
         this.invitees = in.createStringArrayList();
+        this.groupId = in.readString();
         this.fromSelf = in.readByte() != 0;
+        this.mentionedType = in.readInt();
+        this.mentionedTargets = in.createStringArrayList();
     }
 
-    public static final Parcelable.Creator<AddGroupMemberNotificationContent> CREATOR = new Parcelable.Creator<AddGroupMemberNotificationContent>() {
+    public static final Creator<AddGroupMemberNotificationContent> CREATOR = new Creator<AddGroupMemberNotificationContent>() {
         @Override
         public AddGroupMemberNotificationContent createFromParcel(Parcel source) {
             return new AddGroupMemberNotificationContent(source);

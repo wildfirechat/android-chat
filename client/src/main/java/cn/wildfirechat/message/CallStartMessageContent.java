@@ -134,7 +134,7 @@ public class CallStartMessageContent extends MessageContent {
     }
 
     @Override
-    public String digest(Message message) {
+    public String digest() {
         return "[网络电话]";
     }
 

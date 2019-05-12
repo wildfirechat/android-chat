@@ -39,7 +39,7 @@ public class UnknownMessageContent extends MessageContent {
     }
 
     @Override
-    public String digest(Message message) {
+    public String digest() {
         return "未知类型消息(" + (orignalPayload != null ? orignalPayload.contentType : "") + ")";
     }
 

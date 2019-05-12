@@ -67,7 +67,7 @@ public class SimpleNotificationMessageContentViewHolder extends MessageContentVi
     protected void onBind(UiMessage message) {
         String notification;
         try {
-            notification = ((NotificationMessageContent) message.message.content).formatNotification(message.message);
+            notification = ((NotificationMessageContent) message.message.content).formatNotification();
         } catch (Exception e) {
             e.printStackTrace();
             notification = "message is invalid";
