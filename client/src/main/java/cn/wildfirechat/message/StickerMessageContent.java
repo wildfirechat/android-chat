@@ -69,7 +69,7 @@ public class StickerMessageContent extends MediaMessageContent {
     }
 
     @Override
-    public String digest(Message message) {
+    public String digest() {
         return "[动态表情]";
     }
 

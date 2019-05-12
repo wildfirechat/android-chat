@@ -52,7 +52,7 @@ public class TypingMessageContent extends MessageContent {
     }
 
     @Override
-    public String digest(Message message) {
+    public String digest() {
         return "";
     }
 
