@@ -598,7 +598,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             List<UserInfo> userInfos = new ArrayList<>();
             UserInfo userInfo;
             for (String user : users) {
-                userInfo = getUserInfo(user, false);
+                userInfo = getUserInfo(user, null, false);
                 if (userInfo == null) {
                     userInfo = new UserInfo();
                     userInfo.uid = user;
@@ -959,15 +959,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public UserInfo getUserInfo(String userId, boolean refresh) throws RemoteException {
-            return convertProtoUserInfo(ProtoLogic.getUserInfo(userId, refresh));
+        public UserInfo getUserInfo(String userId, String groupId, boolean refresh) throws RemoteException {
+            return convertProtoUserInfo(ProtoLogic.getUserInfo(userId, groupId == null ? "" : groupId, refresh));
         }
 
         @Override
-        public List<UserInfo> getUserInfos(List<String> userIds) throws RemoteException {
+        public List<UserInfo> getUserInfos(List<String> userIds, String groupId) throws RemoteException {
             List<UserInfo> userInfos = new ArrayList<>();
             for (String userId : userIds) {
-                ProtoUserInfo protoUserInfo = ProtoLogic.getUserInfo(userId, false);
+                ProtoUserInfo protoUserInfo = ProtoLogic.getUserInfo(userId, groupId == null ? "" : groupId, false);
                 if (protoUserInfo == null) {
                     userInfos.add(new NullUserInfo(userId));
                 } else {
