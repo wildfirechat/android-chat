@@ -2,6 +2,7 @@ package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -21,7 +22,7 @@ public class TipNotificationContent extends NotificationMessageContent {
 
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         return tip;
     }
 
@@ -37,12 +38,6 @@ public class TipNotificationContent extends NotificationMessageContent {
     public void decode(MessagePayload payload) {
         tip = payload.content;
     }
-
-    @Override
-    public String digest() {
-        return formatNotification();
-    }
-
 
     @Override
     public int describeContents() {

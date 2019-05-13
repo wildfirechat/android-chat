@@ -32,10 +32,13 @@ public class Message implements Parcelable {
     public Message() {
     }
 
-
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public String digest() {
+        return content.digest(this);
     }
 
     @Override

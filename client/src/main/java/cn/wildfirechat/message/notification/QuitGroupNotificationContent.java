@@ -5,6 +5,7 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -24,7 +25,7 @@ public class QuitGroupNotificationContent extends GroupNotificationMessageConten
     }
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
             sb.append("您退出了群组 ");
@@ -63,11 +64,6 @@ public class QuitGroupNotificationContent extends GroupNotificationMessageConten
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public String digest() {
-        return formatNotification();
     }
 
     @Override

@@ -90,7 +90,11 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 if (conversationInfos.get(i).lastMessage == null) {
                     continue;
                 }
-                if (conversationInfos.get(i).lastMessage.sender.equals(userInfo.uid)) {
+                ConversationInfo conversationInfo = conversationInfos.get(i);
+                if (conversationInfo.conversation.type == Conversation.ConversationType.Single
+                        && conversationInfo.conversation.target.equals(userInfo.uid)) {
+                    notifyItemChanged(headerCount() + i);
+                } else if (conversationInfo.lastMessage.sender.equals(userInfo.uid)) {
                     // TODO 以后可能会添加header
                     notifyItemChanged(headerCount() + i);
                     break;
