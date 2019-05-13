@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 
@@ -59,7 +60,11 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
             }
             Glide.with(fragment).load(sender.portrait).apply(new RequestOptions().placeholder(R.mipmap.default_header)).into(portraitImageView);
         }
-        contentTextView.setText(message.content.digest());
+        if (message.content instanceof NotificationMessageContent) {
+            contentTextView.setText(((NotificationMessageContent) message.content).formatNotification(message));
+        } else {
+            contentTextView.setText(message.digest());
+        }
         timeTextView.setText(TimeUtils.getMsgFormatTime(message.serverTime));
     }
 }

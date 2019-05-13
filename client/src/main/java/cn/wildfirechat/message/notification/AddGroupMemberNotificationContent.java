@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -29,7 +30,7 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
     }
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
             sb.append("您邀请");
@@ -41,7 +42,7 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
         if (invitees != null) {
             for (String member : invitees) {
                 sb.append(" ");
-                sb.append(ChatManager.Instance().getUserDisplayName(member));
+                sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, member));
             }
         }
 

@@ -374,9 +374,10 @@ public class ChatManager {
     private void onFriendListUpdated(List<String> friendList) {
         mainHandler.post(() -> {
             for (OnFriendUpdateListener listener : friendUpdateListeners) {
-                listener.onFriendListUpdate();
+                listener.onFriendListUpdate(friendList);
             }
         });
+        onUserInfoUpdate(getUserInfos(friendList));
     }
 
     private void onFriendReqeustUpdated() {
@@ -1796,17 +1797,15 @@ public class ChatManager {
     }
 
     public String getGroupMemberDisplayName(String groupId, String memberId) {
-        GroupMember groupMember = getGroupMember(groupId, memberId);
-        if (groupMember != null && !TextUtils.isEmpty(groupMember.alias)) {
-            return groupMember.alias;
+        UserInfo userInfo = getUserInfo(memberId, groupId, false);
+        if (userInfo == null) {
+            return null;
         }
-
-        String alias = getFriendAlias(memberId);
-        if (!TextUtils.isEmpty(alias)) {
-            return alias;
-        }
-        UserInfo userInfo = getUserInfo(memberId, false);
-        if (userInfo != null && !TextUtils.isEmpty(userInfo.displayName)) {
+        if (!TextUtils.isEmpty(userInfo.friendAlias)) {
+            return userInfo.friendAlias;
+        } else if (!TextUtils.isEmpty(userInfo.groupAlias)) {
+            return userInfo.groupAlias;
+        } else if (TextUtils.isEmpty(userInfo.displayName)) {
             return userInfo.displayName;
         }
         return "<" + memberId + ">";
@@ -1814,13 +1813,14 @@ public class ChatManager {
 
     public String getUserDisplayName(UserInfo userInfo) {
         if (userInfo == null) {
-            return null;
+            return "";
         }
-        String alias = ChatManager.Instance().getFriendAlias(userInfo.uid);
-        if (!TextUtils.isEmpty(alias)) {
-            return alias;
+        if (!TextUtils.isEmpty(userInfo.friendAlias)) {
+            return userInfo.friendAlias;
+        } else if (!TextUtils.isEmpty(userInfo.displayName)) {
+            return userInfo.displayName;
         }
-        return TextUtils.isEmpty(userInfo.displayName) ? "<" + userInfo.uid + ">" : userInfo.displayName;
+        return "<" + userInfo.uid + ">";
     }
 
     public String getUserDisplayName(String userId) {
@@ -2264,7 +2264,12 @@ public class ChatManager {
         if (TextUtils.isEmpty(userId)) {
             return null;
         }
-        UserInfo userInfo = userInfoCache.get(userId);
+        UserInfo userInfo;
+        if (!TextUtils.isEmpty(groupId)) {
+            userInfo = groupUserCache.get(groupMemberCacheKey(groupId, userId));
+        } else {
+            userInfo = userInfoCache.get(userId);
+        }
         if (userInfo != null) {
             return userInfo;
         }

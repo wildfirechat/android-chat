@@ -106,7 +106,7 @@ public class ImageTextMessageContent extends MessageContent {
     }
 
     @Override
-    public String digest() {
+    public String digest(Message message) {
         return content;
     }
 

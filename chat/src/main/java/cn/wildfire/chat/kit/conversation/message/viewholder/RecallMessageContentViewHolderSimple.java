@@ -25,7 +25,6 @@ public class RecallMessageContentViewHolderSimple extends SimpleNotificationMess
 
     @Override
     protected void onBind(UiMessage message) {
-        RecallMessageContent content = (RecallMessageContent) message.message.content;
-        notificationTextView.setText(content.digest());
+        notificationTextView.setText(message.message.digest());
     }
 }

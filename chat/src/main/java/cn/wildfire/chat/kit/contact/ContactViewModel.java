@@ -72,7 +72,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
     }
 
     @Override
-    public void onFriendListUpdate() {
+    public void onFriendListUpdate(List<String> updateFriendList) {
         if (contactListUpdatedLiveData != null) {
             contactListUpdatedLiveData.setValue(new Object());
         }

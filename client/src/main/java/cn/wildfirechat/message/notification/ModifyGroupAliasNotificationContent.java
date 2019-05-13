@@ -5,6 +5,7 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -25,7 +26,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
     }
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
             sb.append("您");
@@ -67,11 +68,6 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public String digest() {
-        return formatNotification();
     }
 
     @Override
