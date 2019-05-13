@@ -121,12 +121,12 @@ public class ChatManager {
 
     private List<IMServiceStatusListener> imServiceStatusListeners = new ArrayList<>();
 
-    // fixme
-    // TODO 目前alias和userInfo是分开的，考虑合在一起，故alias更新的时候，先不通知用户信息更新了
+    // key = userId
     private LruCache<String, UserInfo> userInfoCache;
     // key = memberId@groupId
     private LruCache<String, GroupMember> groupMemberCache;
-    private LruCache<String, String> friendAliasStore;
+    // key = userId@groupId
+    private LruCache<String, UserInfo> groupUserCache;
 
     public enum PushType {
         Xiaomi(1),
@@ -362,6 +362,7 @@ public class ChatManager {
         }
         for (GroupMember member : groupMembers) {
             groupMemberCache.remove(groupMemberCacheKey(groupId, member.memberId));
+            groupUserCache.remove(groupMemberCacheKey(groupId, member.memberId));
         }
         mainHandler.post(() -> {
             for (OnGroupMembersUpdateListener listener : groupMembersUpdateListeners) {
@@ -371,9 +372,6 @@ public class ChatManager {
     }
 
     private void onFriendListUpdated(List<String> friendList) {
-        for (String friendId : friendList) {
-            friendAliasStore.remove(friendId);
-        }
         mainHandler.post(() -> {
             for (OnFriendUpdateListener listener : friendUpdateListeners) {
                 listener.onFriendListUpdate();
@@ -1138,8 +1136,8 @@ public class ChatManager {
         this.userId = userId;
         this.token = token;
         this.userInfoCache = new LruCache<>(1024);
-        this.friendAliasStore = new LruCache<>(1024);
         this.groupMemberCache = new LruCache<>(1024);
+        this.groupUserCache = new LruCache<>(1024);
 
         if (mClient != null) {
             try {
@@ -1834,14 +1832,9 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return null;
         }
-        String alias = friendAliasStore.get(userId);
-        if (alias != null) {
-            return alias;
-        }
-
+        String alias;
         try {
             alias = mClient.getFriendAlias(userId);
-            friendAliasStore.put(userId, TextUtils.isEmpty(alias) ? "" : alias);
             return alias;
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -1855,7 +1848,6 @@ public class ChatManager {
                 callback.onFail(-1001);
             }
         }
-        friendAliasStore.remove(userId);
 
         try {
             mClient.setFriendAlias(userId, alias, new IGeneralCallback.Stub() {
@@ -2256,14 +2248,19 @@ public class ChatManager {
     }
 
 
+    public UserInfo getUserInfo(String userId, boolean refresh) {
+        return getUserInfo(userId, null, refresh);
+    }
+
     /**
      * 当对应用户，本地不存在时，返回的{@link UserInfo}为{@link NullUserInfo}
      *
      * @param userId
+     * @param groupId
      * @param refresh
      * @return
      */
-    public UserInfo getUserInfo(String userId, boolean refresh) {
+    public UserInfo getUserInfo(String userId, String groupId, boolean refresh) {
         if (TextUtils.isEmpty(userId)) {
             return null;
         }
@@ -2285,11 +2282,15 @@ public class ChatManager {
         }
 
         try {
-            userInfo = mClient.getUserInfo(userId, refresh);
+            userInfo = mClient.getUserInfo(userId, groupId, refresh);
             if (userInfo == null) {
                 userInfo = new NullUserInfo(userId);
             }
-            userInfoCache.put(userId, userInfo);
+            if (TextUtils.isEmpty(groupId)) {
+                userInfoCache.put(userId, userInfo);
+            } else {
+                groupUserCache.put(groupMemberCacheKey(groupId, userId), userInfo);
+            }
             return userInfo;
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -2297,13 +2298,18 @@ public class ChatManager {
         }
     }
 
+    public List<UserInfo> getUserInfos(List<String> userIds) {
+        return getUserInfos(userIds, null);
+    }
+
     /**
      * 返回的list里面的元素可能为null
      *
      * @param userIds
+     * @param groupId
      * @return
      */
-    public List<UserInfo> getUserInfos(List<String> userIds) {
+    public List<UserInfo> getUserInfos(List<String> userIds, String groupId) {
         if (userIds == null || userIds.isEmpty()) {
             return null;
         }
@@ -2320,7 +2326,20 @@ public class ChatManager {
         }
 
         try {
-            return mClient.getUserInfos(userIds);
+            List<UserInfo> userInfos = mClient.getUserInfos(userIds, groupId);
+            if (userInfos != null && userInfos.size() > 0) {
+                for (UserInfo info : userInfos) {
+                    if (info != null) {
+                        if (TextUtils.isEmpty(groupId)) {
+                            userInfoCache.put(userId, info);
+                        } else {
+                            groupUserCache.put(groupMemberCacheKey(groupId, userId), info);
+                        }
+                    }
+                }
+            }
+
+            return userInfos;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -2799,6 +2818,7 @@ public class ChatManager {
                             @Override
                             public void run() {
                                 groupMemberCache.remove(groupMemberCacheKey(groupId, userId));
+                                groupUserCache.remove(groupMemberCacheKey(groupId, userId));
                                 callback.onSuccess();
                             }
                         });

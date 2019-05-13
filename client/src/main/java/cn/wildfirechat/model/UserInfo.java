@@ -13,6 +13,10 @@ public class UserInfo implements Parcelable, Comparable<UserInfo> {
     public String uid;
     public String name;
     public String displayName;
+    // 用户在群里面给自己设置的备注，不同群不一样
+    public String groupAlias;
+    // 我为好友设置的备注
+    public String friendAlias;
     public String portrait;
     public int gender;
     public String mobile;
@@ -34,7 +38,6 @@ public class UserInfo implements Parcelable, Comparable<UserInfo> {
         return displayName.compareTo(userInfo.displayName);
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -45,6 +48,8 @@ public class UserInfo implements Parcelable, Comparable<UserInfo> {
         dest.writeString(this.uid);
         dest.writeString(this.name);
         dest.writeString(this.displayName);
+        dest.writeString(this.groupAlias);
+        dest.writeString(this.friendAlias);
         dest.writeString(this.portrait);
         dest.writeInt(this.gender);
         dest.writeString(this.mobile);
@@ -61,6 +66,8 @@ public class UserInfo implements Parcelable, Comparable<UserInfo> {
         this.uid = in.readString();
         this.name = in.readString();
         this.displayName = in.readString();
+        this.groupAlias = in.readString();
+        this.friendAlias = in.readString();
         this.portrait = in.readString();
         this.gender = in.readInt();
         this.mobile = in.readString();
