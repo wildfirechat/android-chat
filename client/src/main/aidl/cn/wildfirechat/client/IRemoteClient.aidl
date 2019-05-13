@@ -126,8 +126,8 @@ interface IRemoteClient {
     oneway void getChatRoomInfo(in String chatRoomId, in long updateDt, in IGetChatRoomInfoCallback callback);
     oneway void getChatRoomMembersInfo(in String chatRoomId, in int maxCount, in IGetChatRoomMembersInfoCallback callback);
     GroupInfo getGroupInfo(in String groupId, in boolean refresh);
-    UserInfo getUserInfo(in String userId, in boolean refresh);
-    List<UserInfo> getUserInfos(in List<String> userIds);
+    UserInfo getUserInfo(in String userId, in String groupId, in boolean refresh);
+    List<UserInfo> getUserInfos(in List<String> userIds, in String groupId);
 
     oneway void uploadMedia(in byte[] data, int mediaType, in IUploadMediaCallback callback);
     oneway void modifyMyInfo(in List<ModifyMyInfoEntry> values, in IGeneralCallback callback);
