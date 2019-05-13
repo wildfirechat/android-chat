@@ -1570,6 +1570,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         userInfo.extra = protoUserInfo.getExtra();
         userInfo.updateDt = protoUserInfo.getUpdateDt();
         userInfo.type = protoUserInfo.getType();
+        userInfo.friendAlias = protoUserInfo.getFriendAlias();
+        userInfo.groupAlias = protoUserInfo.getGroupAlias();
         return userInfo;
     }
 

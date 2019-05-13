@@ -55,7 +55,7 @@ public class FileMessageContent extends MediaMessageContent {
     }
 
     @Override
-    public String digest() {
+    public String digest(Message message) {
         return "[文件]";
     }
 

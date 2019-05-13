@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -29,7 +30,7 @@ public class KickoffGroupMemberNotificationContent extends GroupNotificationMess
     }
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
             sb.append("您把");
@@ -88,11 +89,6 @@ public class KickoffGroupMemberNotificationContent extends GroupNotificationMess
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public String digest() {
-        return formatNotification();
     }
 
     @Override

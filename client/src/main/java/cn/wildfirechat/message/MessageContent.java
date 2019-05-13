@@ -17,7 +17,7 @@ public abstract class MessageContent implements Parcelable {
 
     public abstract void decode(MessagePayload payload);
 
-    public abstract String digest();
+    public abstract String digest(Message message);
 
     //0 普通消息, 1 部分提醒, 2 提醒全部
     public int mentionedType;

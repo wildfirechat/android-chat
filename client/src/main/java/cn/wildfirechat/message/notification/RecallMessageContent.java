@@ -2,9 +2,11 @@ package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Recall;
@@ -39,11 +41,6 @@ public class RecallMessageContent extends NotificationMessageContent {
     public void decode(MessagePayload payload) {
         operatorId = payload.content;
         messageUid = Long.parseLong(new String(payload.binaryContent));
-    }
-
-    @Override
-    public String digest() {
-        return formatNotification();
     }
 
     public String getOperatorId() {
@@ -91,12 +88,18 @@ public class RecallMessageContent extends NotificationMessageContent {
     };
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         String notification = "%s撤回了一条消息";
         if (fromSelf) {
             notification = String.format(notification, "您");
         } else {
-            notification = String.format(notification, ChatManager.Instance().getUserDisplayName(operatorId));
+            String displayName;
+            if (message.conversation.type == Conversation.ConversationType.Group) {
+                displayName = ChatManager.Instance().getGroupMemberDisplayName(message.conversation.target, operatorId);
+            } else {
+                displayName = ChatManager.Instance().getUserDisplayName(operatorId);
+            }
+            notification = String.format(notification, displayName);
         }
         return notification;
     }

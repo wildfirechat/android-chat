@@ -58,7 +58,7 @@ public class ConversationViewHolder extends ResultItemViewHolder<ConversationSea
         }
 
         if (conversationSearchResult.marchedMessage != null) {
-            descTextView.setText(conversationSearchResult.marchedMessage.content.digest());
+            descTextView.setText(conversationSearchResult.marchedMessage.digest());
         } else {
             descTextView.setText(conversationSearchResult.marchedCount + "条记录");
         }
