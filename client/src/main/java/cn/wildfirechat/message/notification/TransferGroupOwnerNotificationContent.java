@@ -5,6 +5,7 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -25,7 +26,7 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
     }
 
     @Override
-    public String formatNotification() {
+    public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
             sb.append("您把群组转让给了");
@@ -33,7 +34,7 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
             sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, operator));
             sb.append("把群组转让给了");
         }
-        sb.append(newOwner);
+        sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, newOwner));
 
         return sb.toString();
     }
@@ -68,12 +69,6 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
             e.printStackTrace();
         }
     }
-
-    @Override
-    public String digest() {
-        return formatNotification();
-    }
-
 
     @Override
     public int describeContents() {

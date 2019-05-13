@@ -115,10 +115,6 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
         return ChatManager.Instance().getUserDisplayName(userInfo);
     }
 
-    public String getUserDisplayName(String userId) {
-        return ChatManager.Instance().getUserDisplayName(userId);
-    }
-
     public List<UserInfo> getUserInfos(List<String> userIds) {
         return ChatManager.Instance().getUserInfos(userIds);
     }
@@ -160,5 +156,4 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
             settingUpdatedLiveData.setValue(new Object());
         }
     }
-
 }

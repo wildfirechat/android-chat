@@ -468,7 +468,7 @@ public class FileUtils {
         } else {
             uri = Uri.fromFile(file);
         }
-        String url = file.toString();
+        String url = file.toString().toLowerCase();
         if (url.contains(".doc") || url.contains(".docx")) {
             // Word document
             intent.setDataAndType(uri, "application/msword");
