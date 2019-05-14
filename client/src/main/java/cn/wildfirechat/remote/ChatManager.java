@@ -287,6 +287,10 @@ public class ChatManager {
      */
     private void onRecallMessage(final long messageUid) {
         Message message = getMessageByUid(messageUid);
+        // 想撤回的消息已经被删除
+        if (message == null) {
+            return;
+        }
         ConversationInfo conversationInfo = getConversation(message.conversation);
         conversationInfo.lastMessage = message;
         mainHandler.post(new Runnable() {
