@@ -21,6 +21,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -1225,6 +1226,22 @@ public class ChatManager {
                 listener.onSendFail(msg, -1001);
             }
             return;
+        }
+
+        if (msg.content instanceof MediaMessageContent) {
+            String localPath = ((MediaMessageContent) msg.content).localPath;
+            if (!TextUtils.isEmpty(localPath)) {
+                File file = new File(localPath);
+                if (!file.exists()) {
+                    callback.onFail(-1002);
+                    return;
+                }
+
+                if (file.length() > 100 * 1024 * 1024) {
+                    callback.onFail(-1003);
+                    return;
+                }
+            }
         }
 
         try {
