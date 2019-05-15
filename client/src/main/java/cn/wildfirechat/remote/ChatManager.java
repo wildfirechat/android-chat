@@ -1809,7 +1809,7 @@ public class ChatManager {
             return userInfo.friendAlias;
         } else if (!TextUtils.isEmpty(userInfo.groupAlias)) {
             return userInfo.groupAlias;
-        } else if (TextUtils.isEmpty(userInfo.displayName)) {
+        } else if (!TextUtils.isEmpty(userInfo.displayName)) {
             return userInfo.displayName;
         }
         return "<" + memberId + ">";
