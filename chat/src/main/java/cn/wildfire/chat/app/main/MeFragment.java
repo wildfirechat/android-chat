@@ -53,6 +53,9 @@ public class MeFragment extends Fragment {
     private Observer<List<UserInfo>> userInfoLiveDataObserver = new Observer<List<UserInfo>>() {
         @Override
         public void onChanged(@Nullable List<UserInfo> userInfos) {
+            if (userInfos == null) {
+                return;
+            }
             for (UserInfo info : userInfos) {
                 if (info.uid.equals(userViewModel.getUserId())) {
                     userInfo = info;
