@@ -7,10 +7,13 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
 import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
@@ -27,6 +30,9 @@ public class InviteFriendActivity extends WfcBaseActivity {
         if (userInfo == null) {
             finish();
         }
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserInfo me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
+        introTextView.setText("我是 " + (me == null ? "" : me.displayName));
     }
 
     @Override

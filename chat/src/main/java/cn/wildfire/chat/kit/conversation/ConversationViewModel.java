@@ -158,6 +158,8 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
                                 msgs.add(new UiMessage(msg));
                             }
                             result.postValue(msgs);
+                        } else {
+                            result.postValue(new ArrayList<UiMessage>());
                         }
                     }
 
