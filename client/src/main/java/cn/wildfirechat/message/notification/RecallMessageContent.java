@@ -60,34 +60,6 @@ public class RecallMessageContent extends NotificationMessageContent {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.operatorId);
-        dest.writeLong(this.messageUid);
-    }
-
-    protected RecallMessageContent(Parcel in) {
-        this.operatorId = in.readString();
-        this.messageUid = in.readLong();
-    }
-
-    public static final Creator<RecallMessageContent> CREATOR = new Creator<RecallMessageContent>() {
-        @Override
-        public RecallMessageContent createFromParcel(Parcel source) {
-            return new RecallMessageContent(source);
-        }
-
-        @Override
-        public RecallMessageContent[] newArray(int size) {
-            return new RecallMessageContent[size];
-        }
-    };
-
-    @Override
     public String formatNotification(Message message) {
         String notification = "%s撤回了一条消息";
         if (fromSelf) {
@@ -103,4 +75,35 @@ public class RecallMessageContent extends NotificationMessageContent {
         }
         return notification;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.operatorId);
+        dest.writeLong(this.messageUid);
+        dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
+    }
+
+    protected RecallMessageContent(Parcel in) {
+        this.operatorId = in.readString();
+        this.messageUid = in.readLong();
+        this.fromSelf = in.readByte() != 0;
+    }
+
+    public static final Creator<RecallMessageContent> CREATOR = new Creator<RecallMessageContent>() {
+        @Override
+        public RecallMessageContent createFromParcel(Parcel source) {
+            return new RecallMessageContent(source);
+        }
+
+        @Override
+        public RecallMessageContent[] newArray(int size) {
+            return new RecallMessageContent[size];
+        }
+    };
 }

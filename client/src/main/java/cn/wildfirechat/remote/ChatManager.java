@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ICreateChannelCallback;
@@ -600,7 +601,7 @@ public class ChatManager {
     public void createChannel(@Nullable String channelId, String channelName, String channelPortrait, String desc, String extra, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
         try {
@@ -622,7 +623,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null) {
-                mainHandler.post(() -> callback.onFail(-1000));
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
             }
         }
     }
@@ -638,7 +639,7 @@ public class ChatManager {
     public void modifyChannelInfo(String channelId, ModifyChannelInfoType modifyType, String newValue, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -671,7 +672,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -710,7 +711,7 @@ public class ChatManager {
     public void searchChannel(String keyword, SearchChannelCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -744,7 +745,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null) {
-                mainHandler.post(() -> callback.onFail(-1000));
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
             }
         }
     }
@@ -779,7 +780,7 @@ public class ChatManager {
     public void listenChannel(String channelId, boolean listen, GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -813,7 +814,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -826,7 +827,7 @@ public class ChatManager {
     public void destoryChannel(String channelId, GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -860,7 +861,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -1220,10 +1221,10 @@ public class ChatManager {
         if (!checkRemoteService()) {
             if (callback != null) {
                 msg.status = MessageStatus.Send_Failure;
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             }
             for (OnSendMessageListener listener : sendMessageListeners) {
-                listener.onSendFail(msg, -1001);
+                listener.onSendFail(msg, ErrorCode.SERVICE_DIED);
             }
             return;
         }
@@ -1233,12 +1234,12 @@ public class ChatManager {
             if (!TextUtils.isEmpty(localPath)) {
                 File file = new File(localPath);
                 if (!file.exists()) {
-                    callback.onFail(-1002);
+                    callback.onFail(ErrorCode.FILE_NOT_EXIST);
                     return;
                 }
 
                 if (file.length() > 100 * 1024 * 1024) {
-                    callback.onFail(-1003);
+                    callback.onFail(ErrorCode.FILE_TOO_LARGE);
                     return;
                 }
             }
@@ -1328,10 +1329,10 @@ public class ChatManager {
             e.printStackTrace();
             if (callback != null) {
                 msg.status = MessageStatus.Send_Failure;
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
             }
             for (OnSendMessageListener listener : sendMessageListeners) {
-                listener.onSendFail(msg, -1001);
+                listener.onSendFail(msg, ErrorCode.SERVICE_EXCEPTION);
             }
         }
     }
@@ -1348,6 +1349,7 @@ public class ChatManager {
                 @Override
                 public void onSuccess() throws RemoteException {
                     msg.content = new RecallMessageContent(userId, msg.messageUid);
+                    ((RecallMessageContent) msg.content).fromSelf = true;
                     callback.onSuccess();
                     for (OnRecallMessageListener listener : recallMessageListeners) {
                         listener.onRecallMessage(msg);
@@ -1754,7 +1756,7 @@ public class ChatManager {
         }
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -1787,7 +1789,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -1866,7 +1868,7 @@ public class ChatManager {
     public void setFriendAlias(String userId, String alias, GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null) {
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             }
         }
 
@@ -1960,7 +1962,7 @@ public class ChatManager {
     public void removeFriend(String userId, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -1993,14 +1995,14 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
     public void sendFriendRequest(String userId, String reason, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2033,14 +2035,14 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
     public void handleFriendRequest(String userId, boolean accept, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2073,14 +2075,14 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
     public void setBlackList(String userId, boolean isBlacked, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2113,14 +2115,14 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
     public void deleteFriend(String userId, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2153,7 +2155,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -2178,7 +2180,7 @@ public class ChatManager {
 
     public void joinChatRoom(String chatRoomId, GeneralCallback callback) {
         if (!checkRemoteService()) {
-            callback.onFail(-1000);
+            callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
         try {
@@ -2200,7 +2202,7 @@ public class ChatManager {
 
     public void quitChatRoom(String chatRoomId, GeneralCallback callback) {
         if (!checkRemoteService()) {
-            callback.onFail(-1000);
+            callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
         try {
@@ -2217,13 +2219,13 @@ public class ChatManager {
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(-1000);
+            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
     public void getChatRoomInfo(String chatRoomId, long updateDt, GetChatRoomInfoCallback callback) {
         if (!checkRemoteService()) {
-            callback.onFail(-1000);
+            callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2241,13 +2243,13 @@ public class ChatManager {
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(-1000);
+            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
     public void getChatRoomMembersInfo(String chatRoomId, int maxCount, GetChatRoomMembersInfoCallback callback) {
         if (!checkRemoteService()) {
-            callback.onFail(-1000);
+            callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
         try {
@@ -2264,7 +2266,7 @@ public class ChatManager {
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(-1000);
+            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -2375,7 +2377,7 @@ public class ChatManager {
     public void uploadMedia(byte[] data, int mediaType, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2413,7 +2415,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -2424,7 +2426,7 @@ public class ChatManager {
         }
         if (!checkRemoteService()) {
             if (callback != null) {
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             }
             return;
         }
@@ -2460,7 +2462,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
 
     }
@@ -2547,7 +2549,7 @@ public class ChatManager {
     public void createGroup(String groupId, String groupName, String groupPortrait, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2585,14 +2587,14 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
     public void addGroupMembers(String groupId, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2630,7 +2632,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -2646,7 +2648,7 @@ public class ChatManager {
     public void removeGroupMembers(String groupId, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2684,7 +2686,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -2692,7 +2694,7 @@ public class ChatManager {
     public void quitGroup(String groupId, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2729,14 +2731,14 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
     public void dismissGroup(String groupId, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2774,14 +2776,14 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
     public void modifyGroupInfo(String groupId, ModifyGroupInfoType modifyType, String newValue, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2818,7 +2820,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -2827,7 +2829,7 @@ public class ChatManager {
     public void modifyGroupAlias(String groupId, String alias, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2866,7 +2868,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -2914,7 +2916,7 @@ public class ChatManager {
     public void transferGroup(String groupId, String newOwner, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
-                callback.onFail(-1001);
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
@@ -2952,7 +2954,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(-1000);
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
         }
     }
 
@@ -2987,7 +2989,7 @@ public class ChatManager {
             return;
         }
         if (!checkRemoteService()) {
-            callback.onFail(-1001);
+            callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
         workHandler.post(() -> {
