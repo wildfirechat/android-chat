@@ -1115,7 +1115,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (int i = 0; i < memberIds.size(); i++) {
                 memberArray[i] = memberIds.get(i);
             }
-            ProtoLogic.createGroup(groupId, groupName, groupPortrait, memberArray, notifyLines, notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback2() {
+            ProtoLogic.createGroup(groupId, groupName, groupPortrait, memberArray, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback2() {
                 @Override
                 public void onSuccess(String s) {
                     try {
@@ -1142,7 +1142,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (int i = 0; i < memberIds.size(); i++) {
                 memberArray[i] = memberIds.get(i);
             }
-            ProtoLogic.addMembers(groupId, memberArray, notifyLines, notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+            ProtoLogic.addMembers(groupId, memberArray, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -1169,7 +1169,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (int i = 0; i < memberIds.size(); i++) {
                 memberArray[i] = memberIds.get(i);
             }
-            ProtoLogic.kickoffMembers(groupId, memberArray, notifyLines, notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+            ProtoLogic.kickoffMembers(groupId, memberArray, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -1192,7 +1192,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void quitGroup(String groupId, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.quitGroup(groupId, notifyLines, notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+            ProtoLogic.quitGroup(groupId, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -1215,7 +1215,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void dismissGroup(String groupId, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.dismissGroup(groupId, notifyLines, notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+            ProtoLogic.dismissGroup(groupId, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -1261,7 +1261,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void modifyGroupAlias(String groupId, String newAlias, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.modifyGroupAlias(groupId, newAlias, notifyLines, notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+            ProtoLogic.modifyGroupAlias(groupId, newAlias, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -1313,7 +1313,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void transferGroup(String groupId, String newOwner, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.transferGroup(groupId, newOwner, notifyLines, notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+            ProtoLogic.transferGroup(groupId, newOwner, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
