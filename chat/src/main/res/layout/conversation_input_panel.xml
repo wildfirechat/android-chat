@@ -44,6 +44,7 @@
                     android:drawableBottom="@drawable/selector_edit_focus"
                     android:maxLines="4"
                     android:minHeight="30dp"
+                    android:textSize="16sp"
                     android:visibility="visible" />
 
                 <Button
@@ -68,11 +69,11 @@
 
             <ImageView
                 android:id="@+id/extImageView"
-                android:scaleType="centerInside"
                 android:layout_width="45dp"
                 android:layout_height="35dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginBottom="5dp"
+                android:scaleType="centerInside"
                 android:src="@mipmap/ic_cheat_add" />
 
             <Button
