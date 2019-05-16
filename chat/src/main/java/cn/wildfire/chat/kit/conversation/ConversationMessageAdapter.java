@@ -36,6 +36,7 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderMan
 import cn.wildfire.chat.kit.conversation.message.viewholder.SimpleNotificationMessageContentViewHolder;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -153,9 +154,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (messages == null || messages.isEmpty()) {
             return;
         }
+        Message msg;
         for (int i = 0; i < messages.size(); i++) {
+            msg = messages.get(i).message;
             for (UserInfo userInfo : userInfos) {
-                if (messages.get(i).message.sender.equals(userInfo.uid)) {
+                if (msg.sender.equals(userInfo.uid)
+                        || (msg.conversation.type == Conversation.ConversationType.Single && msg.conversation.target.equals(userInfo.uid))) {
                     notifyItemChanged(i);
                     break;
                 }

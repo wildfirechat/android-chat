@@ -17,4 +17,27 @@
         app:left_text_color="@color/black0"
         app:left_text_size="16sp" />
 
+    <com.lqr.optionitemview.OptionItemView
+        android:id="@+id/robotOptionItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_common_item"
+        app:left_image_margin_left="@dimen/option_item_margin_left"
+        app:left_image_margin_right="@dimen/option_item_margin_right"
+        app:left_src="@mipmap/ic_robot"
+        app:left_text="机器人"
+        app:left_text_color="@color/black0"
+        app:left_text_size="16sp" />
+
+    <com.lqr.optionitemview.OptionItemView
+        android:id="@+id/channelOptionItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_common_item"
+        app:left_image_margin_left="@dimen/option_item_margin_left"
+        app:left_image_margin_right="@dimen/option_item_margin_right"
+        app:left_src="@mipmap/ic_channel"
+        app:left_text="频道"
+        app:left_text_color="@color/black0"
+        app:left_text_size="16sp" />
 </LinearLayout>
