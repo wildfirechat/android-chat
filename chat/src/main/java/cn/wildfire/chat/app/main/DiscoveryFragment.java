@@ -9,10 +9,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
+import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.model.Conversation;
 
 public class DiscoveryFragment extends Fragment {
 
@@ -28,5 +31,16 @@ public class DiscoveryFragment extends Fragment {
     void chatRoom() {
         Intent intent = new Intent(getActivity(), ChatRoomListActivity.class);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.robotOptionItemView)
+    void robot() {
+        Intent intent = ConversationActivity.buildConversationIntent(getActivity(), Conversation.ConversationType.Single, "FireRobot", 0);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.channelNameOptionItemView)
+    void channel() {
+
     }
 }
