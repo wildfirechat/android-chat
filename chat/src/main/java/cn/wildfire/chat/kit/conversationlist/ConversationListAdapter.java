@@ -16,17 +16,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolderManager;
-import cn.wildfire.chat.kit.conversationlist.viewholder.StatusNotificationViewHolder;
+import cn.wildfire.chat.kit.conversationlist.viewholder.StatusNotificationContainerViewHolder;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -36,7 +34,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
     private Fragment fragment;
 
     private List<ConversationInfo> conversationInfos = new ArrayList<>();
-    private Map<Class<? extends StatusNotification>, Object> statusNotifications = new HashMap<>();
+    private List<StatusNotification> statusNotifications;
 
     public ConversationListAdapter(Fragment context) {
         super();
@@ -47,36 +45,31 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         return conversationInfos;
     }
 
-    /**
-     * 显示或更新状态通知
-     *
-     * @param holderClazz
-     * @param value
-     */
-    public void showStatusNotification(Class<? extends StatusNotification> holderClazz, Object value) {
-        boolean insert = statusNotifications.size() == 0;
-        statusNotifications.put(holderClazz, value);
-        if (insert) {
-            notifyItemInserted(0);
-        } else {
-            notifyItemChanged(0);
-        }
+    private boolean isEmpty(List list) {
+        return list == null || list.isEmpty();
     }
 
-    public void clearStatusNotification(Class<? extends StatusNotification> holderClazz) {
-        if (!statusNotifications.containsKey(holderClazz)) {
+    public void updateStatusNotification(List<StatusNotification> statusNotifications) {
+        if (isEmpty(this.statusNotifications) && !isEmpty(statusNotifications)) {
+            this.statusNotifications = statusNotifications;
+            notifyItemInserted(0);
             return;
         }
-        statusNotifications.remove(holderClazz);
-        if (statusNotifications.size() > 0) {
-            notifyItemChanged(0);
-        } else {
+
+        if (!isEmpty(this.statusNotifications) && isEmpty(statusNotifications)) {
+            this.statusNotifications = null;
             notifyItemRemoved(0);
+            return;
+        }
+
+        if (!isEmpty(this.statusNotifications) && !isEmpty(statusNotifications)) {
+            this.statusNotifications = statusNotifications;
+            notifyItemChanged(0);
         }
     }
 
     private int headerCount() {
-        return statusNotifications.size() > 0 ? 1 : 0;
+        return isEmpty(this.statusNotifications) ? 0 : 1;
     }
 
     // TODO 其实只有更新可见的那部分就可以了
@@ -173,7 +166,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == R.layout.conversationlist_item_notification_container) {
             View view = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversationlist_item_notification_container, parent, false);
-            return new StatusNotificationViewHolder(view);
+            return new StatusNotificationContainerViewHolder(view);
         }
         Class<? extends ConversationViewHolder> viewHolderClazz = ConversationViewHolderManager.getInstance().getConversationContentViewHolder(viewType);
 
@@ -303,7 +296,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (headerCount() > 0 && position == 0) {
-            ((StatusNotificationViewHolder) holder).onBind(fragment, holder.itemView, statusNotifications);
+            ((StatusNotificationContainerViewHolder) holder).onBind(fragment, holder.itemView, statusNotifications);
             return;
         }
         ((ConversationViewHolder) holder).onBind(getItem(position), position - headerCount());
@@ -312,7 +305,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
         if (headerCount() > 0 && position == 0) {
-            ((StatusNotificationViewHolder) holder).onBind(fragment, holder.itemView, statusNotifications);
+            ((StatusNotificationContainerViewHolder) holder).onBind(fragment, holder.itemView, statusNotifications);
             return;
         }
         super.onBindViewHolder(holder, position, payloads);
