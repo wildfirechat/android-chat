@@ -7,10 +7,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.File;
-
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.io.File;
+
 import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
@@ -74,6 +75,11 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
                 conversationViewModel.playAudioMessage(message);
             });
         }
+    }
+
+    @Override
+    public void onViewRecycled() {
+        // TODO 可实现语音是否持续播放、中断登录逻辑
     }
 
     @OnClick(R.id.audioContentLayout)

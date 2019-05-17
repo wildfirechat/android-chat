@@ -94,6 +94,7 @@ public class ConversationActivity extends WfcBaseActivity implements
     private String conversationTitle = "";
     private SharedPreferences sharedPreferences;
     private boolean showGroupMemberAlias = false;
+    private LinearLayoutManager layoutManager;
 
     private Observer<UiMessage> messageLiveDataObserver = new Observer<UiMessage>() {
         @Override
@@ -164,11 +165,14 @@ public class ConversationActivity extends WfcBaseActivity implements
     private Observer<List<UserInfo>> userInfoUpdateLiveDataObserver = new Observer<List<UserInfo>>() {
         @Override
         public void onChanged(@Nullable List<UserInfo> userInfos) {
-            if (conversation.type == Conversation.ConversationType.Single){
+            if (conversation.type == Conversation.ConversationType.Single) {
                 conversationTitle = null;
                 setTitle();
             }
             adapter.updateUserInfos(userInfos);
+            int start = layoutManager.findFirstVisibleItemPosition();
+            int end = layoutManager.findLastVisibleItemPosition();
+            adapter.notifyItemRangeChanged(start, end - start, userInfos);
         }
     };
 
@@ -245,8 +249,8 @@ public class ConversationActivity extends WfcBaseActivity implements
         adapter = new ConversationMessageAdapter(this);
         adapter.setOnPortraitClickListener(this);
         adapter.setOnPortraitLongClickListener(this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -260,7 +264,7 @@ public class ConversationActivity extends WfcBaseActivity implements
                 if (!recyclerView.canScrollVertically(1)) {
                     moveToBottom = true;
                     if (initialFocusedMessageId != -1 && !loadingNewMessage && shouldContinueLoadNewMessage) {
-                        int lastVisibleItem = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+                        int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
                         if (lastVisibleItem > adapter.getItemCount() - 3) {
                             loadMoreNewMessages();
                         }
