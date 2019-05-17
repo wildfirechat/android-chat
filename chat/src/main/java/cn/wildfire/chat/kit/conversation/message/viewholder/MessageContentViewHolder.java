@@ -47,7 +47,11 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
      * @return 返回true，将从context menu中排除
      */
 
-    public abstract boolean contextMenuItemFilter(UiMessage uiMessage, String itemTitle);
+    public abstract boolean contextMenuItemFilter(UiMessage uiMessage, String tag);
+
+    public void onViewRecycled() {
+        // you can do some clean up here
+    }
 
     protected void setMessageTime(Message item, int position) {
         long msgTime = item.serverTime;
