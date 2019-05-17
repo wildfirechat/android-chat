@@ -2419,6 +2419,7 @@ public class ChatManager {
         }
     }
 
+    // 修改个人信息，好像不能多端同步
     public void modifyMyInfo(List<ModifyMyInfoEntry> values, final GeneralCallback callback) {
         if (userSource != null) {
             userSource.modifyMyInfo(values, callback);
