@@ -21,8 +21,8 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.conversationlist.notification.ConnectionNotification;
-import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
+import cn.wildfire.chat.kit.conversationlist.notification.ConnectionStatusNotification;
+import cn.wildfire.chat.kit.conversationlist.notification.StatusNotificationViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
@@ -117,29 +117,31 @@ public class ConversationListFragment extends Fragment {
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
 
+        StatusNotificationViewModel statusNotificationViewModel = WfcUIKit.getAppScopeViewModel(StatusNotificationViewModel.class);
+        statusNotificationViewModel.statusNotificationLiveData().observe(this, new Observer<Object>() {
+            @Override
+            public void onChanged(Object o) {
+                adapter.updateStatusNotification(statusNotificationViewModel.getNotificationItems());
+            }
+        });
         conversationListViewModel.connectionStatusLiveData().observe(this, status -> {
+            ConnectionStatusNotification connectionStatusNotification = new ConnectionStatusNotification();
             switch (status) {
                 case ConnectionStatus.ConnectionStatusConnecting:
-                    showNotification(ConnectionNotification.class, "正在连接...");
+                    connectionStatusNotification.setValue("正在连接...");
+                    statusNotificationViewModel.showStatusNotification(connectionStatusNotification);
                     break;
                 case ConnectionStatus.ConnectionStatusConnected:
-                    clearNotification(ConnectionNotification.class);
+                    statusNotificationViewModel.removeStatusNotification(connectionStatusNotification);
                     break;
                 case ConnectionStatus.ConnectionStatusUnconnected:
-                    showNotification(ConnectionNotification.class, "连接失败");
+                    connectionStatusNotification.setValue("连接失败");
+                    statusNotificationViewModel.showStatusNotification(connectionStatusNotification);
                     break;
                 default:
                     break;
             }
         });
-    }
-
-    private void showNotification(Class<? extends StatusNotification> clazz, Object value) {
-        adapter.showStatusNotification(clazz, value);
-    }
-
-    private void clearNotification(Class<? extends StatusNotification> clazz) {
-        adapter.clearStatusNotification(clazz);
     }
 
     private void reloadConversations() {

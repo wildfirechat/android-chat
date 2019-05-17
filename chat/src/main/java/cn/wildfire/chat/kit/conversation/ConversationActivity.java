@@ -169,7 +169,6 @@ public class ConversationActivity extends WfcBaseActivity implements
                 conversationTitle = null;
                 setTitle();
             }
-            adapter.updateUserInfos(userInfos);
             int start = layoutManager.findFirstVisibleItemPosition();
             int end = layoutManager.findLastVisibleItemPosition();
             adapter.notifyItemRangeChanged(start, end - start, userInfos);
