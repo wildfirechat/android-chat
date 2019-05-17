@@ -36,7 +36,6 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderMan
 import cn.wildfire.chat.kit.conversation.message.viewholder.SimpleNotificationMessageContentViewHolder;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -149,21 +148,11 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
-    // TODO 只更新可见的部分
-    public void updateUserInfos(List<UserInfo> userInfos) {
-        if (messages == null || messages.isEmpty()) {
-            return;
-        }
-        Message msg;
-        for (int i = 0; i < messages.size(); i++) {
-            msg = messages.get(i).message;
-            for (UserInfo userInfo : userInfos) {
-                if (msg.sender.equals(userInfo.uid)
-                        || (msg.conversation.type == Conversation.ConversationType.Single && msg.conversation.target.equals(userInfo.uid))) {
-                    notifyItemChanged(i);
-                    break;
-                }
-            }
+    @Override
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewRecycled(holder);
+        if (holder instanceof MessageContentViewHolder) {
+            ((MessageContentViewHolder) holder).onViewRecycled();
         }
     }
 
