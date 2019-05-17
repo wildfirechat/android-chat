@@ -39,7 +39,7 @@ public class DiscoveryFragment extends Fragment {
         startActivity(intent);
     }
 
-    @OnClick(R.id.channelNameOptionItemView)
+    @OnClick(R.id.channelOptionItemView)
     void channel() {
 
     }
