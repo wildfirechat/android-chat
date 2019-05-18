@@ -336,7 +336,7 @@ public class ChatManager {
      */
     private void onUserInfoUpdate(List<UserInfo> userInfos) {
         for (UserInfo info : userInfos) {
-            userInfoCache.remove(info.uid);
+            userInfoCache.put(info.uid, info);
         }
         mainHandler.post(() -> {
             for (OnUserInfoUpdateListener listener : userInfoUpdateListeners) {
@@ -2288,20 +2288,21 @@ public class ChatManager {
             return null;
         }
         UserInfo userInfo;
-        if (!TextUtils.isEmpty(groupId)) {
-            userInfo = groupUserCache.get(groupMemberCacheKey(groupId, userId));
-        } else {
-            userInfo = userInfoCache.get(userId);
-        }
-        if (userInfo != null) {
-            return userInfo;
+        if (!refresh) {
+            if (!TextUtils.isEmpty(groupId)) {
+                userInfo = groupUserCache.get(groupMemberCacheKey(groupId, userId));
+            } else {
+                userInfo = userInfoCache.get(userId);
+            }
+            if (userInfo != null) {
+                return userInfo;
+            }
         }
         if (userSource != null) {
             userInfo = userSource.getUser(userId);
             if (userInfo == null) {
                 userInfo = new NullUserInfo(userId);
             }
-            userInfoCache.put(userId, userInfo);
             return userInfo;
         }
 
@@ -2313,11 +2314,12 @@ public class ChatManager {
             userInfo = mClient.getUserInfo(userId, groupId, refresh);
             if (userInfo == null) {
                 userInfo = new NullUserInfo(userId);
-            }
-            if (TextUtils.isEmpty(groupId)) {
-                userInfoCache.put(userId, userInfo);
             } else {
-                groupUserCache.put(groupMemberCacheKey(groupId, userId), userInfo);
+                if (TextUtils.isEmpty(groupId)) {
+                    userInfoCache.put(userId, userInfo);
+                } else {
+                    groupUserCache.put(groupMemberCacheKey(groupId, userId), userInfo);
+                }
             }
             return userInfo;
         } catch (RemoteException e) {
@@ -2359,9 +2361,9 @@ public class ChatManager {
                 for (UserInfo info : userInfos) {
                     if (info != null) {
                         if (TextUtils.isEmpty(groupId)) {
-                            userInfoCache.put(userId, info);
+                            userInfoCache.put(info.uid, info);
                         } else {
-                            groupUserCache.put(groupMemberCacheKey(groupId, userId), info);
+                            groupUserCache.put(groupMemberCacheKey(groupId, info.uid), info);
                         }
                     }
                 }
@@ -2421,6 +2423,7 @@ public class ChatManager {
 
     // 修改个人信息，好像不能多端同步
     public void modifyMyInfo(List<ModifyMyInfoEntry> values, final GeneralCallback callback) {
+        userInfoCache.remove(userId);
         if (userSource != null) {
             userSource.modifyMyInfo(values, callback);
             return;
@@ -2444,6 +2447,7 @@ public class ChatManager {
                             }
                         });
                     }
+
                     UserInfo userInfo = getUserInfo(userId, false);
                     onUserInfoUpdate(Collections.singletonList(userInfo));
                 }
