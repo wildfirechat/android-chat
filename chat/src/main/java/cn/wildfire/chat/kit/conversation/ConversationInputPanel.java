@@ -84,6 +84,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private ConversationViewModel conversationViewModel;
     private InputAwareLayout rootLinearLayout;
     private FragmentActivity activity;
+    private AudioRecorderPanel audioRecorderPanel;
 
     private long lastTypingTime;
     private String draftString;
@@ -169,8 +170,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         });
 
         // audio record panel
-        AudioRecorderPanel audioRecorderPanel = new AudioRecorderPanel(getContext());
-        audioRecorderPanel.attach(rootLinearLayout, audioButton);
+        audioRecorderPanel = new AudioRecorderPanel(getContext());
         audioRecorderPanel.setRecordListener(new AudioRecorderPanel.OnRecordListener() {
             @Override
             public void onRecordSuccess(String audioFile, int duration) {
@@ -183,7 +183,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
             @Override
             public void onRecordFail(String reason) {
-                // TODO
+                Toast.makeText(activity, reason, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -350,6 +350,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     private void showAudioButton() {
         audioButton.setVisibility(View.VISIBLE);
+        audioRecorderPanel.attach(rootLinearLayout, audioButton);
         editText.setVisibility(View.GONE);
         sendButton.setVisibility(View.GONE);
         audioImageView.setImageResource(R.mipmap.ic_cheat_keyboard);
@@ -360,6 +361,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     private void hideAudioButton() {
         audioButton.setVisibility(View.GONE);
+        audioRecorderPanel.deattch();
         editText.setVisibility(View.VISIBLE);
         if (TextUtils.isEmpty(editText.getText())) {
             sendButton.setVisibility(View.GONE);

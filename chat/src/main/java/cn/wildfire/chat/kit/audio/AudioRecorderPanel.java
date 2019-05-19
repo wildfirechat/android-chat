@@ -73,6 +73,15 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         this.button.setOnTouchListener(this);
     }
 
+    public void deattch() {
+        recorder = null;
+        handler = null;
+        recordingWindow = null;
+        stateImageView = null;
+        stateTextView = null;
+        countDownTextView = null;
+    }
+
 
     public void setRecordListener(OnRecordListener recordListener) {
         this.recordListener = recordListener;
@@ -194,7 +203,6 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             return;
         }
         recordingWindow.dismiss();
-        recordingWindow = null;
     }
 
     private void showTooShortTip() {
