@@ -966,13 +966,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public List<UserInfo> getUserInfos(List<String> userIds, String groupId) throws RemoteException {
             List<UserInfo> userInfos = new ArrayList<>();
-            for (String userId : userIds) {
-                ProtoUserInfo protoUserInfo = ProtoLogic.getUserInfo(userId, groupId == null ? "" : groupId, false);
-                if (protoUserInfo == null) {
-                    userInfos.add(new NullUserInfo(userId));
-                } else {
-                    userInfos.add(convertProtoUserInfo(protoUserInfo));
+            String[] userIdsArray = new String[userIds.size()];
+            ProtoUserInfo[] protoUserInfos = ProtoLogic.getUserInfos(userIds.toArray(userIdsArray), groupId == null ? "" : groupId);
+
+            for (ProtoUserInfo protoUserInfo : protoUserInfos) {
+                UserInfo userInfo = convertProtoUserInfo(protoUserInfo);
+                if (userInfo.name == null && userInfo.displayName == null) {
+                    userInfo = new NullUserInfo(userInfo.uid);
                 }
+                userInfos.add(userInfo);
             }
             return userInfos;
         }
