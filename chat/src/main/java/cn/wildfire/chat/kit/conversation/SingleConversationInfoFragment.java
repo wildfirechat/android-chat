@@ -30,6 +30,7 @@ import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
+import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
@@ -103,6 +104,12 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         conversationViewModel.clearConversationMessage(conversationInfo.conversation);
     }
 
+    @OnClick(R.id.searchMessageOptionItemView)
+    void searchGroupMessage() {
+        Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
+        intent.putExtra("conversation", conversationInfo.conversation);
+        startActivity(intent);
+    }
 
     @Override
     public void onUserMemberClick(UserInfo userInfo) {
