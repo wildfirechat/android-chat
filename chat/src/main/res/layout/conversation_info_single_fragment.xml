@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray5"
@@ -106,6 +107,18 @@
                     android:layout_marginRight="15dp" />
 
             </LinearLayout>
+
+
+            <com.lqr.optionitemview.OptionItemView
+                android:id="@+id/searchMessageOptionItemView"
+                style="@style/OptionItem"
+                android:layout_marginTop="@dimen/option_item_margin_top"
+                android:background="@drawable/selector_option_item"
+                app:left_text="查找聊天记录"
+                app:left_text_color="@color/black0"
+                app:left_text_margin_left="@dimen/option_item_margin_left"
+                app:left_text_size="16sp"
+                tools:visibility="visible" />
 
             <com.lqr.optionitemview.OptionItemView
                 android:id="@+id/clearMessagesOptionItemView"
