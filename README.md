@@ -36,7 +36,9 @@
 ### 联系我们
 问题讨论请加群：822762829
 
-<img src="http://static.wildfirechat.cn/qr_qqgroup.jpeg" width = 50% height = 50% />
+微信公众号：
+
+<img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 50% height = 50% />
 
 
 ## 体验Demo
