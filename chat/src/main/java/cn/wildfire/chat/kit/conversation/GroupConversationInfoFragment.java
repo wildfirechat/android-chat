@@ -200,6 +200,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
         memberReclerView.setAdapter(conversationMemberAdapter);
         memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
+        memberReclerView.setNestedScrollingEnabled(false);
+        memberReclerView.setHasFixedSize(true);
+        memberReclerView.setFocusable(false);
         stickTopSwitchButton.setChecked(conversationInfo.isTop);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
