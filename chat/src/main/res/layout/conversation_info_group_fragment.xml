@@ -130,6 +130,25 @@
                 android:orientation="vertical"
                 android:visibility="visible">
 
+                <com.lqr.optionitemview.OptionItemView
+                    android:id="@+id/searchMessageOptionItemView"
+                    style="@style/OptionItem"
+                    android:background="@drawable/selector_option_item"
+                    app:left_text="查找聊天记录"
+                    app:left_text_color="@color/black0"
+                    app:left_text_margin_left="@dimen/option_item_margin_left"
+                    app:left_text_size="16sp"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/option_item_margin_top"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:visibility="visible">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"

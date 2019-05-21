@@ -47,6 +47,7 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.RemoveGroupMemberActivity;
 import cn.wildfire.chat.kit.group.SetGroupNameActivity;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
+import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
@@ -276,6 +277,13 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     void showGroupQRCode() {
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_GROUP + groupInfo.target;
         Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "群二维码", groupInfo.portrait, qrCodeValue);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.searchMessageOptionItemView)
+    void searchGroupMessage() {
+        Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
+        intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
     }
 

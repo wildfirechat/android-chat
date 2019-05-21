@@ -44,7 +44,7 @@
     <!--选项条目样式-->
     <style name="OptionItem">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">55dp</item>
+        <item name="android:layout_height">50dp</item>
         <item name="android:background">@color/white</item>
     </style>
 
