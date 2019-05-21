@@ -236,6 +236,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                                 public void onChanged(@Nullable OperateResult operateResult) {
                                     ConfigEventViewModel configEventViewModel = WfcUIKit.getAppScopeViewModel(ConfigEventViewModel.class);
                                     configEventViewModel.postGroupAliasEvent(groupInfo.target, true);
+                                    UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), groupInfo.target, false);
+                                    conversationMemberAdapter.updateMember(userInfo);
                                     if (operateResult.isSuccess()) {
                                         myGroupNickNameOptionItemView.setRightText(input.toString().trim());
                                     } else {

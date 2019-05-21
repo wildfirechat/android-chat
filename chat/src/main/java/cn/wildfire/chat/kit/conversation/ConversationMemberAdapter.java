@@ -6,14 +6,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -40,6 +41,19 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
         int startIndex = this.members.size();
         this.members.addAll(members);
         notifyItemRangeInserted(startIndex, members.size());
+    }
+
+    public void updateMember(UserInfo userInfo) {
+        if (this.members == null) {
+            return;
+        }
+        for (int i = 0; i < members.size(); i++) {
+            if (members.get(i).uid.equals(userInfo.uid)) {
+                members.set(i, userInfo);
+                notifyItemChanged(i);
+                break;
+            }
+        }
     }
 
     public void removeMembers(List<String> memberIds) {
@@ -121,7 +135,7 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
             }
             switch (type) {
                 case TYPE_USER:
-                    if (userInfo != null){
+                    if (userInfo != null) {
                         onMemberClickListener.onUserMemberClick(userInfo);
                     }
                     break;
