@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -176,7 +177,7 @@ public class ConversationActivity extends WfcBaseActivity implements
     };
 
     private Observer<Object> clearMessageLiveDataObserver = (obj) -> {
-        adapter.setMessages(null);
+        adapter.setMessages(new ArrayList<>());
         adapter.notifyDataSetChanged();
     };
 
