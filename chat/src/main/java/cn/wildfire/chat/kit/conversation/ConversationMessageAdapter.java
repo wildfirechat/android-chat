@@ -67,6 +67,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setMessages(List<UiMessage> messages) {
         this.messages = messages;
+        if (this.messages == null) {
+            this.messages = new ArrayList<>();
+        }
     }
 
     public void setOnPortraitClickListener(OnPortraitClickListener onPortraitClickListener) {
@@ -78,7 +81,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     public void addNewMessage(UiMessage message) {
-        if (messages == null) {
+        if (message == null) {
             return;
         }
         if (contains(message)) {
