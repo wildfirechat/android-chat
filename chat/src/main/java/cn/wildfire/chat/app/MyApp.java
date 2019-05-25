@@ -5,6 +5,8 @@ import android.content.Context;
 
 import com.tencent.bugly.crashreport.CrashReport;
 
+import java.io.File;
+
 import cn.wildfire.chat.app.third.location.viewholder.LocationMessageContentViewHolder;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
@@ -25,6 +27,26 @@ public class MyApp extends BaseApp {
             wfcUIKit = new WfcUIKit();
             wfcUIKit.init(this);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class);
+            seuptWfcDirs();
+        }
+    }
+
+    private void seuptWfcDirs() {
+        File file = new File(Config.VIDEO_SAVE_DIR);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        file = new File(Config.AUDIO_SAVE_DIR);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        file = new File(Config.FILE_SAVE_DIR);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        file = new File(Config.PHOTO_SAVE_DIR);
+        if (!file.exists()) {
+            file.mkdirs();
         }
     }
 
