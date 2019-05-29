@@ -110,7 +110,15 @@ public class ConversationActivity extends WfcBaseActivity implements
                 }
                 adapter.addNewMessage(uiMessage);
                 if (moveToBottom || uiMessage.message.sender.equals(ChatManager.Instance().getUserId())) {
-                    UIUtils.postTaskDelay(() -> recyclerView.smoothScrollToPosition(adapter.getItemCount() - 1), 100);
+                    UIUtils.postTaskDelay(() -> {
+
+                                int position = adapter.getItemCount() - 1;
+                                if (position < 0) {
+                                    return;
+                                }
+                                recyclerView.scrollToPosition(position);
+                            },
+                            100);
                 }
             }
             if (content instanceof TypingMessageContent && uiMessage.message.direction == MessageDirection.Receive) {
