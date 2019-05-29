@@ -1234,12 +1234,16 @@ public class ChatManager {
             if (!TextUtils.isEmpty(localPath)) {
                 File file = new File(localPath);
                 if (!file.exists()) {
-                    callback.onFail(ErrorCode.FILE_NOT_EXIST);
+                    if (callback != null ){
+                        callback.onFail(ErrorCode.FILE_NOT_EXIST);
+                    }
                     return;
                 }
 
                 if (file.length() > 100 * 1024 * 1024) {
-                    callback.onFail(ErrorCode.FILE_TOO_LARGE);
+                    if (callback != null){
+                        callback.onFail(ErrorCode.FILE_TOO_LARGE);
+                    }
                     return;
                 }
             }
