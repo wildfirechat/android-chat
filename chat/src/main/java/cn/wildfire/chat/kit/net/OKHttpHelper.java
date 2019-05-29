@@ -135,7 +135,11 @@ public class OKHttpHelper {
                     }
                 } else {
                     ResultWrapper<T> wrapper = gson.fromJson(response.body().string(), new ResultType(type));
-                    if (wrapper.isSuccess()) {
+                    if (wrapper == null) {
+                        callback.onFailure(-1, "response is null");
+                        return;
+                    }
+                    if (wrapper.isSuccess() && wrapper.getResult() != null) {
                         callback.onSuccess(wrapper.getResult());
                     } else {
                         callback.onFailure(wrapper.getCode(), wrapper.getMessage());
