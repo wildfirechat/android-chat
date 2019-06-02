@@ -37,6 +37,8 @@ import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -153,14 +155,31 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
         Message message = uiMessage.message;
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
-            long delta = ChatManager.Instance().getServerDeltaTime();
-            long now = System.currentTimeMillis();
-            if (message.direction == MessageDirection.Send
-                    && TextUtils.equals(message.sender, ChatManager.Instance().getUserId())
-                    && now - (message.serverTime - delta) < 60 * 1000) {
-                return false;
+
+            String userId = ChatManager.Instance().getUserId();
+            if (message.conversation.type == Conversation.ConversationType.Group) {
+                GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
+                GroupInfo groupInfo = groupViewModel.getGroupInfo(message.conversation.target, false);
+                if (groupInfo != null && userId.equals(groupInfo.owner)) {
+                    return false;
+                }
+                GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
+                if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Manager
+                        || groupMember.type == GroupMember.GroupMemberType.Owner)) {
+                    return false;
+                } else {
+                    return true;
+                }
             } else {
-                return true;
+                long delta = ChatManager.Instance().getServerDeltaTime();
+                long now = System.currentTimeMillis();
+                if (message.direction == MessageDirection.Send
+                        && TextUtils.equals(message.sender, ChatManager.Instance().getUserId())
+                        && now - (message.serverTime - delta) < 60 * 1000) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
         }
 
