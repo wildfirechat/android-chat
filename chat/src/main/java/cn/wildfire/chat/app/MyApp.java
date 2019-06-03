@@ -27,11 +27,11 @@ public class MyApp extends BaseApp {
             wfcUIKit = new WfcUIKit();
             wfcUIKit.init(this);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class);
-            seuptWfcDirs();
+            seuptwfcdirs();
         }
     }
 
-    private void seuptWfcDirs() {
+    private void seuptwfcdirs() {
         File file = new File(Config.VIDEO_SAVE_DIR);
         if (!file.exists()) {
             file.mkdirs();
