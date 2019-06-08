@@ -4,10 +4,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.IInterface;
+import android.os.LocaleList;
 import android.os.Looper;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -1836,12 +1839,18 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             info = new AppLogic.DeviceInfo(imei);
             info.packagename = context.getPackageName();
-            // TODO 自行处理吧，这些信息不是必须的
-            info.carriername = "CMCC";
-            info.device = "小米6";
-            info.deviceversion = "Android8.0";
-            info.language = "ZH_CN";
-            info.phonename = "XXXx的小米6";
+            info.device = Build.MANUFACTURER;
+            info.deviceversion = Build.VERSION.RELEASE;
+            info.phonename = Build.MODEL;
+
+            Locale locale;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                locale = LocaleList.getDefault().get(0);
+            } else {
+                locale = Locale.getDefault();
+            }
+
+            info.language = locale.getLanguage();
         }
         return info;
     }
