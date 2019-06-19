@@ -191,7 +191,7 @@
             android:name="cn.wildfire.chat.app.main.MainActivity"
             android:label="火信">
             <intent-filter>
-                <action android:name="cn.wildfirechat.chat.main" />
+                <action android:name="${applicationId}.main" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
