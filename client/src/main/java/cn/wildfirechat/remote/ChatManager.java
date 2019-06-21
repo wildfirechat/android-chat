@@ -1033,17 +1033,16 @@ public class ChatManager {
         try {
             Constructor c = msgContentClazz.getConstructor();
             if (c.getModifiers() != Modifier.PUBLIC) {
-                throw new IllegalArgumentException("the default constructor of messageContent class should be public");
+                throw new IllegalArgumentException("the default constructor of your custom messageContent class should be public");
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("messageContent class must have a default constructor");
+            throw new IllegalArgumentException("custom messageContent class must have a default constructor");
         }
         ContentTag tag = msgContentClazz.getAnnotation(ContentTag.class);
         if (tag == null) {
-            throw new IllegalArgumentException("messageContent class must have a ContentTag annotation");
+            throw new IllegalArgumentException("custom messageContent class must have a ContentTag annotation");
         }
-
     }
 
     /**
@@ -1234,14 +1233,14 @@ public class ChatManager {
             if (!TextUtils.isEmpty(localPath)) {
                 File file = new File(localPath);
                 if (!file.exists()) {
-                    if (callback != null ){
+                    if (callback != null) {
                         callback.onFail(ErrorCode.FILE_NOT_EXIST);
                     }
                     return;
                 }
 
                 if (file.length() > 100 * 1024 * 1024) {
-                    if (callback != null){
+                    if (callback != null) {
                         callback.onFail(ErrorCode.FILE_TOO_LARGE);
                     }
                     return;
