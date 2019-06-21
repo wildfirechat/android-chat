@@ -1,9 +1,11 @@
 package cn.wildfire.chat.kit.search.viewHolder;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfirechat.chat.R;
@@ -18,6 +20,11 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onBind(String category) {
+        if (TextUtils.isEmpty(category)) {
+            categoryTextView.setVisibility(View.GONE);
+            return;
+        }
+        categoryTextView.setVisibility(View.VISIBLE);
         categoryTextView.setText(category);
     }
 }
