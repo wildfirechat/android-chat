@@ -6,8 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -15,9 +13,14 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.FriendRequest;
 
@@ -30,6 +33,7 @@ public class FriendRequestListFragment extends Fragment {
     RecyclerView recyclerView;
 
     private ContactViewModel contactViewModel;
+    private FriendRequestListAdapter adapter;
 
     @Nullable
     @Override
@@ -42,12 +46,17 @@ public class FriendRequestListFragment extends Fragment {
 
     private void init() {
         contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        userViewModel.userInfoLiveData().observe(this, userInfos -> {
+            adapter.onUserInfosUpdate(userInfos);
+        });
+
         List<FriendRequest> requests = contactViewModel.getFriendRequest();
         if (requests != null && requests.size() > 0) {
             noNewFriendLinearLayout.setVisibility(View.GONE);
             newFriendLinearLayout.setVisibility(View.VISIBLE);
 
-            FriendRequestListAdapter adapter = new FriendRequestListAdapter(FriendRequestListFragment.this);
+            adapter = new FriendRequestListAdapter(FriendRequestListFragment.this);
             adapter.setFriendRequests(requests);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
