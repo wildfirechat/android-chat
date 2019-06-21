@@ -1,13 +1,15 @@
 package cn.wildfire.chat.kit.search;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.List;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
 
 public abstract class SearchableModule<R, V extends RecyclerView.ViewHolder> {
     protected String keyword;
@@ -26,6 +28,9 @@ public abstract class SearchableModule<R, V extends RecyclerView.ViewHolder> {
      * @param r
      */
     public final void onClickInternal(Fragment fragment, V holder, View view, R r) {
+
+        InputMethodManager inputManager = (InputMethodManager) fragment.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         if (listener != null) {
             listener.onResultItemClick(fragment, holder.itemView, view, r);
         } else {
