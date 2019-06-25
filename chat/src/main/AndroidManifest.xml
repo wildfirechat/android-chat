@@ -207,6 +207,9 @@
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupInfoActivity"
             android:label="群信息" />
+        <activity
+            android:name="cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity"
+            android:label="扫一扫" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
