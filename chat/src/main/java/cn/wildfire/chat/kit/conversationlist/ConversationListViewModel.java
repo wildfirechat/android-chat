@@ -167,8 +167,10 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
                 }
                 Conversation conversation = message.conversation;
                 if (types.contains(conversation.type) && lines.contains(conversation.line)) {
-                    ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-                    postConversationInfo(conversationInfo);
+                    ChatManager.Instance().getWorkHandler().post(() -> {
+                        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
+                        postConversationInfo(conversationInfo);
+                    });
                 }
             }
         }
@@ -271,7 +273,8 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
             return;
         }
         if (conversationInfoLiveData != null) {
-            UIUtils.postTaskSafely(() -> conversationInfoLiveData.setValue(conversationInfo));
+            //UIUtils.postTaskSafely(() -> conversationInfoLiveData.setValue(conversationInfo));
+            conversationInfoLiveData.postValue(conversationInfo);
         }
 
         if (unreadCountLiveData != null) {
