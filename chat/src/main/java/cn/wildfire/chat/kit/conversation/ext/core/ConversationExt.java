@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.fragment.app.FragmentActivity;
+
 import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfirechat.model.Conversation;
 
@@ -42,6 +43,13 @@ public abstract class ConversationExt {
         this.conversation = conversation;
         this.extension = conversationExtension;
         this.index = index;
+    }
+
+    protected final void onDestroy() {
+        this.context = null;
+        this.conversationViewModel = null;
+        this.conversation = null;
+        this.extension = null;
     }
 
     protected final void startActivity(Intent intent) {

@@ -537,6 +537,7 @@ public class ConversationActivity extends WfcBaseActivity implements
         conversationViewModel.mediaUpdateLiveData().removeObserver(mediaUploadedLiveDataObserver);
         conversationViewModel.clearMessageLiveData().removeObserver(clearMessageLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoUpdateLiveDataObserver);
+        inputPanel.onDestroy();
     }
 
     @Override

@@ -85,6 +85,12 @@ public class ConversationExtension {
         }
     }
 
+    public void onDestroy() {
+        for (int i = 0; i < exts.size(); i++) {
+            exts.get(i).onDestroy();
+        }
+    }
+
     private void setupExtViewPager(ViewPagerFixed viewPager) {
         exts = ConversationExtManager.getInstance().getConversationExts(conversation);
         if (exts.isEmpty()) {

@@ -129,6 +129,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         setDraft();
     }
 
+    public void onDestroy() {
+        this.extension.onDestroy();
+    }
+
     public void init(FragmentActivity activity, InputAwareLayout rootInputAwareLayout) {
         LayoutInflater.from(getContext()).inflate(R.layout.conversation_input_panel, this, true);
         ButterKnife.bind(this, this);
