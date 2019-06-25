@@ -251,7 +251,13 @@ public class ConversationActivity extends WfcBaseActivity implements
         handler = new Handler();
         rootLinearLayout.addOnKeyboardShownListener(this);
 
-        swipeRefreshLayout.setOnRefreshListener(this::loadMoreOldMessages);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            if (adapter.getMessages() == null || adapter.getMessages().isEmpty()) {
+                swipeRefreshLayout.setRefreshing(false);
+                return;
+            }
+            loadMoreOldMessages();
+        });
 
         // message list
         adapter = new ConversationMessageAdapter(this);
@@ -574,18 +580,6 @@ public class ConversationActivity extends WfcBaseActivity implements
         if (adapter.getMessages() != null && !adapter.getMessages().isEmpty()) {
             fromMessageId = adapter.getItem(0).message.messageId;
             fromMessageUid = adapter.getItem(0).message.messageUid;
-        }
-
-        if (adapter.getMessages() == null || adapter.getMessages().isEmpty()) {
-            return;
-        }
-        for (UiMessage msg : adapter.getMessages()) {
-            if (msg.message.messageId < fromMessageId) {
-                fromMessageId = msg.message.messageId;
-            }
-            if (msg.message.messageUid < fromMessageUid) {
-                fromMessageUid = msg.message.messageUid;
-            }
         }
 
         conversationViewModel.loadOldMessages(fromMessageId, fromMessageUid, MESSAGE_LOAD_COUNT_PER_TIME)
