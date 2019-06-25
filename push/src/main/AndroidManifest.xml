@@ -11,10 +11,10 @@
 
     <!-- the following 2 com.xiaomi.mipushdemo should be changed to your package name -->
     <permission
-        android:name="${APP_ID}.permission.MIPUSH_RECEIVE"
+        android:name="${applicationId}.permission.MIPUSH_RECEIVE"
         android:protectionLevel="signatureOrSystem" />
 
-    <uses-permission android:name="${APP_ID}.permission.MIPUSH_RECEIVE" />
+    <uses-permission android:name="${applicationId}.permission.MIPUSH_RECEIVE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
@@ -23,16 +23,16 @@
     <!-- 兼容flyme5.0以下版本，魅族内部集成pushSDK必填，不然无法收到消息-->
     <uses-permission android:name="com.meizu.flyme.push.permission.RECEIVE"></uses-permission>
     <permission
-        android:name="${APP_ID}.push.permission.MESSAGE"
+        android:name="${applicationId}.push.permission.MESSAGE"
         android:protectionLevel="signature" />
-    <uses-permission android:name="${APP_ID}.push.permission.MESSAGE"></uses-permission>
+    <uses-permission android:name="${applicationId}.push.permission.MESSAGE"></uses-permission>
 
     <!--  兼容flyme3.0配置权限-->
     <uses-permission android:name="com.meizu.c2dm.permission.RECEIVE" />
     <permission
-        android:name="${APP_ID}.permission.C2D_MESSAGE"
+        android:name="${applicationId}.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
-    <uses-permission android:name="${APP_ID}.permission.C2D_MESSAGE" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
 
     <application>
 
@@ -57,7 +57,7 @@
         <!--“xxx.xxx.xxx”用实际的应用包名替换-->
         <provider
             android:name="com.huawei.hms.update.provider.UpdateProvider"
-            android:authorities="${APP_ID}.hms.update.provider"
+            android:authorities="${applicationId}.hms.update.provider"
             android:exported="false"
             android:grantUriPermissions="true"></provider>
 
@@ -155,7 +155,7 @@
                 <action android:name="com.meizu.c2dm.intent.REGISTRATION" />
                 <action android:name="com.meizu.c2dm.intent.RECEIVE" />
 
-                <category android:name="${APP_ID}"></category>
+                <category android:name="${applicationId}"></category>
             </intent-filter>
         </receiver>
 
