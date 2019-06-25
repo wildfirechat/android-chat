@@ -24,24 +24,13 @@ android {
                 includeCompileClasspath true
             }
         }
-        manifestPlaceholders = [
-                APP_ID       : "cn.wildfirechat.chat",
-
-                MI_APP_ID    : "2882303761517722456",
-                MI_APP_KEY   : "5731772292456",
-
-                HMS_APP_ID   : "100221325",
-
-                MEIZU_APP_ID : "113616",
-                MEIZU_APP_KEY: "fcd886f51c144b45b87a67a28e2934d1"
-        ]
         signingConfig signingConfigs.wfc
 
+        buildConfigField("String", "BuglyId", '"34490ba79f"')
 
         ndk {
             abiFilters "armeabi-v7a", 'x86', 'x86_64' // ，'armeabi', 'arm64-v8a', 'x86', 'x86_64'
         }
-
     }
     buildTypes {
         release {

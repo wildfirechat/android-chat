@@ -13,8 +13,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders = [
-                APP_ID       : "cn.wildfirechat.chat",
-
                 MI_APP_ID    : "2882303761517722456",
                 MI_APP_KEY   : "5731772292456",
 
