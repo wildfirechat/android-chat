@@ -7,11 +7,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -53,6 +54,7 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
     void accept() {
         contactViewModel.acceptFriendRequest(friendRequest.target).observe(fragment, aBoolean -> {
             if (aBoolean) {
+                this.friendRequest.status = 1;
                 acceptButton.setVisibility(View.GONE);
             } else {
                 Toast.makeText(fragment.getActivity(), "操作失败", Toast.LENGTH_SHORT).show();
