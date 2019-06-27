@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
+import cn.wildfire.chat.kit.common.AppScopeViewModel;
+import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -13,7 +15,7 @@ import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.SearchUserCallback;
 
-public class ContactViewModel extends ViewModel implements OnFriendUpdateListener {
+public class ContactViewModel extends ViewModel implements OnFriendUpdateListener, AppScopeViewModel {
     private MutableLiveData<Object> contactListUpdatedLiveData;
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
 
@@ -133,6 +135,26 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
 
     public boolean isFriend(String targetUid) {
         return ChatManager.Instance().isMyFriend(targetUid);
+    }
+
+    public LiveData<OperateResult<Boolean>> deleteFriend(String userId) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().deleteFriend(userId, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                if (contactListUpdatedLiveData != null) {
+                    contactListUpdatedLiveData.postValue(new Object());
+                }
+                result.postValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.postValue(new OperateResult<>(errorCode));
+            }
+        });
+
+        return result;
     }
 
     public MutableLiveData<Boolean> invite(String targetUid, String message) {

@@ -54,9 +54,6 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
     private void loadContacts() {
         contactViewModel.getContactsAsync(false)
                 .observe(this, userInfos -> {
-                    if (userInfos == null || userInfos.isEmpty()) {
-                        return;
-                    }
                     contactAdapter.setContacts(userInfoToUIUserInfo(userInfos));
                     contactAdapter.notifyDataSetChanged();
 
