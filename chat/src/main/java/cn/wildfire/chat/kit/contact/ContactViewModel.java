@@ -8,6 +8,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -146,6 +147,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
                     contactListUpdatedLiveData.postValue(new Object());
                 }
                 result.postValue(new OperateResult<>(0));
+                ChatManager.Instance().removeConversation(new Conversation(Conversation.ConversationType.Single, userId, 0), true);
             }
 
             @Override

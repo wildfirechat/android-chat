@@ -120,6 +120,7 @@ public class ChatManager {
     private List<OnChannelInfoUpdateListener> channelInfoUpdateListeners = new ArrayList<>();
     private List<OnMessageUpdateListener> messageUpdateListeners = new ArrayList<>();
     private List<OnClearMessageListener> clearMessageListeners = new ArrayList<>();
+    private List<OnRemoveConversationListener> removeConversationListeners = new ArrayList<>();
 
     private List<IMServiceStatusListener> imServiceStatusListeners = new ArrayList<>();
 
@@ -1018,6 +1019,18 @@ public class ChatManager {
         clearMessageListeners.remove(listener);
     }
 
+    public void addRemoveConversationListener(OnRemoveConversationListener listener) {
+        if (listener == null) {
+            return;
+        }
+        removeConversationListeners.add(listener);
+    }
+
+    public void removeRemoveConversationListener(OnRemoveConversationListener listener) {
+        removeConversationListeners.remove(listener);
+    }
+
+
     public void addIMServiceStatusListener(IMServiceStatusListener listener) {
         if (listener == null) {
             return;
@@ -1691,6 +1704,9 @@ public class ChatManager {
 
         try {
             mClient.removeConversation(conversation.type.ordinal(), conversation.target, conversation.line, clearMsg);
+            for (OnRemoveConversationListener listener : removeConversationListeners) {
+                listener.onConversationRemove(conversation);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
