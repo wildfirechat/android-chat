@@ -120,7 +120,7 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
     }
 
     public List<UserInfo> getUserInfos(List<String> userIds) {
-        return ChatManager.Instance().getUserInfos(userIds);
+        return ChatManager.Instance().getUserInfos(userIds, null);
     }
 
     public MutableLiveData<OperateResult<Integer>> setFriendAlias(String userId, String alias) {
