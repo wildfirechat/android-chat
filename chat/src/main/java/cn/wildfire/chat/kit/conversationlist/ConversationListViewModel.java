@@ -24,6 +24,7 @@ import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
+import cn.wildfirechat.remote.OnRemoveConversationListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.RemoveMessageListener;
@@ -40,7 +41,10 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         RemoveMessageListener,
         OnSettingUpdateListener,
         OnGroupInfoUpdateListener,
-        OnConversationInfoUpdateListener, OnConnectionStatusChangeListener, OnClearMessageListener {
+        OnConversationInfoUpdateListener,
+        OnRemoveConversationListener,
+        OnConnectionStatusChangeListener,
+        OnClearMessageListener {
     private MutableLiveData<ConversationInfo> conversationInfoLiveData;
     private MutableLiveData<Conversation> conversationRemovedLiveData;
     private MutableLiveData<UnreadCount> unreadCountLiveData;
@@ -63,6 +67,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addRemoveMessageListener(this);
         ChatManager.Instance().addGroupInfoUpdateListener(this);
         ChatManager.Instance().addClearMessageListener(this);
+        ChatManager.Instance().addRemoveConversationListener(this);
     }
 
     @Override
@@ -77,6 +82,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeRemoveMessageListener(this);
         ChatManager.Instance().removeGroupInfoUpdateListener(this);
         ChatManager.Instance().removeClearMessageListener(this);
+        ChatManager.Instance().removeRemoveConversationListener(this);
     }
 
     public LiveData<List<ConversationInfo>> getConversationListAsync(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
@@ -225,9 +231,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
             Log.e(ConversationListViewModel.class.getSimpleName(), "this conversationListViewModel can not remove the target conversation");
             return;
         }
-        if (conversationRemovedLiveData != null) {
-            conversationRemovedLiveData.setValue(conversationInfo.conversation);
-        }
         ChatManager.Instance().removeConversation(conversationInfo.conversation, false);
     }
 
@@ -344,5 +347,12 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     public void onClearMessage(Conversation conversation) {
         ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
         postConversationInfo(conversationInfo);
+    }
+
+    @Override
+    public void onConversationRemove(Conversation conversation) {
+        if (conversationRemovedLiveData != null) {
+            conversationRemovedLiveData.setValue(conversation);
+        }
     }
 }
