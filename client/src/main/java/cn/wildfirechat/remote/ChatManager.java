@@ -384,7 +384,7 @@ public class ChatManager {
                 listener.onFriendListUpdate(friendList);
             }
         });
-        onUserInfoUpdate(getUserInfos(friendList));
+        onUserInfoUpdate(getUserInfos(friendList, null));
     }
 
     private void onFriendReqeustUpdated() {
@@ -2345,10 +2345,6 @@ public class ChatManager {
             e.printStackTrace();
             return new NullUserInfo(userId);
         }
-    }
-
-    public List<UserInfo> getUserInfos(List<String> userIds) {
-        return getUserInfos(userIds, null);
     }
 
     /**

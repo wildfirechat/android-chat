@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -183,16 +182,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             enableRemoveMember = true;
         }
         conversationMemberAdapter = new ConversationMemberAdapter(true, enableRemoveMember);
-        List<UserInfo> members = contactViewModel.getContacts(memberIds);
+        List<UserInfo> members = contactViewModel.getContacts(memberIds, groupInfo.target);
 
-        for (GroupMember member : groupMembers) {
-            for (UserInfo userInfo : members) {
-                if (!TextUtils.isEmpty(member.alias) && member.memberId.equals(userInfo.uid)) {
-                    userInfo.displayName = member.alias;
-                    break;
-                }
-            }
-        }
         myGroupNickNameOptionItemView.setRightText(groupMember.alias);
         groupNameOptionItemView.setRightText(groupInfo.name);
 
@@ -208,6 +199,17 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
+
+        groupViewModel.getMyGroups().observe(this, listOperateResult -> {
+            if (listOperateResult.isSuccess()) {
+                for (GroupInfo info : listOperateResult.getResult()) {
+                    if (groupInfo.target.equals(info.target)) {
+                        markGroupSwitchButton.setChecked(true);
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     @OnClick(R.id.groupNameOptionItemView)
