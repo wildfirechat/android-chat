@@ -47,7 +47,7 @@ public class GroupMemberListFragment extends BaseContactFragment {
             memberIds.add(member.memberId);
         }
         ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
-        List<UserInfo> userInfos = contactViewModel.getContacts(memberIds);
+        List<UserInfo> userInfos = contactViewModel.getContacts(memberIds, groupInfo.target);
         for (GroupMember member : members) {
             for (UserInfo userInfo : userInfos) {
                 if (!TextUtils.isEmpty(member.alias) && member.memberId.equals(userInfo.uid)) {

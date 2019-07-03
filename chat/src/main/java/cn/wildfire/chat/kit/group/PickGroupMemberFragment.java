@@ -2,11 +2,12 @@ package cn.wildfire.chat.kit.group;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.kit.contact.ContactAdapter;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
@@ -50,7 +51,7 @@ public class PickGroupMemberFragment extends PickContactFragment {
             memberIds.add(member.memberId);
         }
         ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
-        List<UIUserInfo> contacts = userInfoToUIUserInfo(contactViewModel.getContacts(memberIds));
+        List<UIUserInfo> contacts = userInfoToUIUserInfo(contactViewModel.getContacts(memberIds, groupInfo.target));
         pickContactViewModel.setContacts(contacts);
         checkableContactAdapter.setContacts(contacts);
 
