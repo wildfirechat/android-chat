@@ -100,7 +100,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             }
         });
 
-        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
             if (count == null || count == 0) {
                 if (unreadFriendRequestBadgeView != null) {
