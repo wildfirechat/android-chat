@@ -9,6 +9,7 @@ public enum ModifyGroupInfoType {
     Modify_Group_Portrait(1),
     Modify_Group_Extra(2);
 
+
     private int value;
 
     ModifyGroupInfoType(int value) {
