@@ -45,6 +45,11 @@ public class GroupInfo implements Parcelable {
     public String extra;
     public long updateDt;
 
+    public int mute;
+    public int joinType;
+    public int privateChat;
+    public int searchable;
+
     public GroupInfo() {
     }
 
@@ -64,6 +69,10 @@ public class GroupInfo implements Parcelable {
         dest.writeInt(this.memberCount);
         dest.writeString(this.extra);
         dest.writeLong(this.updateDt);
+        dest.writeInt(this.mute);
+        dest.writeInt(this.joinType);
+        dest.writeInt(this.privateChat);
+        dest.writeInt(this.searchable);
     }
 
     protected GroupInfo(Parcel in) {
@@ -76,6 +85,10 @@ public class GroupInfo implements Parcelable {
         this.memberCount = in.readInt();
         this.extra = in.readString();
         this.updateDt = in.readLong();
+        this.mute = in.readInt();
+        this.joinType = in.readInt();
+        this.privateChat = in.readInt();
+        this.searchable = in.readInt();
     }
 
     public static final Creator<GroupInfo> CREATOR = new Creator<GroupInfo>() {
