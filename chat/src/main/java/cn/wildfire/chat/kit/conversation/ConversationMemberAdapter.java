@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -57,20 +57,19 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
     }
 
     public void removeMembers(List<String> memberIds) {
-        List<Integer> indexes = new ArrayList<>(memberIds.size());
-        for (int j = 0; j < memberIds.size(); j++) {
-            for (int i = 0; i < members.size(); i++) {
-                if (members.get(i).uid.equals(memberIds.get(j))) {
-                    indexes.add(i);
-                    break;
-                }
+        Iterator<UserInfo> iterator = members.iterator();
+        while (iterator.hasNext()) {
+            UserInfo userInfo = iterator.next();
+            if (memberIds.contains(userInfo.uid)) {
+                iterator.remove();
+                memberIds.remove(userInfo.uid);
+            }
+
+            if (memberIds.size() == 0) {
+                break;
             }
         }
-
-        for (int index : indexes) {
-            members.remove(index);
-            notifyItemRemoved(index);
-        }
+        notifyDataSetChanged();
     }
 
     public void setOnMemberClickListener(OnMemberClickListener onMemberClickListener) {
