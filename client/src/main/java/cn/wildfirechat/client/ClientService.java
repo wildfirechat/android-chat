@@ -1509,6 +1509,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         groupInfo.memberCount = protoGroupInfo.getMemberCount();
         groupInfo.extra = protoGroupInfo.getExtra();
         groupInfo.updateDt = protoGroupInfo.getUpdateDt();
+        groupInfo.mute = protoGroupInfo.getMute();
+        groupInfo.joinType = protoGroupInfo.getJoinType();
+        groupInfo.privateChat = protoGroupInfo.getPrivateChat();
+        groupInfo.searchable = protoGroupInfo.getSearchable();
         return groupInfo;
     }
 
