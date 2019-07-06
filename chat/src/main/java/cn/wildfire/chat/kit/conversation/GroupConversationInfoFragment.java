@@ -34,6 +34,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
+import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ConfigEventViewModel;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -263,7 +264,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     void quitGroup() {
         groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0)).observe(this, aBoolean -> {
             if (aBoolean != null && aBoolean) {
-                getActivity().finish();
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
             } else {
                 Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
             }

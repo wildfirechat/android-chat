@@ -146,8 +146,8 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
                 if (contactListUpdatedLiveData != null) {
                     contactListUpdatedLiveData.postValue(new Object());
                 }
-                result.postValue(new OperateResult<>(0));
                 ChatManager.Instance().removeConversation(new Conversation(Conversation.ConversationType.Single, userId, 0), true);
+                result.postValue(new OperateResult<>(0));
             }
 
             @Override
