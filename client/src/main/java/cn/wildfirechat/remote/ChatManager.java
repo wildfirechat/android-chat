@@ -336,6 +336,9 @@ public class ChatManager {
      * @param userInfos
      */
     private void onUserInfoUpdate(List<UserInfo> userInfos) {
+        if (userInfos == null || userInfos.isEmpty()) {
+            return;
+        }
         for (UserInfo info : userInfos) {
             userInfoCache.put(info.uid, info);
         }
@@ -3150,8 +3153,6 @@ public class ChatManager {
             boolean result = gContext.bindService(intent, serviceConnection, BIND_AUTO_CREATE);
             if (!result) {
                 Log.e(TAG, "Bind service failure");
-            } else {
-                Log.e(TAG, "Chat service not binded");
             }
         } else {
             Log.e(TAG, "Chat manager not initialized");
