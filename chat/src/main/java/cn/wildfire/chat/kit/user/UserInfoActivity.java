@@ -1,9 +1,11 @@
 package cn.wildfire.chat.kit.user;
 
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -53,7 +55,8 @@ public class UserInfoActivity extends WfcBaseActivity {
             contactViewModel.deleteFriend(userInfo.uid).observe(
                     this, booleanOperateResult -> {
                         if (booleanOperateResult.isSuccess()) {
-                            finish();
+                            Intent intent = new Intent(UserInfoActivity.this, MainActivity.class);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(this, "delete friend error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
                         }

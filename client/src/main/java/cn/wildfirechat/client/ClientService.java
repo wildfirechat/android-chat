@@ -1949,6 +1949,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onFriendListUpdated(String[] friendList) {
+        if (friendList == null || friendList.length == 0) {
+            return;
+        }
         handler.post(() -> {
             int i = onFriendUpdateListenerRemoteCallbackList.beginBroadcast();
             IOnFriendUpdateListener listener;
