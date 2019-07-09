@@ -7,7 +7,11 @@ package cn.wildfirechat.model;
 public enum ModifyGroupInfoType {
     Modify_Group_Name(0),
     Modify_Group_Portrait(1),
-    Modify_Group_Extra(2);
+    Modify_Group_Extra(2),
+    Modify_Group_Mute(3),
+    Modify_Group_JoinType(4),
+    Modify_Group_PrivateChat(5),
+    Modify_Group_Searchable(6);
 
 
     private int value;

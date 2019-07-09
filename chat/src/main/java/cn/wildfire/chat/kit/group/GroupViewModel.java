@@ -110,7 +110,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
                 ChatManager.Instance().uploadMedia(content, MessageContentMediaType.PORTRAIT.getValue(), new GeneralCallback2() {
                     @Override
                     public void onSuccess(String result) {
-                        ChatManager.Instance().createGroup(null, finalGroupName, result, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
+                        ChatManager.Instance().createGroup(null, finalGroupName, result, GroupInfo.GroupType.Normal, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
                             @Override
                             public void onSuccess(String groupId) {
                                 groupLiveData.setValue(new OperateResult<>(groupId, 0));
@@ -129,7 +129,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
                     }
                 });
             } else {
-                ChatManager.Instance().createGroup(null, finalGroupName, null, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
+                ChatManager.Instance().createGroup(null, finalGroupName, null, GroupInfo.GroupType.Normal, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
                     @Override
                     public void onSuccess(String groupId) {
                         groupLiveData.setValue(new OperateResult<>(groupId, 0));
