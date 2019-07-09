@@ -138,7 +138,7 @@ interface IRemoteClient {
     List<GroupSearchResult> searchGroups(in String keyword);
     List<UserInfo> searchFriends(in String keyworkd);
 
-    oneway void createGroup(in String groupId, in String groupName, in String groupPortrait, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback2 callback);
+    oneway void createGroup(in String groupId, in String groupName, in String groupPortrait, in int groupType, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback2 callback);
     oneway void addGroupMembers(in String groupId, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void removeGroupMembers(in String groupId, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void quitGroup(in String groupId, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
@@ -148,6 +148,7 @@ interface IRemoteClient {
     List<GroupMember> getGroupMembers(in String groupId, in boolean forceUpdate);
     GroupMember getGroupMember(in String groupId, in String memberId);
     oneway void transferGroup(in String groupId, in String newOwner, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
+    oneway void setGroupManager(in String groupId, in boolean isSet, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
 
     oneway void createChannel(in String channelId, in String channelName, in String channelPortrait, in String desc, in String extra, in ICreateChannelCallback callback);
     oneway void modifyChannelInfo(in String channelId, in int modifyType, in String newValue, in IGeneralCallback callback);
