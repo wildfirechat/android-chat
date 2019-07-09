@@ -2569,7 +2569,7 @@ public class ChatManager {
         }
     }
 
-    public void createGroup(String groupId, String groupName, String groupPortrait, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback2 callback) {
+    public void createGroup(String groupId, String groupName, String groupPortrait, GroupInfo.GroupType groupType, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -2582,7 +2582,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.createGroup(groupId, groupName, groupPortrait, memberIds, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback2.Stub() {
+            mClient.createGroup(groupId, groupName, groupPortrait, groupType.value(), memberIds, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback2.Stub() {
                 @Override
                 public void onSuccess(final String result) throws RemoteException {
                     if (callback != null) {
@@ -2978,6 +2978,42 @@ public class ChatManager {
             e.printStackTrace();
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+        }
+    }
+
+    public void setGroupManager(String groupId, boolean isSet, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        int[] inlines = new int[lines.size()];
+        for (int j = 0; j < lines.size(); j++) {
+            inlines[j] = lines.get(j);
+        }
+
+        try {
+            mClient.setGroupManager(groupId, isSet, memberIds, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(()->callback.onSuccess());
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(()->callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+            }
         }
     }
 
