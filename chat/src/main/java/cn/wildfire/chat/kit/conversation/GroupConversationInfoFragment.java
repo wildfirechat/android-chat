@@ -35,6 +35,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.ConfigEventViewModel;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -211,6 +212,12 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 }
             }
         });
+
+        if (groupInfo != null && ChatManagerHolder.gChatManager.getUserId().equals(groupInfo.owner)) {
+            quitGroupButton.setText(R.string.delete_and_dismiss);
+        } else {
+            quitGroupButton.setText(R.string.delete_and_exit);
+        }
     }
 
     @OnClick(R.id.groupNameOptionItemView)
@@ -262,14 +269,25 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @OnClick(R.id.quitButton)
     void quitGroup() {
-        groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0)).observe(this, aBoolean -> {
-            if (aBoolean != null && aBoolean) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-            } else {
-                Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (groupInfo != null && ChatManagerHolder.gChatManager.getUserId().equals(groupInfo.owner)) {
+            groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0)).observe(this, aBoolean -> {
+                if (aBoolean != null && aBoolean) {
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0)).observe(this, aBoolean -> {
+                if (aBoolean != null && aBoolean) {
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @OnClick(R.id.clearMessagesOptionItemView)
