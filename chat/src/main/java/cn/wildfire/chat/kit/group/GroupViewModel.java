@@ -300,6 +300,22 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         return result;
     }
 
+    public MutableLiveData<Boolean> dismissGroup(String groupId, List<Integer> lines) {
+        MutableLiveData<Boolean> result = new MutableLiveData<>();
+        ChatManager.Instance().dismissGroup(groupId, lines, null, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(true);
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(false);
+            }
+        });
+        return result;
+    }
+
     private @Nullable
     String generateGroupPortrait(Context context, List<UIUserInfo> userInfos) throws Exception {
         List<Bitmap> bitmaps = new ArrayList<>();

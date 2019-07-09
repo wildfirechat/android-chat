@@ -68,6 +68,7 @@
     <string name="show_group_member_name">显示群成员昵称</string>
     <string name="clear_chat_log">清空聊天记录</string>
     <string name="delete_and_exit">删除并退出</string>
+    <string name="delete_and_dismiss">解散并删除</string>
     <string name="add_member_success">添加群成员成功</string>
     <string name="add_member_fail">添加群成员失败</string>
     <string name="del_member_success">删除群成员成功</string>
