@@ -48,7 +48,9 @@ public class FriendRequestListFragment extends Fragment {
         contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, userInfos -> {
-            adapter.onUserInfosUpdate(userInfos);
+            if (adapter != null) {
+                adapter.onUserInfosUpdate(userInfos);
+            }
         });
 
         List<FriendRequest> requests = contactViewModel.getFriendRequest();
