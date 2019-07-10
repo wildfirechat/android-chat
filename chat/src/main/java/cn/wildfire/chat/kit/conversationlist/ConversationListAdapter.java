@@ -373,6 +373,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 info = conversationInfos.get(i);
                 if (info.isTop) {
                     // do nothing, just continue
+                    position++;
                 } else {
                     if (conversationInfo.timestamp >= info.timestamp) {
                         position = i;

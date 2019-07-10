@@ -56,6 +56,8 @@ import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
+import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
+import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
@@ -321,6 +323,15 @@ public class ChatManager {
             }
         });
         mainHandler.post(() -> {
+            for (Message message : messages) {
+                if (message.content instanceof QuitGroupNotificationContent
+                        || (message.content instanceof KickoffGroupMemberNotificationContent
+                        && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(ChatManager.Instance().getUserId()))) {
+                    for (OnRemoveConversationListener listener : removeConversationListeners) {
+                        listener.onConversationRemove(message.conversation);
+                    }
+                }
+            }
             Iterator<OnReceiveMessageListener> iterator = onReceiveMessageListeners.iterator();
             OnReceiveMessageListener listener;
             while (iterator.hasNext()) {
