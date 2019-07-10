@@ -17,7 +17,7 @@
                 android:id="@+id/chat"
                 android:icon="@mipmap/ic_create_group_cheat"
                 android:orderInCategory="100"
-                android:title="发起聊天"
+                android:title="发起群聊"
                 app:iconTint="@color/colorPrimary"
                 app:showAsAction="never" />
 
