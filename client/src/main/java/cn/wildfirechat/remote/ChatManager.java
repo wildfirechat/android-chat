@@ -1850,7 +1850,7 @@ public class ChatManager {
     public String getGroupMemberDisplayName(String groupId, String memberId) {
         UserInfo userInfo = getUserInfo(memberId, groupId, false);
         if (userInfo == null) {
-            return null;
+            return "<" + memberId + ">";
         }
         if (!TextUtils.isEmpty(userInfo.friendAlias)) {
             return userInfo.friendAlias;
@@ -3004,14 +3004,14 @@ public class ChatManager {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(()->callback.onSuccess());
+                        mainHandler.post(() -> callback.onSuccess());
                     }
                 }
 
                 @Override
                 public void onFailure(final int errorCode) throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(()->callback.onFail(errorCode));
+                        mainHandler.post(() -> callback.onFail(errorCode));
                     }
                 }
             });
