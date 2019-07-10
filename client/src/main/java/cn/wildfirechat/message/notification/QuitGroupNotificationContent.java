@@ -44,8 +44,8 @@ public class QuitGroupNotificationContent extends GroupNotificationMessageConten
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
-            objWrite.put("m", operator);
-            payload.content = objWrite.toString();
+            objWrite.put("o", operator);
+            payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -57,9 +57,9 @@ public class QuitGroupNotificationContent extends GroupNotificationMessageConten
     public void decode(MessagePayload payload) {
         try {
             if (payload.content != null) {
-                JSONObject jsonObject = new JSONObject(payload.content);
+                JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 groupId = jsonObject.optString("g");
-                operator = jsonObject.optString("m");
+                operator = jsonObject.optString("o");
             }
         } catch (JSONException e) {
             e.printStackTrace();
