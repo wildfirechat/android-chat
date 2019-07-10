@@ -1103,6 +1103,11 @@ public class ChatManager {
         message.sender = sender;
         message.status = status;
         message.serverTime = serverTime;
+        if (this.userId.equals(sender)) {
+            message.direction = MessageDirection.Send;
+        } else {
+            message.direction = MessageDirection.Receive;
+        }
 
         try {
             message = mClient.insertMessage(message, notify);
@@ -1232,6 +1237,7 @@ public class ChatManager {
     public void sendMessage(final Message msg, final int expireDuration, final SendMessageCallback callback) {
         msg.direction = MessageDirection.Send;
         msg.status = MessageStatus.Sending;
+        msg.serverTime = System.currentTimeMillis();
         msg.sender = userId;
         if (!checkRemoteService()) {
             if (callback != null) {

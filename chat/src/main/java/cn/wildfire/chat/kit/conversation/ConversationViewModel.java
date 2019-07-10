@@ -34,6 +34,8 @@ import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
+import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -303,6 +305,10 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         }
 
         toPlayAudioMessage = message.message;
+        if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {
+            message.message.status = MessageStatus.Played;
+            ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
+        }
 
         File file = mediaMessageContentFile(message);
 
