@@ -1115,24 +1115,28 @@ public class ChatManager {
     }
 
     /**
-     * 更新消息，会覆盖原始消息，小心使用
+     * 更新消息
      *
-     * @param message
+     * @param messageId     消息id
+     * @param newMsgContent 新的消息体，未更新部分，不可置空！
      * @return
      */
-    public boolean updateMessage(Message message) {
+    public boolean updateMessage(long messageId, MessageContent newMsgContent) {
         if (!checkRemoteService()) {
             return false;
         }
-        if (message == null || message.messageId == 0) {
-            return false;
-        }
 
+        Message message = new Message();
+        message.messageId = messageId;
+        message.content = newMsgContent;
         try {
             boolean result = mClient.updateMessage(message);
-            for (OnMessageUpdateListener listener : messageUpdateListeners) {
-                listener.onMessageUpdate(message);
-            }
+            Message newMessage = mClient.getMessage(messageId);
+            mainHandler.post(() -> {
+                for (OnMessageUpdateListener listener : messageUpdateListeners) {
+                    listener.onMessageUpdate(newMessage);
+                }
+            });
             return result;
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -2994,14 +2998,14 @@ public class ChatManager {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(() -> callback.onSuccess());
+                        mainHandler.post(()->callback.onSuccess());
                     }
                 }
 
                 @Override
                 public void onFailure(final int errorCode) throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(() -> callback.onFail(errorCode));
+                        mainHandler.post(()->callback.onFail(errorCode));
                     }
                 }
             });
