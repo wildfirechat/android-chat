@@ -18,17 +18,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
-import org.webrtc.StatsReport;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import org.webrtc.StatsReport;
+
 import butterknife.ButterKnife;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
@@ -157,8 +159,13 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
                 .commit();
 
         if (outgoing) {
-            gEngineKit.startCall(targetId, audioOnly, SingleVoipCallActivity.this);
-            gEngineKit.startPreview();
+            try {
+                gEngineKit.startCall(targetId, audioOnly, SingleVoipCallActivity.this);
+                gEngineKit.startPreview();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
+            }
         } else {
             if (session == null) {
                 finish();
