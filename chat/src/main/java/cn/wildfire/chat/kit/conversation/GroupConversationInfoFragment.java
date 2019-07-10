@@ -269,7 +269,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @OnClick(R.id.quitButton)
     void quitGroup() {
-        if (groupInfo != null && ChatManagerHolder.gChatManager.getUserId().equals(groupInfo.owner)) {
+        if (groupInfo != null && userViewModel.getUserId().equals(groupInfo.owner)) {
             groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0)).observe(this, aBoolean -> {
                 if (aBoolean != null && aBoolean) {
                     Intent intent = new Intent(getActivity(), MainActivity.class);
