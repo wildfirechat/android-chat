@@ -12,6 +12,8 @@ import java.util.Map;
 
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
+import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -174,8 +176,14 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
                 Conversation conversation = message.conversation;
                 if (types.contains(conversation.type) && lines.contains(conversation.line)) {
                     ChatManager.Instance().getWorkHandler().post(() -> {
-                        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-                        postConversationInfo(conversationInfo);
+                        String uid = ChatManager.Instance().getUserId();
+                        if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(uid))
+                                || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(uid))) {
+                            // do nothing
+                        } else {
+                            ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
+                            postConversationInfo(conversationInfo);
+                        }
                     });
                 }
             }
