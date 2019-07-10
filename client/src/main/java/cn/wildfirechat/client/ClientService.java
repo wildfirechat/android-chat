@@ -268,11 +268,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         private ProtoMessage convertMessage(cn.wildfirechat.message.Message msg) {
             ProtoMessage protoMessage = new ProtoMessage();
 
-            msg.sender = accountInfo.userName;
-            msg.status = MessageStatus.Sending;
-            msg.serverTime = System.currentTimeMillis();
-            msg.direction = MessageDirection.Send;
-
             if (msg.conversation != null) {
                 protoMessage.setConversationType(msg.conversation.type.ordinal());
                 protoMessage.setTarget(msg.conversation.target);
@@ -503,7 +498,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void setMediaMessagePlayed(long messageId) {
             try {
                 Message message = getMessage(messageId);
-                if (message != null || message.direction == MessageDirection.Send || !(message.content instanceof MediaMessageContent)) {
+                if (message == null || message.direction == MessageDirection.Send || !(message.content instanceof MediaMessageContent)) {
                     return;
                 }
                 ProtoLogic.setMediaMessagePlayed(messageId);

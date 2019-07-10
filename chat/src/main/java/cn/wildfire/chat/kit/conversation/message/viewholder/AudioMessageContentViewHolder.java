@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,7 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.core.MessageStatus;
 
 @MessageContentType(SoundMessageContent.class)
 @SendLayoutRes(resId = R.layout.conversation_item_audio_send)
@@ -36,6 +38,9 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     TextView durationTextView;
     @Bind(R.id.audioContentLayout)
     RelativeLayout contentLayout;
+    @Nullable
+    @Bind(R.id.playStatusIndicator)
+    View playStatusIndicator;
 
     public AudioMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
         super(context, adapter, itemView);
@@ -51,6 +56,11 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
         params.width = UIUtils.dip2Px(65) + UIUtils.dip2Px(increment);
         contentLayout.setLayoutParams(params);
+        if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {
+            playStatusIndicator.setVisibility(View.VISIBLE);
+        } else {
+            playStatusIndicator.setVisibility(View.GONE);
+        }
 
         AnimationDrawable animation;
         if (message.isPlaying) {

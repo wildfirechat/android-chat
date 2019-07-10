@@ -27,4 +27,11 @@
         android:layout_height="wrap_content"
         android:text="6''" />
 
+    <View
+        android:id="@+id/playStatusIndicator"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginLeft="8dp"
+        android:background="@drawable/shape_red_dot" />
+
 </LinearLayout>

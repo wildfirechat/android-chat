@@ -28,17 +28,17 @@
 
             <TextView
                 android:id="@+id/unreadFriendRequestCountTextView"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignTop="@id/ivNewFriend"
                 android:layout_alignRight="@id/ivNewFriend"
                 android:layout_marginTop="-6dp"
                 android:layout_marginRight="-6dp"
-                android:background="@mipmap/bg_unread"
+                android:background="@drawable/shape_red_dot"
                 android:gravity="center"
-                android:text="10"
+                android:text="99"
                 android:textColor="@color/white"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 android:visibility="gone" />
 
         </RelativeLayout>
