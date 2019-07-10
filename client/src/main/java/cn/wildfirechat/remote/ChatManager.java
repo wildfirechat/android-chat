@@ -1144,15 +1144,13 @@ public class ChatManager {
             return false;
         }
 
-        Message message = new Message();
-        message.messageId = messageId;
-        message.content = newMsgContent;
         try {
+            Message message = mClient.getMessage(messageId);
+            message.content = newMsgContent;
             boolean result = mClient.updateMessage(message);
-            Message newMessage = mClient.getMessage(messageId);
             mainHandler.post(() -> {
                 for (OnMessageUpdateListener listener : messageUpdateListeners) {
-                    listener.onMessageUpdate(newMessage);
+                    listener.onMessageUpdate(message);
                 }
             });
             return result;
