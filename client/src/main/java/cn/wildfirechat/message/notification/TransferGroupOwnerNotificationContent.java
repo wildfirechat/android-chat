@@ -48,7 +48,7 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
             objWrite.put("g", groupId);
             objWrite.put("o", operator);
             objWrite.put("m", newOwner);
-            payload.content = objWrite.toString();
+            payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -60,7 +60,7 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
     public void decode(MessagePayload payload) {
         try {
             if (payload.content != null) {
-                JSONObject jsonObject = new JSONObject(payload.content);
+                JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 groupId = jsonObject.optString("g");
                 operator = jsonObject.optString("o");
                 newOwner = jsonObject.optString("m");
