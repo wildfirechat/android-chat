@@ -41,6 +41,7 @@ import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.RemoveGroupMemberActivity;
 import cn.wildfire.chat.kit.group.SetGroupNameActivity;
+import cn.wildfire.chat.kit.group.manage.GroupManageActivity;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
@@ -146,11 +147,15 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         if (groupMember == null || groupInfo == null) {
             return;
         }
+        if (groupMember.type == GroupMember.GroupMemberType.Manager || groupMember.type == GroupMember.GroupMemberType.Owner) {
+            groupManageOptionItemView.setVisibility(View.VISIBLE);
+        }
 
         showGroupMemberNickNameSwitchButton.setChecked("1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target)));
         showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             userViewModel.setUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target, isChecked ? "1" : "0");
         });
+
 
         myGroupNickNameOptionItemView.setRightText(groupMember.alias);
         groupNameOptionItemView.setRightText(groupInfo.name);
@@ -254,7 +259,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @OnClick(R.id.groupManageOptionItemView)
     void manageGroup() {
-        // TODO
+        Intent intent = new Intent(getActivity(), GroupManageActivity.class);
+        intent.putExtra("groupInfo", groupInfo);
+        startActivity(intent);
     }
 
     @OnClick(R.id.myGroupNickNameOptionItemView)
