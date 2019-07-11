@@ -92,7 +92,7 @@ public class ConversationListFragment extends Fragment {
     private void init() {
         adapter = new ConversationListAdapter(this);
         conversationListViewModel = ViewModelProviders
-                .of(this, new ConversationListViewModelFactory(types, lines))
+                .of(getActivity(), new ConversationListViewModelFactory(types, lines))
                 .get(ConversationListViewModel.class);
         conversationListViewModel.getConversationListAsync(types, lines)
                 .observe(this, conversationInfos -> {

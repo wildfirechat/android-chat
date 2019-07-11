@@ -241,7 +241,9 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
             Log.e(ConversationListViewModel.class.getSimpleName(), "this conversationListViewModel can not remove the target conversation");
             return;
         }
+        ChatManager.Instance().clearUnreadStatus(conversation);
         ChatManager.Instance().removeConversation(conversationInfo.conversation, false);
+        loadUnreadCount();
     }
 
     public void clearMessages(Conversation conversation) {
