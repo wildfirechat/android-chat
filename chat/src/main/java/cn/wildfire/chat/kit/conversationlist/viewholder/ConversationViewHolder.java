@@ -64,7 +64,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         this.adapter = adapter;
         ButterKnife.bind(this, itemView);
         conversationListViewModel = ViewModelProviders
-                .of(fragment, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
+                .of(fragment.getActivity(), new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
                 .get(ConversationListViewModel.class);
     }
 
