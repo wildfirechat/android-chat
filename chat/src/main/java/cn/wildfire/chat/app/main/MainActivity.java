@@ -103,11 +103,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             }
         });
 
-        int unreadFriendRequestCount = contactViewModel.getUnreadFriendRequestCount();
-        if (unreadFriendRequestCount > 0) {
-            showUnreadFriendRequestBadgeView(unreadFriendRequestCount);
-        }
-
         if (checkDisplayName()) {
             ignoreBatteryOption();
         }
