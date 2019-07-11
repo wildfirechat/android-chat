@@ -88,37 +88,57 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
 
             if (unreadCount != null && unreadCount.unread > 0) {
-                if (unreadMessageUnreadBadgeView == null) {
-                    BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
-                    View view = bottomNavigationMenuView.getChildAt(0);
-                    unreadMessageUnreadBadgeView = new QBadgeView(MainActivity.this);
-                    unreadMessageUnreadBadgeView.bindTarget(view);
-                }
-                unreadMessageUnreadBadgeView.setBadgeNumber(unreadCount.unread);
-            } else if (unreadMessageUnreadBadgeView != null) {
-                unreadMessageUnreadBadgeView.hide(true);
+                showUnreadMessageBadgeView(unreadCount.unread);
+            } else {
+                hideUnreadMessageBadgeView();
             }
         });
 
         ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
             if (count == null || count == 0) {
-                if (unreadFriendRequestBadgeView != null) {
-                    unreadFriendRequestBadgeView.hide(true);
-                }
+                hideUnreadFriendRequestBadgeView();
             } else {
-                if (unreadFriendRequestBadgeView == null) {
-                    BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
-                    View view = bottomNavigationMenuView.getChildAt(1);
-                    unreadFriendRequestBadgeView = new QBadgeView(MainActivity.this);
-                    unreadFriendRequestBadgeView.bindTarget(view);
-                }
-                unreadFriendRequestBadgeView.setBadgeNumber(count);
+                showUnreadFriendRequestBadgeView(count);
             }
         });
+
+        int unreadFriendRequestCount = contactViewModel.getUnreadFriendRequestCount();
+        if (unreadFriendRequestCount > 0) {
+            showUnreadFriendRequestBadgeView(unreadFriendRequestCount);
+        }
+
         if (checkDisplayName()) {
             ignoreBatteryOption();
         }
+    }
+
+    private void showUnreadMessageBadgeView(int count) {
+        if (unreadMessageUnreadBadgeView == null) {
+            BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
+            View view = bottomNavigationMenuView.getChildAt(0);
+            unreadMessageUnreadBadgeView = new QBadgeView(MainActivity.this);
+            unreadMessageUnreadBadgeView.bindTarget(view);
+        }
+        unreadMessageUnreadBadgeView.setBadgeNumber(count);
+    }
+
+    private void hideUnreadMessageBadgeView() {
+        if (unreadMessageUnreadBadgeView != null) {
+            unreadMessageUnreadBadgeView.hide(true);
+            unreadFriendRequestBadgeView = null;
+        }
+    }
+
+
+    private void showUnreadFriendRequestBadgeView(int count) {
+        if (unreadFriendRequestBadgeView == null) {
+            BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
+            View view = bottomNavigationMenuView.getChildAt(1);
+            unreadFriendRequestBadgeView = new QBadgeView(MainActivity.this);
+            unreadFriendRequestBadgeView.bindTarget(view);
+        }
+        unreadFriendRequestBadgeView.setBadgeNumber(count);
     }
 
     public void hideUnreadFriendRequestBadgeView() {
