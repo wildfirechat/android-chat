@@ -21,6 +21,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.IMServiceStatusListener;
 import cn.wildfirechat.remote.OnClearMessageListener;
 import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
 import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
@@ -47,7 +48,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         OnConversationInfoUpdateListener,
         OnRemoveConversationListener,
         OnConnectionStatusChangeListener,
-        OnClearMessageListener {
+        OnClearMessageListener, IMServiceStatusListener {
     private MutableLiveData<ConversationInfo> conversationInfoLiveData;
     private MutableLiveData<Conversation> conversationRemovedLiveData;
     private MutableLiveData<UnreadCount> unreadCountLiveData;
@@ -71,6 +72,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addGroupInfoUpdateListener(this);
         ChatManager.Instance().addClearMessageListener(this);
         ChatManager.Instance().addRemoveConversationListener(this);
+        ChatManager.Instance().addIMServiceStatusListener(this);
     }
 
     @Override
@@ -86,6 +88,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeGroupInfoUpdateListener(this);
         ChatManager.Instance().removeClearMessageListener(this);
         ChatManager.Instance().removeRemoveConversationListener(this);
+        ChatManager.Instance().removeIMServiceStatusListener(this);
     }
 
     public LiveData<List<ConversationInfo>> getConversationListAsync(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
@@ -366,5 +369,16 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         if (conversationRemovedLiveData != null) {
             conversationRemovedLiveData.setValue(conversation);
         }
+    }
+
+    @Override
+    public void onServiceConnected() {
+        // tmp solution
+        loadUnreadCount();
+    }
+
+    @Override
+    public void onServiceDisconnected() {
+
     }
 }
