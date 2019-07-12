@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import java.util.Arrays;
 import java.util.List;
 
-import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotificationViewModel;
@@ -39,7 +38,6 @@ public class ConversationListFragment extends Fragment {
     private static final List<Integer> lines = Arrays.asList(0);
 
     private ConversationListViewModel conversationListViewModel;
-    private IMServiceStatusViewModel imServiceStatusViewModel;
     private UserViewModel userViewModel;
     private Observer<ConversationInfo> conversationInfoObserver = new Observer<ConversationInfo>() {
         @Override
@@ -72,14 +70,6 @@ public class ConversationListFragment extends Fragment {
         adapter.updateUserInfos(userInfos);
     };
 
-    private Observer<Boolean> imStatusLiveDataObserver = (connected) -> {
-        if (connected) {
-            if (adapter != null && (adapter.getConversationInfos() == null || adapter.getConversationInfos().size() == 0)) {
-                reloadConversations();
-            }
-        }
-    };
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -110,9 +100,6 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel.conversationInfoLiveData().observeForever(conversationInfoObserver);
         conversationListViewModel.conversationRemovedLiveData().observeForever(conversationRemovedObserver);
         conversationListViewModel.settingUpdateLiveData().observeForever(settingUpdateObserver);
-
-        imServiceStatusViewModel = WfcUIKit.getAppScopeViewModel(IMServiceStatusViewModel.class);
-        imServiceStatusViewModel.imServiceStatusLiveData().observeForever(imStatusLiveDataObserver);
 
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
@@ -158,7 +145,6 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel.conversationInfoLiveData().removeObserver(conversationInfoObserver);
         conversationListViewModel.conversationRemovedLiveData().removeObserver(conversationRemovedObserver);
         conversationListViewModel.settingUpdateLiveData().removeObserver(settingUpdateObserver);
-        imServiceStatusViewModel.imServiceStatusLiveData().removeObserver(imStatusLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoLiveDataObserver);
     }
 

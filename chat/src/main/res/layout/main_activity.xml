@@ -8,23 +8,43 @@
 
     <include layout="@layout/toolbar" />
 
-    <cn.wildfire.chat.kit.widget.ViewPagerFixed
-        android:id="@+id/vpContent"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent">
 
-    <!--底部-->
-    <View style="@style/Line" />
+        <LinearLayout
+            android:id="@+id/contentLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:labelVisibilityMode="labeled"
-        app:itemIconTint="@null"
-        app:itemTextColor="@color/bottom_nav_color"
-        app:menu="@menu/main_bottom_navigation" />
-    <!--app:labelVisibilityMode="labeled"-->
+
+            <cn.wildfire.chat.kit.widget.ViewPagerFixed
+                android:id="@+id/contentViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!--底部-->
+            <View style="@style/Line" />
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavigationView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                app:itemIconTint="@null"
+                app:itemTextColor="@color/bottom_nav_color"
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/main_bottom_navigation" />
+            <!--app:labelVisibilityMode="labeled"-->
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/startingTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="野火IM初始化中" />
+    </FrameLayout>
 </LinearLayout>
