@@ -22,6 +22,8 @@ public class IMServiceStatusViewModel extends ViewModel implements AppScopeViewM
     }
 
     public MutableLiveData<Boolean> imServiceStatusLiveData() {
+        boolean binded = ChatManager.Instance().isIMServiceConnected();
+        imServiceStatusLiveData.setValue(binded);
         return imServiceStatusLiveData;
     }
 
