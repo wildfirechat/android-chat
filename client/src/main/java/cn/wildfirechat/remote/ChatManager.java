@@ -56,6 +56,7 @@ import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
+import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
 import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
@@ -318,7 +319,8 @@ public class ChatManager {
     private void onReceiveMessage(final List<Message> messages, final boolean hasMore) {
         workHandler.post(() -> {
             for (Message message : messages) {
-                if (message.content instanceof ChangeGroupNameNotificationContent) {
+                if (message.content instanceof ChangeGroupNameNotificationContent
+                        || message.content instanceof ChangeGroupPortraitNotificationContent) {
                     getGroupInfo(message.conversation.target, true);
                 }
             }
