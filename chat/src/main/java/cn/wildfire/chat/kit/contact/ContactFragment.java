@@ -13,7 +13,6 @@ import androidx.lifecycle.Observer;
 import java.util.List;
 
 import cn.wildfire.chat.app.main.MainActivity;
-import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
@@ -34,7 +33,6 @@ import cn.wildfirechat.model.UserInfo;
 
 public class ContactFragment extends BaseContactFragment implements QuickIndexBar.OnLetterUpdateListener {
     private UserViewModel userViewModel;
-    private IMServiceStatusViewModel imServiceStatusViewModel;
 
     private Observer<Integer> friendRequestUpdateLiveDataObserver = count -> {
         FriendRequestValue requestValue = new FriendRequestValue(count == null ? 0 : count);
@@ -43,12 +41,6 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
 
     private Observer<Object> contactListUpdateLiveDataObserver = o -> {
         loadContacts();
-    };
-
-    private Observer<Boolean> imStatusLiveDataObserver = status -> {
-        if (status && (contactAdapter != null && (contactAdapter.contacts == null || contactAdapter.contacts.size() == 0))) {
-            loadContacts();
-        }
     };
 
     private void loadContacts() {
@@ -79,8 +71,6 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
 
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
-        imServiceStatusViewModel = WfcUIKit.getAppScopeViewModel(IMServiceStatusViewModel.class);
-        imServiceStatusViewModel.imServiceStatusLiveData().observeForever(imStatusLiveDataObserver);
         return view;
     }
 
@@ -90,7 +80,6 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
         contactViewModel.contactListUpdatedLiveData().removeObserver(contactListUpdateLiveDataObserver);
         contactViewModel.friendRequestUpdatedLiveData().removeObserver(friendRequestUpdateLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoLiveDataObserver);
-        imServiceStatusViewModel.imServiceStatusLiveData().removeObserver(imStatusLiveDataObserver);
     }
 
     @Override

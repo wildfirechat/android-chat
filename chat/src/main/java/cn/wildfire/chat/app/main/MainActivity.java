@@ -10,11 +10,14 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
@@ -29,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
+import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -59,8 +63,12 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     @Bind(R.id.bottomNavigationView)
     BottomNavigationView bottomNavigationView;
-    @Bind(R.id.vpContent)
-    ViewPagerFixed mVpContent;
+    @Bind(R.id.contentViewPager)
+    ViewPagerFixed contentViewPager;
+    @Bind(R.id.startingTextView)
+    TextView startingTextView;
+    @Bind(R.id.contentLinearLayout)
+    LinearLayout contentLinearLayout;
 
     private QBadgeView unreadMessageUnreadBadgeView;
     private QBadgeView unreadFriendRequestBadgeView;
@@ -68,10 +76,20 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
     private static final int REQUEST_IGNORE_BATTERY_CODE = 101;
 
+    private IMServiceStatusViewModel imServiceStatusViewModel;
+    private boolean isInitialized = false;
+
     private ConversationListFragment conversationListFragment;
     private ContactFragment contactFragment;
     private DiscoveryFragment discoveryFragment;
     private MeFragment meFragment;
+
+    private Observer<Boolean> imStatusLiveDataObserver = status -> {
+        if (status && !isInitialized) {
+            init();
+            isInitialized = true;
+        }
+    };
 
     @Override
     protected int contentLayout() {
@@ -80,6 +98,17 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     @Override
     protected void afterViews() {
+        imServiceStatusViewModel = WfcUIKit.getAppScopeViewModel(IMServiceStatusViewModel.class);
+        imServiceStatusViewModel.imServiceStatusLiveData().observeForever(imStatusLiveDataObserver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        imServiceStatusViewModel.imServiceStatusLiveData().removeObserver(imStatusLiveDataObserver);
+    }
+
+    private void init() {
         initView();
 
         ConversationListViewModel conversationListViewModel = ViewModelProviders
@@ -161,8 +190,11 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void initView() {
         setTitle(UIUtils.getString(R.string.app_name));
 
+        startingTextView.setVisibility(View.GONE);
+        contentLinearLayout.setVisibility(View.VISIBLE);
+
         //设置ViewPager的最大缓存页面
-        mVpContent.setOffscreenPageLimit(3);
+        contentViewPager.setOffscreenPageLimit(3);
 
         conversationListFragment = new ConversationListFragment();
         contactFragment = new ContactFragment();
@@ -172,22 +204,22 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         mFragmentList.add(contactFragment);
         mFragmentList.add(discoveryFragment);
         mFragmentList.add(meFragment);
-        mVpContent.setAdapter(new HomeFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
-        mVpContent.setOnPageChangeListener(this);
+        contentViewPager.setAdapter(new HomeFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
+        contentViewPager.setOnPageChangeListener(this);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.conversation_list:
-                    mVpContent.setCurrentItem(0);
+                    contentViewPager.setCurrentItem(0);
                     break;
                 case R.id.contact:
-                    mVpContent.setCurrentItem(1);
+                    contentViewPager.setCurrentItem(1);
                     break;
                 case R.id.discovery:
-                    mVpContent.setCurrentItem(2);
+                    contentViewPager.setCurrentItem(2);
                     break;
                 case R.id.me:
-                    mVpContent.setCurrentItem(3);
+                    contentViewPager.setCurrentItem(3);
                     break;
                 default:
                     break;
