@@ -3152,6 +3152,15 @@ public class ChatManager {
         }
     }
 
+    /**
+     * IM服务进程是否bind成功
+     *
+     * @return
+     */
+    public boolean isIMServiceConnected() {
+        return mClient != null;
+    }
+
     public void startLog() {
         startLog = true;
         if (!checkRemoteService()) {
