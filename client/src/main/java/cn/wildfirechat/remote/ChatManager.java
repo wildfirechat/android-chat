@@ -327,9 +327,8 @@ public class ChatManager {
         });
         mainHandler.post(() -> {
             for (Message message : messages) {
-                if (message.content instanceof QuitGroupNotificationContent
-                        || (message.content instanceof KickoffGroupMemberNotificationContent
-                        && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(ChatManager.Instance().getUserId()))
+                if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(getUserId()))
+                        || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(getUserId()))
                         || message.content instanceof DismissGroupNotificationContent) {
                     for (OnRemoveConversationListener listener : removeConversationListeners) {
                         listener.onConversationRemove(message.conversation);
