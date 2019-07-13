@@ -55,8 +55,6 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
-import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
-import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
 import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
@@ -317,32 +315,22 @@ public class ChatManager {
      * @param hasMore  是否还有更多消息待收取
      */
     private void onReceiveMessage(final List<Message> messages, final boolean hasMore) {
-        workHandler.post(() -> {
-            for (Message message : messages) {
-                if (message.content instanceof ChangeGroupNameNotificationContent
-                        || message.content instanceof ChangeGroupPortraitNotificationContent
-                        || message.content instanceof QuitGroupNotificationContent
-                        || message.content instanceof KickoffGroupMemberNotificationContent
-                ) {
-                    getGroupInfo(message.conversation.target, true);
-                }
-            }
-        });
         mainHandler.post(() -> {
-            for (Message message : messages) {
-                if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(getUserId()))
-                        || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(getUserId()))
-                        || message.content instanceof DismissGroupNotificationContent) {
-                    for (OnRemoveConversationListener listener : removeConversationListeners) {
-                        listener.onConversationRemove(message.conversation);
-                    }
-                }
-            }
             Iterator<OnReceiveMessageListener> iterator = onReceiveMessageListeners.iterator();
             OnReceiveMessageListener listener;
             while (iterator.hasNext()) {
                 listener = iterator.next();
                 listener.onReceiveMessage(messages, hasMore);
+            }
+
+            for (Message message : messages) {
+                if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(getUserId()))
+                        || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(getUserId()))
+                        || message.content instanceof DismissGroupNotificationContent) {
+                    for (OnRemoveConversationListener l : removeConversationListeners) {
+                        l.onConversationRemove(message.conversation);
+                    }
+                }
             }
         });
     }
