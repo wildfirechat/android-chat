@@ -94,7 +94,6 @@ import cn.wildfirechat.model.ProtoUserInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.RecoverReceiver;
-import cn.wildfirechat.remote.UserSettingScope;
 
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnected;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusLogout;
@@ -1196,9 +1195,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ProtoLogic.quitGroup(groupId, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
-                    if ("1".equals(ProtoLogic.getUserSetting(UserSettingScope.FavoriteGroup, groupId))) {
-                        ProtoLogic.setUserSetting(UserSettingScope.FavoriteGroup, groupId, "0", null);
-                    }
                     try {
                         callback.onSuccess();
                     } catch (RemoteException e) {
@@ -1223,9 +1219,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 @Override
                 public void onSuccess() {
                     // side
-                    if ("1".equals(ProtoLogic.getUserSetting(UserSettingScope.FavoriteGroup, groupId))) {
-                        ProtoLogic.setUserSetting(UserSettingScope.FavoriteGroup, groupId, "0", null);
-                    }
                     try {
                         callback.onSuccess();
                     } catch (RemoteException e) {
@@ -1957,14 +1950,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             } else {
                 tmpList = new ArrayList<>(messageList);
                 messageList.clear();
-            }
-            for (Message msg : tmpList) {
-                if (msg.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) msg.content).kickedMembers != null
-                        && ((KickoffGroupMemberNotificationContent) msg.content).kickedMembers.contains(userId)) {
-                    if ("1".equals(ProtoLogic.getUserSetting(UserSettingScope.FavoriteGroup, ((KickoffGroupMemberNotificationContent) msg.content).groupId))) {
-                        ProtoLogic.setUserSetting(UserSettingScope.FavoriteGroup, ((KickoffGroupMemberNotificationContent) msg.content).groupId, "0", null);
-                    }
-                }
             }
             boolean finalHasMore = hasMore;
             handler.post(() -> {
