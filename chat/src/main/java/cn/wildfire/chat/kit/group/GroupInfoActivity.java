@@ -5,12 +5,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.lifecycle.ViewModelProviders;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.Collections;
 import java.util.List;
 
-import androidx.lifecycle.ViewModelProviders;
 import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
@@ -66,20 +67,19 @@ public class GroupInfoActivity extends WfcBaseActivity {
             showLoading();
             groupViewModel.groupMembersUpdateLiveData().observe(this, members -> {
                 if (members.get(0).groupId.equals(groupId)) {
-
                     List<GroupMember> gMembers = groupViewModel.getGroupMembers(groupId, false);
                     for (GroupMember member : gMembers) {
                         if (member.type != GroupMember.GroupMemberType.Removed && member.memberId.equals(userId)) {
                             this.isJoined = true;
                         }
-                        dismissLoading();
-                        updateActionButtonStatus();
                     }
+                    dismissLoading();
+                    updateActionButtonStatus();
                 }
             });
         } else {
             for (GroupMember member : groupMembers) {
-                if (member.memberId.equals(userId)) {
+                if (member.type != GroupMember.GroupMemberType.Removed && member.memberId.equals(userId)) {
                     this.isJoined = true;
                 }
             }
