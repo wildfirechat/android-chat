@@ -158,7 +158,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             if (member.memberId.equals(userId)) {
                 groupMember = member;
             }
-            memberIds.add(member.memberId);
+            if (member.type != GroupMember.GroupMemberType.Removed) {
+                memberIds.add(member.memberId);
+            }
         }
         groupInfo = groupViewModel.getGroupInfo(conversationInfo.conversation.target, false);
 
@@ -211,10 +213,6 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     }
                 }
             }
-        });
-        groupViewModel.groupMembersUpdateLiveData().observe(this, groupMembers1 -> {
-            List<UserInfo> members1 = contactViewModel.getContacts(memberIds, groupInfo.target);
-            conversationMemberAdapter.setMembers(members1);
         });
 
         if (groupInfo != null && ChatManagerHolder.gChatManager.getUserId().equals(groupInfo.owner)) {

@@ -320,7 +320,10 @@ public class ChatManager {
         workHandler.post(() -> {
             for (Message message : messages) {
                 if (message.content instanceof ChangeGroupNameNotificationContent
-                        || message.content instanceof ChangeGroupPortraitNotificationContent) {
+                        || message.content instanceof ChangeGroupPortraitNotificationContent
+                        || message.content instanceof QuitGroupNotificationContent
+                        || message.content instanceof KickoffGroupMemberNotificationContent
+                ) {
                     getGroupInfo(message.conversation.target, true);
                 }
             }
