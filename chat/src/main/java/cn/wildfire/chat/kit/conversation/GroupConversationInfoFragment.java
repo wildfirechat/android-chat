@@ -143,8 +143,6 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     private void init() {
         conversationViewModel = ViewModelProviders.of(this, new ConversationViewModelFactory(conversationInfo.conversation)).get(ConversationViewModel.class);
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
-        String userId = userViewModel.getUserId();
         groupLinearLayout_0.setVisibility(View.VISIBLE);
         groupLinearLayout_1.setVisibility(View.VISIBLE);
         markGroupLinearLayout.setVisibility(View.VISIBLE);
@@ -152,6 +150,60 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         quitGroupButton.setVisibility(View.VISIBLE);
 
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+
+        loadAndShowGroupMembers();
+
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.SP_NAME, Context.MODE_PRIVATE);
+        String showAliasKey = String.format(Config.SP_KEY_SHOW_GROUP_MEMBER_ALIAS, groupInfo.target);
+        showGroupMemberNickNameSwitchButton.setChecked(sp.getBoolean(showAliasKey, false));
+        showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sp.edit()
+                    .putBoolean(showAliasKey, isChecked)
+                    .apply();
+            ConfigEventViewModel configEventViewModel = WfcUIKit.getAppScopeViewModel(ConfigEventViewModel.class);
+            configEventViewModel.postGroupAliasEvent(groupInfo.target, isChecked);
+        });
+
+        myGroupNickNameOptionItemView.setRightText(groupMember.alias);
+        groupNameOptionItemView.setRightText(groupInfo.name);
+
+        stickTopSwitchButton.setChecked(conversationInfo.isTop);
+        silentSwitchButton.setChecked(conversationInfo.isSilent);
+        stickTopSwitchButton.setOnCheckedChangeListener(this);
+        silentSwitchButton.setOnCheckedChangeListener(this);
+
+        if (groupInfo != null && ChatManagerHolder.gChatManager.getUserId().equals(groupInfo.owner)) {
+            quitGroupButton.setText(R.string.delete_and_dismiss);
+        } else {
+            quitGroupButton.setText(R.string.delete_and_exit);
+        }
+
+        observerGroupInfoUpdate();
+        observerGroupMembersUpdate();
+    }
+
+    private void observerGroupInfoUpdate() {
+        groupViewModel.getMyGroups().observe(this, listOperateResult -> {
+            if (listOperateResult.isSuccess()) {
+                for (GroupInfo info : listOperateResult.getResult()) {
+                    if (groupInfo.target.equals(info.target)) {
+                        markGroupSwitchButton.setChecked(true);
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    private void observerGroupMembersUpdate() {
+        groupViewModel.groupMembersUpdateLiveData().observe(this, groupMembers -> {
+            loadAndShowGroupMembers();
+        });
+    }
+
+    private void loadAndShowGroupMembers() {
+        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        String userId = userViewModel.getUserId();
         List<GroupMember> groupMembers = groupViewModel.getGroupMembers(conversationInfo.conversation.target, true);
         List<String> memberIds = new ArrayList<>();
         for (GroupMember member : groupMembers) {
@@ -170,56 +222,20 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             return;
         }
 
-        SharedPreferences sp = getActivity().getSharedPreferences(Config.SP_NAME, Context.MODE_PRIVATE);
-        String showAliasKey = String.format(Config.SP_KEY_SHOW_GROUP_MEMBER_ALIAS, groupInfo.target);
-        showGroupMemberNickNameSwitchButton.setChecked(sp.getBoolean(showAliasKey, false));
-        showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            sp.edit()
-                    .putBoolean(showAliasKey, isChecked)
-                    .apply();
-            ConfigEventViewModel configEventViewModel = WfcUIKit.getAppScopeViewModel(ConfigEventViewModel.class);
-            configEventViewModel.postGroupAliasEvent(groupInfo.target, isChecked);
-        });
-
         boolean enableRemoveMember = false;
         if (groupMember.type != GroupMember.GroupMemberType.Normal || userId.equals(groupInfo.owner)) {
             enableRemoveMember = true;
         }
         conversationMemberAdapter = new ConversationMemberAdapter(true, enableRemoveMember);
         List<UserInfo> members = contactViewModel.getContacts(memberIds, groupInfo.target);
-
-        myGroupNickNameOptionItemView.setRightText(groupMember.alias);
-        groupNameOptionItemView.setRightText(groupInfo.name);
-
         conversationMemberAdapter.setMembers(members);
         conversationMemberAdapter.setOnMemberClickListener(this);
-
         memberReclerView.setAdapter(conversationMemberAdapter);
         memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
         memberReclerView.setNestedScrollingEnabled(false);
         memberReclerView.setHasFixedSize(true);
         memberReclerView.setFocusable(false);
-        stickTopSwitchButton.setChecked(conversationInfo.isTop);
-        silentSwitchButton.setChecked(conversationInfo.isSilent);
-        stickTopSwitchButton.setOnCheckedChangeListener(this);
-        silentSwitchButton.setOnCheckedChangeListener(this);
 
-        groupViewModel.getMyGroups().observe(this, listOperateResult -> {
-            if (listOperateResult.isSuccess()) {
-                for (GroupInfo info : listOperateResult.getResult()) {
-                    if (groupInfo.target.equals(info.target)) {
-                        markGroupSwitchButton.setChecked(true);
-                        break;
-                    }
-                }
-            }
-        });
-
-        if (groupInfo != null && ChatManagerHolder.gChatManager.getUserId().equals(groupInfo.owner)) {
-            quitGroupButton.setText(R.string.delete_and_dismiss);
-        } else {
-            quitGroupButton.setText(R.string.delete_and_exit);
-        }
     }
 
     @OnClick(R.id.groupNameOptionItemView)
