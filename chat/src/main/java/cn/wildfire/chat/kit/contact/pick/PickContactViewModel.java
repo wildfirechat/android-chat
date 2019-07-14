@@ -1,10 +1,11 @@
 package cn.wildfire.chat.kit.contact.pick;
 
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -104,12 +105,25 @@ public class PickContactViewModel extends ViewModel {
      * @return
      */
     public List<UIUserInfo> getCheckedContacts() {
-        if (contacts == null) {
-            return null;
-        }
         List<UIUserInfo> checkedContacts = new ArrayList<>();
+        if (contacts == null) {
+            return checkedContacts;
+        }
         for (UIUserInfo info : contacts) {
             if (info.isCheckable() && info.isChecked()) {
+                checkedContacts.add(info);
+            }
+        }
+        return checkedContacts;
+    }
+
+    public List<UIUserInfo> getInitialCheckedContacts() {
+        List<UIUserInfo> checkedContacts = new ArrayList<>();
+        if (contacts == null || initialCheckedIds == null) {
+            return checkedContacts;
+        }
+        for (UIUserInfo info : contacts) {
+            if (initialCheckedIds.contains(info.getUserInfo().uid)) {
                 checkedContacts.add(info);
             }
         }

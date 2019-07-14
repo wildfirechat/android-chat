@@ -4,11 +4,12 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.List;
-
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import java.util.List;
+
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.chat.R;
@@ -91,10 +92,11 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
         pickContactViewModel.contactCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
     }
 
-    protected abstract void onContactPicked(List<UIUserInfo> checkedUserInfos);
+    protected abstract void onContactPicked(List<UIUserInfo> initialCheckedUserInfos, List<UIUserInfo> newlyCheckedUserInfos);
 
     protected void onConfirmClick() {
-        List<UIUserInfo> uiUserInfos = pickContactViewModel.getCheckedContacts();
-        onContactPicked(uiUserInfos);
+        List<UIUserInfo> initialCheckedUserInfos = pickContactViewModel.getInitialCheckedContacts();
+        List<UIUserInfo> newlyCheckedUserInfos = pickContactViewModel.getCheckedContacts();
+        onContactPicked(initialCheckedUserInfos, newlyCheckedUserInfos);
     }
 }
