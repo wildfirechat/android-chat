@@ -1,8 +1,6 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -22,14 +20,15 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
@@ -41,6 +40,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.UserSettingScope;
 
 /**
  * 普通消息
@@ -222,8 +222,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     }
 
     private void showGroupMemberAlias(Conversation conversation, String sender) {
-        SharedPreferences sp = context.getSharedPreferences(Config.SP_NAME, Context.MODE_PRIVATE);
-        if (!sp.getBoolean(String.format(Config.SP_KEY_SHOW_GROUP_MEMBER_ALIAS, conversation.target), false)) {
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        if (!"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, conversation.target))) {
             nameTextView.setVisibility(View.GONE);
             return;
         }
@@ -233,6 +233,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 //            return;
 //        }
         GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
+
         nameTextView.setText(groupViewModel.getGroupMemberDisplayName(conversation.target, sender));
         nameTextView.setTag(sender);
     }
