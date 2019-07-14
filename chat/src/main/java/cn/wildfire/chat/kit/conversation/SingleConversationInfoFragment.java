@@ -29,7 +29,6 @@ import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
-import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -53,7 +52,6 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     private ConversationViewModel conversationViewModel;
     private UserViewModel userViewModel;
 
-    private static final int REQUEST_ADD_MEMBER = 100;
 
     public static SingleConversationInfoFragment newInstance(ConversationInfo conversationInfo) {
         SingleConversationInfoFragment fragment = new SingleConversationInfoFragment();
@@ -130,32 +128,6 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     @Override
     public void onRemoveMemberClick() {
         // do nothing
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_ADD_MEMBER:
-                if (resultCode == AddGroupMemberActivity.RESULT_ADD_SUCCESS) {
-                    List<String> memberIds = data.getStringArrayListExtra("memberIds");
-                    addGroupMember(memberIds);
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-        }
-    }
-
-    private void addGroupMember(List<String> memberIds) {
-        if (memberIds == null || memberIds.isEmpty()) {
-            return;
-        }
-        List<UserInfo> userInfos = userViewModel.getUserInfos(memberIds);
-        if (userInfos == null) {
-            return;
-        }
-        conversationMemberAdapter.addMembers(userInfos);
     }
 
     private void stickTop(boolean top) {

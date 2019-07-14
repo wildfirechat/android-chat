@@ -2,11 +2,13 @@ package cn.wildfire.chat.kit.conversation;
 
 import android.content.Intent;
 
+import androidx.lifecycle.ViewModelProviders;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -30,8 +32,8 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
     }
 
     @Override
-    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos) {
-        if (newlyCheckedUserInfos.size() == 1) {
+    protected void onContactPicked(List<UIUserInfo> initialCheckedUserInfos, List<UIUserInfo> newlyCheckedUserInfos) {
+        if (initialCheckedUserInfos.isEmpty() && newlyCheckedUserInfos.size() == 1) {
 
             Intent intent = new Intent(this, ConversationActivity.class);
             Conversation conversation = new Conversation(Conversation.ConversationType.Single, newlyCheckedUserInfos.get(0).getUserInfo().uid);
@@ -45,7 +47,10 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
                     .build();
             dialog.show();
 
-            groupViewModel.createGroup(this, newlyCheckedUserInfos).observe(this, result -> {
+            List<UIUserInfo> userInfos = new ArrayList<>();
+            userInfos.addAll(initialCheckedUserInfos);
+            userInfos.addAll(newlyCheckedUserInfos);
+            groupViewModel.createGroup(this, userInfos).observe(this, result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {
                     UIUtils.showToast(UIUtils.getString(R.string.create_group_success));
