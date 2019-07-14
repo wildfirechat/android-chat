@@ -110,10 +110,6 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     private GroupMember groupMember;
 
 
-    private static final int REQUEST_ADD_MEMBER = 100;
-    private static final int REQUEST_REMOVE_MEMBER = 200;
-    private static final int REQUEST_CODE_SET_GROUP_NAME = 300;
-
     public static GroupConversationInfoFragment newInstance(ConversationInfo conversationInfo) {
         GroupConversationInfoFragment fragment = new GroupConversationInfoFragment();
         Bundle args = new Bundle();
@@ -178,11 +174,12 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             quitGroupButton.setText(R.string.delete_and_exit);
         }
 
+        observerFavGroupsUpdate();
         observerGroupInfoUpdate();
         observerGroupMembersUpdate();
     }
 
-    private void observerGroupInfoUpdate() {
+    private void observerFavGroupsUpdate() {
         groupViewModel.getMyGroups().observe(this, listOperateResult -> {
             if (listOperateResult.isSuccess()) {
                 for (GroupInfo info : listOperateResult.getResult()) {
@@ -198,6 +195,18 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     private void observerGroupMembersUpdate() {
         groupViewModel.groupMembersUpdateLiveData().observe(this, groupMembers -> {
             loadAndShowGroupMembers();
+        });
+    }
+
+    private void observerGroupInfoUpdate() {
+        groupViewModel.groupInfoUpdateLiveData().observe(this, groupInfos -> {
+            for (GroupInfo groupInfo : groupInfos) {
+                if (groupInfo.target.equals(this.groupInfo.target)) {
+                    groupNameOptionItemView.setRightText(groupInfo.name);
+                    break;
+                }
+            }
+
         });
     }
 
@@ -242,7 +251,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     void updateGroupName() {
         Intent intent = new Intent(getActivity(), SetGroupNameActivity.class);
         intent.putExtra("groupInfo", groupInfo);
-        startActivityForResult(intent, REQUEST_CODE_SET_GROUP_NAME);
+        startActivity(intent);
     }
 
     @OnClick(R.id.groupNoticeLinearLayout)
@@ -338,7 +347,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     public void onAddMemberClick() {
         Intent intent = new Intent(getActivity(), AddGroupMemberActivity.class);
         intent.putExtra("groupInfo", groupInfo);
-        startActivityForResult(intent, REQUEST_ADD_MEMBER);
+        startActivity(intent);
     }
 
     @Override
@@ -346,52 +355,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         if (groupInfo != null) {
             Intent intent = new Intent(getActivity(), RemoveGroupMemberActivity.class);
             intent.putExtra("groupInfo", groupInfo);
-            startActivityForResult(intent, REQUEST_REMOVE_MEMBER);
+            startActivity(intent);
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_ADD_MEMBER:
-                if (resultCode == AddGroupMemberActivity.RESULT_ADD_SUCCESS) {
-                    List<String> memberIds = data.getStringArrayListExtra("memberIds");
-                    addGroupMember(memberIds);
-                }
-                break;
-            case REQUEST_REMOVE_MEMBER:
-                if (resultCode == RemoveGroupMemberActivity.RESULT_REMOVE_SUCCESS) {
-                    List<String> memberIds = data.getStringArrayListExtra("memberIds");
-                    removeGroupMember(memberIds);
-                }
-                break;
-            case REQUEST_CODE_SET_GROUP_NAME:
-                if (resultCode == SetGroupNameActivity.RESULT_SET_GROUP_NAME_SUCCESS) {
-                    groupNameOptionItemView.setRightText(data.getStringExtra("groupName"));
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-        }
-    }
-
-    private void addGroupMember(List<String> memberIds) {
-        if (memberIds == null || memberIds.isEmpty()) {
-            return;
-        }
-        List<UserInfo> userInfos = userViewModel.getUserInfos(memberIds);
-        if (userInfos == null) {
-            return;
-        }
-        conversationMemberAdapter.addMembers(userInfos);
-    }
-
-    private void removeGroupMember(List<String> memberIds) {
-        if (memberIds == null || memberIds.isEmpty()) {
-            return;
-        }
-        conversationMemberAdapter.removeMembers(memberIds);
     }
 
     private void stickTop(boolean top) {
