@@ -147,6 +147,28 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
         return ChatManager.Instance().getUserId();
     }
 
+
+    public String getUserSetting(int scope, String key) {
+        return ChatManager.Instance().getUserSetting(scope, key);
+    }
+
+    public MutableLiveData<OperateResult<Integer>> setUserSetting(int scope, String key, String value) {
+        MutableLiveData<OperateResult<Integer>> result = new MutableLiveData<>();
+        ChatManager.Instance().setUserSetting(scope, key, value, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
+
+            }
+        });
+        return result;
+    }
+
     @Override
     public void onUserInfoUpdate(List<UserInfo> userInfos) {
         if (userInfoLiveData != null && userInfos != null && !userInfos.isEmpty()) {
