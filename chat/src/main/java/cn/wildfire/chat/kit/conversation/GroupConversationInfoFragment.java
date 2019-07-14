@@ -1,8 +1,6 @@
 package cn.wildfire.chat.kit.conversation;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,13 +30,10 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.kit.ConfigEventViewModel;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -57,6 +51,7 @@ import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.UserSettingScope;
 
 public class GroupConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -149,15 +144,10 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
         loadAndShowGroupMembers();
 
-        SharedPreferences sp = getActivity().getSharedPreferences(Config.SP_NAME, Context.MODE_PRIVATE);
-        String showAliasKey = String.format(Config.SP_KEY_SHOW_GROUP_MEMBER_ALIAS, groupInfo.target);
-        showGroupMemberNickNameSwitchButton.setChecked(sp.getBoolean(showAliasKey, false));
+
+        showGroupMemberNickNameSwitchButton.setChecked("1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target)));
         showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            sp.edit()
-                    .putBoolean(showAliasKey, isChecked)
-                    .apply();
-            ConfigEventViewModel configEventViewModel = WfcUIKit.getAppScopeViewModel(ConfigEventViewModel.class);
-            configEventViewModel.postGroupAliasEvent(groupInfo.target, isChecked);
+            userViewModel.setUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target, isChecked ? "1" : "0");
         });
 
         myGroupNickNameOptionItemView.setRightText(groupMember.alias);
@@ -203,6 +193,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             for (GroupInfo groupInfo : groupInfos) {
                 if (groupInfo.target.equals(this.groupInfo.target)) {
                     groupNameOptionItemView.setRightText(groupInfo.name);
+                    loadAndShowGroupMembers();
                     break;
                 }
             }
@@ -269,19 +260,11 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .input("请输入你的群昵称", groupMember.alias, false, (dialog1, input) -> {
                     groupViewModel.modifyMyGroupAlias(groupInfo.target, input.toString().trim())
-                            .observe(GroupConversationInfoFragment.this, new Observer<OperateResult>() {
-                                @Override
-                                public void onChanged(@Nullable OperateResult operateResult) {
-                                    ConfigEventViewModel configEventViewModel = WfcUIKit.getAppScopeViewModel(ConfigEventViewModel.class);
-                                    configEventViewModel.postGroupAliasEvent(groupInfo.target, true);
-                                    UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), groupInfo.target, false);
-                                    conversationMemberAdapter.updateMember(userInfo);
-                                    if (operateResult.isSuccess()) {
-                                        myGroupNickNameOptionItemView.setRightText(input.toString().trim());
-                                    } else {
-                                        Toast.makeText(getActivity(), "修改群昵称失败:" + operateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
-
-                                    }
+                            .observe(GroupConversationInfoFragment.this, operateResult -> {
+                                if (operateResult.isSuccess()) {
+                                    myGroupNickNameOptionItemView.setRightText(input.toString().trim());
+                                } else {
+                                    Toast.makeText(getActivity(), "修改群昵称失败:" + operateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
                                 }
                             });
                 })
