@@ -143,7 +143,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
 
         loadAndShowGroupMembers();
-
+        if (groupMember == null || groupInfo == null) {
+            return;
+        }
 
         showGroupMemberNickNameSwitchButton.setChecked("1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target)));
         showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
