@@ -1,12 +1,14 @@
 package cn.wildfire.chat.app.main;
 
-import java.util.List;
+import android.os.Parcelable;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
-public class HomeFragmentPagerAdapter extends FragmentPagerAdapter {
+import java.util.List;
+
+public class HomeFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     private List<Fragment> mFragments;
 
@@ -25,4 +27,8 @@ public class HomeFragmentPagerAdapter extends FragmentPagerAdapter {
         return mFragments != null ? mFragments.size() : 0;
     }
 
+    @Override
+    public Parcelable saveState() {
+        return null;
+    }
 }
