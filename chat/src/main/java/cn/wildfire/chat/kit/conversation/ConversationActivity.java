@@ -30,6 +30,7 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.OnTouch;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
@@ -87,6 +88,8 @@ public class ConversationActivity extends WfcBaseActivity implements
     private boolean moveToBottom = true;
     private ConversationViewModel conversationViewModel;
     private UserViewModel userViewModel;
+    private IMServiceStatusViewModel imServiceStatusViewModel;
+    private boolean isInitialized = false;
     private ChatRoomViewModel chatRoomViewModel;
 
     private Handler handler;
@@ -201,6 +204,16 @@ public class ConversationActivity extends WfcBaseActivity implements
 
     @Override
     protected void afterViews() {
+        imServiceStatusViewModel = WfcUIKit.getAppScopeViewModel(IMServiceStatusViewModel.class);
+        imServiceStatusViewModel.imServiceStatusLiveData().observe(this, aBoolean -> {
+            if (!isInitialized && aBoolean) {
+                init();
+                isInitialized = true;
+            }
+        });
+    }
+
+    private void init() {
         initView();
         sharedPreferences = getSharedPreferences("sticker", Context.MODE_PRIVATE);
         Intent intent = getIntent();
