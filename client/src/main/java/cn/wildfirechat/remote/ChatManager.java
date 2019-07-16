@@ -1780,7 +1780,7 @@ public class ChatManager {
         }
     }
 
-    public void searchUser(String keyword, final SearchUserCallback callback) {
+    public void searchUser(String keyword, boolean fuzzy, final SearchUserCallback callback) {
         if (userSource != null) {
             userSource.searchUser(keyword, callback);
             return;
@@ -1792,7 +1792,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.searchUser(keyword, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
+            mClient.searchUser(keyword, fuzzy, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
                 @Override
                 public void onSuccess(final List<UserInfo> userInfos) throws RemoteException {
                     if (callback != null) {
