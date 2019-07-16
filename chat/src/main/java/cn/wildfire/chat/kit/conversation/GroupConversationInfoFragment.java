@@ -142,7 +142,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
 
-        loadAndShowGroupMembers();
+        loadAndShowGroupMembers(true);
         if (groupMember == null || groupInfo == null) {
             return;
         }
@@ -186,7 +186,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     private void observerGroupMembersUpdate() {
         groupViewModel.groupMembersUpdateLiveData().observe(this, groupMembers -> {
-            loadAndShowGroupMembers();
+            loadAndShowGroupMembers(false);
         });
     }
 
@@ -195,7 +195,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             for (GroupInfo groupInfo : groupInfos) {
                 if (groupInfo.target.equals(this.groupInfo.target)) {
                     groupNameOptionItemView.setRightText(groupInfo.name);
-                    loadAndShowGroupMembers();
+                    loadAndShowGroupMembers(false);
                     break;
                 }
             }
@@ -203,10 +203,10 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         });
     }
 
-    private void loadAndShowGroupMembers() {
+    private void loadAndShowGroupMembers(boolean refresh) {
         ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         String userId = userViewModel.getUserId();
-        List<GroupMember> groupMembers = groupViewModel.getGroupMembers(conversationInfo.conversation.target, true);
+        List<GroupMember> groupMembers = groupViewModel.getGroupMembers(conversationInfo.conversation.target, refresh);
         List<String> memberIds = new ArrayList<>();
         for (GroupMember member : groupMembers) {
             if (member.memberId.equals(userId)) {
