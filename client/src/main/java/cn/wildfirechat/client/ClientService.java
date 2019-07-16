@@ -528,8 +528,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void searchUser(String keyword, final ISearchUserCallback callback) throws RemoteException {
-            ProtoLogic.searchUser(keyword, new ProtoLogic.ISearchUserCallback() {
+        public void searchUser(String keyword, boolean fuzzy, final ISearchUserCallback callback) throws RemoteException {
+            ProtoLogic.searchUser(keyword, fuzzy, 0, new ProtoLogic.ISearchUserCallback() {
                 @Override
                 public void onSuccess(ProtoUserInfo[] userInfos) {
                     List<UserInfo> out = new ArrayList<>();
