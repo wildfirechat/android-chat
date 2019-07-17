@@ -213,6 +213,9 @@
             android:label="扫一扫" />
         <activity android:name="cn.wildfire.chat.kit.group.manage.GroupManageActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.manage.GroupManagerListActivity" />
+        <activity android:name="cn.wildfire.chat.kit.group.manage.AddGroupManagerActivity" />
+        <activity android:name="cn.wildfire.chat.kit.group.manage.GroupMuteActivity" />
+        <activity android:name="cn.wildfire.chat.kit.group.manage.GroupMemberPermissionActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

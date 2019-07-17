@@ -212,6 +212,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         String userId = userViewModel.getUserId();
         List<GroupMember> groupMembers = groupViewModel.getGroupMembers(conversationInfo.conversation.target, refresh);
+        if (groupMembers == null || groupMembers.isEmpty()) {
+            return;
+        }
         List<String> memberIds = new ArrayList<>();
         for (GroupMember member : groupMembers) {
             if (member.memberId.equals(userId)) {

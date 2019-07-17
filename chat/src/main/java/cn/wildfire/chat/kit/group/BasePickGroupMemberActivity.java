@@ -1,11 +1,12 @@
 package cn.wildfire.chat.kit.group;
 
-import java.util.Collections;
-import java.util.List;
-
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import java.util.Collections;
+import java.util.List;
+
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
@@ -16,6 +17,7 @@ import cn.wildfirechat.model.GroupInfo;
 
 public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     protected GroupInfo groupInfo;
+    protected List<String> unCheckableMemberIds;
 
     private PickContactViewModel pickContactViewModel;
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
@@ -41,6 +43,7 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     @Override
     protected void afterViews() {
         groupInfo = getIntent().getParcelableExtra("groupInfo");
+        unCheckableMemberIds = getIntent().getStringArrayListExtra("unCheckableMemberIds");
         int maxPickCount = getIntent().getIntExtra("maxCount", Integer.MAX_VALUE);
         if (groupInfo == null) {
             finish();
@@ -49,8 +52,12 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
 
         pickContactViewModel = ViewModelProviders.of(this).get(PickContactViewModel.class);
         pickContactViewModel.contactCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        pickContactViewModel.setUncheckableIds(Collections.singletonList(userViewModel.getUserId()));
+        if (unCheckableMemberIds != null && !unCheckableMemberIds.isEmpty()) {
+            pickContactViewModel.setUncheckableIds(unCheckableMemberIds);
+        } else {
+            UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+            pickContactViewModel.setUncheckableIds(Collections.singletonList(userViewModel.getUserId()));
+        }
         pickContactViewModel.setMaxPickCount(maxPickCount);
 
         initView();

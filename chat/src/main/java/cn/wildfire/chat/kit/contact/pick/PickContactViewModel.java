@@ -74,6 +74,7 @@ public class PickContactViewModel extends ViewModel {
             return null;
         }
 
+        // FIXME: 2019-07-17 需要个搜索人的接口，从本地user表搜索，friend是联表了，需要是好友才能被搜索到
         List<UserInfo> tmpList = ChatManager.Instance().searchFriends(keyword);
         if (tmpList == null || tmpList.isEmpty()) {
             return null;
@@ -93,6 +94,9 @@ public class PickContactViewModel extends ViewModel {
                     break;
                 }
             }
+        }
+        if (resultList.isEmpty()) {
+            return null;
         }
         resultList.get(0).setShowCategory(true);
         resultList.get(0).setCategory("搜索结果");

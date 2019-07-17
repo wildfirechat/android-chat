@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="group_join_type">
+        <item>不限制加入</item>
+        <item>群成员可以拉人</item>
+        <item>只能群管理拉人</item>
+    </string-array>
+
+    <string-array name="group_search_type">
+        <item>允许查找</item>
+        <item>不允许查找</item>
+    </string-array>
+
+</resources>
