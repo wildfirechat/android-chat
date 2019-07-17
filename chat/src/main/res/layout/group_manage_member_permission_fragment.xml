@@ -24,7 +24,7 @@
             android:textSize="16sp" />
 
         <com.kyleduo.switchbutton.SwitchButton
-            android:id="@+id/silentSwitchButton"
+            android:id="@+id/privateChatSwitchButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/option_item_margin_right"

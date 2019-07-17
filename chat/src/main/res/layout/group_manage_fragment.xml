@@ -77,7 +77,7 @@
             android:text="加群设置" />
 
         <com.lqr.optionitemview.OptionItemView
-            android:id="@+id/jionOptionItemView"
+            android:id="@+id/joinOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
             app:left_image_margin_left="@dimen/option_item_margin_left"

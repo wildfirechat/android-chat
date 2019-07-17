@@ -44,6 +44,7 @@ public abstract class BaseContactFragment extends Fragment implements QuickIndex
 
     private LinearLayoutManager linearLayoutManager;
     protected ContactViewModel contactViewModel;
+    private boolean showQuickIndexBar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,7 +74,13 @@ public abstract class BaseContactFragment extends Fragment implements QuickIndex
         contactRecyclerView.setAdapter(contactAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         contactRecyclerView.setLayoutManager(linearLayoutManager);
-        quickIndexBar.setOnLetterUpdateListener(this);
+
+        if (showQuickIndexBar) {
+            quickIndexBar.setVisibility(View.VISIBLE);
+            quickIndexBar.setOnLetterUpdateListener(this);
+        } else {
+            quickIndexBar.setVisibility(View.GONE);
+        }
     }
 
     public void initHeaderViewHolders() {
@@ -154,8 +161,10 @@ public abstract class BaseContactFragment extends Fragment implements QuickIndex
      * @param show
      */
     public void showQuickIndexBar(boolean show) {
+        this.showQuickIndexBar = show;
         if (quickIndexBar != null) {
             quickIndexBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            quickIndexBar.setOnLetterUpdateListener(this);
             quickIndexBar.invalidate();
         }
     }
