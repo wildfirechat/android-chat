@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,24 +19,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.List;
-
 import butterknife.ButterKnife;
 import cn.wildfire.chat.app.login.SMSLoginActivity;
 import cn.wildfirechat.chat.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static String[] permissions = {Manifest.permission.READ_PHONE_STATE,
-            // 位置
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-
-            //相机、麦克风
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.CAMERA,
-            //存储空间
+    private static String[] permissions = {
+            Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
     private static final int REQUEST_CODE_DRAW_OVERLAY = 101;
@@ -68,9 +56,7 @@ public class SplashActivity extends AppCompatActivity {
         token = sharedPreferences.getString("token", null);
 
         if (checkPermission()) {
-            if (checkOverlayPermission()) {
-                new Handler().postDelayed(this::showNextScreen, 1000);
-            }
+            new Handler().postDelayed(this::showNextScreen, 1000);
         } else {
             requestPermissions(permissions, 100);
         }
@@ -93,31 +79,12 @@ public class SplashActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int grantResult : grantResults) {
             if (grantResult != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "需要悬浮窗等权限才能正常使用", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "需要相关权限才能正常使用", Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
         }
-        if (checkOverlayPermission()) {
-            showNextScreen();
-        }
-    }
-
-    private boolean checkOverlayPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-
-                List<ResolveInfo> infos = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-                if (infos == null || infos.isEmpty()) {
-                    return true;
-                }
-                startActivityForResult(intent, REQUEST_CODE_DRAW_OVERLAY);
-                return false;
-            }
-        }
-        return true;
+        showNextScreen();
     }
 
     @Override
