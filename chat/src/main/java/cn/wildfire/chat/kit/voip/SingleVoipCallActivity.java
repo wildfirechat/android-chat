@@ -13,6 +13,8 @@ package cn.wildfire.chat.kit.voip;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +33,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.webrtc.StatsReport;
 
+import java.util.List;
+
 import butterknife.ButterKnife;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
@@ -42,6 +46,7 @@ import cn.wildfirechat.client.NotInitializedExecption;
  */
 public class SingleVoipCallActivity extends FragmentActivity implements AVEngineKit.CallSessionCallback {
     private static final String TAG = "P2PVideoActivity";
+    private static final int REQUEST_CODE_DRAW_OVERLAY = 100;
 
     public static final String EXTRA_TARGET = "TARGET";
     public static final String EXTRA_MO = "ISMO";
@@ -305,12 +310,10 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
 
     public void showFloatingView() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        if (!checkOverlayPermission()) {
+            return;
         }
+
         Intent intent = new Intent(this, FloatingVoipService.class);
         intent.putExtra(EXTRA_TARGET, targetId);
         intent.putExtra(EXTRA_AUDIO_ONLY, isAudioOnly);
@@ -321,5 +324,22 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
 
     private void postAction(Runnable action) {
         handler.post(action);
+    }
+
+    private boolean checkOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+
+                List<ResolveInfo> infos = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                if (infos == null || infos.isEmpty()) {
+                    return true;
+                }
+                startActivity(intent);
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -1,13 +1,16 @@
 package cn.wildfire.chat.kit.conversation.ext;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
 
+import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.preview.TakePhotoActivity;
@@ -26,6 +29,13 @@ public class ShootExt extends ConversationExt {
      */
     @ExtContextMenuItem(title = "拍摄")
     public void shoot(View containerView, Conversation conversation) {
+        String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!((WfcBaseActivity) context).checkPermission(permissions)) {
+                context.requestPermissions(permissions, 100);
+                return;
+            }
+        }
         Intent intent = new Intent(context, TakePhotoActivity.class);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);

@@ -20,9 +20,6 @@ public interface Config {
 
     int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 120;
 
-    String SP_NAME = "config";
-    String SP_KEY_SHOW_GROUP_MEMBER_ALIAS = "show_group_member_alias:%s";
-
     String VIDEO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/video";
     String AUDIO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/audio";
     String PHOTO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/photo";
