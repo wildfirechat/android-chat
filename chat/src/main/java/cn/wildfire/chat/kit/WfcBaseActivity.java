@@ -2,6 +2,8 @@ package cn.wildfire.chat.kit;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -110,5 +112,22 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
 
     protected boolean showHomeMenuItem() {
         return true;
+    }
+
+    public boolean checkPermission(String permission) {
+        return checkPermission(new String[]{permission});
+    }
+
+    public boolean checkPermission(String[] permissions) {
+        boolean granted = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (String permission : permissions) {
+                granted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+                if (!granted) {
+                    break;
+                }
+            }
+        }
+        return granted;
     }
 }
