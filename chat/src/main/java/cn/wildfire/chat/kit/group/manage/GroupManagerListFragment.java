@@ -3,8 +3,11 @@ package cn.wildfire.chat.kit.group.manage;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.Toast;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -25,8 +28,10 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class GroupManagerListFragment extends BaseContactFragment {
+    private GroupViewModel groupViewModel;
     private GroupInfo groupInfo;
     private GroupMember groupMember;
+    private List<GroupMember> managerMembers = new ArrayList<>();
 
     public static GroupManagerListFragment newInstance(GroupInfo groupInfo) {
         Bundle args = new Bundle();
@@ -40,17 +45,24 @@ public class GroupManagerListFragment extends BaseContactFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
+        showQuickIndexBar(false);
+
+        groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
+        groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
+        observerGroupMemberUpdate();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        loadAndShowGroupMembers();
+        return view;
     }
 
     @Override
     public ContactAdapter onCreateContactAdapter() {
-        ContactAdapter contactAdapter = new ContactAdapter(this);
-
-        GroupViewModel groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
-        groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
-        List<GroupMember> members = groupViewModel.getGroupMembers(groupInfo.target, false);
-        contactAdapter.setContacts(memberToUIUserInfo(members));
-        return contactAdapter;
+        return new ContactAdapter(this);
     }
 
     @Override
@@ -69,17 +81,43 @@ public class GroupManagerListFragment extends BaseContactFragment {
 
     @Override
     public void onFooterClick(int index) {
-        Toast.makeText(getActivity(), "hello world", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity(), AddGroupManagerActivity.class);
+        intent.putExtra("groupInfo", groupInfo);
+        ArrayList<String> memberIds = new ArrayList<>(managerMembers.size());
+        for (GroupMember member : managerMembers) {
+            memberIds.add(member.memberId);
+        }
+        intent.putStringArrayListExtra("unCheckableMemberIds", memberIds);
+        startActivity(intent);
+    }
+
+    private void observerGroupMemberUpdate() {
+        groupViewModel.groupMembersUpdateLiveData().observe(this, groupMembers -> {
+            if (groupInfo.target.equals(groupMembers.get(0).groupId)) {
+                loadAndShowGroupMembers();
+            }
+        });
+    }
+
+    private void loadAndShowGroupMembers() {
+        List<GroupMember> members = groupViewModel.getGroupMembers(groupInfo.target, false);
+        managerMembers.clear();
+        for (GroupMember member : members) {
+            if (member.type == GroupMember.GroupMemberType.Owner || member.type == GroupMember.GroupMemberType.Manager) {
+                managerMembers.add(member);
+            }
+        }
+        contactAdapter.setContacts(memberToUIUserInfo(managerMembers));
+        contactAdapter.notifyDataSetChanged();
     }
 
     private List<UIUserInfo> memberToUIUserInfo(List<GroupMember> members) {
 
         List<String> memberIds = new ArrayList<>(members.size());
         for (GroupMember member : members) {
-            if (member.type == GroupMember.GroupMemberType.Owner || member.type == GroupMember.GroupMemberType.Manager) {
-                memberIds.add(member.memberId);
-            }
+            memberIds.add(member.memberId);
         }
+
         List<UIUserInfo> uiUserInfos = new ArrayList<>();
         ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
         List<UserInfo> userInfos = contactViewModel.getContacts(memberIds, groupInfo.target);
@@ -107,14 +145,15 @@ public class GroupManagerListFragment extends BaseContactFragment {
                             showManagerCategory = true;
                             info.setShowCategory(true);
                         }
+                        uiUserInfos.add(info);
                     } else {
                         info.setCategory("群主");
                         info.setShowCategory(true);
+                        uiUserInfos.add(0, info);
                     }
                     break;
                 }
             }
-            uiUserInfos.add(info);
         }
         return uiUserInfos;
     }
