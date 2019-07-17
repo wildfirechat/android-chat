@@ -1,13 +1,17 @@
 package cn.wildfire.chat.kit.conversation.ext;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.view.View;
+
+import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
 
-import androidx.lifecycle.ViewModelProviders;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
@@ -22,7 +26,14 @@ public class VoipExt extends ConversationExt {
     public static final int REQUEST_CODE_GROUP_AUDIO_CHAT = 1;
 
     @ExtContextMenuItem(title = "视频通话")
-    public void voip(View containerView, Conversation conversation) {
+    public void video(View containerView, Conversation conversation) {
+        String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!((WfcBaseActivity) context).checkPermission(permissions)) {
+                context.requestPermissions(permissions, 100);
+                return;
+            }
+        }
         switch (conversation.type) {
             case Single:
                 videoChat(conversation.target);
@@ -37,6 +48,13 @@ public class VoipExt extends ConversationExt {
 
     @ExtContextMenuItem(title = "语音通话")
     public void audio(View containerView, Conversation conversation) {
+        String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!((WfcBaseActivity) context).checkPermission(permissions)) {
+                context.requestPermissions(permissions, 100);
+                return;
+            }
+        }
         switch (conversation.type) {
             case Single:
                 audioChat(conversation.target);
