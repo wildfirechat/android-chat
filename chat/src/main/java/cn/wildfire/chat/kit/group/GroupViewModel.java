@@ -28,6 +28,7 @@ import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.notification.GroupNotificationMessageContent;
+import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.ModifyGroupInfoType;
@@ -185,6 +186,86 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
             }
         });
 
+        return result;
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> setGroupManager(String groupId, boolean isSet, List<String> memberIds, List<Integer> lines, NotificationMessageContent notifyMsg) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().setGroupManager(groupId, isSet, memberIds, lines, notifyMsg, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return result;
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> muteAll(String groupId, boolean mute) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_Mute, mute ? "1" : "0", Collections.singletonList(0), null, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return result;
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> preventPrivateChat(String groupId, boolean preventPrivateChat) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_PrivateChat, preventPrivateChat ? "1" : "0", Collections.singletonList(0), null, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return result;
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> setGroupJoinType(String groupId, int joinType) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_JoinType, joinType + "", Collections.singletonList(0), null, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return result;
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> setGroupSearchType(String groupId, int searchType) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_Searchable, searchType + "", Collections.singletonList(0), null, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
+            }
+        });
         return result;
     }
 
@@ -353,7 +434,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
 
     @Override
     public void onGroupMembersUpdate(String groupId, List<GroupMember> groupMembers) {
-        if (groupMembersUpdateLiveData != null) {
+        if (groupMembersUpdateLiveData != null && groupMembers != null && !groupMembers.isEmpty()) {
             groupMembersUpdateLiveData.setValue(groupMembers);
         }
     }
