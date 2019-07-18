@@ -10,7 +10,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.contact.pick.PickContactViewModel;
+import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupInfo;
@@ -19,11 +19,11 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     protected GroupInfo groupInfo;
     protected List<String> unCheckableMemberIds;
 
-    private PickContactViewModel pickContactViewModel;
-    private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
+    private PickUserViewModel pickUserViewModel;
+    private Observer<UIUserInfo> userCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
         @Override
         public void onChanged(@Nullable UIUserInfo userInfo) {
-            List<UIUserInfo> list = pickContactViewModel.getCheckedContacts();
+            List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
             onGroupMemberChecked(list);
         }
     };
@@ -50,15 +50,15 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
             return;
         }
 
-        pickContactViewModel = ViewModelProviders.of(this).get(PickContactViewModel.class);
-        pickContactViewModel.contactCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
+        pickUserViewModel = ViewModelProviders.of(this).get(PickUserViewModel.class);
+        pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(userCheckStatusUpdateLiveDataObserver);
         if (unCheckableMemberIds != null && !unCheckableMemberIds.isEmpty()) {
-            pickContactViewModel.setUncheckableIds(unCheckableMemberIds);
+            pickUserViewModel.setUncheckableIds(unCheckableMemberIds);
         } else {
             UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-            pickContactViewModel.setUncheckableIds(Collections.singletonList(userViewModel.getUserId()));
+            pickUserViewModel.setUncheckableIds(Collections.singletonList(userViewModel.getUserId()));
         }
-        pickContactViewModel.setMaxPickCount(maxPickCount);
+        pickUserViewModel.setMaxPickCount(maxPickCount);
 
         initView();
     }
@@ -72,6 +72,6 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        pickContactViewModel.contactCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
+        pickUserViewModel.userCheckStatusUpdateLiveData().removeObserver(userCheckStatusUpdateLiveDataObserver);
     }
 }

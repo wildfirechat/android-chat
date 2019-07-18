@@ -30,6 +30,10 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
         ChatManager.Instance().addSettingUpdateListener(this);
     }
 
+    public static List<UserInfo> getUsers(List<String> ids, String groupId) {
+        return ChatManager.Instance().getUserInfos(ids, groupId);
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();

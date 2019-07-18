@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
-import cn.wildfire.chat.kit.contact.ContactAdapter;
+import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
 import cn.wildfirechat.chat.R;
 
@@ -19,7 +19,7 @@ public class FriendRequestViewHolder extends HeaderViewHolder<FriendRequestValue
     private FriendRequestValue value;
 
 
-    public FriendRequestViewHolder(Fragment fragment, ContactAdapter adapter, View itemView) {
+    public FriendRequestViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         ButterKnife.bind(this, itemView);
     }

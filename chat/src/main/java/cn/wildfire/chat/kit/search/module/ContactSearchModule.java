@@ -10,7 +10,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.contact.viewholder.ContactViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfirechat.chat.R;
@@ -18,21 +18,21 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class ContactSearchModule extends SearchableModule<UserInfo, ContactViewHolder> {
+public class ContactSearchModule extends SearchableModule<UserInfo, UserViewHolder> {
     @Override
-    public ContactViewHolder onCreateViewHolder(Fragment fragment, @NonNull ViewGroup parent, int viewType) {
+    public UserViewHolder onCreateViewHolder(Fragment fragment, @NonNull ViewGroup parent, int viewType) {
         View itemView;
         itemView = LayoutInflater.from(fragment.getActivity()).inflate(R.layout.contact_item_contact, parent, false);
-        return new ContactViewHolder(fragment, null, itemView);
+        return new UserViewHolder(fragment, null, itemView);
     }
 
     @Override
-    public void onBind(Fragment fragment, ContactViewHolder holder, UserInfo userInfo) {
+    public void onBind(Fragment fragment, UserViewHolder holder, UserInfo userInfo) {
         holder.onBind(new UIUserInfo(userInfo));
     }
 
     @Override
-    public void onClick(Fragment fragment, ContactViewHolder holder, View view, UserInfo userInfo) {
+    public void onClick(Fragment fragment, UserViewHolder holder, View view, UserInfo userInfo) {
         Intent intent = new Intent(fragment.getActivity(), ConversationActivity.class);
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, 0);
         intent.putExtra("conversation", conversation);

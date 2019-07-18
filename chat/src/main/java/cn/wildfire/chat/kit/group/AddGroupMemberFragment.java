@@ -6,18 +6,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
-import cn.wildfire.chat.kit.contact.pick.PickContactFragment;
-import cn.wildfire.chat.kit.contact.pick.PickContactViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.wildfire.chat.kit.contact.pick.PickUserFragment;
+import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 
-public class AddGroupMemberFragment extends PickContactFragment {
+public class AddGroupMemberFragment extends PickUserFragment {
     private GroupInfo groupInfo;
 
     public static AddGroupMemberFragment newInstance(GroupInfo groupInfo) {
@@ -43,7 +44,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
     }
 
     private void init() {
-        PickContactViewModel pickContactViewModel = ViewModelProviders.of(getActivity()).get(PickContactViewModel.class);
+        PickUserViewModel pickUserViewModel = ViewModelProviders.of(getActivity()).get(PickUserViewModel.class);
 
         GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
 
@@ -56,7 +57,7 @@ public class AddGroupMemberFragment extends PickContactFragment {
         for (GroupMember member : groupMembers) {
             memberIds.add(member.memberId);
         }
-        pickContactViewModel.setUncheckableIds(memberIds);
+        pickUserViewModel.setUncheckableIds(memberIds);
     }
 
     @Override

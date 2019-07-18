@@ -4,7 +4,7 @@ import android.view.View;
 
 import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
-import cn.wildfire.chat.kit.contact.ContactAdapter;
+import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfirechat.chat.R;
 
@@ -12,7 +12,7 @@ import cn.wildfirechat.chat.R;
 @LayoutRes(resId = R.layout.contact_header_channel)
 public class ChannelViewHolder extends HeaderViewHolder<HeaderValue> {
 
-    public ChannelViewHolder(Fragment fragment, ContactAdapter adapter, View itemView) {
+    public ChannelViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
         super(fragment, adapter, itemView);
     }
 
