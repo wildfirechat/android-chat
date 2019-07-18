@@ -66,10 +66,6 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return ChatManager.Instance().getMyFriendListInfo(refresh);
     }
 
-    public List<UserInfo> getContacts(List<String> ids, String groupId) {
-        return ChatManager.Instance().getUserInfos(ids, groupId);
-    }
-
     public int getUnreadFriendRequestCount() {
         return ChatManager.Instance().getUnreadFriendRequestStatus();
     }

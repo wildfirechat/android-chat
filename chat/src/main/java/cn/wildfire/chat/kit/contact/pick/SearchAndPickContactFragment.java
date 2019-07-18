@@ -7,27 +7,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.contact.ContactAdapter;
+import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.chat.R;
 
-public class SearchAndPickContactFragment extends Fragment implements ContactAdapter.OnContactClickListener {
-    private CheckableContactAdapter contactAdapter;
-    private PickContactViewModel pickContactViewModel;
-    private PickContactFragment pickContactFragment;
+public class SearchAndPickContactFragment extends Fragment implements UserListAdapter.OnUserClickListener {
+    private CheckableUserListAdapter contactAdapter;
+    private PickUserViewModel pickUserViewModel;
+    private PickUserFragment pickUserFragment;
 
-    @Bind(R.id.contactRecyclerView)
+    @Bind(R.id.usersRecyclerView)
     RecyclerView contactRecyclerView;
     @Bind(R.id.tipTextView)
     TextView tipTextView;
@@ -41,20 +42,20 @@ public class SearchAndPickContactFragment extends Fragment implements ContactAda
         return view;
     }
 
-    public void setPickContactFragment(PickContactFragment pickContactFragment) {
-        this.pickContactFragment = pickContactFragment;
+    public void setPickUserFragment(PickUserFragment pickUserFragment) {
+        this.pickUserFragment = pickUserFragment;
     }
 
 
     @OnClick(R.id.tipTextView)
     void onTipTextViewClick() {
-        pickContactFragment.hideSearchContactFragment();
+        pickUserFragment.hideSearchContactFragment();
     }
 
     private void init() {
-        pickContactViewModel = ViewModelProviders.of(getActivity()).get(PickContactViewModel.class);
-        contactAdapter = new CheckableContactAdapter(this);
-        contactAdapter.setOnContactClickListener(this);
+        pickUserViewModel = ViewModelProviders.of(getActivity()).get(PickUserViewModel.class);
+        contactAdapter = new CheckableUserListAdapter(this);
+        contactAdapter.setOnUserClickListener(this);
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         contactRecyclerView.setAdapter(contactAdapter);
     }
@@ -63,7 +64,7 @@ public class SearchAndPickContactFragment extends Fragment implements ContactAda
         if (TextUtils.isEmpty(keyword)) {
             return;
         }
-        List<UIUserInfo> result = pickContactViewModel.searchContact(keyword);
+        List<UIUserInfo> result = pickUserViewModel.searchContact(keyword);
         if (result == null || result.isEmpty()) {
             contactRecyclerView.setVisibility(View.GONE);
             tipTextView.setVisibility(View.VISIBLE);
@@ -71,22 +72,22 @@ public class SearchAndPickContactFragment extends Fragment implements ContactAda
             contactRecyclerView.setVisibility(View.VISIBLE);
             tipTextView.setVisibility(View.GONE);
         }
-        contactAdapter.setContacts(result);
+        contactAdapter.setUsers(result);
         contactAdapter.notifyDataSetChanged();
     }
 
     public void rest() {
         tipTextView.setVisibility(View.VISIBLE);
         contactRecyclerView.setVisibility(View.GONE);
-        contactAdapter.setContacts(null);
+        contactAdapter.setUsers(null);
     }
 
     @Override
-    public void onContactClick(UIUserInfo userInfo) {
+    public void onUserClick(UIUserInfo userInfo) {
         if (userInfo.isCheckable()) {
-            pickContactViewModel.checkContact(userInfo, !userInfo.isChecked());
+            pickUserViewModel.checkUser(userInfo, !userInfo.isChecked());
             // the checked status has already changed by checkContact method
-            contactAdapter.updateContactStatus(userInfo);
+            contactAdapter.updateUserStatus(userInfo);
         }
     }
 }

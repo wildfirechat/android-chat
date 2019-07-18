@@ -22,36 +22,36 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
-import cn.wildfire.chat.kit.contact.BaseContactFragment;
-import cn.wildfire.chat.kit.contact.ContactAdapter;
+import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.chat.R;
 
-public class PickContactFragment extends BaseContactFragment implements QuickIndexBar.OnLetterUpdateListener {
+public class PickUserFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private SearchAndPickContactFragment searchAndPickContactFragment;
-    private PickContactViewModel pickContactViewModel;
+    private PickUserViewModel pickUserViewModel;
 
-    @Bind(R.id.pickedContactRecyclerView)
-    RecyclerView pickedContactRecyclerView;
+    @Bind(R.id.pickedUserRecyclerView)
+    RecyclerView pickedUserRecyclerView;
     @Bind(R.id.searchEditText)
     EditText searchEditText;
-    @Bind(R.id.searchContactFrameLayout)
-    FrameLayout searchContactFrameLayout;
+    @Bind(R.id.searchFrameLayout)
+    FrameLayout searchUserFrameLayout;
 
     private boolean isSearchFragmentShowing = false;
 
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = userInfo -> {
-        ((CheckableContactAdapter) contactAdapter).updateContactStatus(userInfo);
+        ((CheckableUserListAdapter) userListAdapter).updateUserStatus(userInfo);
         hideSearchContactFragment();
     };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pickContactViewModel = ViewModelProviders.of(getActivity()).get(PickContactViewModel.class);
-        pickContactViewModel.contactCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
+        pickUserViewModel = ViewModelProviders.of(getActivity()).get(PickUserViewModel.class);
+        pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
     }
 
     @Nullable
@@ -65,12 +65,12 @@ public class PickContactFragment extends BaseContactFragment implements QuickInd
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        pickContactViewModel.contactCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
+        pickUserViewModel.userCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
     }
 
     private void initView() {
         RecyclerView.LayoutManager pickedContactRecyclerViewLayoutManager = new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false);
-        pickedContactRecyclerView.setLayoutManager(pickedContactRecyclerViewLayoutManager);
+        pickedUserRecyclerView.setLayoutManager(pickedContactRecyclerViewLayoutManager);
     }
 
     @OnFocusChange(R.id.searchEditText)
@@ -105,24 +105,24 @@ public class PickContactFragment extends BaseContactFragment implements QuickInd
     }
 
     @Override
-    public ContactAdapter onCreateContactAdapter() {
-        CheckableContactAdapter checkableContactAdapter = new CheckableContactAdapter(this);
+    public UserListAdapter onCreateUserListAdapter() {
+        CheckableUserListAdapter checkableContactAdapter = new CheckableUserListAdapter(this);
         ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
 
         List<UIUserInfo> contacts = userInfoToUIUserInfo(contactViewModel.getContacts(false));
-        pickContactViewModel.setContacts(contacts);
-        checkableContactAdapter.setContacts(contacts);
+        pickUserViewModel.setUsers(contacts);
+        checkableContactAdapter.setUsers(contacts);
         return checkableContactAdapter;
     }
 
     private void showSearchContactFragment() {
         if (searchAndPickContactFragment == null) {
             searchAndPickContactFragment = new SearchAndPickContactFragment();
-            searchAndPickContactFragment.setPickContactFragment(this);
+            searchAndPickContactFragment.setPickUserFragment(this);
         }
-        searchContactFrameLayout.setVisibility(View.VISIBLE);
+        searchUserFrameLayout.setVisibility(View.VISIBLE);
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.searchContactFrameLayout, searchAndPickContactFragment)
+                .replace(R.id.searchFrameLayout, searchAndPickContactFragment)
                 .commit();
         isSearchFragmentShowing = true;
     }
@@ -134,15 +134,15 @@ public class PickContactFragment extends BaseContactFragment implements QuickInd
 
         searchEditText.setText("");
         searchEditText.clearFocus();
-        searchContactFrameLayout.setVisibility(View.GONE);
+        searchUserFrameLayout.setVisibility(View.GONE);
         getChildFragmentManager().beginTransaction().remove(searchAndPickContactFragment).commit();
         isSearchFragmentShowing = false;
     }
 
     @Override
-    public void onContactClick(UIUserInfo userInfo) {
+    public void onUserClick(UIUserInfo userInfo) {
         if (userInfo.isCheckable()) {
-            if (!pickContactViewModel.checkContact(userInfo, !userInfo.isChecked())) {
+            if (!pickUserViewModel.checkUser(userInfo, !userInfo.isChecked())) {
                 Toast.makeText(getActivity(), "选人超限", Toast.LENGTH_SHORT).show();
             }
         }

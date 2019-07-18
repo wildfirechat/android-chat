@@ -10,22 +10,22 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class PickContactViewModel extends ViewModel {
-    private List<UIUserInfo> contacts;
+public class PickUserViewModel extends ViewModel {
+    private List<UIUserInfo> users;
     private List<String> uncheckableIds;
     private List<String> initialCheckedIds;
-    private MutableLiveData<UIUserInfo> contactCheckStatusUpdateLiveData;
+    private MutableLiveData<UIUserInfo> userCheckStatusUpdateLiveData;
     private int maxPickCount = Integer.MAX_VALUE;
 
-    public PickContactViewModel() {
+    public PickUserViewModel() {
         super();
     }
 
-    public MutableLiveData<UIUserInfo> contactCheckStatusUpdateLiveData() {
-        if (contactCheckStatusUpdateLiveData == null) {
-            contactCheckStatusUpdateLiveData = new MutableLiveData<>();
+    public MutableLiveData<UIUserInfo> userCheckStatusUpdateLiveData() {
+        if (userCheckStatusUpdateLiveData == null) {
+            userCheckStatusUpdateLiveData = new MutableLiveData<>();
         }
-        return contactCheckStatusUpdateLiveData;
+        return userCheckStatusUpdateLiveData;
     }
 
     public void setMaxPickCount(int maxPickCount) {
@@ -38,24 +38,24 @@ public class PickContactViewModel extends ViewModel {
 
     public void setUncheckableIds(List<String> uncheckableIds) {
         this.uncheckableIds = uncheckableIds;
-        updateContactStatus();
+        updateUserStatus();
     }
 
     public void setInitialCheckedIds(List<String> checkedIds) {
         this.initialCheckedIds = checkedIds;
-        updateContactStatus();
+        updateUserStatus();
     }
 
-    public void setContacts(List<UIUserInfo> contacts) {
-        this.contacts = contacts;
-        updateContactStatus();
+    public void setUsers(List<UIUserInfo> users) {
+        this.users = users;
+        updateUserStatus();
     }
 
-    private void updateContactStatus() {
-        if (contacts == null || contacts.isEmpty()) {
+    private void updateUserStatus() {
+        if (users == null || users.isEmpty()) {
             return;
         }
-        for (UIUserInfo info : contacts) {
+        for (UIUserInfo info : users) {
             if (initialCheckedIds != null && !initialCheckedIds.isEmpty()) {
                 if (initialCheckedIds.contains(info.getUserInfo().uid)) {
                     info.setChecked(true);
@@ -70,7 +70,7 @@ public class PickContactViewModel extends ViewModel {
     }
 
     public List<UIUserInfo> searchContact(String keyword) {
-        if (contacts == null || contacts.isEmpty()) {
+        if (users == null || users.isEmpty()) {
             return null;
         }
 
@@ -82,7 +82,7 @@ public class PickContactViewModel extends ViewModel {
 
         List<UIUserInfo> resultList = new ArrayList<>();
         for (UserInfo userInfo : tmpList) {
-            for (UIUserInfo info : contacts) {
+            for (UIUserInfo info : users) {
                 if (info.getUserInfo().uid.equals(userInfo.uid)) {
                     resultList.add(info);
                     if (uncheckableIds != null && uncheckableIds.contains(userInfo.uid)) {
@@ -104,34 +104,34 @@ public class PickContactViewModel extends ViewModel {
     }
 
     /**
-     * not include initial checked contacts
+     * not include initial checked users
      *
      * @return
      */
-    public List<UIUserInfo> getCheckedContacts() {
-        List<UIUserInfo> checkedContacts = new ArrayList<>();
-        if (contacts == null) {
-            return checkedContacts;
+    public List<UIUserInfo> getCheckedUsers() {
+        List<UIUserInfo> checkedUsers = new ArrayList<>();
+        if (users == null) {
+            return checkedUsers;
         }
-        for (UIUserInfo info : contacts) {
+        for (UIUserInfo info : users) {
             if (info.isCheckable() && info.isChecked()) {
-                checkedContacts.add(info);
+                checkedUsers.add(info);
             }
         }
-        return checkedContacts;
+        return checkedUsers;
     }
 
-    public List<UIUserInfo> getInitialCheckedContacts() {
-        List<UIUserInfo> checkedContacts = new ArrayList<>();
-        if (contacts == null || initialCheckedIds == null) {
-            return checkedContacts;
+    public List<UIUserInfo> getInitialCheckedUsers() {
+        List<UIUserInfo> checkedUsers = new ArrayList<>();
+        if (users == null || initialCheckedIds == null) {
+            return checkedUsers;
         }
-        for (UIUserInfo info : contacts) {
+        for (UIUserInfo info : users) {
             if (initialCheckedIds.contains(info.getUserInfo().uid)) {
-                checkedContacts.add(info);
+                checkedUsers.add(info);
             }
         }
-        return checkedContacts;
+        return checkedUsers;
     }
 
     /**
@@ -139,13 +139,13 @@ public class PickContactViewModel extends ViewModel {
      * @param checked
      * @return 选择成功，则返回true；否则，失败
      */
-    public boolean checkContact(UIUserInfo userInfo, boolean checked) {
-        if (checked && getCheckedContacts() != null && getCheckedContacts().size() >= maxPickCount) {
+    public boolean checkUser(UIUserInfo userInfo, boolean checked) {
+        if (checked && getCheckedUsers() != null && getCheckedUsers().size() >= maxPickCount) {
             return false;
         }
         userInfo.setChecked(checked);
-        if (contactCheckStatusUpdateLiveData != null) {
-            contactCheckStatusUpdateLiveData.setValue(userInfo);
+        if (userCheckStatusUpdateLiveData != null) {
+            userCheckStatusUpdateLiveData.setValue(userInfo);
         }
         return true;
     }

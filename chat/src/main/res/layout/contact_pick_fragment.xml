@@ -11,7 +11,7 @@
 
         <!--联系人选择列表-->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/contactRecyclerView"
+            android:id="@+id/usersRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="70dp" />
@@ -60,7 +60,7 @@
 
             <!--被选中的联系人头像列表-->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/pickedContactRecyclerView"
+                android:id="@+id/pickedUserRecyclerView"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:visibility="gone" />
@@ -85,7 +85,7 @@
             android:layout_marginRight="0px" />
 
         <FrameLayout
-            android:id="@+id/searchContactFrameLayout"
+            android:id="@+id/searchFrameLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"

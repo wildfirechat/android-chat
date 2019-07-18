@@ -37,7 +37,7 @@ import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
-import cn.wildfire.chat.kit.contact.ContactFragment;
+import cn.wildfire.chat.kit.contact.UserFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
@@ -80,7 +80,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private boolean isInitialized = false;
 
     private ConversationListFragment conversationListFragment;
-    private ContactFragment contactFragment;
+    private UserFragment contactFragment;
     private DiscoveryFragment discoveryFragment;
     private MeFragment meFragment;
 
@@ -197,7 +197,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         contentViewPager.setOffscreenPageLimit(3);
 
         conversationListFragment = new ConversationListFragment();
-        contactFragment = new ContactFragment();
+        contactFragment = new UserFragment();
         discoveryFragment = new DiscoveryFragment();
         meFragment = new MeFragment();
         mFragmentList.add(conversationListFragment);

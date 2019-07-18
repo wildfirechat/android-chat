@@ -31,16 +31,16 @@ import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
-public abstract class BaseContactFragment extends Fragment implements QuickIndexBar.OnLetterUpdateListener, ContactAdapter.OnContactClickListener, ContactAdapter.OnHeaderClickListener, ContactAdapter.OnFooterClickListener {
+public abstract class BaseUserListFragment extends Fragment implements QuickIndexBar.OnLetterUpdateListener, UserListAdapter.OnUserClickListener, UserListAdapter.OnHeaderClickListener, UserListAdapter.OnFooterClickListener {
 
-    @Bind(R.id.contactRecyclerView)
-    RecyclerView contactRecyclerView;
+    @Bind(R.id.usersRecyclerView)
+    RecyclerView usersRecyclerView;
     @Bind(R.id.quickIndexBar)
     QuickIndexBar quickIndexBar;
     @Bind(R.id.indexLetterTextView)
     TextView indexLetterTextView;
 
-    protected ContactAdapter contactAdapter;
+    protected UserListAdapter userListAdapter;
 
     private LinearLayoutManager linearLayoutManager;
     protected ContactViewModel contactViewModel;
@@ -63,17 +63,17 @@ public abstract class BaseContactFragment extends Fragment implements QuickIndex
 
     private void initView() {
 
-        contactAdapter = onCreateContactAdapter();
-        contactAdapter.setOnContactClickListener(this);
-        contactAdapter.setOnHeaderClickListener(this);
-        contactAdapter.setOnFooterClickListener(this);
+        userListAdapter = onCreateUserListAdapter();
+        userListAdapter.setOnUserClickListener(this);
+        userListAdapter.setOnHeaderClickListener(this);
+        userListAdapter.setOnFooterClickListener(this);
 
         initHeaderViewHolders();
         initFooterViewHolders();
 
-        contactRecyclerView.setAdapter(contactAdapter);
+        usersRecyclerView.setAdapter(userListAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
-        contactRecyclerView.setLayoutManager(linearLayoutManager);
+        usersRecyclerView.setLayoutManager(linearLayoutManager);
 
         if (showQuickIndexBar) {
             quickIndexBar.setVisibility(View.VISIBLE);
@@ -101,23 +101,23 @@ public abstract class BaseContactFragment extends Fragment implements QuickIndex
     }
 
     /**
-     * the data for this contactAdapter should be set here
+     * the data for this userListAdapter should be set here
      *
      * @return
      */
-    protected ContactAdapter onCreateContactAdapter() {
-        contactAdapter = new ContactAdapter(this);
-        contactAdapter.setContacts(userInfoToUIUserInfo(contactViewModel.getContacts(true)));
-        return contactAdapter;
+    protected UserListAdapter onCreateUserListAdapter() {
+        userListAdapter = new UserListAdapter(this);
+        userListAdapter.setUsers(userInfoToUIUserInfo(contactViewModel.getContacts(true)));
+        return userListAdapter;
     }
 
     protected void addHeaderViewHolder(Class<? extends HeaderViewHolder> clazz, HeaderValue value) {
-        contactAdapter.addHeaderViewHolder(clazz, value);
+        userListAdapter.addHeaderViewHolder(clazz, value);
         // to do notify header changed
     }
 
     protected void addFooterViewHolder(Class<? extends FooterViewHolder> clazz, FooterValue value) {
-        contactAdapter.addFooterViewHolder(clazz, value);
+        userListAdapter.addFooterViewHolder(clazz, value);
     }
 
     @Override
@@ -128,22 +128,22 @@ public abstract class BaseContactFragment extends Fragment implements QuickIndex
         if ("↑".equalsIgnoreCase(letter)) {
             linearLayoutManager.scrollToPositionWithOffset(0, 0);
         } else if ("☆".equalsIgnoreCase(letter)) {
-            linearLayoutManager.scrollToPositionWithOffset(contactAdapter.headerCount(), 0);
+            linearLayoutManager.scrollToPositionWithOffset(userListAdapter.headerCount(), 0);
         } else if ("#".equalsIgnoreCase(letter)) {
-            List<UIUserInfo> data = contactAdapter.getContacts();
+            List<UIUserInfo> data = userListAdapter.getUsers();
             for (int i = 0; i < data.size(); i++) {
                 UIUserInfo friend = data.get(i);
                 if (friend.getCategory().equals("#")) {
-                    linearLayoutManager.scrollToPositionWithOffset(contactAdapter.headerCount() + i, 0);
+                    linearLayoutManager.scrollToPositionWithOffset(userListAdapter.headerCount() + i, 0);
                     break;
                 }
             }
         } else {
-            List<UIUserInfo> data = contactAdapter.getContacts();
+            List<UIUserInfo> data = userListAdapter.getUsers();
             for (int i = 0; i < data.size(); i++) {
                 UIUserInfo friend = data.get(i);
                 if (friend.getCategory().compareTo(letter) >= 0) {
-                    linearLayoutManager.scrollToPositionWithOffset(i + contactAdapter.headerCount(), 0);
+                    linearLayoutManager.scrollToPositionWithOffset(i + userListAdapter.headerCount(), 0);
                     break;
                 }
             }
@@ -170,7 +170,7 @@ public abstract class BaseContactFragment extends Fragment implements QuickIndex
     }
 
     @Override
-    public void onContactClick(UIUserInfo userInfo) {
+    public void onUserClick(UIUserInfo userInfo) {
 
     }
 

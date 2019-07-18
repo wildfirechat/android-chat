@@ -17,42 +17,42 @@ import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.contact.viewholder.ContactViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfirechat.chat.R;
 
-public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_CONTACT = 1024;
     private static final int TYPE_FOOTER_START_INDEX = 2048;
-    protected List<UIUserInfo> contacts;
+    protected List<UIUserInfo> users;
     protected Fragment fragment;
     private List<Class<? extends HeaderViewHolder>> headerViewHolders;
     private List<Class<? extends FooterViewHolder>> footerViewHolders;
     private List<HeaderValue> headerValues;
     private List<FooterValue> footerValues;
-    protected OnContactClickListener onContactClickListener;
+    protected OnUserClickListener onUserClickListener;
     protected OnHeaderClickListener onHeaderClickListener;
     protected OnFooterClickListener onFooterClickListener;
 
-    public ContactAdapter(Fragment fragment) {
+    public UserListAdapter(Fragment fragment) {
         this.fragment = fragment;
     }
 
-    public List<UIUserInfo> getContacts() {
-        return contacts;
+    public List<UIUserInfo> getUsers() {
+        return users;
     }
 
     public int getContactCount() {
-        return contacts == null ? 0 : contacts.size();
+        return users == null ? 0 : users.size();
     }
 
-    public void setContacts(List<UIUserInfo> contacts) {
-        this.contacts = contacts;
+    public void setUsers(List<UIUserInfo> users) {
+        this.users = users;
     }
 
     public void updateContacts(List<UIUserInfo> userInfos) {
-        if (contacts == null) {
+        if (users == null) {
             return;
         }
         for (UIUserInfo info : userInfos) {
@@ -61,13 +61,13 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void updateContact(UIUserInfo userInfo) {
-        if (contacts == null) {
+        if (users == null) {
             return;
         }
         int originalPosition = -1;
-        for (int i = 0; i < contacts.size(); i++) {
-            if (contacts.get(i).getUserInfo().uid.equals(userInfo.getUserInfo().uid)) {
-                contacts.set(i, userInfo);
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUserInfo().uid.equals(userInfo.getUserInfo().uid)) {
+                users.set(i, userInfo);
                 originalPosition = headerCount() + i;
                 break;
             }
@@ -76,11 +76,11 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return;
         }
 
-        Collections.sort(contacts, (o1, o2) -> o1.getSortName().compareToIgnoreCase(o2.getSortName()));
+        Collections.sort(users, (o1, o2) -> o1.getSortName().compareToIgnoreCase(o2.getSortName()));
 
         int targetPosition = 0;
-        for (int i = 0; i < contacts.size(); i++) {
-            if (contacts.get(i).getUserInfo().uid.equals(userInfo.getUserInfo().uid)) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUserInfo().uid.equals(userInfo.getUserInfo().uid)) {
                 targetPosition = headerCount() + i;
                 break;
             }
@@ -89,7 +89,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (targetPosition == headerCount()) {
             userInfo.setShowCategory(true);
         } else {
-            UIUserInfo pre = contacts.get(targetPosition - headerCount() - 1);
+            UIUserInfo pre = users.get(targetPosition - headerCount() - 1);
             if (pre.getCategory() == null || !pre.getCategory().equals(userInfo.getCategory())) {
                 userInfo.setShowCategory(true);
             }
@@ -102,8 +102,8 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public void setOnContactClickListener(OnContactClickListener onContactClickListener) {
-        this.onContactClickListener = onContactClickListener;
+    public void setOnUserClickListener(OnUserClickListener onUserClickListener) {
+        this.onUserClickListener = onUserClickListener;
     }
 
     public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener) {
@@ -125,7 +125,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             LayoutRes layoutRes = clazz.getAnnotation(LayoutRes.class);
             itemView = LayoutInflater.from(fragment.getActivity()).inflate(layoutRes.resId(), parent, false);
             try {
-                Constructor constructor = clazz.getConstructor(Fragment.class, ContactAdapter.class, View.class);
+                Constructor constructor = clazz.getConstructor(Fragment.class, UserListAdapter.class, View.class);
                 viewHolder = (HeaderViewHolder) constructor.newInstance(fragment, this, itemView);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -145,7 +145,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             LayoutRes layoutRes = clazz.getAnnotation(LayoutRes.class);
             itemView = LayoutInflater.from(fragment.getActivity()).inflate(layoutRes.resId(), parent, false);
             try {
-                Constructor constructor = clazz.getConstructor(Fragment.class, ContactAdapter.class, View.class);
+                Constructor constructor = clazz.getConstructor(Fragment.class, UserListAdapter.class, View.class);
                 viewHolder = (FooterViewHolder) constructor.newInstance(fragment, this, itemView);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -153,7 +153,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
             itemView.setOnClickListener(v -> {
                 if (onFooterClickListener != null) {
-                    onFooterClickListener.onFooterClick(viewHolder.getAdapterPosition() - headerCount() - contactCount());
+                    onFooterClickListener.onFooterClick(viewHolder.getAdapterPosition() - headerCount() - userCount());
                 }
             });
 
@@ -164,11 +164,11 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     protected RecyclerView.ViewHolder onCreateContactViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView;
         itemView = LayoutInflater.from(fragment.getActivity()).inflate(R.layout.contact_item_contact, parent, false);
-        ContactViewHolder viewHolder = new ContactViewHolder(fragment, this, itemView);
+        UserViewHolder viewHolder = new UserViewHolder(fragment, this, itemView);
         itemView.setOnClickListener(v -> {
-            if (onContactClickListener != null) {
+            if (onUserClickListener != null) {
                 int position = viewHolder.getAdapterPosition();
-                onContactClickListener.onContactClick(contacts.get(position - headerCount()));
+                onUserClickListener.onUserClick(users.get(position - headerCount()));
             }
         });
         return viewHolder;
@@ -182,26 +182,26 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (position < headerCount()) {
             ((HeaderViewHolder) holder).onBind(headerValues.get(position));
-        } else if (position < headerCount() + contactCount()) {
-            ((ContactViewHolder) holder).onBind(contacts.get(position - headerCount()));
+        } else if (position < headerCount() + userCount()) {
+            ((UserViewHolder) holder).onBind(users.get(position - headerCount()));
         } else {
-            ((FooterViewHolder<FooterValue>) holder).onBind(footerValues.get(position - headerCount() - contactCount()));
+            ((FooterViewHolder<FooterValue>) holder).onBind(footerValues.get(position - headerCount() - userCount()));
         }
     }
 
     @Override
     public int getItemCount() {
-        return contactCount() + headerCount() + footerCount();
+        return userCount() + headerCount() + footerCount();
     }
 
     @Override
     public int getItemViewType(int position) {
         if (position < headerCount()) {
             return position;
-        } else if (position < headerCount() + contactCount()) {
+        } else if (position < headerCount() + userCount()) {
             return TYPE_CONTACT;
         } else {
-            return TYPE_FOOTER_START_INDEX + (position - headerCount() - contactCount());
+            return TYPE_FOOTER_START_INDEX + (position - headerCount() - userCount());
         }
     }
 
@@ -232,23 +232,23 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void updateFooter(int index, FooterValue value) {
         footerValues.set(index, value);
-        notifyItemChanged(headerCount() + contactCount() + index);
+        notifyItemChanged(headerCount() + userCount() + index);
     }
 
     public int headerCount() {
         return headerViewHolders == null ? 0 : headerViewHolders.size();
     }
 
-    private int contactCount() {
-        return contacts == null ? 0 : contacts.size();
+    private int userCount() {
+        return users == null ? 0 : users.size();
     }
 
     public int footerCount() {
         return footerViewHolders == null ? 0 : footerViewHolders.size();
     }
 
-    public interface OnContactClickListener {
-        void onContactClick(UIUserInfo userInfo);
+    public interface OnUserClickListener {
+        void onUserClick(UIUserInfo userInfo);
     }
 
     public interface OnHeaderClickListener {
