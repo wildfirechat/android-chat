@@ -60,6 +60,10 @@ import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
 import cn.wildfirechat.message.notification.CreateGroupNotificationContent;
 import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
+import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
+import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
+import cn.wildfirechat.message.notification.GroupPrivateChatNotificationContent;
+import cn.wildfirechat.message.notification.GroupSetManagerChatNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
@@ -1719,6 +1723,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             mBinder.registerMessageContent(TransferGroupOwnerNotificationContent.class.getName());
             mBinder.registerMessageContent(VideoMessageContent.class.getName());
             mBinder.registerMessageContent(TypingMessageContent.class.getName());
+            mBinder.registerMessageContent(GroupMuteNotificationContent.class.getName());
+            mBinder.registerMessageContent(GroupJoinTypeNotificationContent.class.getName());
+            mBinder.registerMessageContent(GroupPrivateChatNotificationContent.class.getName());
+            mBinder.registerMessageContent(GroupSetManagerChatNotificationContent.class.getName());
         } catch (RemoteException e) {
             e.printStackTrace();
         }

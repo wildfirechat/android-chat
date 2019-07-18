@@ -35,9 +35,16 @@ public interface MessageContentType {
     int ContentType_DISMISS_GROUP = 108;
     int ContentType_TRANSFER_GROUP_OWNER = 109;
 
+
     int ContentType_CHANGE_GROUP_NAME = 110;
     int ContentType_MODIFY_GROUP_ALIAS = 111;
     int ContentType_CHANGE_GROUP_PORTRAIT = 112;
+
+    int CONTENT_TYPE_CHANGE_MUTE = 113;
+    int CONTENT_TYPE_CHANGE_JOINTYPE = 114;
+    int CONTENT_TYPE_CHANGE_PRIVATECHAT = 115;
+    int CONTENT_TYPE_CHANGE_SEARCHABLE = 116;
+    int CONTENT_TYPE_SET_MANAGER = 117;
 
     int ContentType_Call_Start = 400;
     int ContentType_Call_End = 402;
