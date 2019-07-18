@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,6 +58,12 @@ import cn.wildfirechat.model.GroupInfo;
 import static cn.wildfire.chat.kit.conversation.ConversationActivity.REQUEST_PICK_MENTION_CONTACT;
 
 public class ConversationInputPanel extends FrameLayout implements IEmotionSelectedListener {
+
+    @Bind(R.id.inputContainerLinearLayout)
+    LinearLayout inputContainerLinearLayout;
+    @Bind(R.id.disableInputTipTextView)
+    TextView disableInputTipTextView;
+
     @Bind(R.id.audioImageView)
     ImageView audioImageView;
     @Bind(R.id.audioButton)
@@ -76,8 +84,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     @Bind(R.id.extContainerContainerLayout)
     KeyboardHeightFrameLayout extContainerFrameLayout;
 
-    @Bind(R.id.inputPanelFrameLayout)
-    FrameLayout inputContainerFrameLayout;
     @Bind(R.id.conversationExtViewPager)
     ViewPagerFixed extViewPager;
 
@@ -129,6 +135,18 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         this.extension.bind(conversationViewModel, conversation);
 
         setDraft();
+    }
+
+    public void disableInput(String tip) {
+        collapse();
+        inputContainerLinearLayout.setVisibility(GONE);
+        disableInputTipTextView.setVisibility(VISIBLE);
+        disableInputTipTextView.setText(tip);
+    }
+
+    public void enableInput() {
+        inputContainerLinearLayout.setVisibility(VISIBLE);
+        disableInputTipTextView.setVisibility(GONE);
     }
 
     public void onDestroy() {
