@@ -13,7 +13,7 @@ import cn.wildfire.chat.kit.contact.pick.viewholder.PickGroupViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfirechat.model.GroupInfo;
 
-public class PickConversationTargetFragment extends PickContactFragment {
+public class PickConversationTargetFragment extends PickUserFragment {
     private final static int REQUEST_CODE_PICK_GROUP = 100;
     private boolean pickGroupForResult;
     private boolean multiGroupMode;

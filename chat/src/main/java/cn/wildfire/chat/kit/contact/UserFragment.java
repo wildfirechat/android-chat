@@ -31,12 +31,12 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.model.UserInfo;
 
-public class ContactFragment extends BaseContactFragment implements QuickIndexBar.OnLetterUpdateListener {
+public class UserFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private UserViewModel userViewModel;
 
     private Observer<Integer> friendRequestUpdateLiveDataObserver = count -> {
         FriendRequestValue requestValue = new FriendRequestValue(count == null ? 0 : count);
-        contactAdapter.updateHeader(0, requestValue);
+        userListAdapter.updateHeader(0, requestValue);
     };
 
     private Observer<Object> contactListUpdateLiveDataObserver = o -> {
@@ -46,8 +46,8 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
     private void loadContacts() {
         contactViewModel.getContactsAsync(false)
                 .observe(this, userInfos -> {
-                    contactAdapter.setContacts(userInfoToUIUserInfo(userInfos));
-                    contactAdapter.notifyDataSetChanged();
+                    userListAdapter.setUsers(userInfoToUIUserInfo(userInfos));
+                    userListAdapter.notifyDataSetChanged();
 
                     for (UserInfo info : userInfos) {
                         if (info.name == null || info.displayName == null) {
@@ -58,7 +58,7 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
     }
 
     private Observer<List<UserInfo>> userInfoLiveDataObserver = userInfos -> {
-        contactAdapter.updateContacts(userInfoToUIUserInfo(userInfos));
+        userListAdapter.updateContacts(userInfoToUIUserInfo(userInfos));
     };
 
     @Nullable
@@ -95,7 +95,7 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
     }
 
     @Override
-    public void onContactClick(UIUserInfo userInfo) {
+    public void onUserClick(UIUserInfo userInfo) {
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);
         intent.putExtra("userInfo", userInfo.getUserInfo());
         startActivity(intent);
@@ -121,7 +121,7 @@ public class ContactFragment extends BaseContactFragment implements QuickIndexBa
 
     private void showFriendRequest() {
         FriendRequestValue value = new FriendRequestValue(0);
-        contactAdapter.updateHeader(0, value);
+        userListAdapter.updateHeader(0, value);
 
         contactViewModel.clearUnreadFriendRequestStatus();
         Intent intent = new Intent(getActivity(), FriendRequestListActivity.class);
