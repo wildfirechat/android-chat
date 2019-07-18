@@ -11,14 +11,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.contact.ContactAdapter;
+import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 
-public class ContactViewHolder extends RecyclerView.ViewHolder {
+public class UserViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;
-    protected ContactAdapter adapter;
+    protected UserListAdapter adapter;
     @Bind(R.id.portraitImageView)
     ImageView portraitImageView;
     @Bind(R.id.nameTextView)
@@ -28,7 +28,7 @@ public class ContactViewHolder extends RecyclerView.ViewHolder {
 
     protected UIUserInfo userInfo;
 
-    public ContactViewHolder(Fragment fragment, ContactAdapter adapter, View itemView) {
+    public UserViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
         super(itemView);
         this.fragment = fragment;
         this.adapter = adapter;

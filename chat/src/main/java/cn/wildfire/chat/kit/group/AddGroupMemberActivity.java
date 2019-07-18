@@ -15,7 +15,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.contact.pick.PickContactViewModel;
+import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupInfo;
@@ -27,12 +27,12 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
     public static final int RESULT_ADD_SUCCESS = 2;
     public static final int RESULT_ADD_FAIL = 3;
 
-    private PickContactViewModel pickContactViewModel;
+    private PickUserViewModel pickUserViewModel;
     private GroupViewModel groupViewModel;
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
         @Override
         public void onChanged(@Nullable UIUserInfo userInfo) {
-            List<UIUserInfo> list = pickContactViewModel.getCheckedContacts();
+            List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
             if (list == null || list.isEmpty()) {
                 menuItem.setTitle("确定");
                 menuItem.setEnabled(false);
@@ -56,8 +56,8 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
             return;
         }
 
-        pickContactViewModel = ViewModelProviders.of(this).get(PickContactViewModel.class);
-        pickContactViewModel.contactCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
+        pickUserViewModel = ViewModelProviders.of(this).get(PickUserViewModel.class);
+        pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.containerFrameLayout, AddGroupMemberFragment.newInstance(groupInfo))
@@ -87,7 +87,7 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        pickContactViewModel.contactCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
+        pickUserViewModel.userCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
     }
 
 
@@ -98,7 +98,7 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
                 .cancelable(false)
                 .build();
         dialog.show();
-        List<UIUserInfo> checkedUsers = pickContactViewModel.getCheckedContacts();
+        List<UIUserInfo> checkedUsers = pickUserViewModel.getCheckedUsers();
         if (checkedUsers != null && !checkedUsers.isEmpty()) {
             ArrayList<String> checkedIds = new ArrayList<>(checkedUsers.size());
             for (UIUserInfo user : checkedUsers) {

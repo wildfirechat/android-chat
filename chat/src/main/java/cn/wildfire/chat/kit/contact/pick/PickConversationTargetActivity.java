@@ -21,11 +21,11 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
     private boolean multiGroupMode = false;
     private MenuItem menuItem;
 
-    private PickContactViewModel pickContactViewModel;
+    private PickUserViewModel pickUserViewModel;
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
         @Override
         public void onChanged(@Nullable UIUserInfo userInfo) {
-            List<UIUserInfo> list = pickContactViewModel.getCheckedContacts();
+            List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
             updatePickStatus(list);
         }
     };
@@ -50,10 +50,10 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
         Intent intent = getIntent();
         List<String> initialParticipantsIds = intent.getStringArrayListExtra(CURRENT_PARTICIPANTS);
 
-        pickContactViewModel = ViewModelProviders.of(this).get(PickContactViewModel.class);
-        pickContactViewModel.contactCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
-        pickContactViewModel.setInitialCheckedIds(initialParticipantsIds);
-        pickContactViewModel.setUncheckableIds(initialParticipantsIds);
+        pickUserViewModel = ViewModelProviders.of(this).get(PickUserViewModel.class);
+        pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
+        pickUserViewModel.setInitialCheckedIds(initialParticipantsIds);
+        pickUserViewModel.setUncheckableIds(initialParticipantsIds);
 
         initView();
     }
@@ -89,14 +89,14 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        pickContactViewModel.contactCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
+        pickUserViewModel.userCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
     }
 
     protected abstract void onContactPicked(List<UIUserInfo> initialCheckedUserInfos, List<UIUserInfo> newlyCheckedUserInfos);
 
     protected void onConfirmClick() {
-        List<UIUserInfo> initialCheckedUserInfos = pickContactViewModel.getInitialCheckedContacts();
-        List<UIUserInfo> newlyCheckedUserInfos = pickContactViewModel.getCheckedContacts();
+        List<UIUserInfo> initialCheckedUserInfos = pickUserViewModel.getInitialCheckedUsers();
+        List<UIUserInfo> newlyCheckedUserInfos = pickUserViewModel.getCheckedUsers();
         onContactPicked(initialCheckedUserInfos, newlyCheckedUserInfos);
     }
 }

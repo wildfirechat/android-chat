@@ -10,7 +10,7 @@
 
     <!--联系人选择列表-->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/contactRecyclerView"
+        android:id="@+id/usersRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"

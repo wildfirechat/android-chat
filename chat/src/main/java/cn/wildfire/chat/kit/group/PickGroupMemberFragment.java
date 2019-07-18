@@ -8,16 +8,16 @@ import androidx.lifecycle.ViewModelProviders;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.contact.ContactAdapter;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.contact.pick.CheckableContactAdapter;
-import cn.wildfire.chat.kit.contact.pick.PickContactFragment;
-import cn.wildfire.chat.kit.contact.pick.PickContactViewModel;
+import cn.wildfire.chat.kit.contact.pick.CheckableUserListAdapter;
+import cn.wildfire.chat.kit.contact.pick.PickUserFragment;
+import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 
-public class PickGroupMemberFragment extends PickContactFragment {
+public class PickGroupMemberFragment extends PickUserFragment {
     private GroupInfo groupInfo;
 
     public static PickGroupMemberFragment newInstance(GroupInfo groupInfo) {
@@ -40,9 +40,9 @@ public class PickGroupMemberFragment extends PickContactFragment {
     }
 
     @Override
-    public ContactAdapter onCreateContactAdapter() {
-        CheckableContactAdapter checkableContactAdapter = new CheckableContactAdapter(this);
-        PickContactViewModel pickContactViewModel = ViewModelProviders.of(getActivity()).get(PickContactViewModel.class);
+    public UserListAdapter onCreateUserListAdapter() {
+        CheckableUserListAdapter checkableContactAdapter = new CheckableUserListAdapter(this);
+        PickUserViewModel pickUserViewModel = ViewModelProviders.of(getActivity()).get(PickUserViewModel.class);
 
         GroupViewModel groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
         List<GroupMember> members = groupViewModel.getGroupMembers(groupInfo.target, false);
@@ -50,10 +50,9 @@ public class PickGroupMemberFragment extends PickContactFragment {
         for (GroupMember member : members) {
             memberIds.add(member.memberId);
         }
-        ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
-        List<UIUserInfo> contacts = userInfoToUIUserInfo(contactViewModel.getContacts(memberIds, groupInfo.target));
-        pickContactViewModel.setContacts(contacts);
-        checkableContactAdapter.setContacts(contacts);
+        List<UIUserInfo> users = userInfoToUIUserInfo(UserViewModel.getUsers(memberIds, groupInfo.target));
+        pickUserViewModel.setUsers(users);
+        checkableContactAdapter.setUsers(users);
 
         return checkableContactAdapter;
     }

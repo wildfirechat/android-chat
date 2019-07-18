@@ -14,20 +14,20 @@ import androidx.lifecycle.ViewModelProviders;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.contact.BaseContactFragment;
-import cn.wildfire.chat.kit.contact.ContactAdapter;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.contact.BaseUserListFragment;
+import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class GroupManagerListFragment extends BaseContactFragment {
+public class GroupManagerListFragment extends BaseUserListFragment {
     private GroupViewModel groupViewModel;
     private GroupInfo groupInfo;
     private GroupMember groupMember;
@@ -61,8 +61,8 @@ public class GroupManagerListFragment extends BaseContactFragment {
     }
 
     @Override
-    public ContactAdapter onCreateContactAdapter() {
-        return new ContactAdapter(this);
+    public UserListAdapter onCreateUserListAdapter() {
+        return new UserListAdapter(this);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class GroupManagerListFragment extends BaseContactFragment {
     }
 
     @Override
-    public void onContactClick(UIUserInfo userInfo) {
+    public void onUserClick(UIUserInfo userInfo) {
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);
         intent.putExtra("userId", userInfo.getUserInfo());
         startActivity(intent);
@@ -107,8 +107,8 @@ public class GroupManagerListFragment extends BaseContactFragment {
                 managerMembers.add(member);
             }
         }
-        contactAdapter.setContacts(memberToUIUserInfo(managerMembers));
-        contactAdapter.notifyDataSetChanged();
+        userListAdapter.setUsers(memberToUIUserInfo(managerMembers));
+        userListAdapter.notifyDataSetChanged();
     }
 
     private List<UIUserInfo> memberToUIUserInfo(List<GroupMember> members) {
@@ -119,8 +119,7 @@ public class GroupManagerListFragment extends BaseContactFragment {
         }
 
         List<UIUserInfo> uiUserInfos = new ArrayList<>();
-        ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
-        List<UserInfo> userInfos = contactViewModel.getContacts(memberIds, groupInfo.target);
+        List<UserInfo> userInfos = UserViewModel.getUsers(memberIds, groupInfo.target);
         boolean showManagerCategory = false;
         for (UserInfo userInfo : userInfos) {
             UIUserInfo info = new UIUserInfo(userInfo);
