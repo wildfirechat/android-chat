@@ -233,10 +233,19 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         }
 
         boolean enableRemoveMember = false;
-        if (groupMember.type != GroupMember.GroupMemberType.Normal || userId.equals(groupInfo.owner)) {
-            enableRemoveMember = true;
+        boolean enableAddMember = false;
+        if (groupInfo.joinType == 2) {
+            if (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager) {
+                enableAddMember = true;
+                enableRemoveMember = true;
+            }
+        } else {
+            enableAddMember = true;
+            if (groupMember.type != GroupMember.GroupMemberType.Normal || userId.equals(groupInfo.owner)) {
+                enableRemoveMember = true;
+            }
         }
-        conversationMemberAdapter = new ConversationMemberAdapter(true, enableRemoveMember);
+        conversationMemberAdapter = new ConversationMemberAdapter(enableAddMember, enableRemoveMember);
         List<UserInfo> members = contactViewModel.getContacts(memberIds, groupInfo.target);
         conversationMemberAdapter.setMembers(members);
         conversationMemberAdapter.setOnMemberClickListener(this);
@@ -333,6 +342,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @Override
     public void onUserMemberClick(UserInfo userInfo) {
+        if (groupInfo != null && groupInfo.privateChat == 1 && groupMember.type == GroupMember.GroupMemberType.Normal) {
+            return;
+        }
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);
         intent.putExtra("userInfo", userInfo);
         startActivity(intent);
