@@ -332,6 +332,11 @@ public class ConversationActivity extends WfcBaseActivity implements
                 for (GroupInfo info : groupInfos) {
                     if (info.target.equals(groupInfo.target)) {
                         groupInfo = info;
+                        if (groupInfo.mute == 1) {
+                            inputPanel.disableInput("全员禁言中");
+                        } else {
+                            inputPanel.enableInput();
+                        }
                         setTitle();
                         adapter.notifyDataSetChanged();
                     }
@@ -346,6 +351,10 @@ public class ConversationActivity extends WfcBaseActivity implements
                     adapter.notifyDataSetChanged();
                 }
             });
+
+            if (groupInfo.mute == 1) {
+                inputPanel.disableInput("全员禁言中");
+            }
         }
 
         inputPanel.setupConversation(conversationViewModel, conversation);
