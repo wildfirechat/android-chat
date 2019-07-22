@@ -29,6 +29,7 @@ import androidx.core.app.NotificationCompat;
 import org.webrtc.StatsReport;
 
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 
 import static org.webrtc.RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
@@ -79,7 +80,7 @@ public class FloatingVoipService extends Service {
 
         String channelId = "";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            channelId = "cn.wildfirechat.chat.voip";
+            channelId = BuildConfig.APPLICATION_ID + ".voip";
             String channelName = "voip";
             NotificationChannel chan = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
             chan.setLightColor(Color.BLUE);
