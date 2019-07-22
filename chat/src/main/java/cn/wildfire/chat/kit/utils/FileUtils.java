@@ -30,12 +30,13 @@ import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.Comparator;
 
+import cn.wildfirechat.chat.BuildConfig;
 import okhttp3.ResponseBody;
 
 public class FileUtils {
     public static final String DOCUMENTS_DIR = "documents";
     // configured android:authorities in AndroidManifest (https://developer.android.com/reference/android/support/v4/content/FileProvider)
-    public static final String AUTHORITY = "cn.wildfirechat.chat.provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
     public static final String HIDDEN_PREFIX = ".";
     /**
      * TAG for log messages.
