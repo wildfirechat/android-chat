@@ -37,12 +37,14 @@ public class PushService {
     private boolean hasHMSToken;
     private PushServiceType pushServiceType;
     private static PushService INST = new PushService();
+    private static String applicationId;
 
     public enum PushServiceType {
         Unknown, Xiaomi, HMS, MeiZu
     }
 
-    public static void init(Context gContext) {
+    public static void init(Context gContext, String applicationId) {
+        PushService.applicationId = applicationId;
         String sys = getSystem();
         if (SYS_EMUI.equals(sys) && INST.isHMSConfigured(gContext)) {
             INST.pushServiceType = PushServiceType.HMS;
@@ -66,7 +68,7 @@ public class PushService {
     }
 
     public static void showMainActivity(Context context) {
-        String action = "cn.wildfirechat.chat.main";
+        String action = applicationId + ".main";
         Intent intent = new Intent(action);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);

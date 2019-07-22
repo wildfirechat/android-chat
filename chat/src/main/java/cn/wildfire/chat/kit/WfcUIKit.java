@@ -33,6 +33,7 @@ import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.SingleVoipCallActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
@@ -83,7 +84,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             ChatManagerHolder.gChatManager.startLog();
             ChatManagerHolder.gChatManager.addOnReceiveMessageListener(this);
             ChatManagerHolder.gChatManager.addRecallMessageListener(this);
-            PushService.init(application);
+            PushService.init(application, BuildConfig.APPLICATION_ID);
 
             ringPlayer = new AsyncPlayer(null);
             AVEngineKit.init(application, this);
