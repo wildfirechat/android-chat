@@ -40,7 +40,7 @@
         <!-- value的值“xxx”用实际申请的应用ID替换，来源于开发者联盟网站应用的服务详情。-->
         <meta-data
             android:name="com.huawei.hms.client.appid"
-            android:value="${HMS_APP_ID}"></meta-data>
+            android:value="${HMS_APP_ID}" />
 
         <activity
             android:name="com.huawei.hms.activity.BridgeActivity"
