@@ -259,9 +259,12 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @OnClick(R.id.groupNameOptionItemView)
     void updateGroupName() {
-        Intent intent = new Intent(getActivity(), SetGroupNameActivity.class);
-        intent.putExtra("groupInfo", groupInfo);
-        startActivity(intent);
+        if (groupInfo.type != GroupInfo.GroupType.Restricted
+                || (groupMember.type == GroupMember.GroupMemberType.Manager || groupMember.type == GroupMember.GroupMemberType.Owner)) {
+            Intent intent = new Intent(getActivity(), SetGroupNameActivity.class);
+            intent.putExtra("groupInfo", groupInfo);
+            startActivity(intent);
+        }
     }
 
     @OnClick(R.id.groupNoticeLinearLayout)

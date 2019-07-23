@@ -21,7 +21,6 @@ import com.xiaomi.mipush.sdk.MiPushClient;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Properties;
@@ -267,7 +266,7 @@ public class PushService {
             } else if (getMeizuFlymeOSFlag().toLowerCase().contains("flyme")) {
                 SYS = SYS_FLYME;//魅族
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
 
             if (Build.MANUFACTURER.equalsIgnoreCase("HUAWEI")) {
