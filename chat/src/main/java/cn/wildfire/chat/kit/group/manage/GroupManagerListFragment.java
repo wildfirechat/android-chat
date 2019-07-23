@@ -11,7 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
@@ -19,7 +22,6 @@ import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfirechat.model.GroupInfo;
@@ -56,7 +58,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        loadAndShowGroupMembers();
+        loadAndShowGroupMembers(true);
         return view;
     }
 
@@ -74,9 +76,17 @@ public class GroupManagerListFragment extends BaseUserListFragment {
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
-        Intent intent = new Intent(getActivity(), UserInfoActivity.class);
-        intent.putExtra("userId", userInfo.getUserInfo());
-        startActivity(intent);
+        GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
+        if (groupMember.type == GroupMember.GroupMemberType.Owner) {
+            new MaterialDialog.Builder(getActivity())
+                    .items(Collections.singleton("移除群管理"))
+                    .itemsCallback((dialog, itemView, position, text) -> {
+                        groupViewModel.setGroupManager(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), Collections.singletonList(0), null);
+                    })
+                    .cancelable(true)
+                    .build()
+                    .show();
+        }
     }
 
     @Override
@@ -94,13 +104,13 @@ public class GroupManagerListFragment extends BaseUserListFragment {
     private void observerGroupMemberUpdate() {
         groupViewModel.groupMembersUpdateLiveData().observe(this, groupMembers -> {
             if (groupInfo.target.equals(groupMembers.get(0).groupId)) {
-                loadAndShowGroupMembers();
+                loadAndShowGroupMembers(false);
             }
         });
     }
 
-    private void loadAndShowGroupMembers() {
-        List<GroupMember> members = groupViewModel.getGroupMembers(groupInfo.target, false);
+    private void loadAndShowGroupMembers(boolean refresh) {
+        List<GroupMember> members = groupViewModel.getGroupMembers(groupInfo.target, refresh);
         managerMembers.clear();
         for (GroupMember member : members) {
             if (member.type == GroupMember.GroupMemberType.Owner || member.type == GroupMember.GroupMemberType.Manager) {
