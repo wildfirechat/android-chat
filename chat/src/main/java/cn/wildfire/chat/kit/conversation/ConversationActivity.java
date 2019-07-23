@@ -55,6 +55,7 @@ import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.UserSettingScope;
@@ -333,7 +334,12 @@ public class ConversationActivity extends WfcBaseActivity implements
                     if (info.target.equals(groupInfo.target)) {
                         groupInfo = info;
                         if (groupInfo.mute == 1) {
-                            inputPanel.disableInput("全员禁言中");
+                            GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
+                            if (groupMember.type != GroupMember.GroupMemberType.Owner && groupMember.type != GroupMember.GroupMemberType.Manager) {
+                                inputPanel.disableInput("全员禁言中");
+                            } else {
+                                inputPanel.enableInput();
+                            }
                         } else {
                             inputPanel.enableInput();
                         }
@@ -353,7 +359,10 @@ public class ConversationActivity extends WfcBaseActivity implements
             });
 
             if (groupInfo.mute == 1) {
-                inputPanel.disableInput("全员禁言中");
+                GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
+                if (groupMember.type != GroupMember.GroupMemberType.Owner && groupMember.type != GroupMember.GroupMemberType.Manager) {
+                    inputPanel.disableInput("全员禁言中");
+                }
             }
         }
 
