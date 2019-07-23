@@ -56,10 +56,12 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
         params.width = UIUtils.dip2Px(65) + UIUtils.dip2Px(increment);
         contentLayout.setLayoutParams(params);
-        if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {
-            playStatusIndicator.setVisibility(View.VISIBLE);
-        } else {
-            playStatusIndicator.setVisibility(View.GONE);
+        if (message.message.direction == MessageDirection.Receive) {
+            if (message.message.status != MessageStatus.Played) {
+                playStatusIndicator.setVisibility(View.VISIBLE);
+            } else {
+                playStatusIndicator.setVisibility(View.GONE);
+            }
         }
 
         AnimationDrawable animation;
