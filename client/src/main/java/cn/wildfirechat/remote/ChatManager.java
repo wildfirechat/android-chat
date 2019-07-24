@@ -136,7 +136,8 @@ public class ChatManager {
     public enum PushType {
         Xiaomi(1),
         HMS(2),
-        MeiZu(3);
+        MeiZu(3),
+        VIVO(4);
 
         private int value;
 

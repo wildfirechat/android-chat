@@ -3,6 +3,7 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 28
 
+
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
@@ -12,13 +13,17 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders = [
-                MI_APP_ID    : "2882303761517722456",
-                MI_APP_KEY   : "5731772292456",
 
-                HMS_APP_ID   : "100221325",
+                MI_APP_ID    : "2882303761518022277",
+                MI_APP_KEY   : "5181802235277",
+
+                HMS_APP_ID   : "100846173",
 
                 MEIZU_APP_ID : "113616",
-                MEIZU_APP_KEY: "fcd886f51c144b45b87a67a28e2934d1"
+                MEIZU_APP_KEY: "fcd886f51c144b45b87a67a28e2934d1",
+
+                VIVO_APP_ID  : "12918",
+                VIVO_APP_KEY : "c42feb05-de6c-427d-af55-4f902d9e0a75"
         ]
     }
 
