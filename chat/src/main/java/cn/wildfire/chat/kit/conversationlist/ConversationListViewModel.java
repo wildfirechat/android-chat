@@ -6,7 +6,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.message.Message;
@@ -29,6 +31,7 @@ import cn.wildfirechat.remote.OnRemoveConversationListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.RemoveMessageListener;
+import cn.wildfirechat.remote.UserSettingScope;
 
 /**
  * how
@@ -158,25 +161,42 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     @Override
     public void onReceiveMessage(List<Message> messages, boolean hasMore) {
+        Map<String, String> settings = ChatManager.Instance().getUserSettings(UserSettingScope.Conversation_Sync);
+        if (settings == null || settings.isEmpty()) {
+            return;
+        }
+
         if (messages != null && messages.size() > 0) {
+            Map<Conversation, Long> toUpdateConversationMap = new HashMap<>();
+            String userId = ChatManager.Instance().getUserId();
             for (Message message : messages) {
+                Conversation conversation = message.conversation;
+                if (!types.contains(conversation.type) && !lines.contains(conversation.line)) {
+                    continue;
+                }
+
                 if (message.messageId == 0) {
                     continue;
                 }
-                Conversation conversation = message.conversation;
-                if (types.contains(conversation.type) && lines.contains(conversation.line)) {
-                    ChatManager.Instance().getWorkHandler().post(() -> {
-                        String uid = ChatManager.Instance().getUserId();
-                        if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(uid))
-                                || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(uid))
-                                || message.content instanceof DismissGroupNotificationContent) {
-                            // do nothing
-                        } else {
-                            ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-                            postConversationInfo(conversationInfo);
-                        }
-                    });
+
+                if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(userId))
+                        || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(userId))
+                        || message.content instanceof DismissGroupNotificationContent) {
+                    continue;
                 }
+
+                Long uid = toUpdateConversationMap.get(message.conversation);
+                if (uid == null || message.messageUid > uid) {
+                    toUpdateConversationMap.put(message.conversation, message.messageUid);
+                }
+            }
+
+            for (Conversation conversation : toUpdateConversationMap.keySet()) {
+                ChatManager.Instance().getWorkHandler().post(() -> {
+                    ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
+                    postConversationInfo(conversationInfo);
+                });
+
             }
             loadUnreadCount();
         }

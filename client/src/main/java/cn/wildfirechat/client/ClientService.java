@@ -94,6 +94,7 @@ import cn.wildfirechat.model.ProtoGroupInfo;
 import cn.wildfirechat.model.ProtoGroupMember;
 import cn.wildfirechat.model.ProtoGroupSearchResult;
 import cn.wildfirechat.model.ProtoMessage;
+import cn.wildfirechat.model.ProtoMessageContent;
 import cn.wildfirechat.model.ProtoUserInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
@@ -1941,41 +1942,52 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         });
     }
 
+    private void onReceiveMessageInternal(List<Message> messages, boolean hasMore) {
+        handler.post(() -> {
+            int receiverCount = onReceiveMessageListeners.beginBroadcast();
+            IOnReceiveMessageListener listener;
+            while (receiverCount > 0) {
+                receiverCount--;
+                listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
+                try {
+                    listener.onReceive(messages, hasMore);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onReceiveMessageListeners.finishBroadcast();
+        });
+    }
+
     @Override
     public void onReceiveMessage(List<ProtoMessage> messages, boolean hasMore) {
         if (messages.isEmpty()) {
             return;
         }
 
-        android.util.Log.d("", "RECEIVE MESSAGES");
-        List<cn.wildfirechat.message.Message> messageList = convertProtoMessages(messages);
-        while (messageList.size() > 0) {
-            ArrayList<cn.wildfirechat.message.Message> tmpList;
-            if (messageList.size() >= 100) {
-                hasMore = true;
-                tmpList = new ArrayList<>(messageList.subList(0, 100));
-                messageList = new ArrayList<>(messageList.subList(100, messageList.size()));
-            } else {
-                tmpList = new ArrayList<>(messageList);
-                messageList.clear();
+        int totalLength = 0;
+        int messageContentLength;
+        int maxIpcMessageLength = 900 * 1024;
+
+        List<Message> msgs = new ArrayList<>();
+        for (ProtoMessage pmsg : messages) {
+            messageContentLength = getProtoMessageLength(pmsg);
+            if (messageContentLength > maxIpcMessageLength) {
+                android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageContentLength);
+                continue;
             }
-            boolean finalHasMore = hasMore;
-            handler.post(() -> {
-                int receiverCount = onReceiveMessageListeners.beginBroadcast();
-                IOnReceiveMessageListener listener;
-                while (receiverCount > 0) {
-                    receiverCount--;
-                    listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
-                    try {
-                        listener.onReceive(tmpList, finalHasMore);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-                onReceiveMessageListeners.finishBroadcast();
-            });
+            totalLength += messageContentLength;
+            if (totalLength >= maxIpcMessageLength) {
+                onReceiveMessageInternal(msgs, msgs.size() < messages.size());
+                totalLength = 0;
+                msgs = new ArrayList<>();
+            } else {
+                msgs.add(convertProtoMessage(pmsg));
+            }
         }
-        ;
+        if (!msgs.isEmpty()) {
+            onReceiveMessageInternal(msgs, false);
+        }
     }
 
     @Override
@@ -2135,5 +2147,19 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             onUserInfoUpdateListenerRemoteCallbackList.finishBroadcast();
         });
+    }
+
+    // 只是大体大小
+    private int getProtoMessageLength(ProtoMessage message) {
+        int length = 0;
+        ProtoMessageContent content = message.getContent();
+        length += content.getBinaryContent() != null ? content.getBinaryContent().length : 0;
+        length += content.getContent() != null ? content.getContent().length() : 0;
+        length += content.getSearchableContent() != null ? content.getSearchableContent().length() : 0;
+        length += content.getPushContent() != null ? content.getPushContent().length() : 0;
+        length += content.getLocalMediaPath() != null ? content.getLocalMediaPath().length() : 0;
+        length += content.getRemoteMediaUrl() != null ? content.getRemoteMediaUrl().length() : 0;
+        length += content.getLocalContent() != null ? content.getLocalContent().length() : 0;
+        return length;
     }
 }
