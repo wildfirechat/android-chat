@@ -20,6 +20,7 @@ import cn.wildfirechat.message.core.PersistFlag;
 @ContentTag(type = MessageContentType.ContentType_Video, flag = PersistFlag.Persist_And_Count)
 public class VideoMessageContent extends MediaMessageContent {
     private Bitmap thumbnail;
+    private byte[] thumbnailBytes;
 
     // 所有消息都需要一个默认构造函数
     public VideoMessageContent() {
@@ -35,6 +36,9 @@ public class VideoMessageContent extends MediaMessageContent {
     }
 
     public Bitmap getThumbnail() {
+        if (thumbnailBytes != null) {
+            thumbnail = BitmapFactory.decodeByteArray(thumbnailBytes, 0, thumbnailBytes.length);
+        }
         return thumbnail;
     }
 
@@ -57,9 +61,7 @@ public class VideoMessageContent extends MediaMessageContent {
     @Override
     public void decode(MessagePayload payload) {
         super.decode(payload);
-        if (payload.binaryContent != null) {
-            thumbnail = BitmapFactory.decodeByteArray(payload.binaryContent, 0, payload.binaryContent.length);
-        }
+        thumbnailBytes = payload.binaryContent;
     }
 
     @Override
@@ -76,6 +78,7 @@ public class VideoMessageContent extends MediaMessageContent {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.thumbnail, flags);
+        dest.writeByteArray(this.thumbnailBytes);
         dest.writeString(this.localPath);
         dest.writeString(this.remoteUrl);
         dest.writeInt(this.mediaType == null ? -1 : this.mediaType.ordinal());
@@ -85,6 +88,7 @@ public class VideoMessageContent extends MediaMessageContent {
 
     protected VideoMessageContent(Parcel in) {
         this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
+        this.thumbnailBytes = in.createByteArray();
         this.localPath = in.readString();
         this.remoteUrl = in.readString();
         int tmpMediaType = in.readInt();
