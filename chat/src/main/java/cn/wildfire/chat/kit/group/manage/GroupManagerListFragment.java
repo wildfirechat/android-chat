@@ -76,8 +76,11 @@ public class GroupManagerListFragment extends BaseUserListFragment {
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
-        GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
-        if (groupMember.type == GroupMember.GroupMemberType.Owner) {
+        if (userInfo.getUserInfo().uid.equalsIgnoreCase(groupViewModel.getGroupInfo(groupInfo.target, false).owner)) {
+            return;
+        }
+        GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userInfo.getUserInfo().uid);
+        if (groupMember.type == GroupMember.GroupMemberType.Manager) {
             new MaterialDialog.Builder(getActivity())
                     .items(Collections.singleton("移除群管理"))
                     .itemsCallback((dialog, itemView, position, text) -> {
