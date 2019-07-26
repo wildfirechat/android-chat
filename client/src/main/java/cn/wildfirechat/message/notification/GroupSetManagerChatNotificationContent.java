@@ -39,11 +39,12 @@ public class GroupSetManagerChatNotificationContent extends GroupNotificationMes
                 sb.append(" ");
                 sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, member));
             }
+            sb.append(" ");
         }
         if (type == 0) {
-            sb.append("设置为了管理员");
-        } else {
             sb.append("取消了管理员");
+        } else {
+            sb.append("设置为了管理员");
         }
 
         return sb.toString();
