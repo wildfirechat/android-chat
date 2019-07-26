@@ -167,37 +167,37 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         }
 
         if (messages != null && messages.size() > 0) {
-            Map<Conversation, Long> toUpdateConversationMap = new HashMap<>();
-            String userId = ChatManager.Instance().getUserId();
-            for (Message message : messages) {
-                Conversation conversation = message.conversation;
-                if (!types.contains(conversation.type) && !lines.contains(conversation.line)) {
-                    continue;
+            ChatManager.Instance().getWorkHandler().post(() -> {
+                Map<Conversation, Long> toUpdateConversationMap = new HashMap<>();
+                String userId = ChatManager.Instance().getUserId();
+                for (Message message : messages) {
+                    Conversation conversation = message.conversation;
+                    if (!types.contains(conversation.type) && !lines.contains(conversation.line)) {
+                        continue;
+                    }
+
+                    if (message.messageId == 0) {
+                        continue;
+                    }
+
+                    if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(userId))
+                            || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(userId))
+                            || message.content instanceof DismissGroupNotificationContent) {
+                        continue;
+                    }
+
+                    Long uid = toUpdateConversationMap.get(message.conversation);
+                    if (uid == null || message.messageUid > uid) {
+                        toUpdateConversationMap.put(message.conversation, message.messageUid);
+                    }
                 }
 
-                if (message.messageId == 0) {
-                    continue;
-                }
-
-                if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(userId))
-                        || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(userId))
-                        || message.content instanceof DismissGroupNotificationContent) {
-                    continue;
-                }
-
-                Long uid = toUpdateConversationMap.get(message.conversation);
-                if (uid == null || message.messageUid > uid) {
-                    toUpdateConversationMap.put(message.conversation, message.messageUid);
-                }
-            }
-
-            for (Conversation conversation : toUpdateConversationMap.keySet()) {
-                ChatManager.Instance().getWorkHandler().post(() -> {
+                for (Conversation conversation : toUpdateConversationMap.keySet()) {
                     ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
                     postConversationInfo(conversationInfo);
-                });
 
-            }
+                }
+            });
             loadUnreadCount();
         }
     }
