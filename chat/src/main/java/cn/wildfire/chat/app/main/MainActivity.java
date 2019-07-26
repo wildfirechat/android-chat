@@ -37,7 +37,7 @@ import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
-import cn.wildfire.chat.kit.contact.UserFragment;
+import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
@@ -80,7 +80,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private boolean isInitialized = false;
 
     private ConversationListFragment conversationListFragment;
-    private UserFragment contactFragment;
+    private ContactListFragment contactListFragment;
     private DiscoveryFragment discoveryFragment;
     private MeFragment meFragment;
 
@@ -197,11 +197,11 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         contentViewPager.setOffscreenPageLimit(3);
 
         conversationListFragment = new ConversationListFragment();
-        contactFragment = new UserFragment();
+        contactListFragment = new ContactListFragment();
         discoveryFragment = new DiscoveryFragment();
         meFragment = new MeFragment();
         mFragmentList.add(conversationListFragment);
-        mFragmentList.add(contactFragment);
+        mFragmentList.add(contactListFragment);
         mFragmentList.add(discoveryFragment);
         mFragmentList.add(meFragment);
         contentViewPager.setAdapter(new HomeFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
@@ -285,16 +285,16 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             default:
                 break;
         }
-        contactFragment.showQuickIndexBar(position == 1);
+        contactListFragment.showQuickIndexBar(position == 1);
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
         if (state != ViewPager.SCROLL_STATE_IDLE) {
             //滚动过程中隐藏快速导航条
-            contactFragment.showQuickIndexBar(false);
+            contactListFragment.showQuickIndexBar(false);
         } else {
-            contactFragment.showQuickIndexBar(true);
+            contactListFragment.showQuickIndexBar(true);
         }
     }
 
