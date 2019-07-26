@@ -1943,20 +1943,18 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     private void onReceiveMessageInternal(List<Message> messages, boolean hasMore) {
-        handler.post(() -> {
-            int receiverCount = onReceiveMessageListeners.beginBroadcast();
-            IOnReceiveMessageListener listener;
-            while (receiverCount > 0) {
-                receiverCount--;
-                listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
-                try {
-                    listener.onReceive(messages, hasMore);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+        int receiverCount = onReceiveMessageListeners.beginBroadcast();
+        IOnReceiveMessageListener listener;
+        while (receiverCount > 0) {
+            receiverCount--;
+            listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
+            try {
+                listener.onReceive(messages, hasMore);
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
-            onReceiveMessageListeners.finishBroadcast();
-        });
+        }
+        onReceiveMessageListeners.finishBroadcast();
     }
 
     @Override
@@ -1964,30 +1962,31 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (messages.isEmpty()) {
             return;
         }
+        handler.post(() -> {
+            int totalLength = 0;
+            int messageContentLength;
+            int maxIpcMessageLength = 900 * 1024;
 
-        int totalLength = 0;
-        int messageContentLength;
-        int maxIpcMessageLength = 900 * 1024;
-
-        List<Message> msgs = new ArrayList<>();
-        for (ProtoMessage pmsg : messages) {
-            messageContentLength = getProtoMessageLength(pmsg);
-            if (messageContentLength > maxIpcMessageLength) {
-                android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageContentLength);
-                continue;
+            List<Message> msgs = new ArrayList<>();
+            for (ProtoMessage pmsg : messages) {
+                messageContentLength = getProtoMessageLength(pmsg);
+                if (messageContentLength > maxIpcMessageLength) {
+                    android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageContentLength);
+                    continue;
+                }
+                totalLength += messageContentLength;
+                if (totalLength >= maxIpcMessageLength) {
+                    onReceiveMessageInternal(msgs, msgs.size() < messages.size());
+                    totalLength = 0;
+                    msgs = new ArrayList<>();
+                } else {
+                    msgs.add(convertProtoMessage(pmsg));
+                }
             }
-            totalLength += messageContentLength;
-            if (totalLength >= maxIpcMessageLength) {
-                onReceiveMessageInternal(msgs, msgs.size() < messages.size());
-                totalLength = 0;
-                msgs = new ArrayList<>();
-            } else {
-                msgs.add(convertProtoMessage(pmsg));
+            if (!msgs.isEmpty()) {
+                onReceiveMessageInternal(msgs, false);
             }
-        }
-        if (!msgs.isEmpty()) {
-            onReceiveMessageInternal(msgs, false);
-        }
+        });
     }
 
     @Override
