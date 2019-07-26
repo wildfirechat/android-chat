@@ -31,7 +31,7 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.model.UserInfo;
 
-public class UserFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
+public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private UserViewModel userViewModel;
 
     private Observer<Integer> friendRequestUpdateLiveDataObserver = count -> {
