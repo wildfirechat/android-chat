@@ -25,7 +25,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -82,8 +81,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     private void init() {
         conversationViewModel = ViewModelProviders.of(this, new ConversationViewModelFactory(conversationInfo.conversation)).get(ConversationViewModel.class);
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
-        String userId = userViewModel.getUserId();
+        String userId = conversationInfo.conversation.target;
         conversationMemberAdapter = new ConversationMemberAdapter(true, false);
         List<UserInfo> members = Collections.singletonList(userViewModel.getUserInfo(userId, false));
         conversationMemberAdapter.setMembers(members);
