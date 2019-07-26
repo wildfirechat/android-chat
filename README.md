@@ -32,10 +32,12 @@
 
 另外，如果可以请告知我们，我们会在案例参考把项目加上。
 
-
 ### 联系我们
-1. QQ：3239481169(野火IM)
-2. QQ: 1960867973(x86)
+
+> 请优先采用邮箱和我们联系。
+
+1. heavyrain.lee  邮箱: heavyrain.lee@wildfirechat.cn  微信：wildfirechat
+2. imndx  邮箱: imndx@wildfirechat.cn  微信：wfchat
 
 ### 问题交流
 1. 如果大家发现bug，请在GitHub提issue
