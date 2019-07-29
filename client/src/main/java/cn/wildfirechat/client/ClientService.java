@@ -24,6 +24,7 @@ import com.tencent.mars.Mars;
 import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.proto.ProtoLogic;
 import com.tencent.mars.sdt.SdtLogic;
+import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.xlog.Log;
 import com.tencent.mars.xlog.Xlog;
 
@@ -1115,6 +1116,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public String getEncodedClientId() throws RemoteException {
+            return StnLogic.clientId();
+        }
+
+        @Override
         public void createGroup(String groupId, String groupName, String groupPortrait, int groupType, List<String> memberIds, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback2 callback) throws RemoteException {
             String[] memberArray = new String[memberIds.size()];
             for (int i = 0; i < memberIds.size(); i++) {
@@ -1365,6 +1371,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             });
+        }
+
+        @Override
+        public byte[] encodeData(byte[] data) throws RemoteException {
+            return StnLogic.encodeData(data);
+        }
+
+        @Override
+        public byte[] decodeData(byte[] data) throws RemoteException {
+            return StnLogic.decodeData(data);
         }
 
 
