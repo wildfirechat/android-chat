@@ -1501,6 +1501,73 @@ public class ChatManager {
         return null;
     }
 
+    public List<Message> getMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, long fromIndex, boolean before, int count, String withUser) {
+        if (!checkRemoteService()) {
+            Log.e(TAG, "Remote service not available");
+            return null;
+        }
+
+        if (conversationTypes == null || conversationTypes.size() == 0 ||
+                lines == null || lines.size() == 0 ||
+                contentTypes == null || contentTypes.size() == 0) {
+            Log.e(TAG, "Invalid conversation type or lines or contentType");
+            return null;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        int[] inlines = new int[lines.size()];
+        int[] inCntTypes = new int[contentTypes.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+
+        for (int j = 0; j < lines.size(); j++) {
+            inlines[j] = lines.get(j);
+        }
+
+        for (int k = 0; k < contentTypes.size(); k++) {
+            inCntTypes[k] = contentTypes.get(k);
+        }
+
+        try {
+            return mClient.getMessagesEx(intypes, inlines, inCntTypes, fromIndex, before, count, withUser);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Message> getMessagesEx2(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, MessageStatus messageStatus, long fromIndex, boolean before, int count, String withUser) {
+        if (!checkRemoteService()) {
+            Log.e(TAG, "Remote service not available");
+            return null;
+        }
+
+        if (conversationTypes == null || conversationTypes.size() == 0 ||
+                lines == null || lines.size() == 0) {
+            Log.e(TAG, "Invalid conversation type or lines");
+            return null;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        int[] inlines = new int[lines.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+
+        for (int j = 0; j < lines.size(); j++) {
+            inlines[j] = lines.get(j);
+        }
+
+        try {
+            return mClient.getMessagesEx2(intypes, inlines, messageStatus == null ? -1 : messageStatus.ordinal(), fromIndex, before, count, withUser);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     public void getRemoteMessages(Conversation conversation, long beforeMessageId, int count, GetRemoteMessageCallback callback) {
         if (!checkRemoteService()) {
             return;
