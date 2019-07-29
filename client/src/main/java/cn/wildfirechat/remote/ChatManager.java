@@ -2578,6 +2578,18 @@ public class ChatManager {
         }
     }
 
+    public String getEncodedClientId() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getEncodedClientId();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     public void createGroup(String groupId, String groupName, String groupPortrait, GroupInfo.GroupType groupType, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -3023,6 +3035,32 @@ public class ChatManager {
             if (callback != null) {
                 callback.onFail(ErrorCode.SERVICE_EXCEPTION);
             }
+        }
+    }
+
+    public byte[] encodeData(byte[] data) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.encodeData(data);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public byte[] decodeData(byte[] data) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.decodeData(data);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
