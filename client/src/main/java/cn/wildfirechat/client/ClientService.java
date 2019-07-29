@@ -422,6 +422,32 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<Message> getMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser);
+            List<cn.wildfirechat.message.Message> out = new ArrayList<>();
+            for (ProtoMessage protoMessage : protoMessages) {
+                cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
+                if (msg != null) {
+                    out.add(msg);
+                }
+            }
+            return out;
+        }
+
+        @Override
+        public List<Message> getMessagesEx2(int[] conversationTypes, int[] lines, int messageStatus, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser);
+            List<cn.wildfirechat.message.Message> out = new ArrayList<>();
+            for (ProtoMessage protoMessage : protoMessages) {
+                cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
+                if (msg != null) {
+                    out.add(msg);
+                }
+            }
+            return out;
+        }
+
+        @Override
         public void getRemoteMessages(Conversation conversation, long beforeMessageUid, int count, IGetRemoteMessageCallback callback) throws RemoteException {
             ProtoLogic.getRemoteMessages(conversation.type.ordinal(), conversation.target, conversation.line, beforeMessageUid, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
                 @Override
