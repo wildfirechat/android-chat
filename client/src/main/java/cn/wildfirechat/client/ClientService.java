@@ -1082,10 +1082,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     result.marchedMessage = convertProtoMessage(protoResult.getMarchedMessage());
                     result.timestamp = protoResult.getTimestamp();
                     result.marchedCount = protoResult.getMarchedCount();
-
-                    if (result.marchedMessage != null) {
-                        output.add(result);
-                    }
+                    output.add(result);
 
                 }
             }
