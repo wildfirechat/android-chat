@@ -102,7 +102,7 @@ public class GroupManageFragment extends Fragment {
         new MaterialDialog.Builder(getActivity())
                 .items(R.array.group_search_type)
                 .itemsCallback((dialog, itemView, position, text) -> {
-                    // TODO
+                    searchOptionItemView.setRightText((String) text);
                 })
                 .show();
     }
