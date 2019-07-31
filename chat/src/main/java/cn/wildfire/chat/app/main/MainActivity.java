@@ -1,5 +1,6 @@
 package cn.wildfire.chat.app.main;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -241,6 +242,13 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 searchUser();
                 break;
             case R.id.scan_qrcode:
+                String[] permissions = new String[]{Manifest.permission.CAMERA};
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!checkPermission(permissions)) {
+                        requestPermissions(permissions, 100);
+                        return true;
+                    }
+                }
                 startActivityForResult(new Intent(this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
             default:
                 break;
