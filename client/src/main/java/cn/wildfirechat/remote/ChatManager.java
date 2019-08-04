@@ -1158,8 +1158,10 @@ public class ChatManager {
      *
      * @param userId
      * @param token
+     *
+     * @return 是否是新用户。新用户需要同步信息，耗时较长，可以增加等待提示。
      */
-    public void connect(String userId, String token) {
+    public boolean connect(String userId, String token) {
         if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("userId and token must be empty!");
         }
@@ -1171,17 +1173,17 @@ public class ChatManager {
 
         if (mClient != null) {
             try {
-                mClient.connect(this.userId, this.token);
                 SharedPreferences sp = gContext.getSharedPreferences("wildfirechat.config", Context.MODE_PRIVATE);
                 sp.edit()
                         .putString("userId", userId)
                         .putString("token", token)
                         .commit();
-                ;
+                return mClient.connect(this.userId, this.token);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
+        return false;
     }
 
     /**

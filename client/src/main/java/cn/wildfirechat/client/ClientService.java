@@ -163,9 +163,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void connect(String userName, String userPwd) throws RemoteException {
+        public boolean connect(String userName, String userPwd) throws RemoteException {
             if (logined) {
-                return;
+                return false;
             }
 
             logined = true;
@@ -173,8 +173,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             mConnectionStatus = ConnectionStatusUnconnected;
             userId = userName;
-            initProto(userName, userPwd);
-
+            return initProto(userName, userPwd);
         }
 
         @Override
@@ -1783,7 +1782,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
     }
 
-    private void initProto(String userName, String userPwd) {
+    private boolean initProto(String userName, String userPwd) {
         AppLogic.setCallBack(this);
         SdtLogic.setCallBack(this);
 
@@ -1803,7 +1802,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setConnectionStatusCallback(ClientService.this);
         ProtoLogic.setReceiveMessageCallback(ClientService.this);
         ProtoLogic.setAuthInfo(userName, userPwd);
-        ProtoLogic.connect(mHost, mPort);
+        return ProtoLogic.connect(mHost, mPort);
     }
 
     private void resetProto() {
