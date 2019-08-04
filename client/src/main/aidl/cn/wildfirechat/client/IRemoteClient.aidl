@@ -49,7 +49,7 @@ import java.util.Map;
 
 interface IRemoteClient {
     String getClientId();
-    oneway void connect(in String userId, in String token);
+    boolean connect(in String userId, in String token);
     oneway void disconnect(in boolean clearSession);
     oneway void setForeground(in int isForeground);
     oneway void onNetworkChange();
