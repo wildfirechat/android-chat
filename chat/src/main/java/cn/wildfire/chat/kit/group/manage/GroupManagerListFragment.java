@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
@@ -76,11 +77,14 @@ public class GroupManagerListFragment extends BaseUserListFragment {
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
-        if (userInfo.getUserInfo().uid.equalsIgnoreCase(groupInfo.owner)) {
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        GroupMember me = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
+        if (me == null || me.type != GroupMember.GroupMemberType.Owner) {
             return;
         }
+
         GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userInfo.getUserInfo().uid);
-        if (groupMember.type == GroupMember.GroupMemberType.Owner) {
+        if (groupMember.type == GroupMember.GroupMemberType.Manager) {
             new MaterialDialog.Builder(getActivity())
                     .items(Collections.singleton("移除群管理"))
                     .itemsCallback((dialog, itemView, position, text) -> {
