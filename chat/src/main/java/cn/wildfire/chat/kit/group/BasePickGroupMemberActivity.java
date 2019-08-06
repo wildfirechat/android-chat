@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -19,7 +19,7 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     protected GroupInfo groupInfo;
     protected List<String> unCheckableMemberIds;
 
-    private PickUserViewModel pickUserViewModel;
+    protected PickUserViewModel pickUserViewModel;
     private Observer<UIUserInfo> userCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
         @Override
         public void onChanged(@Nullable UIUserInfo userInfo) {
@@ -56,7 +56,9 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
             pickUserViewModel.setUncheckableIds(unCheckableMemberIds);
         } else {
             UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-            pickUserViewModel.setUncheckableIds(Collections.singletonList(userViewModel.getUserId()));
+            List<String> list = new ArrayList<>();
+            list.add(userViewModel.getUserId());
+            pickUserViewModel.setUncheckableIds(list);
         }
         pickUserViewModel.setMaxPickCount(maxPickCount);
 
