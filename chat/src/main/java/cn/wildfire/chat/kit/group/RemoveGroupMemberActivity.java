@@ -4,15 +4,19 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.lifecycle.ViewModelProviders;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.model.GroupMember;
+import cn.wildfirechat.remote.ChatManager;
 
 public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
     private MenuItem menuItem;
@@ -37,6 +41,10 @@ public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
     protected void afterViews() {
         super.afterViews();
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
+        if (groupMember.type == GroupMember.GroupMemberType.Manager) {
+            pickUserViewModel.addUncheckableIds(Collections.singletonList(groupInfo.owner));
+        }
     }
 
     @Override
