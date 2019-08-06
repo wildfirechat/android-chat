@@ -41,6 +41,16 @@ public class PickUserViewModel extends ViewModel {
         updateUserStatus();
     }
 
+    public void addUncheckableIds(List<String> uncheckableIds) {
+        if (uncheckableIds == null || uncheckableIds.isEmpty()) {
+            return;
+        }
+        if (this.uncheckableIds == null) {
+            this.uncheckableIds = new ArrayList<>();
+        }
+        this.uncheckableIds.addAll(uncheckableIds);
+    }
+
     public void setInitialCheckedIds(List<String> checkedIds) {
         this.initialCheckedIds = checkedIds;
         updateUserStatus();
