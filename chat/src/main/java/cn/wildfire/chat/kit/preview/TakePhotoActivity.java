@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.cjt2325.cameralibrary.JCameraView;
 import com.cjt2325.cameralibrary.listener.JCameraListener;
 
@@ -14,13 +17,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import cn.wildfire.chat.app.Config;
 import cn.wildfirechat.chat.R;
 
 public class TakePhotoActivity extends AppCompatActivity {
     private JCameraView mJCameraView;
+    public static final String MODE = "mode";
+    public static final int MODE_RECORDER_ONLY = 0x102;
+    public static final int MODE_CAPTURE_ONLY = 0x101;
+    public static final int MODE_CAPTURE_AND_RECORDER = 0x103;
+//    public static final int BUTTON_STATE_ONLY_CAPTURE = 0x101;      //只能拍照
+//    public static final int BUTTON_STATE_ONLY_RECORDER = 0x102;     //只能录像
+//    public static final int BUTTON_STATE_BOTH = 0x103;              //两者都可以
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +48,8 @@ public class TakePhotoActivity extends AppCompatActivity {
             file.mkdirs();
         }
 
+        int mode = getIntent().getIntExtra(MODE, MODE_CAPTURE_AND_RECORDER);
+        mJCameraView.setFeatures(mode);
         mJCameraView.setSaveVideoPath(Config.VIDEO_SAVE_DIR);
         mJCameraView.setJCameraLisenter(new JCameraListener() {
 
