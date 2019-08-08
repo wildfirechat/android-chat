@@ -26,6 +26,7 @@ import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -98,11 +99,12 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
         ButterKnife.bind(this);
 
         // Check for mandatory permissions.
-        for (String permission : MANDATORY_PERMISSIONS) {
-            if (checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                setResult(RESULT_CANCELED);
-                finish();
-                return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (String permission : MANDATORY_PERMISSIONS) {
+                if (checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(MANDATORY_PERMISSIONS, 100);
+                    break;
+                }
             }
         }
 
@@ -119,6 +121,17 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
             isOutgoing = intent.getBooleanExtra(EXTRA_MO, false);
             isAudioOnly = intent.getBooleanExtra(EXTRA_AUDIO_ONLY, false);
             init(targetId, isOutgoing, isAudioOnly);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "需要录音和摄像头权限，才能进行语音通话", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
         }
     }
 
