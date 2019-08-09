@@ -516,6 +516,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void clearUnreadStatusEx(int[] conversationTypes, int[] lines) throws RemoteException {
+            ProtoLogic.clearUnreadStatusEx(conversationTypes, lines);
+        }
+
+        @Override
         public void clearAllUnreadStatus() throws RemoteException {
             ProtoLogic.clearAllUnreadStatus();
         }
