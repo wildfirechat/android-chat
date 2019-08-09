@@ -1158,7 +1158,6 @@ public class ChatManager {
      *
      * @param userId
      * @param token
-     *
      * @return 是否是新用户。新用户需要同步信息，耗时较长，可以增加等待提示。
      */
     public boolean connect(String userId, String token) {
@@ -1719,6 +1718,26 @@ public class ChatManager {
             for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                 listener.onConversationUnreadStatusClear(conversationInfo, unreadCount);
             }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearUnreadStatusEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        int[] inTypes = new int[conversationTypes.size()];
+        int[] inLines = new int[lines.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            inTypes[i] = conversationTypes.get(i).ordinal();
+        }
+        for (int j = 0; j < lines.size(); j++) {
+            inLines[j] = lines.get(j);
+        }
+
+        try {
+            mClient.clearUnreadStatusEx(inTypes, inLines);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -2659,6 +2678,7 @@ public class ChatManager {
             return null;
         }
     }
+
     public void createGroup(String groupId, String groupName, String groupPortrait, GroupInfo.GroupType groupType, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
