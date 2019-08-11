@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.preview;
+package cn.wildfire.chat.kit.mm;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,14 +28,10 @@ import java.util.List;
 
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.message.core.MessageContentType;
 
 /**
  * @author imndx
@@ -45,7 +41,7 @@ public class MMPreviewActivity extends Activity {
     private View currentVideoView;
 
     private static int currentPosition = -1;
-    private static List<UiMessage> messages;
+    private static List<MediaEntry> entries;
     private boolean pendingPreviewInitialMedia;
 
     private final PagerAdapter pagerAdapter = new PagerAdapter() {
@@ -54,8 +50,8 @@ public class MMPreviewActivity extends Activity {
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             View view;
-            UiMessage message = messages.get(position);
-            if (message.message.content.getType() == MessageContentType.ContentType_Image) {
+            MediaEntry entry = entries.get(position);
+            if (entry.getType() == MediaEntry.TYPE_IMAGE) {
                 view = LayoutInflater.from(MMPreviewActivity.this).inflate(R.layout.preview_photo, null);
             } else {
                 view = LayoutInflater.from(MMPreviewActivity.this).inflate(R.layout.preview_video, null);
@@ -64,7 +60,7 @@ public class MMPreviewActivity extends Activity {
             container.addView(view);
             views.put(position % 3, view);
             if (pendingPreviewInitialMedia) {
-                preview(view, message);
+                preview(view, entry);
             }
             return view;
         }
@@ -77,7 +73,7 @@ public class MMPreviewActivity extends Activity {
 
         @Override
         public int getCount() {
-            return messages == null ? 0 : messages.size();
+            return entries == null ? 0 : entries.size();
         }
 
         @Override
@@ -103,8 +99,8 @@ public class MMPreviewActivity extends Activity {
                 resetVideoView(currentVideoView);
                 currentVideoView = null;
             }
-            UiMessage message = messages.get(position);
-            preview(view, message);
+            MediaEntry entry = entries.get(position);
+            preview(view, entry);
         }
 
         @Override
@@ -113,8 +109,8 @@ public class MMPreviewActivity extends Activity {
         }
     };
 
-    private void preview(View view, UiMessage message) {
-        if (message.message.content.getType() == MessageContentType.ContentType_Image) {
+    private void preview(View view, MediaEntry message) {
+        if (message.getType() == MediaEntry.TYPE_IMAGE) {
             previewImage(view, message);
         } else {
             previewVideo(view, message);
@@ -134,11 +130,14 @@ public class MMPreviewActivity extends Activity {
         videoView.setVisibility(View.INVISIBLE);
     }
 
-    private void previewVideo(View view, UiMessage message) {
+    private void previewVideo(View view, MediaEntry entry) {
 
-        VideoMessageContent content = (VideoMessageContent) message.message.content;
         PhotoView photoView = view.findViewById(R.id.photoView);
-        photoView.setImageBitmap(content.getThumbnail());
+        if (entry.getThumbnail() != null) {
+            GlideApp.with(photoView).load(entry.getThumbnail()).into(photoView);
+        } else {
+            GlideApp.with(photoView).load(entry.getThumbnailUrl()).into(photoView);
+        }
 
         VideoView videoView = view.findViewById(R.id.videoView);
         videoView.setVisibility(View.INVISIBLE);
@@ -152,19 +151,20 @@ public class MMPreviewActivity extends Activity {
             @Override
             public void onClick(View v) {
                 btn.setVisibility(View.GONE);
-                if (TextUtils.isEmpty(content.localPath)) {
-                    File videoFile = new File(Config.VIDEO_SAVE_DIR, message.message.messageUid + ".mp4");
+                if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
+                    String name = entry.getMediaUrl().substring(entry.getMediaUrl().lastIndexOf("/"));
+                    File videoFile = new File(Config.VIDEO_SAVE_DIR, name);
                     if (!videoFile.exists()) {
-                        view.setTag(message.message.messageUid + "");
+                        view.setTag(name);
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
                         final WeakReference<View> viewWeakReference = new WeakReference<>(view);
-                        DownloadManager.get().download(content.remoteUrl, Config.VIDEO_SAVE_DIR, message.message.messageUid + ".mp4", new DownloadManager.OnDownloadListener() {
+                        DownloadManager.get().download(entry.getMediaUrl(), Config.VIDEO_SAVE_DIR, name, new DownloadManager.OnDownloadListener() {
                             @Override
                             public void onSuccess(File file) {
                                 UIUtils.postTaskSafely(() -> {
                                     View targetView = viewWeakReference.get();
-                                    if (targetView != null && (message.message.messageUid + "").equals(targetView.getTag())) {
+                                    if (targetView != null && name.equals(targetView.getTag())) {
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
                                         playVideo(targetView, file.getAbsolutePath());
                                     }
@@ -181,7 +181,7 @@ public class MMPreviewActivity extends Activity {
                             public void onFail() {
                                 View targetView = viewWeakReference.get();
                                 UIUtils.postTaskSafely(() -> {
-                                    if (targetView != null && (message.message.messageUid + "").equals(targetView.getTag())) {
+                                    if (targetView != null && name.equals(targetView.getTag())) {
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
                                         targetView.findViewById(R.id.btnVideo).setVisibility(View.VISIBLE);
                                     }
@@ -192,7 +192,7 @@ public class MMPreviewActivity extends Activity {
                         playVideo(view, videoFile.getAbsolutePath());
                     }
                 } else {
-                    playVideo(view, content.localPath);
+                    playVideo(view, entry.getMediaLocalPath());
                 }
             }
         });
@@ -225,13 +225,17 @@ public class MMPreviewActivity extends Activity {
 
     }
 
-    private void previewImage(View view, UiMessage message) {
-        ImageMessageContent content = (ImageMessageContent) message.message.content;
-        String path = TextUtils.isEmpty(content.localPath) ? content.remoteUrl : content.localPath;
+    private void previewImage(View view, MediaEntry entry) {
         PhotoView photoView = view.findViewById(R.id.photoView);
-        GlideApp.with(MMPreviewActivity.this).load(path)
-                .placeholder(new BitmapDrawable(getResources(), content.getThumbnail()))
-                .into(photoView);
+        if (entry.getThumbnail() != null) {
+            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl())
+                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
+                    .into(photoView);
+        } else {
+            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl())
+                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
+                    .into(photoView);
+        }
     }
 
     @Override
@@ -254,15 +258,15 @@ public class MMPreviewActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        messages = null;
+        entries = null;
     }
 
-    public static void startActivity(Context context, List<UiMessage> messages, int current) {
-        if (messages == null || messages.isEmpty()) {
+    public static void startActivity(Context context, List<MediaEntry> entries, int current) {
+        if (entries == null || entries.isEmpty()) {
             Log.w(MMPreviewActivity.class.getSimpleName(), "message is null or empty");
             return;
         }
-        MMPreviewActivity.messages = messages;
+        MMPreviewActivity.entries = entries;
         MMPreviewActivity.currentPosition = current;
         Intent intent = new Intent(context, MMPreviewActivity.class);
         context.startActivity(intent);

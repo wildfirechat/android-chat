@@ -13,7 +13,7 @@ import java.io.File;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
-import cn.wildfire.chat.kit.preview.TakePhotoActivity;
+import cn.wildfire.chat.kit.mm.TakePhotoActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.TypingMessageContent;

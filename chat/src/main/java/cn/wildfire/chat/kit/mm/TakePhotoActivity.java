@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.preview;
+package cn.wildfire.chat.kit.mm;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
