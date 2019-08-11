@@ -99,7 +99,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="cn.wildfire.chat.kit.preview.TakePhotoActivity"
+            android:name="cn.wildfire.chat.kit.mm.TakePhotoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
@@ -122,7 +122,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="cn.wildfire.chat.kit.preview.MMPreviewActivity"
+            android:name="cn.wildfire.chat.kit.mm.MMPreviewActivity"
             android:theme="@style/AppTheme.FullScreen" />
         <activity android:name="cn.wildfire.chat.kit.voip.SingleVoipCallActivity">
             <intent-filter>
