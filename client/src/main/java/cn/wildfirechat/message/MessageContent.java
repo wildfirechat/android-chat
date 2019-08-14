@@ -24,6 +24,7 @@ public abstract class MessageContent implements Parcelable {
 
     //提醒对象，mentionedType 1时有效
     public List<String> mentionedTargets;
+    public String extra;
 
     public int getType() {
         ContentTag tag = getClass().getAnnotation(ContentTag.class);
