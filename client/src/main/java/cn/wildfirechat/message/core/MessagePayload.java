@@ -101,6 +101,7 @@ public class MessagePayload implements Parcelable {
         dest.writeString(this.remoteMediaUrl);
         dest.writeString(this.localMediaPath);
         dest.writeString(this.localContent);
+        dest.writeString(this.extra);
     }
 
     protected MessagePayload(Parcel in) {
@@ -116,6 +117,7 @@ public class MessagePayload implements Parcelable {
         this.remoteMediaUrl = in.readString();
         this.localMediaPath = in.readString();
         this.localContent = in.readString();
+        this.extra = in.readString();
     }
 
     public static final Creator<MessagePayload> CREATOR = new Creator<MessagePayload>() {
