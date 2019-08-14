@@ -35,6 +35,7 @@ public class MessagePayload implements Parcelable {
 
     //前面的属性都会在网络发送，下面的属性只在本地存储
     public String localContent;
+    public String extra;
 
     public MessagePayload() {
     }
@@ -55,6 +56,7 @@ public class MessagePayload implements Parcelable {
         } else {
             this.mentionedTargets = new ArrayList<>();
         }
+        this.extra = protoMessageContent.getExtra();
     }
 
     public ProtoMessageContent toProtoContent() {
@@ -76,6 +78,7 @@ public class MessagePayload implements Parcelable {
             targets = new String[0];
         }
         out.setMentionedTargets(targets);
+        out.setExtra(extra);
         return out;
     }
 
