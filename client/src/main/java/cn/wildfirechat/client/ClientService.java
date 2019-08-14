@@ -281,6 +281,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             protoMessage.setFrom(msg.sender);
             protoMessage.setTos(msg.toUsers);
             MessagePayload payload = msg.content.encode();
+            payload.extra = msg.content.extra;
             payload.contentType = msg.content.getClass().getAnnotation(ContentTag.class).type();
             protoMessage.setContent(payload.toProtoContent());
             protoMessage.setMessageId(msg.messageId);
@@ -1701,6 +1702,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     ((NotificationMessageContent) msg.content).fromSelf = true;
                 }
             }
+            msg.content.extra = payload.extra;
         } catch (Exception e) {
             e.printStackTrace();
             if (msg.content.getPersistFlag() == PersistFlag.Persist || msg.content.getPersistFlag() == PersistFlag.Persist_And_Count) {
