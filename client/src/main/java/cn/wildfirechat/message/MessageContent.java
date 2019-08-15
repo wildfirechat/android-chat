@@ -26,7 +26,7 @@ public abstract class MessageContent implements Parcelable {
     public List<String> mentionedTargets;
     public String extra;
 
-    public int getType() {
+    final public int getType() {
         ContentTag tag = getClass().getAnnotation(ContentTag.class);
         if (tag != null) {
             return tag.type();
@@ -34,7 +34,7 @@ public abstract class MessageContent implements Parcelable {
         return -1;
     }
 
-    public PersistFlag getPersistFlag() {
+    final public PersistFlag getPersistFlag() {
         ContentTag tag = getClass().getAnnotation(ContentTag.class);
         if (tag != null) {
             return tag.flag();
