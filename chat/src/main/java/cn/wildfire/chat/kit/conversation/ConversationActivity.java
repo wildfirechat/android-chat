@@ -579,6 +579,7 @@ public class ConversationActivity extends WfcBaseActivity implements
     protected void onPause() {
         super.onPause();
         inputPanel.onActivityPause();
+        conversationViewModel.stopPlayAudio();
     }
 
     @Override
