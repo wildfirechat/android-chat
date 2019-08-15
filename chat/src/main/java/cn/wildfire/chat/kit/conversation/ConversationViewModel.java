@@ -322,6 +322,9 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
         }
     }
 
+    public void stopPlayAudio() {
+        AudioPlayManager.getInstance().stopPlay();
+    }
 
     public void sendMessage(MessageContent content) {
         Message msg = new Message();
@@ -340,6 +343,7 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
     }
 
     public void sendTextMsg(TextMessageContent txtContent) {
+        txtContent.extra = "hello extra";
         sendMessage(txtContent);
         ChatManager.Instance().setConversationDraft(conversation, null);
     }
