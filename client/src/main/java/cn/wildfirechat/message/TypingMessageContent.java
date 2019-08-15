@@ -20,35 +20,34 @@ public class TypingMessageContent extends MessageContent {
     public static final int TYPING_LOCATION = 3;
     public static final int TYPING_FILE = 4;
 
-    private int type;
+    private int typingType;
 
     public TypingMessageContent() {
     }
 
-    public TypingMessageContent(int type) {
-        this.type = type;
+    public TypingMessageContent(int typingType) {
+        this.typingType = typingType;
     }
 
-    @Override
-    public int getType() {
-        return type;
+    public int getTypingType() {
+        return typingType;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setTypingType(int typingType) {
+        this.typingType = typingType;
     }
 
     @Override
     public MessagePayload encode() {
         MessagePayload payload = new MessagePayload();
-        payload.content = type + "";
+        payload.content = typingType + "";
         return payload;
     }
 
 
     @Override
     public void decode(MessagePayload payload) {
-        type = Integer.parseInt(payload.content);
+        typingType = Integer.parseInt(payload.content);
     }
 
     @Override
@@ -64,11 +63,11 @@ public class TypingMessageContent extends MessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.type);
+        dest.writeInt(this.typingType);
     }
 
     protected TypingMessageContent(Parcel in) {
-        this.type = in.readInt();
+        this.typingType = in.readInt();
     }
 
     public static final Creator<TypingMessageContent> CREATOR = new Creator<TypingMessageContent>() {
