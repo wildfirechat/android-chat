@@ -31,7 +31,6 @@ import cn.wildfirechat.remote.OnRemoveConversationListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.RemoveMessageListener;
-import cn.wildfirechat.remote.UserSettingScope;
 
 /**
  * how
@@ -161,10 +160,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     @Override
     public void onReceiveMessage(List<Message> messages, boolean hasMore) {
-        Map<String, String> settings = ChatManager.Instance().getUserSettings(UserSettingScope.Conversation_Sync);
-        if (settings == null || settings.isEmpty()) {
-            return;
-        }
 
         if (messages != null && messages.size() > 0) {
             ChatManager.Instance().getWorkHandler().post(() -> {
