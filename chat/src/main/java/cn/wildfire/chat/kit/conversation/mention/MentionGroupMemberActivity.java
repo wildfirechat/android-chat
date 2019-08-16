@@ -1,22 +1,44 @@
 package cn.wildfire.chat.kit.conversation.mention;
 
-import cn.wildfire.chat.kit.WfcBaseActivity;
+import android.view.Menu;
+
+import java.util.List;
+
+import cn.wildfire.chat.kit.search.SearchActivity;
+import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupInfo;
 
-public class MentionGroupMemberActivity extends WfcBaseActivity {
+public class MentionGroupMemberActivity extends SearchActivity {
     private GroupInfo groupInfo;
 
     @Override
-    protected void afterViews() {
+    protected void beforeViews() {
+        super.beforeViews();
         groupInfo = getIntent().getParcelableExtra("groupInfo");
+    }
+
+    @Override
+    protected void afterViews() {
+        super.afterViews();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, MentionGroupMemberFragment.newInstance(groupInfo))
+                .replace(R.id.mentionGroupMemberContainer, MentionGroupMemberFragment.newInstance(groupInfo))
                 .commit();
     }
 
     @Override
+    protected void afterMenus(Menu menu) {
+        super.afterMenus(menu);
+        searchView.setIconified(true);
+    }
+
+    @Override
+    protected void initSearchModule(List<SearchableModule> modules) {
+        modules.add(new GroupMemberSearchModule(groupInfo.target));
+    }
+
+    @Override
     protected int contentLayout() {
-        return R.layout.fragment_container_activity;
+        return R.layout.group_mention_activity;
     }
 }
