@@ -18,7 +18,7 @@ import cn.wildfirechat.chat.R;
 public abstract class SearchActivity extends WfcBaseActivity {
     private SearchFragment searchFragment;
     private List<SearchableModule> modules = new ArrayList<>();
-    private SearchView searchView;
+    protected SearchView searchView;
 
     @Override
     protected int contentLayout() {

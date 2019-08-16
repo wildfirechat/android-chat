@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,6 +15,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfirechat.chat.R;
@@ -66,13 +67,16 @@ public class SearchFragment extends Fragment {
         if (adapter != null) {
             adapter.reset();
         }
+        emptyLinearLayout.setVisibility(View.GONE);
     }
 
     private void onSearchResult(SearchResult result) {
         if (result == null) {
+            recyclerView.setVisibility(View.GONE);
             emptyLinearLayout.setVisibility(View.VISIBLE);
             return;
         } else {
+            recyclerView.setVisibility(View.VISIBLE);
             emptyLinearLayout.setVisibility(View.GONE);
         }
         if (adapter == null) {
