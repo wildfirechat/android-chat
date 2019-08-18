@@ -68,6 +68,7 @@ public class SearchFragment extends Fragment {
             adapter.reset();
         }
         emptyLinearLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
     }
 
     private void onSearchResult(SearchResult result) {
