@@ -1,5 +1,7 @@
 package cn.wildfire.chat.kit.annotation;
 
+import androidx.annotation.StringRes;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,6 +20,8 @@ import cn.wildfirechat.model.ConversationInfo;
 public @interface ConversationContextMenuItem {
     String title();
 
+    @StringRes int titleResId() default 0;
+
     String tag();
 
     int priority() default 0;
@@ -35,4 +39,6 @@ public @interface ConversationContextMenuItem {
      * @return
      */
     String confirmPrompt() default "";
+
+    @StringRes int confirmPromptResId() default 0;
 }

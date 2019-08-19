@@ -339,7 +339,11 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 Collections.sort(contextMenus, (o1, o2) -> o1.contextMenuItem.priority() - o2.contextMenuItem.priority());
                 List<String> titles = new ArrayList<>(contextMenus.size());
                 for (ContextMenuItemWrapper itemWrapper : contextMenus) {
-                    titles.add(itemWrapper.contextMenuItem.title());
+                    if (itemWrapper.contextMenuItem.titleResId() > 0) {
+                        titles.add(mContext.getString(itemWrapper.contextMenuItem.titleResId()));
+                    } else {
+                        titles.add(itemWrapper.contextMenuItem.title());
+                    }
                 }
                 new MaterialDialog.Builder(mContext).items(titles).itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
@@ -347,8 +351,14 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                         try {
                             ContextMenuItemWrapper menuItem = contextMenus.get(position);
                             if (menuItem.contextMenuItem.confirm()) {
+                                String content;
+                                if (menuItem.contextMenuItem.confirmPromptResId() != 0) {
+                                    content = mContext.getString(menuItem.contextMenuItem.confirmPromptResId());
+                                } else {
+                                    content = menuItem.contextMenuItem.confirmPrompt();
+                                }
                                 new MaterialDialog.Builder(mContext)
-                                        .content(menuItem.contextMenuItem.confirmPrompt())
+                                        .content(content)
                                         .negativeText("取消")
                                         .positiveText("确认")
                                         .onPositive(new MaterialDialog.SingleButtonCallback() {
