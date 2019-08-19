@@ -2471,7 +2471,16 @@ public class ChatManager {
         }
 
         try {
-            List<UserInfo> userInfos = mClient.getUserInfos(userIds, groupId);
+            List<UserInfo> userInfos = new ArrayList<>();
+            int step = 400;
+            int startIndex, endIndex;
+            for (int i = 0; i <= userIds.size() / step; i++) {
+                startIndex = i * step;
+                endIndex = (i + 1) * step;
+                endIndex = endIndex > userIds.size() ? userIds.size() : endIndex;
+                List<UserInfo> us = mClient.getUserInfos(userIds.subList(startIndex, endIndex), groupId);
+                userInfos.addAll(us);
+            }
             if (userInfos != null && userInfos.size() > 0) {
                 for (UserInfo info : userInfos) {
                     if (info != null) {
