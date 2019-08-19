@@ -3,7 +3,6 @@ package cn.wildfire.chat.kit.group;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
@@ -13,7 +12,6 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.GroupInfo;
@@ -47,16 +45,7 @@ public class GroupMemberListFragment extends BaseUserListFragment {
         for (GroupMember member : members) {
             memberIds.add(member.memberId);
         }
-        ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
         List<UserInfo> userInfos = UserViewModel.getUsers(memberIds, groupInfo.target);
-        for (GroupMember member : members) {
-            for (UserInfo userInfo : userInfos) {
-                if (!TextUtils.isEmpty(member.alias) && member.memberId.equals(userInfo.uid)) {
-                    userInfo.displayName = member.alias;
-                    break;
-                }
-            }
-        }
         List<UIUserInfo> users = userInfoToUIUserInfo(userInfos);
         userListAdapter.setUsers(users);
 
