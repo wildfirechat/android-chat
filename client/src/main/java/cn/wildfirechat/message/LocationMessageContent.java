@@ -113,18 +113,17 @@ public class LocationMessageContent extends MessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(this.title);
         dest.writeParcelable(this.thumbnail, flags);
-        dest.writeString(this.title != null ? this.title : "");
-        dest.writeDouble(this.location.getLatitude());
-        dest.writeDouble(this.location.getLongitude());
+        dest.writeParcelable(this.location, flags);
     }
 
     protected LocationMessageContent(Parcel in) {
-        this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
+        super(in);
         this.title = in.readString();
-        this.location = new Location(LocationManager.GPS_PROVIDER);
-        this.location.setLatitude(in.readDouble());
-        this.location.setLongitude(in.readDouble());
+        this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
+        this.location = in.readParcelable(Location.class.getClassLoader());
     }
 
     public static final Creator<LocationMessageContent> CREATOR = new Creator<LocationMessageContent>() {

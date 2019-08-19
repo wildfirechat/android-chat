@@ -92,7 +92,6 @@ public class GroupSetManagerChatNotificationContent extends GroupNotificationMes
         }
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -100,26 +99,20 @@ public class GroupSetManagerChatNotificationContent extends GroupNotificationMes
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.operator);
         dest.writeInt(this.type);
         dest.writeStringList(this.memberIds);
-        dest.writeString(this.groupId);
-        dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.mentionedType);
-        dest.writeStringList(this.mentionedTargets);
     }
 
     public GroupSetManagerChatNotificationContent() {
     }
 
     protected GroupSetManagerChatNotificationContent(Parcel in) {
+        super(in);
         this.operator = in.readString();
         this.type = in.readInt();
         this.memberIds = in.createStringArrayList();
-        this.groupId = in.readString();
-        this.fromSelf = in.readByte() != 0;
-        this.mentionedType = in.readInt();
-        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<GroupSetManagerChatNotificationContent> CREATOR = new Creator<GroupSetManagerChatNotificationContent>() {

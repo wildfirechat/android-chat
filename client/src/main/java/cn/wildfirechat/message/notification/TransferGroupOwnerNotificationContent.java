@@ -77,15 +77,15 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.operator);
         dest.writeString(this.newOwner);
-        dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
     }
 
     protected TransferGroupOwnerNotificationContent(Parcel in) {
+        super(in);
         this.operator = in.readString();
         this.newOwner = in.readString();
-        this.fromSelf = in.readByte() != 0;
     }
 
     public static final Creator<TransferGroupOwnerNotificationContent> CREATOR = new Creator<TransferGroupOwnerNotificationContent>() {

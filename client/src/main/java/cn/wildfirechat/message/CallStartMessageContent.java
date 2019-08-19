@@ -1,7 +1,6 @@
 package cn.wildfirechat.message;
 
 import android.os.Parcel;
-import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -146,21 +145,23 @@ public class CallStartMessageContent extends MessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.callId);
+        dest.writeString(this.targetId);
         dest.writeLong(this.connectTime);
         dest.writeLong(this.endTime);
+        dest.writeByte(this.audioOnly ? (byte) 1 : (byte) 0);
         dest.writeInt(this.status);
-        dest.writeInt(audioOnly ? 1 : 0);
-        dest.writeString(TextUtils.isEmpty(targetId) ? "" : targetId);
     }
 
     protected CallStartMessageContent(Parcel in) {
+        super(in);
         this.callId = in.readString();
+        this.targetId = in.readString();
         this.connectTime = in.readLong();
         this.endTime = in.readLong();
+        this.audioOnly = in.readByte() != 0;
         this.status = in.readInt();
-        this.audioOnly = in.readInt() > 0;
-        this.targetId = in.readString();
     }
 
     public static final Creator<CallStartMessageContent> CREATOR = new Creator<CallStartMessageContent>() {
