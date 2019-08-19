@@ -1,5 +1,7 @@
 package cn.wildfire.chat.kit.annotation;
 
+import androidx.annotation.StringRes;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,6 +19,8 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MessageContextMenuItem {
     String title();
+
+    @StringRes int titleResId() default 0;
 
     /**
      * 用来唯一表示菜单项
@@ -40,4 +44,6 @@ public @interface MessageContextMenuItem {
      * @return
      */
     String confirmPrompt() default "";
+
+    @StringRes int confirmPromptResId() default 0;
 }
