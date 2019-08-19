@@ -246,7 +246,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             }
         }
         conversationMemberAdapter = new ConversationMemberAdapter(enableAddMember, enableRemoveMember);
-        List<UserInfo> members = userViewModel.getUsers(memberIds, groupInfo.target);
+        List<UserInfo> members = UserViewModel.getUsers(memberIds, groupInfo.target);
         conversationMemberAdapter.setMembers(members);
         conversationMemberAdapter.setOnMemberClickListener(this);
         memberReclerView.setAdapter(conversationMemberAdapter);
