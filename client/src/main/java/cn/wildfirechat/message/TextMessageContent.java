@@ -61,15 +61,13 @@ public class TextMessageContent extends MessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.content);
-        dest.writeInt(this.mentionedType);
-        dest.writeStringList(this.mentionedTargets);
     }
 
     protected TextMessageContent(Parcel in) {
+        super(in);
         this.content = in.readString();
-        this.mentionedType = in.readInt();
-        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<TextMessageContent> CREATOR = new Creator<TextMessageContent>() {

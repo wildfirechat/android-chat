@@ -70,6 +70,7 @@ public class CreateGroupNotificationContent extends GroupNotificationMessageCont
         }
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -77,21 +78,15 @@ public class CreateGroupNotificationContent extends GroupNotificationMessageCont
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.creator);
         dest.writeString(this.groupName);
-        dest.writeString(this.groupId);
-        dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.mentionedType);
-        dest.writeStringList(this.mentionedTargets);
     }
 
     protected CreateGroupNotificationContent(Parcel in) {
+        super(in);
         this.creator = in.readString();
         this.groupName = in.readString();
-        this.groupId = in.readString();
-        this.fromSelf = in.readByte() != 0;
-        this.mentionedType = in.readInt();
-        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<CreateGroupNotificationContent> CREATOR = new Creator<CreateGroupNotificationContent>() {
