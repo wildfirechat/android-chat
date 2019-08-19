@@ -76,7 +76,6 @@ public class RecallMessageContent extends NotificationMessageContent {
         return notification;
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -84,15 +83,15 @@ public class RecallMessageContent extends NotificationMessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.operatorId);
         dest.writeLong(this.messageUid);
-        dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
     }
 
     protected RecallMessageContent(Parcel in) {
+        super(in);
         this.operatorId = in.readString();
         this.messageUid = in.readLong();
-        this.fromSelf = in.readByte() != 0;
     }
 
     public static final Creator<RecallMessageContent> CREATOR = new Creator<RecallMessageContent>() {

@@ -51,10 +51,12 @@ public class UnknownMessageContent extends MessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeParcelable(this.orignalPayload, flags);
     }
 
     protected UnknownMessageContent(Parcel in) {
+        super(in);
         this.orignalPayload = in.readParcelable(MessagePayload.class.getClassLoader());
     }
 

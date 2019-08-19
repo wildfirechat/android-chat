@@ -1,5 +1,7 @@
 package cn.wildfirechat.message.notification;
 
+import android.os.Parcel;
+
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 
@@ -21,5 +23,25 @@ public abstract class NotificationMessageContent extends MessageContent {
     @Override
     public String digest(Message message) {
         return formatNotification(message);
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
+    }
+
+    public NotificationMessageContent() {
+    }
+
+    protected NotificationMessageContent(Parcel in) {
+        super(in);
+        this.fromSelf = in.readByte() != 0;
     }
 }

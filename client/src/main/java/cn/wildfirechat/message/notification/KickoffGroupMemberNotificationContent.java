@@ -98,21 +98,15 @@ public class KickoffGroupMemberNotificationContent extends GroupNotificationMess
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.operator);
         dest.writeStringList(this.kickedMembers);
-        dest.writeString(this.groupId);
-        dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.mentionedType);
-        dest.writeStringList(this.mentionedTargets);
     }
 
     protected KickoffGroupMemberNotificationContent(Parcel in) {
+        super(in);
         this.operator = in.readString();
         this.kickedMembers = in.createStringArrayList();
-        this.groupId = in.readString();
-        this.fromSelf = in.readByte() != 0;
-        this.mentionedType = in.readInt();
-        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<KickoffGroupMemberNotificationContent> CREATOR = new Creator<KickoffGroupMemberNotificationContent>() {

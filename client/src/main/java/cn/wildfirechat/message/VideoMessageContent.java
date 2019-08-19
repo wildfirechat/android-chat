@@ -77,24 +77,15 @@ public class VideoMessageContent extends MediaMessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeParcelable(this.thumbnail, flags);
         dest.writeByteArray(this.thumbnailBytes);
-        dest.writeString(this.localPath);
-        dest.writeString(this.remoteUrl);
-        dest.writeInt(this.mediaType == null ? -1 : this.mediaType.ordinal());
-        dest.writeInt(this.mentionedType);
-        dest.writeStringList(this.mentionedTargets);
     }
 
     protected VideoMessageContent(Parcel in) {
+        super(in);
         this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
         this.thumbnailBytes = in.createByteArray();
-        this.localPath = in.readString();
-        this.remoteUrl = in.readString();
-        int tmpMediaType = in.readInt();
-        this.mediaType = tmpMediaType == -1 ? null : MessageContentMediaType.values()[tmpMediaType];
-        this.mentionedType = in.readInt();
-        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<VideoMessageContent> CREATOR = new Creator<VideoMessageContent>() {
