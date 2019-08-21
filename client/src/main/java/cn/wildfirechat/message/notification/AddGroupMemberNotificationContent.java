@@ -32,6 +32,15 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
     @Override
     public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
+        if (invitees.size() == 1 && invitees.get(0).equals(invitor)) {
+            if (ChatManager.Instance().getUserId().equals(invitor)) {
+                sb.append("你加入了群聊");
+            } else {
+                sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, invitor));
+                sb.append("加入了群聊");
+            }
+            return sb.toString();
+        }
         if (fromSelf) {
             sb.append("您邀请");
         } else {
