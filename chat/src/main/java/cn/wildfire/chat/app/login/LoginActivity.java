@@ -72,7 +72,7 @@ public class LoginActivity extends WfcBaseActivity {
         String account = accountEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
-        String url = "http://" + Config.APP_SERVER_HOST + ":" + Config.APP_SERVER_PORT + "/api/login";
+        String url = Config.APP_SERVER_ADDRESS + "/api/login";
         Map<String, String> params = new HashMap<>();
         params.put("name", account);
         params.put("password", password);
