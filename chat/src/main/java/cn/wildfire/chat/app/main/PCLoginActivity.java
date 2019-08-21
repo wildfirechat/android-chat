@@ -57,7 +57,7 @@ public class PCLoginActivity extends WfcBaseActivity {
                 .progress(true, 100)
                 .build();
         dialog.show();
-        String url = "http://" + Config.APP_SERVER_HOST + ":" + Config.APP_SERVER_PORT + "/scan_pc";
+        String url = Config.APP_SERVER_ADDRESS + "/scan_pc";
         url += "/" + token;
         OKHttpHelper.post(url, null, new SimpleCallback<PCSession>() {
             @Override
@@ -87,7 +87,7 @@ public class PCLoginActivity extends WfcBaseActivity {
     }
 
     private void confirmPCLogin(String token, String userId) {
-        String url = "http://" + Config.APP_SERVER_HOST + ":" + Config.APP_SERVER_PORT + "/confirm_pc";
+        String url = Config.APP_SERVER_ADDRESS + "/confirm_pc";
 
         Map<String, String> params = new HashMap<>(2);
         params.put("user_id", userId);
