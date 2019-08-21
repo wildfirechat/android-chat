@@ -59,7 +59,6 @@ public class FileMessageContent extends MediaMessageContent {
         return "[文件]";
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -73,6 +72,7 @@ public class FileMessageContent extends MediaMessageContent {
     }
 
     protected FileMessageContent(Parcel in) {
+        super(in);
         this.name = in.readString();
         this.size = in.readInt();
     }
