@@ -31,6 +31,7 @@ import com.tencent.mars.xlog.Xlog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -2002,6 +2003,23 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         onReceiveMessageListeners.finishBroadcast();
     }
 
+    private String conversationKey(ProtoMessage message) {
+        return message.getConversationType() + message.getTarget() + message.getLine();
+    }
+
+    // 优化收到大量消息界面卡顿
+    public final static boolean ENABLE_DELIVERY_OPTIMIZATION = true;
+    /**
+     * 一次收到大量消息时，每个会话投递最新的N条消息
+     */
+    public final static int DELIVERY_LATEST_MESSAGE_COUNT = 10;
+    /**
+     * 那些类型的消息是必须投递的
+     */
+    public final static int[] MUST_DELIVERY_MESSAGE_TYPES = new int[]{
+            // your type here, eg. MessageContentType.CONTENT_TYPE_CHANGE_MUTE
+    };
+
     @Override
     public void onReceiveMessage(List<ProtoMessage> messages, boolean hasMore) {
         if (messages.isEmpty()) {
@@ -2011,6 +2029,40 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             int totalLength = 0;
             int messageContentLength;
             int maxIpcMessageLength = 900 * 1024;
+
+            if (ENABLE_DELIVERY_OPTIMIZATION) {
+                Map<String, List<ProtoMessage>> conversationMessageMap = new HashMap<>();
+                for (ProtoMessage msg : messages) {
+                    String key = conversationKey(msg);
+                    List<ProtoMessage> msgs = conversationMessageMap.get(key);
+                    if (msgs == null) {
+                        msgs = new ArrayList<>();
+                        conversationMessageMap.put(key, msgs);
+                    }
+                    msgs.add(msg);
+                }
+                for (Map.Entry<String, List<ProtoMessage>> entry : conversationMessageMap.entrySet()) {
+                    Collections.sort(entry.getValue(), (o1, o2) -> (int) (o1.getTimestamp() - o2.getTimestamp()));
+                }
+
+                messages.clear();
+                for (Map.Entry<String, List<ProtoMessage>> entry : conversationMessageMap.entrySet()) {
+                    if (entry.getValue().size() > DELIVERY_LATEST_MESSAGE_COUNT) {
+                        messages.addAll(entry.getValue().subList(0, DELIVERY_LATEST_MESSAGE_COUNT));
+                        // 后面的检查是否是特殊类型
+                        for (ProtoMessage m : entry.getValue().subList(DELIVERY_LATEST_MESSAGE_COUNT, entry.getValue().size())) {
+                            for (int type : MUST_DELIVERY_MESSAGE_TYPES) {
+                                if (type == m.getContent().getType()) {
+                                    messages.add(m);
+                                }
+                            }
+                        }
+
+                    } else {
+                        messages.addAll(entry.getValue());
+                    }
+                }
+            }
 
             List<Message> msgs = new ArrayList<>();
             for (ProtoMessage pmsg : messages) {
@@ -2193,7 +2245,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         });
     }
 
-    // 只是大体大小
+    // 只是大概大小
     private int getProtoMessageLength(ProtoMessage message) {
         int length = 0;
         ProtoMessageContent content = message.getContent();
