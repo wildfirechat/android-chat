@@ -2,7 +2,6 @@ package cn.wildfire.chat.kit.conversation;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -245,10 +244,6 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 enableRemoveMember = true;
             }
         }
-        conversationMemberAdapter = new ConversationMemberAdapter(enableAddMember, enableRemoveMember);
-        List<UserInfo> members = UserViewModel.getUsers(memberIds, groupInfo.target);
-        Log.e("jyj", "members got");
-
         int maxShowMemberCount = 45;
         if (enableAddMember) {
             maxShowMemberCount--;
@@ -256,11 +251,15 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         if (enableRemoveMember) {
             maxShowMemberCount--;
         }
-        if (members.size() > maxShowMemberCount) {
+        if (memberIds.size() > maxShowMemberCount) {
             showAllGroupMemberButton.setVisibility(View.VISIBLE);
+            memberIds = memberIds.subList(0, maxShowMemberCount);
         }
 
-        conversationMemberAdapter.setMembers(members.subList(0, maxShowMemberCount));
+        conversationMemberAdapter = new ConversationMemberAdapter(enableAddMember, enableRemoveMember);
+        List<UserInfo> members = UserViewModel.getUsers(memberIds, groupInfo.target);
+
+        conversationMemberAdapter.setMembers(members);
         conversationMemberAdapter.setOnMemberClickListener(this);
         memberReclerView.setAdapter(conversationMemberAdapter);
         memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
