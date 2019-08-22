@@ -12,7 +12,7 @@ public interface Config {
     int IM_SERVER_PORT = 80;
 
     //正式商用时，建议用https，确保token安全
-    String APP_SERVER_ADDRESS = "wildfirechat.cn";
+    String APP_SERVER_ADDRESS = "http://wildfirechat.cn:8888";
 
     String ICE_ADDRESS = "turn:turn.liyufan.win:3478";
     String ICE_USERNAME = "wfchat";
