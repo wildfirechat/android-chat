@@ -1,10 +1,9 @@
 package cn.wildfire.chat.kit.third.utils;
 
+import androidx.annotation.NonNull;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.Days;
-
-import androidx.annotation.NonNull;
 
 /**
  * @创建者 CSDN_LQR
@@ -19,19 +18,18 @@ public class TimeUtils {
      * @return
      */
     public static String getMsgFormatTime(long msgTimeMillis) {
-        DateTime nowTime = new DateTime();
-//        LogUtils.sf("nowTime = " + nowTime);
+        long now = System.currentTimeMillis();
+        DateTime nowTime = new DateTime(now);
         DateTime msgTime = new DateTime(msgTimeMillis);
-//        LogUtils.sf("msgTime = " + msgTime);
-        int days = Math.abs(Days.daysBetween(msgTime, nowTime).getDays());
-//        LogUtils.sf("days = " + days);
-        if (days < 1) {
+        long dayMillis = 24 * 60 * 60 * 1000;
+
+        if ((int) (now / dayMillis) == (int) (msgTimeMillis / dayMillis)) {
             //早上、下午、晚上 1:40
             return getTime(msgTime);
-        } else if (days == 1) {
+        } else if ((int) (msgTimeMillis / dayMillis) + 1 == (int) (now / dayMillis)) {
             //昨天
             return "昨天 " + getTime(msgTime);
-        } else if (days <= 7) {
+        } else if (nowTime.getYearOfCentury() == msgTime.getYearOfCentury() && nowTime.getWeekOfWeekyear() == msgTime.getWeekOfWeekyear()) {
             //星期
             switch (msgTime.getDayOfWeek()) {
                 case DateTimeConstants.SUNDAY:
@@ -54,26 +52,13 @@ public class TimeUtils {
             return "";
         } else {
             //12月22日
-            return msgTime.toString("MM月dd日 " + getTime(msgTime));
+            return msgTime.toString("MM月dd日 HH:mm");
         }
     }
 
     @NonNull
     private static String getTime(DateTime msgTime) {
-        int hourOfDay = msgTime.getHourOfDay();
-        String when;
-        if (hourOfDay >= 18) {//18-24
-            when = "晚上";
-        } else if (hourOfDay >= 13) {//13-18
-            when = "下午";
-        } else if (hourOfDay >= 11) {//11-13
-            when = "中午";
-        } else if (hourOfDay >= 5) {//5-11
-            when = "早上";
-        } else {//0-5
-            when = "凌晨";
-        }
-        return when + " " + msgTime.toString("hh:mm");
+        return msgTime.toString("HH:mm");
     }
 
 }
