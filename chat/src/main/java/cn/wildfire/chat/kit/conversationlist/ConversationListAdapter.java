@@ -249,7 +249,11 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 Collections.sort(contextMenus, (o1, o2) -> o1.contextMenuItem.priority() - o2.contextMenuItem.priority());
                 List<String> titles = new ArrayList<>(contextMenus.size());
                 for (ContextMenuItemWrapper itemWrapper : contextMenus) {
-                    titles.add(itemWrapper.contextMenuItem.title());
+                    if (itemWrapper.contextMenuItem.titleResId() != 0) {
+                        titles.add(fragment.getString(itemWrapper.contextMenuItem.titleResId()));
+                    } else {
+                        titles.add(itemWrapper.contextMenuItem.title());
+                    }
                 }
                 new MaterialDialog.Builder(fragment.getContext()).items(titles).itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
@@ -257,8 +261,14 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                         try {
                             ContextMenuItemWrapper menuItem = contextMenus.get(position);
                             if (menuItem.contextMenuItem.confirm()) {
+                                String content;
+                                if (menuItem.contextMenuItem.confirmPromptResId() != 0) {
+                                    content = fragment.getString(menuItem.contextMenuItem.confirmPromptResId());
+                                } else {
+                                    content = menuItem.contextMenuItem.confirmPrompt();
+                                }
                                 new MaterialDialog.Builder(fragment.getActivity())
-                                        .content(menuItem.contextMenuItem.confirmPrompt())
+                                        .content(content)
                                         .negativeText("取消")
                                         .positiveText("确认")
                                         .onPositive(new MaterialDialog.SingleButtonCallback() {

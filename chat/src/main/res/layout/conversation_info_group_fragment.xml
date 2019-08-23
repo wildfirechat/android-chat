@@ -30,6 +30,15 @@
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="5" />
 
+            <Button
+                android:visibility="gone"
+                android:id="@+id/showAllMemberButton"
+                android:layout_width="match_parent"
+                android:background="@drawable/selector_common_item"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:text="查看全部成员"
+                android:layout_height="50dp"/>
             <LinearLayout
                 android:id="@+id/groupLinearLayout_0"
                 android:layout_width="match_parent"

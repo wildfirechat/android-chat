@@ -24,6 +24,7 @@ public class ChatRoomWelcomeNotificationContent extends NotificationMessageConte
 
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -31,6 +32,7 @@ public class ChatRoomWelcomeNotificationContent extends NotificationMessageConte
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.welcome);
     }
 
@@ -38,6 +40,7 @@ public class ChatRoomWelcomeNotificationContent extends NotificationMessageConte
     }
 
     protected ChatRoomWelcomeNotificationContent(Parcel in) {
+        super(in);
         this.welcome = in.readString();
     }
 

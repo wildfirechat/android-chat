@@ -32,6 +32,15 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
     @Override
     public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
+        if (invitees.size() == 1 && invitees.get(0).equals(invitor)) {
+            if (ChatManager.Instance().getUserId().equals(invitor)) {
+                sb.append("你加入了群聊");
+            } else {
+                sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, invitor));
+                sb.append("加入了群聊");
+            }
+            return sb.toString();
+        }
         if (fromSelf) {
             sb.append("您邀请");
         } else {
@@ -92,6 +101,7 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
         }
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -99,21 +109,15 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.invitor);
         dest.writeStringList(this.invitees);
-        dest.writeString(this.groupId);
-        dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.mentionedType);
-        dest.writeStringList(this.mentionedTargets);
     }
 
     protected AddGroupMemberNotificationContent(Parcel in) {
+        super(in);
         this.invitor = in.readString();
         this.invitees = in.createStringArrayList();
-        this.groupId = in.readString();
-        this.fromSelf = in.readByte() != 0;
-        this.mentionedType = in.readInt();
-        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<AddGroupMemberNotificationContent> CREATOR = new Creator<AddGroupMemberNotificationContent>() {

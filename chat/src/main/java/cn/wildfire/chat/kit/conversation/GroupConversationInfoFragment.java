@@ -34,10 +34,10 @@ import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
+import cn.wildfire.chat.kit.group.GroupMemberListActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.RemoveGroupMemberActivity;
 import cn.wildfire.chat.kit.group.SetGroupNameActivity;
@@ -71,6 +71,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     OptionItemView groupManageOptionItemView;
     @Bind(R.id.groupManageDividerLine)
     View groupManageDividerLine;
+    @Bind(R.id.showAllMemberButton)
+    Button showAllGroupMemberButton;
 
     @Bind(R.id.groupLinearLayout_1)
     LinearLayout groupLinearLayout_1;
@@ -209,7 +211,6 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     private void loadAndShowGroupMembers(boolean refresh) {
-        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         String userId = userViewModel.getUserId();
         List<GroupMember> groupMembers = groupViewModel.getGroupMembers(conversationInfo.conversation.target, refresh);
         if (groupMembers == null || groupMembers.isEmpty()) {
@@ -220,9 +221,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             if (member.memberId.equals(userId)) {
                 groupMember = member;
             }
-            if (member.type != GroupMember.GroupMemberType.Removed) {
-                memberIds.add(member.memberId);
-            }
+            memberIds.add(member.memberId);
         }
         groupInfo = groupViewModel.getGroupInfo(conversationInfo.conversation.target, false);
 
@@ -245,8 +244,21 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 enableRemoveMember = true;
             }
         }
+        int maxShowMemberCount = 45;
+        if (enableAddMember) {
+            maxShowMemberCount--;
+        }
+        if (enableRemoveMember) {
+            maxShowMemberCount--;
+        }
+        if (memberIds.size() > maxShowMemberCount) {
+            showAllGroupMemberButton.setVisibility(View.VISIBLE);
+            memberIds = memberIds.subList(0, maxShowMemberCount);
+        }
+
         conversationMemberAdapter = new ConversationMemberAdapter(enableAddMember, enableRemoveMember);
-        List<UserInfo> members = userViewModel.getUsers(memberIds, groupInfo.target);
+        List<UserInfo> members = UserViewModel.getUsers(memberIds, groupInfo.target);
+
         conversationMemberAdapter.setMembers(members);
         conversationMemberAdapter.setOnMemberClickListener(this);
         memberReclerView.setAdapter(conversationMemberAdapter);
@@ -275,6 +287,13 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @OnClick(R.id.groupManageOptionItemView)
     void manageGroup() {
         Intent intent = new Intent(getActivity(), GroupManageActivity.class);
+        intent.putExtra("groupInfo", groupInfo);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.showAllMemberButton)
+    void showAllGroupMember() {
+        Intent intent = new Intent(getActivity(), GroupMemberListActivity.class);
         intent.putExtra("groupInfo", groupInfo);
         startActivity(intent);
     }

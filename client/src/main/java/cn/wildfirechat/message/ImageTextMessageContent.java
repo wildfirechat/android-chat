@@ -110,7 +110,6 @@ public class ImageTextMessageContent extends MessageContent {
         return content;
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -118,15 +117,17 @@ public class ImageTextMessageContent extends MessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.content);
+        super.writeToParcel(dest, flags);
         dest.writeString(this.title);
+        dest.writeString(this.content);
         dest.writeString(this.url);
         dest.writeParcelable(this.thumbnail, flags);
     }
 
     protected ImageTextMessageContent(Parcel in) {
-        this.content = in.readString();
+        super(in);
         this.title = in.readString();
+        this.content = in.readString();
         this.url = in.readString();
         this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
     }

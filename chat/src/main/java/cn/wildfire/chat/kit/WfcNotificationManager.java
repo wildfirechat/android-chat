@@ -19,8 +19,6 @@ import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.Conversation;
@@ -93,18 +91,9 @@ public class WfcNotificationManager {
             if (message.direction == MessageDirection.Send || (message.content.getPersistFlag() != Persist_And_Count && !(message.content instanceof RecallMessageContent))) {
                 continue;
             }
-            String pushContent = message.content.encode().pushContent;
+            String pushContent = message.content.pushContent;
             if (TextUtils.isEmpty(pushContent)) {
-                if (message.content.getType() == MessageContentType.ContentType_Text) {
-                    TextMessageContent textMessageContent = (TextMessageContent) message.content;
-                    pushContent = textMessageContent.getContent();
-                } else if (message.content.getType() == MessageContentType.ContentType_Image) {
-                    pushContent = "[图片]";
-                } else if (message.content.getType() == MessageContentType.ContentType_Voice) {
-                    pushContent = "[语音]";
-                } else if (message.content.getType() == MessageContentType.ContentType_Recall) {
-                    pushContent = "撤回了一条消息";
-                }
+                pushContent = message.content.digest(message);
             }
 
             int unreadCount = ChatManager.Instance().getUnreadCount(message.conversation).unread;

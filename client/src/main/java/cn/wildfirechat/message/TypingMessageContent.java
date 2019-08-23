@@ -63,10 +63,12 @@ public class TypingMessageContent extends MessageContent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeInt(this.typingType);
     }
 
     protected TypingMessageContent(Parcel in) {
+        super(in);
         this.typingType = in.readInt();
     }
 

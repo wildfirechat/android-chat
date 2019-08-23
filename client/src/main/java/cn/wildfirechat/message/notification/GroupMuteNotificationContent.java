@@ -67,7 +67,6 @@ public class GroupMuteNotificationContent extends GroupNotificationMessageConten
         }
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -75,24 +74,18 @@ public class GroupMuteNotificationContent extends GroupNotificationMessageConten
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.operator);
         dest.writeInt(this.type);
-        dest.writeString(this.groupId);
-        dest.writeByte(this.fromSelf ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.mentionedType);
-        dest.writeStringList(this.mentionedTargets);
     }
 
     public GroupMuteNotificationContent() {
     }
 
     protected GroupMuteNotificationContent(Parcel in) {
+        super(in);
         this.operator = in.readString();
         this.type = in.readInt();
-        this.groupId = in.readString();
-        this.fromSelf = in.readByte() != 0;
-        this.mentionedType = in.readInt();
-        this.mentionedTargets = in.createStringArrayList();
     }
 
     public static final Creator<GroupMuteNotificationContent> CREATOR = new Creator<GroupMuteNotificationContent>() {

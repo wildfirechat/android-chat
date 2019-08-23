@@ -1,5 +1,7 @@
 package cn.wildfire.chat.kit.annotation;
 
+import androidx.annotation.StringRes;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,4 +17,6 @@ import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExtContextMenuItem {
     String title() default "";
+
+    @StringRes int titleResId() default 0;
 }
