@@ -24,7 +24,6 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.notification.GroupNotificationMessageContent;
@@ -39,6 +38,7 @@ import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetGroupsCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
+import cn.wildfirechat.remote.UploadMediaCallback;
 import cn.wildfirechat.remote.UserSettingScope;
 
 public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
@@ -107,8 +107,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
                 e.printStackTrace();
             }
             if (groupPortrait != null) {
-                byte[] content = FileUtils.readFile(groupPortrait);
-                ChatManager.Instance().uploadMedia(content, MessageContentMediaType.PORTRAIT.getValue(), new GeneralCallback2() {
+                ChatManager.Instance().uploadMediaFile(groupPortrait, MessageContentMediaType.PORTRAIT.getValue(), new UploadMediaCallback() {
                     @Override
                     public void onSuccess(String result) {
                         ChatManager.Instance().createGroup(null, finalGroupName, result, GroupInfo.GroupType.Normal, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
@@ -122,6 +121,11 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
                                 groupLiveData.setValue(new OperateResult<>(errorCode));
                             }
                         });
+                    }
+
+                    @Override
+                    public void onProgress(long uploaded, long total) {
+
                     }
 
                     @Override
