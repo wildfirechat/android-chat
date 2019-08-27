@@ -2500,10 +2500,76 @@ public class ChatManager {
         return null;
     }
 
+    public void uploadMediaFile(String mediaPath, int mediaType, final UploadMediaCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        File file = new File(mediaPath);
+        if (!file.exists()) {
+            callback.onFail(ErrorCode.FILE_NOT_EXIST);
+            return;
+        }
+        if (file.length() > 900 * 1024) {
+            callback.onFail(ErrorCode.FILE_TOO_LARGE);
+            return;
+        }
+
+        try {
+            mClient.uploadMediaFile(mediaPath, mediaType, new IUploadMediaCallback.Stub() {
+                @Override
+                public void onSuccess(final String remoteUrl) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(remoteUrl);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onProgress(final long uploaded, final long total) throws RemoteException {
+                    callback.onProgress(uploaded, total);
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+        }
+    }
+
+
+    /**
+     * @param data      不能超过1M，为了安全，实际只有900K
+     * @param mediaType
+     * @param callback
+     */
     public void uploadMedia(byte[] data, int mediaType, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if (data.length > 900 * 1024) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.FILE_TOO_LARGE);
+            }
             return;
         }
 

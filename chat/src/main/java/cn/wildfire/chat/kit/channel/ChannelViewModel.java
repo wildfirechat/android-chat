@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.common.OperateResult;
-import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.OnChannelInfoUpdateListener;
+import cn.wildfirechat.remote.UploadMediaCallback;
 
 public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateListener {
 
@@ -39,9 +39,8 @@ public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateLi
 
     public MutableLiveData<OperateResult<String>> createChannel(String channelId, String channelName, String channelPortrait, String desc, String extra) {
         MutableLiveData<OperateResult<String>> resultLiveData = new MutableLiveData<>();
-        byte[] content = FileUtils.readFile(channelPortrait);
-        if (content != null) {
-            ChatManager.Instance().uploadMedia(content, MessageContentMediaType.PORTRAIT.getValue(), new GeneralCallback2() {
+        if (channelPortrait != null) {
+            ChatManager.Instance().uploadMediaFile(channelPortrait, MessageContentMediaType.PORTRAIT.getValue(), new UploadMediaCallback() {
                 @Override
                 public void onSuccess(String result) {
                     ChatManager.Instance().createChannel(channelId, channelName, result, desc, extra, new GeneralCallback2() {
@@ -55,6 +54,11 @@ public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateLi
                             resultLiveData.setValue(new OperateResult<String>(errorCode));
                         }
                     });
+                }
+
+                @Override
+                public void onProgress(long uploaded, long total) {
+
                 }
 
                 @Override
