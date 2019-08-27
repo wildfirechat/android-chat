@@ -28,7 +28,9 @@ import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.xlog.Log;
 import com.tencent.mars.xlog.Xlog;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +40,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -1041,6 +1044,22 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             });
+        }
+
+        @Override
+        public void uploadMediaFile(String mediaPath, int mediaType, IUploadMediaCallback callback) throws RemoteException {
+            try {
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(mediaPath));
+                int length = bufferedInputStream.available();
+                byte[] data = new byte[length];
+                bufferedInputStream.read(data);
+
+                uploadMedia(data, mediaType, callback);
+            } catch (Exception e) {
+                e.printStackTrace();
+                e.printStackTrace();
+                callback.onFailure(ErrorCode.FILE_NOT_EXIST);
+            }
         }
 
         @Override

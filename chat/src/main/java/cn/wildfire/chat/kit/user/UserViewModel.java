@@ -16,9 +16,9 @@ import cn.wildfirechat.model.ModifyMyInfoType;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.OnUserInfoUpdateListener;
+import cn.wildfirechat.remote.UploadMediaCallback;
 
 // FIXME: 2019/1/4 应该是个单例的
 public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUserInfoUpdateListener, OnSettingUpdateListener {
@@ -59,7 +59,7 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
         MutableLiveData<OperateResult<Boolean>> resultLiveData = new MutableLiveData<>();
         byte[] content = FileUtils.readFile(localImagePath);
         if (content != null) {
-            ChatManager.Instance().uploadMedia(content, MessageContentMediaType.PORTRAIT.getValue(), new GeneralCallback2() {
+            ChatManager.Instance().uploadMediaFile(localImagePath, MessageContentMediaType.PORTRAIT.getValue(), new UploadMediaCallback() {
                 @Override
                 public void onSuccess(String result) {
                     List<ModifyMyInfoEntry> entries = new ArrayList<>();
@@ -76,6 +76,12 @@ public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUse
                         }
                     });
                 }
+
+                @Override
+                public void onProgress(long uploaded, long total) {
+
+                }
+
 
                 @Override
                 public void onFail(int errorCode) {
