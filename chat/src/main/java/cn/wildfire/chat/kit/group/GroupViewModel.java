@@ -10,8 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.bumptech.glide.Glide;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,10 +19,12 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.notification.GroupNotificationMessageContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
@@ -406,7 +406,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         List<Bitmap> bitmaps = new ArrayList<>();
         for (UIUserInfo userInfo : userInfos) {
             try {
-                Drawable drawable = Glide.with(context).load(userInfo.getUserInfo().portrait).submit(60, 60).get();
+                Drawable drawable = GlideApp.with(context).load(userInfo.getUserInfo().portrait).error(R.mipmap.avatar_def).submit(60, 60).get();
                 if (drawable instanceof BitmapDrawable) {
                     bitmaps.add(((BitmapDrawable) drawable).getBitmap());
                 }
