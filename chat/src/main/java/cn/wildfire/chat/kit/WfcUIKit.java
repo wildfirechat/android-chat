@@ -68,7 +68,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
             public void onBackground() {
                 isBackground = true;
-                viewModelStore.clear();
             }
         });
 
