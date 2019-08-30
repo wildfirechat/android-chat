@@ -66,8 +66,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        contactViewModel.contactListUpdatedLiveData().observeForever(contactListUpdateLiveDataObserver);
-        contactViewModel.friendRequestUpdatedLiveData().observeForever(friendRequestUpdateLiveDataObserver);
+        contactViewModel.contactListUpdatedLiveData().observe(this, contactListUpdateLiveDataObserver);
+        contactViewModel.friendRequestUpdatedLiveData().observe(this, friendRequestUpdateLiveDataObserver);
 
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
@@ -77,8 +77,6 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        contactViewModel.contactListUpdatedLiveData().removeObserver(contactListUpdateLiveDataObserver);
-        contactViewModel.friendRequestUpdatedLiveData().removeObserver(friendRequestUpdateLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoLiveDataObserver);
     }
 
