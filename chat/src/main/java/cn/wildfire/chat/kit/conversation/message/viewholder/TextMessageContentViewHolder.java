@@ -15,12 +15,15 @@ import com.lqr.emoji.MoonUtils;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.kit.annotation.SendLayoutRes;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.widget.LinkClickListener;
+import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.TextMessageContent;
 
@@ -39,6 +42,13 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
     @Override
     public void onBind(UiMessage message) {
         MoonUtils.identifyFaceExpression(context, contentTextView, ((TextMessageContent) message.message.content).getContent(), ImageSpan.ALIGN_BOTTOM);
+        contentTextView.setMovementMethod(new LinkTextViewMovementMethod(new LinkClickListener() {
+            @Override
+            public boolean onLinkClick(String link) {
+                WfcWebViewActivity.loadUrl(context, "", link);
+                return true;
+            }
+        }));
     }
 
     @OnClick(R.id.contentTextView)
