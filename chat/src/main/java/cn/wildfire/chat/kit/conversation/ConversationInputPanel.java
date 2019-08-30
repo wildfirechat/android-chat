@@ -237,6 +237,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @OnClick(R.id.extImageView)
     void onExtImageViewClick() {
+        if (audioButton.getVisibility() == VISIBLE) {
+            return;
+        }
         if (rootLinearLayout.getCurrentInput() == extContainerFrameLayout) {
             rootLinearLayout.showSoftkey(editText);
             hideConversationExtension();
@@ -248,6 +251,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @OnClick(R.id.emotionImageView)
     void onEmotionImageViewClick() {
+        if (audioButton.getVisibility() == VISIBLE) {
+            return;
+        }
         if (rootLinearLayout.getCurrentInput() == emotionContainerFrameLayout) {
             hideEmotionLayout();
         } else {
