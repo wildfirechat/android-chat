@@ -10,8 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.bumptech.glide.Glide;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,11 +19,12 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.notification.GroupNotificationMessageContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
@@ -39,6 +38,7 @@ import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetGroupsCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
+import cn.wildfirechat.remote.UploadMediaCallback;
 import cn.wildfirechat.remote.UserSettingScope;
 
 public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
@@ -107,8 +107,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
                 e.printStackTrace();
             }
             if (groupPortrait != null) {
-                byte[] content = FileUtils.readFile(groupPortrait);
-                ChatManager.Instance().uploadMedia(content, MessageContentMediaType.PORTRAIT.getValue(), new GeneralCallback2() {
+                ChatManager.Instance().uploadMediaFile(groupPortrait, MessageContentMediaType.PORTRAIT.getValue(), new UploadMediaCallback() {
                     @Override
                     public void onSuccess(String result) {
                         ChatManager.Instance().createGroup(null, finalGroupName, result, GroupInfo.GroupType.Normal, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
@@ -122,6 +121,11 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
                                 groupLiveData.setValue(new OperateResult<>(errorCode));
                             }
                         });
+                    }
+
+                    @Override
+                    public void onProgress(long uploaded, long total) {
+
                     }
 
                     @Override
@@ -402,7 +406,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         List<Bitmap> bitmaps = new ArrayList<>();
         for (UIUserInfo userInfo : userInfos) {
             try {
-                Drawable drawable = Glide.with(context).load(userInfo.getUserInfo().portrait).submit(60, 60).get();
+                Drawable drawable = GlideApp.with(context).load(userInfo.getUserInfo().portrait).error(R.mipmap.avatar_def).submit(60, 60).get();
                 if (drawable instanceof BitmapDrawable) {
                     bitmaps.add(((BitmapDrawable) drawable).getBitmap());
                 }

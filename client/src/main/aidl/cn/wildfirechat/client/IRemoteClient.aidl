@@ -134,6 +134,7 @@ interface IRemoteClient {
     List<UserInfo> getUserInfos(in List<String> userIds, in String groupId);
 
     oneway void uploadMedia(in byte[] data, int mediaType, in IUploadMediaCallback callback);
+    oneway void uploadMediaFile(in String mediaPath, int mediaType, in IUploadMediaCallback callback);
     oneway void modifyMyInfo(in List<ModifyMyInfoEntry> values, in IGeneralCallback callback);
     boolean deleteMessage(in long messageId);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
