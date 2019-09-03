@@ -16,8 +16,8 @@ android {
         applicationId "cn.wildfirechat.chat"
         minSdkVersion 16
         targetSdkVersion 28 //当targetversion大于23时，需要使用fileprovider
-        versionCode 12
-        versionName "0.5.4"
+        versionCode 13
+        versionName "0.5.5"
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -39,6 +39,8 @@ android {
             signingConfig signingConfigs.wfc
         }
         debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.wfc
         }
     }
