@@ -467,7 +467,7 @@ public class ConversationActivity extends WfcBaseActivity implements
             conversationTitle = userViewModel.getUserDisplayName(userInfo);
         } else if (conversation.type == Conversation.ConversationType.Group) {
             if (groupInfo != null) {
-                conversationTitle = groupInfo.name;
+                conversationTitle = groupInfo.name + "(" + groupInfo.memberCount + "人)";
             }
         } else if (conversation.type == Conversation.ConversationType.Channel) {
             ChannelViewModel channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
