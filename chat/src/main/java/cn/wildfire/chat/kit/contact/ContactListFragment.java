@@ -8,9 +8,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
-
-import java.util.List;
 
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -34,20 +31,10 @@ import cn.wildfirechat.model.UserInfo;
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private UserViewModel userViewModel;
 
-    private Observer<Integer> friendRequestUpdateLiveDataObserver = count -> {
-        FriendRequestValue requestValue = new FriendRequestValue(count == null ? 0 : count);
-        userListAdapter.updateHeader(0, requestValue);
-    };
-
-    private Observer<Object> contactListUpdateLiveDataObserver = o -> {
-        loadContacts();
-    };
-
     private void loadContacts() {
         contactViewModel.getContactsAsync(false)
                 .observe(this, userInfos -> {
                     userListAdapter.setUsers(userInfoToUIUserInfo(userInfos));
-                    userListAdapter.notifyDataSetChanged();
 
                     for (UserInfo info : userInfos) {
                         if (info.name == null || info.displayName == null) {
@@ -55,29 +42,32 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
                         }
                     }
                 });
+        contactViewModel.friendRequestUpdatedLiveData().observe(this, integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
     }
 
-    private Observer<List<UserInfo>> userInfoLiveDataObserver = userInfos -> {
-        userListAdapter.updateContacts(userInfoToUIUserInfo(userInfos));
-    };
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (userListAdapter != null && isVisibleToUser) {
+            loadContacts();
+        }
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        contactViewModel.contactListUpdatedLiveData().observe(this, contactListUpdateLiveDataObserver);
-        contactViewModel.friendRequestUpdatedLiveData().observe(this, friendRequestUpdateLiveDataObserver);
+        contactViewModel.contactListUpdatedLiveData().observe(this, o -> loadContacts());
 
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
+        userViewModel.userInfoLiveData().observe(this, userInfos -> loadContacts());
         return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        userViewModel.userInfoLiveData().removeObserver(userInfoLiveDataObserver);
     }
 
     @Override

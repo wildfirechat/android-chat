@@ -4,12 +4,14 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.remote.ChatManager;
 
 @SuppressWarnings("unused")
 @LayoutRes(resId = R.layout.contact_header_friend)
@@ -27,9 +29,10 @@ public class FriendRequestViewHolder extends HeaderViewHolder<FriendRequestValue
     @Override
     public void onBind(FriendRequestValue value) {
         this.value = value;
-        if (value.getUnreadRequestCount() > 0) {
+        int count = ChatManager.Instance().getUnreadFriendRequestStatus();
+        if (count > 0) {
             unreadRequestCountTextView.setVisibility(View.VISIBLE);
-            unreadRequestCountTextView.setText("" + value.getUnreadRequestCount());
+            unreadRequestCountTextView.setText("" + count);
         } else {
             unreadRequestCountTextView.setVisibility(View.GONE);
         }
