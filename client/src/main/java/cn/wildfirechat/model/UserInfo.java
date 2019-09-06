@@ -91,4 +91,56 @@ public class UserInfo implements Parcelable, Comparable<UserInfo> {
             return new UserInfo[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserInfo userInfo = (UserInfo) o;
+
+        if (gender != userInfo.gender) return false;
+        if (updateDt != userInfo.updateDt) return false;
+        if (type != userInfo.type) return false;
+        if (!uid.equals(userInfo.uid)) return false;
+        if (name != null ? !name.equals(userInfo.name) : userInfo.name != null) return false;
+        if (displayName != null ? !displayName.equals(userInfo.displayName) : userInfo.displayName != null)
+            return false;
+        if (groupAlias != null ? !groupAlias.equals(userInfo.groupAlias) : userInfo.groupAlias != null)
+            return false;
+        if (friendAlias != null ? !friendAlias.equals(userInfo.friendAlias) : userInfo.friendAlias != null)
+            return false;
+        if (portrait != null ? !portrait.equals(userInfo.portrait) : userInfo.portrait != null)
+            return false;
+        if (mobile != null ? !mobile.equals(userInfo.mobile) : userInfo.mobile != null)
+            return false;
+        if (email != null ? !email.equals(userInfo.email) : userInfo.email != null) return false;
+        if (address != null ? !address.equals(userInfo.address) : userInfo.address != null)
+            return false;
+        if (company != null ? !company.equals(userInfo.company) : userInfo.company != null)
+            return false;
+        if (social != null ? !social.equals(userInfo.social) : userInfo.social != null)
+            return false;
+        return extra != null ? extra.equals(userInfo.extra) : userInfo.extra == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = uid.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
+        result = 31 * result + (groupAlias != null ? groupAlias.hashCode() : 0);
+        result = 31 * result + (friendAlias != null ? friendAlias.hashCode() : 0);
+        result = 31 * result + (portrait != null ? portrait.hashCode() : 0);
+        result = 31 * result + gender;
+        result = 31 * result + (mobile != null ? mobile.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (company != null ? company.hashCode() : 0);
+        result = 31 * result + (social != null ? social.hashCode() : 0);
+        result = 31 * result + (extra != null ? extra.hashCode() : 0);
+        result = 31 * result + (int) (updateDt ^ (updateDt >>> 32));
+        result = 31 * result + type;
+        return result;
+    }
 }
