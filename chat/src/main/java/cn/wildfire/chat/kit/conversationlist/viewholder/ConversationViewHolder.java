@@ -35,7 +35,6 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;
     protected View itemView;
     protected ConversationInfo conversationInfo;
-    protected int position;
     protected RecyclerView.Adapter adapter;
     protected ConversationListViewModel conversationListViewModel;
 
@@ -70,7 +69,6 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 
     final public void onBind(ConversationInfo conversationInfo, int position) {
         this.conversationInfo = conversationInfo;
-        this.position = position;
         onBind(conversationInfo);
     }
 
