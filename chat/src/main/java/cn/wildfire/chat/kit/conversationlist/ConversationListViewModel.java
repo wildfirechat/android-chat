@@ -10,9 +10,6 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
-import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
-import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -158,31 +155,9 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     @Override
     public void onReceiveMessage(List<Message> messages, boolean hasMore) {
-
-        if (messages != null && messages.size() > 0) {
-            ChatManager.Instance().getWorkHandler().post(() -> {
-                String userId = ChatManager.Instance().getUserId();
-                for (Message message : messages) {
-                    Conversation conversation = message.conversation;
-                    if (!types.contains(conversation.type) && !lines.contains(conversation.line)) {
-                        continue;
-                    }
-
-                    if (message.messageId == 0) {
-                        continue;
-                    }
-
-                    if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(userId))
-                            || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(userId))
-                            || message.content instanceof DismissGroupNotificationContent) {
-                        continue;
-                    }
-                    ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-                    postConversationInfo(conversationInfo);
-                }
-            });
-            loadUnreadCount();
-        }
+        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(messages.get(0).conversation);
+        postConversationInfo(conversationInfo);
+        loadUnreadCount();
     }
 
     @Override
