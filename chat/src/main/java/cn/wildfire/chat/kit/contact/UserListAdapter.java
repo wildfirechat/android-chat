@@ -6,11 +6,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.annotation.LayoutRes;
@@ -22,20 +22,21 @@ import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfirechat.chat.R;
 
-public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class UserListAdapter extends ListAdapter<Object, RecyclerView.ViewHolder> {
     private static final int TYPE_CONTACT = 1024;
     private static final int TYPE_FOOTER_START_INDEX = 2048;
     protected List<UIUserInfo> users;
     protected Fragment fragment;
-    private List<Class<? extends HeaderViewHolder>> headerViewHolders;
-    private List<Class<? extends FooterViewHolder>> footerViewHolders;
-    private List<HeaderValue> headerValues;
-    private List<FooterValue> footerValues;
+    private List<HeaderValueWrapper> headerValues;
+    private List<FooterValueWrapper> footerValues;
     protected OnUserClickListener onUserClickListener;
     protected OnHeaderClickListener onHeaderClickListener;
     protected OnFooterClickListener onFooterClickListener;
 
+    private final static UserInfoDiffCallback cb = new UserInfoDiffCallback();
+
     public UserListAdapter(Fragment fragment) {
+        super(cb);
         this.fragment = fragment;
     }
 
@@ -44,62 +45,26 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public int getContactCount() {
-        return users == null ? 0 : users.size();
+        return userCount();
     }
 
     public void setUsers(List<UIUserInfo> users) {
         this.users = users;
+        submit(users, headerValues, footerValues);
     }
 
-    public void updateContacts(List<UIUserInfo> userInfos) {
-        if (users == null) {
-            return;
+    private void submit(List<UIUserInfo> users, List<HeaderValueWrapper> headerValues, List<FooterValueWrapper> footerValues) {
+        List<Object> items = new ArrayList<>();
+        if (headerValues != null) {
+            items.addAll(headerValues);
         }
-        for (UIUserInfo info : userInfos) {
-            updateContact(info);
+        if (users != null) {
+            items.addAll(users);
         }
-    }
-
-    public void updateContact(UIUserInfo userInfo) {
-        if (users == null) {
-            return;
+        if (footerValues != null) {
+            items.addAll(footerValues);
         }
-        int originalPosition = -1;
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUserInfo().uid.equals(userInfo.getUserInfo().uid)) {
-                users.set(i, userInfo);
-                originalPosition = headerCount() + i;
-                break;
-            }
-        }
-        if (originalPosition == -1) {
-            return;
-        }
-
-        Collections.sort(users, (o1, o2) -> o1.getSortName().compareToIgnoreCase(o2.getSortName()));
-
-        int targetPosition = 0;
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUserInfo().uid.equals(userInfo.getUserInfo().uid)) {
-                targetPosition = headerCount() + i;
-                break;
-            }
-        }
-
-        if (targetPosition == headerCount()) {
-            userInfo.setShowCategory(true);
-        } else {
-            UIUserInfo pre = users.get(targetPosition - headerCount() - 1);
-            if (pre.getCategory() == null || !pre.getCategory().equals(userInfo.getCategory())) {
-                userInfo.setShowCategory(true);
-            }
-        }
-
-        if (originalPosition == targetPosition) {
-            notifyItemChanged(originalPosition);
-        } else {
-            notifyItemMoved(originalPosition, targetPosition);
-        }
+        submitList(items);
     }
 
     public void setOnUserClickListener(OnUserClickListener onUserClickListener) {
@@ -120,12 +85,12 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         RecyclerView.ViewHolder viewHolder;
         View itemView;
         // header
-        if (viewType < headerCount()) {
-            Class<? extends HeaderViewHolder> clazz = headerViewHolders.get(viewType);
-            LayoutRes layoutRes = clazz.getAnnotation(LayoutRes.class);
+        if (viewType < TYPE_CONTACT) {
+            HeaderValueWrapper wrapper = (HeaderValueWrapper) getItem(viewType);
+            LayoutRes layoutRes = wrapper.headerViewHolderClazz.getAnnotation(LayoutRes.class);
             itemView = LayoutInflater.from(fragment.getActivity()).inflate(layoutRes.resId(), parent, false);
             try {
-                Constructor constructor = clazz.getConstructor(Fragment.class, UserListAdapter.class, View.class);
+                Constructor constructor = wrapper.headerViewHolderClazz.getConstructor(Fragment.class, UserListAdapter.class, View.class);
                 viewHolder = (HeaderViewHolder) constructor.newInstance(fragment, this, itemView);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -141,11 +106,11 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder = onCreateContactViewHolder(parent, viewType);
             // footer
         } else {
-            Class<? extends FooterViewHolder> clazz = footerViewHolders.get(viewType - TYPE_FOOTER_START_INDEX);
-            LayoutRes layoutRes = clazz.getAnnotation(LayoutRes.class);
+            FooterValueWrapper wrapper = (FooterValueWrapper) getItem(viewType - TYPE_FOOTER_START_INDEX + headerCount() + userCount());
+            LayoutRes layoutRes = wrapper.footerViewHolderClazz.getAnnotation(LayoutRes.class);
             itemView = LayoutInflater.from(fragment.getActivity()).inflate(layoutRes.resId(), parent, false);
             try {
-                Constructor constructor = clazz.getConstructor(Fragment.class, UserListAdapter.class, View.class);
+                Constructor constructor = wrapper.footerViewHolderClazz.getConstructor(Fragment.class, UserListAdapter.class, View.class);
                 viewHolder = (FooterViewHolder) constructor.newInstance(fragment, this, itemView);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -168,7 +133,7 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         itemView.setOnClickListener(v -> {
             if (onUserClickListener != null) {
                 int position = viewHolder.getAdapterPosition();
-                onUserClickListener.onUserClick(users.get(position - headerCount()));
+                onUserClickListener.onUserClick((UIUserInfo) getItem(position));
             }
         });
         return viewHolder;
@@ -180,25 +145,23 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (position < headerCount()) {
-            ((HeaderViewHolder) holder).onBind(headerValues.get(position));
-        } else if (position < headerCount() + userCount()) {
-            ((UserViewHolder) holder).onBind(users.get(position - headerCount()));
-        } else {
-            ((FooterViewHolder<FooterValue>) holder).onBind(footerValues.get(position - headerCount() - userCount()));
+        if (holder instanceof UserViewHolder) {
+            ((UserViewHolder) holder).onBind((UIUserInfo) getItem(position));
+        } else if (holder instanceof HeaderViewHolder) {
+            HeaderValueWrapper wrapper = (HeaderValueWrapper) getItem(position);
+            ((HeaderViewHolder) holder).onBind(wrapper.headerValue);
+        } else if (holder instanceof FooterViewHolder) {
+            FooterValueWrapper wrapper = (FooterValueWrapper) getItem(position);
+            ((FooterViewHolder<FooterValue>) holder).onBind(wrapper.footerValue);
         }
     }
 
     @Override
-    public int getItemCount() {
-        return userCount() + headerCount() + footerCount();
-    }
-
-    @Override
     public int getItemViewType(int position) {
-        if (position < headerCount()) {
+        Object item = getItem(position);
+        if (item instanceof HeaderValueWrapper) {
             return position;
-        } else if (position < headerCount() + userCount()) {
+        } else if (item instanceof UIUserInfo) {
             return TYPE_CONTACT;
         } else {
             return TYPE_FOOTER_START_INDEX + (position - headerCount() - userCount());
@@ -207,44 +170,60 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void addHeaderViewHolder(Class<? extends HeaderViewHolder> clazz, HeaderValue value) {
 
-        if (headerViewHolders == null) {
-            headerViewHolders = new ArrayList<>();
+        if (headerValues == null) {
             headerValues = new ArrayList<>();
         }
-        headerViewHolders.add(clazz);
-        headerValues.add(value);
+        headerValues.add(new HeaderValueWrapper(clazz, value));
+
+        submit(this.users, headerValues, footerValues);
     }
 
     public void updateHeader(int index, HeaderValue value) {
-        headerValues.set(index, value);
-        notifyItemChanged(index);
+        HeaderValueWrapper wrapper = headerValues.get(index);
+        headerValues.set(index, new HeaderValueWrapper(wrapper.headerViewHolderClazz, value));
+        submit(users, headerValues, footerValues);
     }
 
     public void addFooterViewHolder(Class<? extends FooterViewHolder> clazz, FooterValue value) {
-        if (footerViewHolders == null) {
-            footerViewHolders = new ArrayList<>();
+        if (footerValues == null) {
             footerValues = new ArrayList<>();
         }
-
-        footerViewHolders.add(clazz);
-        footerValues.add(value);
+        footerValues.add(new FooterValueWrapper(clazz, value));
+        submit(users, headerValues, footerValues);
     }
 
     public void updateFooter(int index, FooterValue value) {
-        footerValues.set(index, value);
-        notifyItemChanged(headerCount() + userCount() + index);
+        FooterValueWrapper wrapper = footerValues.get(index);
+        footerValues.set(index, new FooterValueWrapper(wrapper.footerViewHolderClazz, value));
+        submit(users, headerValues, footerValues);
     }
 
     public int headerCount() {
-        return headerViewHolders == null ? 0 : headerViewHolders.size();
+        int headerCount = 0;
+        for (int i = 0; i < getItemCount(); i++) {
+            if (getItem(i) instanceof HeaderValueWrapper) {
+                ++headerCount;
+            } else {
+                break;
+            }
+        }
+        return headerCount;
     }
 
     private int userCount() {
-        return users == null ? 0 : users.size();
+        return getItemCount() - headerCount() - footerCount();
     }
 
     public int footerCount() {
-        return footerViewHolders == null ? 0 : footerViewHolders.size();
+        int footerCount = 0;
+        for (int i = getItemCount() - 1; i >= 0; i--) {
+            if (getItem(i) instanceof FooterValueWrapper) {
+                ++footerCount;
+            } else {
+                break;
+            }
+        }
+        return footerCount;
     }
 
     public interface OnUserClickListener {
@@ -257,5 +236,25 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public interface OnFooterClickListener {
         void onFooterClick(int index);
+    }
+
+    static class HeaderValueWrapper {
+        Class<? extends HeaderViewHolder> headerViewHolderClazz;
+        HeaderValue headerValue;
+
+        public HeaderValueWrapper(Class<? extends HeaderViewHolder> headerViewHolderClazz, HeaderValue headerValue) {
+            this.headerViewHolderClazz = headerViewHolderClazz;
+            this.headerValue = headerValue;
+        }
+    }
+
+    static class FooterValueWrapper {
+        Class<? extends FooterViewHolder> footerViewHolderClazz;
+        FooterValue footerValue;
+
+        public FooterValueWrapper(Class<? extends FooterViewHolder> footerViewHolderClazz, FooterValue footerValue) {
+            this.footerViewHolderClazz = footerViewHolderClazz;
+            this.footerValue = footerValue;
+        }
     }
 }
