@@ -22,12 +22,9 @@ import java.util.List;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotificationViewModel;
-import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.UserInfo;
 
 public class ConversationListFragment extends Fragment {
     private RecyclerView recyclerView;
@@ -38,37 +35,6 @@ public class ConversationListFragment extends Fragment {
     private static final List<Integer> lines = Arrays.asList(0);
 
     private ConversationListViewModel conversationListViewModel;
-    private UserViewModel userViewModel;
-    private Observer<ConversationInfo> conversationInfoObserver = new Observer<ConversationInfo>() {
-        @Override
-        public void onChanged(@Nullable ConversationInfo conversationInfo) {
-            // just handle what we care about
-            if (types.contains(conversationInfo.conversation.type) && lines.contains(conversationInfo.conversation.line)) {
-                adapter.submitConversationInfo(conversationInfo);
-                // scroll or not?
-                // recyclerView.scrollToPosition(0);
-            }
-        }
-    };
-
-    private Observer<Conversation> conversationRemovedObserver = new Observer<Conversation>() {
-        @Override
-        public void onChanged(@Nullable Conversation conversation) {
-            if (conversation == null) {
-                return;
-            }
-            if (types.contains(conversation.type) && lines.contains(conversation.line)) {
-                adapter.removeConversation(conversation);
-            }
-        }
-    };
-
-    // 会话同步
-    private Observer<Object> settingUpdateObserver = o -> reloadConversations();
-
-    private Observer<List<UserInfo>> userInfoLiveDataObserver = (userInfos) -> {
-        adapter.updateUserInfos(userInfos);
-    };
 
     @Nullable
     @Override
@@ -79,6 +45,12 @@ public class ConversationListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        reloadConversations();
+    }
+
     private void init() {
         adapter = new ConversationListAdapter(this);
         conversationListViewModel = ViewModelProviders
@@ -87,7 +59,6 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel.getConversationListAsync(types, lines)
                 .observe(this, conversationInfos -> {
                     adapter.setConversationInfos(conversationInfos);
-                    adapter.notifyDataSetChanged();
                 });
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -97,12 +68,9 @@ public class ConversationListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-        conversationListViewModel.conversationInfoLiveData().observeForever(conversationInfoObserver);
-        conversationListViewModel.conversationRemovedLiveData().observeForever(conversationRemovedObserver);
-        conversationListViewModel.settingUpdateLiveData().observeForever(settingUpdateObserver);
-
-        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
+        conversationListViewModel.conversationInfoLiveData().observe(this, conversationInfo -> reloadConversations());
+        conversationListViewModel.conversationRemovedLiveData().observe(this, conversation -> reloadConversations());
+        conversationListViewModel.settingUpdateLiveData().observe(this, o -> reloadConversations());
 
         StatusNotificationViewModel statusNotificationViewModel = WfcUIKit.getAppScopeViewModel(StatusNotificationViewModel.class);
         statusNotificationViewModel.statusNotificationLiveData().observe(this, new Observer<Object>() {
@@ -135,17 +103,12 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel.getConversationListAsync(types, lines)
                 .observe(this, conversationInfos -> {
                     adapter.setConversationInfos(conversationInfos);
-                    adapter.notifyDataSetChanged();
                 });
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        conversationListViewModel.conversationInfoLiveData().removeObserver(conversationInfoObserver);
-        conversationListViewModel.conversationRemovedLiveData().removeObserver(conversationRemovedObserver);
-        conversationListViewModel.settingUpdateLiveData().removeObserver(settingUpdateObserver);
-        userViewModel.userInfoLiveData().removeObserver(userInfoLiveDataObserver);
     }
 
 }
