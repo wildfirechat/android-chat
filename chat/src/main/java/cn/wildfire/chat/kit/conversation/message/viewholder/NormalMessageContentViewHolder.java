@@ -202,11 +202,12 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     private void setSenderAvatar(Message item) {
         // TODO get user info from viewModel
         UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(item.sender, false);
-        if (userInfo != null && !TextUtils.isEmpty(userInfo.portrait) && portraitImageView != null) {
+        if (portraitImageView != null) {
             GlideApp
                     .with(context)
                     .load(userInfo.portrait)
                     .transforms(new CenterCrop(), new RoundedCorners(10))
+                    .error(R.mipmap.default_header)
                     .into(portraitImageView);
         }
     }
