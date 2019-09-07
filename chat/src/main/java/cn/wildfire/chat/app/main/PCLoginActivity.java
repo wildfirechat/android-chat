@@ -47,7 +47,7 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     @OnClick(R.id.confirmButton)
     void confirmPCLogin() {
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
         confirmPCLogin(token, userViewModel.getUserId());
     }
 

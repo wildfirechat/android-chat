@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -17,7 +18,7 @@ import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.SearchUserCallback;
 
 public class ContactViewModel extends ViewModel implements OnFriendUpdateListener, AppScopeViewModel {
-    private MutableLiveData<Object> contactListUpdatedLiveData;
+    private MutableLiveData<List<UserInfo>> contactListLiveData;
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
 
     public ContactViewModel() {
@@ -31,11 +32,12 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         ChatManager.Instance().removeFriendUpdateListener(this);
     }
 
-    public MutableLiveData<Object> contactListUpdatedLiveData() {
-        if (contactListUpdatedLiveData == null) {
-            contactListUpdatedLiveData = new MutableLiveData<>();
+    public MutableLiveData<List<UserInfo>> contactListLiveData() {
+        if (contactListLiveData == null) {
+            contactListLiveData = new MutableLiveData<>();
         }
-        return contactListUpdatedLiveData;
+        reloadContact();
+        return contactListLiveData;
     }
 
     public MutableLiveData<Integer> friendRequestUpdatedLiveData() {
@@ -53,13 +55,21 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return ChatManager.Instance().getMyFriendList(refresh);
     }
 
-    public LiveData<List<UserInfo>> getContactsAsync(boolean refresh) {
-        MutableLiveData<List<UserInfo>> data = new MutableLiveData<>();
+    private AtomicInteger loadingCount = new AtomicInteger(0);
+
+    public void reloadContact() {
+        int count = loadingCount.get();
+        if (count > 0) {
+            return;
+        }
+        loadingCount.incrementAndGet();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<UserInfo> userInfos = ChatManager.Instance().getMyFriendListInfo(refresh);
-            data.postValue(userInfos);
+            loadingCount.decrementAndGet();
+            List<UserInfo> userInfos = ChatManager.Instance().getMyFriendListInfo(false);
+            if (contactListLiveData != null) {
+                contactListLiveData.postValue(userInfos);
+            }
         });
-        return data;
     }
 
     public List<UserInfo> getContacts(boolean refresh) {
@@ -76,9 +86,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
 
     @Override
     public void onFriendListUpdate(List<String> updateFriendList) {
-        if (contactListUpdatedLiveData != null) {
-            contactListUpdatedLiveData.setValue(new Object());
-        }
+        reloadContact();
     }
 
     @Override
@@ -143,9 +151,6 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         ChatManager.Instance().deleteFriend(userId, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                if (contactListUpdatedLiveData != null) {
-                    contactListUpdatedLiveData.postValue(new Object());
-                }
                 ChatManager.Instance().removeConversation(new Conversation(Conversation.ConversationType.Single, userId, 0), true);
                 result.postValue(new OperateResult<>(0));
             }

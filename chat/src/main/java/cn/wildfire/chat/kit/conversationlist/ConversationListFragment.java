@@ -22,9 +22,14 @@ import java.util.List;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotificationViewModel;
+import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class ConversationListFragment extends Fragment {
     private RecyclerView recyclerView;
@@ -35,6 +40,7 @@ public class ConversationListFragment extends Fragment {
     private static final List<Integer> lines = Arrays.asList(0);
 
     private ConversationListViewModel conversationListViewModel;
+    private LinearLayoutManager layoutManager;
 
     @Nullable
     @Override
@@ -43,6 +49,14 @@ public class ConversationListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         init();
         return view;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (adapter != null && isVisibleToUser) {
+            reloadConversations();
+        }
     }
 
     @Override
@@ -56,11 +70,9 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel = ViewModelProviders
                 .of(getActivity(), new ConversationListViewModelFactory(types, lines))
                 .get(ConversationListViewModel.class);
-        conversationListViewModel.getConversationListAsync(types, lines)
-                .observe(this, conversationInfos -> {
-                    adapter.setConversationInfos(conversationInfos);
-                });
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        conversationListViewModel.conversationListLiveData().observe(this, conversationInfos -> adapter.setConversationInfos(conversationInfos));
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
 
         DividerItemDecoration itemDecor = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
         itemDecor.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.recyclerview_horizontal_divider));
@@ -68,9 +80,24 @@ public class ConversationListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-        conversationListViewModel.conversationInfoLiveData().observe(this, conversationInfo -> reloadConversations());
-        conversationListViewModel.conversationRemovedLiveData().observe(this, conversation -> reloadConversations());
-        conversationListViewModel.settingUpdateLiveData().observe(this, o -> reloadConversations());
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel.userInfoLiveData().observe(this, new Observer<List<UserInfo>>() {
+            @Override
+            public void onChanged(List<UserInfo> userInfos) {
+                int start = layoutManager.findFirstVisibleItemPosition();
+                int end = layoutManager.findLastVisibleItemPosition();
+                adapter.notifyItemRangeChanged(start, end - start + 1);
+            }
+        });
+        GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel.groupInfoUpdateLiveData().observe(this, new Observer<List<GroupInfo>>() {
+            @Override
+            public void onChanged(List<GroupInfo> groupInfos) {
+                int start = layoutManager.findFirstVisibleItemPosition();
+                int end = layoutManager.findLastVisibleItemPosition();
+                adapter.notifyItemRangeChanged(start, end - start + 1);
+            }
+        });
 
         StatusNotificationViewModel statusNotificationViewModel = WfcUIKit.getAppScopeViewModel(StatusNotificationViewModel.class);
         statusNotificationViewModel.statusNotificationLiveData().observe(this, new Observer<Object>() {
@@ -100,10 +127,10 @@ public class ConversationListFragment extends Fragment {
     }
 
     private void reloadConversations() {
-        conversationListViewModel.getConversationListAsync(types, lines)
-                .observe(this, conversationInfos -> {
-                    adapter.setConversationInfos(conversationInfos);
-                });
+        if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusReceiveing) {
+            return;
+        }
+        conversationListViewModel.reloadConversationList();
     }
 
     @Override

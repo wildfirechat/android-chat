@@ -20,7 +20,6 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
@@ -41,7 +40,7 @@ import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
 import cn.wildfirechat.remote.UploadMediaCallback;
 import cn.wildfirechat.remote.UserSettingScope;
 
-public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
+public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;
     private MutableLiveData<List<GroupMember>> groupMembersUpdateLiveData;
 
@@ -161,10 +160,6 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, Arrays.asList(0), null, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                if (groupInfoUpdateLiveData != null) {
-                    groupInfo.memberCount -= groupInfo.memberCount + memberIds.size();
-                    groupInfoUpdateLiveData.setValue(Collections.singletonList(groupInfo));
-                }
                 result.setValue(true);
             }
 
@@ -182,10 +177,6 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         ChatManagerHolder.gChatManager.removeGroupMembers(groupInfo.target, memberIds, Arrays.asList(0), null, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                if (groupInfoUpdateLiveData != null) {
-                    groupInfo.memberCount -= groupInfo.memberCount + memberIds.size();
-                    groupInfoUpdateLiveData.setValue(Collections.singletonList(groupInfo));
-                }
                 result.setValue(true);
             }
 

@@ -2169,6 +2169,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onGroupInfoUpdated(List<ProtoGroupInfo> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
         handler.post(() -> {
             ArrayList<GroupInfo> groups = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {

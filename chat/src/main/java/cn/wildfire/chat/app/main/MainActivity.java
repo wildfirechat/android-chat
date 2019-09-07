@@ -34,10 +34,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
+import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -55,8 +55,10 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageChangeListener {
@@ -78,7 +80,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
     private static final int REQUEST_IGNORE_BATTERY_CODE = 101;
 
-    private IMServiceStatusViewModel imServiceStatusViewModel;
     private boolean isInitialized = false;
 
     private ConversationListFragment conversationListFragment;
@@ -100,14 +101,30 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     @Override
     protected void afterViews() {
-        imServiceStatusViewModel = WfcUIKit.getAppScopeViewModel(IMServiceStatusViewModel.class);
-        imServiceStatusViewModel.imServiceStatusLiveData().observeForever(imStatusLiveDataObserver);
+        IMServiceStatusViewModel imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
+        imServiceStatusViewModel.imServiceStatusLiveData().observe(this, imStatusLiveDataObserver);
+        IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
+        connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
+            if (status == ConnectionStatus.ConnectionStatusTokenIncorrect) {
+                reLogin();
+            }
+        });
+    }
+
+    private void reLogin() {
+        ChatManager.Instance().disconnect(true);
+        SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+        sp.edit().clear().apply();
+
+        Intent intent = new Intent(this, SplashActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        imServiceStatusViewModel.imServiceStatusLiveData().removeObserver(imStatusLiveDataObserver);
     }
 
     private void init() {
@@ -125,7 +142,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             }
         });
 
-        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
+        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
             if (count == null || count == 0) {
                 hideUnreadFriendRequestBadgeView();
@@ -369,7 +386,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private void showUser(String uid) {
 
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(uid, true);
         if (userInfo == null) {
             return;
@@ -392,7 +409,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     }
 
     private boolean checkDisplayName() {
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         if (userInfo != null && TextUtils.equals(userInfo.displayName, userInfo.mobile)) {

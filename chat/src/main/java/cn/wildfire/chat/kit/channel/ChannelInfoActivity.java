@@ -86,7 +86,7 @@ public class ChannelInfoActivity extends AppCompatActivity {
         channelDescTextView.setText(TextUtils.isEmpty(channelInfo.desc) ? "频道主什么也没写" : channelInfo.desc);
 
 
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
         if (channelInfo.owner.equals(userViewModel.getUserId())) {
             followChannelButton.setVisibility(View.GONE);
             return;

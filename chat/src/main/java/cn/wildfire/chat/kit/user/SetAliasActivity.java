@@ -7,11 +7,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import butterknife.Bind;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
@@ -40,7 +40,7 @@ public class SetAliasActivity extends WfcBaseActivity {
             finish();
             return;
         }
-        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         String alias = userViewModel.getFriendAlias(userId);
         if (!TextUtils.isEmpty(alias)) {
             aliasEditText.setHint(alias);
