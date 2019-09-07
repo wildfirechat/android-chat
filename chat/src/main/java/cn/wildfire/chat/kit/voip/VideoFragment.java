@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
 
@@ -25,7 +26,6 @@ import org.webrtc.StatsReport;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
@@ -299,7 +299,7 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
                 descTextView.setText(R.string.av_video_invite);
             }
         }
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(targetId, false);
         if (userInfo == null) {
             getActivity().finish();

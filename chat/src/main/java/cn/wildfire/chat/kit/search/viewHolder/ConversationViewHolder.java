@@ -12,7 +12,6 @@ import com.bumptech.glide.request.RequestOptions;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
@@ -36,7 +35,7 @@ public class ConversationViewHolder extends ResultItemViewHolder<ConversationSea
         super(fragment, itemView);
         ButterKnife.bind(this, itemView);
 
-        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
     }
 

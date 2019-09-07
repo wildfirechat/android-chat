@@ -32,7 +32,6 @@ import butterknife.OnTouch;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
 import cn.wildfire.chat.kit.chatroom.ChatRoomViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -89,7 +88,6 @@ public class ConversationActivity extends WfcBaseActivity implements
     private boolean moveToBottom = true;
     private ConversationViewModel conversationViewModel;
     private UserViewModel userViewModel;
-    private IMServiceStatusViewModel imServiceStatusViewModel;
     private boolean isInitialized = false;
     private ChatRoomViewModel chatRoomViewModel;
 
@@ -187,7 +185,7 @@ public class ConversationActivity extends WfcBaseActivity implements
             }
             int start = layoutManager.findFirstVisibleItemPosition();
             int end = layoutManager.findLastVisibleItemPosition();
-            adapter.notifyItemRangeChanged(start, end - start, userInfos);
+            adapter.notifyItemRangeChanged(start, end - start + 1, userInfos);
         }
     };
 
@@ -205,7 +203,7 @@ public class ConversationActivity extends WfcBaseActivity implements
 
     @Override
     protected void afterViews() {
-        imServiceStatusViewModel = WfcUIKit.getAppScopeViewModel(IMServiceStatusViewModel.class);
+        IMServiceStatusViewModel imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
         imServiceStatusViewModel.imServiceStatusLiveData().observe(this, aBoolean -> {
             if (!isInitialized && aBoolean) {
                 init();
@@ -320,7 +318,7 @@ public class ConversationActivity extends WfcBaseActivity implements
             conversationViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
             conversationViewModel.clearMessageLiveData().observeForever(clearMessageLiveDataObserver);
 
-            userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+            userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
             userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
         } else {
             conversationViewModel.setConversation(conversation, channelPrivateChatUser);

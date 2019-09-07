@@ -3,12 +3,11 @@ package cn.wildfire.chat.kit;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.IMServiceStatusListener;
 
 // application scope
-public class IMServiceStatusViewModel extends ViewModel implements AppScopeViewModel, IMServiceStatusListener {
+public class IMServiceStatusViewModel extends ViewModel implements IMServiceStatusListener {
     private MutableLiveData<Boolean> imServiceStatusLiveData = new MutableLiveData<>();
 
     public IMServiceStatusViewModel() {

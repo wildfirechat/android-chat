@@ -136,7 +136,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     private void init() {
         conversationViewModel = ViewModelProviders.of(this, new ConversationViewModelFactory(conversationInfo.conversation)).get(ConversationViewModel.class);
-        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
         groupLinearLayout_0.setVisibility(View.VISIBLE);
         groupLinearLayout_1.setVisibility(View.VISIBLE);
         markGroupLinearLayout.setVisibility(View.VISIBLE);

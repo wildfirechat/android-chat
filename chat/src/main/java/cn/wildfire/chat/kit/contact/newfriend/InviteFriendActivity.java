@@ -30,7 +30,7 @@ public class InviteFriendActivity extends WfcBaseActivity {
         if (userInfo == null) {
             finish();
         }
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         introTextView.setText("我是 " + (me == null ? "" : me.displayName));
     }
