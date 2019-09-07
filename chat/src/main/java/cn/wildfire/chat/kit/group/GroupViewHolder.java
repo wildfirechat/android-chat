@@ -4,12 +4,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupInfo;
 
@@ -39,7 +39,7 @@ public class GroupViewHolder extends RecyclerView.ViewHolder {
         this.groupInfo = groupInfo;
         categoryTextView.setVisibility(View.GONE);
         nameTextView.setText(this.groupInfo.name);
-        Glide.with(fragment).load(this.groupInfo.portrait).into(portraitImageView);
+        GlideApp.with(fragment).load(this.groupInfo.portrait).error(R.mipmap.ic_group_cheat).into(portraitImageView);
     }
 
     public GroupInfo getGroupInfo() {
