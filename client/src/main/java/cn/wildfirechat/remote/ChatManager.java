@@ -3270,7 +3270,10 @@ public class ChatManager {
             if (groupIdMap != null && !groupIdMap.isEmpty()) {
                 for (Map.Entry<String, String> entry : groupIdMap.entrySet()) {
                     if (entry.getValue().equals(fav)) {
-                        groups.add(getGroupInfo(entry.getKey(), false));
+                        GroupInfo info = getGroupInfo(entry.getKey(), false);
+                        if (!(info instanceof NullGroupInfo)) {
+                            groups.add(getGroupInfo(entry.getKey(), false));
+                        }
                     }
                 }
             }
