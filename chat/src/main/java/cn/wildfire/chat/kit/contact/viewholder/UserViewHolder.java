@@ -5,12 +5,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -43,7 +43,7 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         } else {
             categoryTextView.setVisibility(View.GONE);
         }
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo.getUserInfo()));
         GlideApp.with(fragment).load(userInfo.getUserInfo().portrait).error(R.mipmap.default_header).into(portraitImageView);
     }

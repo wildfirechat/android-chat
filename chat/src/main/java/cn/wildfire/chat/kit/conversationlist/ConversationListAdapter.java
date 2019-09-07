@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -30,16 +29,14 @@ import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 
-public class ConversationListAdapter extends ListAdapter<Object, RecyclerView.ViewHolder> {
+public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Fragment fragment;
 
     private List<ConversationInfo> conversationInfos = new ArrayList<>();
     private List<StatusNotification> statusNotifications;
 
-    private static final ConversationInfoDiffCallback cb = new ConversationInfoDiffCallback();
-
     public ConversationListAdapter(Fragment context) {
-        super(cb);
+        super();
         this.fragment = context;
     }
 
@@ -62,12 +59,7 @@ public class ConversationListAdapter extends ListAdapter<Object, RecyclerView.Vi
     private void submit(List<StatusNotification> notifications, List<ConversationInfo> conversationInfos) {
         this.statusNotifications = notifications;
         this.conversationInfos = conversationInfos;
-        List<Object> items = new ArrayList<>();
-        if (headerCount() > 0) {
-            items.add(new Object());
-        }
-        items.addAll(conversationInfos);
-        submitList(items);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -142,7 +134,7 @@ public class ConversationListAdapter extends ListAdapter<Object, RecyclerView.Vi
                 }
 
                 int position = viewHolder.getAdapterPosition();
-                ConversationInfo conversationInfo = (ConversationInfo) getItem(position);
+                ConversationInfo conversationInfo = conversationInfos.get(position - headerCount());
                 Iterator<ContextMenuItemWrapper> iterator = contextMenus.iterator();
                 ConversationContextMenuItem item;
                 while (iterator.hasNext()) {
@@ -218,7 +210,7 @@ public class ConversationListAdapter extends ListAdapter<Object, RecyclerView.Vi
             ((StatusNotificationContainerViewHolder) holder).onBind(fragment, holder.itemView, statusNotifications);
             return;
         }
-        ((ConversationViewHolder) holder).onBind((ConversationInfo) getItem(position), position);
+        ((ConversationViewHolder) holder).onBind(conversationInfos.get(position - headerCount()), position);
     }
 
     @Override
@@ -235,11 +227,16 @@ public class ConversationListAdapter extends ListAdapter<Object, RecyclerView.Vi
         if (isStatusNotificationHeader(position)) {
             return R.layout.conversationlist_item_notification_container;
         }
-        Conversation conversation = ((ConversationInfo) getItem(position)).conversation;
+        Conversation conversation = conversationInfos.get(position - headerCount()).conversation;
         return conversation.type.getValue() << 24 | conversation.line;
     }
 
+    @Override
+    public int getItemCount() {
+        return headerCount() + conversationInfos.size();
+    }
+
     private boolean isStatusNotificationHeader(int position) {
-        return position == 0 && getItem(position).getClass() == Object.class;
+        return position < headerCount();
     }
 }
