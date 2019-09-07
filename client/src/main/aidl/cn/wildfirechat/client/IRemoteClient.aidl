@@ -167,4 +167,6 @@ interface IRemoteClient {
     oneway void destoryChannel(in String channelId, in IGeneralCallback callback);
     List<String> getMyChannels();
     List<String> getListenedChannels();
+
+    String getImageThumbPara();
 }

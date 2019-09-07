@@ -1457,7 +1457,25 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void modifyChannelInfo(String channelId, int modifyType, String newValue, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.modifyChannelInfo(channelId, modifyType, newValue, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
 
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
@@ -1567,6 +1585,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
             return out;
+        }
+
+        @Override
+        public String getImageThumbPara() throws RemoteException {
+            return ProtoLogic.getImageThumbPara();
         }
 
     }
