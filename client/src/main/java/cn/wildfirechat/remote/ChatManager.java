@@ -3349,6 +3349,19 @@ public class ChatManager {
         }
     }
 
+    public String getImageThumbPara() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getImageThumbPara();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * IM服务进程是否bind成功
      *
