@@ -55,7 +55,7 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
         if (unCheckableMemberIds != null && !unCheckableMemberIds.isEmpty()) {
             pickUserViewModel.setUncheckableIds(unCheckableMemberIds);
         } else {
-            UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+            UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
             List<String> list = new ArrayList<>();
             list.add(userViewModel.getUserId());
             pickUserViewModel.setUncheckableIds(list);

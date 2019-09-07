@@ -15,8 +15,4 @@ public class FriendRequestValue extends HeaderValue {
         this.unreadRequestCount = unreadRequestCount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return false;
-    }
 }

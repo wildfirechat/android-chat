@@ -61,7 +61,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
             showGroupInfo(groupInfo);
         }
         List<GroupMember> groupMembers = groupViewModel.getGroupMembers(groupId, true);
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
         userId = userViewModel.getUserId();
         if (groupMembers == null || groupMembers.isEmpty()) {
             showLoading();
