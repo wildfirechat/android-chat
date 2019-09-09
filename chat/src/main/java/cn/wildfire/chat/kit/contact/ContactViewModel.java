@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
+import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.UserInfo;
@@ -18,7 +19,7 @@ import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.SearchUserCallback;
 
 public class ContactViewModel extends ViewModel implements OnFriendUpdateListener, AppScopeViewModel {
-    private MutableLiveData<List<UserInfo>> contactListLiveData;
+    private MutableLiveData<List<UIUserInfo>> contactListLiveData;
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
 
     public ContactViewModel() {
@@ -32,7 +33,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         ChatManager.Instance().removeFriendUpdateListener(this);
     }
 
-    public MutableLiveData<List<UserInfo>> contactListLiveData() {
+    public MutableLiveData<List<UIUserInfo>> contactListLiveData() {
         if (contactListLiveData == null) {
             contactListLiveData = new MutableLiveData<>();
         }
@@ -67,7 +68,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             loadingCount.decrementAndGet();
             List<UserInfo> userInfos = ChatManager.Instance().getMyFriendListInfo(false);
             if (contactListLiveData != null) {
-                contactListLiveData.postValue(userInfos);
+                contactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos));
             }
         });
     }

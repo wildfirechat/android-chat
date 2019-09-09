@@ -22,6 +22,8 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.MessageContentMediaType;
@@ -68,6 +70,21 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             groupMembersUpdateLiveData = new MutableLiveData<>();
         }
         return groupMembersUpdateLiveData;
+    }
+
+    public MutableLiveData<List<UIUserInfo>> getGroupMemberUIUserInfosLiveData(String groupId, boolean refresh) {
+        MutableLiveData<List<UIUserInfo>> groupMemberLiveData = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, refresh);
+            List<String> memberIds = new ArrayList<>(members.size());
+            for (GroupMember member : members) {
+                memberIds.add(member.memberId);
+            }
+            List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
+            List<UIUserInfo> users = UIUserInfo.fromUserInfos(userInfos);
+            groupMemberLiveData.postValue(users);
+        });
+        return groupMemberLiveData;
     }
 
     @Override
@@ -278,6 +295,79 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return ChatManager.Instance().getGroupMembers(groupId, forceRefresh);
     }
 
+    public MutableLiveData<List<GroupMember>> getGroupMembersLiveData(String groupId, boolean refresh) {
+        MutableLiveData<List<GroupMember>> data = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, false);
+            data.postValue(members);
+        });
+
+        return data;
+    }
+
+    public MutableLiveData<List<UIUserInfo>> getGroupManagerUIUserInfosLiveData(String groupId, boolean refresh) {
+        MutableLiveData<List<UIUserInfo>> data = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, false);
+            List<UIUserInfo> userInfos = memberToUIUserInfo(groupId, members);
+            data.postValue(userInfos);
+        });
+
+        return data;
+    }
+
+
+    private List<UIUserInfo> memberToUIUserInfo(String groupId, List<GroupMember> members) {
+        if (members == null || members.isEmpty()) {
+            return null;
+        }
+
+        List<String> memberIds = new ArrayList<>(members.size());
+        for (GroupMember member : members) {
+            if (member.type == GroupMember.GroupMemberType.Owner || member.type == GroupMember.GroupMemberType.Manager) {
+                memberIds.add(member.memberId);
+            }
+        }
+
+        List<UIUserInfo> uiUserInfos = new ArrayList<>();
+        List<UserInfo> userInfos = UserViewModel.getUsers(memberIds, groupId);
+        boolean showManagerCategory = false;
+        for (UserInfo userInfo : userInfos) {
+            UIUserInfo info = new UIUserInfo(userInfo);
+            if (!TextUtils.isEmpty(userInfo.displayName)) {
+                String pinyin = PinyinUtils.getPinyin(userInfo.displayName);
+                char c = pinyin.toUpperCase().charAt(0);
+                if (c >= 'A' && c <= 'Z') {
+                    info.setSortName(pinyin);
+                } else {
+                    // 为了让排序排到最后
+                    info.setSortName("{" + pinyin);
+                }
+            } else {
+                info.setSortName("");
+            }
+
+            for (GroupMember member : members) {
+                if (userInfo.uid.equals(member.memberId)) {
+                    if (member.type == GroupMember.GroupMemberType.Manager) {
+                        info.setCategory("管理员");
+                        if (!showManagerCategory) {
+                            showManagerCategory = true;
+                            info.setShowCategory(true);
+                        }
+                        uiUserInfos.add(info);
+                    } else {
+                        info.setCategory("群主");
+                        info.setShowCategory(true);
+                        uiUserInfos.add(0, info);
+                    }
+                    break;
+                }
+            }
+        }
+        return uiUserInfos;
+    }
+
     public GroupMember getGroupMember(String groupId, String memberId) {
         return ChatManager.Instance().getGroupMember(groupId, memberId);
     }
@@ -285,20 +375,8 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     // 优先级如下：
     // 1. 群备注 2. 好友备注 3. 用户displayName 4. <uid>
     public String getGroupMemberDisplayName(String groupId, String memberId) {
-        GroupMember groupMember = ChatManager.Instance().getGroupMember(groupId, memberId);
-        if (groupMember != null && !TextUtils.isEmpty(groupMember.alias)) {
-            return groupMember.alias;
-        }
-
-        String alias = ChatManager.Instance().getFriendAlias(memberId);
-        if (!TextUtils.isEmpty(alias)) {
-            return alias;
-        }
-        UserInfo userInfo = ChatManager.Instance().getUserInfo(memberId, false);
-        if (userInfo != null && !TextUtils.isEmpty(userInfo.displayName)) {
-            return userInfo.displayName;
-        }
-        return "<" + memberId + ">";
+        UserInfo userInfo = ChatManager.Instance().getUserInfo(memberId, groupId, false);
+        return userInfo == null ? "<" + memberId + ">" : userInfo.displayName;
     }
 
     public MutableLiveData<OperateResult<List<GroupInfo>>> getMyGroups() {
@@ -440,4 +518,5 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             groupMembersUpdateLiveData.setValue(groupMembers);
         }
     }
+
 }
