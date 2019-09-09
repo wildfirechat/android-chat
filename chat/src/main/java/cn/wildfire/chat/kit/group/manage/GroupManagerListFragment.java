@@ -2,12 +2,8 @@ package cn.wildfire.chat.kit.group.manage;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -23,10 +19,8 @@ import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class GroupManagerListFragment extends BaseUserListFragment {
@@ -54,12 +48,10 @@ public class GroupManagerListFragment extends BaseUserListFragment {
         observerGroupMemberUpdate();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+    protected void afterViews(View view) {
+        super.afterViews(view);
         loadAndShowGroupMembers(true);
-        return view;
     }
 
     @Override
@@ -76,7 +68,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
-        UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         GroupMember me = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
         if (me == null || me.type != GroupMember.GroupMemberType.Owner) {
             return;
@@ -116,60 +108,10 @@ public class GroupManagerListFragment extends BaseUserListFragment {
     }
 
     private void loadAndShowGroupMembers(boolean refresh) {
-        List<GroupMember> members = groupViewModel.getGroupMembers(groupInfo.target, refresh);
-        managerMembers.clear();
-        for (GroupMember member : members) {
-            if (member.type == GroupMember.GroupMemberType.Owner || member.type == GroupMember.GroupMemberType.Manager) {
-                managerMembers.add(member);
-            }
-        }
-        userListAdapter.setUsers(memberToUIUserInfo(managerMembers));
-        userListAdapter.notifyDataSetChanged();
-    }
-
-    private List<UIUserInfo> memberToUIUserInfo(List<GroupMember> members) {
-
-        List<String> memberIds = new ArrayList<>(members.size());
-        for (GroupMember member : members) {
-            memberIds.add(member.memberId);
-        }
-
-        List<UIUserInfo> uiUserInfos = new ArrayList<>();
-        List<UserInfo> userInfos = UserViewModel.getUsers(memberIds, groupInfo.target);
-        boolean showManagerCategory = false;
-        for (UserInfo userInfo : userInfos) {
-            UIUserInfo info = new UIUserInfo(userInfo);
-            if (!TextUtils.isEmpty(userInfo.displayName)) {
-                String pinyin = PinyinUtils.getPinyin(userInfo.displayName);
-                char c = pinyin.toUpperCase().charAt(0);
-                if (c >= 'A' && c <= 'Z') {
-                    info.setSortName(pinyin);
-                } else {
-                    // 为了让排序排到最后
-                    info.setSortName("{" + pinyin);
-                }
-            } else {
-                info.setSortName("");
-            }
-
-            for (GroupMember member : members) {
-                if (userInfo.uid.equals(member.memberId)) {
-                    if (member.type == GroupMember.GroupMemberType.Manager) {
-                        info.setCategory("管理员");
-                        if (!showManagerCategory) {
-                            showManagerCategory = true;
-                            info.setShowCategory(true);
-                        }
-                        uiUserInfos.add(info);
-                    } else {
-                        info.setCategory("群主");
-                        info.setShowCategory(true);
-                        uiUserInfos.add(0, info);
-                    }
-                    break;
-                }
-            }
-        }
-        return uiUserInfos;
+        groupViewModel.getGroupManagerUIUserInfosLiveData(groupInfo.target, refresh).observe(this, uiUserInfos -> {
+            showContent();
+            userListAdapter.setUsers(uiUserInfos);
+            userListAdapter.notifyDataSetChanged();
+        });
     }
 }

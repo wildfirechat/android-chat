@@ -3,21 +3,16 @@ package cn.wildfire.chat.kit.contact.pick;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnFocusChange;
@@ -54,12 +49,11 @@ public class PickUserFragment extends BaseUserListFragment implements QuickIndex
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+    protected void afterViews(View view) {
+        super.afterViews(view);
         initView();
-        return view;
+        setupPickTargetUsers();
     }
 
     @Override
@@ -106,13 +100,16 @@ public class PickUserFragment extends BaseUserListFragment implements QuickIndex
 
     @Override
     public UserListAdapter onCreateUserListAdapter() {
-        CheckableUserListAdapter checkableContactAdapter = new CheckableUserListAdapter(this);
-        ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
+        return new CheckableUserListAdapter(this);
+    }
 
-        List<UIUserInfo> contacts = userInfoToUIUserInfo(contactViewModel.getContacts(false));
-        pickUserViewModel.setUsers(contacts);
-        checkableContactAdapter.setUsers(contacts);
-        return checkableContactAdapter;
+    protected void setupPickTargetUsers() {
+        ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
+        contactViewModel.contactListLiveData().observe(this, userInfos -> {
+            showContent();
+            pickUserViewModel.setUsers(userInfos);
+            userListAdapter.setUsers(userInfos);
+        });
     }
 
     private void showSearchContactFragment() {
