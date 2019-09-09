@@ -1,28 +1,20 @@
 package cn.wildfire.chat.kit.conversationlist;
 
-import android.util.Log;
-
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
-import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
-import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.OnClearMessageListener;
 import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
 import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
-import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnRemoveConversationListener;
@@ -41,15 +33,12 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         OnRecallMessageListener,
         RemoveMessageListener,
         OnSettingUpdateListener,
-        OnGroupInfoUpdateListener,
         OnConversationInfoUpdateListener,
         OnRemoveConversationListener,
         OnConnectionStatusChangeListener,
         OnClearMessageListener {
-    private MutableLiveData<ConversationInfo> conversationInfoLiveData;
-    private MutableLiveData<Conversation> conversationRemovedLiveData;
+    private MutableLiveData<List<ConversationInfo>> conversationListLiveData;
     private MutableLiveData<UnreadCount> unreadCountLiveData;
-    private MutableLiveData<Object> settingUpdateLiveData;
     private MutableLiveData<Integer> connectionStatusLiveData = new MutableLiveData<>();
 
     private List<Conversation.ConversationType> types;
@@ -66,7 +55,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addRecallMessageListener(this);
         ChatManager.Instance().addConnectionChangeListener(this);
         ChatManager.Instance().addRemoveMessageListener(this);
-        ChatManager.Instance().addGroupInfoUpdateListener(this);
         ChatManager.Instance().addClearMessageListener(this);
         ChatManager.Instance().addRemoveConversationListener(this);
     }
@@ -81,43 +69,52 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeConnectionChangeListener(this);
         ChatManager.Instance().removeRecallMessageListener(this);
         ChatManager.Instance().removeRemoveMessageListener(this);
-        ChatManager.Instance().removeGroupInfoUpdateListener(this);
         ChatManager.Instance().removeClearMessageListener(this);
         ChatManager.Instance().removeRemoveConversationListener(this);
     }
 
-    public LiveData<List<ConversationInfo>> getConversationListAsync(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
-        MutableLiveData<List<ConversationInfo>> data = new MutableLiveData<>();
+    private AtomicInteger loadingCount = new AtomicInteger(0);
+
+    public void reloadConversationList() {
+        reloadConversationList(false);
+    }
+
+    public void reloadConversationList(boolean force) {
+        if (conversationListLiveData == null) {
+            return;
+        }
+        if (!force) {
+            int count = loadingCount.get();
+            if (count > 0) {
+                return;
+            }
+        }
+        loadingCount.incrementAndGet();
+
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<ConversationInfo> conversationInfos = ChatManager.Instance().getConversationList(conversationTypes, lines);
-            data.postValue(conversationInfos);
+            loadingCount.decrementAndGet();
+            List<ConversationInfo> conversationInfos = ChatManager.Instance().getConversationList(types, lines);
+            if (!conversationInfos.isEmpty()) {
+                conversationListLiveData.postValue(conversationInfos);
+            }
         });
-        return data;
+        loadUnreadCount();
     }
 
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
         return ChatManager.Instance().getConversationList(conversationTypes, lines);
     }
 
-    public MutableLiveData<ConversationInfo> conversationInfoLiveData() {
-        if (conversationInfoLiveData == null) {
-            conversationInfoLiveData = new MutableLiveData<>();
+    public MutableLiveData<List<ConversationInfo>> conversationListLiveData() {
+        if (conversationListLiveData == null) {
+            conversationListLiveData = new MutableLiveData<>();
         }
-        return conversationInfoLiveData;
-    }
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<ConversationInfo> conversationInfos = ChatManager.Instance().getConversationList(types, lines);
+            conversationListLiveData.postValue(conversationInfos);
+        });
 
-    public MutableLiveData<Conversation> conversationRemovedLiveData() {
-        if (conversationRemovedLiveData == null) {
-            conversationRemovedLiveData = new MutableLiveData<>();
-        }
-        return conversationRemovedLiveData;
-    }
-
-    public MutableLiveData<Object> settingUpdateLiveData() {
-        if (settingUpdateLiveData == null) {
-            settingUpdateLiveData = new MutableLiveData<>();
-        }
-        return settingUpdateLiveData;
+        return conversationListLiveData;
     }
 
     public MutableLiveData<UnreadCount> unreadCountLiveData() {
@@ -158,64 +155,23 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     @Override
     public void onReceiveMessage(List<Message> messages, boolean hasMore) {
-
-        if (messages != null && messages.size() > 0) {
-            ChatManager.Instance().getWorkHandler().post(() -> {
-                String userId = ChatManager.Instance().getUserId();
-                for (Message message : messages) {
-                    Conversation conversation = message.conversation;
-                    if (!types.contains(conversation.type) && !lines.contains(conversation.line)) {
-                        continue;
-                    }
-
-                    if (message.messageId == 0) {
-                        continue;
-                    }
-
-                    if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(userId))
-                            || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(userId))
-                            || message.content instanceof DismissGroupNotificationContent) {
-                        continue;
-                    }
-                    ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-                    postConversationInfo(conversationInfo);
-                }
-            });
-            loadUnreadCount();
-        }
+        reloadConversationList(true);
     }
 
     @Override
     public void onRecallMessage(Message message) {
-        Conversation conversation = message.conversation;
-        if (types.contains(conversation.type) && lines.contains(conversation.line)) {
-            ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-            postConversationInfo(conversationInfo);
-        }
-        loadUnreadCount();
+        reloadConversationList();
     }
 
 
     @Override
     public void onSendSuccess(Message message) {
-        Conversation conversation = message.conversation;
-        if (types.contains(conversation.type) && lines.contains(conversation.line)) {
-            if (message.messageId > 0) {
-                ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-                postConversationInfo(conversationInfo);
-            }
-        }
+        reloadConversationList();
     }
 
     @Override
     public void onSendFail(Message message, int errorCode) {
-        Conversation conversation = message.conversation;
-        if (types.contains(conversation.type) && lines.contains(conversation.line)) {
-            if (message.messageId > 0) {
-                ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-                postConversationInfo(conversationInfo);
-            }
-        }
+        reloadConversationList();
     }
 
     @Override
@@ -223,26 +179,18 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         Conversation conversation = message.conversation;
         if (types.contains(conversation.type) && lines.contains(conversation.line)) {
             if (message.messageId > 0) {
-                ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-                postConversationInfo(conversationInfo);
+                reloadConversationList();
             }
         }
     }
 
     public void removeConversation(ConversationInfo conversationInfo) {
-        Conversation conversation = conversationInfo.conversation;
-        if (!types.contains(conversation.type) || !lines.contains(conversation.line)) {
-            Log.e(ConversationListViewModel.class.getSimpleName(), "this conversationListViewModel can not remove the target conversation");
-            return;
-        }
-        ChatManager.Instance().clearUnreadStatus(conversation);
+        ChatManager.Instance().clearUnreadStatus(conversationInfo.conversation);
         ChatManager.Instance().removeConversation(conversationInfo.conversation, false);
-        loadUnreadCount();
     }
 
     public void clearMessages(Conversation conversation) {
         ChatManager.Instance().clearMessages(conversation);
-        loadUnreadCount();
     }
 
     public void unSubscribeChannel(ConversationInfo conversationInfo) {
@@ -267,57 +215,38 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
      * @param conversationInfo
      */
     public void clearConversationUnreadStatus(ConversationInfo conversationInfo) {
-        UnreadCount unreadCount = conversationInfo.unreadCount;
-        if (unreadCount.unread == 0 && unreadCount.unreadMentionAll == 0 && unreadCount.unreadMention == 0) {
-            return;
-        }
         ChatManager.Instance().clearUnreadStatus(conversationInfo.conversation);
-        loadUnreadCount();
-    }
-
-    private void postConversationInfo(ConversationInfo conversationInfo) {
-        if (conversationInfo == null) {
-            return;
-        }
-        if (conversationInfoLiveData != null) {
-            conversationInfoLiveData.postValue(conversationInfo);
-        }
     }
 
     @Override
     public void onMessagedRemove(Message message) {
-        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-        postConversationInfo(conversationInfo);
+        reloadConversationList();
     }
 
     @Override
     public void onConversationDraftUpdate(ConversationInfo conversationInfo, String draft) {
-        postConversationInfo(conversationInfo);
+        reloadConversationList();
     }
 
     @Override
     public void onConversationTopUpdate(ConversationInfo conversationInfo, boolean top) {
-        postConversationInfo(conversationInfo);
+        reloadConversationList();
     }
 
     @Override
     public void onConversationSilentUpdate(ConversationInfo conversationInfo, boolean silent) {
-        postConversationInfo(conversationInfo);
+        reloadConversationList();
     }
 
     @Override
     public void onConversationUnreadStatusClear(ConversationInfo conversationInfo, UnreadCount unreadCount) {
-        postConversationInfo(conversationInfo);
+        reloadConversationList();
     }
 
     @Override
     public void onSettingUpdate() {
-        if (settingUpdateLiveData != null) {
-            UIUtils.postTaskSafely(() -> settingUpdateLiveData.setValue(new Object()));
-        }
-
         // 可能是会话同步
-        loadUnreadCount();
+        reloadConversationList(true);
     }
 
     @Override
@@ -326,31 +255,12 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     @Override
-    public void onGroupInfoUpdate(List<GroupInfo> groupInfos) {
-        if (!types.contains(Conversation.ConversationType.Group)) {
-            return;
-        }
-        if (groupInfos != null) {
-            for (GroupInfo groupInfo : groupInfos) {
-                Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupInfo.target);
-                ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
-                postConversationInfo(conversationInfo);
-            }
-        }
-    }
-
-    @Override
     public void onClearMessage(Conversation conversation) {
-        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
-        postConversationInfo(conversationInfo);
-        loadUnreadCount();
+        reloadConversationList();
     }
 
     @Override
     public void onConversationRemove(Conversation conversation) {
-        if (conversationRemovedLiveData != null) {
-            conversationRemovedLiveData.setValue(conversation);
-        }
-        loadUnreadCount();
+        reloadConversationList();
     }
 }

@@ -106,6 +106,7 @@ public class ChatManager {
     private UserSource userSource;
 
     private boolean startLog;
+    private int connectionStatus;
 
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
@@ -241,6 +242,10 @@ public class ChatManager {
         this.userSource = userSource;
     }
 
+    public int getConnectionStatus() {
+        return connectionStatus;
+    }
+
     //App在后台时，如果需要强制连上服务器并收消息，调用此方法。后台时无法保证长时间连接中。
     public void forceConnect() {
         if (mClient != null) {
@@ -275,6 +280,7 @@ public class ChatManager {
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
+                connectionStatus = status;
                 Iterator<OnConnectionStatusChangeListener> iterator = onConnectionStatusChangeListeners.iterator();
                 OnConnectionStatusChangeListener listener;
                 while (iterator.hasNext()) {
@@ -323,6 +329,10 @@ public class ChatManager {
                 listener.onReceiveMessage(messages, hasMore);
             }
 
+            // 消息数大于时，认为是历史消息同步，不通知群被删除
+            if (messages.size() > 10) {
+                return;
+            }
             for (Message message : messages) {
                 if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(getUserId()))
                         || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(getUserId()))
@@ -3270,7 +3280,10 @@ public class ChatManager {
             if (groupIdMap != null && !groupIdMap.isEmpty()) {
                 for (Map.Entry<String, String> entry : groupIdMap.entrySet()) {
                     if (entry.getValue().equals(fav)) {
-                        groups.add(getGroupInfo(entry.getKey(), false));
+                        GroupInfo info = getGroupInfo(entry.getKey(), false);
+                        if (!(info instanceof NullGroupInfo)) {
+                            groups.add(getGroupInfo(entry.getKey(), false));
+                        }
                     }
                 }
             }
@@ -3343,6 +3356,19 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return 0L;
+        }
+    }
+
+    public String getImageThumbPara() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getImageThumbPara();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

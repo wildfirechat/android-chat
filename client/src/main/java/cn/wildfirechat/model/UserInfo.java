@@ -91,4 +91,24 @@ public class UserInfo implements Parcelable, Comparable<UserInfo> {
             return new UserInfo[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserInfo userInfo = (UserInfo) o;
+
+        if (updateDt != userInfo.updateDt) return false;
+        if (type != userInfo.type) return false;
+        return uid.equals(userInfo.uid);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = uid.hashCode();
+        result = 31 * result + (int) (updateDt ^ (updateDt >>> 32));
+        result = 31 * result + type;
+        return result;
+    }
 }

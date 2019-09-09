@@ -8,12 +8,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
-
-import java.util.List;
 
 import cn.wildfire.chat.app.main.MainActivity;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
@@ -27,57 +23,36 @@ import cn.wildfire.chat.kit.contact.viewholder.header.FriendRequestViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
-import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
-import cn.wildfirechat.model.UserInfo;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
-    private UserViewModel userViewModel;
 
-    private Observer<Integer> friendRequestUpdateLiveDataObserver = count -> {
-        FriendRequestValue requestValue = new FriendRequestValue(count == null ? 0 : count);
-        userListAdapter.updateHeader(0, requestValue);
-    };
-
-    private Observer<Object> contactListUpdateLiveDataObserver = o -> {
-        loadContacts();
-    };
-
-    private void loadContacts() {
-        contactViewModel.getContactsAsync(false)
-                .observe(this, userInfos -> {
-                    userListAdapter.setUsers(userInfoToUIUserInfo(userInfos));
-                    userListAdapter.notifyDataSetChanged();
-
-                    for (UserInfo info : userInfos) {
-                        if (info.name == null || info.displayName == null) {
-                            userViewModel.getUserInfo(info.uid, true);
-                        }
-                    }
-                });
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (userListAdapter != null && isVisibleToUser) {
+            contactViewModel.reloadContact();
+        }
     }
 
-    private Observer<List<UserInfo>> userInfoLiveDataObserver = userInfos -> {
-        userListAdapter.updateContacts(userInfoToUIUserInfo(userInfos));
-    };
+    @Override
+    public void onResume() {
+        super.onResume();
+        contactViewModel.reloadContact();
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-
-        contactViewModel.contactListUpdatedLiveData().observe(this, contactListUpdateLiveDataObserver);
-        contactViewModel.friendRequestUpdatedLiveData().observe(this, friendRequestUpdateLiveDataObserver);
-
-        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
+        contactViewModel.contactListLiveData().observe(this, userInfos -> userListAdapter.setUsers(userInfoToUIUserInfo(userInfos)));
+        contactViewModel.friendRequestUpdatedLiveData().observe(this, integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
         return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        userViewModel.userInfoLiveData().removeObserver(userInfoLiveDataObserver);
     }
 
     @Override

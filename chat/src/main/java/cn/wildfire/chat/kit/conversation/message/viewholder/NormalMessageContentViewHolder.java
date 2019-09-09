@@ -22,7 +22,6 @@ import butterknife.Bind;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
@@ -223,7 +222,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     }
 
     private void showGroupMemberAlias(Conversation conversation, String sender) {
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(context).get(UserViewModel.class);
         if (!"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, conversation.target))) {
             nameTextView.setVisibility(View.GONE);
             return;

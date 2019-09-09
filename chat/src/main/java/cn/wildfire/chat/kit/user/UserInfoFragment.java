@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -91,8 +92,8 @@ public class UserInfoFragment extends Fragment {
     }
 
     private void init() {
-        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         String selfUid = userViewModel.getUserId();
         if (selfUid.equals(userInfo.uid)) {
             // self

@@ -62,7 +62,7 @@ public class ForwardActivity extends WfcBaseActivity {
                 .add(R.id.containerFrameLayout, new ForwardFragment())
                 .commit();
         forwardViewModel = ViewModelProviders.of(this).get(ForwardViewModel.class);
-        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         initSearch();
     }

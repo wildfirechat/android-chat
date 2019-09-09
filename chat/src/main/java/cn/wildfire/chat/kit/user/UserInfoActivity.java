@@ -5,9 +5,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.lifecycle.ViewModelProviders;
+
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
@@ -40,7 +41,7 @@ public class UserInfoActivity extends WfcBaseActivity {
     @Override
     protected void afterMenus(Menu menu) {
         super.afterMenus(menu);
-        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
+        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         if (!contactViewModel.isFriend(userInfo.uid)) {
             MenuItem item = menu.findItem(R.id.delete);
             item.setEnabled(false);
@@ -51,7 +52,7 @@ public class UserInfoActivity extends WfcBaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.delete) {
-            ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
+            ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
             contactViewModel.deleteFriend(userInfo.uid).observe(
                     this, booleanOperateResult -> {
                         if (booleanOperateResult.isSuccess()) {

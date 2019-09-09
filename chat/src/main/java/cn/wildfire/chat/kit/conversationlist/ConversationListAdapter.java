@@ -28,7 +28,6 @@ import cn.wildfire.chat.kit.conversationlist.viewholder.StatusNotificationContai
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.UserInfo;
 
 public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Fragment fragment;
@@ -41,124 +40,26 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         this.fragment = context;
     }
 
-    public List<ConversationInfo> getConversationInfos() {
-        return conversationInfos;
-    }
-
     private boolean isEmpty(List list) {
         return list == null || list.isEmpty();
     }
 
     public void updateStatusNotification(List<StatusNotification> statusNotifications) {
-        if (isEmpty(this.statusNotifications) && !isEmpty(statusNotifications)) {
-            this.statusNotifications = statusNotifications;
-            notifyItemInserted(0);
-            return;
-        }
-
-        if (!isEmpty(this.statusNotifications) && isEmpty(statusNotifications)) {
-            this.statusNotifications = null;
-            notifyItemRemoved(0);
-            return;
-        }
-
-        if (!isEmpty(this.statusNotifications) && !isEmpty(statusNotifications)) {
-            this.statusNotifications = statusNotifications;
-            notifyItemChanged(0);
-        }
+        submit(statusNotifications, this.conversationInfos);
     }
 
     private int headerCount() {
         return isEmpty(this.statusNotifications) ? 0 : 1;
     }
 
-    // TODO 其实只有更新可见的那部分就可以了
-    public void updateUserInfos(List<UserInfo> userInfos) {
-        if (conversationInfos == null || conversationInfos.isEmpty()) {
-            return;
-        }
-
-        for (int i = 0; i < conversationInfos.size(); i++) {
-            for (UserInfo userInfo : userInfos) {
-                if (conversationInfos.get(i).lastMessage == null) {
-                    continue;
-                }
-                ConversationInfo conversationInfo = conversationInfos.get(i);
-                if (conversationInfo.conversation.type == Conversation.ConversationType.Single
-                        && conversationInfo.conversation.target.equals(userInfo.uid)) {
-                    notifyItemChanged(headerCount() + i);
-                } else if (conversationInfo.lastMessage.sender.equals(userInfo.uid)) {
-                    // TODO 以后可能会添加header
-                    notifyItemChanged(headerCount() + i);
-                    break;
-                }
-            }
-        }
-    }
-
     public void setConversationInfos(List<ConversationInfo> conversationInfos) {
+        submit(this.statusNotifications, conversationInfos);
+    }
+
+    private void submit(List<StatusNotification> notifications, List<ConversationInfo> conversationInfos) {
+        this.statusNotifications = notifications;
         this.conversationInfos = conversationInfos;
-    }
-
-    public void submitConversationInfo(ConversationInfo conversationInfo) {
-        if (conversationInfos == null) {
-            return;
-        }
-
-        int currentPosition, targetPosition;
-        currentPosition = currentPosition(conversationInfo);
-        targetPosition = targetPosition(conversationInfo, currentPosition);
-
-        if (currentPosition >= 0) {
-            if (currentPosition == targetPosition) {
-                conversationInfos.set(targetPosition, conversationInfo);
-                notifyItemChanged(headerCount() + targetPosition);
-            } else {
-                conversationInfos.remove(currentPosition);
-                conversationInfos.add(targetPosition, conversationInfo);
-                notifyItemRemoved(headerCount() + currentPosition);
-                notifyItemInserted(headerCount() + targetPosition);
-            }
-        } else {
-            conversationInfos.add(targetPosition, conversationInfo);
-            notifyItemInserted(headerCount() + targetPosition);
-        }
-    }
-
-    public void removeConversation(Conversation conversation) {
-        boolean found = false;
-        Iterator<ConversationInfo> iterator = conversationInfos.iterator();
-        int index = 0;
-        Conversation c;
-        while (iterator.hasNext()) {
-            c = iterator.next().conversation;
-            if (c.type == conversation.type && c.line == conversation.line && c.target.equals(conversation.target)) {
-                iterator.remove();
-                found = true;
-                break;
-            }
-            index++;
-        }
-        if (found) {
-            notifyItemRemoved(headerCount() + index);
-        }
-    }
-
-    public void clearAllUnreadStatus() {
-        if (conversationInfos == null) {
-            return;
-        }
-
-        ConversationInfo info;
-        for (int i = 0; i < conversationInfos.size(); i++) {
-            info = conversationInfos.get(i);
-            if (info.unreadCount.unread > 0 || info.unreadCount.unreadMention > 0 || info.unreadCount.unreadMentionAll > 0) {
-                info.unreadCount.unread = 0;
-                info.unreadCount.unreadMention = 0;
-                info.unreadCount.unreadMentionAll = 0;
-            }
-            notifyItemChanged(headerCount() + i);
-        }
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -233,7 +134,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 }
 
                 int position = viewHolder.getAdapterPosition();
-                ConversationInfo conversationInfo = getItem(position);
+                ConversationInfo conversationInfo = conversationInfos.get(position - headerCount());
                 Iterator<ContextMenuItemWrapper> iterator = contextMenus.iterator();
                 ConversationContextMenuItem item;
                 while (iterator.hasNext()) {
@@ -305,16 +206,16 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (headerCount() > 0 && position == 0) {
+        if (isStatusNotificationHeader(position)) {
             ((StatusNotificationContainerViewHolder) holder).onBind(fragment, holder.itemView, statusNotifications);
             return;
         }
-        ((ConversationViewHolder) holder).onBind(getItem(position), position - headerCount());
+        ((ConversationViewHolder) holder).onBind(conversationInfos.get(position - headerCount()), position);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
-        if (headerCount() > 0 && position == 0) {
+        if (isStatusNotificationHeader(position)) {
             ((StatusNotificationContainerViewHolder) holder).onBind(fragment, holder.itemView, statusNotifications);
             return;
         }
@@ -322,79 +223,20 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     @Override
-    public int getItemCount() {
-        return headerCount() + (conversationInfos == null ? 0 : conversationInfos.size());
-    }
-
-    public ConversationInfo getItem(int position) {
-        return conversationInfos.get(position - headerCount());
-    }
-
-    @Override
     public int getItemViewType(int position) {
-        if (headerCount() > 0 && position == 0) {
+        if (isStatusNotificationHeader(position)) {
             return R.layout.conversationlist_item_notification_container;
         }
-        Conversation conversation = getItem(position).conversation;
+        Conversation conversation = conversationInfos.get(position - headerCount()).conversation;
         return conversation.type.getValue() << 24 | conversation.line;
     }
 
-    private int currentPosition(ConversationInfo conversationInfo) {
-        if (conversationInfos == null || conversationInfos.isEmpty()) {
-            return -1;
-        }
-        ConversationInfo info;
-        int position = -1;
-        for (int i = 0; i < conversationInfos.size(); i++) {
-            info = conversationInfos.get(i);
-            if (info.conversation.equals(conversationInfo.conversation)) {
-                position = i;
-                break;
-            }
-        }
-        return position;
+    @Override
+    public int getItemCount() {
+        return headerCount() + conversationInfos.size();
     }
 
-    private int targetPosition(ConversationInfo conversationInfo, int currentPosition) {
-        if (conversationInfos == null) {
-            return -1;
-        }
-        if (conversationInfos.isEmpty()) {
-            return 0;
-        }
-        // isTop
-        ConversationInfo info;
-        int position = 0;
-        if (conversationInfo.isTop) {
-            for (int i = 0; i < conversationInfos.size(); i++) {
-                info = conversationInfos.get(i);
-                if (info.isTop) {
-                    if (conversationInfo.timestamp >= info.timestamp) {
-                        position = i;
-                        break;
-                    }
-                } else {
-                    position = i;
-                    break;
-                }
-            }
-        } else {
-            for (int i = 0; i < conversationInfos.size(); i++) {
-                info = conversationInfos.get(i);
-                if (info.isTop) {
-                    // do nothing, just continue
-                    position++;
-                } else {
-                    if (conversationInfo.timestamp >= info.timestamp) {
-                        position = i;
-                        break;
-                    }
-                }
-            }
-        }
-        if (currentPosition >= 0 && position > currentPosition) {
-            position = position - 1;
-        }
-        return position;
+    private boolean isStatusNotificationHeader(int position) {
+        return position < headerCount();
     }
 }

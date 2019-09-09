@@ -20,7 +20,6 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
@@ -41,7 +40,7 @@ import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
 import cn.wildfirechat.remote.UploadMediaCallback;
 import cn.wildfirechat.remote.UserSettingScope;
 
-public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
+public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;
     private MutableLiveData<List<GroupMember>> groupMembersUpdateLiveData;
 
@@ -80,21 +79,26 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
 
     public MutableLiveData<OperateResult<String>> createGroup(Context context, List<UIUserInfo> checkedUsers) {
         List<String> selectedIds = new ArrayList<>(checkedUsers.size());
+        List<UserInfo> selectedUsers = new ArrayList<>();
         for (UIUserInfo userInfo : checkedUsers) {
             selectedIds.add(userInfo.getUserInfo().uid);
+            selectedUsers.add(userInfo.getUserInfo());
+        }
+        String id = ChatManager.Instance().getUserId();
+        if (!selectedIds.contains(id)) {
+            selectedIds.add(id);
+            selectedUsers.add(ChatManager.Instance().getUserInfo(id, false));
         }
         selectedIds.add(ChatManager.Instance().getUserId());
         String groupName = "";
-        if (checkedUsers.size() > 3) {
-            for (int i = 0; i < 3; i++) {
-                UserInfo friend = checkedUsers.get(i).getUserInfo();
-                groupName += friend.displayName + "、";
-            }
-        } else {
-            for (UIUserInfo friend : checkedUsers) {
-                groupName += friend.getUserInfo().displayName + "、";
-            }
+        for (int i = 0; i < 3 && i < selectedUsers.size(); i++) {
+            groupName += selectedUsers.get(i).displayName + "、";
         }
+        groupName = groupName.substring(0, groupName.length() - 1);
+        if (selectedUsers.size() > 3) {
+            groupName += " ...";
+        }
+
         groupName = groupName.substring(0, groupName.length() - 1);
 
         MutableLiveData<OperateResult<String>> groupLiveData = new MutableLiveData<>();
@@ -102,7 +106,7 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         ChatManager.Instance().getWorkHandler().post(() -> {
             String groupPortrait = null;
             try {
-                groupPortrait = generateGroupPortrait(context, checkedUsers);
+                groupPortrait = generateGroupPortrait(context, selectedUsers);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -156,10 +160,6 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, Arrays.asList(0), null, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                if (groupInfoUpdateLiveData != null) {
-                    groupInfo.memberCount -= groupInfo.memberCount + memberIds.size();
-                    groupInfoUpdateLiveData.setValue(Collections.singletonList(groupInfo));
-                }
                 result.setValue(true);
             }
 
@@ -177,10 +177,6 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         ChatManagerHolder.gChatManager.removeGroupMembers(groupInfo.target, memberIds, Arrays.asList(0), null, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                if (groupInfoUpdateLiveData != null) {
-                    groupInfo.memberCount -= groupInfo.memberCount + memberIds.size();
-                    groupInfoUpdateLiveData.setValue(Collections.singletonList(groupInfo));
-                }
                 result.setValue(true);
             }
 
@@ -402,16 +398,18 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
     }
 
     private @Nullable
-    String generateGroupPortrait(Context context, List<UIUserInfo> userInfos) throws Exception {
+    String generateGroupPortrait(Context context, List<UserInfo> userInfos) throws Exception {
         List<Bitmap> bitmaps = new ArrayList<>();
-        for (UIUserInfo userInfo : userInfos) {
+        for (UserInfo userInfo : userInfos) {
+            Drawable drawable;
             try {
-                Drawable drawable = GlideApp.with(context).load(userInfo.getUserInfo().portrait).error(R.mipmap.avatar_def).submit(60, 60).get();
-                if (drawable instanceof BitmapDrawable) {
-                    bitmaps.add(((BitmapDrawable) drawable).getBitmap());
-                }
+                drawable = GlideApp.with(context).load(userInfo.portrait).error(R.mipmap.avatar_def).submit(60, 60).get();
             } catch (Exception e) {
                 e.printStackTrace();
+                drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
+            }
+            if (drawable instanceof BitmapDrawable) {
+                bitmaps.add(((BitmapDrawable) drawable).getBitmap());
             }
         }
         Bitmap bitmap = CombineBitmapTools.combimeBitmap(context, 60, 60, bitmaps);
