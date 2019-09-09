@@ -1,21 +1,14 @@
 package cn.wildfire.chat.kit.contact;
 
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -25,13 +18,11 @@ import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
-import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.utils.PinyinUtils;
+import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.model.UserInfo;
 
-public abstract class BaseUserListFragment extends Fragment implements QuickIndexBar.OnLetterUpdateListener, UserListAdapter.OnUserClickListener, UserListAdapter.OnHeaderClickListener, UserListAdapter.OnFooterClickListener {
+public abstract class BaseUserListFragment extends ProgressFragment implements QuickIndexBar.OnLetterUpdateListener, UserListAdapter.OnUserClickListener, UserListAdapter.OnHeaderClickListener, UserListAdapter.OnFooterClickListener {
 
     @Bind(R.id.usersRecyclerView)
     RecyclerView usersRecyclerView;
@@ -52,13 +43,15 @@ public abstract class BaseUserListFragment extends Fragment implements QuickInde
         contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(getContentLayoutResId(), container, false);
+    protected int contentLayout() {
+        return getContentLayoutResId();
+    }
+
+    @Override
+    protected void afterViews(View view) {
         ButterKnife.bind(this, view);
         initView();
-        return view;
     }
 
     private void initView() {
@@ -181,51 +174,5 @@ public abstract class BaseUserListFragment extends Fragment implements QuickInde
     @Override
     public void onFooterClick(int index) {
 
-    }
-
-    private UIUserInfo userInfoToUIUserInfo(UserInfo userInfo) {
-        UIUserInfo info = new UIUserInfo(userInfo);
-        String indexLetter;
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        String displayName = userViewModel.getUserDisplayName(userInfo);
-        if (!TextUtils.isEmpty(displayName)) {
-            String pinyin = PinyinUtils.getPinyin(displayName);
-            char c = pinyin.toUpperCase().charAt(0);
-            if (c >= 'A' && c <= 'Z') {
-                indexLetter = c + "";
-                info.setSortName(pinyin);
-            } else {
-                indexLetter = "#";
-                // 为了让排序排到最后
-                info.setSortName("{" + pinyin);
-            }
-            info.setCategory(indexLetter);
-        } else {
-            info.setSortName("");
-        }
-        return info;
-    }
-
-    protected List<UIUserInfo> userInfoToUIUserInfo(List<UserInfo> userInfos) {
-        if (userInfos != null) {
-            List<UIUserInfo> uiUserInfos = new ArrayList<>(userInfos.size());
-            String indexLetter;
-            for (UserInfo userInfo : userInfos) {
-                uiUserInfos.add(userInfoToUIUserInfo(userInfo));
-            }
-            Collections.sort(uiUserInfos, (o1, o2) -> o1.getSortName().compareToIgnoreCase(o2.getSortName()));
-
-            String preIndexLetter = null;
-            for (UIUserInfo info : uiUserInfos) {
-                indexLetter = info.getCategory();
-                if (preIndexLetter == null || !preIndexLetter.equals(indexLetter)) {
-                    info.setShowCategory(true);
-                }
-                preIndexLetter = indexLetter;
-            }
-            return uiUserInfos;
-        } else {
-            return null;
-        }
     }
 }

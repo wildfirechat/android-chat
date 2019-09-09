@@ -8,11 +8,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -33,7 +35,6 @@ import butterknife.OnClick;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcScheme;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
@@ -52,9 +53,16 @@ import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.UserSettingScope;
 
 public class GroupConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
+
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
+
+    @Bind(R.id.contentNestedScrollView)
+    NestedScrollView contentNestedScrollView;
 
     // group
     @Bind(R.id.groupLinearLayout_0)
@@ -136,7 +144,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     private void init() {
         conversationViewModel = ViewModelProviders.of(this, new ConversationViewModelFactory(conversationInfo.conversation)).get(ConversationViewModel.class);
-        userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         groupLinearLayout_0.setVisibility(View.VISIBLE);
         groupLinearLayout_1.setVisibility(View.VISIBLE);
         markGroupLinearLayout.setVisibility(View.VISIBLE);
@@ -145,34 +153,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
 
+        progressBar.setVisibility(View.VISIBLE);
         loadAndShowGroupMembers(true);
-        if (groupMember == null || groupInfo == null) {
-            return;
-        }
-        if (groupMember.type == GroupMember.GroupMemberType.Manager || groupMember.type == GroupMember.GroupMemberType.Owner) {
-            groupManageOptionItemView.setVisibility(View.VISIBLE);
-        }
-
-        showGroupMemberNickNameSwitchButton.setChecked("1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target)));
-        showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            userViewModel.setUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target, isChecked ? "1" : "0");
-        });
-
-
-        myGroupNickNameOptionItemView.setRightText(groupMember.alias);
-        groupNameOptionItemView.setRightText(groupInfo.name);
-
-        stickTopSwitchButton.setChecked(conversationInfo.isTop);
-        silentSwitchButton.setChecked(conversationInfo.isSilent);
-        stickTopSwitchButton.setOnCheckedChangeListener(this);
-        silentSwitchButton.setOnCheckedChangeListener(this);
-
-        if (groupInfo != null && ChatManagerHolder.gChatManager.getUserId().equals(groupInfo.owner)) {
-            quitGroupButton.setText(R.string.delete_and_dismiss);
-        } else {
-            quitGroupButton.setText(R.string.delete_and_exit);
-        }
-
         observerFavGroupsUpdate();
         observerGroupInfoUpdate();
         observerGroupMembersUpdate();
@@ -210,12 +192,47 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         });
     }
 
+
     private void loadAndShowGroupMembers(boolean refresh) {
-        String userId = userViewModel.getUserId();
-        List<GroupMember> groupMembers = groupViewModel.getGroupMembers(conversationInfo.conversation.target, refresh);
+        groupViewModel.getGroupMembersLiveData(conversationInfo.conversation.target, refresh)
+                .observe(this, groupMembers -> {
+                    progressBar.setVisibility(View.GONE);
+                    showGroupMembers(groupMembers);
+                    showGroupManageViews();
+                    contentNestedScrollView.setVisibility(View.VISIBLE);
+                });
+    }
+
+    private void showGroupManageViews() {
+        if (groupMember.type == GroupMember.GroupMemberType.Manager || groupMember.type == GroupMember.GroupMemberType.Owner) {
+            groupManageOptionItemView.setVisibility(View.VISIBLE);
+        }
+
+        showGroupMemberNickNameSwitchButton.setChecked("1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target)));
+        showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            userViewModel.setUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target, isChecked ? "1" : "0");
+        });
+
+        myGroupNickNameOptionItemView.setRightText(groupMember.alias);
+        groupNameOptionItemView.setRightText(groupInfo.name);
+
+        stickTopSwitchButton.setChecked(conversationInfo.isTop);
+        silentSwitchButton.setChecked(conversationInfo.isSilent);
+        stickTopSwitchButton.setOnCheckedChangeListener(this);
+        silentSwitchButton.setOnCheckedChangeListener(this);
+
+        if (groupInfo != null && ChatManagerHolder.gChatManager.getUserId().equals(groupInfo.owner)) {
+            quitGroupButton.setText(R.string.delete_and_dismiss);
+        } else {
+            quitGroupButton.setText(R.string.delete_and_exit);
+        }
+    }
+
+    private void showGroupMembers(List<GroupMember> groupMembers) {
         if (groupMembers == null || groupMembers.isEmpty()) {
             return;
         }
+        String userId = ChatManager.Instance().getUserId();
         List<String> memberIds = new ArrayList<>();
         for (GroupMember member : groupMembers) {
             if (member.memberId.equals(userId)) {

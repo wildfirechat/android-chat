@@ -1953,14 +1953,7 @@ public class ChatManager {
         if (userInfo == null) {
             return "<" + memberId + ">";
         }
-        if (!TextUtils.isEmpty(userInfo.friendAlias)) {
-            return userInfo.friendAlias;
-        } else if (!TextUtils.isEmpty(userInfo.groupAlias)) {
-            return userInfo.groupAlias;
-        } else if (!TextUtils.isEmpty(userInfo.displayName)) {
-            return userInfo.displayName;
-        }
-        return "<" + memberId + ">";
+        return userInfo.displayName;
     }
 
     public String getUserDisplayName(UserInfo userInfo) {
