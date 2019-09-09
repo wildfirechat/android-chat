@@ -3,20 +3,15 @@ package cn.wildfire.chat.kit.group;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.model.UserInfo;
 
 public class GroupMemberListFragment extends BaseUserListFragment {
     private GroupInfo groupInfo;
@@ -36,20 +31,18 @@ public class GroupMemberListFragment extends BaseUserListFragment {
     }
 
     @Override
-    public UserListAdapter onCreateUserListAdapter() {
-        UserListAdapter userListAdapter = new UserListAdapter(this);
-
+    protected void afterViews(View view) {
+        super.afterViews(view);
         GroupViewModel groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
-        List<GroupMember> members = groupViewModel.getGroupMembers(groupInfo.target, false);
-        List<String> memberIds = new ArrayList<>(members.size());
-        for (GroupMember member : members) {
-            memberIds.add(member.memberId);
-        }
-        List<UserInfo> userInfos = UserViewModel.getUsers(memberIds, groupInfo.target);
-        List<UIUserInfo> users = userInfoToUIUserInfo(userInfos);
-        userListAdapter.setUsers(users);
+        groupViewModel.getGroupMemberUIUserInfosLiveData(groupInfo.target, false).observe(this, uiUserInfos -> {
+            showContent();
+            userListAdapter.setUsers(uiUserInfos);
+        });
+    }
 
-        return userListAdapter;
+    @Override
+    public UserListAdapter onCreateUserListAdapter() {
+        return new UserListAdapter(this);
     }
 
     @Override

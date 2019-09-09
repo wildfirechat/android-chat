@@ -1,13 +1,7 @@
 package cn.wildfire.chat.kit.contact;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
@@ -41,13 +35,14 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         contactViewModel.reloadContact();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        contactViewModel.contactListLiveData().observe(this, userInfos -> userListAdapter.setUsers(userInfoToUIUserInfo(userInfos)));
+    protected void afterViews(View view) {
+        super.afterViews(view);
+        contactViewModel.contactListLiveData().observe(this, userInfos -> {
+            showContent();
+            userListAdapter.setUsers(userInfos);
+        });
         contactViewModel.friendRequestUpdatedLiveData().observe(this, integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
-        return view;
     }
 
     @Override

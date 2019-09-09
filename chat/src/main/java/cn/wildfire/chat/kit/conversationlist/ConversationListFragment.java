@@ -1,14 +1,8 @@
 package cn.wildfire.chat.kit.conversationlist;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -24,6 +18,7 @@ import cn.wildfire.chat.kit.conversationlist.notification.ConnectionStatusNotifi
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotificationViewModel;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
@@ -31,7 +26,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class ConversationListFragment extends Fragment {
+public class ConversationListFragment extends ProgressFragment {
     private RecyclerView recyclerView;
     private ConversationListAdapter adapter;
     private static final List<Conversation.ConversationType> types = Arrays.asList(Conversation.ConversationType.Single,
@@ -42,13 +37,15 @@ public class ConversationListFragment extends Fragment {
     private ConversationListViewModel conversationListViewModel;
     private LinearLayoutManager layoutManager;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.conversationlist_frament, container, false);
+    protected int contentLayout() {
+        return R.layout.conversationlist_frament;
+    }
+
+    @Override
+    protected void afterViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
         init();
-        return view;
     }
 
     @Override
@@ -70,7 +67,10 @@ public class ConversationListFragment extends Fragment {
         conversationListViewModel = ViewModelProviders
                 .of(getActivity(), new ConversationListViewModelFactory(types, lines))
                 .get(ConversationListViewModel.class);
-        conversationListViewModel.conversationListLiveData().observe(this, conversationInfos -> adapter.setConversationInfos(conversationInfos));
+        conversationListViewModel.conversationListLiveData().observe(this, conversationInfos -> {
+            showContent();
+            adapter.setConversationInfos(conversationInfos);
+        });
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 

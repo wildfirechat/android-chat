@@ -5,17 +5,11 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cn.wildfire.chat.kit.contact.UserListAdapter;
-import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.CheckableUserListAdapter;
 import cn.wildfire.chat.kit.contact.pick.PickUserFragment;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
-import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupMember;
 
 public class PickGroupMemberFragment extends PickUserFragment {
     private GroupInfo groupInfo;
@@ -40,20 +34,19 @@ public class PickGroupMemberFragment extends PickUserFragment {
     }
 
     @Override
-    public UserListAdapter onCreateUserListAdapter() {
-        CheckableUserListAdapter checkableContactAdapter = new CheckableUserListAdapter(this);
+    protected void setupPickTargetUsers() {
+
         PickUserViewModel pickUserViewModel = ViewModelProviders.of(getActivity()).get(PickUserViewModel.class);
-
         GroupViewModel groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
-        List<GroupMember> members = groupViewModel.getGroupMembers(groupInfo.target, false);
-        List<String> memberIds = new ArrayList<>(members.size());
-        for (GroupMember member : members) {
-            memberIds.add(member.memberId);
-        }
-        List<UIUserInfo> users = userInfoToUIUserInfo(UserViewModel.getUsers(memberIds, groupInfo.target));
-        pickUserViewModel.setUsers(users);
-        checkableContactAdapter.setUsers(users);
+        groupViewModel.getGroupMemberUIUserInfosLiveData(groupInfo.target, false).observe(this, uiUserInfos -> {
+            showContent();
+            pickUserViewModel.setUsers(uiUserInfos);
+            userListAdapter.setUsers(uiUserInfos);
+        });
+    }
 
-        return checkableContactAdapter;
+    @Override
+    public UserListAdapter onCreateUserListAdapter() {
+        return new CheckableUserListAdapter(this);
     }
 }
