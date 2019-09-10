@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
@@ -20,7 +19,6 @@ import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.SearchUserCallback;
 
 public class GroupMemberSearchModule extends SearchableModule<UserInfo, UserViewHolder> {
     private String groupId;
@@ -71,7 +69,6 @@ public class GroupMemberSearchModule extends SearchableModule<UserInfo, UserView
 
     @Override
     public List<UserInfo> search(String keyword) {
-        CountDownLatch countDownLatch = new CountDownLatch(1);
         List<GroupMember> groupMembers = ChatManager.Instance().getGroupMembers(groupId, false);
         if (groupMembers == null || groupMembers.isEmpty()) {
             return null;
@@ -80,28 +77,15 @@ public class GroupMemberSearchModule extends SearchableModule<UserInfo, UserView
         for (GroupMember member : groupMembers) {
             memberIds.add(member.memberId);
         }
-        List<UserInfo> userInfos = new ArrayList<>();
-        ChatManager.Instance().searchUser(keyword, true, new SearchUserCallback() {
-            @Override
-            public void onSuccess(List<UserInfo> infos) {
-                for (UserInfo info : infos) {
-                    if (memberIds.contains(info.uid)) {
-                        userInfos.add(info);
-                    }
+        List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
+        List<UserInfo> resultUserInfos = new ArrayList<>();
+        if (userInfos != null) {
+            for (UserInfo userInfo : userInfos) {
+                if (userInfo.displayName != null && userInfo.displayName.contains(keyword)) {
+                    resultUserInfos.add(userInfo);
                 }
-                countDownLatch.countDown();
             }
-
-            @Override
-            public void onFail(int errorCode) {
-                countDownLatch.countDown();
-            }
-        });
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
-        return userInfos;
+        return resultUserInfos;
     }
 }
