@@ -40,7 +40,7 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
     }
 
     @Override
