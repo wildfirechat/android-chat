@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.group.GroupMemberListFragment;
 import cn.wildfirechat.model.GroupInfo;
@@ -16,6 +18,12 @@ public class MentionGroupMemberFragment extends GroupMemberListFragment {
         MentionGroupMemberFragment fragment = new MentionGroupMemberFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        showQuickIndexBar(true);
     }
 
     @Override
