@@ -102,8 +102,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     @Override
     protected void onResume() {
         super.onResume();
-        contactViewModel.reloadFriendRequestStatus();
-        conversationListViewModel.reloadConversationUnreadStatus();
+        if (contactViewModel != null) {
+            contactViewModel.reloadFriendRequestStatus();
+            conversationListViewModel.reloadConversationUnreadStatus();
+        }
     }
 
     @Override
