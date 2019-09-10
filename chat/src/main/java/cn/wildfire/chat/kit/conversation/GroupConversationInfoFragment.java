@@ -150,11 +150,22 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         markGroupLinearLayout.setVisibility(View.VISIBLE);
         markGroupSwitchButton.setOnCheckedChangeListener(this);
         quitGroupButton.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
 
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupInfo = groupViewModel.getGroupInfo(conversationInfo.conversation.target, false);
+        if (groupInfo != null) {
+            groupMember = ChatManager.Instance().getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
+        }
 
-        progressBar.setVisibility(View.VISIBLE);
+        if (groupMember == null || groupMember.type == GroupMember.GroupMemberType.Removed) {
+            Toast.makeText(getActivity(), "你不在群组或发生错误, 请稍后再试", Toast.LENGTH_SHORT).show();
+            getActivity().finish();
+            return;
+        }
         loadAndShowGroupMembers(true);
+
+        userViewModel.userInfoLiveData().observe(this, userInfos -> loadAndShowGroupMembers(false));
         observerFavGroupsUpdate();
         observerGroupInfoUpdate();
         observerGroupMembersUpdate();
@@ -235,17 +246,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         String userId = ChatManager.Instance().getUserId();
         List<String> memberIds = new ArrayList<>();
         for (GroupMember member : groupMembers) {
-            if (member.memberId.equals(userId)) {
-                groupMember = member;
-            }
             memberIds.add(member.memberId);
-        }
-        groupInfo = groupViewModel.getGroupInfo(conversationInfo.conversation.target, false);
-
-        if (groupMember == null || groupInfo == null) {
-            Toast.makeText(getActivity(), "你不在群组或发生错误, 请稍后再试", Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-            return;
         }
 
         boolean enableRemoveMember = false;
