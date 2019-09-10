@@ -98,7 +98,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
                 conversationListLiveData.postValue(conversationInfos);
             }
         });
-        loadUnreadCount();
     }
 
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
@@ -122,7 +121,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
             unreadCountLiveData = new MutableLiveData<>();
         }
 
-        loadUnreadCount();
+        reloadConversationUnreadStatus();
         return unreadCountLiveData;
     }
 
@@ -130,8 +129,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         return connectionStatusLiveData;
     }
 
-
-    private void loadUnreadCount() {
+    public void reloadConversationUnreadStatus() {
         ChatManager.Instance().getWorkHandler().post(() -> {
             List<ConversationInfo> conversations = ChatManager.Instance().getConversationList(types, lines);
             if (conversations != null) {
@@ -247,6 +245,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     public void onSettingUpdate() {
         // 可能是会话同步
         reloadConversationList(true);
+        reloadConversationUnreadStatus();
     }
 
     @Override

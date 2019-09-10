@@ -82,10 +82,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private boolean isInitialized = false;
 
-    private ConversationListFragment conversationListFragment;
     private ContactListFragment contactListFragment;
-    private DiscoveryFragment discoveryFragment;
-    private MeFragment meFragment;
+
+    private ContactViewModel contactViewModel;
+    private ConversationListViewModel conversationListViewModel;
 
     private Observer<Boolean> imStatusLiveDataObserver = status -> {
         if (status && !isInitialized) {
@@ -97,6 +97,13 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     @Override
     protected int contentLayout() {
         return R.layout.main_activity;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        contactViewModel.reloadFriendRequestStatus();
+        conversationListViewModel.reloadConversationUnreadStatus();
     }
 
     @Override
@@ -122,15 +129,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         finish();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     private void init() {
         initView();
 
-        ConversationListViewModel conversationListViewModel = ViewModelProviders
+        conversationListViewModel = ViewModelProviders
                 .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
                 .get(ConversationListViewModel.class);
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
@@ -142,7 +144,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             }
         });
 
-        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
             if (count == null || count == 0) {
                 hideUnreadFriendRequestBadgeView();
@@ -215,10 +217,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         //设置ViewPager的最大缓存页面
         contentViewPager.setOffscreenPageLimit(3);
 
-        conversationListFragment = new ConversationListFragment();
+        ConversationListFragment conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();
-        discoveryFragment = new DiscoveryFragment();
-        meFragment = new MeFragment();
+        DiscoveryFragment discoveryFragment = new DiscoveryFragment();
+        MeFragment meFragment = new MeFragment();
         mFragmentList.add(conversationListFragment);
         mFragmentList.add(contactListFragment);
         mFragmentList.add(discoveryFragment);
@@ -356,9 +358,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void onScanPcQrCode(String qrcode) {
         String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);
         String value = qrcode.substring(qrcode.lastIndexOf("/") + 1);
-//        Uri uri = Uri.parse(value);
-//        uri.getAuthority();
-//        uri.getQuery()
         switch (prefix) {
             case WfcScheme.QR_CODE_PREFIX_PC_SESSION:
                 pcLogin(value);
