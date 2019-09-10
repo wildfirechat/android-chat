@@ -46,10 +46,17 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             friendRequestUpdatedLiveData = new MutableLiveData<>();
         }
         int count = getUnreadFriendRequestCount();
-        if (count > 0) {
-            friendRequestUpdatedLiveData.setValue(count);
-        }
+        friendRequestUpdatedLiveData.setValue(count);
         return friendRequestUpdatedLiveData;
+    }
+
+    public void reloadFriendRequestStatus() {
+        if (friendRequestUpdatedLiveData != null) {
+            ChatManager.Instance().getWorkHandler().post(() -> {
+                int count = getUnreadFriendRequestCount();
+                friendRequestUpdatedLiveData.postValue(count);
+            });
+        }
     }
 
     public List<String> getFriends(boolean refresh) {

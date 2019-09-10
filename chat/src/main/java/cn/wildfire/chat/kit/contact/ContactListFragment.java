@@ -26,6 +26,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         super.setUserVisibleHint(isVisibleToUser);
         if (userListAdapter != null && isVisibleToUser) {
             contactViewModel.reloadContact();
+            contactViewModel.reloadFriendRequestStatus();
         }
     }
 
@@ -33,6 +34,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     public void onResume() {
         super.onResume();
         contactViewModel.reloadContact();
+        contactViewModel.reloadFriendRequestStatus();
     }
 
     @Override
