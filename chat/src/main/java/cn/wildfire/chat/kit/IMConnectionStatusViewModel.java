@@ -30,7 +30,7 @@ public class IMConnectionStatusViewModel extends ViewModel implements OnConnecti
     @Override
     public void onConnectionStatusChange(int status) {
         if (connectionStatusLiveData != null) {
-            connectionStatusLiveData.postValue(status);
+            connectionStatusLiveData.setValue(status);
         }
     }
 }
