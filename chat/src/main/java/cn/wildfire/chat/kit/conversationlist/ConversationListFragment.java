@@ -131,6 +131,7 @@ public class ConversationListFragment extends ProgressFragment {
             return;
         }
         conversationListViewModel.reloadConversationList();
+        conversationListViewModel.reloadConversationUnreadStatus();
     }
 
     @Override

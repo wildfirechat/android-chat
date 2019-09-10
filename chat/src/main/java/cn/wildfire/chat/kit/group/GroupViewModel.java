@@ -87,6 +87,20 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return groupMemberLiveData;
     }
 
+    public MutableLiveData<List<UserInfo>> getGroupMemberUserInfosLiveData(String groupId, boolean refresh) {
+        MutableLiveData<List<UserInfo>> groupMemberLiveData = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, refresh);
+            List<String> memberIds = new ArrayList<>(members.size());
+            for (GroupMember member : members) {
+                memberIds.add(member.memberId);
+            }
+            List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
+            groupMemberLiveData.postValue(userInfos);
+        });
+        return groupMemberLiveData;
+    }
+
     @Override
     public void onGroupInfoUpdate(List<GroupInfo> groupInfos) {
         if (groupInfoUpdateLiveData != null) {
