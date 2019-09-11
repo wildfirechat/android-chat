@@ -1,6 +1,5 @@
 package cn.wildfire.chat.kit.conversation;
 
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -358,7 +357,10 @@ public class ConversationViewModel extends ViewModel implements OnReceiveMessage
 
     public void sendImgMsg(Uri imageFileThumbUri, Uri imageFileSourceUri) {
         ImageMessageContent imgContent = new ImageMessageContent(imageFileSourceUri.getEncodedPath());
-        imgContent.setThumbnail(BitmapFactory.decodeFile(imageFileThumbUri.getEncodedPath()));
+        String thumbParam = ChatManager.Instance().getImageThumbPara();
+        if (!TextUtils.isEmpty(thumbParam)) {
+            imgContent.setThumbPara(ChatManager.Instance().getImageThumbPara());
+        }
         sendMessage(imgContent);
     }
 
