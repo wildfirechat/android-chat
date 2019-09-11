@@ -7,6 +7,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -30,7 +31,6 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
@@ -51,6 +51,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     LinearLayout errorLinearLayout;
     @Bind(R.id.nameTextView)
     TextView nameTextView;
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
 
     public NormalMessageContentViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {
         super(activity, adapter, itemView);
@@ -239,13 +241,15 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     }
 
     protected void setSendStatus(Message item) {
-        MessageContent msgContent = item.content;
         MessageStatus sentStatus = item.status;
         if (sentStatus == MessageStatus.Sending) {
+            progressBar.setVisibility(View.VISIBLE);
             errorLinearLayout.setVisibility(View.GONE);
         } else if (sentStatus == MessageStatus.Send_Failure) {
+            progressBar.setVisibility(View.GONE);
             errorLinearLayout.setVisibility(View.VISIBLE);
         } else if (sentStatus == MessageStatus.Sent) {
+            progressBar.setVisibility(View.GONE);
             errorLinearLayout.setVisibility(View.GONE);
         }
     }
