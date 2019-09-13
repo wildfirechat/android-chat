@@ -154,11 +154,13 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     @Override
     public void onReceiveMessage(List<Message> messages, boolean hasMore) {
         reloadConversationList(true);
+        reloadConversationUnreadStatus();
     }
 
     @Override
     public void onRecallMessage(Message message) {
         reloadConversationList();
+        reloadConversationUnreadStatus();
     }
 
 
@@ -219,6 +221,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     @Override
     public void onMessagedRemove(Message message) {
         reloadConversationList();
+        reloadConversationUnreadStatus();
     }
 
     @Override
@@ -239,6 +242,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     @Override
     public void onConversationUnreadStatusClear(ConversationInfo conversationInfo, UnreadCount unreadCount) {
         reloadConversationList();
+        reloadConversationUnreadStatus();
     }
 
     @Override
@@ -256,10 +260,12 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     @Override
     public void onClearMessage(Conversation conversation) {
         reloadConversationList();
+        reloadConversationUnreadStatus();
     }
 
     @Override
     public void onConversationRemove(Conversation conversation) {
         reloadConversationList();
+        reloadConversationUnreadStatus();
     }
 }
