@@ -1757,7 +1757,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         msg.direction = MessageDirection.values()[protoMessage.getDirection()];
-        msg.status = MessageStatus.values()[protoMessage.getStatus()];
+        msg.status = MessageStatus.status(protoMessage.getStatus());
         msg.messageUid = protoMessage.getMessageUid();
         msg.serverTime = protoMessage.getTimestamp();
 
