@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.contact.pick.PickUserFragment;
+import cn.wildfire.chat.kit.contact.pick.PickContactFragment;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfirechat.model.GroupInfo;
 
-public class AddGroupMemberFragment extends PickUserFragment {
+public class AddGroupMemberFragment extends PickContactFragment {
     private GroupInfo groupInfo;
 
     public static AddGroupMemberFragment newInstance(GroupInfo groupInfo) {
