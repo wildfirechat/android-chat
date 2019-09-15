@@ -64,7 +64,7 @@ public class SearchAndPickContactFragment extends Fragment implements UserListAd
         if (TextUtils.isEmpty(keyword)) {
             return;
         }
-        List<UIUserInfo> result = pickUserViewModel.searchContact(keyword);
+        List<UIUserInfo> result = pickUserViewModel.searchUser(keyword);
         if (result == null || result.isEmpty()) {
             contactRecyclerView.setVisibility(View.GONE);
             tipTextView.setVisibility(View.VISIBLE);

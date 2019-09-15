@@ -53,7 +53,7 @@ public class PickUserFragment extends BaseUserListFragment implements QuickIndex
     protected void afterViews(View view) {
         super.afterViews(view);
         initView();
-        setupPickTargetUsers();
+        setupPickFromUsers();
     }
 
     @Override
@@ -103,7 +103,7 @@ public class PickUserFragment extends BaseUserListFragment implements QuickIndex
         return new CheckableUserListAdapter(this);
     }
 
-    protected void setupPickTargetUsers() {
+    protected void setupPickFromUsers() {
         ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
         contactViewModel.contactListLiveData().observe(this, userInfos -> {
             showContent();
