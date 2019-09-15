@@ -33,7 +33,6 @@ import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
-import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -156,7 +155,6 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
         Message message = uiMessage.message;
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
-
             String userId = ChatManager.Instance().getUserId();
             if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
@@ -168,24 +166,18 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Manager
                         || groupMember.type == GroupMember.GroupMemberType.Owner)) {
                     return false;
-                } else {
-                    return true;
-                }
-            } else {
-                long delta = ChatManager.Instance().getServerDeltaTime();
-                long now = System.currentTimeMillis();
-                if (message.direction == MessageDirection.Send
-                        && TextUtils.equals(message.sender, ChatManager.Instance().getUserId())
-                        && now - (message.serverTime - delta) < 60 * 1000) {
-                    return false;
-                } else {
-                    return true;
                 }
             }
-        }
 
-        if (uiMessage.message.content instanceof NotificationMessageContent && MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
-            return true;
+            long delta = ChatManager.Instance().getServerDeltaTime();
+            long now = System.currentTimeMillis();
+            if (message.direction == MessageDirection.Send
+                    && TextUtils.equals(message.sender, ChatManager.Instance().getUserId())
+                    && now - (message.serverTime - delta) < 60 * 1000) {
+                return false;
+            } else {
+                return true;
+            }
         }
 
         // 只有channel 主可以发起
