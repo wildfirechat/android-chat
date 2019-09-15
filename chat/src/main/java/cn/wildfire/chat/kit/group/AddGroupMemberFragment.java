@@ -32,8 +32,8 @@ public class AddGroupMemberFragment extends PickUserFragment {
 
 
     @Override
-    protected void setupPickTargetUsers() {
-        super.setupPickTargetUsers();
+    protected void setupPickFromUsers() {
+        super.setupPickFromUsers();
         PickUserViewModel pickUserViewModel = ViewModelProviders.of(getActivity()).get(PickUserViewModel.class);
 
         GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
