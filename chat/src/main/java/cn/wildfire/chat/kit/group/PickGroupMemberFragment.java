@@ -5,8 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
-import cn.wildfire.chat.kit.contact.UserListAdapter;
-import cn.wildfire.chat.kit.contact.pick.CheckableUserListAdapter;
 import cn.wildfire.chat.kit.contact.pick.PickUserFragment;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfirechat.model.GroupInfo;
@@ -29,13 +27,7 @@ public class PickGroupMemberFragment extends PickUserFragment {
     }
 
     @Override
-    public void initHeaderViewHolders() {
-        // do nothing
-    }
-
-    @Override
     protected void setupPickFromUsers() {
-
         PickUserViewModel pickUserViewModel = ViewModelProviders.of(getActivity()).get(PickUserViewModel.class);
         GroupViewModel groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
         groupViewModel.getGroupMemberUIUserInfosLiveData(groupInfo.target, false).observe(this, uiUserInfos -> {
@@ -43,10 +35,5 @@ public class PickGroupMemberFragment extends PickUserFragment {
             pickUserViewModel.setUsers(uiUserInfos);
             userListAdapter.setUsers(uiUserInfos);
         });
-    }
-
-    @Override
-    public UserListAdapter onCreateUserListAdapter() {
-        return new CheckableUserListAdapter(this);
     }
 }
