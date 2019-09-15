@@ -18,15 +18,14 @@ import butterknife.Bind;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.chat.R;
 
-public class PickUserFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
-    private SearchAndPickContactFragment searchAndPickContactFragment;
-    private PickUserViewModel pickUserViewModel;
+public abstract class PickUserFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
+    private SearchAndPickUserFragment searchAndPickUserFragment;
+    protected PickUserViewModel pickUserViewModel;
 
     @Bind(R.id.pickedUserRecyclerView)
     RecyclerView pickedUserRecyclerView;
@@ -82,14 +81,14 @@ public class PickUserFragment extends BaseUserListFragment implements QuickIndex
     @OnTextChanged(value = R.id.searchEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void search(Editable editable) {
         // restore view state
-        if (searchAndPickContactFragment == null) {
+        if (searchAndPickUserFragment == null) {
             return;
         }
         String key = editable.toString();
         if (!TextUtils.isEmpty(key)) {
-            searchAndPickContactFragment.search(key);
+            searchAndPickUserFragment.search(key);
         } else {
-            searchAndPickContactFragment.rest();
+            searchAndPickUserFragment.rest();
         }
     }
 
@@ -103,23 +102,16 @@ public class PickUserFragment extends BaseUserListFragment implements QuickIndex
         return new CheckableUserListAdapter(this);
     }
 
-    protected void setupPickFromUsers() {
-        ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
-        contactViewModel.contactListLiveData().observe(this, userInfos -> {
-            showContent();
-            pickUserViewModel.setUsers(userInfos);
-            userListAdapter.setUsers(userInfos);
-        });
-    }
+    abstract protected void setupPickFromUsers();
 
     private void showSearchContactFragment() {
-        if (searchAndPickContactFragment == null) {
-            searchAndPickContactFragment = new SearchAndPickContactFragment();
-            searchAndPickContactFragment.setPickUserFragment(this);
+        if (searchAndPickUserFragment == null) {
+            searchAndPickUserFragment = new SearchAndPickUserFragment();
+            searchAndPickUserFragment.setPickUserFragment(this);
         }
         searchUserFrameLayout.setVisibility(View.VISIBLE);
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.searchFrameLayout, searchAndPickContactFragment)
+                .replace(R.id.searchFrameLayout, searchAndPickUserFragment)
                 .commit();
         isSearchFragmentShowing = true;
     }
@@ -132,7 +124,7 @@ public class PickUserFragment extends BaseUserListFragment implements QuickIndex
         searchEditText.setText("");
         searchEditText.clearFocus();
         searchUserFrameLayout.setVisibility(View.GONE);
-        getChildFragmentManager().beginTransaction().remove(searchAndPickContactFragment).commit();
+        getChildFragmentManager().beginTransaction().remove(searchAndPickUserFragment).commit();
         isSearchFragmentShowing = false;
     }
 

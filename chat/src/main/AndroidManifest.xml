@@ -225,6 +225,9 @@
             android:name="cn.wildfire.chat.kit.group.GroupMemberListActivity"
             android:label="群成员列表"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.contact.pick.PickContactActivity"
+            android:label="联系人选择" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

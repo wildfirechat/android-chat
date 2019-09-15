@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.contact.pick;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -107,30 +108,18 @@ public class PickUserViewModel extends ViewModel {
     }
 
     /**
-     * not include initial checked users
+     * include initial checked users
      *
      * @return
      */
-    public List<UIUserInfo> getCheckedUsers() {
+    public @NonNull
+    List<UIUserInfo> getCheckedUsers() {
         List<UIUserInfo> checkedUsers = new ArrayList<>();
         if (users == null) {
             return checkedUsers;
         }
         for (UIUserInfo info : users) {
             if (info.isCheckable() && info.isChecked()) {
-                checkedUsers.add(info);
-            }
-        }
-        return checkedUsers;
-    }
-
-    public List<UIUserInfo> getInitialCheckedUsers() {
-        List<UIUserInfo> checkedUsers = new ArrayList<>();
-        if (users == null || initialCheckedIds == null) {
-            return checkedUsers;
-        }
-        for (UIUserInfo info : users) {
-            if (initialCheckedIds.contains(info.getUserInfo().uid)) {
                 checkedUsers.add(info);
             }
         }

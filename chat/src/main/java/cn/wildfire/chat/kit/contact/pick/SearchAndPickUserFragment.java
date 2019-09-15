@@ -23,7 +23,7 @@ import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.chat.R;
 
-public class SearchAndPickContactFragment extends Fragment implements UserListAdapter.OnUserClickListener {
+public class SearchAndPickUserFragment extends Fragment implements UserListAdapter.OnUserClickListener {
     private CheckableUserListAdapter contactAdapter;
     private PickUserViewModel pickUserViewModel;
     private PickUserFragment pickUserFragment;
