@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
+import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.model.GroupValue;
 import cn.wildfire.chat.kit.contact.pick.viewholder.PickGroupViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
@@ -41,6 +44,16 @@ public class PickConversationTargetFragment extends PickUserFragment {
             pickGroupForResult = args.getBoolean("pickGroupForResult", false);
             multiGroupMode = args.getBoolean("multiGroupMode", false);
         }
+    }
+
+    @Override
+    protected void setupPickFromUsers() {
+        ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
+        contactViewModel.contactListLiveData().observe(this, userInfos -> {
+            showContent();
+            pickUserViewModel.setUsers(userInfos);
+            userListAdapter.setUsers(userInfos);
+        });
     }
 
     public void setOnGroupPickListener(OnGroupPickListener listener) {

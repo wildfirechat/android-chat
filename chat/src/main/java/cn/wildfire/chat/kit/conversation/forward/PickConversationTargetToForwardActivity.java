@@ -23,7 +23,7 @@ public class PickConversationTargetToForwardActivity extends PickConversationTar
     private boolean singleMode = true;
 
     @Override
-    protected void onContactPicked(List<UIUserInfo> initialCheckedUserInfos, List<UIUserInfo> newlyCheckedUserInfos) {
+    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos) {
         if (singleMode && newlyCheckedUserInfos.size() > 1) {
             // 先创建群组
             MaterialDialog dialog = new MaterialDialog.Builder(this)
