@@ -32,8 +32,8 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
     }
 
     @Override
-    protected void onContactPicked(List<UIUserInfo> initialCheckedUserInfos, List<UIUserInfo> newlyCheckedUserInfos) {
-        if (initialCheckedUserInfos.isEmpty() && newlyCheckedUserInfos.size() == 1) {
+    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos) {
+        if (newlyCheckedUserInfos.size() == 1) {
 
             Intent intent = new Intent(this, ConversationActivity.class);
             Conversation conversation = new Conversation(Conversation.ConversationType.Single, newlyCheckedUserInfos.get(0).getUserInfo().uid);
@@ -48,7 +48,6 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
             dialog.show();
 
             List<UIUserInfo> userInfos = new ArrayList<>();
-            userInfos.addAll(initialCheckedUserInfos);
             userInfos.addAll(newlyCheckedUserInfos);
             groupViewModel.createGroup(this, userInfos).observe(this, result -> {
                 dialog.dismiss();
