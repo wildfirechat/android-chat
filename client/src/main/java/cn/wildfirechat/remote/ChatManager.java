@@ -1571,7 +1571,7 @@ public class ChatManager {
         }
 
         try {
-            return mClient.getMessagesEx2(intypes, inlines, messageStatus == null ? -1 : messageStatus.ordinal(), fromIndex, before, count, withUser);
+            return mClient.getMessagesEx2(intypes, inlines, messageStatus == null ? -1 : messageStatus.value(), fromIndex, before, count, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
