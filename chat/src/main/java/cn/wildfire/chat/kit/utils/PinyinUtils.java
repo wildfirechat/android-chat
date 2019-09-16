@@ -1,6 +1,8 @@
 package cn.wildfire.chat.kit.utils;
 
 
+import android.text.TextUtils;
+
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
@@ -47,8 +49,11 @@ public class PinyinUtils {
                 }
             }
         }
-
-        return sb.toString();
+        String pinyin = sb.toString();
+        if (TextUtils.isEmpty(pinyin)) {
+            pinyin = "#";
+        }
+        return pinyin;
     }
 
 }
