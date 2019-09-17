@@ -14,6 +14,7 @@ import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfirechat.chat.R;
 
 
@@ -26,7 +27,7 @@ public class SetAliasActivity extends WfcBaseActivity {
     EditText aliasEditText;
 
     private MenuItem menuItem;
-    private UserViewModel userViewModel;
+    private ContactViewModel contactViewModel;
 
     @Override
     protected int contentLayout() {
@@ -40,8 +41,8 @@ public class SetAliasActivity extends WfcBaseActivity {
             finish();
             return;
         }
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        String alias = userViewModel.getFriendAlias(userId);
+        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        String alias = contactViewModel.getFriendAlias(userId);
         if (!TextUtils.isEmpty(alias)) {
             aliasEditText.setHint(alias);
         }
@@ -78,7 +79,7 @@ public class SetAliasActivity extends WfcBaseActivity {
             UIUtils.showToast(UIUtils.getString(R.string.alias_no_empty));
             return;
         }
-        userViewModel.setFriendAlias(userId, displayName).observe(this, new Observer<OperateResult<Integer>>() {
+        contactViewModel.setFriendAlias(userId, displayName).observe(this, new Observer<OperateResult<Integer>>() {
             @Override
             public void onChanged(OperateResult<Integer> integerOperateResult) {
                 if (integerOperateResult.isSuccess()) {

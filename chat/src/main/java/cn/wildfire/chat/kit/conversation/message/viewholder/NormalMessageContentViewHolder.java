@@ -122,7 +122,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 .content("重新发送?")
                 .negativeText("取消")
                 .positiveText("重发")
-                .onPositive((dialog, which) -> conversationViewModel.resendMessage(message.message))
+                .onPositive((dialog, which) -> messageViewModel.resendMessage(message.message))
                 .build()
                 .show();
     }
@@ -130,12 +130,12 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_RECALL, title = "撤回", priority = 10)
     public void recall(View itemView, UiMessage message) {
-        conversationViewModel.recallMessage(message.message);
+        messageViewModel.recallMessage(message.message);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, title = "删除", confirm = true, confirmPrompt = "确认删除此消息", priority = 11)
     public void removeMessage(View itemView, UiMessage message) {
-        conversationViewModel.deleteMessage(message.message);
+        messageViewModel.deleteMessage(message.message);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FORWARD, title = "转发", priority = 11)
@@ -183,8 +183,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         // 只有channel 主可以发起
         if (MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT.equals(tag)) {
             if (uiMessage.message.conversation.type == Conversation.ConversationType.Channel
-                    && uiMessage.message.direction == MessageDirection.Receive
-                    && conversationViewModel.getChannelPrivateChatUser() == null) {
+                    && uiMessage.message.direction == MessageDirection.Receive) {
                 return false;
             }
             return true;

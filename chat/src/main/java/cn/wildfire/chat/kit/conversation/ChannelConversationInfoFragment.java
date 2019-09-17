@@ -23,6 +23,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcScheme;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -79,7 +80,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     }
 
     private void init() {
-        conversationViewModel = ViewModelProviders.of(this, new ConversationViewModelFactory(conversationInfo.conversation)).get(ConversationViewModel.class);
+        conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
         channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
         channelInfo = channelViewModel.getChannelInfo(conversationInfo.conversation.target, true);
 
