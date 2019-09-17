@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.Conversation;
@@ -18,7 +17,7 @@ import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.SearchUserCallback;
 
-public class ContactViewModel extends ViewModel implements OnFriendUpdateListener, AppScopeViewModel {
+public class ContactViewModel extends ViewModel implements OnFriendUpdateListener {
     private MutableLiveData<List<UIUserInfo>> contactListLiveData;
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
 
@@ -186,6 +185,26 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             }
         });
         return result;
+    }
+
+    public MutableLiveData<OperateResult<Integer>> setFriendAlias(String userId, String alias) {
+        MutableLiveData<OperateResult<Integer>> data = new MutableLiveData<>();
+        ChatManager.Instance().setFriendAlias(userId, alias, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                data.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                data.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return data;
+    }
+
+    public String getFriendAlias(String userId) {
+        return ChatManager.Instance().getFriendAlias(userId);
     }
 
 }

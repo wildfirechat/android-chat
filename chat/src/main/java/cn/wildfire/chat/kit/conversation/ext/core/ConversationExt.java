@@ -5,7 +5,7 @@ import android.content.Intent;
 
 import androidx.fragment.app.FragmentActivity;
 
-import cn.wildfire.chat.kit.conversation.ConversationViewModel;
+import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfirechat.model.Conversation;
 
 public abstract class ConversationExt {
@@ -13,7 +13,7 @@ public abstract class ConversationExt {
     protected ConversationExtension extension;
     private int index;
     protected Conversation conversation;
-    protected ConversationViewModel conversationViewModel;
+    protected MessageViewModel messageViewModel;
 
     public abstract int priority();
 
@@ -37,9 +37,9 @@ public abstract class ConversationExt {
      * @param activity
      */
 
-    protected final void onBind(FragmentActivity activity, ConversationViewModel conversationViewModel, Conversation conversation, ConversationExtension conversationExtension, int index) {
+    protected final void onBind(FragmentActivity activity, MessageViewModel messageViewModel, Conversation conversation, ConversationExtension conversationExtension, int index) {
         this.context = activity;
-        this.conversationViewModel = conversationViewModel;
+        this.messageViewModel = messageViewModel;
         this.conversation = conversation;
         this.extension = conversationExtension;
         this.index = index;
@@ -47,7 +47,7 @@ public abstract class ConversationExt {
 
     protected final void onDestroy() {
         this.context = null;
-        this.conversationViewModel = null;
+        this.messageViewModel = null;
         this.conversation = null;
         this.extension = null;
     }

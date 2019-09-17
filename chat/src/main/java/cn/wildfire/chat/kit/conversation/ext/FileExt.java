@@ -31,7 +31,7 @@ public class FileExt extends ConversationExt {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_FILE);
-        conversationViewModel.sendMessage(content);
+        messageViewModel.sendMessage(conversation, content);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class FileExt extends ConversationExt {
                 case ".jpeg":
                 case ".gif":
                     File imageFileThumb = ImageUtils.genThumbImgFile(path);
-                    conversationViewModel.sendImgMsg(imageFileThumb, file);
+                    messageViewModel.sendImgMsg(conversation, imageFileThumb, file);
                     break;
                 case ".3gp":
                 case ".mpg":
@@ -60,10 +60,10 @@ public class FileExt extends ConversationExt {
                 case ".mpe":
                 case ".mp4":
                 case ".avi":
-                    conversationViewModel.sendVideoMsg(file);
+                    messageViewModel.sendVideoMsg(conversation, file);
                     break;
                 default:
-                    conversationViewModel.sendFileMsg(file);
+                    messageViewModel.sendFileMsg(conversation, file);
                     break;
             }
         }

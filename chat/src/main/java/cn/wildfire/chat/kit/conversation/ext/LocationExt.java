@@ -40,14 +40,14 @@ public class LocationExt extends ConversationExt {
         Intent intent = new Intent(context, MyLocationActivity.class);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_LOCATION);
-        conversationViewModel.sendMessage(content);
+        messageViewModel.sendMessage(conversation, content);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             LocationData locationData = (LocationData) data.getSerializableExtra("location");
-            conversationViewModel.sendLocationMessage(locationData);
+            messageViewModel.sendLocationMessage(conversation, locationData);
         }
     }
 

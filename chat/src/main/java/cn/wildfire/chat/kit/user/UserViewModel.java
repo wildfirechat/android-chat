@@ -15,17 +15,14 @@ import cn.wildfirechat.model.ModifyMyInfoType;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.OnUserInfoUpdateListener;
 import cn.wildfirechat.remote.UploadMediaCallback;
 
-public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener, OnSettingUpdateListener {
+public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener {
     private MutableLiveData<List<UserInfo>> userInfoLiveData;
-    private MutableLiveData<Object> settingUpdatedLiveData;
 
     public UserViewModel() {
         ChatManager.Instance().addUserInfoUpdateListener(this);
-        ChatManager.Instance().addSettingUpdateListener(this);
     }
 
     public static List<UserInfo> getUsers(List<String> ids, String groupId) {
@@ -36,7 +33,6 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
     protected void onCleared() {
         super.onCleared();
         ChatManager.Instance().removeUserInfoUpdateListener(this);
-        ChatManager.Instance().removeSettingUpdateListener(this);
     }
 
     public MutableLiveData<List<UserInfo>> userInfoLiveData() {
@@ -44,13 +40,6 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
             userInfoLiveData = new MutableLiveData<>();
         }
         return userInfoLiveData;
-    }
-
-    public MutableLiveData<Object> settingUpdatedLiveData() {
-        if (settingUpdatedLiveData == null) {
-            settingUpdatedLiveData = new MutableLiveData<>();
-        }
-        return settingUpdatedLiveData;
     }
 
     public MutableLiveData<OperateResult<Boolean>> updateUserPortrait(String localImagePath) {
@@ -131,26 +120,6 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
         return ChatManager.Instance().getUserInfos(userIds, null);
     }
 
-    public MutableLiveData<OperateResult<Integer>> setFriendAlias(String userId, String alias) {
-        MutableLiveData<OperateResult<Integer>> data = new MutableLiveData<>();
-        ChatManager.Instance().setFriendAlias(userId, alias, new GeneralCallback() {
-            @Override
-            public void onSuccess() {
-                data.setValue(new OperateResult<>(0));
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-                data.setValue(new OperateResult<>(errorCode));
-            }
-        });
-        return data;
-    }
-
-    public String getFriendAlias(String userId) {
-        return ChatManager.Instance().getFriendAlias(userId);
-    }
-
     public String getUserId() {
         return ChatManager.Instance().getUserId();
     }
@@ -181,13 +150,6 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
     public void onUserInfoUpdate(List<UserInfo> userInfos) {
         if (userInfoLiveData != null && userInfos != null && !userInfos.isEmpty()) {
             userInfoLiveData.setValue(userInfos);
-        }
-    }
-
-    @Override
-    public void onSettingUpdate() {
-        if (settingUpdatedLiveData != null) {
-            settingUpdatedLiveData.setValue(new Object());
         }
     }
 }
