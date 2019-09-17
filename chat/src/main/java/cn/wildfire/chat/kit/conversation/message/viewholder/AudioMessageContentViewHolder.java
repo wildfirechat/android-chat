@@ -84,7 +84,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         if (message.progress == 100) {
             message.progress = 0;
             itemView.post(() -> {
-                conversationViewModel.playAudioMessage(message);
+                messageViewModel.playAudioMessage(message);
             });
         }
     }
@@ -96,17 +96,17 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
     @OnClick(R.id.audioContentLayout)
     public void onClick(View view) {
-        File file = conversationViewModel.mediaMessageContentFile(message);
+        File file = messageViewModel.mediaMessageContentFile(message);
         if (file == null) {
             return;
         }
         if (file.exists()) {
-            conversationViewModel.playAudioMessage(message);
+            messageViewModel.playAudioMessage(message);
         } else {
             if (message.isDownloading) {
                 return;
             }
-            conversationViewModel.downloadMedia(message, file);
+            messageViewModel.downloadMedia(message, file);
         }
     }
 

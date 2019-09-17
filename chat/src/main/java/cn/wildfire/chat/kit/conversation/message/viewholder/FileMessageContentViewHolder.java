@@ -60,7 +60,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         if (message.isDownloading) {
             return;
         }
-        File file = conversationViewModel.mediaMessageContentFile(message);
+        File file = messageViewModel.mediaMessageContentFile(message);
         if (file == null) {
             return;
         }
@@ -74,7 +74,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
             }
             context.startActivity(intent);
         } else {
-            conversationViewModel.downloadMedia(message, file);
+            messageViewModel.downloadMedia(message, file);
         }
     }
 }

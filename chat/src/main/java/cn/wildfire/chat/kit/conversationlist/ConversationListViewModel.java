@@ -193,6 +193,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().clearMessages(conversation);
     }
 
+    // TODO move the following to another class
     public void unSubscribeChannel(ConversationInfo conversationInfo) {
         ChatManager.Instance().listenChannel(conversationInfo.conversation.target, false, new GeneralCallback() {
             @Override

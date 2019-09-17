@@ -29,7 +29,7 @@ public class ImageExt extends ConversationExt {
         Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(context);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
-        conversationViewModel.sendMessage(content);
+        messageViewModel.sendMessage(conversation, content);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ImageExt extends ConversationExt {
 //                        //imageFileThumb = ImageUtils.genThumbImgFile(imageFileSource.getAbsolutePath());
 //                        imageFileThumb = imageFileSource;
 //                    }
-                    conversationViewModel.sendImgMsg(imageFileThumb, imageFileSource);
+                    messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
                 }
             }
         }

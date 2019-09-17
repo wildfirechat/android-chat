@@ -45,6 +45,7 @@ import cn.wildfire.chat.kit.conversation.ext.core.ConversationExtension;
 import cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity;
 import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
@@ -89,6 +90,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     ConversationExtension extension;
     private Conversation conversation;
+    private MessageViewModel messageViewModel;
     private ConversationViewModel conversationViewModel;
     private InputAwareLayout rootLinearLayout;
     private FragmentActivity activity;
@@ -129,10 +131,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     }
 
-    public void setupConversation(ConversationViewModel conversationViewModel, Conversation conversation) {
-        this.conversationViewModel = conversationViewModel;
+    public void setupConversation(Conversation conversation) {
         this.conversation = conversation;
-        this.extension.bind(conversationViewModel, conversation);
+        this.extension.bind(this.messageViewModel, conversation);
 
         setDraft();
     }
@@ -201,7 +202,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 //发送文件
                 File file = new File(audioFile);
                 if (file.exists()) {
-                    conversationViewModel.sendAudioFile(Uri.parse(audioFile), duration);
+                    messageViewModel.sendAudioFile(conversation, Uri.parse(audioFile), duration);
                 }
             }
 
@@ -214,7 +215,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             public void onRecordStateChanged(AudioRecorderPanel.RecordState state) {
                 if (state == AudioRecorderPanel.RecordState.START) {
                     TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_VOICE);
-                    conversationViewModel.sendMessage(content);
+                    messageViewModel.sendMessage(conversation, content);
                 }
             }
         });
@@ -232,6 +233,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 Toast.makeText(activity, "setting", Toast.LENGTH_SHORT).show();
             }
         });
+
+        messageViewModel = ViewModelProviders.of(activity).get(MessageViewModel.class);
+        conversationViewModel = ViewModelProviders.of(activity).get(ConversationViewModel.class);
 
     }
 
@@ -347,7 +351,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 }
             }
         }
-        conversationViewModel.sendTextMsg(txtContent);
+        messageViewModel.sendTextMsg(conversation, txtContent);
         editText.setText("");
     }
 
@@ -374,7 +378,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         Editable editable = editText.getText();
         if (TextUtils.isEmpty(editable.toString().trim())) {
             if (!TextUtils.isEmpty(draftString)) {
-                conversationViewModel.saveDraft(conversation, null);
+                messageViewModel.saveDraft(conversation, null);
             }
             return;
         }
@@ -382,7 +386,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             return;
         }
         String draft = Draft.toDraftJson(editable);
-        conversationViewModel.saveDraft(conversation, draft);
+        messageViewModel.saveDraft(conversation, draft);
     }
 
     private void showAudioButton() {
@@ -453,7 +457,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             if (now - lastTypingTime > TYPING_INTERVAL_IN_SECOND * 1000) {
                 lastTypingTime = now;
                 TypingMessageContent content = new TypingMessageContent(type);
-                conversationViewModel.sendMessage(content);
+                messageViewModel.sendMessage(conversation, content);
             }
         }
     }
@@ -466,7 +470,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     @Override
     public void onStickerSelected(String categoryName, String stickerName, String stickerBitmapPath) {
         String remoteUrl = sharedPreferences.getString(stickerBitmapPath, null);
-        conversationViewModel.sendStickerMsg(stickerBitmapPath, remoteUrl);
+        messageViewModel.sendStickerMsg(conversation, stickerBitmapPath, remoteUrl);
     }
 
 
