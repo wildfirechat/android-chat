@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
-import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
+import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 
@@ -22,7 +22,7 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
     protected UiMessage message;
     protected int position;
     protected RecyclerView.Adapter adapter;
-    protected ConversationViewModel conversationViewModel;
+    protected MessageViewModel messageViewModel;
 
     @Bind(R.id.timeTextView)
     TextView timeTextView;
@@ -33,7 +33,7 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
         this.context = activity;
         this.itemView = itemView;
         this.adapter = adapter;
-        conversationViewModel = ViewModelProviders.of(context).get(ConversationViewModel.class);
+        messageViewModel = ViewModelProviders.of(activity).get(MessageViewModel.class);
         ButterKnife.bind(this, itemView);
     }
 

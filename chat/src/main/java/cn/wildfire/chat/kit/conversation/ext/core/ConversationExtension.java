@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
-import cn.wildfire.chat.kit.conversation.ConversationViewModel;
+import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.model.Conversation;
 
@@ -80,12 +80,12 @@ public class ConversationExtension {
     }
 
 
-    public void bind(ConversationViewModel conversationViewModel, Conversation conversation) {
+    public void bind(MessageViewModel messageViewModel, Conversation conversation) {
         this.conversation = conversation;
         setupExtViewPager(extViewPager);
 
         for (int i = 0; i < exts.size(); i++) {
-            exts.get(i).onBind(activity, conversationViewModel, conversation, this, i);
+            exts.get(i).onBind(activity, messageViewModel, conversation, this, i);
         }
     }
 
