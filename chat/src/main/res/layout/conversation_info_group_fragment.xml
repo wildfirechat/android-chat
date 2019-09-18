@@ -58,28 +58,18 @@
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <com.lqr.optionitemview.OptionItemView
+                <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/groupNameOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
-                    app:left_text="@string/group_name"
-                    app:left_text_color="@color/black0"
-                    app:left_text_margin_left="@dimen/option_item_margin_left"
-                    app:left_text_size="16sp"
-                    app:right_text="@string/untitled"
-                    app:right_text_color="@color/gray2"
-                    app:right_text_margin_right="@dimen/option_item_margin_right"
-                    app:right_text_size="14sp" />
+                    app:desc="@string/untitled"
+                    app:title="@string/group_name" />
 
-                <com.lqr.optionitemview.OptionItemView
+                <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/groupQRCodeOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
-                    app:left_text="二维码"
-                    app:left_text_color="@color/black0"
-                    app:left_text_margin_left="@dimen/option_item_margin_left"
-                    app:left_text_size="16sp"
-                    app:right_src="@mipmap/qr_code" />
+                    app:title="二维码" />
 
                 <View
                     style="@style/Line"
@@ -128,29 +118,21 @@
                     android:layout_marginRight="@dimen/option_item_margin_right"
                     android:visibility="visible" />
 
-                <com.lqr.optionitemview.OptionItemView
+                <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/groupManageOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
                     android:visibility="gone"
-                    app:left_text="群管理"
-                    app:left_text_color="@color/black0"
-                    app:left_text_margin_left="@dimen/option_item_margin_left"
-                    app:left_text_size="16sp"
-                    tools:visibility="visible" />
+                    app:title="群管理" />
             </LinearLayout>
 
 
-            <com.lqr.optionitemview.OptionItemView
+            <cn.wildfire.chat.kit.widget.OptionItemView
                 android:id="@+id/searchMessageOptionItemView"
                 style="@style/OptionItem"
                 android:layout_marginTop="@dimen/option_item_margin_top"
                 android:background="@drawable/selector_option_item"
-                app:left_text="查找聊天记录"
-                app:left_text_color="@color/black0"
-                app:left_text_margin_left="@dimen/option_item_margin_left"
-                app:left_text_size="16sp"
-                tools:visibility="visible" />
+                app:title="查找聊天记录" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -271,17 +253,11 @@
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <com.lqr.optionitemview.OptionItemView
+                <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/myGroupNickNameOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
-                    app:left_text="@string/my_nickname_in_this_group"
-                    app:left_text_color="@color/black0"
-                    app:left_text_margin_left="@dimen/option_item_margin_left"
-                    app:left_text_size="16sp"
-                    app:right_text_color="@color/gray2"
-                    app:right_text_margin_right="@dimen/option_item_margin_right"
-                    app:right_text_size="14sp" />
+                    app:title="@string/my_nickname_in_this_group" />
 
 
                 <View
@@ -323,15 +299,12 @@
 
             </LinearLayout>
 
-            <com.lqr.optionitemview.OptionItemView
+            <cn.wildfire.chat.kit.widget.OptionItemView
                 android:id="@+id/clearMessagesOptionItemView"
                 style="@style/OptionItem"
                 android:layout_marginTop="@dimen/option_item_margin_top"
                 android:background="@drawable/selector_option_item"
-                app:left_text="@string/clear_chat_log"
-                app:left_text_color="@color/black0"
-                app:left_text_margin_left="@dimen/option_item_margin_left"
-                app:left_text_size="16sp" />
+                app:title="@string/clear_chat_log" />
 
             <Button
                 android:id="@+id/quitButton"

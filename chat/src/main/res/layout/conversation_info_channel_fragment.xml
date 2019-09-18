@@ -32,40 +32,31 @@
                 android:orientation="vertical"
                 android:visibility="visible">
 
-                <com.lqr.optionitemview.OptionItemView
+                <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/channelNameOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
-                    app:left_text="频道名称"
-                    app:left_text_color="@color/black0"
-                    app:left_text_margin_left="@dimen/option_item_margin_left"
-                    app:left_text_size="16sp"
-                    app:right_text="channel name" />
+                    app:desc="channel name"
+                    app:title="频道名称" />
 
                 <View
                     style="@style/Line"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp" />
 
-                <com.lqr.optionitemview.OptionItemView
+                <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/channelDescOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
-                    app:left_text="频道描述"
-                    app:left_text_color="@color/black0"
-                    app:left_text_margin_left="@dimen/option_item_margin_left"
-                    app:left_text_size="16sp"
-                    app:right_text="channel desc" />
+                    app:desc="channel desc"
+                    app:title="频道描述" />
 
-                <com.lqr.optionitemview.OptionItemView
+                <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/channelQRCodeOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
-                    app:left_text="二维码"
-                    app:left_text_color="@color/black0"
-                    app:left_text_margin_left="@dimen/option_item_margin_left"
-                    app:left_text_size="16sp"
-                    app:right_src="@mipmap/qr_code" />
+                    app:end_src="@mipmap/qr_code"
+                    app:title="二维码" />
 
             </LinearLayout>
 
@@ -147,15 +138,12 @@
 
             </LinearLayout>
 
-            <com.lqr.optionitemview.OptionItemView
+            <cn.wildfire.chat.kit.widget.OptionItemView
                 android:id="@+id/clearMessagesOptionItemView"
                 style="@style/OptionItem"
                 android:layout_marginTop="@dimen/option_item_margin_top"
                 android:background="@drawable/selector_option_item"
-                app:left_text="@string/clear_chat_log"
-                app:left_text_color="@color/black0"
-                app:left_text_margin_left="@dimen/option_item_margin_left"
-                app:left_text_size="16sp" />
+                app:title="@string/clear_chat_log" />
 
         </LinearLayout>
     </ScrollView>

@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
 import com.kyleduo.switchbutton.SwitchButton;
-import com.lqr.optionitemview.OptionItemView;
 
 import java.util.Arrays;
 
@@ -28,6 +27,7 @@ import cn.wildfire.chat.kit.channel.ChannelViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
+import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
@@ -106,8 +106,8 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     }
 
     private void initChannel(ChannelInfo channelInfo) {
-        channelNameOptionItemView.setRightText(channelInfo.name);
-        channelDescOptionItemView.setRightText(channelInfo.desc);
+        channelNameOptionItemView.setDesc(channelInfo.name);
+        channelDescOptionItemView.setDesc(channelInfo.desc);
         Glide.with(this).load(channelInfo.portrait).into(portraitImageView);
     }
 
