@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.lqr.optionitemview.OptionItemView;
 
 import java.util.List;
 
@@ -27,6 +26,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.setting.SettingActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
