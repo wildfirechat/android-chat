@@ -85,21 +85,21 @@
             </LinearLayout>
         </LinearLayout>
 
-        <com.lqr.optionitemview.OptionItemView
+        <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/aliasOptionItemView"
             style="@style/OptionItem"
             android:layout_marginTop="20dp"
             android:background="@drawable/selector_common_item"
-            app:left_text="设置昵称或别名" />
+            app:title="设置昵称或别名" />
 
-        <com.lqr.optionitemview.OptionItemView
+        <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/qrCodeOptionItemView"
             style="@style/OptionItem"
             android:layout_marginTop="20dp"
             android:background="@drawable/selector_common_item"
             android:visibility="gone"
-            app:left_text="二维码"
-            app:right_src="@mipmap/qr_code" />
+            app:end_src="@mipmap/qr_code"
+            app:title="二维码" />
 
 
         <Button

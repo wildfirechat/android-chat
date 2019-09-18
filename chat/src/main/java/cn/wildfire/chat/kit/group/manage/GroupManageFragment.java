@@ -13,12 +13,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.lqr.optionitemview.OptionItemView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupInfo;
 
@@ -54,7 +54,7 @@ public class GroupManageFragment extends Fragment {
 
     private void init() {
         String[] types = getResources().getStringArray(R.array.group_join_type);
-        joinOptionItemView.setRightText(types[groupInfo.joinType]);
+        joinOptionItemView.setDesc(types[groupInfo.joinType]);
     }
 
     @OnClick(R.id.managerOptionItemView)
@@ -88,7 +88,7 @@ public class GroupManageFragment extends Fragment {
                     groupViewModel.setGroupJoinType(groupInfo.target, position)
                             .observe(GroupManageFragment.this, booleanOperateResult -> {
                                 if (booleanOperateResult.isSuccess()) {
-                                    joinOptionItemView.setRightText((String) text);
+                                    joinOptionItemView.setDesc((String) text);
                                 } else {
                                     Toast.makeText(getActivity(), "修改加群方式失败", Toast.LENGTH_SHORT).show();
                                 }
@@ -102,7 +102,7 @@ public class GroupManageFragment extends Fragment {
         new MaterialDialog.Builder(getActivity())
                 .items(R.array.group_search_type)
                 .itemsCallback((dialog, itemView, position, text) -> {
-                    searchOptionItemView.setRightText((String) text);
+                    searchOptionItemView.setDesc((String) text);
                 })
                 .show();
     }
