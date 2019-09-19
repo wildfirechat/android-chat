@@ -8,7 +8,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -303,9 +302,6 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
         }
         mLlPageNumber.removeAllViews();
         setCurPageCommon(0);
-        if (tabPosi == 0) {
-            adapter.attachEditText(mMessageEditText);
-        }
     }
 
     private void setCategoryPageIndexIndicator(int position, int pageCount) {
@@ -342,11 +338,4 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
             ivCur.setVisibility(View.VISIBLE);
         }
     }
-
-    EditText mMessageEditText;
-
-    public void attachEditText(EditText messageEditText) {
-        mMessageEditText = messageEditText;
-    }
-
 }

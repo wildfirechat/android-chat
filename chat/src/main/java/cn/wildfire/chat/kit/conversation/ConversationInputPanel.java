@@ -31,6 +31,8 @@ import androidx.lifecycle.ViewModelProviders;
 import com.lqr.emoji.EmotionLayout;
 import com.lqr.emoji.IEmotionExtClickListener;
 import com.lqr.emoji.IEmotionSelectedListener;
+import com.lqr.emoji.LQREmotionKit;
+import com.lqr.emoji.MoonUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -99,6 +101,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private long lastTypingTime;
     private String draftString;
     private static final int TYPING_INTERVAL_IN_SECOND = 10;
+    private static final int MAX_EMOJI_PER_MESSAGE = 50;
+    private int messageEmojiCount = 0;
     private SharedPreferences sharedPreferences;
 
     private OnConversationInputPanelStateChangeListener onConversationInputPanelStateChangeListener;
@@ -167,7 +171,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         sharedPreferences = getContext().getSharedPreferences("sticker", Context.MODE_PRIVATE);
 
         // emotion
-        emotionLayout.attachEditText(editText);
         emotionLayout.setEmotionAddVisiable(true);
         emotionLayout.setEmotionSettingVisiable(true);
 
@@ -325,6 +328,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @OnClick(R.id.sendButton)
     void sendMessage() {
+        messageEmojiCount = 0;
         Editable content = editText.getText();
         if (TextUtils.isEmpty(content)) {
             return;
@@ -370,6 +374,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
         draftString = draft == null ? "" : draft.getContent();
+        messageEmojiCount = draft == null ? 0 : draft.getEmojiCount();
 
         editText.setText(draftString);
     }
@@ -385,7 +390,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (TextUtils.equals(this.draftString, editable)) {
             return;
         }
-        String draft = Draft.toDraftJson(editable);
+        String draft = Draft.toDraftJson(editable, messageEmojiCount);
         messageViewModel.saveDraft(conversation, draft);
     }
 
@@ -464,7 +469,34 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @Override
     public void onEmojiSelected(String key) {
-//        LogUtils.e("onEmojiSelected : " + key);
+        Editable editable = editText.getText();
+        if (key.equals("/DEL")) {
+            messageEmojiCount--;
+            messageEmojiCount = messageEmojiCount < 0 ? 0 : messageEmojiCount;
+            editText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+        } else {
+            if (messageEmojiCount >= MAX_EMOJI_PER_MESSAGE) {
+                Toast.makeText(activity, "最多允许输入" + MAX_EMOJI_PER_MESSAGE + "个表情符号", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            messageEmojiCount++;
+            int code = Integer.decode(key);
+            char[] chars = Character.toChars(code);
+            String value = Character.toString(chars[0]);
+            for (int i = 1; i < chars.length; i++) {
+                value += Character.toString(chars[i]);
+            }
+
+            int start = editText.getSelectionStart();
+            int end = editText.getSelectionEnd();
+            start = (start < 0 ? 0 : start);
+            end = (start < 0 ? 0 : end);
+            editable.replace(start, end, value);
+
+            int editEnd = editText.getSelectionEnd();
+            MoonUtils.replaceEmoticons(LQREmotionKit.getContext(), editable, 0, editable.toString().length());
+            editText.setSelection(editEnd);
+        }
     }
 
     @Override
