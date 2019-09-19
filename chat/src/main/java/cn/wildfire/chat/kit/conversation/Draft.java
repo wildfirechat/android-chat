@@ -14,6 +14,7 @@ import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
 
 public class Draft {
     private String content;
+    private int emojiCount;
     private List<Mention> mentions;
 
     public String getContent() {
@@ -24,9 +25,14 @@ public class Draft {
         return mentions;
     }
 
-    public static Draft toDraft(Editable content) {
+    public int getEmojiCount() {
+        return emojiCount;
+    }
+
+    public static Draft toDraft(Editable content, int emojiCount) {
         Draft draft = new Draft();
         draft.content = content.toString();
+        draft.emojiCount = emojiCount;
 
         List<Mention> mentions;
         MentionSpan[] mentionSpans = content.getSpans(0, content.length(), MentionSpan.class);
@@ -56,8 +62,8 @@ public class Draft {
         return new Gson().fromJson(json, Draft.class);
     }
 
-    public static String toDraftJson(Editable content) {
-        Draft draft = toDraft(content);
+    public static String toDraftJson(Editable content, int emojiCount) {
+        Draft draft = toDraft(content, emojiCount);
         return new Gson().toJson(draft);
     }
 
