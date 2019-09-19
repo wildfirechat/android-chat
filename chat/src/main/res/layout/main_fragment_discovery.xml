@@ -28,7 +28,6 @@
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
-        app:badge_count="3"
         app:divider_align_to_title="false"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_channel"
