@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -1437,16 +1438,17 @@ public class ChatManager {
      * @param lines             获取哪些会话线路
      * @return
      */
+    @NonNull
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
-            return null;
+            return new ArrayList<>();
         }
 
         if (conversationTypes == null || conversationTypes.size() == 0 ||
                 lines == null || lines.size() == 0) {
             Log.e(TAG, "Invalid conversation type and lines");
-            return null;
+            return new ArrayList<>();
         }
 
         int[] intypes = new int[conversationTypes.size()];
@@ -1464,7 +1466,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     /**
