@@ -9,7 +9,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.text.Editable;
-import android.text.Selection;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -44,6 +45,7 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.audio.AudioRecorderPanel;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExtension;
+import cn.wildfire.chat.kit.conversation.mention.Mention;
 import cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity;
 import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -174,29 +176,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         emotionLayout.setEmotionAddVisiable(true);
         emotionLayout.setEmotionSettingVisiable(true);
 
-        editText.setOnKeyListener((v, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
-                Editable buffer = ((EditText) v).getText();
-                // If the cursor is at the end of a MentionSpan then remove the whole span
-                int start = Selection.getSelectionStart(buffer);
-                int end = Selection.getSelectionEnd(buffer);
-                if (start == end) {
-                    MentionSpan[] mentions = buffer.getSpans(start, end, MentionSpan.class);
-                    if (mentions.length > 0) {
-                        buffer.replace(
-                                buffer.getSpanStart(mentions[0]),
-                                buffer.getSpanEnd(mentions[0]),
-                                ""
-                        );
-                        buffer.removeSpan(mentions[0]);
-                        return true;
-                    }
-                }
-                return false;
-            }
-            return false;
-        });
-
         // audio record panel
         audioRecorderPanel = new AudioRecorderPanel(getContext());
         audioRecorderPanel.setRecordListener(new AudioRecorderPanel.OnRecordListener() {
@@ -273,10 +252,38 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     void onInputTextChanged(CharSequence s, int start, int before, int count) {
         if (activity.getCurrentFocus() == editText) {
             if (conversation.type == Conversation.ConversationType.Group) {
-                if (count == 1 && s.charAt(start) == '@') {
+                if (before == 0 && count == 1 && s.charAt(start) == '@') {
 //                    if (start == 0 || s.charAt(start - 1) == ' ') {
                     mentionGroupMember();
 //                    }
+                }
+                // delete
+                if (before == 1 && count == 0) {
+                    Editable text = editText.getText();
+                    MentionSpan[] spans = text.getSpans(0, text.length(), MentionSpan.class);
+                    if (spans != null) {
+                        for (MentionSpan span : spans) {
+                            if (text.getSpanEnd(span) == start && text.getSpanFlags(span) == Spanned.SPAN_INCLUSIVE_EXCLUSIVE) {
+                                text.delete(text.getSpanStart(span), text.getSpanEnd(span));
+                                text.removeSpan(span);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // insert
+                if (before == 0 && count > 0) {
+                    Editable text = editText.getText();
+                    MentionSpan[] spans = text.getSpans(0, text.length(), MentionSpan.class);
+                    if (spans != null) {
+                        for (MentionSpan span : spans) {
+                            if (start >= text.getSpanStart(span) && start < text.getSpanEnd(span)) {
+                                text.removeSpan(span);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -368,15 +375,36 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     private void setDraft() {
+        MentionSpan[] spans = editText.getText().getSpans(0, editText.getText().length(), MentionSpan.class);
+        if (spans != null) {
+            for (MentionSpan span : spans) {
+                editText.getText().removeSpan(span);
+            }
+        }
         ConversationInfo conversationInfo = conversationViewModel.getConversationInfo(conversation);
-        if (conversationInfo == null) {
+        if (conversationInfo == null || TextUtils.isEmpty(conversationInfo.draft)) {
             return;
         }
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
-        draftString = draft == null ? "" : draft.getContent();
-        messageEmojiCount = draft == null ? 0 : draft.getEmojiCount();
+        if (draft == null || TextUtils.isEmpty(draft.getContent())) {
+            return;
+        }
+        draftString = draft.getContent();
+        messageEmojiCount = draft.getEmojiCount();
 
-        editText.setText(draftString);
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(draftString);
+        List<Mention> mentions = draft.getMentions();
+        if (mentions != null) {
+            for (Mention mention : mentions) {
+                if (mention.isMentionAll()) {
+                    spannableStringBuilder.setSpan(new MentionSpan(true), mention.getStart(), mention.getEnd(), mention.getFlags());
+                } else {
+                    spannableStringBuilder.setSpan(new MentionSpan(mention.getUid()), mention.getStart(), mention.getEnd(), mention.getFlags());
+                }
+            }
+        }
+
+        editText.setText(spannableStringBuilder);
     }
 
     public void onActivityPause() {
