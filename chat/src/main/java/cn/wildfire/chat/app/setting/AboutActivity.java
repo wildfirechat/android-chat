@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.setting;
+package cn.wildfire.chat.app.setting;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;

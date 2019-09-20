@@ -1,0 +1,66 @@
+<resources>
+
+    <string name="complete">完成</string>
+
+    <string name="draft">[草稿]</string>
+    <string name="video">视频</string>
+    <string name="set_conversation_to_top">置顶聊天</string>
+
+    <!--联系人-->
+    <string name="new_friend">新的朋友</string>
+    <string name="group_cheat">群聊</string>
+
+    <!--新的朋友-->
+    <string name="add_friend">添加朋友</string>
+    <string name="no_recommend_friend">还没有推荐的朋友</string>
+
+    <!--搜索用户-->
+    <string name="user_no_found">该用户不存在</string>
+    <string name="search">搜索</string>
+
+    <!--用户信息-->
+    <string name="nickname_colon">昵称:%1$s</string>
+    <string name="set_alias_and_tag">设置备注和标签</string>
+    <string name="send_message">发消息</string>
+    <string name="add_to_contact">添加到通讯录</string>
+    <string name="change_my_name_tip">好名字可以让你的朋友 更容易记住你。</string>
+
+    <!--修改备注-->
+    <string name="alias">备注名</string>
+    <string name="alias_no_empty">备注名不能为空</string>
+
+    <!--附言界面-->
+    <string name="postscript_tip">你需要发送验证申请，等对方通过</string>
+    <string name="send">发送</string>
+
+    <!--会话界面-->
+    <string name="please_to_talk">按住 说话</string>
+    <string name="shot">拍摄</string>
+    <string name="location">位置</string>
+    <string name="file">文件</string>
+
+    <string name="voice_rec">手指上滑，取消发送</string>
+    <string name="voice_cancel">松开手指，取消发送</string>
+    <string name="voice_short">录音时间太短</string>
+
+    <!--创建群-->
+    <string name="create_group_success">创建群成功</string>
+    <string name="create_group_fail">创建群失败</string>
+    <string name="no_group_now">暂无群聊</string>
+
+    <!--群信息-->
+    <string name="group_name">群聊名称</string>
+    <string name="untitled">未命名</string>
+    <string name="group_announcement">群公告</string>
+    <string name="message_free">消息免打扰</string>
+    <string name="my_nickname_in_this_group">我在本群的昵称</string>
+    <string name="show_group_member_name">显示群成员昵称</string>
+    <string name="clear_chat_log">清空聊天记录</string>
+    <string name="delete_and_exit">删除并退出</string>
+    <string name="delete_and_dismiss">解散并删除</string>
+    <string name="add_member_success">添加群成员成功</string>
+    <string name="add_member_fail">添加群成员失败</string>
+    <string name="del_member_success">删除群成员成功</string>
+    <string name="del_member_fail">删除群成员失败</string>
+
+</resources>
