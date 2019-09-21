@@ -267,6 +267,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                                 text.delete(text.getSpanStart(span), text.getSpanEnd(span));
                                 text.removeSpan(span);
                                 break;
+                            } else if (start >= text.getSpanStart(span) && start < text.getSpanEnd(span)) {
+                                text.removeSpan(span);
+                                break;
                             }
                         }
                     }
