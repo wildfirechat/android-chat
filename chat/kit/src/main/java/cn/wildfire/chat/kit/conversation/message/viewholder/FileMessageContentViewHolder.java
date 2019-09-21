@@ -13,7 +13,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
@@ -31,7 +31,7 @@ import cn.wildfirechat.message.core.MessageStatus;
 @EnableContextMenu
 public class FileMessageContentViewHolder extends MediaMessageContentViewHolder {
 
-    @Bind(R.id.imageView)
+    @BindView(R.id.imageView)
     BubbleImageView imageView;
     private FileMessageContent fileMessageContent;
 

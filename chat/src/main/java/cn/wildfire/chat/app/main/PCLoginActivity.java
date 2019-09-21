@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.lifecycle.ViewModelProviders;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.login.model.PCSession;
@@ -23,7 +23,7 @@ import cn.wildfirechat.chat.R;
 public class PCLoginActivity extends WfcBaseActivity {
     private String token;
     private PCSession pcSession;
-    @Bind(R.id.confirmButton)
+    @BindView(R.id.confirmButton)
     Button confirmButton;
 
     @Override

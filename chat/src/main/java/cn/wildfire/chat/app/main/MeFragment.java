@@ -20,7 +20,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.setting.SettingActivity;
@@ -32,19 +32,19 @@ import cn.wildfirechat.model.UserInfo;
 
 public class MeFragment extends Fragment {
 
-    @Bind(R.id.meLinearLayout)
+    @BindView(R.id.meLinearLayout)
     LinearLayout meLinearLayout;
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.accountTextView)
+    @BindView(R.id.accountTextView)
     TextView accountTextView;
 
-    @Bind(R.id.notificationOptionItemView)
+    @BindView(R.id.notificationOptionItemView)
     OptionItemView notificationOptionItem;
 
-    @Bind(R.id.settintOptionItemView)
+    @BindView(R.id.settintOptionItemView)
     OptionItemView settingOptionItem;
 
     private UserViewModel userViewModel;

@@ -14,7 +14,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.app.Config;
@@ -31,11 +31,11 @@ import cn.wildfirechat.chat.R;
  */
 @Deprecated
 public class LoginActivity extends WfcBaseActivity {
-    @Bind(R.id.loginButton)
+    @BindView(R.id.loginButton)
     Button loginButton;
-    @Bind(R.id.accountEditText)
+    @BindView(R.id.accountEditText)
     EditText accountEditText;
-    @Bind(R.id.passwordEditText)
+    @BindView(R.id.passwordEditText)
     EditText passwordEditText;
 
     @Override

@@ -13,7 +13,7 @@ import com.king.zxing.util.CodeUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import butterknife.Bind;
+import butterknife.BindView;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.chat.R;
@@ -23,7 +23,7 @@ public class QRCodeActivity extends WfcBaseActivity {
     private String logoUrl;
     private String qrCodeValue;
 
-    @Bind(R.id.qrCodeImageView)
+    @BindView(R.id.qrCodeImageView)
     ImageView qrCodeImageView;
 
     public static Intent buildQRCodeIntent(Context context, String title, String logoUrl, String qrCodeValue) {

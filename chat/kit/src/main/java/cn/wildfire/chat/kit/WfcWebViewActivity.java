@@ -6,13 +6,13 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import cn.wildfirechat.chat.R;
 
 public class WfcWebViewActivity extends WfcBaseActivity {
     private String url;
 
-    @Bind(R.id.webview)
+    @BindView(R.id.webview)
     WebView webView;
 
     public static void loadUrl(Context context, String title, String url) {

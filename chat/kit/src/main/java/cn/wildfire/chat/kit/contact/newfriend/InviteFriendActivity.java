@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -17,7 +17,7 @@ import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
 public class InviteFriendActivity extends WfcBaseActivity {
-    @Bind(R.id.introTextView)
+    @BindView(R.id.introTextView)
     TextView introTextView;
 
     private UserInfo userInfo;

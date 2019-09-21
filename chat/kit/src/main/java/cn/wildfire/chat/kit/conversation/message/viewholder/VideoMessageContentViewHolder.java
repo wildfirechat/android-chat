@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
@@ -20,9 +20,9 @@ import cn.wildfirechat.message.VideoMessageContent;
 @LayoutRes(resId = R.layout.conversation_item_video_send)
 @EnableContextMenu
 public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder {
-    @Bind(R.id.imageView)
+    @BindView(R.id.imageView)
     BubbleImageView imageView;
-    @Bind(R.id.playImageView)
+    @BindView(R.id.playImageView)
     ImageView playImageView;
 
     public VideoMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {

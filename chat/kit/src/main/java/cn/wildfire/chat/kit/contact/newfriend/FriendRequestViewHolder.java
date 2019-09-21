@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -29,15 +29,15 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
     private UserViewModel userViewModel;
     private ContactViewModel contactViewModel;
 
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.introTextView)
+    @BindView(R.id.introTextView)
     TextView introTextView;
-    @Bind(R.id.acceptButton)
+    @BindView(R.id.acceptButton)
     Button acceptButton;
-    @Bind(R.id.acceptStatusTextView)
+    @BindView(R.id.acceptStatusTextView)
     TextView acceptStatusTextView;
 
     public FriendRequestViewHolder(FriendRequestListFragment fragment, FriendRequestListAdapter adapter, View itemView) {

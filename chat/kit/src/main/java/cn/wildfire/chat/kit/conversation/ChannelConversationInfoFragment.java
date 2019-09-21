@@ -18,7 +18,7 @@ import com.kyleduo.switchbutton.SwitchButton;
 
 import java.util.Arrays;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcScheme;
@@ -36,16 +36,16 @@ import cn.wildfirechat.model.ConversationInfo;
 public class ChannelConversationInfoFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
     // common
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.stickTopSwitchButton)
+    @BindView(R.id.stickTopSwitchButton)
     SwitchButton stickTopSwitchButton;
-    @Bind(R.id.silentSwitchButton)
+    @BindView(R.id.silentSwitchButton)
     SwitchButton silentSwitchButton;
 
-    @Bind(R.id.channelNameOptionItemView)
+    @BindView(R.id.channelNameOptionItemView)
     OptionItemView channelNameOptionItemView;
-    @Bind(R.id.channelDescOptionItemView)
+    @BindView(R.id.channelDescOptionItemView)
     OptionItemView channelDescOptionItemView;
 
     private ConversationInfo conversationInfo;

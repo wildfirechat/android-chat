@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -22,7 +22,7 @@ import cn.wildfirechat.message.CallStartMessageContent;
 @SendLayoutRes(resId = R.layout.conversation_item_voip_send)
 @EnableContextMenu
 public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
-    @Bind(R.id.contentTextView)
+    @BindView(R.id.contentTextView)
     TextView textView;
 
     public VoipMessageViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {

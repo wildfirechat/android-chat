@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
@@ -27,11 +27,11 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
     private SearchAndPickUserFragment searchAndPickUserFragment;
     protected PickUserViewModel pickUserViewModel;
 
-    @Bind(R.id.pickedUserRecyclerView)
+    @BindView(R.id.pickedUserRecyclerView)
     RecyclerView pickedUserRecyclerView;
-    @Bind(R.id.searchEditText)
+    @BindView(R.id.searchEditText)
     EditText searchEditText;
-    @Bind(R.id.searchFrameLayout)
+    @BindView(R.id.searchFrameLayout)
     FrameLayout searchUserFrameLayout;
 
     private boolean isSearchFragmentShowing = false;

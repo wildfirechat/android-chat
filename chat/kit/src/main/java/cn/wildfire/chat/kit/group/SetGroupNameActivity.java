@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -21,7 +21,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.ModifyGroupInfoType;
 
 public class SetGroupNameActivity extends WfcBaseActivity {
-    @Bind(R.id.nameEditText)
+    @BindView(R.id.nameEditText)
     EditText nameEditText;
 
     private MenuItem confirmMenuItem;

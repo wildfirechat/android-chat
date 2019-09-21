@@ -22,16 +22,16 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.chat.R;
 
 public class ScanQRCodeActivity extends WfcBaseActivity {
 
     private CaptureHelper mCaptureHelper;
-    @Bind(R.id.surfaceView)
+    @BindView(R.id.surfaceView)
     SurfaceView surfaceView;
-    @Bind(R.id.viewfinderView)
+    @BindView(R.id.viewfinderView)
     ViewfinderView viewfinderView;
 
     private static final int REQUEST_CODE_IMAGE = 100;

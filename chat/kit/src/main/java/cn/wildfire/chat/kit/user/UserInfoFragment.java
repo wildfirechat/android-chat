@@ -24,7 +24,7 @@ import com.lqr.imagepicker.bean.ImageItem;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcScheme;
@@ -42,24 +42,24 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class UserInfoFragment extends Fragment {
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.mobileTextView)
+    @BindView(R.id.mobileTextView)
     TextView mobileTextView;
-    @Bind(R.id.nickyName)
+    @BindView(R.id.nickyName)
     TextView nickyNameTextView;
-    @Bind(R.id.chatButton)
+    @BindView(R.id.chatButton)
     Button chatButton;
-    @Bind(R.id.voipChatButton)
+    @BindView(R.id.voipChatButton)
     Button voipChatButton;
-    @Bind(R.id.inviteButton)
+    @BindView(R.id.inviteButton)
     Button inviteButton;
-    @Bind(R.id.aliasOptionItemView)
+    @BindView(R.id.aliasOptionItemView)
     OptionItemView aliasOptionItemView;
 
-    @Bind(R.id.qrCodeOptionItemView)
+    @BindView(R.id.qrCodeOptionItemView)
     OptionItemView qrCodeOptionItemView;
 
     private UserInfo userInfo;

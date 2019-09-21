@@ -35,7 +35,7 @@ import com.tencent.mapsdk.raster.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import cn.wildfire.chat.app.third.location.ui.base.BaseActivity;
 import cn.wildfire.chat.app.third.location.ui.presenter.MyLocationAtPresenter;
 import cn.wildfire.chat.app.third.location.ui.view.IMyLocationAtView;
@@ -60,17 +60,17 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
     private Circle accuracy;
     private TencentSearch mTencentSearch;
 
-    @Bind(R.id.confirmButton)
+    @BindView(R.id.confirmButton)
     Button mBtnToolbarSend;
-    @Bind(R.id.rlMap)
+    @BindView(R.id.rlMap)
     RelativeLayout mRlMap;
-    @Bind(R.id.map)
+    @BindView(R.id.map)
     MapView mMap;
-    @Bind(R.id.ibShowLocation)
+    @BindView(R.id.ibShowLocation)
     ImageButton mIbShowLocation;
-    @Bind(R.id.rvPOI)
+    @BindView(R.id.rvPOI)
     RecyclerView mRvPOI;
-    @Bind(R.id.pb)
+    @BindView(R.id.pb)
     ProgressBar mPb;
 
     @Override

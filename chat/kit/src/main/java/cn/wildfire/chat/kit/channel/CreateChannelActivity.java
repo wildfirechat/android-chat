@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -31,12 +31,12 @@ import cn.wildfirechat.model.Conversation;
 
 public class CreateChannelActivity extends WfcBaseActivity {
     @Nullable
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
 
-    @Bind(R.id.channelNameTextInputEditText)
+    @BindView(R.id.channelNameTextInputEditText)
     TextInputEditText nameInputEditText;
-    @Bind(R.id.channelDescTextInputEditText)
+    @BindView(R.id.channelDescTextInputEditText)
     TextInputEditText descInputEditText;
 
     private static final int REQUEST_CODE_PICK_IMAGE = 100;

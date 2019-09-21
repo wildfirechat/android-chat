@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.chat.R;
@@ -25,7 +25,7 @@ import cn.wildfirechat.model.Conversation;
 
 
 public class ChannelListFragment extends Fragment implements ChannelListAdapter.OnChannelClickListener {
-    @Bind(R.id.recyclerView)
+    @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
     private ChannelViewModel channelViewModel;
     private ChannelListAdapter channelListAdapter;

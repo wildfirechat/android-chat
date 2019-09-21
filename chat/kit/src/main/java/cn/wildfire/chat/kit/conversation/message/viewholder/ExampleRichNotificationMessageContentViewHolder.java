@@ -9,7 +9,7 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -27,7 +27,7 @@ import cn.wildfirechat.message.StickerMessageContent;
 @EnableContextMenu
 public class ExampleRichNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder {
     private String path;
-    @Bind(R.id.stickerImageView)
+    @BindView(R.id.stickerImageView)
     ImageView imageView;
 
     public ExampleRichNotificationMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {

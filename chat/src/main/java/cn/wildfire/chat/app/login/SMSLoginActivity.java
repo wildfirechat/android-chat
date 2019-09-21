@@ -14,7 +14,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.app.Config;
@@ -28,13 +28,13 @@ import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfirechat.chat.R;
 
 public class SMSLoginActivity extends WfcBaseActivity {
-    @Bind(R.id.loginButton)
+    @BindView(R.id.loginButton)
     Button loginButton;
-    @Bind(R.id.phoneNumberEditText)
+    @BindView(R.id.phoneNumberEditText)
     EditText phoneNumberEditText;
-    @Bind(R.id.authCodeEditText)
+    @BindView(R.id.authCodeEditText)
     EditText authCodeEditText;
-    @Bind(R.id.requestAuthCodeButton)
+    @BindView(R.id.requestAuthCodeButton)
     Button requestAuthCodeButton;
 
     private String phoneNumber;

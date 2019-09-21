@@ -6,7 +6,7 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -55,7 +55,7 @@ import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationConten
  */
 public class SimpleNotificationMessageContentViewHolder extends MessageContentViewHolder {
 
-    @Bind(R.id.notificationTextView)
+    @BindView(R.id.notificationTextView)
     TextView notificationTextView;
 
     public SimpleNotificationMessageContentViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.third.location.ui.activity.ShowLocationActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -28,9 +28,9 @@ import cn.wildfirechat.message.LocationMessageContent;
 @EnableContextMenu
 public class LocationMessageContentViewHolder extends NormalMessageContentViewHolder {
 
-    @Bind(R.id.locationTitleTextView)
+    @BindView(R.id.locationTitleTextView)
     TextView locationTitleTextView;
-    @Bind(R.id.locationImageView)
+    @BindView(R.id.locationImageView)
     ImageView locationImageView;
 
     public LocationMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
