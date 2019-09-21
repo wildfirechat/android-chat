@@ -15,7 +15,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.Iterator;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfirechat.chat.R;
@@ -91,9 +91,9 @@ public class GroupMemberListAdapter extends RecyclerView.Adapter<GroupMemberList
     }
 
     class MemberViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.portraitImageView)
+        @BindView(R.id.portraitImageView)
         ImageView portraitImageView;
-        @Bind(R.id.nameTextView)
+        @BindView(R.id.nameTextView)
         TextView nameTextView;
         private UserInfo userInfo;
 

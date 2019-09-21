@@ -4,12 +4,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfirechat.chat.R;
 
 public class ExpandViewHolder extends RecyclerView.ViewHolder {
-    @Bind(R.id.expandTextView)
+    @BindView(R.id.expandTextView)
     TextView expandTextView;
 
     public ExpandViewHolder(View itemView) {

@@ -7,17 +7,17 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import androidx.fragment.app.Fragment;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.GroupSearchResult;
 
 public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.descTextView)
+    @BindView(R.id.descTextView)
     TextView descTextView;
 
     public GroupViewHolder(Fragment fragment, View itemView) {

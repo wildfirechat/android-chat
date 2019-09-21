@@ -26,7 +26,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnTouch;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
@@ -76,14 +76,14 @@ public class ConversationActivity extends WfcBaseActivity implements
     private static final int MESSAGE_LOAD_COUNT_PER_TIME = 20;
     private static final int MESSAGE_LOAD_AROUND = 10;
 
-    @Bind(R.id.rootLinearLayout)
+    @BindView(R.id.rootLinearLayout)
     InputAwareLayout rootLinearLayout;
-    @Bind(R.id.swipeRefreshLayout)
+    @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
-    @Bind(R.id.msgRecyclerView)
+    @BindView(R.id.msgRecyclerView)
     RecyclerView recyclerView;
 
-    @Bind(R.id.inputPanelFrameLayout)
+    @BindView(R.id.inputPanelFrameLayout)
     ConversationInputPanel inputPanel;
 
     private ConversationMessageAdapter adapter;

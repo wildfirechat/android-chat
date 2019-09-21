@@ -12,7 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
@@ -21,7 +21,7 @@ import cn.wildfire.chat.kit.conversationlist.notification.viewholder.StatusNotif
 import cn.wildfirechat.chat.R;
 
 public class StatusNotificationContainerViewHolder extends RecyclerView.ViewHolder {
-    @Bind(R.id.notificationContainerLayout)
+    @BindView(R.id.notificationContainerLayout)
     LinearLayout containerLayout;
 
     public StatusNotificationContainerViewHolder(View itemView) {

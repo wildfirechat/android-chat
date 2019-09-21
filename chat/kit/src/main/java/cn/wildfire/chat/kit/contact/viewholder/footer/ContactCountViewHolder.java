@@ -4,7 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
@@ -13,7 +13,7 @@ import cn.wildfirechat.chat.R;
 
 @LayoutRes(resId = R.layout.contact_item_footer)
 public class ContactCountViewHolder extends FooterViewHolder<ContactCountFooterValue> {
-    @Bind(R.id.countTextView)
+    @BindView(R.id.countTextView)
     TextView countTextView;
     private UserListAdapter adapter;
 

@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.main.MainActivity;
@@ -59,51 +59,51 @@ import cn.wildfirechat.remote.UserSettingScope;
 
 public class GroupConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
-    @Bind(R.id.progressBar)
+    @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
-    @Bind(R.id.contentNestedScrollView)
+    @BindView(R.id.contentNestedScrollView)
     NestedScrollView contentNestedScrollView;
 
     // group
-    @Bind(R.id.groupLinearLayout_0)
+    @BindView(R.id.groupLinearLayout_0)
     LinearLayout groupLinearLayout_0;
-    @Bind(R.id.groupNameOptionItemView)
+    @BindView(R.id.groupNameOptionItemView)
     OptionItemView groupNameOptionItemView;
-    @Bind(R.id.groupQRCodeOptionItemView)
+    @BindView(R.id.groupQRCodeOptionItemView)
     OptionItemView groupQRCodeOptionItemView;
-    @Bind(R.id.groupNoticeLinearLayout)
+    @BindView(R.id.groupNoticeLinearLayout)
     LinearLayout noticeLinearLayout;
-    @Bind(R.id.groupNoticeTextView)
+    @BindView(R.id.groupNoticeTextView)
     TextView noticeTextView;
-    @Bind(R.id.groupManageOptionItemView)
+    @BindView(R.id.groupManageOptionItemView)
     OptionItemView groupManageOptionItemView;
-    @Bind(R.id.groupManageDividerLine)
+    @BindView(R.id.groupManageDividerLine)
     View groupManageDividerLine;
-    @Bind(R.id.showAllMemberButton)
+    @BindView(R.id.showAllMemberButton)
     Button showAllGroupMemberButton;
 
-    @Bind(R.id.groupLinearLayout_1)
+    @BindView(R.id.groupLinearLayout_1)
     LinearLayout groupLinearLayout_1;
-    @Bind(R.id.myGroupNickNameOptionItemView)
+    @BindView(R.id.myGroupNickNameOptionItemView)
     OptionItemView myGroupNickNameOptionItemView;
-    @Bind(R.id.showGroupMemberAliasSwitchButton)
+    @BindView(R.id.showGroupMemberAliasSwitchButton)
     SwitchButton showGroupMemberNickNameSwitchButton;
 
-    @Bind(R.id.quitButton)
+    @BindView(R.id.quitButton)
     Button quitGroupButton;
 
-    @Bind(R.id.markGroupLinearLayout)
+    @BindView(R.id.markGroupLinearLayout)
     LinearLayout markGroupLinearLayout;
-    @Bind(R.id.markGroupSwitchButton)
+    @BindView(R.id.markGroupSwitchButton)
     SwitchButton markGroupSwitchButton;
 
     // common
-    @Bind(R.id.memberRecyclerView)
+    @BindView(R.id.memberRecyclerView)
     RecyclerView memberReclerView;
-    @Bind(R.id.stickTopSwitchButton)
+    @BindView(R.id.stickTopSwitchButton)
     SwitchButton stickTopSwitchButton;
-    @Bind(R.id.silentSwitchButton)
+    @BindView(R.id.silentSwitchButton)
     SwitchButton silentSwitchButton;
 
     private ConversationInfo conversationInfo;

@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
@@ -16,7 +16,7 @@ import cn.wildfirechat.remote.ChatManager;
 @SuppressWarnings("unused")
 @LayoutRes(resId = R.layout.contact_header_friend)
 public class FriendRequestViewHolder extends HeaderViewHolder<FriendRequestValue> {
-    @Bind(R.id.unreadFriendRequestCountTextView)
+    @BindView(R.id.unreadFriendRequestCountTextView)
     TextView unreadRequestCountTextView;
     private FriendRequestValue value;
 

@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -29,7 +29,7 @@ import cn.wildfirechat.model.UserInfo;
 
 public class ForwardFragment extends Fragment implements ForwardAdapter.OnConversationItemClickListener, ForwardAdapter.OnNewConversationItemClickListener {
     private static final int REQUEST_CODE_PICK_CONVERSATION_TARGET = 100;
-    @Bind(R.id.recyclerView)
+    @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
     @Nullable

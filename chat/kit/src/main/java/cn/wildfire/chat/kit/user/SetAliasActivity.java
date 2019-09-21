@@ -9,7 +9,7 @@ import android.widget.Toast;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -23,7 +23,7 @@ public class SetAliasActivity extends WfcBaseActivity {
     private String userId;
 //    private Friend mFriend;
 
-    @Bind(R.id.aliasEditText)
+    @BindView(R.id.aliasEditText)
     EditText aliasEditText;
 
     private MenuItem menuItem;

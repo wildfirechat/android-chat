@@ -15,7 +15,7 @@ import com.jaeger.library.StatusBarUtil;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
@@ -25,21 +25,21 @@ public abstract class BaseActivity<V, T extends BasePresenter<V>> extends AppCom
     protected T mPresenter;
 
     //以下是所有Activity中可能会出现的控件
-    @Bind(R.id.appBarLayout)
+    @BindView(R.id.appBarLayout)
     protected AppBarLayout mAppBar;
-    //    @Bind(R.id.toolbar)
+    //    @BindView(R.id.toolbar)
     //    protected Toolbar mToolbar;
-    @Bind(R.id.toolbarContainerFrameLayout)
+    @BindView(R.id.toolbarContainerFrameLayout)
     public FrameLayout mToolbar;
-    @Bind(R.id.backImageView)
+    @BindView(R.id.backImageView)
     public ImageView mToolbarNavigation;
-    @Bind(R.id.backDividerView)
+    @BindView(R.id.backDividerView)
     public View mToolbarDivision;
-    @Bind(R.id.titleLinearLayout)
+    @BindView(R.id.titleLinearLayout)
     public LinearLayout mLlToolbarTitle;
-    @Bind(R.id.titleTextView)
+    @BindView(R.id.titleTextView)
     public TextView mToolbarTitle;
-    @Bind(R.id.subTitleTextView)
+    @BindView(R.id.subTitleTextView)
     public TextView mToolbarSubTitle;
 
     @Override

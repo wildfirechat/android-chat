@@ -7,15 +7,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ChannelInfo;
 
 public class ChannelViewHolder extends RecyclerView.ViewHolder {
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.channelNameTextView)
+    @BindView(R.id.channelNameTextView)
     TextView channelNameTextView;
 
     public ChannelViewHolder(View itemView) {

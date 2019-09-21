@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.kyleduo.switchbutton.SwitchButton;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfirechat.chat.R;
@@ -22,7 +22,7 @@ import cn.wildfirechat.model.GroupInfo;
 public class GroupMuteFragment extends Fragment {
     private GroupInfo groupInfo;
 
-    @Bind(R.id.muteSwitchButton)
+    @BindView(R.id.muteSwitchButton)
     SwitchButton switchButton;
 
     public static GroupMuteFragment newInstance(GroupInfo groupInfo) {

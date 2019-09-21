@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -39,11 +39,11 @@ import cn.wildfirechat.model.UserInfo;
 public class SingleConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
     // common
-    @Bind(R.id.memberRecyclerView)
+    @BindView(R.id.memberRecyclerView)
     RecyclerView memberReclerView;
-    @Bind(R.id.stickTopSwitchButton)
+    @BindView(R.id.stickTopSwitchButton)
     SwitchButton stickTopSwitchButton;
-    @Bind(R.id.silentSwitchButton)
+    @BindView(R.id.silentSwitchButton)
     SwitchButton silentSwitchButton;
 
     private ConversationInfo conversationInfo;

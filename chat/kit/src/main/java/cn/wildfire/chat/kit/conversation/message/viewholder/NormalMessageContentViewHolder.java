@@ -19,7 +19,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
@@ -44,13 +44,13 @@ import cn.wildfirechat.remote.UserSettingScope;
  * 普通消息
  */
 public abstract class NormalMessageContentViewHolder extends MessageContentViewHolder {
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.errorLinearLayout)
+    @BindView(R.id.errorLinearLayout)
     LinearLayout errorLinearLayout;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.progressBar)
+    @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
     public NormalMessageContentViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {
