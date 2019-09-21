@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -32,14 +32,14 @@ import cn.wildfirechat.message.core.MessageStatus;
 @ReceiveLayoutRes(resId = R.layout.conversation_item_audio_receive)
 @EnableContextMenu
 public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder {
-    @Bind(R.id.audioImageView)
+    @BindView(R.id.audioImageView)
     ImageView ivAudio;
-    @Bind(R.id.durationTextView)
+    @BindView(R.id.durationTextView)
     TextView durationTextView;
-    @Bind(R.id.audioContentLayout)
+    @BindView(R.id.audioContentLayout)
     RelativeLayout contentLayout;
     @Nullable
-    @Bind(R.id.playStatusIndicator)
+    @BindView(R.id.playStatusIndicator)
     View playStatusIndicator;
 
     public AudioMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {

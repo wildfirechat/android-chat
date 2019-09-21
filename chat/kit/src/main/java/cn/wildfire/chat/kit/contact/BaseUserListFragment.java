@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
@@ -24,11 +24,11 @@ import cn.wildfirechat.chat.R;
 
 public abstract class BaseUserListFragment extends ProgressFragment implements QuickIndexBar.OnLetterUpdateListener, UserListAdapter.OnUserClickListener, UserListAdapter.OnHeaderClickListener, UserListAdapter.OnFooterClickListener {
 
-    @Bind(R.id.usersRecyclerView)
+    @BindView(R.id.usersRecyclerView)
     RecyclerView usersRecyclerView;
-    @Bind(R.id.quickIndexBar)
+    @BindView(R.id.quickIndexBar)
     QuickIndexBar quickIndexBar;
-    @Bind(R.id.indexLetterTextView)
+    @BindView(R.id.indexLetterTextView)
     TextView indexLetterTextView;
 
     protected UserListAdapter userListAdapter;

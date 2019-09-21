@@ -19,7 +19,7 @@ import com.bumptech.glide.Glide;
 
 import org.webrtc.StatsReport;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -33,21 +33,21 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
     private boolean micEnabled = true;
     private boolean isSpeakerOn = false;
 
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.muteImageView)
+    @BindView(R.id.muteImageView)
     ImageView muteImageView;
-    @Bind(R.id.speakerImageView)
+    @BindView(R.id.speakerImageView)
     ImageView spearImageView;
-    @Bind(R.id.incomingActionContainer)
+    @BindView(R.id.incomingActionContainer)
     ViewGroup incomingActionContainer;
-    @Bind(R.id.outgoingActionContainer)
+    @BindView(R.id.outgoingActionContainer)
     ViewGroup outgoingActionContainer;
-    @Bind(R.id.descTextView)
+    @BindView(R.id.descTextView)
     TextView descTextView;
-    @Bind(R.id.durationTextView)
+    @BindView(R.id.durationTextView)
     TextView durationTextView;
 
     public static VideoFragment newInstance(String targetId, boolean isOutgoing) {

@@ -23,7 +23,7 @@ import org.webrtc.Logging;
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -33,27 +33,27 @@ import cn.wildfirechat.model.UserInfo;
 
 public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
 
-    @Bind(R.id.pip_video_view)
+    @BindView(R.id.pip_video_view)
     FrameLayout pipRenderer;
-    @Bind(R.id.fullscreen_video_view)
+    @BindView(R.id.fullscreen_video_view)
     FrameLayout fullscreenRenderer;
-    @Bind(R.id.minimizeImageView)
+    @BindView(R.id.minimizeImageView)
     ImageView minimizeImageView;
-    @Bind(R.id.outgoingActionContainer)
+    @BindView(R.id.outgoingActionContainer)
     ViewGroup outgoingActionContainer;
-    @Bind(R.id.incomingActionContainer)
+    @BindView(R.id.incomingActionContainer)
     ViewGroup incomingActionContainer;
-    @Bind(R.id.connectedActionContainer)
+    @BindView(R.id.connectedActionContainer)
     ViewGroup connectedActionContainer;
-    @Bind(R.id.inviteeInfoContainer)
+    @BindView(R.id.inviteeInfoContainer)
     ViewGroup inviteeInfoContainer;
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.descTextView)
+    @BindView(R.id.descTextView)
     TextView descTextView;
-    @Bind(R.id.durationTextView)
+    @BindView(R.id.durationTextView)
     TextView durationTextView;
 
     SurfaceView localSurfaceView;

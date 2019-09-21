@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
@@ -20,13 +20,13 @@ import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.UserInfo;
 
 public class MessageViewHolder extends RecyclerView.ViewHolder {
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     protected ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     protected TextView nameTextView;
-    @Bind(R.id.contentTextView)
+    @BindView(R.id.contentTextView)
     protected TextView contentTextView;
-    @Bind(R.id.timeTextView)
+    @BindView(R.id.timeTextView)
     protected TextView timeTextView;
 
     private Fragment fragment;

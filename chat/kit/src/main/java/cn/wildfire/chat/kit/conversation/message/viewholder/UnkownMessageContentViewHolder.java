@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.Bind;
+import butterknife.BindView;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
@@ -19,7 +19,7 @@ import cn.wildfirechat.message.UnknownMessageContent;
 @ReceiveLayoutRes(resId = R.layout.conversation_item_unknown_receive)
 @EnableContextMenu
 public class UnkownMessageContentViewHolder extends NormalMessageContentViewHolder {
-    @Bind(R.id.contentTextView)
+    @BindView(R.id.contentTextView)
     TextView contentTextView;
 
     public UnkownMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {

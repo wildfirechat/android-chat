@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.chat.R;
@@ -25,11 +25,11 @@ import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GetGroupsCallback;
 
 public class GroupListFragment extends Fragment implements OnGroupItemClickListener {
-    @Bind(R.id.groupRecyclerView)
+    @BindView(R.id.groupRecyclerView)
     RecyclerView recyclerView;
-    @Bind(R.id.tipTextView)
+    @BindView(R.id.tipTextView)
     TextView tipTextView;
-    @Bind(R.id.groupsLinearLayout)
+    @BindView(R.id.groupsLinearLayout)
     LinearLayout groupsLinearLayout;
 
     private GroupListAdapter groupListAdapter;

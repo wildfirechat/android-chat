@@ -4,7 +4,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.widget.TextView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -13,7 +13,7 @@ import cn.wildfirechat.chat.R;
 
 public class AboutActivity extends WfcBaseActivity {
 
-    @Bind(R.id.infoTextView)
+    @BindView(R.id.infoTextView)
     TextView infoTextView;
 
     @Override

@@ -12,7 +12,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -29,11 +29,11 @@ public class GroupInfoActivity extends WfcBaseActivity {
     private GroupInfo groupInfo;
     private boolean isJoined;
     private GroupViewModel groupViewModel;
-    @Bind(R.id.groupNameTextView)
+    @BindView(R.id.groupNameTextView)
     TextView groupNameTextView;
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView groupPortraitImageView;
-    @Bind(R.id.actionButton)
+    @BindView(R.id.actionButton)
     Button actionButton;
 
     private MaterialDialog dialog;

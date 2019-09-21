@@ -20,7 +20,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -29,15 +29,15 @@ import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.ChannelInfo;
 
 public class ChannelInfoActivity extends AppCompatActivity {
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.channelNameTextView)
+    @BindView(R.id.channelNameTextView)
     TextView channelTextView;
-    @Bind(R.id.channelDescTextView)
+    @BindView(R.id.channelDescTextView)
     TextView channelDescTextView;
-    @Bind(R.id.followChannelButton)
+    @BindView(R.id.followChannelButton)
     Button followChannelButton;
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
     private boolean isFollowed = false;

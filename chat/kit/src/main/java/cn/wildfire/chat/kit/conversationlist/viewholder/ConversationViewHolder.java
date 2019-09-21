@@ -15,7 +15,7 @@ import com.lqr.emoji.MoonUtils;
 
 import java.util.Arrays;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
@@ -38,22 +38,22 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected RecyclerView.Adapter adapter;
     protected ConversationListViewModel conversationListViewModel;
 
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     protected TextView nameTextView;
-    @Bind(R.id.timeTextView)
+    @BindView(R.id.timeTextView)
     protected TextView timeTextView;
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     protected ImageView portraitImageView;
-    @Bind(R.id.slient)
+    @BindView(R.id.slient)
     protected ImageView silentImageView;
-    @Bind(R.id.unreadCountTextView)
+    @BindView(R.id.unreadCountTextView)
     protected TextView unreadCountTextView;
-    @Bind(R.id.contentTextView)
+    @BindView(R.id.contentTextView)
     protected TextView contentTextView;
-    @Bind(R.id.promptTextView)
+    @BindView(R.id.promptTextView)
     protected TextView promptTextView;
 
-    @Bind(R.id.statusImageView)
+    @BindView(R.id.statusImageView)
     protected ImageView statusImageView;
 
     public ConversationViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {

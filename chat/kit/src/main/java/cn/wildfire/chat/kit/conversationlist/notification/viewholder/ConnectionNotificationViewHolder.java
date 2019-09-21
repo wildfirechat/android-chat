@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.StatusNotificationType;
@@ -21,7 +21,7 @@ public class ConnectionNotificationViewHolder extends StatusNotificationViewHold
         super(fragment);
     }
 
-    @Bind(R.id.statusTextView)
+    @BindView(R.id.statusTextView)
     TextView statusTextView;
 
     @Override

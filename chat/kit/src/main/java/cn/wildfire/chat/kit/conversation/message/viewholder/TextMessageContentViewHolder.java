@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lqr.emoji.MoonUtils;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -32,7 +32,7 @@ import cn.wildfirechat.message.TextMessageContent;
 @ReceiveLayoutRes(resId = R.layout.conversation_item_text_receive)
 @EnableContextMenu
 public class TextMessageContentViewHolder extends NormalMessageContentViewHolder {
-    @Bind(R.id.contentTextView)
+    @BindView(R.id.contentTextView)
     TextView contentTextView;
 
     public TextMessageContentViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {

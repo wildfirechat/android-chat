@@ -39,7 +39,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
@@ -64,32 +64,32 @@ import static cn.wildfire.chat.kit.conversation.ConversationActivity.REQUEST_PIC
 
 public class ConversationInputPanel extends FrameLayout implements IEmotionSelectedListener {
 
-    @Bind(R.id.inputContainerLinearLayout)
+    @BindView(R.id.inputContainerLinearLayout)
     LinearLayout inputContainerLinearLayout;
-    @Bind(R.id.disableInputTipTextView)
+    @BindView(R.id.disableInputTipTextView)
     TextView disableInputTipTextView;
 
-    @Bind(R.id.audioImageView)
+    @BindView(R.id.audioImageView)
     ImageView audioImageView;
-    @Bind(R.id.audioButton)
+    @BindView(R.id.audioButton)
     Button audioButton;
-    @Bind(R.id.editText)
+    @BindView(R.id.editText)
     EditText editText;
-    @Bind(R.id.emotionImageView)
+    @BindView(R.id.emotionImageView)
     ImageView emotionImageView;
-    @Bind(R.id.extImageView)
+    @BindView(R.id.extImageView)
     ImageView extImageView;
-    @Bind(R.id.sendButton)
+    @BindView(R.id.sendButton)
     Button sendButton;
 
-    @Bind(R.id.emotionContainerFrameLayout)
+    @BindView(R.id.emotionContainerFrameLayout)
     KeyboardHeightFrameLayout emotionContainerFrameLayout;
-    @Bind(R.id.emotionLayout)
+    @BindView(R.id.emotionLayout)
     EmotionLayout emotionLayout;
-    @Bind(R.id.extContainerContainerLayout)
+    @BindView(R.id.extContainerContainerLayout)
     KeyboardHeightFrameLayout extContainerFrameLayout;
 
-    @Bind(R.id.conversationExtViewPager)
+    @BindView(R.id.conversationExtViewPager)
     ViewPagerFixed extViewPager;
 
     ConversationExtension extension;

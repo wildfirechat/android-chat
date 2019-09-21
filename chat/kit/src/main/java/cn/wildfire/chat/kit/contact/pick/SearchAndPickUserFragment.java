@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
@@ -28,9 +28,9 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
     private PickUserViewModel pickUserViewModel;
     private PickUserFragment pickUserFragment;
 
-    @Bind(R.id.usersRecyclerView)
+    @BindView(R.id.usersRecyclerView)
     RecyclerView contactRecyclerView;
-    @Bind(R.id.tipTextView)
+    @BindView(R.id.tipTextView)
     TextView tipTextView;
 
     @Nullable
