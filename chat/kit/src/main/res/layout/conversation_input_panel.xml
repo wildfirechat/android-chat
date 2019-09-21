@@ -88,7 +88,7 @@
                 android:text="@string/send"
                 android:textColor="@color/white"
                 android:textSize="13sp"
-                android:visibility="visible" />
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
