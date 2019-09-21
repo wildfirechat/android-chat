@@ -1,6 +1,7 @@
 package cn.wildfirechat.push;
 
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -9,6 +10,11 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.text.TextUtils;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.huawei.hms.api.ConnectionResult;
 import com.huawei.hms.api.HuaweiApiClient;
@@ -42,7 +48,7 @@ public class PushService {
         Unknown, Xiaomi, HMS, MeiZu
     }
 
-    public static void init(Context gContext, String applicationId) {
+    public static void init(Application gContext, String applicationId) {
         PushService.applicationId = applicationId;
         String sys = getSystem();
         if (SYS_EMUI.equals(sys) && INST.isHMSConfigured(gContext)) {
@@ -56,9 +62,21 @@ public class PushService {
             INST.pushServiceType = PushServiceType.Xiaomi;
             INST.initXiaomi(gContext);
         }
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
+            @OnLifecycleEvent(Lifecycle.Event.ON_START)
+            public void onForeground() {
+                clearNotification(gContext);
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            public void onBackground() {
+            }
+        });
+
     }
 
-    public static void clearNotification(Context context) {
+    private static void clearNotification(Context context) {
         if (INST.pushServiceType == PushServiceType.Xiaomi) {
             MiPushClient.clearNotification(context);
         } else {
