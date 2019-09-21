@@ -18,14 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfirechat.chat.R;
 
 public class SearchFragment extends Fragment {
-    @Bind(R.id.recyclerView)
+    @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
-    @Bind(R.id.emptyLinearLayout)
+    @BindView(R.id.emptyLinearLayout)
     LinearLayout emptyLinearLayout;
     private SearchResultAdapter adapter;
     private SearchViewModel searchViewModel;

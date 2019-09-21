@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
@@ -19,11 +19,11 @@ import cn.wildfirechat.chat.R;
 public class UserViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;
     protected UserListAdapter adapter;
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.categoryTextView)
+    @BindView(R.id.categoryTextView)
     TextView categoryTextView;
 
     protected UIUserInfo userInfo;

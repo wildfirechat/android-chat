@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfirechat.chat.R;
@@ -16,13 +16,13 @@ import cn.wildfirechat.model.GroupInfo;
 public class GroupViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;
     private GroupListAdapter adapter;
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.categoryTextView)
+    @BindView(R.id.categoryTextView)
     TextView categoryTextView;
-    @Bind(R.id.dividerLine)
+    @BindView(R.id.dividerLine)
     View dividerLine;
 
     protected GroupInfo groupInfo;

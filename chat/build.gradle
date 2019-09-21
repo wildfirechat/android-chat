@@ -83,23 +83,24 @@ dependencies {
 
     // wfc kit start
     implementation fileTree(include: ['*.jar'], dir: 'kit/libs')
-    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
-    implementation 'com.google.android.material:material:1.0.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha10'
     implementation 'cjt.library.wheel:camera:1.1.9'
     implementation 'com.kyleduo.switchbutton:library:1.4.4'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okio:okio:1.14.0'
-    implementation 'com.jakewharton:butterknife:7.0.1'
+    implementation 'com.jakewharton:butterknife:10.2.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'org.webrtc:google-webrtc:1.0.21929'
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'q.rorbin:badgeview:1.1.3'
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
     // ViewModel and LiveData
-    def lifecycle_version = '2.0.0-beta01'
+    def lifecycle_version = '2.2.0-alpha05'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
     implementation project(':client')
@@ -109,5 +110,6 @@ dependencies {
     implementation project(':imagepicker')
 
     implementation 'com.king.zxing:zxing-lite:1.1.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     // kit wfc end
 }

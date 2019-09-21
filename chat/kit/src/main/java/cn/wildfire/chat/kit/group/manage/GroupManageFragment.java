@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -24,9 +24,9 @@ import cn.wildfirechat.model.GroupInfo;
 
 public class GroupManageFragment extends Fragment {
     private GroupInfo groupInfo;
-    @Bind(R.id.joinOptionItemView)
+    @BindView(R.id.joinOptionItemView)
     OptionItemView joinOptionItemView;
-    @Bind(R.id.searchOptionItemView)
+    @BindView(R.id.searchOptionItemView)
     OptionItemView searchOptionItemView;
 
     public static GroupManageFragment newInstance(GroupInfo groupInfo) {

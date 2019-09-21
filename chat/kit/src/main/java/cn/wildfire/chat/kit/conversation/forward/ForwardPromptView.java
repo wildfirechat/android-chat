@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
@@ -24,15 +24,15 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.VideoMessageContent;
 
 public class ForwardPromptView extends LinearLayout {
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.contentTextView)
+    @BindView(R.id.contentTextView)
     TextView contentTextView;
-    @Bind(R.id.contentImageView)
+    @BindView(R.id.contentImageView)
     ImageView contentImageView;
-    @Bind(R.id.editText)
+    @BindView(R.id.editText)
     EditText editText;
 
     public ForwardPromptView(Context context) {

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -25,9 +25,9 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
     private Fragment fragment;
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
 
     public ConversationViewHolder(Fragment fragment, View itemView) {

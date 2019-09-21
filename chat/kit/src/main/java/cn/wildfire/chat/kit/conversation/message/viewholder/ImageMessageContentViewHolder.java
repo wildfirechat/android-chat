@@ -9,7 +9,7 @@ import android.view.View;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.GlideRequest;
@@ -33,7 +33,7 @@ import cn.wildfirechat.message.core.MessageStatus;
 @EnableContextMenu
 public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder {
 
-    @Bind(R.id.imageView)
+    @BindView(R.id.imageView)
     BubbleImageView imageView;
 
     public ImageMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {

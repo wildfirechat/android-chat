@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -24,7 +24,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     private GroupInfo groupInfo;
     private GroupMemberListAdapter groupMemberListAdapter;
 
-    @Bind(R.id.memberRecyclerView)
+    @BindView(R.id.memberRecyclerView)
     RecyclerView memberRecyclerView;
 
     public static GroupMemberListFragment newInstance(GroupInfo groupInfo) {

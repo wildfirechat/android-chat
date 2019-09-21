@@ -23,7 +23,7 @@ import com.tencent.mapsdk.raster.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import cn.wildfire.chat.app.third.location.ui.base.BaseActivity;
 import cn.wildfire.chat.app.third.location.ui.presenter.MyLocationAtPresenter;
 import cn.wildfire.chat.app.third.location.ui.view.IMyLocationAtView;
@@ -39,13 +39,13 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
     private double mLat;
     private double mLong;
 
-    @Bind(R.id.confirmButton)
+    @BindView(R.id.confirmButton)
     Button mBtnToolbarSend;
-    @Bind(R.id.rlMap)
+    @BindView(R.id.rlMap)
     RelativeLayout mRlMap;
-    @Bind(R.id.map)
+    @BindView(R.id.map)
     MapView mMap;
-    @Bind(R.id.ibShowLocation)
+    @BindView(R.id.ibShowLocation)
     ImageButton mIbShowLocation;
     private Marker myLocation;
     private Circle accuracy;

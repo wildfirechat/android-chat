@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -24,7 +24,7 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
     protected RecyclerView.Adapter adapter;
     protected MessageViewModel messageViewModel;
 
-    @Bind(R.id.timeTextView)
+    @BindView(R.id.timeTextView)
     TextView timeTextView;
 
 

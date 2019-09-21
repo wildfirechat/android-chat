@@ -20,7 +20,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -49,7 +49,7 @@ public class ForwardActivity extends WfcBaseActivity {
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
 
-    @Bind(R.id.searchEditText)
+    @BindView(R.id.searchEditText)
     EditText editText;
 
 
