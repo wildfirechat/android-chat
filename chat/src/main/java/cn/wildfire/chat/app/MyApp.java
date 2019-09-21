@@ -11,6 +11,7 @@ import cn.wildfire.chat.app.third.location.viewholder.LocationMessageContentView
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfirechat.chat.BuildConfig;
+import cn.wildfirechat.push.PushService;
 
 
 public class MyApp extends BaseApp {
@@ -27,6 +28,7 @@ public class MyApp extends BaseApp {
         if (getCurProcessName(this).equals(BuildConfig.APPLICATION_ID)) {
             wfcUIKit = new WfcUIKit();
             wfcUIKit.init(this);
+            PushService.init(this, BuildConfig.APPLICATION_ID);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class);
             setupWFCDirs();
         }
