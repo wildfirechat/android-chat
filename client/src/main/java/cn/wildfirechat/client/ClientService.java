@@ -1780,6 +1780,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     public void onCreate() {
         super.onCreate();
 
+        AppLogic.setCallBack(this);
+        SdtLogic.setCallBack(this);
         // Initialize the Mars PlatformComm
         handler = new Handler(Looper.getMainLooper());
         Mars.init(getApplicationContext(), handler);
@@ -1951,7 +1953,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public AppLogic.DeviceInfo getDeviceType() {
-        if (info == null) {
+        if (info == null || TextUtils.isEmpty(info.clientid)) {
             String imei = PreferenceManager.getDefaultSharedPreferences(context).getString("mars_core_uid", "");
             if (TextUtils.isEmpty(imei)) {
                 imei = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
