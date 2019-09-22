@@ -26,3 +26,8 @@
 
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
+
+-keep class !cn.wildfire.chat.moment.**,!cn.wildfirechat.moment.**, **{ *; }
+-keep class cn.wildfirechat.moment.MomentClient {
+    public void init(***);
+}
