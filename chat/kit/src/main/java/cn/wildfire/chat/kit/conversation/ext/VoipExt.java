@@ -29,8 +29,8 @@ public class VoipExt extends ConversationExt {
     public void video(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!((WfcBaseActivity) context).checkPermission(permissions)) {
-                context.requestPermissions(permissions, 100);
+            if (!((WfcBaseActivity) activity).checkPermission(permissions)) {
+                activity.requestPermissions(permissions, 100);
                 return;
             }
         }
@@ -50,8 +50,8 @@ public class VoipExt extends ConversationExt {
     public void audio(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!((WfcBaseActivity) context).checkPermission(permissions)) {
-                context.requestPermissions(permissions, 100);
+            if (!((WfcBaseActivity) activity).checkPermission(permissions)) {
+                activity.requestPermissions(permissions, 100);
                 return;
             }
         }
@@ -68,8 +68,8 @@ public class VoipExt extends ConversationExt {
     }
 
     private void pickGroupMemberToAudioChat() {
-        Intent intent = new Intent(context, PickGroupMemberActivity.class);
-        GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
+        Intent intent = new Intent(activity, PickGroupMemberActivity.class);
+        GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
         intent.putExtra("groupInfo", groupInfo);
         intent.putExtra("maxCount", 1);
@@ -77,8 +77,8 @@ public class VoipExt extends ConversationExt {
     }
 
     private void pickGroupMemberToVideoChat() {
-        Intent intent = new Intent(context, PickGroupMemberActivity.class);
-        GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
+        Intent intent = new Intent(activity, PickGroupMemberActivity.class);
+        GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
         intent.putExtra("groupInfo", groupInfo);
         intent.putExtra("maxCount", 1);
@@ -86,11 +86,11 @@ public class VoipExt extends ConversationExt {
     }
 
     private void audioChat(String targetId) {
-        WfcUIKit.onCall(context, targetId, true, true);
+        WfcUIKit.onCall(activity, targetId, true, true);
     }
 
     private void videoChat(String targetId) {
-        WfcUIKit.onCall(context, targetId, true, false);
+        WfcUIKit.onCall(activity, targetId, true, false);
     }
 
     @Override

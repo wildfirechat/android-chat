@@ -14,7 +14,7 @@ public class DeleteMultiMessageAction extends MultiMessageAction {
 
     @Override
     public void onClick(List<UiMessage> messages) {
-        MessageViewModel messageViewModel = new ViewModelProvider(conversationActivity).get(MessageViewModel.class);
+        MessageViewModel messageViewModel = new ViewModelProvider(activity).get(MessageViewModel.class);
         for (UiMessage message : messages) {
             messageViewModel.deleteMessage(message.message);
         }
