@@ -12,6 +12,9 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -38,12 +41,14 @@ import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExtension;
 import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.conversation.multimsg.MultiMessageAction;
+import cn.wildfire.chat.kit.conversation.multimsg.MultiMessageActionManager;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
-import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 import cn.wildfirechat.chat.R;
@@ -65,7 +70,9 @@ public class ConversationActivity extends WfcBaseActivity implements
         KeyboardAwareLinearLayout.OnKeyboardShownListener,
         KeyboardAwareLinearLayout.OnKeyboardHiddenListener,
         ConversationMessageAdapter.OnPortraitClickListener,
-        ConversationMessageAdapter.OnPortraitLongClickListener, ConversationInputPanel.OnConversationInputPanelStateChangeListener {
+        ConversationMessageAdapter.OnPortraitLongClickListener,
+        ConversationInputPanel.OnConversationInputPanelStateChangeListener,
+        ConversationMessageAdapter.OnMessageCheckListener {
 
     public static final int REQUEST_PICK_MENTION_CONTACT = 100;
 
@@ -85,6 +92,9 @@ public class ConversationActivity extends WfcBaseActivity implements
 
     @BindView(R.id.inputPanelFrameLayout)
     ConversationInputPanel inputPanel;
+
+    @BindView(R.id.multiMessageActionContainerLinearLayout)
+    LinearLayout multiMessageActionContainerLinearLayout;
 
     private ConversationMessageAdapter adapter;
     private boolean moveToBottom = true;
@@ -303,6 +313,7 @@ public class ConversationActivity extends WfcBaseActivity implements
         adapter = new ConversationMessageAdapter(this);
         adapter.setOnPortraitClickListener(this);
         adapter.setOnPortraitLongClickListener(this);
+        adapter.setOnMessageCheckListener(this);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -623,9 +634,12 @@ public class ConversationActivity extends WfcBaseActivity implements
 
     @Override
     public void onBackPressed() {
+
         if (rootLinearLayout.getCurrentInput() != null) {
             rootLinearLayout.hideAttachedInput(true);
             inputPanel.collapse();
+        } else if (multiMessageActionContainerLinearLayout.getVisibility() == View.VISIBLE) {
+            showConversationInputPanel();
         } else {
             super.onBackPressed();
         }
@@ -725,5 +739,62 @@ public class ConversationActivity extends WfcBaseActivity implements
     @Override
     public void onInputPanelCollapsed() {
         // do nothing
+    }
+
+    public void showMultiMessageActionContainer() {
+        inputPanel.setVisibility(View.GONE);
+        adapter.setMode(ConversationMessageAdapter.MODE_CHECKABLE);
+        adapter.notifyDataSetChanged();
+        multiMessageActionContainerLinearLayout.setVisibility(View.VISIBLE);
+        initMultiMessageAction();
+    }
+
+    public void showConversationInputPanel() {
+        inputPanel.setVisibility(View.VISIBLE);
+        multiMessageActionContainerLinearLayout.setVisibility(View.GONE);
+        adapter.setMode(ConversationMessageAdapter.MODE_NORMAL);
+        adapter.clearMessageCheckStatus();
+        adapter.notifyDataSetChanged();
+    }
+
+    private void initMultiMessageAction() {
+        multiMessageActionContainerLinearLayout.removeAllViews();
+        List<MultiMessageAction> actions = MultiMessageActionManager.getInstance().getConversationActions(conversation);
+        for (MultiMessageAction action : actions) {
+
+            action.onBind(this, conversation);
+            TextView textView = new TextView(this);
+            textView.setCompoundDrawablePadding(10);
+            textView.setCompoundDrawablesWithIntrinsicBounds(action.iconResId(), 0, 0, 0);
+            textView.setText(action.title(this));
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            multiMessageActionContainerLinearLayout.addView(textView, layoutParams);
+
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    List<UiMessage> checkedMessages = adapter.getCheckedMessages();
+                    action.onClick(checkedMessages);
+                    showConversationInputPanel();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onMessageCheck(UiMessage message, boolean checked) {
+        List<UiMessage> checkedMessages = adapter.getCheckedMessages();
+        setAllClickableChildViewState(multiMessageActionContainerLinearLayout, checkedMessages.size() > 0);
+    }
+
+    private void setAllClickableChildViewState(View view, boolean enable) {
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                setAllClickableChildViewState(((ViewGroup) view).getChildAt(i), enable);
+            }
+        }
+        if (view.isClickable()) {
+            view.setEnabled(enable);
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -52,6 +53,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     TextView nameTextView;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    @BindView(R.id.checkbox)
+    CheckBox checkBox;
 
     public NormalMessageContentViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {
         super(activity, adapter, itemView);
@@ -143,6 +146,11 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         Intent intent = new Intent(context, ForwardActivity.class);
         intent.putExtra("message", message.message);
         context.startActivity(intent);
+    }
+
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_MULTI_CHECK, title = "多选", priority = 11)
+    public void checkMessage(View itemView, UiMessage message) {
+        ((ConversationActivity) context).showMultiMessageActionContainer();
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT, title = "私聊", priority = 12)
