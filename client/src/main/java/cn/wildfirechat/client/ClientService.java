@@ -1984,6 +1984,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     @Override
     public void onConnectionStatusChanged(int status) {
         android.util.Log.d("", "status changed :" + status);
+        if (mConnectionStatus == status) {
+            return;
+        }
         mConnectionStatus = status;
         if (status == -4) {
             status = -1;
