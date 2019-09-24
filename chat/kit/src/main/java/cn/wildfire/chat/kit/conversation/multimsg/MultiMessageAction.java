@@ -27,6 +27,10 @@ public abstract class MultiMessageAction {
         return 0;
     }
 
+    public boolean confirm() {
+        return false;
+    }
+
     public boolean filter(Conversation conversation) {
         return false;
     }
@@ -34,4 +38,8 @@ public abstract class MultiMessageAction {
     public abstract int iconResId();
 
     public abstract String title(Context context);
+
+    public String confirmPrompt() {
+        return "";
+    }
 }
