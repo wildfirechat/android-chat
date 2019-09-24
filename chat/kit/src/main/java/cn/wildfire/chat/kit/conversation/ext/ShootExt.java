@@ -31,12 +31,12 @@ public class ShootExt extends ConversationExt {
     public void shoot(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!((WfcBaseActivity) context).checkPermission(permissions)) {
-                context.requestPermissions(permissions, 100);
+            if (!((WfcBaseActivity) activity).checkPermission(permissions)) {
+                activity.requestPermissions(permissions, 100);
                 return;
             }
         }
-        Intent intent = new Intent(context, TakePhotoActivity.class);
+        Intent intent = new Intent(activity, TakePhotoActivity.class);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
         messageViewModel.sendMessage(conversation, content);
@@ -47,7 +47,7 @@ public class ShootExt extends ConversationExt {
         if (resultCode == RESULT_OK) {
             String path = data.getStringExtra("path");
             if (TextUtils.isEmpty(path)) {
-                Toast.makeText(context, "拍照错误, 请向我们反馈", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "拍照错误, 请向我们反馈", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (data.getBooleanExtra("take_photo", true)) {

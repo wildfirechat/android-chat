@@ -20,7 +20,7 @@ public class ExampleAudioInputExt extends ConversationExt {
     @ExtContextMenuItem(title = "Example")
     public void image(View containerView, Conversation conversation) {
         FrameLayout frameLayout = (FrameLayout) containerView;
-        View view = LayoutInflater.from(context).inflate(R.layout.conversatioin_ext_example_layout, frameLayout, false);
+        View view = LayoutInflater.from(activity).inflate(R.layout.conversatioin_ext_example_layout, frameLayout, false);
         frameLayout.addView(view);
         extension.disableHideOnScroll();
 

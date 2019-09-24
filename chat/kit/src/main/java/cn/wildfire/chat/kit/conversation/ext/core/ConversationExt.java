@@ -3,13 +3,14 @@ package cn.wildfire.chat.kit.conversation.ext.core;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfirechat.model.Conversation;
 
 public abstract class ConversationExt {
-    protected FragmentActivity context;
+    protected FragmentActivity activity;
     protected ConversationExtension extension;
     private int index;
     protected Conversation conversation;
@@ -34,11 +35,11 @@ public abstract class ConversationExt {
     /**
      * 和会话界面绑定之后调用
      *
-     * @param activity
+     * @param fragment
      */
 
-    protected final void onBind(FragmentActivity activity, MessageViewModel messageViewModel, Conversation conversation, ConversationExtension conversationExtension, int index) {
-        this.context = activity;
+    protected final void onBind(Fragment fragment, MessageViewModel messageViewModel, Conversation conversation, ConversationExtension conversationExtension, int index) {
+        this.activity = fragment.getActivity();
         this.messageViewModel = messageViewModel;
         this.conversation = conversation;
         this.extension = conversationExtension;
@@ -46,14 +47,14 @@ public abstract class ConversationExt {
     }
 
     protected final void onDestroy() {
-        this.context = null;
+        this.activity = null;
         this.messageViewModel = null;
         this.conversation = null;
         this.extension = null;
     }
 
     protected final void startActivity(Intent intent) {
-        context.startActivity(intent);
+        activity.startActivity(intent);
     }
 
     /**

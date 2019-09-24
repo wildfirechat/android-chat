@@ -31,13 +31,13 @@ public class LocationExt extends ConversationExt {
                 Manifest.permission.ACCESS_FINE_LOCATION
         };
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!((WfcBaseActivity) context).checkPermission(permissions)) {
-                context.requestPermissions(permissions, 100);
+            if (!((WfcBaseActivity) activity).checkPermission(permissions)) {
+                activity.requestPermissions(permissions, 100);
                 return;
             }
         }
 
-        Intent intent = new Intent(context, MyLocationActivity.class);
+        Intent intent = new Intent(activity, MyLocationActivity.class);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_LOCATION);
         messageViewModel.sendMessage(conversation, content);

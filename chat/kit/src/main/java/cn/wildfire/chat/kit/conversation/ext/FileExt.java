@@ -38,9 +38,9 @@ public class FileExt extends ConversationExt {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
-            String path = FileUtils.getPath(context, uri);
+            String path = FileUtils.getPath(activity, uri);
             if (TextUtils.isEmpty(path)) {
-                Toast.makeText(context, "选择文件错误", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "选择文件错误", Toast.LENGTH_SHORT).show();
                 return;
             }
 

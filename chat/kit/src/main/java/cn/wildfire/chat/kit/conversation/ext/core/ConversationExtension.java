@@ -1,9 +1,10 @@
 package cn.wildfire.chat.kit.conversation.ext.core;
 
+import android.content.Context;
 import android.content.Intent;
 import android.widget.FrameLayout;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -18,7 +19,8 @@ import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.model.Conversation;
 
 public class ConversationExtension {
-    private FragmentActivity activity;
+    private Context context;
+    private Fragment fragment;
     private Conversation conversation;
     private FrameLayout containerLayout;
     private ViewPagerFixed extViewPager;
@@ -27,12 +29,13 @@ public class ConversationExtension {
     private boolean hideOnScroll = true;
 
     /**
-     * @param activity
+     * @param fragment
      * @param inputContainerLayout 包含整个输入区域的framelayout
      * @param extViewPager         用于展示{@link ConversationExtPageView}, 每个ConversationExtPageView包含8个{@link ConversationExt}
      */
-    public ConversationExtension(FragmentActivity activity, FrameLayout inputContainerLayout, ViewPagerFixed extViewPager) {
-        this.activity = activity;
+    public ConversationExtension(Fragment fragment, FrameLayout inputContainerLayout, ViewPagerFixed extViewPager) {
+        this.fragment = fragment;
+        this.context = fragment.getActivity();
         this.containerLayout = inputContainerLayout;
         this.extViewPager = extViewPager;
     }
@@ -59,13 +62,13 @@ public class ConversationExtension {
                 List<String> titles = new ArrayList<>(extMenuItems.size());
                 for (ExtMenuItemWrapper itemWrapper : extMenuItems) {
                     if (itemWrapper.extContextMenuItem.titleResId() != 0) {
-                        titles.add(activity.getString(itemWrapper.extContextMenuItem.titleResId()));
+                        titles.add(context.getString(itemWrapper.extContextMenuItem.titleResId()));
                     } else {
                         titles.add(itemWrapper.extContextMenuItem.title());
                     }
                 }
                 // TODO sort
-                new MaterialDialog.Builder(activity).items(titles).itemsCallback((dialog, v, position, text) -> {
+                new MaterialDialog.Builder(context).items(titles).itemsCallback((dialog, v, position, text) -> {
                     try {
                         extMenuItems.get(position).method.invoke(ext, containerLayout, conversation);
                     } catch (IllegalAccessException e) {
@@ -85,7 +88,7 @@ public class ConversationExtension {
         setupExtViewPager(extViewPager);
 
         for (int i = 0; i < exts.size(); i++) {
-            exts.get(i).onBind(activity, messageViewModel, conversation, this, i);
+            exts.get(i).onBind(fragment, messageViewModel, conversation, this, i);
         }
     }
 
@@ -143,7 +146,7 @@ public class ConversationExtension {
     public void startActivityForResult(Intent intent, int requestCode, int index) {
         int extRequestCode = (requestCode << 7) | 0x8000;
         extRequestCode += index;
-        activity.startActivityForResult(intent, extRequestCode);
+        fragment.startActivityForResult(intent, extRequestCode);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
