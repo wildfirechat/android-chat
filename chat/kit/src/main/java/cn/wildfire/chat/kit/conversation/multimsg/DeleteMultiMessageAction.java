@@ -29,4 +29,14 @@ public class DeleteMultiMessageAction extends MultiMessageAction {
     public String title(Context context) {
         return "删除";
     }
+
+    @Override
+    public boolean confirm() {
+        return true;
+    }
+
+    @Override
+    public String confirmPrompt() {
+        return "确认删除?";
+    }
 }
