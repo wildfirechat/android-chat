@@ -26,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.util.List;
 import java.util.Map;
 
@@ -639,7 +641,7 @@ public class ConversationActivity extends WfcBaseActivity implements
             rootLinearLayout.hideAttachedInput(true);
             inputPanel.collapse();
         } else if (multiMessageActionContainerLinearLayout.getVisibility() == View.VISIBLE) {
-            showConversationInputPanel();
+            toggleConversationMode();
         } else {
             super.onBackPressed();
         }
@@ -741,15 +743,16 @@ public class ConversationActivity extends WfcBaseActivity implements
         // do nothing
     }
 
-    public void showMultiMessageActionContainer() {
+    public void toggleMultiMessageMode(UiMessage message) {
         inputPanel.setVisibility(View.GONE);
+        message.isChecked = true;
         adapter.setMode(ConversationMessageAdapter.MODE_CHECKABLE);
         adapter.notifyDataSetChanged();
         multiMessageActionContainerLinearLayout.setVisibility(View.VISIBLE);
-        initMultiMessageAction();
+        setupMultiMessageAction();
     }
 
-    public void showConversationInputPanel() {
+    public void toggleConversationMode() {
         inputPanel.setVisibility(View.VISIBLE);
         multiMessageActionContainerLinearLayout.setVisibility(View.GONE);
         adapter.setMode(ConversationMessageAdapter.MODE_NORMAL);
@@ -757,7 +760,7 @@ public class ConversationActivity extends WfcBaseActivity implements
         adapter.notifyDataSetChanged();
     }
 
-    private void initMultiMessageAction() {
+    private void setupMultiMessageAction() {
         multiMessageActionContainerLinearLayout.removeAllViews();
         List<MultiMessageAction> actions = MultiMessageActionManager.getInstance().getConversationActions(conversation);
         for (MultiMessageAction action : actions) {
@@ -770,12 +773,22 @@ public class ConversationActivity extends WfcBaseActivity implements
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             multiMessageActionContainerLinearLayout.addView(textView, layoutParams);
 
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    List<UiMessage> checkedMessages = adapter.getCheckedMessages();
+            textView.setOnClickListener(v -> {
+                List<UiMessage> checkedMessages = adapter.getCheckedMessages();
+                if (action.confirm()) {
+                    new MaterialDialog.Builder(ConversationActivity.this).content(action.confirmPrompt())
+                            .negativeText("取消")
+                            .positiveText("确认")
+                            .onPositive((dialog, which) -> {
+                                action.onClick(checkedMessages);
+                                toggleConversationMode();
+                            })
+                            .build()
+                            .show();
+
+                } else {
                     action.onClick(checkedMessages);
-                    showConversationInputPanel();
+                    toggleConversationMode();
                 }
             });
         }

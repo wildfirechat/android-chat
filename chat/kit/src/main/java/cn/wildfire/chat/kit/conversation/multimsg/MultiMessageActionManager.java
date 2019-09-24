@@ -37,7 +37,7 @@ public class MultiMessageActionManager {
         }
     }
 
-    public void unregisterExt(Class<? extends MultiMessageAction> clazz) {
+    public void unregisterAction(Class<? extends MultiMessageAction> clazz) {
         // TODO
     }
 
