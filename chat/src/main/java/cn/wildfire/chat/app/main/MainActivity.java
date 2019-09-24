@@ -122,7 +122,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     }
 
     private void reLogin() {
-        ChatManager.Instance().disconnect(true);
         SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
         sp.edit().clear().apply();
 

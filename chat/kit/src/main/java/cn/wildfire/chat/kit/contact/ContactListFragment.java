@@ -44,7 +44,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             showContent();
             userListAdapter.setUsers(userInfos);
         });
-        contactViewModel.friendRequestUpdatedLiveData().observe(this, integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
+        contactViewModel.friendRequestUpdatedLiveData().observe(getActivity(), integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
     }
 
     @Override
