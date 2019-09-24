@@ -150,7 +150,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_MULTI_CHECK, title = "多选", priority = 13)
     public void checkMessage(View itemView, UiMessage message) {
-        ((ConversationActivity) context).toggleMultiMessageMode(message);
+        ((ConversationActivity) context).getConversationFragment().toggleMultiMessageMode(message);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT, title = "私聊", priority = 12)
