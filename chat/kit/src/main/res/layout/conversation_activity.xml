@@ -5,9 +5,6 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
-
-    <include layout="@layout/toolbar" />
-
     <!--内容-->
     <LinearLayout
         android:id="@+id/contentLayout"

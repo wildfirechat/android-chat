@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -60,7 +61,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 
-import static cn.wildfire.chat.kit.conversation.ConversationActivity.REQUEST_PICK_MENTION_CONTACT;
+import static cn.wildfire.chat.kit.conversation.ConversationFragment.REQUEST_PICK_MENTION_CONTACT;
 
 public class ConversationInputPanel extends FrameLayout implements IEmotionSelectedListener {
 
@@ -97,6 +98,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private MessageViewModel messageViewModel;
     private ConversationViewModel conversationViewModel;
     private InputAwareLayout rootLinearLayout;
+    private Fragment fragment;
     private FragmentActivity activity;
     private AudioRecorderPanel audioRecorderPanel;
 
@@ -160,14 +162,15 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         this.extension.onDestroy();
     }
 
-    public void init(FragmentActivity activity, InputAwareLayout rootInputAwareLayout) {
+    public void init(Fragment fragment, InputAwareLayout rootInputAwareLayout) {
         LayoutInflater.from(getContext()).inflate(R.layout.conversation_input_panel, this, true);
         ButterKnife.bind(this, this);
 
-        this.activity = activity;
+        this.activity = fragment.getActivity();
+        this.fragment = fragment;
         this.rootLinearLayout = rootInputAwareLayout;
 
-        this.extension = new ConversationExtension(activity, this, extViewPager);
+        this.extension = new ConversationExtension(fragment, this, extViewPager);
 
 
         sharedPreferences = getContext().getSharedPreferences("sticker", Context.MODE_PRIVATE);
@@ -216,8 +219,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             }
         });
 
-        messageViewModel = ViewModelProviders.of(activity).get(MessageViewModel.class);
-        conversationViewModel = ViewModelProviders.of(activity).get(ConversationViewModel.class);
+        messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
+        conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
 
     }
 
@@ -294,10 +297,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     private void mentionGroupMember() {
         Intent intent = new Intent(activity, MentionGroupMemberActivity.class);
-        GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
         intent.putExtra("groupInfo", groupInfo);
-        activity.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
+        fragment.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
     }
 
     @OnTextChanged(value = R.id.editText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
@@ -318,7 +321,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     public void showRecordPanel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                activity.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 100);
+                fragment.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 100);
                 return;
             }
         }
