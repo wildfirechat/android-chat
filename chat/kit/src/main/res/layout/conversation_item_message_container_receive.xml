@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<cn.wildfire.chat.kit.conversation.message.MessageItemView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/messageRootLinearLayout"
     android:layout_width="match_parent"
@@ -107,6 +107,22 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            style="@style/CustomCheckboxTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="@dimen/item_margin_left_and_right"
+            android:clickable="false"
+            android:visibility="gone" />
     </LinearLayout>
 
-</LinearLayout>
+</cn.wildfire.chat.kit.conversation.message.MessageItemView>

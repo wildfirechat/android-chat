@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.kit.annotation.SendLayoutRes;
+import cn.wildfire.chat.kit.conversation.message.MessageItemView;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.message.viewholder.LoadingViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageContentViewHolder;
@@ -42,10 +44,14 @@ import cn.wildfirechat.remote.ChatManager;
 public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
 
+    public static int MODE_NORMAL = 0;
+    public static int MODE_CHECKABLE = 1;
+
     // check or normal
     private int mode;
     private List<UiMessage> messages = new ArrayList<>();
     private OnPortraitClickListener onPortraitClickListener;
+    private OnMessageCheckListener onMessageCheckListener;
     private OnPortraitLongClickListener onPortraitLongClickListener;
 
     public ConversationMessageAdapter(Context context) {
@@ -61,6 +67,27 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         this.mode = mode;
     }
 
+    public void clearMessageCheckStatus() {
+        if (messages == null) {
+            return;
+        }
+        for (UiMessage message : messages) {
+            message.isChecked = false;
+        }
+    }
+
+    public List<UiMessage> getCheckedMessages() {
+        List<UiMessage> checkedMessages = new ArrayList<>();
+        if (this.messages != null) {
+            for (UiMessage msg : this.messages) {
+                if (msg.isChecked) {
+                    checkedMessages.add(msg);
+                }
+            }
+        }
+        return checkedMessages;
+    }
+
     public List<UiMessage> getMessages() {
         return messages;
     }
@@ -74,6 +101,10 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setOnPortraitClickListener(OnPortraitClickListener onPortraitClickListener) {
         this.onPortraitClickListener = onPortraitClickListener;
+    }
+
+    public void setOnMessageCheckListener(OnMessageCheckListener onMessageCheckListener) {
+        this.onMessageCheckListener = onMessageCheckListener;
     }
 
     public void setOnPortraitLongClickListener(OnPortraitLongClickListener onPortraitLongClickListener) {
@@ -218,12 +249,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         try {
             Constructor constructor = viewHolderClazz.getConstructor(FragmentActivity.class, RecyclerView.Adapter.class, View.class);
             MessageContentViewHolder viewHolder = (MessageContentViewHolder) constructor.newInstance(mContext, this, itemView);
-
-            processContentLongClick(viewHolderClazz, viewHolder, itemView);
-
             if (viewHolder instanceof SimpleNotificationMessageContentViewHolder) {
                 return viewHolder;
             }
+
+            processCheckClick(viewHolder, itemView);
+            processContentLongClick(viewHolderClazz, viewHolder, itemView);
             processPortraitClick(viewHolder, itemView);
             processPortraitLongClick(viewHolder, itemView);
             return viewHolder;
@@ -267,6 +298,23 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 UiMessage message = getItem(position);
                 // FIXME: 2019/2/15 getUserInfo可能返回null
                 onPortraitClickListener.onPortraitClick(ChatManager.Instance().getUserInfo(message.message.sender, false));
+            }
+        });
+    }
+
+    private void processCheckClick(MessageContentViewHolder holder, View itemView) {
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                UiMessage message = getItem(position);
+                message.isChecked = !message.isChecked;
+                CheckBox checkBox = itemView.findViewById(R.id.checkbox);
+                checkBox.setChecked(message.isChecked);
+                if (onMessageCheckListener != null) {
+                    onMessageCheckListener.onMessageCheck(message, message.isChecked);
+                }
+                notifyItemChanged(position);
             }
         });
     }
@@ -339,7 +387,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 Collections.sort(contextMenus, (o1, o2) -> o1.contextMenuItem.priority() - o2.contextMenuItem.priority());
                 List<String> titles = new ArrayList<>(contextMenus.size());
                 for (ContextMenuItemWrapper itemWrapper : contextMenus) {
-                    if (itemWrapper.contextMenuItem.titleResId() > 0) {
+                    if (itemWrapper.contextMenuItem.titleResId() != 0) {
                         titles.add(mContext.getString(itemWrapper.contextMenuItem.titleResId()));
                     } else {
                         titles.add(itemWrapper.contextMenuItem.title());
@@ -399,6 +447,19 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof MessageContentViewHolder) {
             ((MessageContentViewHolder) holder).onBind(getItem(position), position);
+            MessageItemView itemView = (MessageItemView) holder.itemView;
+            CheckBox checkBox = itemView.findViewById(R.id.checkbox);
+            if (checkBox == null) {
+                return;
+            }
+            itemView.setCheckable(getMode() == MODE_CHECKABLE);
+            if (getMode() == MODE_CHECKABLE) {
+                checkBox.setVisibility(View.VISIBLE);
+                UiMessage message = getItem(position);
+                checkBox.setChecked(message.isChecked);
+            } else {
+                checkBox.setVisibility(View.GONE);
+            }
         } else {
             // bottom loading progress bar, do nothing
         }
@@ -488,4 +549,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         void onPortraitLongClick(UserInfo userInfo);
     }
 
+    public interface OnMessageCheckListener {
+        void onMessageCheck(UiMessage uiMessage, boolean checked);
+    }
 }
