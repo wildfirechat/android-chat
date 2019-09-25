@@ -21,6 +21,7 @@ public class MyApp extends BaseApp {
     @Override
     public void onCreate() {
         super.onCreate();
+        Config.validateConfig();
 
         // bugly，务必替换为你自己的!!!
         CrashReport.initCrashReport(getApplicationContext(), BuildConfig.BuglyId, false);
