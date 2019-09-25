@@ -111,7 +111,7 @@ public class ConversationActivity extends WfcBaseActivity {
     }
 
     public static Intent buildConversationIntent(Context context, Conversation conversation, String channelPrivateChatUser, long toFocusMessageId) {
-        Intent intent = new Intent(context, ConversationFragment.class);
+        Intent intent = new Intent(context, ConversationActivity.class);
         intent.putExtra("conversation", conversation);
         intent.putExtra("toFocusMessageId", toFocusMessageId);
         intent.putExtra("channelPrivateChatUser", channelPrivateChatUser);
