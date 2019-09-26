@@ -9,16 +9,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="#F8F8F8"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp">
 
         <LinearLayout
             android:id="@+id/inputContainerLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:animateLayoutChanges="true"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:gravity="bottom"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
@@ -30,21 +34,19 @@
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:background="@color/white"
                 android:gravity="center">
 
                 <EditText
                     android:id="@+id/editText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_centerInParent="true"
-                    android:background="@null"
-                    android:drawableBottom="@drawable/selector_edit_focus"
-                    android:maxLines="4"
+                    android:background="@drawable/shape_session_text_input"
                     android:minHeight="30dp"
+                    android:paddingLeft="5dp"
                     android:textSize="16sp"
                     android:visibility="visible" />
 
@@ -52,8 +54,9 @@
                     android:id="@+id/audioButton"
                     style="?android:attr/borderlessButtonStyle"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="match_parent"
                     android:background="@drawable/shape_session_btn_voice_normal"
+                    android:gravity="center"
                     android:text="@string/please_to_talk"
                     android:textColor="@color/gray1"
                     android:visibility="gone"
@@ -70,20 +73,18 @@
 
             <ImageView
                 android:id="@+id/extImageView"
-                android:layout_width="45dp"
+                android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginBottom="5dp"
                 android:scaleType="centerInside"
                 android:src="@mipmap/ic_cheat_add" />
 
             <Button
                 android:id="@+id/sendButton"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="45dp"
+                android:layout_width="50dp"
                 android:layout_height="35dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginBottom="2.5dp"
                 android:background="@drawable/shape_session_btn_send"
                 android:text="@string/send"
                 android:textColor="@color/white"
@@ -99,8 +100,6 @@
             android:gravity="center"
             android:text="全员禁言中"
             android:visibility="gone" />
-
-        <View style="@style/Line" />
 
         <cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout
             android:id="@+id/emotionContainerFrameLayout"
