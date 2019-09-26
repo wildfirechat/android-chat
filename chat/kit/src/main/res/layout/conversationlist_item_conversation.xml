@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="70dp"
     android:background="@drawable/selector_common_item"
-    android:gravity="center"
-    android:orientation="horizontal"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:paddingLeft="10dp">
 
     <RelativeLayout
-        android:layout_width="70dp"
-        android:layout_height="70dp">
+        android:id="@+id/portraitRelativeLayout"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerVertical="true">
 
         <!--头像-->
         <ImageView
             android:id="@+id/portraitImageView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="5dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
             android:src="@mipmap/ic_launcher" />
         <!--未读消息数-->
         <TextView
@@ -41,7 +39,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@+id/portraitRelativeLayout"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
@@ -59,7 +60,7 @@
                 android:maxLines="1"
                 android:text="wfc"
                 android:textColor="@color/black"
-                android:textSize="17sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/timeTextView"
@@ -95,7 +96,7 @@
                     android:maxLines="1"
                     android:text="@string/draft"
                     android:textColor="@color/red7"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     android:visibility="gone"
                     tools:visibility="visible" />
 
@@ -117,7 +118,7 @@
                     android:ellipsize="marquee"
                     android:singleLine="true"
                     android:textColor="@color/gray1"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     tools:text="content" />
 
             </LinearLayout>
@@ -133,4 +134,10 @@
                 tools:visibility="visible" />
         </RelativeLayout>
     </LinearLayout>
-</LinearLayout>
+
+    <View
+        style="@style/Line"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/portraitRelativeLayout" />
+</RelativeLayout>
