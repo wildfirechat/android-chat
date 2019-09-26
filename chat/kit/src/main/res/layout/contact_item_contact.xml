@@ -10,7 +10,7 @@
         android:id="@+id/categoryTextView"
         android:layout_width="match_parent"
         android:layout_height="20dp"
-        android:background="#E5E5E5"
+        android:background="#EFEFEF"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_margin_left_and_right"
         android:text="群主"
@@ -21,7 +21,7 @@
     <LinearLayout
         android:id="@+id/contactLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_margin_left_and_right"
@@ -61,8 +61,7 @@
     <View
         android:id="@+id/dividerLine"
         style="@style/Line"
-        android:layout_marginLeft="@dimen/item_margin_left_and_right"
-        android:layout_marginRight="@dimen/item_margin_left_and_right"
+        android:layout_marginLeft="72dp"
         android:visibility="visible" />
 
 </LinearLayout>

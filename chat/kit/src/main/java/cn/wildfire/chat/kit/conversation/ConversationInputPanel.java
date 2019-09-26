@@ -226,7 +226,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @OnClick(R.id.extImageView)
     void onExtImageViewClick() {
-        if (audioButton.getVisibility() == VISIBLE) {
+        if (audioButton.getTag() != null) {
             return;
         }
         if (rootLinearLayout.getCurrentInput() == extContainerFrameLayout) {
@@ -240,7 +240,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @OnClick(R.id.emotionImageView)
     void onEmotionImageViewClick() {
-        if (audioButton.getVisibility() == VISIBLE) {
+
+        if (audioButton.getTag() != null) {
             return;
         }
         if (rootLinearLayout.getCurrentInput() == emotionContainerFrameLayout) {
@@ -432,6 +433,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         audioButton.setVisibility(View.VISIBLE);
         audioRecorderPanel.attach(rootLinearLayout, audioButton);
         editText.setVisibility(View.GONE);
+        extImageView.setVisibility(VISIBLE);
         sendButton.setVisibility(View.GONE);
         audioImageView.setImageResource(R.mipmap.ic_cheat_keyboard);
         rootLinearLayout.hideCurrentInput(editText);
@@ -444,17 +446,19 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         audioRecorderPanel.deattch();
         editText.setVisibility(View.VISIBLE);
         if (TextUtils.isEmpty(editText.getText())) {
+            extImageView.setVisibility(VISIBLE);
             sendButton.setVisibility(View.GONE);
         } else {
+            extImageView.setVisibility(GONE);
             sendButton.setVisibility(View.VISIBLE);
         }
-        rootLinearLayout.show(editText, emotionContainerFrameLayout);
         audioImageView.setImageResource(R.mipmap.ic_cheat_voice);
     }
 
     private void showEmotionLayout() {
         audioButton.setVisibility(View.GONE);
         emotionImageView.setImageResource(R.mipmap.ic_cheat_keyboard);
+        rootLinearLayout.show(editText, emotionContainerFrameLayout);
         if (onConversationInputPanelStateChangeListener != null) {
             onConversationInputPanelStateChangeListener.onInputPanelExpanded();
         }

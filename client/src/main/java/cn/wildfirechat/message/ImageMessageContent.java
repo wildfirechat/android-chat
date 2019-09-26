@@ -50,28 +50,30 @@ public class ImageMessageContent extends MediaMessageContent {
         MessagePayload payload = super.encode();
         payload.searchableContent = "[图片]";
 
-        if (!TextUtils.isEmpty(thumbPara)) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            Bitmap bitmap = BitmapFactory.decodeFile(localPath, options);
+        if (!TextUtils.isEmpty(localPath)) {
+            if (!TextUtils.isEmpty(thumbPara)) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                Bitmap bitmap = BitmapFactory.decodeFile(localPath, options);
 
-            options.inJustDecodeBounds = true;
-            imageWidth = bitmap.getWidth();
-            imageHeight = bitmap.getHeight();
-            try {
-                JSONObject objWrite = new JSONObject();
-                objWrite.put("w", imageWidth);
-                objWrite.put("h", imageHeight);
-                objWrite.put("tp", thumbPara);
-                payload.content = objWrite.toString();
-            } catch (JSONException e) {
-                e.printStackTrace();
+                options.inJustDecodeBounds = true;
+                imageWidth = bitmap.getWidth();
+                imageHeight = bitmap.getHeight();
+                try {
+                    JSONObject objWrite = new JSONObject();
+                    objWrite.put("w", imageWidth);
+                    objWrite.put("h", imageHeight);
+                    objWrite.put("tp", thumbPara);
+                    payload.content = objWrite.toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // TODO 缩略图
+                Bitmap thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), 200, 200);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+                payload.binaryContent = baos.toByteArray();
             }
-        } else {
-            // TODO 缩略图
-            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), 200, 200);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-            payload.binaryContent = baos.toByteArray();
         }
 
         return payload;
