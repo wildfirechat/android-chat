@@ -392,6 +392,8 @@ public class ConversationFragment extends Fragment implements
             joinChatRoom();
         }
 
+        conversationViewModel.clearUnreadStatus(conversation);
+
         setTitle();
     }
 
