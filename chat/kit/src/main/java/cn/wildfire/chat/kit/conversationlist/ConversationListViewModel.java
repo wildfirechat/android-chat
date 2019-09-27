@@ -223,13 +223,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().setConversationTop(conversationInfo.conversation, top);
     }
 
-    /**
-     * @param conversationInfo
-     */
-    public void clearConversationUnreadStatus(ConversationInfo conversationInfo) {
-        ChatManager.Instance().clearUnreadStatus(conversationInfo.conversation);
-    }
-
     @Override
     public void onMessagedRemove(Message message) {
         reloadConversationList();

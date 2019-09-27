@@ -146,7 +146,6 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onClick(View itemView) {
-        conversationListViewModel.clearConversationUnreadStatus(conversationInfo);
         Intent intent = new Intent(fragment.getActivity(), ConversationActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         fragment.startActivity(intent);
