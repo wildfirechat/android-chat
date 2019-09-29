@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/llGroup"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:layout_gravity="center_vertical"
         android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
@@ -57,7 +57,6 @@
 
     <View
         style="@style/Line"
-        android:layout_marginLeft="@dimen/item_margin_left_and_right"
-        android:layout_marginRight="@dimen/item_margin_left_and_right" />
+        android:layout_marginLeft="72dp" />
 
 </LinearLayout>

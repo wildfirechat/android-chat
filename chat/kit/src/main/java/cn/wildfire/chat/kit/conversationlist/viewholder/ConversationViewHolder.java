@@ -27,6 +27,7 @@ import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 
@@ -112,7 +113,9 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                 Message lastMessage = conversationInfo.lastMessage;
                 // the message maybe invalid
                 try {
-                    if (conversationInfo.conversation.type == Conversation.ConversationType.Group && lastMessage.direction == MessageDirection.Receive) {
+                    if (conversationInfo.conversation.type == Conversation.ConversationType.Group
+                            && lastMessage.direction == MessageDirection.Receive
+                            && !(lastMessage.content instanceof NotificationMessageContent)) {
                         GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
                         String senderDisplayName = groupViewModel.getGroupMemberDisplayName(conversationInfo.conversation.target, conversationInfo.lastMessage.sender);
                         content = senderDisplayName + ":" + lastMessage.digest();
