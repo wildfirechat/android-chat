@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -269,7 +270,57 @@ public class FileUtils {
      */
     public static String getPath(final Context context, final Uri uri) {
         String absolutePath = getLocalPath(context, uri);
-        return absolutePath != null ? absolutePath : uri.toString();
+
+        if (absolutePath == null) {
+            File tmpDri = context.getExternalCacheDir();
+            File tmpFile = new File(tmpDri, uri.getLastPathSegment());
+            if (copyFile(context, uri, tmpFile)) {
+                absolutePath = tmpFile.getAbsolutePath();
+            }
+        }
+
+        return absolutePath;
+    }
+
+
+    private static boolean copyFile(Context context, Uri srcUri, File dstFile) {
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(srcUri);
+            if (inputStream == null) return false;
+            OutputStream outputStream = new FileOutputStream(dstFile);
+            copyStream(inputStream, outputStream);
+            inputStream.close();
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    private static int copyStream(InputStream input, OutputStream output) throws Exception, IOException {
+        final int BUFFER_SIZE = 1024 * 2;
+        byte[] buffer = new byte[BUFFER_SIZE];
+        BufferedInputStream in = new BufferedInputStream(input, BUFFER_SIZE);
+        BufferedOutputStream out = new BufferedOutputStream(output, BUFFER_SIZE);
+        int count = 0, n = 0;
+        try {
+            while ((n = in.read(buffer, 0, BUFFER_SIZE)) != -1) {
+                out.write(buffer, 0, n);
+                count += n;
+            }
+            out.flush();
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+            }
+            try {
+                in.close();
+            } catch (IOException e) {
+            }
+        }
+        return count;
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
