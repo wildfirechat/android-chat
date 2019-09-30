@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import butterknife.BindView;
@@ -17,6 +16,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.kit.annotation.SendLayoutRes;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
@@ -36,8 +36,8 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
     @BindView(R.id.imageView)
     BubbleImageView imageView;
 
-    public ImageMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
-        super(context, adapter, itemView);
+    public ImageMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override
@@ -50,15 +50,15 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
         imageView.getLayoutParams().height = UIUtils.dip2Px(height > 200 ? 200 : height);
 
         if (!TextUtils.isEmpty(imageMessage.localPath)) {
-            GlideApp.with(context)
+            GlideApp.with(fragment)
                     .load(imageMessage.localPath)
                     .centerCrop()
                     .into(imageView);
         } else {
-            GlideRequest<Drawable> request = GlideApp.with(context)
+            GlideRequest<Drawable> request = GlideApp.with(fragment)
                     .load(imageMessage.remoteUrl);
             if (thumbnail != null) {
-                request = request.placeholder(new BitmapDrawable(context.getResources(), imageMessage.getThumbnail()));
+                request = request.placeholder(new BitmapDrawable(fragment.getResources(), imageMessage.getThumbnail()));
             } else {
                 request = request.placeholder(R.mipmap.img_error);
             }

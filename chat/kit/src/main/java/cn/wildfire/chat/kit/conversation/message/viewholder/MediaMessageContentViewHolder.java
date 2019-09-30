@@ -2,12 +2,12 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.view.View;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
@@ -20,8 +20,8 @@ import cn.wildfirechat.message.core.MessageDirection;
 
 public class MediaMessageContentViewHolder extends NormalMessageContentViewHolder {
 
-    public MediaMessageContentViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {
-        super(activity, adapter, itemView);
+    public MediaMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override
@@ -71,6 +71,6 @@ public class MediaMessageContentViewHolder extends NormalMessageContentViewHolde
         if (entries.isEmpty()) {
             return;
         }
-        MMPreviewActivity.startActivity(context, entries, current);
+        MMPreviewActivity.startActivity(fragment.getContext(), entries, current);
     }
 }

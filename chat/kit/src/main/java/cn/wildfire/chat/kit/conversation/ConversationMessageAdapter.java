@@ -1,6 +1,5 @@
 package cn.wildfire.chat.kit.conversation;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -42,7 +40,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private Context mContext;
+    private ConversationFragment fragment;
 
     public static int MODE_NORMAL = 0;
     public static int MODE_CHECKABLE = 1;
@@ -54,9 +52,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     private OnMessageCheckListener onMessageCheckListener;
     private OnPortraitLongClickListener onPortraitLongClickListener;
 
-    public ConversationMessageAdapter(Context context) {
+    public ConversationMessageAdapter(ConversationFragment fragment) {
         super();
-        this.mContext = context;
+        this.fragment = fragment;
     }
 
     public int getMode() {
@@ -194,7 +192,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == R.layout.conversation_item_loading) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.conversation_item_loading, parent, false);
+            View view = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversation_item_loading, parent, false);
             return new LoadingViewHolder(view);
         }
 
@@ -221,16 +219,16 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         View itemView;
         ViewStub viewStub;
         if (SimpleNotificationMessageContentViewHolder.class.isAssignableFrom(viewHolderClazz)) {
-            itemView = LayoutInflater.from(mContext).inflate(R.layout.conversation_item_notification_containr, parent, false);
+            itemView = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversation_item_notification_containr, parent, false);
             viewStub = itemView.findViewById(R.id.contentViewStub);
             viewStub.setLayoutResource(layoutRes.resId());
         } else {
             if (direction == 0) {
-                itemView = LayoutInflater.from(mContext).inflate(R.layout.conversation_item_message_container_send, parent, false);
+                itemView = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversation_item_message_container_send, parent, false);
                 viewStub = itemView.findViewById(R.id.contentViewStub);
                 viewStub.setLayoutResource(sendResId > 0 ? sendResId : R.layout.conversation_item_unknown_send);
             } else {
-                itemView = LayoutInflater.from(mContext).inflate(R.layout.conversation_item_message_container_receive, parent, false);
+                itemView = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversation_item_message_container_receive, parent, false);
                 viewStub = itemView.findViewById(R.id.contentViewStub);
                 viewStub.setLayoutResource(receiveResId > 0 ? receiveResId : R.layout.conversation_item_unknown_receive);
             }
@@ -242,13 +240,13 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             }
         } catch (Exception e) {
             if (e.getMessage() != null && e.getMessage().contains("webview")) {
-                Toast.makeText(mContext, "请安装: Android System WebView", Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getContext(), "请安装: Android System WebView", Toast.LENGTH_SHORT).show();
             }
         }
 
         try {
-            Constructor constructor = viewHolderClazz.getConstructor(FragmentActivity.class, RecyclerView.Adapter.class, View.class);
-            MessageContentViewHolder viewHolder = (MessageContentViewHolder) constructor.newInstance(mContext, this, itemView);
+            Constructor constructor = viewHolderClazz.getConstructor(ConversationFragment.class, RecyclerView.Adapter.class, View.class);
+            MessageContentViewHolder viewHolder = (MessageContentViewHolder) constructor.newInstance(fragment, this, itemView);
             if (viewHolder instanceof SimpleNotificationMessageContentViewHolder) {
                 return viewHolder;
             }
@@ -388,12 +386,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 List<String> titles = new ArrayList<>(contextMenus.size());
                 for (ContextMenuItemWrapper itemWrapper : contextMenus) {
                     if (itemWrapper.contextMenuItem.titleResId() != 0) {
-                        titles.add(mContext.getString(itemWrapper.contextMenuItem.titleResId()));
+                        titles.add(fragment.getString(itemWrapper.contextMenuItem.titleResId()));
                     } else {
                         titles.add(itemWrapper.contextMenuItem.title());
                     }
                 }
-                new MaterialDialog.Builder(mContext).items(titles).itemsCallback(new MaterialDialog.ListCallback() {
+                new MaterialDialog.Builder(fragment.getContext()).items(titles).itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {
                         try {
@@ -401,11 +399,11 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                             if (menuItem.contextMenuItem.confirm()) {
                                 String content;
                                 if (menuItem.contextMenuItem.confirmPromptResId() != 0) {
-                                    content = mContext.getString(menuItem.contextMenuItem.confirmPromptResId());
+                                    content = fragment.getString(menuItem.contextMenuItem.confirmPromptResId());
                                 } else {
                                     content = menuItem.contextMenuItem.confirmPrompt();
                                 }
-                                new MaterialDialog.Builder(mContext)
+                                new MaterialDialog.Builder(fragment.getContext())
                                         .content(content)
                                         .negativeText("取消")
                                         .positiveText("确认")

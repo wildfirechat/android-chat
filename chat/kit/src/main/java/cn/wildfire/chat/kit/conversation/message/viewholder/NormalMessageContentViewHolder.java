@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +25,7 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -56,8 +56,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @BindView(R.id.checkbox)
     CheckBox checkBox;
 
-    public NormalMessageContentViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {
-        super(activity, adapter, itemView);
+    public NormalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override
@@ -121,7 +121,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @Nullable
     @OnClick(R.id.errorLinearLayout)
     public void onRetryClick(View itemView) {
-        new MaterialDialog.Builder(context)
+        new MaterialDialog.Builder(fragment.getContext())
                 .content("重新发送?")
                 .negativeText("取消")
                 .positiveText("重发")
@@ -143,20 +143,20 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FORWARD, title = "转发", priority = 11)
     public void forwardMessage(View itemView, UiMessage message) {
-        Intent intent = new Intent(context, ForwardActivity.class);
+        Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("message", message.message);
-        context.startActivity(intent);
+        fragment.startActivity(intent);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_MULTI_CHECK, title = "多选", priority = 13)
     public void checkMessage(View itemView, UiMessage message) {
-        ((ConversationActivity) context).getConversationFragment().toggleMultiMessageMode(message);
+        fragment.toggleMultiMessageMode(message);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT, title = "私聊", priority = 12)
     public void startChanelPrivateChat(View itemView, UiMessage message) {
-        Intent intent = ConversationActivity.buildConversationIntent(context, Conversation.ConversationType.Channel, message.message.conversation.target, message.message.conversation.line, message.message.sender);
-        context.startActivity(intent);
+        Intent intent = ConversationActivity.buildConversationIntent(fragment.getContext(), Conversation.ConversationType.Channel, message.message.conversation.target, message.message.conversation.line, message.message.sender);
+        fragment.startActivity(intent);
     }
 
     @Override
@@ -165,7 +165,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
             String userId = ChatManager.Instance().getUserId();
             if (message.conversation.type == Conversation.ConversationType.Group) {
-                GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
+                GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
                 GroupInfo groupInfo = groupViewModel.getGroupInfo(message.conversation.target, false);
                 if (groupInfo != null && userId.equals(groupInfo.owner)) {
                     return false;
@@ -204,7 +204,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(item.sender, false);
         if (portraitImageView != null) {
             GlideApp
-                    .with(context)
+                    .with(fragment)
                     .load(userInfo.portrait)
                     .transforms(new CenterCrop(), new RoundedCorners(10))
                     .error(R.mipmap.default_header)
@@ -223,7 +223,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     }
 
     private void showGroupMemberAlias(Conversation conversation, String sender) {
-        UserViewModel userViewModel = ViewModelProviders.of(context).get(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         if (!"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, conversation.target))) {
             nameTextView.setVisibility(View.GONE);
             return;
@@ -233,7 +233,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 //        if (Conversation.equals(nameTextView.getTag(), sender)) {
 //            return;
 //        }
-        GroupViewModel groupViewModel = ViewModelProviders.of(context).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
 
         nameTextView.setText(groupViewModel.getGroupMemberDisplayName(conversation.target, sender));
         nameTextView.setTag(sender);

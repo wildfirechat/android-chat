@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -18,6 +17,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
@@ -35,8 +35,8 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
     BubbleImageView imageView;
     private FileMessageContent fileMessageContent;
 
-    public FileMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
-        super(context, adapter, itemView);
+    public FileMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
             imageView.setProgressVisible(false);
             imageView.showShadow(false);
         }
-        Glide.with(context).load(R.mipmap.ic_file)
+        Glide.with(fragment).load(R.mipmap.ic_file)
                 .apply(new RequestOptions().override(UIUtils.dip2Px(150), UIUtils.dip2Px(150)).centerCrop()).into(imageView);
     }
 
@@ -66,13 +66,13 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         }
 
         if (file.exists()) {
-            Intent intent = FileUtils.getViewIntent(context, file);
-            ComponentName cn = intent.resolveActivity(context.getPackageManager());
+            Intent intent = FileUtils.getViewIntent(fragment.getContext(), file);
+            ComponentName cn = intent.resolveActivity(fragment.getContext().getPackageManager());
             if (cn == null) {
-                Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getContext(), "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
                 return;
             }
-            context.startActivity(intent);
+            fragment.startActivity(intent);
         } else {
             messageViewModel.downloadMedia(message, file);
         }

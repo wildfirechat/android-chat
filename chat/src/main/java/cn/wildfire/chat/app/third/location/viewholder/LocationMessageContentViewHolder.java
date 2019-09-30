@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,6 +16,7 @@ import cn.wildfire.chat.app.third.location.ui.activity.ShowLocationActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -33,8 +33,8 @@ public class LocationMessageContentViewHolder extends NormalMessageContentViewHo
     @BindView(R.id.locationImageView)
     ImageView locationImageView;
 
-    public LocationMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
-        super(context, adapter, itemView);
+    public LocationMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override
@@ -49,18 +49,18 @@ public class LocationMessageContentViewHolder extends NormalMessageContentViewHo
             locationImageView.getLayoutParams().height = UIUtils.dip2Px(height > 200 ? 200 : height);
             locationImageView.setImageBitmap(locationMessage.getThumbnail());
         } else {
-            Glide.with(context).load(R.mipmap.default_location)
+            Glide.with(fragment).load(R.mipmap.default_location)
                     .apply(new RequestOptions().override(UIUtils.dip2Px(200), UIUtils.dip2Px(200)).centerCrop()).into(locationImageView);
         }
     }
 
     @OnClick(R.id.locationLinearLayout)
     public void onClick(View view) {
-        Intent intent = new Intent(context, ShowLocationActivity.class);
+        Intent intent = new Intent(fragment.getContext(), ShowLocationActivity.class);
         LocationMessageContent content = (LocationMessageContent) message.message.content;
         intent.putExtra("Lat", content.getLocation().getLatitude());
         intent.putExtra("Long", content.getLocation().getLongitude());
         intent.putExtra("title", content.getTitle());
-        context.startActivity(intent);
+        fragment.startActivity(intent);
     }
 }
