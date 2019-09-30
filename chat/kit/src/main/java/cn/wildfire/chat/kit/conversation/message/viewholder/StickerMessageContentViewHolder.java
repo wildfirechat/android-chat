@@ -4,15 +4,16 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+
 import butterknife.BindView;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.kit.annotation.SendLayoutRes;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
@@ -27,8 +28,8 @@ public class StickerMessageContentViewHolder extends NormalMessageContentViewHol
     @BindView(R.id.stickerImageView)
     ImageView imageView;
 
-    public StickerMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
-        super(context, adapter, itemView);
+    public StickerMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override
@@ -41,14 +42,14 @@ public class StickerMessageContentViewHolder extends NormalMessageContentViewHol
             if (stickerMessage.localPath.equals(path)) {
                 return;
             }
-            GlideApp.with(context).load(stickerMessage.localPath)
+            GlideApp.with(fragment).load(stickerMessage.localPath)
                     .into(imageView);
             path = stickerMessage.localPath;
         } else {
-            CircularProgressDrawable progressDrawable = new CircularProgressDrawable(context);
+            CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
             progressDrawable.start();
-            GlideApp.with(context)
+            GlideApp.with(fragment)
                     .load(stickerMessage.remoteUrl)
                     .placeholder(progressDrawable)
                     .into(imageView);

@@ -3,12 +3,13 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
@@ -17,7 +18,8 @@ import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 
 public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
-    protected FragmentActivity context;
+    @NonNull
+    protected ConversationFragment fragment;
     protected View itemView;
     protected UiMessage message;
     protected int position;
@@ -28,12 +30,12 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
     TextView timeTextView;
 
 
-    public MessageContentViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {
+    public MessageContentViewHolder(@NonNull ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(itemView);
-        this.context = activity;
+        this.fragment = fragment;
         this.itemView = itemView;
         this.adapter = adapter;
-        messageViewModel = ViewModelProviders.of(activity).get(MessageViewModel.class);
+        messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
         ButterKnife.bind(this, itemView);
     }
 

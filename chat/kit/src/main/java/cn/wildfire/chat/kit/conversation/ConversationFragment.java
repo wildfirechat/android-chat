@@ -267,7 +267,7 @@ public class ConversationFragment extends Fragment implements
         });
 
         // message list
-        adapter = new ConversationMessageAdapter(getActivity());
+        adapter = new ConversationMessageAdapter(this);
         adapter.setOnPortraitClickListener(this);
         adapter.setOnPortraitLongClickListener(this);
         adapter.setOnMessageCheckListener(this);

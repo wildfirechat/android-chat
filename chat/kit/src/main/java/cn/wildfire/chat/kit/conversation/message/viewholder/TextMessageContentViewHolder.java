@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lqr.emoji.MoonUtils;
@@ -21,6 +20,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.kit.annotation.SendLayoutRes;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.widget.LinkClickListener;
 import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
@@ -35,17 +35,17 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
     @BindView(R.id.contentTextView)
     TextView contentTextView;
 
-    public TextMessageContentViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {
-        super(activity, adapter, itemView);
+    public TextMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override
     public void onBind(UiMessage message) {
-        MoonUtils.identifyFaceExpression(context, contentTextView, ((TextMessageContent) message.message.content).getContent(), ImageSpan.ALIGN_BOTTOM);
+        MoonUtils.identifyFaceExpression(fragment.getContext(), contentTextView, ((TextMessageContent) message.message.content).getContent(), ImageSpan.ALIGN_BOTTOM);
         contentTextView.setMovementMethod(new LinkTextViewMovementMethod(new LinkClickListener() {
             @Override
             public boolean onLinkClick(String link) {
-                WfcWebViewActivity.loadUrl(context, "", link);
+                WfcWebViewActivity.loadUrl(fragment.getContext(), "", link);
                 return true;
             }
         }));
@@ -53,13 +53,13 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
 
     @OnClick(R.id.contentTextView)
     public void onClickTest(View view) {
-        Toast.makeText(context, "onTextMessage click: " + ((TextMessageContent) message.message.content).getContent(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(fragment.getContext(), "onTextMessage click: " + ((TextMessageContent) message.message.content).getContent(), Toast.LENGTH_SHORT).show();
     }
 
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, title = "复制", confirm = false, priority = 12)
     public void clip(View itemView, UiMessage message) {
-        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager clipboardManager = (ClipboardManager) fragment.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboardManager == null) {
             return;
         }
