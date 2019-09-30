@@ -11,10 +11,12 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.VideoMessageContent;
+import cn.wildfirechat.model.Conversation;
 
 @MessageContentType(VideoMessageContent.class)
 @LayoutRes(resId = R.layout.conversation_item_video_send)
@@ -25,8 +27,8 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
     @BindView(R.id.playImageView)
     ImageView playImageView;
 
-    public VideoMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
-        super(context, adapter, itemView);
+    public VideoMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override
