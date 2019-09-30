@@ -6,9 +6,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
@@ -16,6 +16,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -30,8 +31,8 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
     @BindView(R.id.stickerImageView)
     ImageView imageView;
 
-    public ExampleRichNotificationMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
-        super(context, adapter, itemView);
+    public ExampleRichNotificationMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override
@@ -44,14 +45,14 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
             if (stickerMessage.localPath.equals(path)) {
                 return;
             }
-            GlideApp.with(context).load(stickerMessage.localPath)
+            GlideApp.with(fragment).load(stickerMessage.localPath)
                     .into(imageView);
             path = stickerMessage.localPath;
         } else {
-            CircularProgressDrawable progressDrawable = new CircularProgressDrawable(context);
+            CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
             progressDrawable.start();
-            GlideApp.with(context)
+            GlideApp.with(fragment)
                     .load(stickerMessage.remoteUrl)
                     .placeholder(progressDrawable)
                     .into(imageView);
@@ -60,7 +61,7 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
 
     @OnClick(R.id.stickerImageView)
     public void onClick(View view) {
-        Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show();
+        Toast.makeText(fragment.getContext(), "TODO", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -70,8 +71,8 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FORWARD, title = "转发", priority = 11)
     public void forwardMessage(View itemView, UiMessage message) {
-        Intent intent = new Intent(context, ForwardActivity.class);
+        Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("message", message.message);
-        context.startActivity(intent);
+        fragment.startActivity(intent);
     }
 }

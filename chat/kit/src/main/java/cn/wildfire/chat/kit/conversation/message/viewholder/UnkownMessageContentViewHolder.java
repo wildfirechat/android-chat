@@ -3,13 +3,14 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.BindView;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.kit.annotation.SendLayoutRes;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.UnknownMessageContent;
@@ -22,8 +23,8 @@ public class UnkownMessageContentViewHolder extends NormalMessageContentViewHold
     @BindView(R.id.contentTextView)
     TextView contentTextView;
 
-    public UnkownMessageContentViewHolder(FragmentActivity context, RecyclerView.Adapter adapter, View itemView) {
-        super(context, adapter, itemView);
+    public UnkownMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
     }
 
     @Override

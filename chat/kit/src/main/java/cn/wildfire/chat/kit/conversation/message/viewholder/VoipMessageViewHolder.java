@@ -3,8 +3,8 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -13,6 +13,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.ReceiveLayoutRes;
 import cn.wildfire.chat.kit.annotation.SendLayoutRes;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.CallStartMessageContent;
@@ -25,8 +26,8 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
     @BindView(R.id.contentTextView)
     TextView textView;
 
-    public VoipMessageViewHolder(FragmentActivity activity, RecyclerView.Adapter adapter, View itemView) {
-        super(activity, adapter, itemView);
+    public VoipMessageViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+        super(fragment, adapter, itemView);
         ButterKnife.bind(this, itemView);
     }
 
@@ -58,6 +59,6 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
         if (((CallStartMessageContent) message.message.content).getStatus() == 1) {
             return;
         }
-        WfcUIKit.onCall(context, message.message.conversation.target, true, false);
+        WfcUIKit.onCall(fragment.getContext(), message.message.conversation.target, true, false);
     }
 }
