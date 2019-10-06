@@ -1019,8 +1019,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void uploadMedia(byte[] data, int mediaType, final IUploadMediaCallback callback) throws RemoteException {
-            ProtoLogic.uploadMedia(data, mediaType, new ProtoLogic.IUploadMediaCallback() {
+        public void uploadMedia(String fileName, byte[] data, int mediaType, final IUploadMediaCallback callback) throws RemoteException {
+            ProtoLogic.uploadMedia(fileName, data, mediaType, new ProtoLogic.IUploadMediaCallback() {
                 @Override
                 public void onSuccess(String s) {
                     try {
@@ -1054,7 +1054,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 byte[] data = new byte[length];
                 bufferedInputStream.read(data);
 
-                uploadMedia(data, mediaType, callback);
+                String fileName = "";
+                if (mediaPath.contains("/")) {
+                    fileName = mediaPath.substring(mediaPath.lastIndexOf("/") + 1, mediaPath.length());
+                }
+                uploadMedia(fileName, data, mediaType, callback);
             } catch (Exception e) {
                 e.printStackTrace();
                 e.printStackTrace();
