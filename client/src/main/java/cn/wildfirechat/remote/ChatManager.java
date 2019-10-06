@@ -2565,7 +2565,7 @@ public class ChatManager {
      * @param mediaType
      * @param callback
      */
-    public void uploadMedia(byte[] data, int mediaType, final GeneralCallback2 callback) {
+    public void uploadMedia(String fileName, byte[] data, int mediaType, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -2579,7 +2579,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.uploadMedia(data, mediaType, new IUploadMediaCallback.Stub() {
+            mClient.uploadMedia(fileName, data, mediaType, new IUploadMediaCallback.Stub() {
                 @Override
                 public void onSuccess(final String remoteUrl) throws RemoteException {
                     if (callback != null) {
