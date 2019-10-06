@@ -30,6 +30,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -355,6 +356,17 @@ public class ConversationFragment extends Fragment implements
                     inputPanel.disableInput("全员禁言中");
                 }
             }
+
+            new Thread(()->{
+                List<GroupMember> groupMembers = ChatManager.Instance().getGroupMembers(conversation.target, false);
+                if (groupMembers != null) {
+                    List<String> memberIds = new ArrayList<>();
+                    for (GroupMember member : groupMembers) {
+                        memberIds.add(member.memberId);
+                    }
+                    ChatManager.Instance().getUserInfos(memberIds, conversation.target);
+                }
+            }).start();
         }
 
         inputPanel.setupConversation(conversation);
