@@ -357,7 +357,7 @@ public class ConversationFragment extends Fragment implements
                 }
             }
 
-            new Thread(()->{
+            ChatManager.Instance().getWorkHandler().post(() -> {
                 List<GroupMember> groupMembers = ChatManager.Instance().getGroupMembers(conversation.target, false);
                 if (groupMembers != null) {
                     List<String> memberIds = new ArrayList<>();
@@ -366,7 +366,7 @@ public class ConversationFragment extends Fragment implements
                     }
                     ChatManager.Instance().getUserInfos(memberIds, conversation.target);
                 }
-            }).start();
+            });
         }
 
         inputPanel.setupConversation(conversation);
