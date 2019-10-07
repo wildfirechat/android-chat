@@ -120,7 +120,6 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             selectedIds.add(id);
             selectedUsers.add(ChatManager.Instance().getUserInfo(id, false));
         }
-        selectedIds.add(ChatManager.Instance().getUserId());
         String groupName = "";
         for (int i = 0; i < 3 && i < selectedUsers.size(); i++) {
             groupName += selectedUsers.get(i).displayName + "、";
