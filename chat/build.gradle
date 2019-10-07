@@ -54,7 +54,7 @@ android {
     sourceSets {
         main {
             // wfc kit start
-            jniLibs.srcDirs += ['kit/libs']
+            jniLibs.srcDirs += ['libs', 'kit/libs']
             res.srcDirs += ['kit/src/main/res', 'kit/src/main/res-av']
             assets.srcDirs += ['kit/src/main/assets']
             java.srcDirs += ['kit/src/main/java']
