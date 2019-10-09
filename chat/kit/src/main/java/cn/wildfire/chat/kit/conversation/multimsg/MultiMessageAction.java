@@ -2,22 +2,21 @@ package cn.wildfire.chat.kit.conversation.multimsg;
 
 import android.content.Context;
 
-import androidx.fragment.app.FragmentActivity;
-
 import java.util.List;
 
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.model.Conversation;
 
 public abstract class MultiMessageAction {
     protected Conversation conversation;
-    protected FragmentActivity activity;
+    protected ConversationFragment fragment;
 
     public MultiMessageAction() {
     }
 
-    public final void onBind(FragmentActivity activity, Conversation conversation) {
-        this.activity = activity;
+    public final void onBind(ConversationFragment fragment, Conversation conversation) {
+        this.fragment = fragment;
         this.conversation = conversation;
 
     }

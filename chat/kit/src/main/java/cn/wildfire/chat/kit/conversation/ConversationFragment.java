@@ -718,7 +718,7 @@ public class ConversationFragment extends Fragment implements
         List<MultiMessageAction> actions = MultiMessageActionManager.getInstance().getConversationActions(conversation);
         for (MultiMessageAction action : actions) {
 
-            action.onBind(getActivity(), conversation);
+            action.onBind(this, conversation);
             TextView textView = new TextView(getActivity());
             textView.setCompoundDrawablePadding(10);
             textView.setCompoundDrawablesWithIntrinsicBounds(action.iconResId(), 0, 0, 0);
