@@ -412,6 +412,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
 
         editText.setText(spannableStringBuilder);
+        editText.requestFocus();
     }
 
     public void onActivityPause() {
