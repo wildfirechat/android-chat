@@ -22,8 +22,18 @@ public class CallStartMessageContent extends MessageContent {
     private long connectTime;
     private long endTime;
     private boolean audioOnly;
-    /*
-     * 电话状态， 0 未接听，1 通话中，2 已结束。
+
+
+    /**
+     * 0, UnKnown,
+     * 1, Busy,
+     * 2, SignalError,
+     * 3, Hangup,
+     * 4, MediaError,
+     * 5, RemoteHangup,
+     * 6, OpenCameraFailure,
+     * 7, Timeout,
+     * 8, AcceptByOtherClient
      */
     private int status;
 
