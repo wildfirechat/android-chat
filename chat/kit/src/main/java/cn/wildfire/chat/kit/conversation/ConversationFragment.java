@@ -517,14 +517,13 @@ public class ConversationFragment extends Fragment implements
 
     @Override
     public void onPortraitLongClick(UserInfo userInfo) {
-        // TODO panel insert
-        int position = inputPanel.editText.getSelectionEnd();
-        position = position >= 0 ? position : 0;
         if (conversation.type == Conversation.ConversationType.Group) {
             SpannableString spannableString = mentionSpannable(userInfo);
-            inputPanel.editText.getEditableText().insert(position, spannableString);
+            int position = inputPanel.editText.getSelectionEnd();
+            inputPanel.editText.getEditableText().append(" ");
+            inputPanel.editText.getEditableText().replace(position, position + 1, spannableString);
         } else {
-            inputPanel.editText.getEditableText().insert(position, userViewModel.getUserDisplayName(userInfo));
+            inputPanel.editText.getEditableText().append(userViewModel.getUserDisplayName(userInfo));
         }
     }
 
