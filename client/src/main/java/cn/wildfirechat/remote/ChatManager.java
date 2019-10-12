@@ -132,8 +132,6 @@ public class ChatManager {
     private LruCache<String, UserInfo> userInfoCache;
     // key = memberId@groupId
     private LruCache<String, GroupMember> groupMemberCache;
-    // key = userId@groupId
-    private LruCache<String, UserInfo> groupUserCache;
 
     public enum PushType {
         Xiaomi(1),
@@ -388,7 +386,6 @@ public class ChatManager {
         }
         for (GroupMember member : groupMembers) {
             groupMemberCache.remove(groupMemberCacheKey(groupId, member.memberId));
-            groupUserCache.remove(groupMemberCacheKey(groupId, member.memberId));
         }
         mainHandler.post(() -> {
             for (OnGroupMembersUpdateListener listener : groupMembersUpdateListeners) {
@@ -1179,7 +1176,6 @@ public class ChatManager {
         this.token = token;
         this.userInfoCache = new LruCache<>(1024);
         this.groupMemberCache = new LruCache<>(1024);
-        this.groupUserCache = new LruCache<>(1024);
 
         if (mClient != null) {
             try {
@@ -2411,11 +2407,9 @@ public class ChatManager {
         if (TextUtils.isEmpty(userId)) {
             return null;
         }
-        UserInfo userInfo;
+        UserInfo userInfo = null;
         if (!refresh) {
-            if (!TextUtils.isEmpty(groupId)) {
-                userInfo = groupUserCache.get(groupMemberCacheKey(groupId, userId));
-            } else {
+            if (TextUtils.isEmpty(groupId)) {
                 userInfo = userInfoCache.get(userId);
             }
             if (userInfo != null) {
@@ -2441,8 +2435,6 @@ public class ChatManager {
             } else {
                 if (TextUtils.isEmpty(groupId)) {
                     userInfoCache.put(userId, userInfo);
-                } else {
-                    groupUserCache.put(groupMemberCacheKey(groupId, userId), userInfo);
                 }
             }
             return userInfo;
@@ -2491,8 +2483,6 @@ public class ChatManager {
                     if (info != null) {
                         if (TextUtils.isEmpty(groupId)) {
                             userInfoCache.put(info.uid, info);
-                        } else {
-                            groupUserCache.put(groupMemberCacheKey(groupId, info.uid), info);
                         }
                     }
                 }
@@ -3059,7 +3049,6 @@ public class ChatManager {
                             @Override
                             public void run() {
                                 groupMemberCache.remove(groupMemberCacheKey(groupId, userId));
-                                groupUserCache.remove(groupMemberCacheKey(groupId, userId));
                                 callback.onSuccess();
                             }
                         });
