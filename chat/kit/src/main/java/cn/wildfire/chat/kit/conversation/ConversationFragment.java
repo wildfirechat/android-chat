@@ -300,23 +300,22 @@ public class ConversationFragment extends Fragment implements
 
         inputPanel.init(this, rootLinearLayout);
         inputPanel.setOnConversationInputPanelStateChangeListener(this);
+
+        settingViewModel = ViewModelProviders.of(this).get(SettingViewModel.class);
+        conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
+        conversationViewModel.clearConversationMessageLiveData().observeForever(clearConversationMessageObserver);
+        messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
+
+        messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
+        messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
+        messageViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
+        messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
+
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
     }
 
     private void setupConversation(Conversation conversation) {
-        if (conversationViewModel == null) {
-            settingViewModel = ViewModelProviders.of(this).get(SettingViewModel.class);
-            conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
-            conversationViewModel.clearConversationMessageLiveData().observeForever(clearConversationMessageObserver);
-            messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
-
-            messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
-            messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
-            messageViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
-            messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
-
-            userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-            userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
-        }
 
         if (conversation.type == Conversation.ConversationType.Group) {
             GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
@@ -680,6 +679,9 @@ public class ConversationFragment extends Fragment implements
     private Runnable resetConversationTitleRunnable = this::resetConversationTitle;
 
     private void resetConversationTitle() {
+        if (getActivity() == null || getActivity().isFinishing()) {
+            return;
+        }
         if (!TextUtils.equals(conversationTitle, getActivity().getTitle())) {
             setActivityTitle(conversationTitle);
             handler.removeCallbacks(resetConversationTitleRunnable);

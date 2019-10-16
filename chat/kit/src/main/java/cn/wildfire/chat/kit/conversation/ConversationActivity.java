@@ -79,6 +79,9 @@ public class ConversationActivity extends WfcBaseActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         conversation = intent.getParcelableExtra("conversation");
+        if (conversation == null) {
+            finish();
+        }
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
         String channelPrivateChatUser = intent.getStringExtra("channelPrivateChatUser");
         conversationFragment.setupConversation(conversation, null, initialFocusedMessageId, channelPrivateChatUser);
