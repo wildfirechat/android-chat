@@ -401,8 +401,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             List<ConversationInfo> out = new ArrayList<>();
             for (ProtoConversationInfo protoConversationInfo : protoConversationInfos) {
                 ConversationInfo info = convertProtoConversationInfo(protoConversationInfo);
-                if (info != null)
-                    out.add(info);
+                if (info != null) {
+                    if (info.conversation.type == Conversation.ConversationType.Group) {
+                        GroupInfo groupInfo = getGroupInfo(info.conversation.target, false);
+                        if(groupInfo != null){
+                            out.add(info);
+                        }
+                    } else {
+                        out.add(info);
+                    }
+                }
             }
             return out;
         }
