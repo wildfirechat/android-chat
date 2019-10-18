@@ -652,7 +652,7 @@ public class ConversationFragment extends Fragment implements
 
     private void updateTypingStatusTitle(TypingMessageContent typingMessageContent) {
         String typingDesc = "";
-        switch (typingMessageContent.getType()) {
+        switch (typingMessageContent.getTypingType()) {
             case TypingMessageContent.TYPING_TEXT:
                 typingDesc = "对方正在输入";
                 break;
