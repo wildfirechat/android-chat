@@ -173,7 +173,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void hideUnreadMessageBadgeView() {
         if (unreadMessageUnreadBadgeView != null) {
             unreadMessageUnreadBadgeView.hide(true);
-            unreadFriendRequestBadgeView = null;
+            unreadMessageUnreadBadgeView = null;
         }
     }
 
