@@ -33,10 +33,8 @@ public interface Config {
         if (TextUtils.isEmpty(IM_SERVER_HOST)
                 || IM_SERVER_HOST.startsWith("http")
                 || TextUtils.isEmpty(APP_SERVER_ADDRESS)
-                || !APP_SERVER_ADDRESS.startsWith("http")
-                || IM_SERVER_HOST.equals("192.168.0.1")
+                || (!APP_SERVER_ADDRESS.startsWith("http") && !APP_SERVER_ADDRESS.startsWith("https"))
                 || IM_SERVER_HOST.equals("127.0.0.1")
-                || APP_SERVER_ADDRESS.contains("192.168.0.1")
                 || APP_SERVER_ADDRESS.contains("127.0.0.1")
         ) {
             throw new IllegalStateException("im server host config error");
