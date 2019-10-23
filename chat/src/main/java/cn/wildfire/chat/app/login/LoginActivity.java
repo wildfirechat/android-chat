@@ -11,20 +11,14 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.app.AppService;
-import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.net.OKHttpHelper;
-import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfirechat.chat.R;
 
 /**
@@ -81,7 +75,7 @@ public class LoginActivity extends WfcBaseActivity {
                 .build();
         dialog.show();
 
-        AppService.login(account, password, new AppService.LoginCallback() {
+        AppService.Instance().namePwdLogin(account, password, new AppService.LoginCallback() {
             @Override
             public void onUiSuccess(LoginResult loginResult) {
                 if (isFinishing()) {
