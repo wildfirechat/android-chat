@@ -69,7 +69,7 @@ public class AppService implements AppServiceProvider{
 
     public void smsLogin(String phoneNumber, String authCode, LoginCallback callback) {
 
-        String url = Config.APP_SERVER_ADDRESS + "/smsLogin";
+        String url = Config.APP_SERVER_ADDRESS + "/login";
         Map<String, String> params = new HashMap<>();
         params.put("mobile", phoneNumber);
         params.put("code", authCode);
