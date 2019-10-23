@@ -11,21 +11,14 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.app.AppService;
-import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.net.OKHttpHelper;
-import cn.wildfire.chat.kit.net.SimpleCallback;
-import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfirechat.chat.R;
 
 public class SMSLoginActivity extends WfcBaseActivity {
@@ -81,7 +74,7 @@ public class SMSLoginActivity extends WfcBaseActivity {
         dialog.show();
 
 
-        AppService.login(phoneNumber, authCode, new AppService.LoginCallback() {
+        AppService.Instance().smsLogin(phoneNumber, authCode, new AppService.LoginCallback() {
             @Override
             public void onUiSuccess(LoginResult loginResult) {
                 if (isFinishing()) {
@@ -128,7 +121,7 @@ public class SMSLoginActivity extends WfcBaseActivity {
         Toast.makeText(this, "请求验证码...", Toast.LENGTH_SHORT).show();
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
 
-        AppService.requestAuthCode(phoneNumber, new AppService.SendCodeCallback() {
+        AppService.Instance().requestAuthCode(phoneNumber, new AppService.SendCodeCallback() {
             @Override
             public void onUiSuccess() {
                 Toast.makeText(SMSLoginActivity.this, "发送验证码成功", Toast.LENGTH_SHORT).show();
