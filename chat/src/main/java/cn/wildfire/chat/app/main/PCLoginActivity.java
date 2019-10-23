@@ -58,7 +58,7 @@ public class PCLoginActivity extends WfcBaseActivity {
                 .build();
         dialog.show();
 
-        AppService.scanPCLogin(token, new AppService.ScanPCCallback() {
+        AppService.Instance().scanPCLogin(token, new AppService.ScanPCCallback() {
             @Override
             public void onUiSuccess(PCSession pcSession) {
                 if (isFinishing()) {
@@ -86,7 +86,7 @@ public class PCLoginActivity extends WfcBaseActivity {
     }
 
     private void confirmPCLogin(String token, String userId) {
-        AppService.confirmPCLogin(token, userId, new AppService.PCLoginCallback() {
+        AppService.Instance().confirmPCLogin(token, userId, new AppService.PCLoginCallback() {
             @Override
             public void onUiSuccess() {
                 if (isFinishing()) {
