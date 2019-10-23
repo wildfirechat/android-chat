@@ -17,6 +17,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
+import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
@@ -72,25 +73,15 @@ public class SMSLoginActivity extends WfcBaseActivity {
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
         String authCode = authCodeEditText.getText().toString().trim();
 
-        String url = Config.APP_SERVER_ADDRESS + "/login";
-        Map<String, String> params = new HashMap<>();
-        params.put("mobile", phoneNumber);
-        params.put("code", authCode);
-        try {
-            params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(SMSLoginActivity.this, "网络出来问题了。。。", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .content("登录中...")
                 .progress(true, 100)
                 .cancelable(false)
                 .build();
         dialog.show();
-        OKHttpHelper.post(url, params, new SimpleCallback<LoginResult>() {
+
+
+        AppService.login(phoneNumber, authCode, new AppService.LoginCallback() {
             @Override
             public void onUiSuccess(LoginResult loginResult) {
                 if (isFinishing()) {
@@ -136,24 +127,17 @@ public class SMSLoginActivity extends WfcBaseActivity {
 
         Toast.makeText(this, "请求验证码...", Toast.LENGTH_SHORT).show();
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
-        String url = Config.APP_SERVER_ADDRESS + "/send_code";
-        Map<String, String> params = new HashMap<>();
-        params.put("mobile", phoneNumber);
-        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+
+        AppService.requestAuthCode(phoneNumber, new AppService.SendCodeCallback() {
             @Override
-            public void onUiSuccess(StatusResult statusResult) {
-                if (statusResult.getCode() == 0) {
-                    Toast.makeText(SMSLoginActivity.this, "发送验证码成功", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(SMSLoginActivity.this, "发送验证码失败: " + statusResult.getCode(), Toast.LENGTH_SHORT).show();
-                }
+            public void onUiSuccess() {
+                Toast.makeText(SMSLoginActivity.this, "发送验证码成功", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                Toast.makeText(SMSLoginActivity.this, "发送验证码失败: " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SMSLoginActivity.this, "发送验证码失败: " + code + " " + msg, Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }
