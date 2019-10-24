@@ -1,21 +1,10 @@
 package cn.wildfire.chat.app;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.widget.Toast;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.wildfire.chat.app.login.LoginActivity;
-import cn.wildfire.chat.app.login.SMSLoginActivity;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.login.model.PCSession;
-import cn.wildfire.chat.app.main.MainActivity;
-import cn.wildfire.chat.app.main.PCLoginActivity;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
@@ -23,8 +12,9 @@ import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
 
-public class AppService implements AppServiceProvider{
+public class AppService implements AppServiceProvider {
     private static AppService Instance = new AppService();
+
     private AppService() {
 
     }
@@ -35,6 +25,7 @@ public class AppService implements AppServiceProvider{
 
     public interface LoginCallback {
         void onUiSuccess(LoginResult loginResult);
+
         void onUiFailure(int code, String msg);
     }
 
@@ -97,6 +88,7 @@ public class AppService implements AppServiceProvider{
 
     public interface SendCodeCallback {
         void onUiSuccess();
+
         void onUiFailure(int code, String msg);
     }
 
@@ -125,6 +117,7 @@ public class AppService implements AppServiceProvider{
 
     public interface ScanPCCallback {
         void onUiSuccess(PCSession pcSession);
+
         void onUiFailure(int code, String msg);
     }
 
@@ -150,8 +143,10 @@ public class AppService implements AppServiceProvider{
 
     public interface PCLoginCallback {
         void onUiSuccess();
+
         void onUiFailure(int code, String msg);
     }
+
     public void confirmPCLogin(String token, String userId, PCLoginCallback callback) {
         String url = Config.APP_SERVER_ADDRESS + "/confirm_pc";
 
