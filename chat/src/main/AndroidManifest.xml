@@ -228,6 +228,7 @@
         <activity
             android:name="cn.wildfire.chat.kit.contact.pick.PickContactActivity"
             android:label="联系人选择" />
+        <activity android:name="cn.wildfire.chat.kit.group.SetGroupAnnouncementActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

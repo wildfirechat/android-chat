@@ -16,8 +16,6 @@ import cn.wildfirechat.push.PushService;
 
 public class MyApp extends BaseApp {
 
-    private WfcUIKit wfcUIKit;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -27,8 +25,9 @@ public class MyApp extends BaseApp {
         CrashReport.initCrashReport(getApplicationContext(), "34490ba79f", false);
         // 只在主进程初始化
         if (getCurProcessName(this).equals(BuildConfig.APPLICATION_ID)) {
-            wfcUIKit = new WfcUIKit();
+            WfcUIKit wfcUIKit = WfcUIKit.getWfcUIKit();
             wfcUIKit.init(this);
+            wfcUIKit.setAppServiceProvider(AppService.Instance());
             PushService.init(this, BuildConfig.APPLICATION_ID);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class);
             setupWFCDirs();

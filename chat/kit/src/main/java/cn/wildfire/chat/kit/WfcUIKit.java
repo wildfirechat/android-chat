@@ -45,12 +45,25 @@ import cn.wildfirechat.remote.OnReceiveMessageListener;
 public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener {
 
     private boolean isBackground = true;
-    private static Application application;
+    private Application application;
     private static ViewModelProvider viewModelProvider;
     private ViewModelStore viewModelStore;
+    private AppServiceProvider appServiceProvider;
+    private static WfcUIKit wfcUIKit;
+
+    private WfcUIKit() {
+    }
+
+    public static WfcUIKit getWfcUIKit() {
+        if (wfcUIKit == null) {
+            wfcUIKit = new WfcUIKit();
+        }
+        return wfcUIKit;
+    }
+
 
     public void init(Application application) {
-        WfcUIKit.application = application;
+        this.application = application;
         initWFClient(application);
         //初始化表情控件
         LQREmotionKit.init(application, (context, path, imageView) -> Glide.with(context).load(path).apply(new RequestOptions().centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE).dontAnimate()).into(imageView));
@@ -184,5 +197,14 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         if (isBackground) {
             WfcNotificationManager.getInstance().handleRecallMessage(application, message);
         }
+    }
+
+    public AppServiceProvider getAppServiceProvider() {
+        return this.appServiceProvider;
+    }
+
+
+    public void setAppServiceProvider(AppServiceProvider appServiceProvider) {
+        this.appServiceProvider = appServiceProvider;
     }
 }

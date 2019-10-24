@@ -32,15 +32,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
+import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.group.GroupMemberListActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.RemoveGroupMemberActivity;
+import cn.wildfire.chat.kit.group.SetGroupAnnouncementActivity;
 import cn.wildfire.chat.kit.group.SetGroupNameActivity;
 import cn.wildfire.chat.kit.group.manage.GroupManageActivity;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
@@ -143,6 +146,12 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadAndShowGroupNotice();
+    }
+
     private void init() {
         conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
@@ -213,6 +222,24 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     showGroupManageViews();
                     contentNestedScrollView.setVisibility(View.VISIBLE);
                 });
+    }
+
+    private void loadAndShowGroupNotice() {
+
+        WfcUIKit.getWfcUIKit().getAppServiceProvider().getGroupAnnouncement(groupInfo.target, new AppServiceProvider.GetGroupAnnouncementCallback() {
+            @Override
+            public void onUiSuccess(GroupAnnouncement announcement) {
+                if (getActivity() == null || getActivity().isFinishing()) {
+                    return;
+                }
+                noticeTextView.setText(announcement.text);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+
+            }
+        });
     }
 
     private void showGroupManageViews() {
@@ -300,7 +327,12 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @OnClick(R.id.groupNoticeLinearLayout)
     void updateGroupNotice() {
-        // TODO
+        if (groupInfo.type != GroupInfo.GroupType.Restricted
+                || (groupMember.type == GroupMember.GroupMemberType.Manager || groupMember.type == GroupMember.GroupMemberType.Owner)) {
+            Intent intent = new Intent(getActivity(), SetGroupAnnouncementActivity.class);
+            intent.putExtra("groupInfo", groupInfo);
+            startActivity(intent);
+        }
     }
 
     @OnClick(R.id.groupManageOptionItemView)
