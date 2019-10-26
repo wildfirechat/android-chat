@@ -156,7 +156,7 @@ public class AppService implements AppServiceProvider {
         OKHttpHelper.post(url, params, new SimpleCallback<PCSession>() {
             @Override
             public void onUiSuccess(PCSession pcSession) {
-                if (pcSession.getStatus() == 0) {
+                if (pcSession.getStatus() == 2) {
                     callback.onUiSuccess();
                 } else {
                     callback.onUiFailure(pcSession.getStatus(), "");
