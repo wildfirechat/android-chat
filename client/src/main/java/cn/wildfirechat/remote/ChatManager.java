@@ -179,6 +179,8 @@ public class ChatManager {
 
     /**
      * 初始化，must be called from the main thread
+     * serverHost可以是IP，可以是域名，如果是域名的话只支持主域名或www域名，二级域名不支持！
+     * 例如：example.com或www.example.com是支持的；xx.example.com或xx.yy.example.com是不支持的。
      *
      * @param context
      * @param serverHost
