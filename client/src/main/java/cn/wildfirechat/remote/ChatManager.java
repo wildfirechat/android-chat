@@ -3359,6 +3359,43 @@ public class ChatManager {
         }
     }
 
+    public int getMessageCount(Conversation conversation) {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+
+        try {
+            return mClient.getMessageCount(conversation);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean begainTransaction() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.begainTransaction();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void commitTransaction() {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.commitTransaction();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * IM服务进程是否bind成功
      *
