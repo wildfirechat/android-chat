@@ -346,7 +346,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         message.isDownloading = true;
         postMessageUpdate(message);
 
-        DownloadManager.get().download(((MediaMessageContent) content).remoteUrl, targetFile.getParent(), targetFile.getName() + ".tmp", new DownloadManager.OnDownloadListener() {
+        DownloadManager.download(((MediaMessageContent) content).remoteUrl, targetFile.getParent(), targetFile.getName() + ".tmp", new DownloadManager.OnDownloadListener() {
             @Override
             public void onSuccess(File file) {
                 file.renameTo(targetFile);
