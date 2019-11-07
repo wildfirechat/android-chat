@@ -1604,6 +1604,21 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             return ProtoLogic.getImageThumbPara();
         }
 
+        @Override
+        public int getMessageCount(Conversation conversation) throws RemoteException {
+            return ProtoLogic.getMessageCount(conversation.type.getValue(), conversation.target, conversation.line);
+        }
+
+        @Override
+        public boolean begainTransaction() throws RemoteException {
+            return ProtoLogic.beginTransaction();
+        }
+
+        @Override
+        public void commitTransaction() throws RemoteException {
+            ProtoLogic.commitTransaction();
+        }
+
     }
 
     private ChannelInfo converProtoChannelInfo(ProtoChannelInfo protoChannelInfo) {

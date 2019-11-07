@@ -169,4 +169,8 @@ interface IRemoteClient {
     List<String> getListenedChannels();
 
     String getImageThumbPara();
+
+    int getMessageCount(in Conversation conversation);
+    boolean begainTransaction();
+    void commitTransaction();
 }
