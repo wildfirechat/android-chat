@@ -30,7 +30,6 @@ import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
-import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.chat.R;
 
 /**
@@ -39,12 +38,19 @@ import cn.wildfirechat.chat.R;
 public class MMPreviewActivity extends Activity {
     private SparseArray<View> views;
     private View currentVideoView;
+    private ViewPager viewPager;
+    private MMPagerAdapter adapter;
 
     private static int currentPosition = -1;
     private static List<MediaEntry> entries;
     private boolean pendingPreviewInitialMedia;
 
-    private final PagerAdapter pagerAdapter = new PagerAdapter() {
+    private class MMPagerAdapter extends PagerAdapter {
+        private List<MediaEntry> entries;
+
+        public MMPagerAdapter(List<MediaEntry> entries) {
+            this.entries = entries;
+        }
 
         @NonNull
         @Override
@@ -76,11 +82,15 @@ public class MMPreviewActivity extends Activity {
             return entries == null ? 0 : entries.size();
         }
 
+        public MediaEntry getEntry(int position) {
+            return entries.get(position);
+        }
+
         @Override
         public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
             return view == object;
         }
-    };
+    }
 
     final ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
@@ -99,7 +109,7 @@ public class MMPreviewActivity extends Activity {
                 resetVideoView(currentVideoView);
                 currentVideoView = null;
             }
-            MediaEntry entry = entries.get(position);
+            MediaEntry entry = adapter.getEntry(position);
             preview(view, entry);
         }
 
@@ -133,6 +143,8 @@ public class MMPreviewActivity extends Activity {
     private void previewVideo(View view, MediaEntry entry) {
 
         PhotoView photoView = view.findViewById(R.id.photoView);
+        ImageView saveImageView = view.findViewById(R.id.saveImageView);
+        saveImageView.setVisibility(View.GONE);
         if (entry.getThumbnail() != null) {
             GlideApp.with(photoView).load(entry.getThumbnail()).into(photoView);
         } else {
@@ -150,16 +162,19 @@ public class MMPreviewActivity extends Activity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (TextUtils.isEmpty(entry.getMediaUrl())) {
+                    return;
+                }
                 btn.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
-                    String name = entry.getMediaUrl().substring(entry.getMediaUrl().lastIndexOf("/"));
+                    String name = DownloadManager.md5(entry.getMediaUrl());
                     File videoFile = new File(Config.VIDEO_SAVE_DIR, name);
                     if (!videoFile.exists()) {
                         view.setTag(name);
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
                         final WeakReference<View> viewWeakReference = new WeakReference<>(view);
-                        DownloadManager.get().download(entry.getMediaUrl(), Config.VIDEO_SAVE_DIR, name, new DownloadManager.OnDownloadListener() {
+                        DownloadManager.download(entry.getMediaUrl(), Config.VIDEO_SAVE_DIR, name, new DownloadManager.OnDownloadListener() {
                             @Override
                             public void onSuccess(File file) {
                                 UIUtils.postTaskSafely(() -> {
@@ -227,6 +242,33 @@ public class MMPreviewActivity extends Activity {
 
     private void previewImage(View view, MediaEntry entry) {
         PhotoView photoView = view.findViewById(R.id.photoView);
+        ImageView saveImageView = view.findViewById(R.id.saveImageView);
+
+        String mediaUrl = entry.getMediaUrl();
+        if (TextUtils.isEmpty(entry.getMediaLocalPath()) && !TextUtils.isEmpty(mediaUrl)) {
+            String imageFileName = DownloadManager.md5(mediaUrl) + mediaUrl.substring(mediaUrl.lastIndexOf('.'));
+            File file = new File(Config.PHOTO_SAVE_DIR, imageFileName);
+            if (file.exists()) {
+                saveImageView.setVisibility(View.GONE);
+            } else {
+                saveImageView.setVisibility(View.VISIBLE);
+                saveImageView.setOnClickListener(v -> {
+                    saveImageView.setVisibility(View.GONE);
+                    DownloadManager.download(entry.getMediaUrl(), Config.PHOTO_SAVE_DIR, imageFileName, new DownloadManager.SimpleOnDownloadListener() {
+                        @Override
+                        public void onUiSuccess(File file1) {
+                            if (isFinishing()) {
+                                return;
+                            }
+                            Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                });
+            }
+        } else {
+            saveImageView.setVisibility(View.GONE);
+        }
+
         if (entry.getThumbnail() != null) {
             GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl())
                     .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
@@ -243,12 +285,15 @@ public class MMPreviewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mm_preview);
         views = new SparseArray<>(3);
-        final ViewPagerFixed viewPager = findViewById(R.id.viewPager);
-        viewPager.setAdapter(pagerAdapter);
+        viewPager = findViewById(R.id.viewPager);
+        adapter = new MMPagerAdapter(entries);
+        viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(1);
         viewPager.addOnPageChangeListener(pageChangeListener);
         if (currentPosition == 0) {
-            viewPager.post(() -> pageChangeListener.onPageSelected(0));
+            viewPager.post(() -> {
+                pageChangeListener.onPageSelected(0);
+            });
         } else {
             viewPager.setCurrentItem(currentPosition);
             pendingPreviewInitialMedia = true;

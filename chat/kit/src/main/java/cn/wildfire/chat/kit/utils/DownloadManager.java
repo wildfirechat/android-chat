@@ -2,12 +2,16 @@ package cn.wildfire.chat.kit.utils;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
-import androidx.annotation.NonNull;
+import cn.wildfirechat.remote.ChatManager;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -20,25 +24,13 @@ import okhttp3.Response;
 
 public class DownloadManager {
 
-    private static DownloadManager downloadManager;
-    private final OkHttpClient okHttpClient;
+    private static final OkHttpClient okHttpClient = new OkHttpClient();
 
-    public static DownloadManager get() {
-        if (downloadManager == null) {
-            downloadManager = new DownloadManager();
-        }
-        return downloadManager;
-    }
-
-    private DownloadManager() {
-        okHttpClient = new OkHttpClient();
-    }
-
-    public void download(final String url, final String saveDir, final OnDownloadListener listener) {
+    public static void download(final String url, final String saveDir, final OnDownloadListener listener) {
         download(url, saveDir, listener);
     }
 
-    public void download(final String url, final String saveDir, String name, final OnDownloadListener listener) {
+    public static void download(final String url, final String saveDir, String name, final OnDownloadListener listener) {
         Request request = new Request.Builder().url(url).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -101,7 +93,7 @@ public class DownloadManager {
      * @return
      * @throws IOException 判断下载目录是否存在
      */
-    private String isExistDir(String saveDir) throws IOException {
+    private static String isExistDir(String saveDir) throws IOException {
         // 下载位置
         File downloadFile = new File(saveDir);
         if (!downloadFile.mkdirs()) {
@@ -115,7 +107,7 @@ public class DownloadManager {
      * @return 从下载连接中解析出文件名
      */
     @NonNull
-    private String getNameFromUrl(String url) {
+    private static String getNameFromUrl(String url) {
         return url.substring(url.lastIndexOf("/") + 1);
     }
 
@@ -134,5 +126,60 @@ public class DownloadManager {
          * 下载失败
          */
         void onFail();
+    }
+
+    public static class SimpleOnDownloadListener implements OnDownloadListener {
+
+        @Override
+        final public void onSuccess(File file) {
+            ChatManager.Instance().getMainHandler().post(() -> onUiSuccess(file));
+        }
+
+        @Override
+        final public void onProgress(int progress) {
+            ChatManager.Instance().getMainHandler().post(() -> onProgress(progress));
+        }
+
+        @Override
+        final public void onFail() {
+            ChatManager.Instance().getMainHandler().post(this::onUiFail);
+        }
+
+        public void onUiSuccess(File file) {
+
+
+        }
+
+        public void onUiProgress(int progress) {
+
+        }
+
+        public void onUiFail() {
+
+        }
+    }
+
+    public static String urlToMd5(String url) {
+        return md5(url);
+    }
+
+    public static String md5(String s) {
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes());
+            byte[] messageDigest = digest.digest();
+
+            // Create Hex String
+            StringBuilder hexString = new StringBuilder();
+            for (int i = 0; i < messageDigest.length; i++) {
+                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
