@@ -1606,17 +1606,19 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public int getMessageCount(Conversation conversation) throws RemoteException {
-            return ProtoLogic.getMessageCount(conversation.type.getValue(), conversation.target, conversation.line);
+//            return ProtoLogic.getMessageCount(conversation.type.getValue(), conversation.target, conversation.line);
+            return 0;
         }
 
         @Override
         public boolean begainTransaction() throws RemoteException {
-            return ProtoLogic.beginTransaction();
+            //return ProtoLogic.beginTransaction();
+            return false;
         }
 
         @Override
         public void commitTransaction() throws RemoteException {
-            ProtoLogic.commitTransaction();
+//            ProtoLogic.commitTransaction();
         }
 
     }
