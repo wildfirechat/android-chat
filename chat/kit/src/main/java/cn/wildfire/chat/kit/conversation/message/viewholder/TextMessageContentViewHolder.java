@@ -25,9 +25,15 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.widget.LinkClickListener;
 import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 
-@MessageContentType(TextMessageContent.class)
+
+@MessageContentType(value = {
+        TextMessageContent.class,
+        PTextMessageContent.class
+
+})
 @SendLayoutRes(resId = R.layout.conversation_item_text_send)
 @ReceiveLayoutRes(resId = R.layout.conversation_item_text_receive)
 @EnableContextMenu
