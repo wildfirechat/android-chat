@@ -57,42 +57,29 @@
     </LinearLayout>
 
 
-    <com.lqr.optionitemview.OptionItemView
+    <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/notificationOptionItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
-        app:left_image_margin_left="@dimen/option_item_margin_left"
-        app:left_image_margin_right="@dimen/option_item_margin_right"
-        app:left_src="@mipmap/ic_notification"
-        app:left_text="消息通知"
-        app:left_text_color="@color/black0"
-        app:left_text_size="16sp" />
+        app:start_src="@mipmap/ic_notification"
+        app:title="消息通知" />
 
-    <com.lqr.optionitemview.OptionItemView
+    <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/passwordOptionItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
-        android:visibility="gone"
-        app:left_image_margin_left="@dimen/option_item_margin_left"
-        app:left_image_margin_right="@dimen/option_item_margin_right"
-        app:left_src="@mipmap/ic_account_setting"
-        app:left_text="账号与安全"
-        app:left_text_color="@color/black0"
-        app:left_text_size="16sp" />
+        app:divider_align_to_title="true"
+        app:start_src="@mipmap/ic_account_setting"
+        app:title="账号与安全" />
 
-    <com.lqr.optionitemview.OptionItemView
+    <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/settintOptionItemView"
         style="@style/OptionItem"
-        android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
         android:clickable="true"
-        app:left_image_margin_left="@dimen/option_item_margin_left"
-        app:left_image_margin_right="@dimen/option_item_margin_right"
-        app:left_src="@mipmap/me_press"
-        app:left_text="@string/setting"
-        app:left_text_color="@color/black0"
-        app:left_text_size="16sp" />
+        app:start_src="@mipmap/me_press"
+        app:title="@string/setting" />
 
 </LinearLayout>

@@ -28,7 +28,9 @@ import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.xlog.Log;
 import com.tencent.mars.xlog.Xlog;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +40,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -46,6 +49,7 @@ import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
@@ -398,8 +402,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             List<ConversationInfo> out = new ArrayList<>();
             for (ProtoConversationInfo protoConversationInfo : protoConversationInfos) {
                 ConversationInfo info = convertProtoConversationInfo(protoConversationInfo);
-                if (info != null)
-                    out.add(info);
+                if (info != null) {
+                    if (info.conversation.type == Conversation.ConversationType.Group) {
+                        GroupInfo groupInfo = getGroupInfo(info.conversation.target, false);
+                        if(groupInfo != null){
+                            out.add(info);
+                        }
+                    } else {
+                        out.add(info);
+                    }
+                }
             }
             return out;
         }
@@ -1016,8 +1028,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void uploadMedia(byte[] data, int mediaType, final IUploadMediaCallback callback) throws RemoteException {
-            ProtoLogic.uploadMedia(data, mediaType, new ProtoLogic.IUploadMediaCallback() {
+        public void uploadMedia(String fileName, byte[] data, int mediaType, final IUploadMediaCallback callback) throws RemoteException {
+            ProtoLogic.uploadMedia(fileName, data, mediaType, new ProtoLogic.IUploadMediaCallback() {
                 @Override
                 public void onSuccess(String s) {
                     try {
@@ -1041,6 +1053,26 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             });
+        }
+
+        @Override
+        public void uploadMediaFile(String mediaPath, int mediaType, IUploadMediaCallback callback) throws RemoteException {
+            try {
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(mediaPath));
+                int length = bufferedInputStream.available();
+                byte[] data = new byte[length];
+                bufferedInputStream.read(data);
+
+                String fileName = "";
+                if (mediaPath.contains("/")) {
+                    fileName = mediaPath.substring(mediaPath.lastIndexOf("/") + 1, mediaPath.length());
+                }
+                uploadMedia(fileName, data, mediaType, callback);
+            } catch (Exception e) {
+                e.printStackTrace();
+                e.printStackTrace();
+                callback.onFailure(ErrorCode.FILE_NOT_EXIST);
+            }
         }
 
         @Override
@@ -1438,7 +1470,25 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void modifyChannelInfo(String channelId, int modifyType, String newValue, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.modifyChannelInfo(channelId, modifyType, newValue, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
 
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
@@ -1548,6 +1598,28 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
             return out;
+        }
+
+        @Override
+        public String getImageThumbPara() throws RemoteException {
+            return ProtoLogic.getImageThumbPara();
+        }
+
+        @Override
+        public int getMessageCount(Conversation conversation) throws RemoteException {
+//            return ProtoLogic.getMessageCount(conversation.type.getValue(), conversation.target, conversation.line);
+            return 0;
+        }
+
+        @Override
+        public boolean begainTransaction() throws RemoteException {
+            //return ProtoLogic.beginTransaction();
+            return false;
+        }
+
+        @Override
+        public void commitTransaction() throws RemoteException {
+//            ProtoLogic.commitTransaction();
         }
 
     }
@@ -1715,7 +1787,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         msg.direction = MessageDirection.values()[protoMessage.getDirection()];
-        msg.status = MessageStatus.values()[protoMessage.getStatus()];
+        msg.status = MessageStatus.status(protoMessage.getStatus());
         msg.messageUid = protoMessage.getMessageUid();
         msg.serverTime = protoMessage.getTimestamp();
 
@@ -1738,6 +1810,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     public void onCreate() {
         super.onCreate();
 
+        AppLogic.setCallBack(this);
+        SdtLogic.setCallBack(this);
         // Initialize the Mars PlatformComm
         handler = new Handler(Looper.getMainLooper());
         Mars.init(getApplicationContext(), handler);
@@ -1766,6 +1840,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             mBinder.registerMessageContent(SoundMessageContent.class.getName());
             mBinder.registerMessageContent(StickerMessageContent.class.getName());
             mBinder.registerMessageContent(TextMessageContent.class.getName());
+            mBinder.registerMessageContent(PTextMessageContent.class.getName());
             mBinder.registerMessageContent(TipNotificationContent.class.getName());
             mBinder.registerMessageContent(TransferGroupOwnerNotificationContent.class.getName());
             mBinder.registerMessageContent(VideoMessageContent.class.getName());
@@ -1909,7 +1984,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public AppLogic.DeviceInfo getDeviceType() {
-        if (info == null) {
+        if (info == null || TextUtils.isEmpty(info.clientid)) {
             String imei = PreferenceManager.getDefaultSharedPreferences(context).getString("mars_core_uid", "");
             if (TextUtils.isEmpty(imei)) {
                 imei = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -1940,6 +2015,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     @Override
     public void onConnectionStatusChanged(int status) {
         android.util.Log.d("", "status changed :" + status);
+        if (mConnectionStatus == status) {
+            return;
+        }
         mConnectionStatus = status;
         if (status == -4) {
             status = -1;
@@ -2127,6 +2205,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onGroupInfoUpdated(List<ProtoGroupInfo> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
         handler.post(() -> {
             ArrayList<GroupInfo> groups = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {

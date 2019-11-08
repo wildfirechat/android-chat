@@ -13,38 +13,38 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.lqr.optionitemview.OptionItemView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.setting.SettingActivity;
+import cn.wildfire.chat.app.setting.SettingActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
 public class MeFragment extends Fragment {
 
-    @Bind(R.id.meLinearLayout)
+    @BindView(R.id.meLinearLayout)
     LinearLayout meLinearLayout;
-    @Bind(R.id.portraitImageView)
+    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @Bind(R.id.nameTextView)
+    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @Bind(R.id.accountTextView)
+    @BindView(R.id.accountTextView)
     TextView accountTextView;
 
-    @Bind(R.id.notificationOptionItemView)
+    @BindView(R.id.notificationOptionItemView)
     OptionItemView notificationOptionItem;
 
-    @Bind(R.id.settintOptionItemView)
+    @BindView(R.id.settintOptionItemView)
     OptionItemView settingOptionItem;
 
     private UserViewModel userViewModel;
@@ -82,7 +82,7 @@ public class MeFragment extends Fragment {
     }
 
     private void init() {
-        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.getUserInfoAsync(userViewModel.getUserId(), true)
                 .observe(this, info -> {
                     userInfo = info;

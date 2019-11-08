@@ -3,36 +3,4 @@
     <color name="colorPrimary">#3e64e4</color>
     <color name="colorPrimaryDark">#3e64e4</color>
     <color name="colorAccent">#7e7e7e</color>
-
-    <color name="white">#ffffff</color>
-    <color name="line">#D2D2D2</color>
-
-    <color name="gray0">#464646</color>
-    <color name="gray1">#7e7e7e</color>
-    <color name="gray2">#969696</color>
-    <color name="gray3">#c8969696</color>
-    <color name="gray4">#F5F5F5</color>
-    <color name="gray5">#EBEBEB</color>
-    <color name="gray7">#999999</color>
-    <color name="gray8">#D9D9D9</color>
-    <color name="gray10">#EBEFEF</color>
-
-    <color name="red6">#D54A47</color>
-    <color name="red7">#E64340</color>
-    <color name="red8">#FF3E3E</color>
-
-    <color name="green1">#45C01A</color>
-    <color name="green2">#A3DEA3</color>
-    <color name="green3">#1AAD19</color>
-
-    <color name="blue0">#576B95</color>
-
-    <color name="black0">#000000</color>
-
-
-    <!--遮盖层颜色-->
-
-    <!--快速索引bar颜色-->
-    <color name="side_bar">#919091</color>
-    <color name="side_bar_pressed">#BFBFBF</color>
 </resources>

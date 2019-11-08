@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/llGroup"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/selector_common_item"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/item_margin_left_and_right"
+        android:paddingRight="@dimen/item_margin_left_and_right">
+
+        <RelativeLayout
+            android:layout_width="46dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ivGroup"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/ic_group_cheat" />
+
+            <TextView
+                android:id="@+id/tvNewGroupUnread"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_alignTop="@id/ivGroup"
+                android:layout_alignRight="@id/ivGroup"
+                android:layout_marginTop="-6dp"
+                android:layout_marginRight="-6dp"
+                android:background="@mipmap/bg_unread"
+                android:gravity="center"
+                android:text="10"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:text="@string/group_cheat"
+            android:textColor="@color/black0"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        style="@style/Line"
+        android:layout_marginLeft="72dp" />
+
+</LinearLayout>

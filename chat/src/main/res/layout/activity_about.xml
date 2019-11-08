@@ -46,14 +46,11 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <com.lqr.optionitemview.OptionItemView
+        <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/introOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
-            app:left_text="@string/function_introduction"
-            app:left_text_color="@color/black0"
-            app:left_text_margin_left="@dimen/option_item_margin_left"
-            app:left_text_size="16sp" />
+            app:title="@string/function_introduction" />
 
         <View
             style="@style/Line"
@@ -61,14 +58,11 @@
             android:layout_marginRight="15dp" />
 
 
-        <com.lqr.optionitemview.OptionItemView
+        <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/agreementOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
-            app:left_text="用户协议"
-            app:left_text_color="@color/black0"
-            app:left_text_margin_left="@dimen/option_item_margin_left"
-            app:left_text_size="16sp" />
+            app:title="用户协议" />
 
         <View
             style="@style/Line"
@@ -76,14 +70,11 @@
             android:layout_marginRight="15dp" />
 
 
-        <com.lqr.optionitemview.OptionItemView
+        <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/privacyOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
-            app:left_text="隐私政策"
-            app:left_text_color="@color/black0"
-            app:left_text_margin_left="@dimen/option_item_margin_left"
-            app:left_text_size="16sp" />
+            app:title="隐私政策" />
 
 
     </LinearLayout>

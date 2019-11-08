@@ -8,7 +8,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -37,6 +37,7 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
 
     private int mTabPosi = 0;
     private Context mContext;
+    private View emotionLayout;
     private ViewPagerFixed mVpEmotioin;
     private LinearLayout mLlPageNumber;
     private LinearLayout mLlTabContainer;
@@ -114,7 +115,6 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         init();
-        initListener();
     }
 
     @Override
@@ -159,23 +159,37 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
     }
 
     private void init() {
+        if (emotionLayout != null) {
+            ((ViewGroup) emotionLayout).removeAllViews();
+            removeView(emotionLayout);
+        }
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.emotion_layout, this);
-//        View.inflate(mContext, R.layout.emotion_layout, this);
+        emotionLayout = inflater.inflate(R.layout.emotion_layout, this);
 
         mVpEmotioin = (ViewPagerFixed) findViewById(R.id.vpEmotioin);
         mLlPageNumber = (LinearLayout) findViewById(R.id.llPageNumber);
         mLlTabContainer = (LinearLayout) findViewById(R.id.llTabContainer);
         mRlEmotionAdd = (RelativeLayout) findViewById(R.id.rlEmotionAdd);
+
+//        mVpEmotioin.removeAllViews();
+//        mLlPageNumber.removeAllViews();
+//        mLlTabContainer.removeAllViews();
+
         setEmotionAddVisiable(mEmotionAddVisiable);
-
-        initTabs();
-
+        emotionLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                initTabs();
+                initListener();
+            }
+        });
     }
+
 
     private void initTabs() {
         //默认添加一个表情tab
         EmotionTab emojiTab = new EmotionTab(mContext, R.drawable.ic_tab_emoji);
+        mTabCount = 1;
         mLlTabContainer.addView(emojiTab);
         mTabViewArray.put(0, emojiTab);
 
@@ -187,6 +201,7 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
                 EmotionTab tab = new EmotionTab(mContext, category.getCoverImgPath());
                 mLlTabContainer.addView(tab);
                 mTabViewArray.put(i + 1, tab);
+                mTabCount++;
             }
         }
 
@@ -209,7 +224,6 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
 
     private void initListener() {
         if (mLlTabContainer != null) {
-            mTabCount = mLlTabContainer.getChildCount() - 1;//不包含最后的设置按钮
             for (int position = 0; position < mTabCount; position++) {
                 View tab = mLlTabContainer.getChildAt(position);
                 tab.setTag(position);
@@ -296,16 +310,10 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
     private EmotionViewPagerAdapter adapter;
 
     private void fillVpEmotioin(int tabPosi) {
-        if (adapter == null) {
-            adapter = new EmotionViewPagerAdapter(mMeasuredWidth, mMeasuredHeight, mEmotionSelectedListener);
-            mVpEmotioin.setAdapter(adapter);
-            mVpEmotioin.setOffscreenPageLimit(1);
-        }
-        mLlPageNumber.removeAllViews();
+        adapter = new EmotionViewPagerAdapter(mMeasuredWidth, mMeasuredHeight, mEmotionSelectedListener);
+        mVpEmotioin.setAdapter(adapter);
+        mVpEmotioin.setOffscreenPageLimit(1);
         setCurPageCommon(0);
-        if (tabPosi == 0) {
-            adapter.attachEditText(mMessageEditText);
-        }
     }
 
     private void setCategoryPageIndexIndicator(int position, int pageCount) {
@@ -342,11 +350,4 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
             ivCur.setVisibility(View.VISIBLE);
         }
     }
-
-    EditText mMessageEditText;
-
-    public void attachEditText(EditText messageEditText) {
-        mMessageEditText = messageEditText;
-    }
-
 }

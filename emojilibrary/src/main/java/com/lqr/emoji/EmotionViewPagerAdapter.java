@@ -1,21 +1,18 @@
 package com.lqr.emoji;
 
 import android.content.Context;
-import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 
-import java.util.List;
-
 import androidx.viewpager.widget.PagerAdapter;
+
+import java.util.List;
 
 import static com.lqr.emoji.EmotionLayout.EMOJI_PER_PAGE;
 import static com.lqr.emoji.EmotionLayout.STICKER_PER_PAGE;
@@ -33,11 +30,6 @@ public class EmotionViewPagerAdapter extends PagerAdapter {
     private int mEmotionLayoutHeight;
 
     private IEmotionSelectedListener listener;
-    EditText mMessageEditText;
-
-    public void attachEditText(EditText messageEditText) {
-        mMessageEditText = messageEditText;
-    }
 
     public EmotionViewPagerAdapter(int emotionLayoutWidth, int emotionLayoutHeight, IEmotionSelectedListener listener) {
         mEmotionLayoutWidth = emotionLayoutWidth;
@@ -173,14 +165,12 @@ public class EmotionViewPagerAdapter extends PagerAdapter {
                 if (listener != null) {
                     listener.onEmojiSelected("/DEL");
                 }
-                onEmojiSelected("/DEL");
             } else {
                 String text = EmojiManager.getDisplayText((int) id);
                 if (!TextUtils.isEmpty(text)) {
                     if (listener != null) {
                         listener.onEmojiSelected(text);
                     }
-                    onEmojiSelected(text);
                 }
             }
         }
@@ -216,31 +206,4 @@ public class EmotionViewPagerAdapter extends PagerAdapter {
             }
         }
     };
-
-    private void onEmojiSelected(String key) {
-
-        if (mMessageEditText == null)
-            return;
-        Editable editable = mMessageEditText.getText();
-        if (key.equals("/DEL")) {
-            mMessageEditText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
-        } else {
-            int code = Integer.decode(key);
-            char[] chars = Character.toChars(code);
-            String value = Character.toString(chars[0]);
-            for (int i = 1; i < chars.length; i++) {
-                value += Character.toString(chars[i]);
-            }
-
-            int start = mMessageEditText.getSelectionStart();
-            int end = mMessageEditText.getSelectionEnd();
-            start = (start < 0 ? 0 : start);
-            end = (start < 0 ? 0 : end);
-            editable.replace(start, end, value);
-
-            int editEnd = mMessageEditText.getSelectionEnd();
-            MoonUtils.replaceEmoticons(LQREmotionKit.getContext(), editable, 0, editable.toString().length());
-            mMessageEditText.setSelection(editEnd);
-        }
-    }
 }

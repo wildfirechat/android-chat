@@ -1,6 +1,7 @@
 package cn.wildfirechat.push;
 
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -9,6 +10,12 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.huawei.hms.api.ConnectionResult;
 import com.huawei.hms.api.HuaweiApiClient;
@@ -17,10 +24,15 @@ import com.huawei.hms.support.api.client.ResultCallback;
 import com.huawei.hms.support.api.push.HuaweiPush;
 import com.huawei.hms.support.api.push.TokenResult;
 import com.meizu.cloud.pushsdk.util.MzSystemUtils;
+import com.vivo.push.IPushActionListener;
+import com.vivo.push.PushClient;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Properties;
@@ -39,26 +51,41 @@ public class PushService {
     private static String applicationId;
 
     public enum PushServiceType {
-        Unknown, Xiaomi, HMS, MeiZu
+        Unknown, Xiaomi, HMS, MeiZu, VIVO
     }
 
-    public static void init(Context gContext, String applicationId) {
+    public static void init(Application gContext, String applicationId) {
         PushService.applicationId = applicationId;
         String sys = getSystem();
-        if (SYS_EMUI.equals(sys) && INST.isHMSConfigured(gContext)) {
+        if (SYS_EMUI.equals(sys)) {
             INST.pushServiceType = PushServiceType.HMS;
             INST.initHMS(gContext);
         } else if (/*SYS_FLYME.equals(sys) && INST.isMZConfigured(gContext)*/MzSystemUtils.isBrandMeizu()) {
             INST.pushServiceType = PushServiceType.MeiZu;
             INST.initMZ(gContext);
+        } else if (SYS_VIVO.equalsIgnoreCase(sys)) {
+            INST.pushServiceType = PushServiceType.VIVO;
+            INST.initVIVO(gContext);
         } else /*if (SYS_MIUI.equals(sys) && INST.isXiaomiConfigured(gContext))*/ {
             //MIUI或其它使用小米推送
             INST.pushServiceType = PushServiceType.Xiaomi;
             INST.initXiaomi(gContext);
         }
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
+            @OnLifecycleEvent(Lifecycle.Event.ON_START)
+            public void onForeground() {
+                clearNotification(gContext);
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            public void onBackground() {
+            }
+        });
+
     }
 
-    public static void clearNotification(Context context) {
+    private static void clearNotification(Context context) {
         if (INST.pushServiceType == PushServiceType.Xiaomi) {
             MiPushClient.clearNotification(context);
         } else {
@@ -133,20 +160,6 @@ public class PushService {
             if (info.pid == myPid && mainProcessName.equals(info.processName)) {
                 return true;
             }
-        }
-        return false;
-    }
-
-    private boolean isHMSConfigured(Context context) {
-        String packageName = context.getPackageName();
-        try {
-            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-            if (appInfo.metaData != null) {
-                int hmsappid = appInfo.metaData.getInt("com.huawei.hms.client.appid", 0);
-                return hmsappid > 0;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return false;
     }
@@ -239,15 +252,35 @@ public class PushService {
         return false;
     }
 
+    private void initVIVO(Context context) {
+
+        // 在当前工程入口函数，建议在Application的onCreate函数中，添加以下代码:
+        PushClient.getInstance(context).initialize();
+        // 当需要打开推送服务时，调用以下代码:
+        PushClient.getInstance(context).turnOnPush(new IPushActionListener() {
+            @Override
+            public void onStateChanged(int state) {
+                Log.d("PushService", "vivo turnOnPush " + state);
+                String regId = PushClient.getInstance(context).getRegId();
+                if (!TextUtils.isEmpty(regId)) {
+                    ChatManager.Instance().setDeviceToken(regId, ChatManager.PushType.VIVO);
+                }
+            }
+        });
+    }
+
+
     public static final String SYS_EMUI = "sys_emui";
     public static final String SYS_MIUI = "sys_miui";
     public static final String SYS_FLYME = "sys_flyme";
+    public static final String SYS_VIVO = "sys_vivo";
     private static final String KEY_MIUI_VERSION_CODE = "ro.miui.ui.version.code";
     private static final String KEY_MIUI_VERSION_NAME = "ro.miui.ui.version.name";
     private static final String KEY_MIUI_INTERNAL_STORAGE = "ro.miui.internal.storage";
     private static final String KEY_EMUI_API_LEVEL = "ro.build.hw_emui_api_level";
     private static final String KEY_EMUI_VERSION = "ro.build.version.emui";
     private static final String KEY_EMUI_CONFIG_HW_SYS_VERSION = "ro.confg.hw_systemversion";
+    private static final String KEY_VERSION_VIVO = "ro.vivo.os.version";
 
     public static String getSystem() {
         String SYS = null;
@@ -265,6 +298,8 @@ public class PushService {
                 SYS = SYS_EMUI;//华为
             } else if (getMeizuFlymeOSFlag().toLowerCase().contains("flyme")) {
                 SYS = SYS_FLYME;//魅族
+            } else if (!TextUtils.isEmpty(getProp(KEY_VERSION_VIVO))) {
+                SYS = SYS_VIVO;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -275,6 +310,8 @@ public class PushService {
                 SYS = SYS_MIUI;
             } else if (Build.MANUFACTURER.equalsIgnoreCase("meizu")) {
                 SYS = SYS_FLYME;
+            } else if (Build.MANUFACTURER.equalsIgnoreCase("vivo")) {
+                SYS = SYS_VIVO;
             }
 
             return SYS;
@@ -294,6 +331,29 @@ public class PushService {
         } catch (Exception e) {
         }
         return defaultValue;
+    }
+
+    public static String getProp(String name) {
+        String line = null;
+        BufferedReader input = null;
+        try {
+            Process p = Runtime.getRuntime().exec("getprop " + name);
+            input = new BufferedReader(new InputStreamReader(p.getInputStream()), 1024);
+            line = input.readLine();
+            input.close();
+        } catch (IOException ex) {
+            Log.e("getProp", "Unable to read prop " + name, ex);
+            return null;
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return line;
     }
 
     public static PushServiceType getPushServiceType() {

@@ -33,11 +33,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
+import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -55,21 +55,23 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageChangeListener {
 
     private List<Fragment> mFragmentList = new ArrayList<>(4);
 
-    @Bind(R.id.bottomNavigationView)
+    @BindView(R.id.bottomNavigationView)
     BottomNavigationView bottomNavigationView;
-    @Bind(R.id.contentViewPager)
+    @BindView(R.id.contentViewPager)
     ViewPagerFixed contentViewPager;
-    @Bind(R.id.startingTextView)
+    @BindView(R.id.startingTextView)
     TextView startingTextView;
-    @Bind(R.id.contentLinearLayout)
+    @BindView(R.id.contentLinearLayout)
     LinearLayout contentLinearLayout;
 
     private QBadgeView unreadMessageUnreadBadgeView;
@@ -78,13 +80,12 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
     private static final int REQUEST_IGNORE_BATTERY_CODE = 101;
 
-    private IMServiceStatusViewModel imServiceStatusViewModel;
     private boolean isInitialized = false;
 
-    private ConversationListFragment conversationListFragment;
     private ContactListFragment contactListFragment;
-    private DiscoveryFragment discoveryFragment;
-    private MeFragment meFragment;
+
+    private ContactViewModel contactViewModel;
+    private ConversationListViewModel conversationListViewModel;
 
     private Observer<Boolean> imStatusLiveDataObserver = status -> {
         if (status && !isInitialized) {
@@ -99,21 +100,41 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     }
 
     @Override
-    protected void afterViews() {
-        imServiceStatusViewModel = WfcUIKit.getAppScopeViewModel(IMServiceStatusViewModel.class);
-        imServiceStatusViewModel.imServiceStatusLiveData().observeForever(imStatusLiveDataObserver);
+    protected void onResume() {
+        super.onResume();
+        if (contactViewModel != null) {
+            contactViewModel.reloadFriendRequestStatus();
+            conversationListViewModel.reloadConversationUnreadStatus();
+        }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        imServiceStatusViewModel.imServiceStatusLiveData().removeObserver(imStatusLiveDataObserver);
+    protected void afterViews() {
+        IMServiceStatusViewModel imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
+        imServiceStatusViewModel.imServiceStatusLiveData().observe(this, imStatusLiveDataObserver);
+        IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
+        connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
+            if (status == ConnectionStatus.ConnectionStatusTokenIncorrect || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch || status == ConnectionStatus.ConnectionStatusRejected || status == ConnectionStatus.ConnectionStatusLogout) {
+                ChatManager.Instance().disconnect(true);
+                reLogin();
+            }
+        });
+    }
+
+    private void reLogin() {
+        SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+        sp.edit().clear().apply();
+
+        Intent intent = new Intent(this, SplashActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void init() {
         initView();
 
-        ConversationListViewModel conversationListViewModel = ViewModelProviders
+        conversationListViewModel = ViewModelProviders
                 .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
                 .get(ConversationListViewModel.class);
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
@@ -125,7 +146,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             }
         });
 
-        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
+        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
             if (count == null || count == 0) {
                 hideUnreadFriendRequestBadgeView();
@@ -152,7 +173,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void hideUnreadMessageBadgeView() {
         if (unreadMessageUnreadBadgeView != null) {
             unreadMessageUnreadBadgeView.hide(true);
-            unreadFriendRequestBadgeView = null;
+            unreadMessageUnreadBadgeView = null;
         }
     }
 
@@ -198,10 +219,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         //设置ViewPager的最大缓存页面
         contentViewPager.setOffscreenPageLimit(3);
 
-        conversationListFragment = new ConversationListFragment();
+        ConversationListFragment conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();
-        discoveryFragment = new DiscoveryFragment();
-        meFragment = new MeFragment();
+        DiscoveryFragment discoveryFragment = new DiscoveryFragment();
+        MeFragment meFragment = new MeFragment();
         mFragmentList.add(conversationListFragment);
         mFragmentList.add(contactListFragment);
         mFragmentList.add(discoveryFragment);
@@ -339,9 +360,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void onScanPcQrCode(String qrcode) {
         String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);
         String value = qrcode.substring(qrcode.lastIndexOf("/") + 1);
-//        Uri uri = Uri.parse(value);
-//        uri.getAuthority();
-//        uri.getQuery()
         switch (prefix) {
             case WfcScheme.QR_CODE_PREFIX_PC_SESSION:
                 pcLogin(value);
@@ -369,7 +387,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private void showUser(String uid) {
 
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(uid, true);
         if (userInfo == null) {
             return;
@@ -392,7 +410,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     }
 
     private boolean checkDisplayName() {
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         if (userInfo != null && TextUtils.equals(userInfo.displayName, userInfo.mobile)) {

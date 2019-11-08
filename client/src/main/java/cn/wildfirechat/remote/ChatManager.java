@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -106,6 +107,7 @@ public class ChatManager {
     private UserSource userSource;
 
     private boolean startLog;
+    private int connectionStatus;
 
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
@@ -130,13 +132,12 @@ public class ChatManager {
     private LruCache<String, UserInfo> userInfoCache;
     // key = memberId@groupId
     private LruCache<String, GroupMember> groupMemberCache;
-    // key = userId@groupId
-    private LruCache<String, UserInfo> groupUserCache;
 
     public enum PushType {
         Xiaomi(1),
         HMS(2),
-        MeiZu(3);
+        MeiZu(3),
+        VIVO(4);
 
         private int value;
 
@@ -178,6 +179,8 @@ public class ChatManager {
 
     /**
      * 初始化，must be called from the main thread
+     * serverHost可以是IP，可以是域名，如果是域名的话只支持主域名或www域名，二级域名不支持！
+     * 例如：example.com或www.example.com是支持的；xx.example.com或xx.yy.example.com是不支持的。
      *
      * @param context
      * @param serverHost
@@ -241,6 +244,10 @@ public class ChatManager {
         this.userSource = userSource;
     }
 
+    public int getConnectionStatus() {
+        return connectionStatus;
+    }
+
     //App在后台时，如果需要强制连上服务器并收消息，调用此方法。后台时无法保证长时间连接中。
     public void forceConnect() {
         if (mClient != null) {
@@ -275,6 +282,7 @@ public class ChatManager {
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
+                connectionStatus = status;
                 Iterator<OnConnectionStatusChangeListener> iterator = onConnectionStatusChangeListeners.iterator();
                 OnConnectionStatusChangeListener listener;
                 while (iterator.hasNext()) {
@@ -323,6 +331,10 @@ public class ChatManager {
                 listener.onReceiveMessage(messages, hasMore);
             }
 
+            // 消息数大于时，认为是历史消息同步，不通知群被删除
+            if (messages.size() > 10) {
+                return;
+            }
             for (Message message : messages) {
                 if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(getUserId()))
                         || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(getUserId()))
@@ -377,7 +389,6 @@ public class ChatManager {
         }
         for (GroupMember member : groupMembers) {
             groupMemberCache.remove(groupMemberCacheKey(groupId, member.memberId));
-            groupUserCache.remove(groupMemberCacheKey(groupId, member.memberId));
         }
         mainHandler.post(() -> {
             for (OnGroupMembersUpdateListener listener : groupMembersUpdateListeners) {
@@ -1168,7 +1179,6 @@ public class ChatManager {
         this.token = token;
         this.userInfoCache = new LruCache<>(1024);
         this.groupMemberCache = new LruCache<>(1024);
-        this.groupUserCache = new LruCache<>(1024);
 
         if (mClient != null) {
             try {
@@ -1427,16 +1437,17 @@ public class ChatManager {
      * @param lines             获取哪些会话线路
      * @return
      */
+    @NonNull
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
-            return null;
+            return new ArrayList<>();
         }
 
         if (conversationTypes == null || conversationTypes.size() == 0 ||
                 lines == null || lines.size() == 0) {
             Log.e(TAG, "Invalid conversation type and lines");
-            return null;
+            return new ArrayList<>();
         }
 
         int[] intypes = new int[conversationTypes.size()];
@@ -1454,7 +1465,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     /**
@@ -1561,7 +1572,7 @@ public class ChatManager {
         }
 
         try {
-            return mClient.getMessagesEx2(intypes, inlines, messageStatus == null ? -1 : messageStatus.ordinal(), fromIndex, before, count, withUser);
+            return mClient.getMessagesEx2(intypes, inlines, messageStatus == null ? -1 : messageStatus.value(), fromIndex, before, count, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -1943,14 +1954,7 @@ public class ChatManager {
         if (userInfo == null) {
             return "<" + memberId + ">";
         }
-        if (!TextUtils.isEmpty(userInfo.friendAlias)) {
-            return userInfo.friendAlias;
-        } else if (!TextUtils.isEmpty(userInfo.groupAlias)) {
-            return userInfo.groupAlias;
-        } else if (!TextUtils.isEmpty(userInfo.displayName)) {
-            return userInfo.displayName;
-        }
-        return "<" + memberId + ">";
+        return userInfo.displayName;
     }
 
     public String getUserDisplayName(UserInfo userInfo) {
@@ -2406,11 +2410,9 @@ public class ChatManager {
         if (TextUtils.isEmpty(userId)) {
             return null;
         }
-        UserInfo userInfo;
+        UserInfo userInfo = null;
         if (!refresh) {
-            if (!TextUtils.isEmpty(groupId)) {
-                userInfo = groupUserCache.get(groupMemberCacheKey(groupId, userId));
-            } else {
+            if (TextUtils.isEmpty(groupId)) {
                 userInfo = userInfoCache.get(userId);
             }
             if (userInfo != null) {
@@ -2436,8 +2438,6 @@ public class ChatManager {
             } else {
                 if (TextUtils.isEmpty(groupId)) {
                     userInfoCache.put(userId, userInfo);
-                } else {
-                    groupUserCache.put(groupMemberCacheKey(groupId, userId), userInfo);
                 }
             }
             return userInfo;
@@ -2486,8 +2486,6 @@ public class ChatManager {
                     if (info != null) {
                         if (TextUtils.isEmpty(groupId)) {
                             userInfoCache.put(info.uid, info);
-                        } else {
-                            groupUserCache.put(groupMemberCacheKey(groupId, info.uid), info);
                         }
                     }
                 }
@@ -2500,15 +2498,81 @@ public class ChatManager {
         return null;
     }
 
-    public void uploadMedia(byte[] data, int mediaType, final GeneralCallback2 callback) {
+    public void uploadMediaFile(String mediaPath, int mediaType, final UploadMediaCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        File file = new File(mediaPath);
+        if (!file.exists()) {
+            callback.onFail(ErrorCode.FILE_NOT_EXIST);
+            return;
+        }
+        if (file.length() > 900 * 1024) {
+            callback.onFail(ErrorCode.FILE_TOO_LARGE);
+            return;
+        }
 
         try {
-            mClient.uploadMedia(data, mediaType, new IUploadMediaCallback.Stub() {
+            mClient.uploadMediaFile(mediaPath, mediaType, new IUploadMediaCallback.Stub() {
+                @Override
+                public void onSuccess(final String remoteUrl) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(remoteUrl);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onProgress(final long uploaded, final long total) throws RemoteException {
+                    callback.onProgress(uploaded, total);
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+        }
+    }
+
+
+    /**
+     * @param data      不能超过1M，为了安全，实际只有900K
+     * @param mediaType
+     * @param callback
+     */
+    public void uploadMedia(String fileName, byte[] data, int mediaType, final GeneralCallback2 callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if (data.length > 900 * 1024) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.FILE_TOO_LARGE);
+            }
+            return;
+        }
+
+        try {
+            mClient.uploadMedia(fileName, data, mediaType, new IUploadMediaCallback.Stub() {
                 @Override
                 public void onSuccess(final String remoteUrl) throws RemoteException {
                     if (callback != null) {
@@ -2988,7 +3052,6 @@ public class ChatManager {
                             @Override
                             public void run() {
                                 groupMemberCache.remove(groupMemberCacheKey(groupId, userId));
-                                groupUserCache.remove(groupMemberCacheKey(groupId, userId));
                                 callback.onSuccess();
                             }
                         });
@@ -3204,7 +3267,10 @@ public class ChatManager {
             if (groupIdMap != null && !groupIdMap.isEmpty()) {
                 for (Map.Entry<String, String> entry : groupIdMap.entrySet()) {
                     if (entry.getValue().equals(fav)) {
-                        groups.add(getGroupInfo(entry.getKey(), false));
+                        GroupInfo info = getGroupInfo(entry.getKey(), false);
+                        if (!(info instanceof NullGroupInfo)) {
+                            groups.add(getGroupInfo(entry.getKey(), false));
+                        }
                     }
                 }
             }
@@ -3280,6 +3346,56 @@ public class ChatManager {
         }
     }
 
+    public String getImageThumbPara() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getImageThumbPara();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public int getMessageCount(Conversation conversation) {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+
+        try {
+            return mClient.getMessageCount(conversation);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public boolean begainTransaction() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.begainTransaction();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void commitTransaction() {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.commitTransaction();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * IM服务进程是否bind成功
      *

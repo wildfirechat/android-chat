@@ -1,5 +1,10 @@
 ## 野火IM解决方案
 
+## 特别注意
+
+1. ```com.android.tools.build:gradle:3.5.0``` 可能存在bug，会导致音视频crash，请勿升级到次版本，若已升级到此版本，请降级到```3.4.2```，对应gradle版本为```5.1.1```
+2. 待修复这问题之后，野火IM会升级所使用的```gradle```和```Android Gradle plugin```的版本
+
 野火IM是一套跨平台、核心功能开源的即时通讯解决方案，主要包含以下内容。
 
 | 仓库                                                         | 说明                                                    | 备注 |
@@ -7,7 +12,6 @@
 | [android-chat](https://github.com/wildfirechat/android-chat) | 野火IM Android SDK源码和App源码                       |可以很方便地进行二次开发，或集成到现有应用当中      |
 | [ios-chat](https://github.com/wildfirechat/ios-chat)         | 野火IM iOS SDK源码和App源码                            |可以很方便地进行二次开发，或集成到现有应用当中      |
 | [pc-chat](https://github.com/wildfirechat/pc-chat)           | 基于[Electron](https://electronjs.org/)开发的PC平台应用 |      |
-| [proto](https://github.com/wildfirechat/proto)               | 野火IM的协议栈实现                                      |      |
 | [server](https://github.com/wildfirechat/server)             | IM server                                               |      |
 | [app server](https://github.com/wildfirechat/app_server)     | 应用服务端                                          |      |
 | [robot_server](https://github.com/wildfirechat/robot_server) | 机器人服务端                                        |      |
@@ -41,13 +45,9 @@
 
 ### 问题交流
 
-1. 微信交流群（请先加我们好友，我们再邀请您进群）
-
-  ![微信二维码](http://static.wildfirechat.cn/wx_qr_wildfirechat.jpeg)   ![微信二维码](http://static.wildfirechat.cn/wx_qr_wfc.jpeg)
-  
-2. 如果大家发现bug，请在GitHub提issue
-3. 其他问题，请到[野火IM论坛](http://bbs.wildfirechat.cn/)进行交流学习
-4. 微信公众号
+1. 如果大家发现bug，请在GitHub提issue
+2. 其他问题，请到[野火IM论坛](http://bbs.wildfirechat.cn/)进行交流学习
+3. 微信公众号
 
 <img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 50% height = 50% />
 

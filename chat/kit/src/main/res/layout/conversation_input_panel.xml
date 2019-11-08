@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/inputPanelFrameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F8F8F8"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp">
+
+        <LinearLayout
+            android:id="@+id/inputContainerLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:focusableInTouchMode="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/audioImageView"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="5dp"
+                android:src="@mipmap/ic_cheat_voice" />
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/shape_session_text_input"
+                    android:maxLines="5"
+                    android:minHeight="30dp"
+                    android:paddingLeft="5dp"
+                    android:textSize="16sp"
+                    android:visibility="visible" />
+
+                <Button
+                    android:id="@+id/audioButton"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/shape_session_btn_voice_normal"
+                    android:gravity="center"
+                    android:text="@string/please_to_talk"
+                    android:textColor="@color/gray1"
+                    android:visibility="gone"
+                    tools:visibility="gone" />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/emotionImageView"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="5dp"
+                android:src="@mipmap/ic_cheat_emo" />
+
+            <ImageView
+                android:id="@+id/extImageView"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_cheat_add" />
+
+            <Button
+                android:id="@+id/sendButton"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="50dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="2.5dp"
+                android:background="@drawable/shape_session_btn_send"
+                android:gravity="center"
+                android:text="@string/send"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/disableInputTipTextView"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/gray5"
+            android:gravity="center"
+            android:text="全员禁言中"
+            android:visibility="gone" />
+
+        <cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout
+            android:id="@+id/emotionContainerFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_custom_keyboard_size"
+            android:background="@color/white"
+            android:visibility="gone">
+            <!--表情-->
+            <com.lqr.emoji.EmotionLayout
+                android:id="@+id/emotionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+        </cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout>
+
+        <cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout
+            android:id="@+id/extContainerContainerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_custom_keyboard_size"
+            android:background="@color/white"
+            android:visibility="gone">
+
+            <!--其他功能-->
+            <cn.wildfire.chat.kit.widget.ViewPagerFixed
+                android:id="@+id/conversationExtViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout>
+    </LinearLayout>
+</merge>

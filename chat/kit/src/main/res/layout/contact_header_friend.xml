@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/llNewFriend"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/selector_common_item"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/item_margin_left_and_right"
+        android:paddingRight="@dimen/item_margin_left_and_right">
+
+        <RelativeLayout
+            android:layout_width="46dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ivNewFriend"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/ic_new_friend" />
+
+            <TextView
+                android:id="@+id/unreadFriendRequestCountTextView"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignTop="@id/ivNewFriend"
+                android:layout_alignRight="@id/ivNewFriend"
+                android:background="@drawable/shape_red_dot"
+                android:gravity="center"
+                android:text="99"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:text="@string/new_friend"
+            android:textColor="@color/black0"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        style="@style/Line"
+        android:layout_marginLeft="72dp" />
+
+</LinearLayout>

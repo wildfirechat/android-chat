@@ -166,6 +166,30 @@
         <meta-data
             android:name="MEIZU_PUSH_APP_KEY"
             android:value="${MEIZU_APP_KEY}" />
+        <!--vivo-->
+        <service
+            android:name="com.vivo.push.sdk.service.CommandClientService"
+            android:exported="true" />
+        <activity
+            android:name="com.vivo.push.sdk.LinkProxyClientActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- push应用定义消息receiver声明 -->
+        <receiver android:name="cn.wildfirechat.push.vivo.PushMessageReceiverImpl">
+            <intent-filter>
+                <!-- 接收push消息 -->
+                <action android:name="com.vivo.pushclient.action.RECEIVE" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="com.vivo.push.api_key"
+            android:value="${VIVO_APP_KEY}" />
+        <meta-data
+            android:name="com.vivo.push.app_id"
+            android:value="${VIVO_APP_ID}" />
 
     </application>
 

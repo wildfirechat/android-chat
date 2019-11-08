@@ -2,7 +2,12 @@ package cn.wildfirechat.message;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.os.Parcel;
+import android.text.TextUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 
@@ -17,8 +22,12 @@ import cn.wildfirechat.message.core.PersistFlag;
 
 @ContentTag(type = MessageContentType.ContentType_Image, flag = PersistFlag.Persist_And_Count)
 public class ImageMessageContent extends MediaMessageContent {
-    private Bitmap thumbnail;
+    private Bitmap thumbnail; // 不跨进程传输
     private byte[] thumbnailBytes;
+
+    private double imageWidth;
+    private double imageHeight;
+    private String thumbPara;
 
     public ImageMessageContent() {
     }
@@ -26,6 +35,7 @@ public class ImageMessageContent extends MediaMessageContent {
     public ImageMessageContent(String path) {
         this.localPath = path;
         mediaType = MessageContentMediaType.IMAGE;
+
     }
 
     public Bitmap getThumbnail() {
@@ -35,18 +45,37 @@ public class ImageMessageContent extends MediaMessageContent {
         return thumbnail;
     }
 
-    public void setThumbnail(Bitmap thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
-
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.searchableContent = "[图片]";
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-        payload.binaryContent = baos.toByteArray();
+
+        if (!TextUtils.isEmpty(localPath)) {
+            if (!TextUtils.isEmpty(thumbPara)) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                Bitmap bitmap = BitmapFactory.decodeFile(localPath, options);
+
+                options.inJustDecodeBounds = true;
+                imageWidth = bitmap.getWidth();
+                imageHeight = bitmap.getHeight();
+                try {
+                    JSONObject objWrite = new JSONObject();
+                    objWrite.put("w", imageWidth);
+                    objWrite.put("h", imageHeight);
+                    objWrite.put("tp", thumbPara);
+                    payload.content = objWrite.toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // TODO 缩略图
+                Bitmap thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), 200, 200);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+                payload.binaryContent = baos.toByteArray();
+            }
+        }
+
         return payload;
     }
 
@@ -55,11 +84,38 @@ public class ImageMessageContent extends MediaMessageContent {
     public void decode(MessagePayload payload) {
         super.decode(payload);
         thumbnailBytes = payload.binaryContent;
+        if (payload.content != null && !payload.content.isEmpty()) {
+            try {
+                JSONObject jsonObject = new JSONObject(payload.content);
+                imageWidth = jsonObject.optDouble("w");
+                imageHeight = jsonObject.optDouble("h");
+                thumbPara = jsonObject.optString("tp");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     @Override
     public String digest(Message message) {
         return "[图片]";
+    }
+
+    public double getImageWidth() {
+        return imageWidth;
+    }
+
+    public double getImageHeight() {
+        return imageHeight;
+    }
+
+    public String getThumbPara() {
+        return thumbPara;
+    }
+
+    public void setThumbPara(String thumbPara) {
+        this.thumbPara = thumbPara;
     }
 
     @Override
@@ -70,14 +126,18 @@ public class ImageMessageContent extends MediaMessageContent {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeParcelable(this.thumbnail, flags);
         dest.writeByteArray(this.thumbnailBytes);
+        dest.writeDouble(this.imageWidth);
+        dest.writeDouble(this.imageHeight);
+        dest.writeString(this.thumbPara);
     }
 
     protected ImageMessageContent(Parcel in) {
         super(in);
-        this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
         this.thumbnailBytes = in.createByteArray();
+        this.imageWidth = in.readDouble();
+        this.imageHeight = in.readDouble();
+        this.thumbPara = in.readString();
     }
 
     public static final Creator<ImageMessageContent> CREATOR = new Creator<ImageMessageContent>() {

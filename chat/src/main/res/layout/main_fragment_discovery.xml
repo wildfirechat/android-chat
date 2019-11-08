@@ -5,39 +5,31 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.lqr.optionitemview.OptionItemView
+    <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/chatRoomOptionItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
-        app:left_image_margin_left="@dimen/option_item_margin_left"
-        app:left_image_margin_right="@dimen/option_item_margin_right"
-        app:left_src="@mipmap/ic_chatroom"
-        app:left_text="聊天室"
-        app:left_text_color="@color/black0"
-        app:left_text_size="16sp" />
+        app:show_arrow_indicator="true"
+        app:start_src="@mipmap/ic_chatroom"
+        app:title="聊天室" />
 
-    <com.lqr.optionitemview.OptionItemView
+    <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/robotOptionItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
-        app:left_image_margin_left="@dimen/option_item_margin_left"
-        app:left_image_margin_right="@dimen/option_item_margin_right"
-        app:left_src="@mipmap/ic_robot"
-        app:left_text="机器人"
-        app:left_text_color="@color/black0"
-        app:left_text_size="16sp" />
+        app:show_arrow_indicator="true"
+        app:start_src="@mipmap/ic_robot"
+        app:title="机器人" />
 
-    <com.lqr.optionitemview.OptionItemView
+    <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/channelOptionItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
-        app:left_image_margin_left="@dimen/option_item_margin_left"
-        app:left_image_margin_right="@dimen/option_item_margin_right"
-        app:left_src="@mipmap/ic_channel"
-        app:left_text="频道"
-        app:left_text_color="@color/black0"
-        app:left_text_size="16sp" />
+        app:divider_align_to_title="false"
+        app:show_arrow_indicator="true"
+        app:start_src="@mipmap/ic_channel"
+        app:title="频道" />
 </LinearLayout>
