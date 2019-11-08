@@ -144,7 +144,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
                 ChatManager.Instance().uploadMediaFile(groupPortrait, MessageContentMediaType.PORTRAIT.getValue(), new UploadMediaCallback() {
                     @Override
                     public void onSuccess(String result) {
-                        ChatManager.Instance().createGroup(null, finalGroupName, result, GroupInfo.GroupType.Normal, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
+                        ChatManager.Instance().createGroup(null, finalGroupName, result, GroupInfo.GroupType.Restricted, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
                             @Override
                             public void onSuccess(String groupId) {
                                 groupLiveData.setValue(new OperateResult<>(groupId, 0));
