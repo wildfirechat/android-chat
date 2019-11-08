@@ -168,7 +168,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
                     }
                 });
             } else {
-                ChatManager.Instance().createGroup(null, finalGroupName, null, GroupInfo.GroupType.Normal, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
+                ChatManager.Instance().createGroup(null, finalGroupName, null, GroupInfo.GroupType.Restricted, selectedIds, Arrays.asList(0), null, new GeneralCallback2() {
                     @Override
                     public void onSuccess(String groupId) {
                         groupLiveData.setValue(new OperateResult<>(groupId, 0));

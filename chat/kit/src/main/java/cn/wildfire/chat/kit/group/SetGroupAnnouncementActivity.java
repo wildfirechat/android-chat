@@ -105,6 +105,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
                 }
                 dialog.dismiss();
                 Toast.makeText(SetGroupAnnouncementActivity.this, "设置群公告成功", Toast.LENGTH_SHORT).show();
+                finish();
             }
 
             @Override
