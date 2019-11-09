@@ -49,7 +49,7 @@ public class GroupMemberPermissionFragment extends Fragment {
     }
 
     private void init() {
-        privateChatSwitchButton.setCheckedNoEvent(groupInfo.privateChat == 1);
+        privateChatSwitchButton.setCheckedNoEvent(groupInfo.privateChat == 0);
         privateChatSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
             groupViewModel.preventPrivateChat(groupInfo.target, isChecked).observe(this, booleanOperateResult -> {
