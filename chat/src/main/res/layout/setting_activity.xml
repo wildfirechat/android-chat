@@ -34,6 +34,13 @@
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
             app:title="关于" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/diagnoseOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            android:clickable="true"
+            app:title="诊断" />
     </LinearLayout>
 
     <LinearLayout
