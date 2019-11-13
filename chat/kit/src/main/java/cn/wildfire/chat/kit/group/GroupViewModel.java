@@ -385,11 +385,8 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return ChatManager.Instance().getGroupMember(groupId, memberId);
     }
 
-    // 优先级如下：
-    // 1. 群备注 2. 好友备注 3. 用户displayName 4. <uid>
     public String getGroupMemberDisplayName(String groupId, String memberId) {
-        UserInfo userInfo = ChatManager.Instance().getUserInfo(memberId, groupId, false);
-        return userInfo == null ? "<" + memberId + ">" : userInfo.displayName;
+        return ChatManager.Instance().getGroupMemberDisplayName(groupId, memberId);
     }
 
     public MutableLiveData<OperateResult<List<GroupInfo>>> getMyGroups() {
