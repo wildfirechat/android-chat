@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -140,7 +142,18 @@ public class GroupInfoActivity extends WfcBaseActivity {
             startActivity(intent);
             finish();
         } else {
-            groupViewModel.addGroupMember(groupInfo, Collections.singletonList(userId));
+            groupViewModel.addGroupMember(groupInfo, Collections.singletonList(userId)).observe(this, new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean aBoolean) {
+                    if (aBoolean) {
+                        Intent intent = ConversationActivity.buildConversationIntent(GroupInfoActivity.this, Conversation.ConversationType.Group, groupId, 0);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(GroupInfoActivity.this, R.string.add_member_fail, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 }
