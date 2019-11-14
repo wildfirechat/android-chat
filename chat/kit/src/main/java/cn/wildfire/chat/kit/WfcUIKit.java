@@ -103,6 +103,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             String id = sp.getString("id", null);
             String token = sp.getString("token", null);
             if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(token)) {
+                //需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
                 ChatManagerHolder.gChatManager.connect(id, token);
             }
         } catch (NotInitializedExecption notInitializedExecption) {
