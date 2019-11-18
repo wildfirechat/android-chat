@@ -416,6 +416,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @Override
     public void onUserMemberClick(UserInfo userInfo) {
         if (groupInfo != null && groupInfo.privateChat == 1 && groupMember.type == GroupMember.GroupMemberType.Normal) {
+            Toast.makeText(getActivity(), "禁止群成员私聊", Toast.LENGTH_SHORT).show();
             return;
         }
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);

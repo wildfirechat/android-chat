@@ -1166,6 +1166,7 @@ public class ChatManager {
     /**
      * 连接服务器
      * userId和token都不允许为空
+     * 需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
      *
      * @param userId
      * @param token
@@ -1949,12 +1950,21 @@ public class ChatManager {
         }
     }
 
+    // 优先级如下：
+    // 1. 群备注 2. 好友备注 3. 用户displayName 4. <uid>
     public String getGroupMemberDisplayName(String groupId, String memberId) {
         UserInfo userInfo = getUserInfo(memberId, groupId, false);
         if (userInfo == null) {
             return "<" + memberId + ">";
         }
-        return userInfo.displayName;
+        if (!TextUtils.isEmpty(userInfo.groupAlias)) {
+            return userInfo.groupAlias;
+        } else if (!TextUtils.isEmpty(userInfo.friendAlias)) {
+            return userInfo.friendAlias;
+        } else if (!TextUtils.isEmpty(userInfo.displayName)) {
+            return userInfo.displayName;
+        }
+        return "<" + memberId + ">";
     }
 
     public String getUserDisplayName(UserInfo userInfo) {
@@ -3396,6 +3406,7 @@ public class ChatManager {
             e.printStackTrace();
         }
     }
+
     /**
      * IM服务进程是否bind成功
      *

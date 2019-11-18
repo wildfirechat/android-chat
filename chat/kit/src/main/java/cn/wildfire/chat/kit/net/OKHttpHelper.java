@@ -124,6 +124,16 @@ public class OKHttpHelper {
                 type = ((ParameterizedType) types[0]).getActualTypeArguments()[0];
             }
 
+            if (type.equals(String.class)) {
+                try {
+                    callback.onSuccess((T) response.body().string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+
+
             try {
                 StatusResult statusResult;
                 if (type instanceof Class && type.equals(StatusResult.class)) {

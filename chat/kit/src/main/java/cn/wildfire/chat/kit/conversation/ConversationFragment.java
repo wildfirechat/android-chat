@@ -106,6 +106,7 @@ public class ConversationFragment extends Fragment implements
     private SettingViewModel settingViewModel;
     private MessageViewModel messageViewModel;
     private UserViewModel userViewModel;
+    private GroupViewModel groupViewModel;
     private boolean isInitialized = false;
     private ChatRoomViewModel chatRoomViewModel;
 
@@ -318,7 +319,7 @@ public class ConversationFragment extends Fragment implements
     private void setupConversation(Conversation conversation) {
 
         if (conversation.type == Conversation.ConversationType.Group) {
-            GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+            groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
             groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
             groupViewModel.groupInfoUpdateLiveData().observe(this, groupInfos -> {
                 for (GroupInfo info : groupInfos) {
@@ -509,6 +510,13 @@ public class ConversationFragment extends Fragment implements
 
     @Override
     public void onPortraitClick(UserInfo userInfo) {
+        if (groupInfo != null && groupInfo.privateChat == 1) {
+            GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
+            if (groupMember.type == GroupMember.GroupMemberType.Normal) {
+                Toast.makeText(getActivity(), "禁止群成员私聊", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);
         intent.putExtra("userInfo", userInfo);
         startActivity(intent);

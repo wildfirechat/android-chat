@@ -41,6 +41,8 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
     ImageView muteImageView;
     @BindView(R.id.speakerImageView)
     ImageView spearImageView;
+    @BindView(R.id.minimizeImageView)
+    ImageView minimizeImageView;
     @BindView(R.id.incomingActionContainer)
     ViewGroup incomingActionContainer;
     @BindView(R.id.outgoingActionContainer)
@@ -87,6 +89,7 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 descTextView.setVisibility(View.GONE);
                 durationTextView.setVisibility(View.VISIBLE);
+                minimizeImageView.setVisibility(View.VISIBLE);
             } else {
                 // do nothing now
             }
