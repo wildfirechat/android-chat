@@ -1769,7 +1769,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         try {
             msg.content.decode(payload);
             if (msg.content instanceof NotificationMessageContent) {
-                if (msg.sender.equals(userId)) {
+                if (msg.content instanceof RecallMessageContent) {
+                    RecallMessageContent recallMessageContent = (RecallMessageContent)msg.content;
+                    if (recallMessageContent.getOperatorId().equals(userId)) {
+                        ((NotificationMessageContent) msg.content).fromSelf = true;
+                    }
+                } else if (msg.sender.equals(userId)) {
                     ((NotificationMessageContent) msg.content).fromSelf = true;
                 }
             }
