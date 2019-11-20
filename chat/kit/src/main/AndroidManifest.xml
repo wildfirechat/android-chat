@@ -159,6 +159,9 @@
             android:name="cn.wildfire.chat.kit.user.UserInfoActivity"
             android:label="用户信息" />
         <activity
+            android:name="cn.wildfire.chat.kit.settings.MessageNotifySettingActivity"
+            android:label="新消息通知" />
+        <activity
             android:name="cn.wildfire.chat.kit.conversation.ConversationInfoActivity"
             android:label="会话详情" />
         <activity
