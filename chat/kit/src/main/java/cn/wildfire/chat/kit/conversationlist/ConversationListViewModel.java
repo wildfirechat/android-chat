@@ -133,7 +133,9 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
             if (conversations != null) {
                 UnreadCount unreadCount = new UnreadCount();
                 for (ConversationInfo info : conversations) {
-                    unreadCount.unread += info.unreadCount.unread;
+                    if (!info.isSilent) {
+                        unreadCount.unread += info.unreadCount.unread;
+                    }
                     unreadCount.unreadMention += info.unreadCount.unreadMention;
                     unreadCount.unreadMentionAll += info.unreadCount.unreadMentionAll;
                 }

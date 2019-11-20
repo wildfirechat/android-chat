@@ -33,6 +33,17 @@
             android:textSize="11sp"
             android:visibility="gone"
             tools:visibility="visible" />
+        <View
+            android:id="@+id/redDotView"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/shape_red_dot"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </RelativeLayout>
 
