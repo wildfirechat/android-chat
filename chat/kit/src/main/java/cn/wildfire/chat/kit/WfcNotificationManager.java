@@ -92,6 +92,8 @@ public class WfcNotificationManager {
             return;
         }
 
+        boolean hiddenNotificationDetail = ChatManager.Instance().isHiddenNotificationDetail();
+
         for (Message message : messages) {
             if (message.direction == MessageDirection.Send || (message.content.getPersistFlag() != Persist_And_Count && !(message.content instanceof RecallMessageContent))) {
                 continue;
@@ -101,7 +103,7 @@ public class WfcNotificationManager {
                 continue;
             }
 
-            String pushContent = message.content.pushContent;
+            String pushContent = hiddenNotificationDetail ? "新消息" : message.content.pushContent;
             if (TextUtils.isEmpty(pushContent)) {
                 pushContent = message.content.digest(message);
             }

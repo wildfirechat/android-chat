@@ -24,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.setting.SettingActivity;
+import cn.wildfire.chat.kit.settings.MessageNotifySettingActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
@@ -111,4 +112,11 @@ public class MeFragment extends Fragment {
         Intent intent = new Intent(getActivity(), SettingActivity.class);
         startActivity(intent);
     }
+
+    @OnClick(R.id.notificationOptionItemView)
+    void msgNotifySetting() {
+        Intent intent = new Intent(getActivity(), MessageNotifySettingActivity.class);
+        startActivity(intent);
+    }
+
 }
