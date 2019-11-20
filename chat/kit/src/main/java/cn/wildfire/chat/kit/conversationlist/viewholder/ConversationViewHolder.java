@@ -49,6 +49,8 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected ImageView silentImageView;
     @BindView(R.id.unreadCountTextView)
     protected TextView unreadCountTextView;
+    @BindView(R.id.redDotView)
+    protected View redDotView;
     @BindView(R.id.contentTextView)
     protected TextView contentTextView;
     @BindView(R.id.promptTextView)
@@ -88,12 +90,29 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         statusImageView.setVisibility(View.GONE);
 
         itemView.setBackgroundResource(conversationInfo.isTop ? R.drawable.selector_stick_top_item : R.drawable.selector_common_item);
-        if (conversationInfo.unreadCount.unread > 0) {
-            unreadCountTextView.setVisibility(View.VISIBLE);
-            unreadCountTextView.setText(conversationInfo.unreadCount.unread + "");
+        redDotView.setVisibility(View.GONE);
+        if (conversationInfo.isSilent) {
+            if (conversationInfo.unreadCount.unreadMention + conversationInfo.unreadCount.unreadMentionAll > 0) {
+                unreadCountTextView.setVisibility(View.VISIBLE);
+                unreadCountTextView.setText((conversationInfo.unreadCount.unreadMention + conversationInfo.unreadCount.unreadMentionAll) + "");
+            } else {
+                if (conversationInfo.unreadCount.unread > 0) { // 显示红点
+                    unreadCountTextView.setText("");
+                    unreadCountTextView.setVisibility(View.GONE);
+                    redDotView.setVisibility(View.VISIBLE);
+                } else {
+                    unreadCountTextView.setVisibility(View.GONE);
+                }
+            }
         } else {
-            unreadCountTextView.setVisibility(View.GONE);
+            if (conversationInfo.unreadCount.unread > 0) {
+                unreadCountTextView.setVisibility(View.VISIBLE);
+                unreadCountTextView.setText(conversationInfo.unreadCount.unread + "");
+            } else {
+                unreadCountTextView.setVisibility(View.GONE);
+            }
         }
+
 
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
         if (draft != null && !TextUtils.isEmpty(draft.getContent())) {
