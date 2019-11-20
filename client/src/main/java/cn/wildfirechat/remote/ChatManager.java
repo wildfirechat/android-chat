@@ -3495,6 +3495,42 @@ public class ChatManager {
         }
     }
 
+    public boolean isHiddenNotificationDetail() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return "1".equals(mClient.getUserSetting(UserSettingScope.HiddenNotificationDetail, ""));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void setHiddenNotificationDetail(boolean isSlient, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.setUserSetting(UserSettingScope.HiddenNotificationDetail, "", isSlient ? "1" : "0", new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    callback.onSuccess();
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    callback.onFail(errorCode);
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     private boolean checkRemoteService() {
         if (INST != null) {
             if (mClient != null) {
