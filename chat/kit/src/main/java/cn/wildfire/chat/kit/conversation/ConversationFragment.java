@@ -580,11 +580,15 @@ public class ConversationFragment extends Fragment implements
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
+        if (conversation == null) {
+            return;
+        }
+
         if (conversation.type == Conversation.ConversationType.ChatRoom) {
             quitChatRoom();
         }
 
-        super.onDestroy();
         messageViewModel.messageLiveData().removeObserver(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().removeObserver(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().removeObserver(messageRemovedLiveDataObserver);
