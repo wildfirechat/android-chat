@@ -233,7 +233,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public int getItemCount() {
-        return headerCount() + conversationInfos.size();
+        return headerCount() + (conversationInfos == null ? 0 : conversationInfos.size());
     }
 
     private boolean isStatusNotificationHeader(int position) {
