@@ -16,10 +16,10 @@
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/privacySettingOptionItemView"
+            android:id="@+id/blacklistOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
-            app:title="隐私设置" />
+            app:title="黑名单" />
     </LinearLayout>
 
     <LinearLayout
@@ -30,36 +30,11 @@
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/aboutOptionItemView"
+            android:id="@+id/momentsPrivacyOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
-            app:title="关于" />
-
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/diagnoseOptionItemView"
-            style="@style/OptionItem"
-            android:background="@drawable/selector_common_item"
-            android:clickable="true"
-            app:title="诊断" />
+            app:title="朋友圈" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@color/white"
-        android:orientation="vertical">
-
-        <View
-            style="@style/Line"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" />
-
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/exitOptionItemView"
-            style="@style/OptionItem"
-            android:background="@drawable/selector_option_item"
-            app:title="@string/exit" />
-    </LinearLayout>
 
 </LinearLayout>

@@ -13,6 +13,7 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
+import cn.wildfire.chat.kit.settings.PrivacySettingActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 
@@ -37,9 +38,10 @@ public class SettingActivity extends WfcBaseActivity {
         finish();
     }
 
-    @OnClick(R.id.newMsgNotifyOptionItemView)
-    void notifySetting() {
-
+    @OnClick(R.id.privacySettingOptionItemView)
+    void privacySetting() {
+        Intent intent = new Intent(this, PrivacySettingActivity.class);
+        startActivity(intent);
     }
 
     @OnClick(R.id.diagnoseOptionItemView)
