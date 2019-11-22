@@ -2212,6 +2212,33 @@ public class ChatManager {
         }
     }
 
+    public boolean isBlackListed(String userId) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.isBlackListed(userId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
+    public List<String> getBlackList(boolean refresh) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getBlackList(refresh);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void setBlackList(String userId, boolean isBlacked, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
