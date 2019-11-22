@@ -162,6 +162,12 @@
             android:name="cn.wildfire.chat.kit.user.UserInfoActivity"
             android:label="用户信息" />
         <activity
+            android:name="cn.wildfire.chat.kit.settings.PrivacySettingActivity"
+            android:label="隐私设置" />
+        <activity
+            android:name="cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity"
+            android:label="黑名单" />
+        <activity
             android:name="cn.wildfire.chat.kit.settings.MessageNotifySettingActivity"
             android:label="新消息通知" />
         <activity
