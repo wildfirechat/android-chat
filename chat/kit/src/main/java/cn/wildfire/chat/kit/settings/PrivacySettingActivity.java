@@ -14,6 +14,7 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
+import cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 
@@ -26,7 +27,7 @@ public class PrivacySettingActivity extends WfcBaseActivity {
 
     @OnClick(R.id.blacklistOptionItemView)
     void blacklistSettings() {
-        Intent intent = new Intent(this, AboutActivity.class);
+        Intent intent = new Intent(this, BlacklistListActivity.class);
         startActivity(intent);
     }
 
