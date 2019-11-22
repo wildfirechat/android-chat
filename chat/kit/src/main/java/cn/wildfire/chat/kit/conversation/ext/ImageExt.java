@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
@@ -36,16 +37,25 @@ public class ImageExt extends ConversationExt {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (data != null) {
-                //是否发送原图
-                boolean compress = data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
-                ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-                for (ImageItem imageItem : images) {
-                    File imageFileThumb;
-                    File imageFileSource;
-                    // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //是否发送原图
+                        boolean compress = data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
+                        ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+                        for (ImageItem imageItem : images) {
+                            File imageFileThumb;
+                            File imageFileSource;
+                            // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
+                            if (compress) {
+                                imageFileSource = ImageUtils.compressImage(imageItem.path);
+                            } else {
+                                imageFileSource = new File(imageItem.path);
+                            }
 //                    if (isOrig) {
-                    imageFileSource = new File(imageItem.path);
-                    imageFileThumb = ImageUtils.genThumbImgFile(imageItem.path);
+//                    imageFileSource = new File(imageItem.path);
+                            imageFileThumb = ImageUtils.genThumbImgFile(imageItem.path);
 //                    } else {
 //                        //压缩图片
 //                        // TODO  压缩的有问题
@@ -53,8 +63,14 @@ public class ImageExt extends ConversationExt {
 //                        //imageFileThumb = ImageUtils.genThumbImgFile(imageFileSource.getAbsolutePath());
 //                        imageFileThumb = imageFileSource;
 //                    }
-                    messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
-                }
+//                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
+                            UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource));
+
+                        }
+
+                    }
+                }).start();
+
             }
         }
     }
