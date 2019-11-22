@@ -153,12 +153,33 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return ChatManager.Instance().isMyFriend(targetUid);
     }
 
+    public boolean isBlacklisted(String targetUid) {
+        return ChatManager.Instance().isBlackListed(targetUid);
+    }
+
     public LiveData<OperateResult<Boolean>> deleteFriend(String userId) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
         ChatManager.Instance().deleteFriend(userId, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 ChatManager.Instance().removeConversation(new Conversation(Conversation.ConversationType.Single, userId, 0), true);
+                result.postValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.postValue(new OperateResult<>(errorCode));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<OperateResult<Boolean>> setBlacklist(String userId, boolean value) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().setBlackList(userId, value, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
                 result.postValue(new OperateResult<>(0));
             }
 

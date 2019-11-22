@@ -5,6 +5,29 @@
     <item
         android:id="@+id/delete"
         android:orderInCategory="100"
-        android:title="删除"
-        app:showAsAction="always" />
+        android:title="删除好友"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/addFriend"
+        android:orderInCategory="100"
+        android:title="添加好友"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/addBlacklist"
+        android:orderInCategory="100"
+        android:title="加入黑名单"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/removeBlacklist"
+        android:orderInCategory="100"
+        android:title="移出黑名单"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/setAlias"
+        android:orderInCategory="100"
+        android:title="设置备注名"
+        app:showAsAction="never" />
 </menu>
