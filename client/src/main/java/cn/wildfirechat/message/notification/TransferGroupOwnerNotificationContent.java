@@ -34,7 +34,12 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
             sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, operator));
             sb.append("把群组转让给了");
         }
-        sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, newOwner));
+
+        if (newOwner.equals(ChatManager.Instance().getUserId())) {
+            sb.append("您");
+        } else {
+            sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, newOwner));
+        }
 
         return sb.toString();
     }
