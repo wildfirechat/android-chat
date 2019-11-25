@@ -92,17 +92,12 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         itemView.setBackgroundResource(conversationInfo.isTop ? R.drawable.selector_stick_top_item : R.drawable.selector_common_item);
         redDotView.setVisibility(View.GONE);
         if (conversationInfo.isSilent) {
-            if (conversationInfo.unreadCount.unreadMention + conversationInfo.unreadCount.unreadMentionAll > 0) {
-                unreadCountTextView.setVisibility(View.VISIBLE);
-                unreadCountTextView.setText((conversationInfo.unreadCount.unreadMention + conversationInfo.unreadCount.unreadMentionAll) + "");
+            if (conversationInfo.unreadCount.unread > 0) { // 显示红点
+                unreadCountTextView.setText("");
+                unreadCountTextView.setVisibility(View.GONE);
+                redDotView.setVisibility(View.VISIBLE);
             } else {
-                if (conversationInfo.unreadCount.unread > 0) { // 显示红点
-                    unreadCountTextView.setText("");
-                    unreadCountTextView.setVisibility(View.GONE);
-                    redDotView.setVisibility(View.VISIBLE);
-                } else {
-                    unreadCountTextView.setVisibility(View.GONE);
-                }
+                unreadCountTextView.setVisibility(View.GONE);
             }
         } else {
             if (conversationInfo.unreadCount.unread > 0) {
