@@ -108,6 +108,10 @@ public class ConversationListFragment extends ProgressFragment {
                     connectionStatusNotification.setValue("正在连接...");
                     statusNotificationViewModel.showStatusNotification(connectionStatusNotification);
                     break;
+                case ConnectionStatus.ConnectionStatusReceiveing:
+                    connectionStatusNotification.setValue("正在同步...");
+                    statusNotificationViewModel.showStatusNotification(connectionStatusNotification);
+                    break;
                 case ConnectionStatus.ConnectionStatusConnected:
                     statusNotificationViewModel.removeStatusNotification(connectionStatusNotification);
                     break;

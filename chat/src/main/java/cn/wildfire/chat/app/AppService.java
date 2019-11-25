@@ -33,7 +33,7 @@ public class AppService implements AppServiceProvider {
     public void namePwdLogin(String account, String password, LoginCallback callback) {
 
         String url = Config.APP_SERVER_ADDRESS + "/api/login";
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", account);
         params.put("password", password);
 
@@ -61,9 +61,18 @@ public class AppService implements AppServiceProvider {
     public void smsLogin(String phoneNumber, String authCode, LoginCallback callback) {
 
         String url = Config.APP_SERVER_ADDRESS + "/login";
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("mobile", phoneNumber);
         params.put("code", authCode);
+
+
+        //Platform_iOS = 1,
+        //Platform_Android = 2,
+        //Platform_Windows = 3,
+        //Platform_OSX = 4,
+        //Platform_WEB = 5,
+        //Platform_WX = 6,
+        params.put("platform", new Integer(2));
 
         try {
             params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
@@ -95,7 +104,7 @@ public class AppService implements AppServiceProvider {
     public void requestAuthCode(String phoneNumber, SendCodeCallback callback) {
 
         String url = Config.APP_SERVER_ADDRESS + "/send_code";
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("mobile", phoneNumber);
         OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
             @Override
@@ -150,7 +159,7 @@ public class AppService implements AppServiceProvider {
     public void confirmPCLogin(String token, String userId, PCLoginCallback callback) {
         String url = Config.APP_SERVER_ADDRESS + "/confirm_pc";
 
-        Map<String, String> params = new HashMap<>(2);
+        Map<String, Object> params = new HashMap<>(2);
         params.put("user_id", userId);
         params.put("token", token);
         OKHttpHelper.post(url, params, new SimpleCallback<PCSession>() {
@@ -176,7 +185,7 @@ public class AppService implements AppServiceProvider {
         //从SP中获取到历史数据callback回去，然后再从网络刷新
         String url = Config.APP_SERVER_ADDRESS + "/get_group_announcement";
 
-        Map<String, String> params = new HashMap<>(2);
+        Map<String, Object> params = new HashMap<>(2);
         params.put("groupId", groupId);
         OKHttpHelper.post(url, params, new SimpleCallback<GroupAnnouncement>() {
             @Override
@@ -197,7 +206,7 @@ public class AppService implements AppServiceProvider {
         //更新到应用服务，再保存到本地SP中
         String url = Config.APP_SERVER_ADDRESS + "/put_group_announcement";
 
-        Map<String, String> params = new HashMap<>(2);
+        Map<String, Object> params = new HashMap<>(2);
         params.put("groupId", groupId);
         params.put("author", ChatManagerHolder.gChatManager.getUserId());
         params.put("text", announcement);

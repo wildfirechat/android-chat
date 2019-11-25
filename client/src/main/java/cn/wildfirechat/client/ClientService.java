@@ -106,6 +106,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.RecoverReceiver;
 
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnected;
+import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnecting;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusLogout;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusReceiveing;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusUnconnected;
@@ -176,9 +177,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             logined = true;
             accountInfo.userName = userName;
 
-            mConnectionStatus = ConnectionStatusUnconnected;
+
             userId = userName;
-            return initProto(userName, userPwd);
+            boolean initialSuccess = initProto(userName, userPwd);
+            onConnectionStatusChanged(ConnectionStatusConnecting);
+
+            return initialSuccess;
         }
 
         @Override
@@ -224,10 +228,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void disconnect(boolean clearSession) throws RemoteException {
+            onConnectionStatusChanged(ConnectionStatusLogout);
+
             logined = false;
             userId = null;
-            mConnectionStatus = ConnectionStatusLogout;
-            onConnectionStatusChanged(ConnectionStatusLogout);
 
 //            int protoStatus = ProtoLogic.getConnectionStatus();
 //            if (mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusConnected && mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusReceiveing) {
@@ -1886,8 +1890,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         Mars.onCreate(true);
         openXlog();
 
-        mConnectionStatus = ConnectionStatusLogout;
-
         ProtoLogic.setUserInfoUpdateCallback(this);
         ProtoLogic.setSettingUpdateCallback(this);
         ProtoLogic.setFriendListUpdateCallback(this);
@@ -2029,6 +2031,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     @Override
     public void onConnectionStatusChanged(int status) {
         android.util.Log.d("", "status changed :" + status);
+
+        if (!logined) {
+            return;
+        }
         if (mConnectionStatus == status) {
             return;
         }
