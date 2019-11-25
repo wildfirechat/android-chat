@@ -512,7 +512,7 @@ public class ConversationFragment extends Fragment implements
     public void onPortraitClick(UserInfo userInfo) {
         if (groupInfo != null && groupInfo.privateChat == 1) {
             GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
-            if (groupMember.type == GroupMember.GroupMemberType.Normal) {
+            if (groupMember.type != GroupMember.GroupMemberType.Owner && groupMember.type != GroupMember.GroupMemberType.Manager && !userViewModel.getUserId().equals(groupInfo.owner)) {
                 Toast.makeText(getActivity(), "禁止群成员私聊", Toast.LENGTH_SHORT).show();
                 return;
             }
