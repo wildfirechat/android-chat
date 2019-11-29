@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -107,7 +106,9 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.RecoverReceiver;
 
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnected;
+import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnecting;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusLogout;
+import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusReceiveing;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusUnconnected;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
@@ -176,9 +177,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             logined = true;
             accountInfo.userName = userName;
 
-            mConnectionStatus = ConnectionStatusUnconnected;
+
             userId = userName;
-            return initProto(userName, userPwd);
+            boolean initialSuccess = initProto(userName, userPwd);
+            onConnectionStatusChanged(ConnectionStatusConnecting);
+
+            return initialSuccess;
         }
 
         @Override
@@ -224,10 +228,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void disconnect(boolean clearSession) throws RemoteException {
+            onConnectionStatusChanged(ConnectionStatusLogout);
+
             logined = false;
             userId = null;
-            mConnectionStatus = ConnectionStatusLogout;
-            onConnectionStatusChanged(ConnectionStatusLogout);
 
 //            int protoStatus = ProtoLogic.getConnectionStatus();
 //            if (mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusConnected && mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusReceiveing) {
@@ -405,7 +409,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 if (info != null) {
                     if (info.conversation.type == Conversation.ConversationType.Group) {
                         GroupInfo groupInfo = getGroupInfo(info.conversation.target, false);
-                        if(groupInfo != null){
+                        if (groupInfo != null) {
                             out.add(info);
                         }
                     } else {
@@ -434,30 +438,48 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             return out;
         }
 
+        private List<Message> buildSafeIPCMessages(ProtoMessage[] messages, boolean before) {
+            List<Message> msgs = new ArrayList<>();
+            int totalLength = 0;
+            int messageContentLength;
+            if (messages == null || messages.length == 0) {
+                return msgs;
+            }
+
+            for (int i = 0; i < messages.length; i++) {
+                ProtoMessage pmsg;
+                if (before) {
+                    pmsg = messages[messages.length - i - 1];
+                } else {
+                    pmsg = messages[i];
+                }
+                messageContentLength = getProtoMessageLength(pmsg);
+                if (messageContentLength > MAX_IPC_SIZE) {
+                    android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageContentLength);
+                    continue;
+                }
+                totalLength += messageContentLength;
+                if (totalLength <= MAX_IPC_SIZE) {
+                    if (before) {
+                        msgs.add(0, convertProtoMessage(pmsg));
+                    } else {
+                        msgs.add(convertProtoMessage(pmsg));
+                    }
+                }
+            }
+            return msgs;
+        }
+
         @Override
         public List<Message> getMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser);
-            List<cn.wildfirechat.message.Message> out = new ArrayList<>();
-            for (ProtoMessage protoMessage : protoMessages) {
-                cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
-                if (msg != null) {
-                    out.add(msg);
-                }
-            }
-            return out;
+            return buildSafeIPCMessages(protoMessages, before);
         }
 
         @Override
         public List<Message> getMessagesEx2(int[] conversationTypes, int[] lines, int messageStatus, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser);
-            List<cn.wildfirechat.message.Message> out = new ArrayList<>();
-            for (ProtoMessage protoMessage : protoMessages) {
-                cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
-                if (msg != null) {
-                    out.add(msg);
-                }
-            }
-            return out;
+            return buildSafeIPCMessages(protoMessages, before);
         }
 
         @Override
@@ -465,15 +487,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ProtoLogic.getRemoteMessages(conversation.type.ordinal(), conversation.target, conversation.line, beforeMessageUid, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
                 @Override
                 public void onSuccess(ProtoMessage[] list) {
-                    List<cn.wildfirechat.message.Message> out = new ArrayList<>();
-                    for (ProtoMessage protoMessage : list) {
-                        cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
-                        if (msg != null) {
-                            out.add(msg);
-                        }
-                    }
                     try {
-                        callback.onSuccess(out);
+                        callback.onSuccess(buildSafeIPCMessages(list, false));
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -1769,7 +1784,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         try {
             msg.content.decode(payload);
             if (msg.content instanceof NotificationMessageContent) {
-                if (msg.sender.equals(userId)) {
+                if (msg.content instanceof RecallMessageContent) {
+                    RecallMessageContent recallMessageContent = (RecallMessageContent) msg.content;
+                    if (recallMessageContent.getOperatorId().equals(userId)) {
+                        ((NotificationMessageContent) msg.content).fromSelf = true;
+                    }
+                } else if (msg.sender.equals(userId)) {
                     ((NotificationMessageContent) msg.content).fromSelf = true;
                 }
             }
@@ -1869,8 +1889,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         Mars.onCreate(true);
         openXlog();
-
-        mConnectionStatus = ConnectionStatusLogout;
 
         ProtoLogic.setUserInfoUpdateCallback(this);
         ProtoLogic.setSettingUpdateCallback(this);
@@ -2013,6 +2031,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     @Override
     public void onConnectionStatusChanged(int status) {
         android.util.Log.d("", "status changed :" + status);
+
+        if (!logined) {
+            return;
+        }
         if (mConnectionStatus == status) {
             return;
         }
@@ -2079,66 +2101,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         onReceiveMessageListeners.finishBroadcast();
     }
 
-    private String conversationKey(ProtoMessage message) {
-        return message.getConversationType() + message.getTarget() + message.getLine();
-    }
-
-    // 优化收到大量消息界面卡顿
-    public final static boolean ENABLE_DELIVERY_OPTIMIZATION = true;
-    /**
-     * 一次收到大量消息时，每个会话投递最新的N条消息
-     */
-    public final static int DELIVERY_LATEST_MESSAGE_COUNT = 10;
-    /**
-     * 那些类型的消息是必须投递的
-     */
-    public final static int[] MUST_DELIVERY_MESSAGE_TYPES = new int[]{
-            // your type here, eg. MessageContentType.CONTENT_TYPE_CHANGE_MUTE
-    };
+    public final static int MAX_IPC_SIZE = 900 * 1024;
 
     @Override
     public void onReceiveMessage(List<ProtoMessage> messages, boolean hasMore) {
+        if (mConnectionStatus == ConnectionStatusReceiveing) {
+            return;
+        }
         if (messages.isEmpty()) {
             return;
         }
         handler.post(() -> {
             int totalLength = 0;
             int messageContentLength;
-            int maxIpcMessageLength = 900 * 1024;
-
-            if (ENABLE_DELIVERY_OPTIMIZATION) {
-                Map<String, List<ProtoMessage>> conversationMessageMap = new HashMap<>();
-                for (ProtoMessage msg : messages) {
-                    String key = conversationKey(msg);
-                    List<ProtoMessage> msgs = conversationMessageMap.get(key);
-                    if (msgs == null) {
-                        msgs = new ArrayList<>();
-                        conversationMessageMap.put(key, msgs);
-                    }
-                    msgs.add(msg);
-                }
-                for (Map.Entry<String, List<ProtoMessage>> entry : conversationMessageMap.entrySet()) {
-                    Collections.sort(entry.getValue(), (o1, o2) -> (int) (o1.getTimestamp() - o2.getTimestamp()));
-                }
-
-                messages.clear();
-                for (Map.Entry<String, List<ProtoMessage>> entry : conversationMessageMap.entrySet()) {
-                    if (entry.getValue().size() > DELIVERY_LATEST_MESSAGE_COUNT) {
-                        messages.addAll(entry.getValue().subList(0, DELIVERY_LATEST_MESSAGE_COUNT));
-                        // 后面的检查是否是特殊类型
-                        for (ProtoMessage m : entry.getValue().subList(DELIVERY_LATEST_MESSAGE_COUNT, entry.getValue().size())) {
-                            for (int type : MUST_DELIVERY_MESSAGE_TYPES) {
-                                if (type == m.getContent().getType()) {
-                                    messages.add(m);
-                                }
-                            }
-                        }
-
-                    } else {
-                        messages.addAll(entry.getValue());
-                    }
-                }
-            }
+            int maxIpcMessageLength = MAX_IPC_SIZE;
 
             List<Message> msgs = new ArrayList<>();
             for (ProtoMessage pmsg : messages) {

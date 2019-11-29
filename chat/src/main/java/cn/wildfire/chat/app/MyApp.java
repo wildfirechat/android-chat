@@ -22,7 +22,7 @@ public class MyApp extends BaseApp {
         Config.validateConfig();
 
         // bugly，务必替换为你自己的!!!
-        CrashReport.initCrashReport(getApplicationContext(), "34490ba79f", false);
+        CrashReport.initCrashReport(getApplicationContext(), Config.BUGLY_ID, false);
         // 只在主进程初始化
         if (getCurProcessName(this).equals(BuildConfig.APPLICATION_ID)) {
             WfcUIKit wfcUIKit = WfcUIKit.getWfcUIKit();

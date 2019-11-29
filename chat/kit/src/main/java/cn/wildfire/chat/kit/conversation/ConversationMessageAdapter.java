@@ -33,6 +33,8 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.message.viewholder.LoadingViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
+import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
+import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.SimpleNotificationMessageContentViewHolder;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
@@ -218,7 +220,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
         View itemView;
         ViewStub viewStub;
-        if (SimpleNotificationMessageContentViewHolder.class.isAssignableFrom(viewHolderClazz)) {
+        if (NotificationMessageContentViewHolder.class.isAssignableFrom(viewHolderClazz)) {
             itemView = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversation_item_notification_containr, parent, false);
             viewStub = itemView.findViewById(R.id.contentViewStub);
             viewStub.setLayoutResource(layoutRes.resId());
@@ -253,8 +255,10 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
             processCheckClick(viewHolder, itemView);
             processContentLongClick(viewHolderClazz, viewHolder, itemView);
-            processPortraitClick(viewHolder, itemView);
-            processPortraitLongClick(viewHolder, itemView);
+            if (viewHolder instanceof NormalMessageContentViewHolder) {
+                processPortraitClick(viewHolder, itemView);
+                processPortraitLongClick(viewHolder, itemView);
+            }
             return viewHolder;
         } catch (NoSuchMethodException e) {
             e.printStackTrace();

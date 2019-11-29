@@ -16,10 +16,10 @@
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/newMsgNotifyOptionItemView"
+            android:id="@+id/privacySettingOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
-            app:title="@string/new_message_remind" />
+            app:title="隐私设置" />
     </LinearLayout>
 
     <LinearLayout

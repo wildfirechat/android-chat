@@ -22,6 +22,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -87,11 +88,22 @@ public class WfcNotificationManager {
             return;
         }
 
+        if(ChatManager.Instance().isGlobalSlient()) {
+            return;
+        }
+
+        boolean hiddenNotificationDetail = ChatManager.Instance().isHiddenNotificationDetail();
+
         for (Message message : messages) {
             if (message.direction == MessageDirection.Send || (message.content.getPersistFlag() != Persist_And_Count && !(message.content instanceof RecallMessageContent))) {
                 continue;
             }
-            String pushContent = message.content.pushContent;
+            ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
+            if (conversationInfo.isSilent) {
+                continue;
+            }
+
+            String pushContent = hiddenNotificationDetail ? "新消息" : message.content.pushContent;
             if (TextUtils.isEmpty(pushContent)) {
                 pushContent = message.content.digest(message);
             }

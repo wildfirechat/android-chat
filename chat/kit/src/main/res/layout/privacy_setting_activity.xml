@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray5"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/blacklistOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_option_item"
+            app:title="黑名单" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/momentsPrivacyOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_option_item"
+            app:title="朋友圈" />
+    </LinearLayout>
+
+
+</LinearLayout>
