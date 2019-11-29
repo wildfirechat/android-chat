@@ -11,9 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
+        android:background="@drawable/anleiradius"
         android:gravity="center_vertical"
-        android:paddingRight="3dp">
+        android:paddingRight="3dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        >
 
         <ImageView
             android:id="@+id/portraitImageView"
@@ -49,10 +52,15 @@
                 android:singleLine="true"
                 android:text="@string/my_chat_account"
                 android:textColor="@color/gray2"
-                android:textSize="13sp"
-                android:visibility="gone" />
+                android:textSize="13sp" />
 
         </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/option_item_margin_right"
+            app:srcCompat="@mipmap/qr_code" />
 
     </LinearLayout>
 
@@ -60,24 +68,32 @@
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/notificationOptionItemView"
         style="@style/OptionItem"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        app:start_src="@mipmap/ic_notification"
-        app:title="消息通知" />
+        android:layout_marginRight="8dp"
+        android:background="@drawable/anleiradius"
+        android:clickable="true"
+        app:start_src="@mipmap/ic_file"
+        app:title="@string/app_admin" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/passwordOptionItemView"
         style="@style/OptionItem"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="true"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/anleiradiustop"
+        android:clickable="true"
         app:start_src="@mipmap/ic_account_setting"
-        app:title="账号与安全" />
+        app:title="@string/passwordOption" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/settintOptionItemView"
         style="@style/OptionItem"
-        android:background="@drawable/selector_common_item"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="-1dp"
+        android:background="@drawable/anleiradiusbottom"
         android:clickable="true"
         app:start_src="@mipmap/me_press"
         app:title="@string/setting" />

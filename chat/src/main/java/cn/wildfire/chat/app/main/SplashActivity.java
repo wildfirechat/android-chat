@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import butterknife.ButterKnife;
 import cn.wildfire.chat.app.login.SMSLoginActivity;
+import cn.wildfire.chat.app.login.LoginActivity;
 import cn.wildfirechat.chat.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -119,6 +120,7 @@ public class SplashActivity extends AppCompatActivity {
     private void showLogin() {
         Intent intent;
         intent = new Intent(this, SMSLoginActivity.class);
+        //intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

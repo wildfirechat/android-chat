@@ -17,6 +17,8 @@
     <!--搜索用户-->
     <string name="user_no_found">该用户不存在</string>
     <string name="search">搜索</string>
+    <string name="flush">刷新</string>
+    <string name="web_back">后退</string>
 
     <!--用户信息-->
     <string name="nickname_colon">昵称:%1$s</string>

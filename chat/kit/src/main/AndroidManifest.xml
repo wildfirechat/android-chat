@@ -186,6 +186,9 @@
             android:name="cn.wildfire.chat.app.login.SMSLoginActivity"
             android:label="登录" />
         <activity
+            android:name="cn.wildfire.chat.app.login.LoginActivity"
+            android:label="帐号登录" />
+        <activity
             android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"
             android:label="频道列表" />
 
@@ -198,7 +201,7 @@
         <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
-            android:label="火信"
+            android:label="野鸭"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="${applicationId}.main" />
@@ -209,6 +212,19 @@
             <intent-filter>
                 <action android:name="${applicationId}.webview" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:host="*" android:scheme="weixin"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:host="*" android:scheme="alipays"/>
             </intent-filter>
         </activity>
         <activity android:name="cn.wildfire.chat.kit.search.SearchMessageActivity" />
@@ -248,5 +264,6 @@
                 android:resource="@xml/provider_paths" />
         </provider>
         <service android:name="cn.wildfire.chat.kit.voip.FloatingVoipService" />
+
     </application>
 </manifest>
