@@ -1,16 +1,18 @@
 <resources>
-    <string name="app_name">野火IM</string>
+    <string name="app_name">野鸭IM</string>
 
     <!--我-->
     <string name="my_chat_account">账号:%1$s</string>
     <string name="setting">设置</string>
+    <string name="app_admin">管理员</string>
+    <string name="passwordOption">账号与安全</string>
 
     <!--设置-->
     <string name="new_message_remind">新消息提醒</string>
     <string name="exit">退出</string>
 
     <!--关于-->
-    <string name="app_name_in_about">野火即时通讯</string>
+    <string name="app_name_in_about">野鸭即时通讯</string>
     <string name="function_introduction">功能介绍</string>
     <string name="complaint">投诉</string>
     <string name="check_update">检查更新</string>

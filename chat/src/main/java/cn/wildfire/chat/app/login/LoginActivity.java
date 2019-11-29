@@ -21,10 +21,6 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.chat.R;
 
-/**
- * use {@link SMSLoginActivity} instead
- */
-@Deprecated
 public class LoginActivity extends WfcBaseActivity {
     @BindView(R.id.loginButton)
     Button loginButton;

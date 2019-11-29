@@ -9,7 +9,6 @@
         android:id="@+id/contactLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
         android:paddingTop="@dimen/item_margin_top_and_bottom"
         android:paddingRight="@dimen/item_margin_left_and_right"
@@ -82,7 +81,8 @@
     <View
         android:id="@+id/dividerLine"
         style="@style/Line"
-        android:layout_marginRight="@dimen/item_margin_left_and_right"
-        android:visibility="visible" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:visibility="invisible" />
 
 </LinearLayout>
