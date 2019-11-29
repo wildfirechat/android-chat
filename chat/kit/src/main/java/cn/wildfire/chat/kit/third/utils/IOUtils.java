@@ -1,5 +1,7 @@
 package cn.wildfire.chat.kit.third.utils;
 
+import android.app.Application;
+
 import java.io.Closeable;
 import java.io.IOException;
 
@@ -20,5 +22,20 @@ public class IOUtils {
             }
         }
         return true;
+    }
+    public static Application getCurrApp() {
+        Application application=null;
+        try {
+            application = (Application) Class.forName("android.app.ActivityThread").getMethod("currentApplication").invoke(null, (Object[]) null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            application = (Application) Class.forName("android.app.AppGlobals").getMethod("getInitialApplication").invoke(null, (Object[]) null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return application;
     }
 }

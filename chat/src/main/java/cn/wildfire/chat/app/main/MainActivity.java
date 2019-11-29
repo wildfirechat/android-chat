@@ -1,6 +1,7 @@
 package cn.wildfire.chat.app.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,8 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -18,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -27,13 +31,22 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
+import com.google.zxing.common.StringUtils;
 import com.king.zxing.Intents;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
+import cn.wildfire.chat.app.Config;
+import cn.wildfire.chat.app.login.model.LoginResult;
+import cn.wildfire.chat.app.login.model.RegResult;
+import cn.wildfire.chat.app.main.model.ApiClientVO;
+import cn.wildfire.chat.app.main.model.MainModel;
 import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -47,6 +60,8 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupInfoActivity;
+import cn.wildfire.chat.kit.net.OKHttpHelper;
+import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -59,6 +74,13 @@ import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageChangeListener {
@@ -74,6 +96,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     @BindView(R.id.contentLinearLayout)
     LinearLayout contentLinearLayout;
 
+    MenuItem webback_btn;
+    MenuItem flush_btn;
+
     private QBadgeView unreadMessageUnreadBadgeView;
     private QBadgeView unreadFriendRequestBadgeView;
 
@@ -87,9 +112,16 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private ContactViewModel contactViewModel;
     private ConversationListViewModel conversationListViewModel;
 
+    private DiscoveryFragment discoveryFragment;
+
     private Observer<Boolean> imStatusLiveDataObserver = status -> {
         if (status && !isInitialized) {
-            init();
+            initGetConfig(new Runnable() {
+                @Override
+                public void run() {
+                    init();
+                }
+            });
             isInitialized = true;
         }
     };
@@ -160,10 +192,62 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         }
     }
 
+    private void initGetConfig(Runnable _init){
+        String php_url = Config.APP_SERVER_PHP + "/yh/apiclient.php";
+
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .content("加载配置中...")
+                .progress(true, 100)
+                .cancelable(false)
+                .build();
+        dialog.show();
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody formBody = new FormBody.Builder().build();
+        Request request = new Request.Builder().url(php_url)
+                .post(formBody).build();
+
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                        Log.e("C:", "加载apiclient配置错误");
+                        Toast.makeText(getApplicationContext(), "加载apiclient配置错误", Toast.LENGTH_SHORT).show();
+                        initGetConfig(_init);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseStr = response.body().string();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                        Log.e("D:", responseStr);
+                        //Toast.makeText(activity, responseStr, Toast.LENGTH_SHORT).show();
+                        Gson gson = new Gson();
+                        MainModel.clientConfig = gson.fromJson(responseStr, ApiClientVO.class);
+                        //discoveryFragment.webView.loadUrl(MainModel.clientConfig.getHomeUrl());
+                        _init.run();
+
+                    }
+                });
+
+            }
+        });
+    }
+
     private void showUnreadMessageBadgeView(int count) {
         if (unreadMessageUnreadBadgeView == null) {
             BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
-            View view = bottomNavigationMenuView.getChildAt(0);
+            View view = bottomNavigationMenuView.getChildAt(1);
             unreadMessageUnreadBadgeView = new QBadgeView(MainActivity.this);
             unreadMessageUnreadBadgeView.bindTarget(view);
         }
@@ -181,7 +265,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void showUnreadFriendRequestBadgeView(int count) {
         if (unreadFriendRequestBadgeView == null) {
             BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
-            View view = bottomNavigationMenuView.getChildAt(1);
+            View view = bottomNavigationMenuView.getChildAt(2);
             unreadFriendRequestBadgeView = new QBadgeView(MainActivity.this);
             unreadFriendRequestBadgeView.bindTarget(view);
         }
@@ -210,35 +294,48 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         moveTaskToBack(true);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        webback_btn = menu.findItem(R.id.webback_btn);
+        flush_btn = menu.findItem(R.id.flush_btn);
+        return true;
+    }
+
     private void initView() {
         setTitle(UIUtils.getString(R.string.app_name));
 
         startingTextView.setVisibility(View.GONE);
         contentLinearLayout.setVisibility(View.VISIBLE);
 
+
+
+        //webback_btn.setVisible(false);
+        //flush_btn.setVisible(false);
+
         //设置ViewPager的最大缓存页面
         contentViewPager.setOffscreenPageLimit(3);
 
         ConversationListFragment conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();
-        DiscoveryFragment discoveryFragment = new DiscoveryFragment();
+        discoveryFragment = new DiscoveryFragment();
         MeFragment meFragment = new MeFragment();
+        mFragmentList.add(discoveryFragment);
         mFragmentList.add(conversationListFragment);
         mFragmentList.add(contactListFragment);
-        mFragmentList.add(discoveryFragment);
         mFragmentList.add(meFragment);
         contentViewPager.setAdapter(new HomeFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
         contentViewPager.setOnPageChangeListener(this);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.conversation_list:
+                case R.id.discovery:
                     contentViewPager.setCurrentItem(0);
                     break;
-                case R.id.contact:
+                case R.id.conversation_list:
                     contentViewPager.setCurrentItem(1);
                     break;
-                case R.id.discovery:
+                case R.id.contact:
                     contentViewPager.setCurrentItem(2);
                     break;
                 case R.id.me:
@@ -254,11 +351,22 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.webback_btn:
+                backWebView();
+                break;
+            case R.id.flush_btn:
+                flushWebView();
+                break;
             case R.id.search:
                 showSearchPortal();
                 break;
             case R.id.chat:
-                createConversation();
+                String _onfgc = MainModel.clientConfig.getOnfgroupchat();
+                if(_onfgc.equals("1")) {
+                    createConversation();
+                }else{
+                    Toast.makeText(this, "管理员禁止私建群聊!", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.add_contact:
                 searchUser();
@@ -276,6 +384,23 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void backWebView(){
+        discoveryFragment.webView.goBack();
+        Log.e("B:","Back");
+    }
+
+    private void flushWebView(){
+        if(old_page_index==0) {
+            discoveryFragment.webView.reload();
+            Log.e("B:","reload");
+        }else if(old_page_index==2){
+            Log.e("C:","reload friend");
+            if (contactViewModel != null) {
+                contactViewModel.reloadContact(true);
+            }
+        }
     }
 
     private void showSearchPortal() {
@@ -297,17 +422,25 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
 
+    private int old_page_index=0;
+
     @Override
     public void onPageSelected(int position) {
+        Log.e("Anlei:", Integer.toString(position));
+        if(webback_btn!=null) webback_btn.setVisible(false);
+        if(flush_btn!=null) flush_btn.setVisible(false);
         switch (position) {
             case 0:
-                bottomNavigationView.setSelectedItemId(R.id.conversation_list);
+                bottomNavigationView.setSelectedItemId(R.id.discovery);
+                if(webback_btn!=null) webback_btn.setVisible(true);
+                if(flush_btn!=null) flush_btn.setVisible(true);
                 break;
             case 1:
-                bottomNavigationView.setSelectedItemId(R.id.contact);
+                bottomNavigationView.setSelectedItemId(R.id.conversation_list);
                 break;
             case 2:
-                bottomNavigationView.setSelectedItemId(R.id.discovery);
+                bottomNavigationView.setSelectedItemId(R.id.contact);
+                if(flush_btn!=null) flush_btn.setVisible(true);
                 break;
             case 3:
                 bottomNavigationView.setSelectedItemId(R.id.me);
@@ -315,6 +448,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             default:
                 break;
         }
+        old_page_index = position;
         contactListFragment.showQuickIndexBar(position == 1);
     }
 
@@ -339,7 +473,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 break;
             case REQUEST_IGNORE_BATTERY_CODE:
                 if (resultCode == RESULT_CANCELED) {
-                    Toast.makeText(this, "允许野火IM后台运行，更能保证消息的实时性", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "允许此APP后台运行，更能保证消息的实时性", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
