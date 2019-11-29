@@ -37,13 +37,13 @@ public class SettingActivity extends WfcBaseActivity {
         startActivity(intent);
         finish();
     }
-
+/*
     @OnClick(R.id.privacySettingOptionItemView)
     void privacySetting() {
         Intent intent = new Intent(this, PrivacySettingActivity.class);
         startActivity(intent);
     }
-
+*/
     @OnClick(R.id.diagnoseOptionItemView)
     void diagnose() {
         long start = System.currentTimeMillis();

@@ -201,7 +201,7 @@
         <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
-            android:label="火信"
+            android:label="野鸭"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="${applicationId}.main" />
@@ -212,6 +212,19 @@
             <intent-filter>
                 <action android:name="${applicationId}.webview" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:host="*" android:scheme="weixin"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:host="*" android:scheme="alipays"/>
             </intent-filter>
         </activity>
         <activity android:name="cn.wildfire.chat.kit.search.SearchMessageActivity" />
@@ -252,5 +265,8 @@
                 android:resource="@xml/provider_paths" />
         </provider>
         <service android:name="cn.wildfire.chat.kit.voip.FloatingVoipService" />
+
+        <meta-data android:name="serverhttp" android:value="http" />
+        <meta-data android:name="serverurl" android:value="110.34.181.127" />
     </application>
 </manifest>

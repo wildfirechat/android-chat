@@ -25,7 +25,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (userListAdapter != null && isVisibleToUser) {
-            contactViewModel.reloadContact();
+            contactViewModel.reloadContact(false);
             contactViewModel.reloadFriendRequestStatus();
         }
     }
@@ -33,7 +33,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     @Override
     public void onResume() {
         super.onResume();
-        contactViewModel.reloadContact();
+        contactViewModel.reloadContact(false);
         contactViewModel.reloadFriendRequestStatus();
     }
 
@@ -56,7 +56,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     public void initHeaderViewHolders() {
         addHeaderViewHolder(FriendRequestViewHolder.class, new FriendRequestValue(contactViewModel.getUnreadFriendRequestCount()));
         addHeaderViewHolder(GroupViewHolder.class, new GroupValue());
-        addHeaderViewHolder(ChannelViewHolder.class, new HeaderValue());
+        //addHeaderViewHolder(ChannelViewHolder.class, new HeaderValue());
     }
 
     @Override

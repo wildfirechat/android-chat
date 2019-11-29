@@ -53,7 +53,7 @@ import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationConten
  * 小灰条消息, 居中显示，且不显示发送者，用于简单通知，如果需要扩展成复杂通知，可以参考 {@link ExampleRichNotificationMessageContentViewHolder}
  *
  */
-public class SimpleNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder {
+public class SimpleNotificationMessageContentViewHolder extends MessageContentViewHolder {
 
     @BindView(R.id.notificationTextView)
     TextView notificationTextView;

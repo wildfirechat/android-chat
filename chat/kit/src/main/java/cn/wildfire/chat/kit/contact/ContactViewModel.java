@@ -36,7 +36,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         if (contactListLiveData == null) {
             contactListLiveData = new MutableLiveData<>();
         }
-        reloadContact();
+        reloadContact(false);
         return contactListLiveData;
     }
 
@@ -64,7 +64,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
 
     private AtomicInteger loadingCount = new AtomicInteger(0);
 
-    public void reloadContact() {
+    public void reloadContact(boolean refresh) {
         int count = loadingCount.get();
         if (count > 0) {
             return;
@@ -72,7 +72,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         loadingCount.incrementAndGet();
         ChatManager.Instance().getWorkHandler().post(() -> {
             loadingCount.decrementAndGet();
-            List<UserInfo> userInfos = ChatManager.Instance().getMyFriendListInfo(false);
+            List<UserInfo> userInfos = ChatManager.Instance().getMyFriendListInfo(refresh);
             if (contactListLiveData != null) {
                 contactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos));
             }
@@ -93,7 +93,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
 
     @Override
     public void onFriendListUpdate(List<String> updateFriendList) {
-        reloadContact();
+        reloadContact(false);
     }
 
     @Override
