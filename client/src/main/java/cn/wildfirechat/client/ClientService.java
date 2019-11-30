@@ -1739,6 +1739,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         userInfo.type = protoUserInfo.getType();
         userInfo.friendAlias = protoUserInfo.getFriendAlias();
         userInfo.groupAlias = protoUserInfo.getGroupAlias();
+        userInfo.type = protoUserInfo.getDeleted();
         return userInfo;
     }
 
