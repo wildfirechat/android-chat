@@ -20,6 +20,7 @@
             android:background="@drawable/anleiradius"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:clickable="true"
             app:title="@string/new_message_remind" />
     </LinearLayout>
 

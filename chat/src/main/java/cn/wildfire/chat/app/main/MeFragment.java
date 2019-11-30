@@ -25,6 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.main.model.MainModel;
 import cn.wildfire.chat.app.setting.SettingActivity;
+import cn.wildfire.chat.kit.settings.MessageNotifySettingActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
@@ -133,5 +134,6 @@ public class MeFragment extends Fragment {
         Intent intent = new Intent(getActivity(), SettingActivity.class);
         startActivity(intent);
     }
+
 }
 

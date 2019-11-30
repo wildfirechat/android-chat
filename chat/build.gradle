@@ -63,6 +63,7 @@ android {
     }
     productFlavors {
     }
+    buildToolsVersion = '28.0.3'
 
     compileOptions {
         sourceCompatibility 1.8

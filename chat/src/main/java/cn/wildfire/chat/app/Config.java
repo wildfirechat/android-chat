@@ -59,6 +59,8 @@ public interface Config {
     String ICE_ADDRESS = "turn:turn.wildfirechat.cn:3478";
     String ICE_USERNAME = "wfchat";
     String ICE_PASSWORD = "wfchat";
+    // 二次开发时，一定记得替换为你们自己的
+    String BUGLY_ID = "34490ba79f";
 
     int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 120;
 
@@ -80,6 +82,12 @@ public interface Config {
 
         if (IM_SERVER_PORT != 80) {
             Log.w("wfc config", "如果IM_SERVER_PORT配置为非80端口，无法使用第三方文件存储");
+        }
+
+        if (!IM_SERVER_HOST.equals("wildfirechat.cn")) {
+            if ("34490ba79f".equals(BUGLY_ID)) {
+                Log.e("wfc config", "二次开发一定需要将buglyId替换为自己的!!!!1");
+            }
         }
     }
 }
