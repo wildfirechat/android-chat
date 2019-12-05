@@ -2,11 +2,10 @@ package cn.wildfire.chat.kit.qrcode;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -17,8 +16,6 @@ import com.king.zxing.ViewfinderView;
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -104,17 +101,15 @@ public class ScanQRCodeActivity extends WfcBaseActivity {
                 String path = images.get(0).path;
 
                 InputStream is = null;
-                try {
-                    is = new FileInputStream(path);
-                    Bitmap bmpSource = BitmapFactory.decodeStream(is);
-                    Result result = QRCodeHelper.decodeQR(bmpSource);
-                    Intent intent = new Intent();
+                Result result = QRCodeHelper.decodeQR(path);
+                Intent intent = new Intent();
+                if (result == null) {
+                    Toast.makeText(this, "识别二维码失败", Toast.LENGTH_SHORT).show();
+                } else {
                     intent.putExtra(Intents.Scan.RESULT, result.getText());
                     setResult(Activity.RESULT_OK, intent);
-                    finish();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
                 }
+                finish();
             }
             return;
         }
