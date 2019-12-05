@@ -15,6 +15,8 @@ import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.common.GlobalHistogramBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -122,6 +124,18 @@ public class QRCodeHelper {
         }
 
         return bitmap;
+    }
+
+    public static com.google.zxing.Result decodeQR(String imagePath) {
+        InputStream is = null;
+        try {
+            is = new FileInputStream(imagePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+        Bitmap bmpSource = BitmapFactory.decodeStream(is);
+        return QRCodeHelper.decodeQR(bmpSource);
     }
 
     /**
