@@ -132,9 +132,9 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return result;
     }
 
-    public MutableLiveData<List<UserInfo>> searchUser(String keyword, boolean fuzzy) {
+    public MutableLiveData<List<UserInfo>> searchUser(String keyword, ChatManager.SearchUserType searchUserType, int page) {
         MutableLiveData<List<UserInfo>> result = new MutableLiveData<>();
-        ChatManager.Instance().searchUser(keyword, fuzzy, new SearchUserCallback() {
+        ChatManager.Instance().searchUser(keyword, searchUserType, page, new SearchUserCallback() {
             @Override
             public void onSuccess(List<UserInfo> userInfos) {
                 result.setValue(userInfos);
