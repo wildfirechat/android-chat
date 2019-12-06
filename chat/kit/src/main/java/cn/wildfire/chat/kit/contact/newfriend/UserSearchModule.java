@@ -65,7 +65,7 @@ public class UserSearchModule extends SearchableModule<UserInfo, UserViewHolder>
     public List<UserInfo> search(String keyword) {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         List<UserInfo> userInfos = new ArrayList<>();
-        ChatManager.Instance().searchUser(keyword, true, new SearchUserCallback() {
+        ChatManager.Instance().searchUser(keyword, ChatManager.SearchUserType.General, 0, new SearchUserCallback() {
             @Override
             public void onSuccess(List<UserInfo> infos) {
                 userInfos.addAll(infos);
