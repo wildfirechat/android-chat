@@ -150,6 +150,30 @@ public class ChatManager {
         }
     }
 
+    public enum SearchUserType {
+        //模糊搜索displayName，精确搜索name或电话号码
+        General(0),
+
+        //精确搜索name或电话号码
+        NameOrMobile(1),
+
+        //精确搜索name
+        Name(2),
+
+        //精确搜索电话号码
+        Mobile(3);
+
+        private int value;
+
+        SearchUserType(int value) {
+            this.value = value;
+        }
+
+        public int value() {
+            return this.value;
+        }
+    }
+
     /**
      * 获取当前用户的id
      *
@@ -1880,7 +1904,7 @@ public class ChatManager {
         }
     }
 
-    public void searchUser(String keyword, boolean fuzzy, final SearchUserCallback callback) {
+    public void searchUser(String keyword, SearchUserType searchUserType, int page, final SearchUserCallback callback) {
         if (userSource != null) {
             userSource.searchUser(keyword, callback);
             return;
@@ -1892,7 +1916,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.searchUser(keyword, fuzzy, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
+            mClient.searchUser(keyword, searchUserType.ordinal(), page, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
                 @Override
                 public void onSuccess(final List<UserInfo> userInfos) throws RemoteException {
                     if (callback != null) {

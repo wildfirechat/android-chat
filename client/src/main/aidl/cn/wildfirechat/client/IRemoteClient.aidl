@@ -96,7 +96,7 @@ interface IRemoteClient {
     oneway void setConversationDraft(in int conversationType, in String target, in int line, in String draft);
     oneway void setConversationSilent(in int conversationType, in String target, in int line, in boolean silent);
 
-    oneway void searchUser(in String keyword, in boolean fuzzy, in ISearchUserCallback callback);
+    oneway void searchUser(in String keyword, in int searchType, in int page, in ISearchUserCallback callback);
 
     boolean isMyFriend(in String userId);
     List<String> getMyFriendList(in boolean refresh);
