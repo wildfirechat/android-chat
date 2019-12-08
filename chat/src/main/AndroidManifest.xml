@@ -201,7 +201,6 @@
         <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
-            android:label="野鸭"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="${applicationId}.main" />
@@ -267,6 +266,8 @@
         <service android:name="cn.wildfire.chat.kit.voip.FloatingVoipService" />
 
         <meta-data android:name="serverhttp" android:value="http" />
-        <meta-data android:name="serverurl" android:value="110.34.181.127" />
+        <meta-data android:name="serverport" android:value="81" />
+        <meta-data android:name="serverurl" android:value="129.204.221.206" />
+
     </application>
 </manifest>

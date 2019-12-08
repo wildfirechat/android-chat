@@ -61,6 +61,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 
+import static android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE;
 import static cn.wildfire.chat.kit.conversation.ConversationFragment.REQUEST_PICK_MENTION_CONTACT;
 
 public class ConversationInputPanel extends FrameLayout implements IEmotionSelectedListener {
@@ -308,6 +309,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     @OnTextChanged(value = R.id.editText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void afterInputTextChanged(Editable editable) {
         if (editText.getText().toString().trim().length() > 0) {
+            if(editText.getText().charAt(editText.getText().length()-1) == 10){
+                sendMessage();
+                return;
+            }
             if (activity.getCurrentFocus() == editText) {
                 notifyTyping(TypingMessageContent.TYPING_TEXT);
             }

@@ -201,7 +201,6 @@
         <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
-            android:label="野鸭"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="${applicationId}.main" />

@@ -45,16 +45,33 @@ public interface Config {
             return "";
         }
     }
+
+    static  String getMFSPort(){
+        ApplicationInfo info;
+        try {
+            //获取包管理器
+            PackageManager pm = MyApp._context.getPackageManager();
+            info = pm.getApplicationInfo(
+                    MyApp._context.getPackageName(), PackageManager.GET_META_DATA);
+            int _flag = (int)info.metaData.get("serverport");
+            String flag = Integer.toString(_flag);
+            return flag;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     //String IM_SERVER_HOST = "192.168.133.179";
-    String IM_SERVER_HOST = getMFSU();//"110.34.181.127";
+    String IM_SERVER_HOST = getMFSU();
 
     int IM_SERVER_PORT = 80;
 
     //正式商用时，建议用https，确保token安全
     //String APP_SERVER_URL = "http://192.168.133.179";
-    String APP_SERVER_URL = getMFSH()+"://"+getMFSU();//"http://110.34.181.127";
+    String APP_SERVER_URL = "http://"+getMFSU();
     String APP_SERVER_ADDRESS = APP_SERVER_URL + ":8888";
-    String APP_SERVER_PHP = APP_SERVER_URL + ":81";
+    String APP_SERVER_PHP = getMFSH()+"://"+getMFSU() + ":" + getMFSPort();
 
     String ICE_ADDRESS = "turn:turn.wildfirechat.cn:3478";
     String ICE_USERNAME = "wfchat";

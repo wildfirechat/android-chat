@@ -246,8 +246,13 @@ void onRegaccTest(){
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("C:", "POST注册出错");
-                Toast.makeText(SMSLoginActivity.this, "POST注册出错", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SMSLoginActivity.this, "POST注册出错，请检测网络", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                dialog.dismiss();
             }
 
             @Override

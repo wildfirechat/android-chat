@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">野鸭IM</string>
+    <!--    乐聊    UT客服      野鸭  -->
+    <string name="app_name">野鸭</string>
 
     <!--我-->
     <string name="my_chat_account">账号:%1$s</string>
@@ -12,7 +13,7 @@
     <string name="exit">退出</string>
 
     <!--关于-->
-    <string name="app_name_in_about">野鸭即时通讯</string>
+    <string name="app_name_in_about"></string>
     <string name="function_introduction">功能介绍</string>
     <string name="complaint">投诉</string>
     <string name="check_update">检查更新</string>

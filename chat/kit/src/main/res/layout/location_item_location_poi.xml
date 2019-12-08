@@ -16,7 +16,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="野鸭坑"
+            android:text="IM坑"
             android:textColor="@color/gray0"
             android:textSize="16sp" />
 
@@ -27,7 +27,7 @@
             android:layout_marginTop="10px"
             android:textColor="@color/gray1"
             android:textSize="12sp"
-            tool:text="野鸭" />
+            tool:text="IM" />
     </LinearLayout>
 
     <ImageView

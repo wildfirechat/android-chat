@@ -52,6 +52,9 @@ public class DownloadManager {
                     is = response.body().byteStream();
                     long total = response.body().contentLength();
                     File file = new File(savePath, fileName);
+                    if (!file.getParentFile().exists()) {
+                        file.getParentFile().mkdirs();
+                    }
                     fos = new FileOutputStream(file);
                     long sum = 0;
                     while ((len = is.read(buf)) != -1) {

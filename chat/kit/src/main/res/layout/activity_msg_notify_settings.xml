@@ -25,7 +25,7 @@
             android:paddingLeft="5dp"
             android:switchMinWidth="45dp"
             android:checked="false"
-            android:text="接收新消息通知" />
+            android:text="接收新消息通知声音" />
 
         <View
             style="@style/Line"
@@ -53,6 +53,7 @@
             style="@style/Line"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp" />
+
 
     </LinearLayout>
 </LinearLayout>

@@ -51,4 +51,14 @@ public class ApiClientVO {
         this.onfgroupchat = v;
     }
 
+    public String onfadduser = "";
+    public String getOnfadduser() {
+        return onfadduser;
+    }
+    public void setOnfadduser(String v) {
+        this.onfadduser = v;
+    }
+
+
+
 }

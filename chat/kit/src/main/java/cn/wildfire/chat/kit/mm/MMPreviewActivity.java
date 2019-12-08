@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,9 +28,11 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import cn.wildfire.chat.app.Config;
+import cn.wildfire.chat.app.MyApp;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
+import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.chat.R;
 
 /**
@@ -260,8 +263,25 @@ public class MMPreviewActivity extends Activity {
                             if (isFinishing()) {
                                 return;
                             }
+
+                            String KZ = ".png";
+                            FileUtils.copyFile2(file1.getPath(), file1.getPath() + KZ);
+                            File newFile = new File(file1.getPath() + KZ);
+                            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                            Uri uri = Uri.fromFile(newFile);
+                            intent.setData(uri);
+                            MyApp.getContext().sendBroadcast(intent);
                             Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
                         }
+                        /*
+                        @Override
+                        public void onUiProgress(int progress) {
+                            Toast.makeText(MMPreviewActivity.this, progress, Toast.LENGTH_LONG).show();
+                        }
+                        @Override
+                        public void onUiFail() {
+                            Toast.makeText(MMPreviewActivity.this, "图片保存失败", Toast.LENGTH_LONG).show();
+                        }*/
                     });
                 });
             }

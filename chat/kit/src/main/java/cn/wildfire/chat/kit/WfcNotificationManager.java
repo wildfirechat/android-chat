@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -52,6 +53,7 @@ public class WfcNotificationManager {
     }
 
     private void showNotification(Context context, String tag, int id, String title, String content, PendingIntent pendingIntent) {
+        Log.e("showNotification", "收到新消息");
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = "wfc_notification";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -83,6 +85,7 @@ public class WfcNotificationManager {
     }
 
     public void handleReceiveMessage(Context context, List<Message> messages) {
+        Log.e("handleReceiveMessage", "收到新消息");
 
         if (messages == null || messages.isEmpty()) {
             return;
