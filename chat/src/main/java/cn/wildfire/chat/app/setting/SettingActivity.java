@@ -47,7 +47,7 @@ public class SettingActivity extends WfcBaseActivity {
     @OnClick(R.id.diagnoseOptionItemView)
     void diagnose() {
         long start = System.currentTimeMillis();
-        OKHttpHelper.get("http://" + Config.IM_SERVER_HOST + ":" + Config.IM_SERVER_PORT + "/api/version", null, new SimpleCallback<String>() {
+        OKHttpHelper.get("http://" + Config.IM_SERVER_HOST + "/api/version", null, new SimpleCallback<String>() {
             @Override
             public void onUiSuccess(String s) {
                 long duration = (System.currentTimeMillis() - start) / 2;

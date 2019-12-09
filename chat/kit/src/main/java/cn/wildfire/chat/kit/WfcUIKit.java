@@ -87,7 +87,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     }
 
     private void initWFClient(Application application) {
-        ChatManager.init(application, Config.IM_SERVER_HOST, Config.IM_SERVER_PORT);
+        ChatManager.init(application, Config.IM_SERVER_HOST);
         try {
             ChatManagerHolder.gChatManager = ChatManager.Instance();
             ChatManagerHolder.gChatManager.startLog();
