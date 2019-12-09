@@ -89,7 +89,6 @@ public class ChatManager {
     private static final String TAG = ChatManager.class.getName();
 
     private String SERVER_HOST;
-    private int SERVER_PORT;
 
     private static IRemoteClient mClient;
 
@@ -189,9 +188,8 @@ public class ChatManager {
         void onFailure(int errorCode);
     }
 
-    private ChatManager(String serverHost, int serverPort) {
+    private ChatManager(String serverHost) {
         this.SERVER_HOST = serverHost;
-        this.SERVER_PORT = serverPort;
     }
 
     public static ChatManager Instance() throws NotInitializedExecption {
@@ -208,17 +206,16 @@ public class ChatManager {
      *
      * @param context
      * @param serverHost
-     * @param serverPort
      * @return
      */
 
-    public static void init(Application context, String serverHost, int serverPort) {
+    public static void init(Application context, String serverHost) {
         if (INST != null) {
             // TODO: Already initialized
             return;
         }
         gContext = context.getApplicationContext();
-        INST = new ChatManager(serverHost, serverPort);
+        INST = new ChatManager(serverHost);
         INST.mainHandler = new Handler();
         HandlerThread thread = new HandlerThread("workHandler");
         thread.start();
@@ -3605,7 +3602,7 @@ public class ChatManager {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             try {
-                mClient.setServerAddress(SERVER_HOST, SERVER_PORT);
+                mClient.setServerAddress(SERVER_HOST);
                 for (String msgName : msgList) {
                     mClient.registerMessageContent(msgName);
                 }
