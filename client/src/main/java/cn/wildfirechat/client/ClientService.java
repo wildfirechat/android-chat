@@ -159,7 +159,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private BaseEvent.ConnectionReceiver mConnectionReceiver;
 
     private String mHost;
-    private int mPort;
 
     private class ClientServiceStub extends IRemoteClient.Stub {
 
@@ -254,9 +253,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void setServerAddress(String host, int port) throws RemoteException {
+        public void setServerAddress(String host) throws RemoteException {
             mHost = host;
-            mPort = port;
         }
 
         @Override
@@ -1902,7 +1900,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setConnectionStatusCallback(ClientService.this);
         ProtoLogic.setReceiveMessageCallback(ClientService.this);
         ProtoLogic.setAuthInfo(userName, userPwd);
-        return ProtoLogic.connect(mHost, mPort);
+        return ProtoLogic.connect(mHost);
     }
 
     private void resetProto() {
