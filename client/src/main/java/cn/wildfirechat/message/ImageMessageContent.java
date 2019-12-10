@@ -39,8 +39,13 @@ public class ImageMessageContent extends MediaMessageContent {
     }
 
     public Bitmap getThumbnail() {
+        if (thumbnail != null) {
+            return thumbnail;
+        }
         if (thumbnailBytes != null) {
             thumbnail = BitmapFactory.decodeByteArray(thumbnailBytes, 0, thumbnailBytes.length);
+        } else if (!TextUtils.isEmpty(localPath)) {
+            thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), 200, 200);
         }
         return thumbnail;
     }
