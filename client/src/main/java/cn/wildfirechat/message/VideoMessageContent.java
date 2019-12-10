@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.os.Parcel;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import java.io.ByteArrayOutputStream;
 
@@ -28,30 +29,33 @@ public class VideoMessageContent extends MediaMessageContent {
 
     public VideoMessageContent(String videoPath) {
         this.localPath = videoPath;
-
-        this.thumbnail = ThumbnailUtils.createVideoThumbnail(videoPath, MediaStore.Video.Thumbnails.MICRO_KIND);
-        this.thumbnail = ThumbnailUtils.extractThumbnail(this.thumbnail, 320, 240,
-                ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         this.mediaType = MessageContentMediaType.VIDEO;
     }
 
     public Bitmap getThumbnail() {
+        if (thumbnail != null) {
+            return thumbnail;
+        }
         if (thumbnailBytes != null) {
             thumbnail = BitmapFactory.decodeByteArray(thumbnailBytes, 0, thumbnailBytes.length);
+        } else {
+            if (!TextUtils.isEmpty(localPath)) {
+                thumbnail = ThumbnailUtils.createVideoThumbnail(localPath, MediaStore.Video.Thumbnails.MICRO_KIND);
+                thumbnail = ThumbnailUtils.extractThumbnail(thumbnail, 320, 240,
+                        ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            }
         }
         return thumbnail;
     }
-
-    public void setThumbnail(Bitmap thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
 
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.searchableContent = "[视频]";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(localPath, MediaStore.Video.Thumbnails.MICRO_KIND);
+//        thumbnail = ThumbnailUtils.extractThumbnail(thumbnail, 320, 240, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
         payload.binaryContent = baos.toByteArray();
         return payload;
@@ -78,13 +82,11 @@ public class VideoMessageContent extends MediaMessageContent {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeParcelable(this.thumbnail, flags);
         dest.writeByteArray(this.thumbnailBytes);
     }
 
     protected VideoMessageContent(Parcel in) {
         super(in);
-        this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
         this.thumbnailBytes = in.createByteArray();
     }
 

@@ -68,16 +68,20 @@ public class ForwardPromptView extends LinearLayout {
             contentTextView.setVisibility(GONE);
             contentImageView.setVisibility(VISIBLE);
             Bitmap bitmap = ((ImageMessageContent) message.content).getThumbnail();
-            contentImageView.getLayoutParams().width = UIUtils.dip2Px(bitmap.getWidth());
-            contentImageView.getLayoutParams().height = UIUtils.dip2Px(bitmap.getHeight());
-            contentImageView.setImageBitmap(bitmap);
+            if (bitmap != null) {
+                contentImageView.getLayoutParams().width = UIUtils.dip2Px(bitmap.getWidth());
+                contentImageView.getLayoutParams().height = UIUtils.dip2Px(bitmap.getHeight());
+                contentImageView.setImageBitmap(bitmap);
+            }
         } else if (message.content instanceof VideoMessageContent) {
             contentTextView.setVisibility(GONE);
             contentImageView.setVisibility(VISIBLE);
-            Bitmap bitmap = ((ImageMessageContent) message.content).getThumbnail();
-            contentImageView.getLayoutParams().width = UIUtils.dip2Px(bitmap.getWidth());
-            contentImageView.getLayoutParams().height = UIUtils.dip2Px(bitmap.getHeight());
-            contentImageView.setImageBitmap(bitmap);
+            Bitmap bitmap = ((VideoMessageContent) message.content).getThumbnail();
+            if (bitmap != null) {
+                contentImageView.getLayoutParams().width = UIUtils.dip2Px(bitmap.getWidth());
+                contentImageView.getLayoutParams().height = UIUtils.dip2Px(bitmap.getHeight());
+                contentImageView.setImageBitmap(bitmap);
+            }
         } else {
             contentImageView.setVisibility(GONE);
             contentTextView.setVisibility(VISIBLE);
