@@ -217,7 +217,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                     public void run() {
                         dialog.dismiss();
                         Log.e("C:", "加载apiclient配置错误");
-                        Toast.makeText(getApplicationContext(), "加载apiclient配置错误", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "加载apiclient配置错误", Toast.LENGTH_SHORT).show();
                         initGetConfig(_init);
                     }
                 });

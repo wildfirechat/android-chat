@@ -98,19 +98,19 @@ public class UserInfoFragment extends Fragment {
         if (selfUid.equals(userInfo.uid)) {
             // self
             chatButton.setVisibility(View.GONE);
-            voipChatButton.setVisibility(View.GONE);
+            //voipChatButton.setVisibility(View.GONE);
             inviteButton.setVisibility(View.GONE);
             qrCodeOptionItemView.setVisibility(View.VISIBLE);
             aliasOptionItemView.setVisibility(View.VISIBLE);
         } else if (contactViewModel.isFriend(userInfo.uid)) {
             // friend
             chatButton.setVisibility(View.VISIBLE);
-            voipChatButton.setVisibility(View.VISIBLE);
+            //voipChatButton.setVisibility(View.VISIBLE);
             inviteButton.setVisibility(View.GONE);
         } else {
             // stranger
             chatButton.setVisibility(View.GONE);
-            voipChatButton.setVisibility(View.GONE);
+            //voipChatButton.setVisibility(View.GONE);
             inviteButton.setVisibility(View.VISIBLE);
             aliasOptionItemView.setVisibility(View.GONE);
         }
@@ -134,7 +134,8 @@ public class UserInfoFragment extends Fragment {
         nameTextView.setVisibility(View.GONE);
         nickyNameTextView.setText(userViewModel.getUserDisplayName(userInfo));
         if (ChatManager.Instance().isMyFriend(userInfo.uid)) {
-            mobileTextView.setText("电话:" + userInfo.mobile);
+            //mobileTextView.setText("ID:" + userInfo.mobile);
+            mobileTextView.setText("");
             mobileTextView.setVisibility(View.VISIBLE);
         }
     }

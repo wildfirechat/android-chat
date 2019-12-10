@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import cn.wildfire.chat.app.main.model.MainModel;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.search.SearchableModule;
@@ -65,7 +66,9 @@ public class UserSearchModule extends SearchableModule<UserInfo, UserViewHolder>
     public List<UserInfo> search(String keyword) {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         List<UserInfo> userInfos = new ArrayList<>();
-        ChatManager.Instance().searchUser(keyword, true, new SearchUserCallback() {
+        String _fuzzy = MainModel.clientConfig.getSearchFriendFuzzy();
+        boolean fuzzy = !_fuzzy.equals("1");
+        ChatManager.Instance().searchUser(keyword, fuzzy, new SearchUserCallback() {
             @Override
             public void onSuccess(List<UserInfo> infos) {
                 userInfos.addAll(infos);

@@ -59,6 +59,14 @@ public class ApiClientVO {
         this.onfadduser = v;
     }
 
+    public String searchfriendfuzzy = "";
+    public String getSearchFriendFuzzy() {
+        return searchfriendfuzzy;
+    }
+    public void setSearchFriendFuzzy(String v) {
+        this.searchfriendfuzzy = v;
+    }
+
 
 
 }

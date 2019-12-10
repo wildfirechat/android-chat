@@ -54,12 +54,13 @@ public abstract class SearchActivity extends WfcBaseActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                search(s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                search(s);
+                //search(s);
                 return true;
             }
         });

@@ -130,7 +130,7 @@
             android:textColor="@color/gray0"
             android:textSize="16sp"
             android:visibility="gone"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
         <Button
             android:id="@+id/inviteButton"
