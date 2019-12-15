@@ -217,6 +217,9 @@ public class ConversationFragment extends Fragment implements
     private Observer<List<UserInfo>> userInfoUpdateLiveDataObserver = new Observer<List<UserInfo>>() {
         @Override
         public void onChanged(@Nullable List<UserInfo> userInfos) {
+            if (conversation == null) {
+                return;
+            }
             if (conversation.type == Conversation.ConversationType.Single) {
                 conversationTitle = null;
                 setTitle();
