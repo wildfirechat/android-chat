@@ -559,7 +559,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void clearMessagesEx(int conversationType, String target, int line, long before) throws RemoteException {
-            ProtoLogic.clearMessages(conversationType, target, line, before);
+            ProtoLogic.clearMessagesEx(conversationType, target, line, before);
         }
 
         @Override
