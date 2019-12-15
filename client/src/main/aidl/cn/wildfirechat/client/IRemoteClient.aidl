@@ -90,6 +90,7 @@ interface IRemoteClient {
     oneway void clearUnreadStatusEx(in int[] conversationTypes, in int[] lines);
     oneway void clearAllUnreadStatus();
     oneway void clearMessages(in int conversationType, in String target, in int line);
+    oneway void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
     oneway void setMediaMessagePlayed(in long messageId);
     oneway void removeConversation(in int conversationType, in String target, in int line, in boolean clearMsg);
     oneway void setConversationTop(in int conversationType, in String target, in int line, in boolean top);
