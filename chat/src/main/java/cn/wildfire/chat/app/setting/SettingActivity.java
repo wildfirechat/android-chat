@@ -3,6 +3,7 @@ package cn.wildfire.chat.app.setting;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.Toast;
 
 import butterknife.BindView;
@@ -16,6 +17,11 @@ import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.settings.PrivacySettingActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.TextMessageContent;
+import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.remote.ChatManager;
 
 public class SettingActivity extends WfcBaseActivity {
     @BindView(R.id.diagnoseOptionItemView)
@@ -66,7 +72,26 @@ public class SettingActivity extends WfcBaseActivity {
 
     @OnClick(R.id.aboutOptionItemView)
     void about() {
-        Intent intent = new Intent(this, AboutActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, AboutActivity.class);
+//        startActivity(intent);
+        String groupId = "q4Yuru44";
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId, 0);
+                String sender = ChatManager.Instance().getUserId();
+                for (int i = 0; i < 300; i++) {
+                    ChatManager.Instance().begainTransaction();
+                    Log.d("jyj", "start insert " + i);
+                    for (int j = 0; j < 1000; j++) {
+                        String text = "hello " + (i * 300 + j);
+                        MessageContent content = new TextMessageContent(text);
+                        ChatManager.Instance().insertMessage(conversation, sender, content, MessageStatus.Unread, false, System.currentTimeMillis());
+                    }
+                    ChatManager.Instance().commitTransaction();
+                }
+
+            }
+        }).start();
     }
 }
