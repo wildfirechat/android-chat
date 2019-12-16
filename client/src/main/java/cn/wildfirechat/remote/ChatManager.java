@@ -1824,6 +1824,30 @@ public class ChatManager {
         }
     }
 
+    public void clearMessages(Conversation conversation, long beforeTime) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            int convType = 0;
+            String target = "";
+            int line = 0;
+            if (conversation != null) {
+                convType = conversation.type.getValue();
+                target = conversation.target;
+                line = conversation.line;
+            }
+            mClient.clearMessagesEx(convType, target, line, beforeTime);
+
+            for (OnClearMessageListener listener : clearMessageListeners) {
+                listener.onClearMessage(conversation);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 删除会话
      *
