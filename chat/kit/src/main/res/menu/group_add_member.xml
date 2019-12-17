@@ -3,6 +3,7 @@
     <item xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/add"
         android:title="确定"
+        android:enabled="false"
         app:showAsAction="always" />
 
 </menu>
