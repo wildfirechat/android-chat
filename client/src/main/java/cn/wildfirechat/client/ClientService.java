@@ -1923,6 +1923,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         ProtoLogic.setConnectionStatusCallback(null);
         ProtoLogic.setReceiveMessageCallback(null);
+        ProtoLogic.appWillTerminate();
     }
 
     public void openXlog() {
