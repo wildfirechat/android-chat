@@ -74,14 +74,9 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     }
 
     public void deattch() {
-        recorder = null;
-        handler = null;
-        recordingWindow = null;
-        stateImageView = null;
-        stateTextView = null;
-        countDownTextView = null;
+        rootView = null;
+        button = null;
     }
-
 
     public void setRecordListener(OnRecordListener recordListener) {
         this.recordListener = recordListener;
@@ -91,7 +86,6 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                button.setTag(new Object());
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_pressed);
                 startRecord();
                 break;
@@ -108,7 +102,6 @@ public class AudioRecorderPanel implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                button.setTag(null);
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_normal);
                 if (isToCancel) {
                     cancelRecord();
@@ -142,6 +135,10 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         tick();
     }
 
+    public boolean isShowingRecorder() {
+        return recordingWindow != null;
+    }
+
     private void stopRecord() {
         if (!isRecording) {
             return;
@@ -165,6 +162,9 @@ public class AudioRecorderPanel implements View.OnTouchListener {
 
         isToCancel = false;
         isRecording = false;
+
+        recorder = null;
+        handler = null;
     }
 
     private void cancelRecord() {
@@ -207,6 +207,10 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             return;
         }
         recordingWindow.dismiss();
+        recordingWindow = null;
+        stateImageView = null;
+        stateTextView = null;
+        countDownTextView = null;
     }
 
     private void showTooShortTip() {
