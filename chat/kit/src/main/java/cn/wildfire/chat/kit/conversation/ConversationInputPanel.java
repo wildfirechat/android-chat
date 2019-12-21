@@ -241,7 +241,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     @OnClick(R.id.emotionImageView)
     void onEmotionImageViewClick() {
 
-        if (audioButton.getTag() != null) {
+        if (audioRecorderPanel.isShowingRecorder()) {
             return;
         }
         if (rootLinearLayout.getCurrentInput() == emotionContainerFrameLayout) {
