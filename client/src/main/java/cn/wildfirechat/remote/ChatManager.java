@@ -3307,6 +3307,19 @@ public class ChatManager {
         }
     }
 
+    public String getHost() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getHost();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public String getUserSetting(int scope, String key) {
         if (!checkRemoteService()) {
             return null;
