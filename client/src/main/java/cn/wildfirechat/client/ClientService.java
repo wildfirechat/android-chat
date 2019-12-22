@@ -1462,6 +1462,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             return StnLogic.decodeData(data);
         }
 
+        @Override
+        public String getHost() throws RemoteException {
+            return StnLogic.getHost();
+        }
 
         @Override
         public void createChannel(String channelId, String channelName, String channelPortrait, String desc, String extra, ICreateChannelCallback callback) throws RemoteException {
