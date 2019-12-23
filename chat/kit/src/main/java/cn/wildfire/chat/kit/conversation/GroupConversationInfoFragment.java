@@ -163,7 +163,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         progressBar.setVisibility(View.VISIBLE);
 
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
-        groupInfo = groupViewModel.getGroupInfo(conversationInfo.conversation.target, false);
+        groupInfo = groupViewModel.getGroupInfo(conversationInfo.conversation.target, true);
         if (groupInfo != null) {
             groupMember = ChatManager.Instance().getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
         }
