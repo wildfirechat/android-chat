@@ -83,7 +83,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         String userId = conversationInfo.conversation.target;
         conversationMemberAdapter = new ConversationMemberAdapter(true, false);
-        List<UserInfo> members = Collections.singletonList(userViewModel.getUserInfo(userId, false));
+        List<UserInfo> members = Collections.singletonList(userViewModel.getUserInfo(userId, true));
         conversationMemberAdapter.setMembers(members);
         conversationMemberAdapter.setOnMemberClickListener(this);
 
@@ -93,6 +93,21 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
+
+        observerUserInfoUpdate();
+    }
+
+    private void observerUserInfoUpdate() {
+        userViewModel.userInfoLiveData().observe(this, userInfos -> {
+            for (UserInfo userInfo : userInfos) {
+                if (userInfo.uid.equals(this.conversationInfo.conversation.target)) {
+                    List<UserInfo> members = Collections.singletonList(userInfo);
+                    conversationMemberAdapter.setMembers(members);
+                    conversationMemberAdapter.notifyDataSetChanged();
+                    break;
+                }
+            }
+        });
     }
 
     @OnClick(R.id.clearMessagesOptionItemView)
