@@ -28,7 +28,7 @@ public class SingleConversationViewHolder extends ConversationViewHolder {
 
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
-        UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversationInfo.conversation.target, false);
+        UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversationInfo.conversation.target, true);
         UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         String name = userViewModel.getUserDisplayName(userInfo);
         String portrait;
