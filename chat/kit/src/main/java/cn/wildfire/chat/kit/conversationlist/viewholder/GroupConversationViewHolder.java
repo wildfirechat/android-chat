@@ -26,7 +26,7 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
 
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
-        GroupInfo groupInfo = ChatManagerHolder.gChatManager.getGroupInfo(conversationInfo.conversation.target, true);
+        GroupInfo groupInfo = ChatManagerHolder.gChatManager.getGroupInfo(conversationInfo.conversation.target, false);
         String name;
         String portrait;
         if (groupInfo != null) {
