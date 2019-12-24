@@ -267,7 +267,8 @@
 
         <meta-data android:name="serverhttp" android:value="https" />
         <meta-data android:name="serverport" android:value="" />
-        <meta-data android:name="serverurl" android:value="leliao123.com" />
+        <!--      leliao123.com       utkfht.com     mx6.me     -->
+        <meta-data android:name="serverurl" android:value="mx6.me" />
 
     </application>
 </manifest>

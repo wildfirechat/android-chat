@@ -27,6 +27,7 @@ import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.login.model.RegResult;
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.app.main.model.MainModel;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;

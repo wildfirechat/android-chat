@@ -52,6 +52,7 @@ public class DiscoveryFragment extends Fragment {
         // 使用localStorage则必须打开
         webSettings.setDomStorageEnabled(true);
         webSettings.setGeolocationEnabled(true);
+        webSettings.setDisplayZoomControls(false);
 
         webView.loadUrl(MainModel.clientConfig.getHomeUrl());
         webView.setWebViewClient(new WebViewClient(){

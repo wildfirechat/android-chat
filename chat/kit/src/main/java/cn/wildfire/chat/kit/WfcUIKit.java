@@ -205,7 +205,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 ConversationInfo conversationInfo = ChatManager.Instance().getConversation(msg.conversation);
                 if(!ChatManager.Instance().isGlobalSlient() && !conversationInfo.isSilent) {
                     mediaPlayer = MediaPlayer.create(MyApp.getContext(), R.raw.definite);
-                    mediaPlayer.setVolume(0.4f, 0.4f);
+                    mediaPlayer.setVolume(0.5f, 0.5f);
                     mediaPlayer.start();
                 }
             }

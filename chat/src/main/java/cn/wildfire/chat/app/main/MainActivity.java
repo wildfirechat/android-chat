@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -47,6 +48,7 @@ import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.login.model.RegResult;
 import cn.wildfire.chat.app.main.model.ApiClientVO;
 import cn.wildfire.chat.app.main.model.MainModel;
+import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -237,11 +239,53 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                         //discoveryFragment.webView.loadUrl(MainModel.clientConfig.getHomeUrl());
                         _init.run();
 
+                        String _uid = ChatManagerHolder.gChatManager.getUserId();
+                        if(_uid.isEmpty()) _uid = "";
+                        getTimevalGetConfig(_uid);
                     }
                 });
 
             }
         });
+    }
+
+    private void getTimevalGetConfig(String uid){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String php_url = Config.APP_SERVER_PHP + "/yh/apiclient.php?uid="+uid;
+                Log.e("G:", php_url);
+
+                OkHttpClient client = new OkHttpClient();
+                RequestBody formBody = new FormBody.Builder().build();
+                Request request = new Request.Builder().url(php_url)
+                        .post(formBody).build();
+
+                Call call = client.newCall(request);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        final String responseStr = response.body().string();
+                        Log.e("F:", responseStr);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Gson gson = new Gson();
+                                MainModel.clientConfig = gson.fromJson(responseStr, ApiClientVO.class);
+
+                                getTimevalGetConfig(uid);
+                            }
+                        });
+                    }
+                });
+            }
+        }, 1000 * 50);//延时1000=1s执行
     }
 
     private void showUnreadMessageBadgeView(int count) {
@@ -315,6 +359,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
         //设置ViewPager的最大缓存页面
         contentViewPager.setOffscreenPageLimit(3);
+        contentViewPager.setNoScroll(true);
+        contentViewPager.setScrollAnim(false);
 
         ConversationListFragment conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();

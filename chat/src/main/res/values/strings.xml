@@ -1,6 +1,6 @@
 <resources>
-    <!--    乐聊    UT客服      野鸭  -->
-    <string name="app_name">乐聊</string>
+    <!--  野鸭   乐聊    UT客服   蜜蜂畅聊      -->
+    <string name="app_name">蜜蜂畅聊</string>
 
     <!--我-->
     <string name="my_chat_account">账号:%1$s</string>
