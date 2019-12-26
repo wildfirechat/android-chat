@@ -33,7 +33,7 @@ public class FileMessageContent extends MediaMessageContent {
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
-        payload.searchableContent = name;
+        payload.searchableContent = "[文件] " + name;
         payload.content = size + "";
 
         return payload;
