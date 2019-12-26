@@ -100,7 +100,7 @@ public class ChatManager {
     private Handler mainHandler;
     private Handler workHandler;
     private String deviceToken;
-    private PushType pushType;
+    private int pushType;
     private List<String> msgList = new ArrayList<>();
 
     private UserSource userSource;
@@ -131,23 +131,6 @@ public class ChatManager {
     private LruCache<String, UserInfo> userInfoCache;
     // key = memberId@groupId
     private LruCache<String, GroupMember> groupMemberCache;
-
-    public enum PushType {
-        Xiaomi(1),
-        HMS(2),
-        MeiZu(3),
-        VIVO(4);
-
-        private int value;
-
-        PushType(int value) {
-            this.value = value;
-        }
-
-        public int value() {
-            return this.value;
-        }
-    }
 
     public enum SearchUserType {
         //模糊搜索displayName，精确搜索name或电话号码
@@ -3529,7 +3512,7 @@ public class ChatManager {
         }
     }
 
-    public void setDeviceToken(String token, PushType pushType) {
+    public void setDeviceToken(String token, int pushType) {
         deviceToken = token;
         this.pushType = pushType;
         if (!checkRemoteService()) {
@@ -3537,7 +3520,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.setDeviceToken(token, pushType.value());
+            mClient.setDeviceToken(token, pushType);
         } catch (RemoteException e) {
             e.printStackTrace();
             return;
@@ -3651,7 +3634,7 @@ public class ChatManager {
                 }
 
                 if (!TextUtils.isEmpty(deviceToken)) {
-                    mClient.setDeviceToken(deviceToken, pushType.value());
+                    mClient.setDeviceToken(deviceToken, pushType);
                 }
 
                 mClient.setForeground(1);
