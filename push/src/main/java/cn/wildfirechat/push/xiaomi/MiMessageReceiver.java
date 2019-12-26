@@ -17,6 +17,7 @@ import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.push.AndroidPushMessage;
 import cn.wildfirechat.push.PushService;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.PushType;
 
 /**
  * Created by heavyrainlee on 22/02/2018.
@@ -115,7 +116,7 @@ public class MiMessageReceiver extends PushMessageReceiver {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
                 try {
-                    ChatManager.Instance().setDeviceToken(mRegId, ChatManager.PushType.Xiaomi);
+                    ChatManager.Instance().setDeviceToken(mRegId, PushType.XIAOMI);
                 } catch (NotInitializedExecption notInitializedExecption) {
                     notInitializedExecption.printStackTrace();
                 }
