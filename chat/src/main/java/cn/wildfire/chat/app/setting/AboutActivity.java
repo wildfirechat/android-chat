@@ -30,7 +30,7 @@ public class AboutActivity extends WfcBaseActivity {
             /*
             String info = packageInfo.packageName + "\n"
                     + packageInfo.versionCode + " " + packageInfo.versionName + "\n"
-                    + Config.IM_SERVER_HOST + " " + Config.IM_SERVER_PORT + "\n"
+                    + Config.IM_SERVER_HOST + "\n"
                     + Config.APP_SERVER_ADDRESS +  "\n"
                     + Config.ICE_ADDRESS + " " + Config.ICE_USERNAME + " " + Config.ICE_PASSWORD + "\n";
             */

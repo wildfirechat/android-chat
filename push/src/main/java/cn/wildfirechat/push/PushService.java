@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Properties;
 
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.PushType;
 
 /**
  * Created by heavyrain.lee on 2018/2/26.
@@ -243,7 +244,7 @@ public class PushService {
                     String pushId = com.meizu.cloud.pushsdk.PushManager.getPushId(context);
                     com.meizu.cloud.pushsdk.PushManager.register(context, String.valueOf(appId), appKey);
                     com.meizu.cloud.pushsdk.PushManager.switchPush(context, String.valueOf(appId), appKey, pushId, 1, true);
-                    ChatManager.Instance().setDeviceToken(pushId, ChatManager.PushType.MeiZu);
+                    ChatManager.Instance().setDeviceToken(pushId, PushType.MEIZU);
                 }
             }
         } catch (Exception e) {
@@ -263,7 +264,7 @@ public class PushService {
                 Log.d("PushService", "vivo turnOnPush " + state);
                 String regId = PushClient.getInstance(context).getRegId();
                 if (!TextUtils.isEmpty(regId)) {
-                    ChatManager.Instance().setDeviceToken(regId, ChatManager.PushType.VIVO);
+                    ChatManager.Instance().setDeviceToken(regId, PushType.VIVO);
                 }
             }
         });

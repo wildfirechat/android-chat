@@ -89,7 +89,6 @@ public class ChatManager {
     private static final String TAG = ChatManager.class.getName();
 
     private String SERVER_HOST;
-    private int SERVER_PORT;
 
     private static IRemoteClient mClient;
 
@@ -101,7 +100,7 @@ public class ChatManager {
     private Handler mainHandler;
     private Handler workHandler;
     private String deviceToken;
-    private PushType pushType;
+    private int pushType;
     private List<String> msgList = new ArrayList<>();
 
     private UserSource userSource;
@@ -133,15 +132,22 @@ public class ChatManager {
     // key = memberId@groupId
     private LruCache<String, GroupMember> groupMemberCache;
 
-    public enum PushType {
-        Xiaomi(1),
-        HMS(2),
-        MeiZu(3),
-        VIVO(4);
+    public enum SearchUserType {
+        //模糊搜索displayName，精确搜索name或电话号码
+        General(0),
+
+        //精确搜索name或电话号码
+        NameOrMobile(1),
+
+        //精确搜索name
+        Name(2),
+
+        //精确搜索电话号码
+        Mobile(3);
 
         private int value;
 
-        PushType(int value) {
+        SearchUserType(int value) {
             this.value = value;
         }
 
@@ -165,9 +171,8 @@ public class ChatManager {
         void onFailure(int errorCode);
     }
 
-    private ChatManager(String serverHost, int serverPort) {
+    private ChatManager(String serverHost) {
         this.SERVER_HOST = serverHost;
-        this.SERVER_PORT = serverPort;
     }
 
     public static ChatManager Instance() throws NotInitializedExecption {
@@ -184,17 +189,16 @@ public class ChatManager {
      *
      * @param context
      * @param serverHost
-     * @param serverPort
      * @return
      */
 
-    public static void init(Application context, String serverHost, int serverPort) {
+    public static void init(Application context, String serverHost) {
         if (INST != null) {
             // TODO: Already initialized
             return;
         }
         gContext = context.getApplicationContext();
-        INST = new ChatManager(serverHost, serverPort);
+        INST = new ChatManager(serverHost);
         INST.mainHandler = new Handler();
         HandlerThread thread = new HandlerThread("workHandler");
         thread.start();
@@ -1803,6 +1807,30 @@ public class ChatManager {
         }
     }
 
+    public void clearMessages(Conversation conversation, long beforeTime) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            int convType = 0;
+            String target = "";
+            int line = 0;
+            if (conversation != null) {
+                convType = conversation.type.getValue();
+                target = conversation.target;
+                line = conversation.line;
+            }
+            mClient.clearMessagesEx(convType, target, line, beforeTime);
+
+            for (OnClearMessageListener listener : clearMessageListeners) {
+                listener.onClearMessage(conversation);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 删除会话
      *
@@ -1880,7 +1908,7 @@ public class ChatManager {
         }
     }
 
-    public void searchUser(String keyword, boolean fuzzy, final SearchUserCallback callback) {
+    public void searchUser(String keyword, SearchUserType searchUserType, int page, final SearchUserCallback callback) {
         if (userSource != null) {
             userSource.searchUser(keyword, callback);
             return;
@@ -1892,7 +1920,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.searchUser(keyword, fuzzy, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
+            mClient.searchUser(keyword, searchUserType.ordinal(), page, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
                 @Override
                 public void onSuccess(final List<UserInfo> userInfos) throws RemoteException {
                     if (callback != null) {
@@ -3262,6 +3290,19 @@ public class ChatManager {
         }
     }
 
+    public String getHost() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getHost();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public String getUserSetting(int scope, String key) {
         if (!checkRemoteService()) {
             return null;
@@ -3471,7 +3512,7 @@ public class ChatManager {
         }
     }
 
-    public void setDeviceToken(String token, PushType pushType) {
+    public void setDeviceToken(String token, int pushType) {
         deviceToken = token;
         this.pushType = pushType;
         if (!checkRemoteService()) {
@@ -3479,7 +3520,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.setDeviceToken(token, pushType.value());
+            mClient.setDeviceToken(token, pushType);
         } catch (RemoteException e) {
             e.printStackTrace();
             return;
@@ -3581,7 +3622,7 @@ public class ChatManager {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             try {
-                mClient.setServerAddress(SERVER_HOST, SERVER_PORT);
+                mClient.setServerAddress(SERVER_HOST);
                 for (String msgName : msgList) {
                     mClient.registerMessageContent(msgName);
                 }
@@ -3593,7 +3634,7 @@ public class ChatManager {
                 }
 
                 if (!TextUtils.isEmpty(deviceToken)) {
-                    mClient.setDeviceToken(deviceToken, pushType.value());
+                    mClient.setDeviceToken(deviceToken, pushType);
                 }
 
                 mClient.setForeground(1);

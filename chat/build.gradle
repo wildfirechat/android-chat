@@ -16,8 +16,8 @@ android {
         applicationId "me.mx6" //com.leliao123  //com.utkfht //me.mx6
         minSdkVersion 16
         targetSdkVersion 28 //当targetversion大于23时，需要使用fileprovider
-        versionCode 19
-        versionName "0.6.5"
+        versionCode 21
+        versionName "0.6.7"
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {

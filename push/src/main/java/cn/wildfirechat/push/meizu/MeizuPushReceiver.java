@@ -23,6 +23,7 @@ import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.push.AndroidPushMessage;
 import cn.wildfirechat.push.PushService;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.PushType;
 
 public class MeizuPushReceiver extends MzPushMessageReceiver {
 
@@ -30,7 +31,7 @@ public class MeizuPushReceiver extends MzPushMessageReceiver {
     public void onRegister(Context context, String pushId) {
         Log.e(TAG, "onReceiveClientId -> " + "pushId = " + pushId);
         try {
-            ChatManager.Instance().setDeviceToken(pushId, ChatManager.PushType.MeiZu);
+            ChatManager.Instance().setDeviceToken(pushId, PushType.MEIZU);
         } catch (NotInitializedExecption notInitializedExecption) {
             notInitializedExecption.printStackTrace();
         }

@@ -10,6 +10,7 @@ import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.push.AndroidPushMessage;
 import cn.wildfirechat.push.PushService;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.PushType;
 
 /**
  * Created by heavyrainlee on 22/02/2018.
@@ -21,7 +22,7 @@ public class HuaweiPushRevicer extends PushReceiver {
     @Override
     public void onToken(Context context, String s, Bundle bundle) {
         try {
-            ChatManager.Instance().setDeviceToken(s, ChatManager.PushType.HMS);
+            ChatManager.Instance().setDeviceToken(s, PushType.HMS);
         } catch (NotInitializedExecption notInitializedExecption) {
             notInitializedExecption.printStackTrace();
         }

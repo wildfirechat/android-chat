@@ -217,6 +217,9 @@ public class ConversationFragment extends Fragment implements
     private Observer<List<UserInfo>> userInfoUpdateLiveDataObserver = new Observer<List<UserInfo>>() {
         @Override
         public void onChanged(@Nullable List<UserInfo> userInfos) {
+            if (conversation == null) {
+                return;
+            }
             if (conversation.type == Conversation.ConversationType.Single) {
                 conversationTitle = null;
                 setTitle();
@@ -511,8 +514,18 @@ public class ConversationFragment extends Fragment implements
     @Override
     public void onPortraitClick(UserInfo userInfo) {
         if (groupInfo != null && groupInfo.privateChat == 1) {
+            boolean allowPrivateChat = false;
             GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
-            if (groupMember.type != GroupMember.GroupMemberType.Owner && groupMember.type != GroupMember.GroupMemberType.Manager && !userViewModel.getUserId().equals(groupInfo.owner)) {
+            if (groupMember != null && groupMember.type == GroupMember.GroupMemberType.Normal) {
+                GroupMember targetGroupMember = groupViewModel.getGroupMember(groupInfo.target, userInfo.uid);
+                if (targetGroupMember != null && (targetGroupMember.type == GroupMember.GroupMemberType.Owner || targetGroupMember.type == GroupMember.GroupMemberType.Manager)) {
+                    allowPrivateChat = true;
+                }
+            } else if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager)) {
+                allowPrivateChat = true;
+            }
+
+            if (!allowPrivateChat) {
                 Toast.makeText(getActivity(), "禁止群成员私聊", Toast.LENGTH_SHORT).show();
                 return;
             }

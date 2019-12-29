@@ -159,7 +159,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private BaseEvent.ConnectionReceiver mConnectionReceiver;
 
     private String mHost;
-    private int mPort;
 
     private class ClientServiceStub extends IRemoteClient.Stub {
 
@@ -254,9 +253,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void setServerAddress(String host, int port) throws RemoteException {
+        public void setServerAddress(String host) throws RemoteException {
             mHost = host;
-            mPort = port;
         }
 
         @Override
@@ -560,6 +558,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void clearMessagesEx(int conversationType, String target, int line, long before) throws RemoteException {
+            ProtoLogic.clearMessagesEx(conversationType, target, line, before);
+        }
+
+        @Override
         public void setMediaMessagePlayed(long messageId) {
             try {
                 Message message = getMessage(messageId);
@@ -593,8 +596,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void searchUser(String keyword, boolean fuzzy, final ISearchUserCallback callback) throws RemoteException {
-            ProtoLogic.searchUser(keyword, fuzzy, 0, new ProtoLogic.ISearchUserCallback() {
+        public void searchUser(String keyword, int searchType, int page, final ISearchUserCallback callback) throws RemoteException {
+            ProtoLogic.searchUser(keyword, searchType, page, new ProtoLogic.ISearchUserCallback() {
                 @Override
                 public void onSuccess(ProtoUserInfo[] userInfos) {
                     List<UserInfo> out = new ArrayList<>();
@@ -1459,6 +1462,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             return StnLogic.decodeData(data);
         }
 
+        @Override
+        public String getHost() throws RemoteException {
+            return StnLogic.getHost();
+        }
 
         @Override
         public void createChannel(String channelId, String channelName, String channelPortrait, String desc, String extra, ICreateChannelCallback callback) throws RemoteException {
@@ -1739,6 +1746,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         userInfo.type = protoUserInfo.getType();
         userInfo.friendAlias = protoUserInfo.getFriendAlias();
         userInfo.groupAlias = protoUserInfo.getGroupAlias();
+        userInfo.type = protoUserInfo.getDeleted();
         return userInfo;
     }
 
@@ -1901,7 +1909,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setConnectionStatusCallback(ClientService.this);
         ProtoLogic.setReceiveMessageCallback(ClientService.this);
         ProtoLogic.setAuthInfo(userName, userPwd);
-        return ProtoLogic.connect(mHost, mPort);
+        return ProtoLogic.connect(mHost);
     }
 
     private void resetProto() {
@@ -1919,6 +1927,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         ProtoLogic.setConnectionStatusCallback(null);
         ProtoLogic.setReceiveMessageCallback(null);
+        ProtoLogic.appWillTerminate();
     }
 
     public void openXlog() {
