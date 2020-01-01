@@ -1724,16 +1724,15 @@ public class ChatManager {
         }
 
         try {
-            UnreadCount unreadCount = getUnreadCount(conversation);
-            if (unreadCount.unread == 0 && unreadCount.unreadMention == 0 && unreadCount.unreadMentionAll == 0) {
-                return;
+
+            if(mClient.clearUnreadStatus(conversation.type.getValue(), conversation.target, conversation.line)) {
+                ConversationInfo conversationInfo = getConversation(conversation);
+                conversationInfo.unreadCount = new UnreadCount();
+                for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
+                    listener.onConversationUnreadStatusClear(conversationInfo);
+                }
             }
-            mClient.clearUnreadStatus(conversation.type.getValue(), conversation.target, conversation.line);
-            ConversationInfo conversationInfo = getConversation(conversation);
-            conversationInfo.unreadCount = new UnreadCount();
-            for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
-                listener.onConversationUnreadStatusClear(conversationInfo, unreadCount);
-            }
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
