@@ -86,8 +86,8 @@ interface IRemoteClient {
 
     UnreadCount getUnreadCount(in int conversationType, in String target, in int line);
     UnreadCount getUnreadCountEx(in int[] conversationTypes, in int[] lines);
-    void clearUnreadStatus(in int conversationType, in String target, in int line);
-    oneway void clearUnreadStatusEx(in int[] conversationTypes, in int[] lines);
+    boolean clearUnreadStatus(in int conversationType, in String target, in int line);
+    boolean clearUnreadStatusEx(in int[] conversationTypes, in int[] lines);
     oneway void clearAllUnreadStatus();
     oneway void clearMessages(in int conversationType, in String target, in int line);
     oneway void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
