@@ -184,9 +184,9 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         }
     }
 
-    public void removeConversation(ConversationInfo conversationInfo) {
+    public void removeConversation(ConversationInfo conversationInfo, boolean clearMsg) {
         ChatManager.Instance().clearUnreadStatus(conversationInfo.conversation);
-        ChatManager.Instance().removeConversation(conversationInfo.conversation, false);
+        ChatManager.Instance().removeConversation(conversationInfo.conversation, clearMsg);
     }
 
     public void clearMessages(Conversation conversation) {
@@ -198,7 +198,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().listenChannel(conversationInfo.conversation.target, false, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                removeConversation(conversationInfo);
+                removeConversation(conversationInfo, false);
             }
 
             @Override
