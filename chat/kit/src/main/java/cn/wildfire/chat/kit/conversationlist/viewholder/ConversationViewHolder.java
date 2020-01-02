@@ -174,7 +174,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             confirmPrompt = "确认删除会话？",
             priority = 0)
     public void removeConversation(View itemView, ConversationInfo conversationInfo) {
-        conversationListViewModel.removeConversation(conversationInfo);
+        conversationListViewModel.removeConversation(conversationInfo, true);
     }
 
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_REMOVE,
