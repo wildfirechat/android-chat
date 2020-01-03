@@ -16,8 +16,8 @@ android {
         applicationId "cn.wildfirechat.chat"
         minSdkVersion 16
         targetSdkVersion 28 //当targetversion大于23时，需要使用fileprovider
-        versionCode 22
-        versionName "0.6.8"
+        versionCode 23
+        versionName "0.6.9"
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
