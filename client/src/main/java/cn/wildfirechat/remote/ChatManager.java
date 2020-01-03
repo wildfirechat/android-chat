@@ -308,8 +308,6 @@ public class ChatManager {
         if (message == null) {
             return;
         }
-        ConversationInfo conversationInfo = getConversation(message.conversation);
-        conversationInfo.lastMessage = message;
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
