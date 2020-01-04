@@ -3,6 +3,7 @@ package cn.wildfire.chat.kit.conversation;
 import android.content.Context;
 import android.content.Intent;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProviders;
 
@@ -10,6 +11,7 @@ import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConversationActivity extends WfcBaseActivity {
@@ -71,7 +73,12 @@ public class ConversationActivity extends WfcBaseActivity {
 
     private void showConversationInfo() {
         Intent intent = new Intent(this, ConversationInfoActivity.class);
-        intent.putExtra("conversationInfo", ChatManager.Instance().getConversation(conversation));
+        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
+        if (conversationInfo == null) {
+            Toast.makeText(this, "获取会话信息失败", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        intent.putExtra("conversationInfo", conversationInfo);
         startActivity(intent);
     }
 
