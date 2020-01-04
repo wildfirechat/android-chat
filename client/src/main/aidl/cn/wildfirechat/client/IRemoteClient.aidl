@@ -48,7 +48,6 @@ import java.util.Map;
 // Declare any non-default types here with import statements
 
 interface IRemoteClient {
-    String getClientId();
     boolean connect(in String userId, in String token);
     oneway void disconnect(in boolean clearSession);
     oneway void setForeground(in int isForeground);

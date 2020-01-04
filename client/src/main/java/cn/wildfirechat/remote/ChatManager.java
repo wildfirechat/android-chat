@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.UserSource;
@@ -100,6 +103,7 @@ public class ChatManager {
     private Handler mainHandler;
     private Handler workHandler;
     private String deviceToken;
+    private String clientId;
     private int pushType;
     private List<String> msgList = new ArrayList<>();
 
@@ -599,15 +603,22 @@ public class ChatManager {
 
     /**
      * 获取clientId, 火信用clientId唯一表示用户设备
-     *
-     * @return
-     * @throws Exception
      */
-    public String getClientId() throws Exception {
-        if (!checkRemoteService()) {
-            throw new Exception("mars service not connected");
+    public String getClientId() {
+        if (clientId != null) {
+            return clientId;
         }
-        return mClient.getClientId();
+        String imei = PreferenceManager.getDefaultSharedPreferences(gContext).getString("mars_core_uid", "");
+        if (TextUtils.isEmpty(imei)) {
+            imei = Settings.Secure.getString(gContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+            if (TextUtils.isEmpty(imei)) {
+                imei = UUID.randomUUID().toString();
+            }
+            imei += System.currentTimeMillis();
+            PreferenceManager.getDefaultSharedPreferences(gContext).edit().putString("mars_core_uid", imei).commit();
+        }
+        clientId = imei;
+        return clientId;
     }
 
     /**
@@ -1723,7 +1734,7 @@ public class ChatManager {
 
         try {
 
-            if(mClient.clearUnreadStatus(conversation.type.getValue(), conversation.target, conversation.line)) {
+            if (mClient.clearUnreadStatus(conversation.type.getValue(), conversation.target, conversation.line)) {
                 ConversationInfo conversationInfo = getConversation(conversation);
                 conversationInfo.unreadCount = new UnreadCount();
                 for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
@@ -2250,7 +2261,7 @@ public class ChatManager {
 
         return false;
     }
-    
+
     public List<String> getBlackList(boolean refresh) {
         if (!checkRemoteService()) {
             return null;
@@ -3603,6 +3614,7 @@ public class ChatManager {
             }
 
             Intent intent = new Intent(gContext, ClientService.class);
+            intent.putExtra("clientId", getClientId());
             boolean result = gContext.bindService(intent, serviceConnection, BIND_AUTO_CREATE);
             if (!result) {
                 Log.e(TAG, "Bind service failure");
