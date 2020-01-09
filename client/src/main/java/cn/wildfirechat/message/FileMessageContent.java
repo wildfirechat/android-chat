@@ -1,6 +1,7 @@
 package cn.wildfirechat.message;
 
 import android.os.Parcel;
+import android.text.TextUtils;
 
 import java.io.File;
 
@@ -18,6 +19,7 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_File;
 public class FileMessageContent extends MediaMessageContent {
     private String name;
     private int size;
+    private static final String FILE_NAME_PREFIX = "[文件] ";
 
     public FileMessageContent() {
     }
@@ -33,7 +35,7 @@ public class FileMessageContent extends MediaMessageContent {
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
-        payload.searchableContent = "[文件] " + name;
+        payload.searchableContent = FILE_NAME_PREFIX + name;
         payload.content = size + "";
 
         return payload;
@@ -50,7 +52,14 @@ public class FileMessageContent extends MediaMessageContent {
     @Override
     public void decode(MessagePayload payload) {
         super.decode(payload);
-        name = payload.searchableContent;
+        if (TextUtils.isEmpty(payload.searchableContent)) {
+            return;
+        }
+        if (payload.searchableContent.startsWith(FILE_NAME_PREFIX)) {
+            name = payload.searchableContent.substring(payload.searchableContent.indexOf(FILE_NAME_PREFIX) + FILE_NAME_PREFIX.length());
+        } else {
+            name = payload.searchableContent;
+        }
         size = Integer.parseInt(payload.content);
     }
 
