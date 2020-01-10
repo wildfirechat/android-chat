@@ -3533,7 +3533,7 @@ public class ChatManager {
         File[] subFile = dir.listFiles();
         for (File file : subFile) {
             //wflog为ChatService中定义的，如果修改需要对应修改
-            if (file.isFile() && file.getName().startsWith("wflog")) {
+            if (file.isFile() && file.getName().startsWith("wflog_")) {
                 paths.add(file.getAbsolutePath());
             }
         }
