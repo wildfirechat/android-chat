@@ -3520,6 +3520,26 @@ public class ChatManager {
         }
     }
 
+    private String getLogPath() {
+        return gContext.getCacheDir().getAbsolutePath() + "/log";
+    }
+
+    public List<String> getLogFilesPath() throws RemoteException {
+        List<String> paths = new ArrayList<>();
+        String path = getLogPath();
+
+        //遍历path目录下的所有日志文件，以wflog开头的
+        File dir = new File(path);
+        File[] subFile = dir.listFiles();
+        for (File file : subFile) {
+            //wflog为ChatService中定义的，如果修改需要对应修改
+            if (file.isFile() && file.getName().startsWith("wflog")) {
+                paths.add(file.getAbsolutePath());
+            }
+        }
+        return paths;
+    }
+
     public void setDeviceToken(String token, int pushType) {
         deviceToken = token;
         this.pushType = pushType;

@@ -110,6 +110,7 @@ import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusReceiveing
 import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
 import static com.tencent.mars.comm.PlatformComm.context;
+import static com.tencent.mars.xlog.Xlog.AppednerModeAsync;
 
 
 /**
@@ -708,9 +709,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             });
         }
 
+        private String getLogPath() {
+            return getCacheDir().getAbsolutePath() + "/log";
+        }
+
         @Override
         public void startLog() throws RemoteException {
             Xlog.setConsoleLogOpen(true);
+            String path = getLogPath();
+            //wflog为ChatSManager中使用判断日志文件，如果修改需要对应修改
+            Xlog.appenderOpen(Xlog.LEVEL_INFO, AppednerModeAsync, path, path, "wflog", null);
         }
 
         @Override
@@ -1953,10 +1961,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         String logFileName = processName.indexOf(":") == -1 ? "MarsSample" : ("MarsSample_" + processName.substring(processName.indexOf(":") + 1));
 
         if (BuildConfig.DEBUG) {
-            Xlog.appenderOpen(Xlog.LEVEL_VERBOSE, Xlog.AppednerModeAsync, logCache, logPath, logFileName, "");
+            Xlog.appenderOpen(Xlog.LEVEL_VERBOSE, AppednerModeAsync, logCache, logPath, logFileName, "");
             Xlog.setConsoleLogOpen(true);
         } else {
-            Xlog.appenderOpen(Xlog.LEVEL_INFO, Xlog.AppednerModeAsync, logCache, logPath, logFileName, "");
+            Xlog.appenderOpen(Xlog.LEVEL_INFO, AppednerModeAsync, logCache, logPath, logFileName, "");
             Xlog.setConsoleLogOpen(false);
         }
         Log.setLogImp(new Xlog());
