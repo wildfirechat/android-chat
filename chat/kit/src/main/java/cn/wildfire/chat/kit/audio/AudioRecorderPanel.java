@@ -187,9 +187,9 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             stateTextView = view.findViewById(R.id.rc_audio_state_text);
             countDownTextView = view.findViewById(R.id.rc_audio_timer);
             recordingWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            recordingWindow.setFocusable(true);
+            recordingWindow.setFocusable(false);
             recordingWindow.setOutsideTouchable(false);
-            recordingWindow.setTouchable(false);
+            recordingWindow.setTouchable(true);
         }
 
         recordingWindow.showAtLocation(rootView, Gravity.CENTER, 0, 0);
