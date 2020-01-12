@@ -3,6 +3,7 @@ package cn.wildfire.chat.kit.net;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -14,6 +15,7 @@ import cn.wildfire.chat.kit.net.base.StatusResult;
 import okhttp3.Call;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -108,6 +110,39 @@ public class OKHttpHelper {
         });
     }
 
+    public static <T> void upload(String url, Map<String, String> params, File file, MediaType mediaType, final Callback<T> callback) {
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getName(),
+                        RequestBody.create(mediaType, file));
+
+        if (params != null) {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                builder.addFormDataPart(entry.getKey(), entry.getValue());
+            }
+        }
+
+        RequestBody requestBody = builder.build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        okHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (callback != null) {
+                    callback.onFailure(-1, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleResponse(url, call, response, callback);
+            }
+        });
+    }
+
     private static <T> void handleResponse(String url, Call call, okhttp3.Response response, Callback<T> callback) {
         if (callback != null) {
             if (!response.isSuccessful()) {
@@ -122,6 +157,11 @@ public class OKHttpHelper {
             } else {
                 Type[] types = callback.getClass().getGenericInterfaces();
                 type = ((ParameterizedType) types[0]).getActualTypeArguments()[0];
+            }
+
+            if (type.equals(Void.class)) {
+                callback.onSuccess((T) null);
+                return;
             }
 
             if (type.equals(String.class)) {
