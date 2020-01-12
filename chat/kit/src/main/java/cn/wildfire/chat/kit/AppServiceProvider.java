@@ -2,6 +2,7 @@ package cn.wildfire.chat.kit;
 
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
+import cn.wildfire.chat.kit.net.SimpleCallback;
 
 
 public interface AppServiceProvider {
@@ -20,4 +21,6 @@ public interface AppServiceProvider {
     public void getGroupAnnouncement(String groupId, AppService.GetGroupAnnouncementCallback callback);
 
     public void updateGroupAnnouncement(String groupId, String announcement, AppService.UpdateGroupAnnouncementCallback callback);
+
+    void uploadLog(SimpleCallback<String> callback);
 }

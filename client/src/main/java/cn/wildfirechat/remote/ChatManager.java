@@ -243,6 +243,10 @@ public class ChatManager {
         INST.token = sp.getString("token", null);
     }
 
+    public Context getApplicationContext(){
+        return gContext;
+    }
+
     /**
      * 当有自己的用户账号体系，不想使用火信提供的用户信息托管服务时，调用此方法设置用户信息源
      *
