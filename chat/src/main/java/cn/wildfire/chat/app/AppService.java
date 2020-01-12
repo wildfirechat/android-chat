@@ -1,6 +1,12 @@
 package cn.wildfire.chat.app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.RemoteException;
+
+import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.wildfire.chat.app.login.model.LoginResult;
@@ -11,6 +17,8 @@ import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
+import cn.wildfirechat.remote.ChatManager;
+import okhttp3.MediaType;
 
 public class AppService implements AppServiceProvider {
     private static AppService Instance = new AppService();
@@ -221,5 +229,66 @@ public class AppService implements AppServiceProvider {
                 callback.onUiFailure(-1, msg);
             }
         });
+    }
+
+    @Override
+    public void uploadLog(SimpleCallback<String> callback) {
+        try {
+            List<String> filePaths = ChatManager.Instance().getLogFilesPath();
+            if (filePaths == null || filePaths.isEmpty()) {
+                if (callback != null) {
+                    callback.onUiFailure(-1, "没有日志文件");
+                }
+                return;
+            }
+            Context context = ChatManager.Instance().getApplicationContext();
+            if (context == null) {
+                if (callback != null) {
+                    callback.onUiFailure(-1, "not init");
+                }
+                return;
+            }
+            SharedPreferences sp = context.getSharedPreferences("log_history", Context.MODE_PRIVATE);
+
+            String userId = ChatManager.Instance().getUserId();
+            String url = Config.APP_SERVER_ADDRESS + "/logs/" + userId + "/upload";
+
+            int toUploadCount = 0;
+            for (String path : filePaths) {
+                if (!sp.contains(path)) {
+                    toUploadCount++;
+                    File file = new File(path);
+                    if (file.exists()) {
+                        OKHttpHelper.upload(url, null, file, MediaType.get("application/octet-stream"), new SimpleCallback<Void>() {
+                            @Override
+                            public void onUiSuccess(Void aVoid) {
+                                if (callback != null) {
+                                    callback.onSuccess(url);
+                                }
+                                sp.edit().putBoolean(path, true).commit();
+                            }
+
+                            @Override
+                            public void onUiFailure(int code, String msg) {
+                                if (callback != null) {
+                                    callback.onUiFailure(code, msg);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+            if (toUploadCount == 0) {
+                if (callback != null) {
+                    callback.onUiFailure(-1, "所有日志都已上传");
+                }
+            }
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                callback.onUiFailure(-1, "service not connected");
+            }
+        }
     }
 }

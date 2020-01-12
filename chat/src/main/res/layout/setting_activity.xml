@@ -41,6 +41,13 @@
             android:background="@drawable/selector_common_item"
             android:clickable="true"
             app:title="诊断" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/uploadLogOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            android:clickable="true"
+            app:title="上传日志" />
     </LinearLayout>
 
     <LinearLayout
