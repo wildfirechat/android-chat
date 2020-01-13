@@ -243,7 +243,7 @@ public class ChatManager {
         INST.token = sp.getString("token", null);
     }
 
-    public Context getApplicationContext(){
+    public Context getApplicationContext() {
         return gContext;
     }
 
@@ -3528,7 +3528,7 @@ public class ChatManager {
         return gContext.getCacheDir().getAbsolutePath() + "/log";
     }
 
-    public List<String> getLogFilesPath() throws RemoteException {
+    public List<String> getLogFilesPath() {
         List<String> paths = new ArrayList<>();
         String path = getLogPath();
 
