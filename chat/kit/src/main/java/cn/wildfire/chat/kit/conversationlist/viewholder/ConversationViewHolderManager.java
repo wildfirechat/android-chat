@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.conversationlist.viewholder;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
@@ -32,7 +33,12 @@ public class ConversationViewHolderManager {
     public Class<? extends ConversationViewHolder> getConversationContentViewHolder(int type) {
         Class clazz = messageViewHolders.get(type);
         if (clazz == null) {
-            return ConversationViewHolder.class;
+            type = type & 0xFFFFFF00;
+            clazz = messageViewHolders.get(type);
+            if (clazz == null) {
+                clazz = UnknownConversationViewHolder.class;
+            }
+            Log.e("wfc", "未配置对应的ConversationViewHolder，" + (type >> 24) + " " + (type & 0xFF) + " " + clazz.getSimpleName());
         }
         return clazz;
     }
