@@ -79,7 +79,7 @@ public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
             for (UIUserInfo user : checkedUsers) {
                 checkedIds.add(user.getUserInfo().uid);
             }
-            groupViewModel.removeGroupMember(groupInfo, checkedIds).observe(this, result -> {
+            groupViewModel.removeGroupMember(groupInfo, checkedIds, null, Collections.singletonList(0)).observe(this, result -> {
                 dialog.dismiss();
                 if (result) {
                     Intent intent = new Intent();

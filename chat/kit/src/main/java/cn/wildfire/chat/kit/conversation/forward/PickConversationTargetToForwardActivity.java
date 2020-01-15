@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.Arrays;
 import java.util.List;
 
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -32,7 +33,7 @@ public class PickConversationTargetToForwardActivity extends PickConversationTar
                     .build();
             dialog.show();
             GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
-            groupViewModel.createGroup(this, newlyCheckedUserInfos)
+            groupViewModel.createGroup(this, newlyCheckedUserInfos, null, Arrays.asList(0))
                     .observe(this, new Observer<OperateResult<String>>() {
                         @Override
                         public void onChanged(@Nullable OperateResult<String> result) {

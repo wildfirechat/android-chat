@@ -142,7 +142,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
             startActivity(intent);
             finish();
         } else {
-            groupViewModel.addGroupMember(groupInfo, Collections.singletonList(userId)).observe(this, new Observer<Boolean>() {
+            groupViewModel.addGroupMember(groupInfo, Collections.singletonList(userId), null, Collections.singletonList(0)).observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(Boolean aBoolean) {
                     if (aBoolean) {

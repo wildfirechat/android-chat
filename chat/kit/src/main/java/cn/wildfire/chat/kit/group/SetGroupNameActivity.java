@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.Collections;
+
 import butterknife.BindView;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -88,7 +90,7 @@ public class SetGroupNameActivity extends WfcBaseActivity {
                 .build();
         dialog.show();
 
-        groupViewModel.modifyGroupInfo(groupInfo.target, ModifyGroupInfoType.Modify_Group_Name, groupInfo.name, null).observe(this, new Observer<OperateResult<Boolean>>() {
+        groupViewModel.modifyGroupInfo(groupInfo.target, ModifyGroupInfoType.Modify_Group_Name, groupInfo.name, null, Collections.singletonList(0)).observe(this, new Observer<OperateResult<Boolean>>() {
             @Override
             public void onChanged(@Nullable OperateResult operateResult) {
                 dialog.dismiss();
