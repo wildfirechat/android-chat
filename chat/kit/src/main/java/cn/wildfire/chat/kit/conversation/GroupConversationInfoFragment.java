@@ -353,7 +353,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     void updateMyGroupAlias() {
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .input("请输入你的群昵称", groupMember.alias, false, (dialog1, input) -> {
-                    groupViewModel.modifyMyGroupAlias(groupInfo.target, input.toString().trim())
+                    groupViewModel.modifyMyGroupAlias(groupInfo.target, input.toString().trim(), null, Collections.singletonList(0))
                             .observe(GroupConversationInfoFragment.this, operateResult -> {
                                 if (operateResult.isSuccess()) {
                                     myGroupNickNameOptionItemView.setDesc(input.toString().trim());
@@ -374,7 +374,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @OnClick(R.id.quitButton)
     void quitGroup() {
         if (groupInfo != null && userViewModel.getUserId().equals(groupInfo.owner)) {
-            groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0)).observe(this, aBoolean -> {
+            groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
                 if (aBoolean != null && aBoolean) {
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
@@ -383,7 +383,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 }
             });
         } else {
-            groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0)).observe(this, aBoolean -> {
+            groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
                 if (aBoolean != null && aBoolean) {
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);

@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.kyleduo.switchbutton.SwitchButton;
 
+import java.util.Collections;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -52,7 +54,7 @@ public class GroupMemberPermissionFragment extends Fragment {
         privateChatSwitchButton.setCheckedNoEvent(groupInfo.privateChat == 0);
         privateChatSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
-            groupViewModel.preventPrivateChat(groupInfo.target, isChecked).observe(this, booleanOperateResult -> {
+            groupViewModel.preventPrivateChat(groupInfo.target, isChecked, null, Collections.singletonList(0)).observe(this, booleanOperateResult -> {
                 if (!booleanOperateResult.isSuccess()) {
                     privateChatSwitchButton.setCheckedNoEvent(!isChecked);
                     Toast.makeText(getActivity(), "设置群成员权限失败 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();

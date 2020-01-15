@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.kyleduo.switchbutton.SwitchButton;
 
+import java.util.Collections;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -52,7 +54,7 @@ public class GroupMuteFragment extends Fragment {
         switchButton.setCheckedNoEvent(groupInfo.mute == 1);
         switchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
-            groupViewModel.muteAll(groupInfo.target, isChecked).observe(this, booleanOperateResult -> {
+            groupViewModel.muteAll(groupInfo.target, isChecked, null, Collections.singletonList(0)).observe(this, booleanOperateResult -> {
                 if (!booleanOperateResult.isSuccess()) {
                     switchButton.setCheckedNoEvent(!isChecked);
                     Toast.makeText(getActivity(), "禁言失败 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();

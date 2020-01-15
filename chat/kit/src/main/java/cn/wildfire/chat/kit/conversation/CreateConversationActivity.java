@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
@@ -49,7 +50,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
 
             List<UIUserInfo> userInfos = new ArrayList<>();
             userInfos.addAll(newlyCheckedUserInfos);
-            groupViewModel.createGroup(this, userInfos).observe(this, result -> {
+            groupViewModel.createGroup(this, userInfos, null, Arrays.asList(0)).observe(this, result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {
                     UIUtils.showToast(UIUtils.getString(R.string.create_group_success));
