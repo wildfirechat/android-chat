@@ -79,7 +79,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
             new MaterialDialog.Builder(getActivity())
                     .items(Collections.singleton("移除群管理"))
                     .itemsCallback((dialog, itemView, position, text) -> {
-                        groupViewModel.setGroupManager(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), Collections.singletonList(0), null);
+                        groupViewModel.setGroupManager(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
                     })
                     .cancelable(true)
                     .build()

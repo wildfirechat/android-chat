@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.Collections;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -85,7 +87,7 @@ public class GroupManageFragment extends Fragment {
         new MaterialDialog.Builder(getActivity())
                 .items(R.array.group_join_type)
                 .itemsCallback((dialog, itemView, position, text) -> {
-                    groupViewModel.setGroupJoinType(groupInfo.target, position)
+                    groupViewModel.setGroupJoinType(groupInfo.target, position, null, Collections.singletonList(0))
                             .observe(GroupManageFragment.this, booleanOperateResult -> {
                                 if (booleanOperateResult.isSuccess()) {
                                     joinOptionItemView.setDesc((String) text);
