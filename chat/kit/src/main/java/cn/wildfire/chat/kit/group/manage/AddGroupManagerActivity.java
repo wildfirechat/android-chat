@@ -65,7 +65,7 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
                 .cancelable(false)
                 .build();
         dialog.show();
-        groupViewModel.setGroupManager(groupInfo.target, true, memberIds, Collections.singletonList(0), null)
+        groupViewModel.setGroupManager(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
                 .observe(this, booleanOperateResult -> {
                     dialog.dismiss();
                     if (booleanOperateResult.isSuccess()) {

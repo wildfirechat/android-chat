@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -104,7 +105,7 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
             for (UIUserInfo user : checkedUsers) {
                 checkedIds.add(user.getUserInfo().uid);
             }
-            groupViewModel.addGroupMember(groupInfo, checkedIds).observe(this, result -> {
+            groupViewModel.addGroupMember(groupInfo, checkedIds, null, Collections.singletonList(0)).observe(this, result -> {
                 dialog.dismiss();
                 Intent intent = new Intent();
                 if (result) {
