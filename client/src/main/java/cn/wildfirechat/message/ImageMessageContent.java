@@ -79,6 +79,20 @@ public class ImageMessageContent extends MediaMessageContent {
                 thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                 payload.binaryContent = baos.toByteArray();
             }
+        } else {
+            if (!TextUtils.isEmpty(thumbPara) && imageHeight > 0 && imageWidth > 0) {
+                try {
+                    JSONObject objWrite = new JSONObject();
+                    objWrite.put("w", imageWidth);
+                    objWrite.put("h", imageHeight);
+                    objWrite.put("tp", thumbPara);
+                    payload.content = objWrite.toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                payload.binaryContent = thumbnailBytes;
+            }
         }
 
         return payload;

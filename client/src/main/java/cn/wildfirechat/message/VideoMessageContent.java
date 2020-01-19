@@ -52,12 +52,15 @@ public class VideoMessageContent extends MediaMessageContent {
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.searchableContent = "[视频]";
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(localPath, MediaStore.Video.Thumbnails.MICRO_KIND);
+        if (thumbnailBytes == null && !TextUtils.isEmpty(localPath)) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(localPath, MediaStore.Video.Thumbnails.MICRO_KIND);
 //        thumbnail = ThumbnailUtils.extractThumbnail(thumbnail, 320, 240, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-        payload.binaryContent = baos.toByteArray();
+            thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+            payload.binaryContent = baos.toByteArray();
+        } else {
+            payload.binaryContent = thumbnailBytes;
+        }
         return payload;
     }
 
