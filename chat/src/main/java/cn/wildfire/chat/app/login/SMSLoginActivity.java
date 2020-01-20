@@ -66,6 +66,7 @@ public class SMSLoginActivity extends WfcBaseActivity {
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
         String authCode = authCodeEditText.getText().toString().trim();
 
+        loginButton.setEnabled(false);
         MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .content("登录中...")
                 .progress(true, 100)
@@ -101,6 +102,7 @@ public class SMSLoginActivity extends WfcBaseActivity {
                 }
                 Toast.makeText(SMSLoginActivity.this, "登录失败：" + code + " " + msg, Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
+                loginButton.setEnabled(true);
             }
         });
     }
