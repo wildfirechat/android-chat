@@ -53,6 +53,7 @@ public interface MessageContentType {
     int ContentType_Call_Signal = 403;
     int ContentType_Call_Modify = 404;
     int ContentType_Call_Accept_T = 405;
+    int ContentType_Call_Add_Participant = 406;
 
     //自定义消息type要做1000以上
 }
