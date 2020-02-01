@@ -31,12 +31,14 @@ import java.util.List;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
+import cn.wildfire.chat.kit.voip.MultiCallActivity;
 import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
@@ -125,9 +127,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void onReceiveCall(AVEngineKit.CallSession session) {
         List<String> participants = session.getParticipantIds();
         if (participants == null || participants.size() < 2) {
-            onCall(application, session.initiator, false, session.isAudioOnly());
+            singleCall(application, session.initiator, false, session.isAudioOnly());
         } else {
-            // multi call
+            Intent intent = new Intent(WfcIntent.ACTION_VOIP_MULTI);
+            startActivity(application, intent);
         }
     }
 
@@ -150,18 +153,29 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     }
 
     // pls refer to https://stackoverflow.com/questions/11124119/android-starting-new-activity-from-application-class
-    public static void onCall(Context context, String targetId, boolean isMo, boolean isAudioOnly) {
+    public static void singleCall(Context context, String targetId, boolean isMo, boolean isAudioOnly) {
         Intent voip = new Intent(WfcIntent.ACTION_VOIP_SINGLE);
         voip.putExtra(SingleCallActivity.EXTRA_MO, isMo);
         voip.putExtra(SingleCallActivity.EXTRA_TARGET, targetId);
         voip.putExtra(SingleCallActivity.EXTRA_AUDIO_ONLY, isAudioOnly);
 
+        startActivity(context, voip);
+    }
+
+    public static void multiCall(Context context, String groupId, List<String> participants, boolean isAudioOnly) {
+        Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId);
+        AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
+        Intent intent = new Intent(context, MultiCallActivity.class);
+        startActivity(context, intent);
+    }
+
+    private static void startActivity(Context context, Intent intent) {
         if (context instanceof Activity) {
-            context.startActivity(voip);
+            context.startActivity(intent);
         } else {
             Intent main = new Intent(WfcIntent.ACTION_MAIN);
-            voip.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivities(context, 100, new Intent[]{main, voip}, PendingIntent.FLAG_UPDATE_CURRENT);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivities(context, 100, new Intent[]{main, intent}, PendingIntent.FLAG_UPDATE_CURRENT);
             try {
                 pendingIntent.send();
             } catch (PendingIntent.CanceledException e) {
