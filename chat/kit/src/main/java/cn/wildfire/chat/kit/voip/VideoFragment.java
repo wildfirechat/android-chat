@@ -122,10 +122,20 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
     }
 
     @Override
+    public void didParticipantJoined(String s) {
+
+    }
+
+    @Override
+    public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
+
+    }
+
+    @Override
     public void didChangeMode(boolean audioOnly) {
         if (audioOnly) {
             gEngineKit.getCurrentSession().setupLocalVideo(null, scalingType);
-            gEngineKit.getCurrentSession().setupRemoteVideo(null, scalingType);
+            gEngineKit.getCurrentSession().setupRemoteVideo(targetId, null, scalingType);
         }
     }
 
@@ -145,7 +155,12 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack() {
+    public void didRemoveRemoteVideoTrack(String s) {
+
+    }
+
+    @Override
+    public void didReceiveRemoteVideoTrack(String userId) {
         pipRenderer.setVisibility(View.VISIBLE);
         if (isOutgoing && localSurfaceView != null) {
             ((ViewGroup) localSurfaceView.getParent()).removeView(localSurfaceView);
@@ -158,7 +173,7 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
             remoteSurfaceView = surfaceView;
             fullscreenRenderer.removeAllViews();
             fullscreenRenderer.addView(surfaceView);
-            gEngineKit.getCurrentSession().setupRemoteVideo(surfaceView, scalingType);
+            gEngineKit.getCurrentSession().setupRemoteVideo(userId, surfaceView, scalingType);
         }
     }
 
@@ -266,7 +281,7 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             Logging.d(TAG, "setSwappedFeeds: " + isSwappedFeeds);
             this.isSwappedFeeds = !isSwappedFeeds;
-            session.setupRemoteVideo(isSwappedFeeds ? localSurfaceView : remoteSurfaceView, scalingType);
+            session.setupRemoteVideo(targetId, isSwappedFeeds ? localSurfaceView : remoteSurfaceView, scalingType);
             session.setupLocalVideo(isSwappedFeeds ? remoteSurfaceView : localSurfaceView, scalingType);
         }
     }
@@ -285,7 +300,7 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
 
             session.startVideoSource();
             didCreateLocalVideoTrack();
-            didReceiveRemoteVideoTrack();
+            didReceiveRemoteVideoTrack(targetId);
         } else {
             if (isOutgoing) {
                 incomingActionContainer.setVisibility(View.GONE);
