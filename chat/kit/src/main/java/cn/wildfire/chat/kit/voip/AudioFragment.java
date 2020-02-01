@@ -97,6 +97,16 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
     }
 
     @Override
+    public void didParticipantJoined(String s) {
+
+    }
+
+    @Override
+    public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
+
+    }
+
+    @Override
     public void didChangeMode(boolean audioOnly) {
         // never called
     }
@@ -107,15 +117,19 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack() {
-        // should never called
+    public void didReceiveRemoteVideoTrack(String s) {
+
+    }
+
+    @Override
+    public void didRemoveRemoteVideoTrack(String s) {
+
     }
 
     @Override
     public void didError(String error) {
 
     }
-
 
     @Override
     public void didGetStats(StatsReport[] reports) {

@@ -34,7 +34,7 @@ import cn.wildfirechat.chat.R;
 
 import static org.webrtc.RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
 
-public class FloatingVoipService extends Service {
+public class FloatingSingleCallService extends Service {
     private static boolean isStarted = false;
     private static final int NOTIFICATION_ID = 1;
 
@@ -43,6 +43,7 @@ public class FloatingVoipService extends Service {
     private WindowManager.LayoutParams params;
     private AVEngineKit.CallSession session;
     private Intent resumeActivityIntent;
+    private String targetId;
 
     private Handler handler = new Handler();
 
@@ -73,7 +74,8 @@ public class FloatingVoipService extends Service {
         resumeActivityIntent.putExtra(SingleVoipCallActivity.EXTRA_FROM_FLOATING_VIEW, true);
         resumeActivityIntent.putExtra(SingleVoipCallActivity.EXTRA_MO, intent.getBooleanExtra(SingleVoipCallActivity.EXTRA_MO, false));
         resumeActivityIntent.putExtra(SingleVoipCallActivity.EXTRA_AUDIO_ONLY, intent.getBooleanExtra(SingleVoipCallActivity.EXTRA_AUDIO_ONLY, false));
-        resumeActivityIntent.putExtra(SingleVoipCallActivity.EXTRA_TARGET, intent.getStringExtra(SingleVoipCallActivity.EXTRA_TARGET));
+        targetId = intent.getStringExtra(SingleVoipCallActivity.EXTRA_TARGET);
+        resumeActivityIntent.putExtra(SingleVoipCallActivity.EXTRA_TARGET, targetId);
         resumeActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resumeActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -154,6 +156,16 @@ public class FloatingVoipService extends Service {
             }
 
             @Override
+            public void didParticipantJoined(String s) {
+
+            }
+
+            @Override
+            public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
+
+            }
+
+            @Override
             public void didChangeMode(boolean audioOnly) {
                 handler.post(() -> showAudioInfo());
             }
@@ -164,7 +176,12 @@ public class FloatingVoipService extends Service {
             }
 
             @Override
-            public void didReceiveRemoteVideoTrack() {
+            public void didReceiveRemoteVideoTrack(String userId) {
+
+            }
+
+            @Override
+            public void didRemoveRemoteVideoTrack(String s) {
 
             }
 
@@ -187,7 +204,7 @@ public class FloatingVoipService extends Service {
     private void showAudioInfo() {
         FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
         if (remoteVideoFrameLayout.getVisibility() == View.VISIBLE) {
-            session.setupRemoteVideo(null, SCALE_ASPECT_BALANCED);
+            session.setupRemoteVideo(targetId, null, SCALE_ASPECT_BALANCED);
             remoteVideoFrameLayout.setVisibility(View.GONE);
             wm.removeView(view);
             wm.addView(view, params);
@@ -208,7 +225,7 @@ public class FloatingVoipService extends Service {
         SurfaceView surfaceView = session.createRendererView();
         if (surfaceView != null) {
             remoteVideoFrameLayout.addView(surfaceView);
-            session.setupRemoteVideo(surfaceView, SCALE_ASPECT_BALANCED);
+            session.setupRemoteVideo(targetId, surfaceView, SCALE_ASPECT_BALANCED);
         }
     }
 
