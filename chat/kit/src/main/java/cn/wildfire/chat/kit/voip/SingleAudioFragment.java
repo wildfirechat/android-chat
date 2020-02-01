@@ -28,7 +28,7 @@ import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCallback {
+public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     private AVEngineKit gEngineKit;
     private boolean micEnabled = true;
     private boolean isSpeakerOn = false;
@@ -51,16 +51,6 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
     TextView descTextView;
     @BindView(R.id.durationTextView)
     TextView durationTextView;
-
-    public static VideoFragment newInstance(String targetId, boolean isOutgoing) {
-
-        VideoFragment fragment = new VideoFragment();
-        Bundle args = new Bundle();
-        args.putBoolean("outgoing", isOutgoing);
-        args.putString("targetId", targetId);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -172,7 +162,7 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
 
     @OnClick(R.id.minimizeImageView)
     public void minimize() {
-        ((SingleVoipCallActivity) getActivity()).showFloatingView();
+        ((SingleCallActivity) getActivity()).showFloatingView();
     }
 
     @OnClick(R.id.speakerImageView)
@@ -191,13 +181,13 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
     }
 
     private void init() {
-        gEngineKit = ((SingleVoipCallActivity) getActivity()).getEngineKit();
+        gEngineKit = ((SingleCallActivity) getActivity()).getEngineKit();
         if (gEngineKit.getCurrentSession() != null && gEngineKit.getCurrentSession().getState() == AVEngineKit.CallState.Connected) {
             descTextView.setVisibility(View.GONE);
             outgoingActionContainer.setVisibility(View.VISIBLE);
             durationTextView.setVisibility(View.VISIBLE);
         } else {
-            if (((SingleVoipCallActivity) getActivity()).isOutgoing()) {
+            if (((SingleCallActivity) getActivity()).isOutgoing()) {
                 descTextView.setText(R.string.av_waiting);
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 incomingActionContainer.setVisibility(View.GONE);
@@ -207,7 +197,7 @@ public class AudioFragment extends Fragment implements AVEngineKit.CallSessionCa
                 incomingActionContainer.setVisibility(View.VISIBLE);
             }
         }
-        String targetId = ((SingleVoipCallActivity) getActivity()).getTargetId();
+        String targetId = ((SingleCallActivity) getActivity()).getTargetId();
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
         Glide.with(this).load(userInfo.portrait).into(portraitImageView);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);

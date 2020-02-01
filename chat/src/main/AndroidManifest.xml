@@ -126,7 +126,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
-            android:name="cn.wildfire.chat.kit.voip.SingleVoipCallActivity"
+            android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="${applicationId}.kit.voip.single" />
@@ -251,6 +251,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-        <service android:name="cn.wildfire.chat.kit.voip.FloatingSingleCallService" />
+        <service android:name="cn.wildfire.chat.kit.voip.SingleCallFloatingService" />
     </application>
 </manifest>
