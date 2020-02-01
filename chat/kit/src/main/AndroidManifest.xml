@@ -124,7 +124,7 @@
         <activity
             android:name="cn.wildfire.chat.kit.mm.MMPreviewActivity"
             android:theme="@style/AppTheme.FullScreen" />
-        <activity android:name="cn.wildfire.chat.kit.voip.SingleVoipCallActivity">
+        <activity android:name="cn.wildfire.chat.kit.voip.SingleCallActivity">
             <intent-filter>
                 <action android:name="${applicationId}.kit.voip.single" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -247,6 +247,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-        <service android:name="cn.wildfire.chat.kit.voip.FloatingSingleCallService" />
+        <service android:name="cn.wildfire.chat.kit.voip.SingleCallFloatingService" />
     </application>
 </manifest>
