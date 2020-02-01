@@ -131,6 +131,13 @@
             </intent-filter>
 
         </activity>
+        <activity android:name="cn.wildfire.chat.kit.voip.MultiCallIncomingActivity">
+            <intent-filter>
+                <action android:name="${applicationId}.kit.voip.multi" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
         <activity
             android:name="cn.wildfire.chat.kit.conversation.CreateConversationActivity"
             android:label="创建会话" />
@@ -237,6 +244,7 @@
         <activity
             android:name="cn.wildfire.chat.kit.contact.pick.PickContactActivity"
             android:label="联系人选择" />
+        <activity android:name="cn.wildfire.chat.kit.voip.MultiCallActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
