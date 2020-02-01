@@ -123,7 +123,12 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void onReceiveCall(AVEngineKit.CallSession session) {
-        onCall(application, session.getClientId(), false, session.isAudioOnly());
+        List<String> participants = session.getParticipantIds();
+        if (participants == null || participants.size() < 2) {
+            onCall(application, session.initiator, false, session.isAudioOnly());
+        } else {
+            // multi call
+        }
     }
 
     private AsyncPlayer ringPlayer;
