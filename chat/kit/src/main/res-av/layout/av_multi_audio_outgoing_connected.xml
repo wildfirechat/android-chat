@@ -38,9 +38,9 @@
     </LinearLayout>
 
     <androidx.gridlayout.widget.GridLayout
-        android:id="@+id/participantGridLayout"
+        android:id="@+id/audioContainerGridLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="400dp"
         android:layout_gravity="center"
         android:animateLayoutChanges="true"
         app:alignmentMode="alignBounds"
@@ -48,34 +48,6 @@
         app:orientation="horizontal"
         app:rowCount="3"
         app:useDefaultMargins="false">
-
-        <include
-            layout="@layout/av_multi_outgoing_item"
-            app:layout_columnWeight="1" />
-
-        <include
-            layout="@layout/av_multi_outgoing_item"
-            app:layout_columnWeight="1" />
-
-        <include
-            layout="@layout/av_multi_outgoing_item"
-            app:layout_columnWeight="1" />
-
-        <include
-            layout="@layout/av_multi_outgoing_item"
-            app:layout_columnWeight="1" />
-
-        <include
-            layout="@layout/av_multi_outgoing_item"
-            app:layout_columnWeight="1" />
-
-        <include
-            layout="@layout/av_multi_outgoing_item"
-            app:layout_columnWeight="1" />
-
-        <include
-            layout="@layout/av_multi_outgoing_item"
-            app:layout_columnWeight="1" />
 
     </androidx.gridlayout.widget.GridLayout>
 
