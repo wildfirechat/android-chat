@@ -34,12 +34,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.webrtc.StatsReport;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.NotInitializedExecption;
+import cn.wildfirechat.model.Conversation;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -114,7 +116,7 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
         targetId = intent.getStringExtra(EXTRA_TARGET);
         isFromFloatingView = intent.getBooleanExtra(EXTRA_FROM_FLOATING_VIEW, false);
         if (isFromFloatingView) {
-            Intent serviceIntent = new Intent(this, FloatingVoipService.class);
+            Intent serviceIntent = new Intent(this, FloatingSingleCallService.class);
             stopService(serviceIntent);
             initFromFloatView();
         } else {
@@ -178,8 +180,9 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
 
         if (outgoing) {
             try {
-                gEngineKit.startCall(targetId, audioOnly, SingleVoipCallActivity.this);
-                gEngineKit.startPreview();
+                Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetId);
+                gEngineKit.startCall(conversation, Collections.singletonList(targetId), audioOnly, SingleVoipCallActivity.this);
+                session.startPreview();
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.e(TAG, e.getMessage());
@@ -279,13 +282,28 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
     }
 
     @Override
+    public void didParticipantJoined(String s) {
+
+    }
+
+    @Override
+    public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
+
+    }
+
+    @Override
     public void didCreateLocalVideoTrack() {
         postAction(() -> currentCallback.didCreateLocalVideoTrack());
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack() {
-        postAction(() -> currentCallback.didReceiveRemoteVideoTrack());
+    public void didReceiveRemoteVideoTrack(String s) {
+        postAction(() -> currentCallback.didReceiveRemoteVideoTrack(s));
+    }
+
+    @Override
+    public void didRemoveRemoteVideoTrack(String s) {
+
     }
 
     public void audioAccept() {
@@ -327,7 +345,7 @@ public class SingleVoipCallActivity extends FragmentActivity implements AVEngine
             return;
         }
 
-        Intent intent = new Intent(this, FloatingVoipService.class);
+        Intent intent = new Intent(this, FloatingSingleCallService.class);
         intent.putExtra(EXTRA_TARGET, targetId);
         intent.putExtra(EXTRA_AUDIO_ONLY, isAudioOnly);
         intent.putExtra(EXTRA_MO, isOutgoing);
