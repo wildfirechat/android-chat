@@ -31,7 +31,7 @@ import java.util.List;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
-import cn.wildfire.chat.kit.voip.SingleVoipCallActivity;
+import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.NotInitializedExecption;
@@ -152,9 +152,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     // pls refer to https://stackoverflow.com/questions/11124119/android-starting-new-activity-from-application-class
     public static void onCall(Context context, String targetId, boolean isMo, boolean isAudioOnly) {
         Intent voip = new Intent(WfcIntent.ACTION_VOIP_SINGLE);
-        voip.putExtra(SingleVoipCallActivity.EXTRA_MO, isMo);
-        voip.putExtra(SingleVoipCallActivity.EXTRA_TARGET, targetId);
-        voip.putExtra(SingleVoipCallActivity.EXTRA_AUDIO_ONLY, isAudioOnly);
+        voip.putExtra(SingleCallActivity.EXTRA_MO, isMo);
+        voip.putExtra(SingleCallActivity.EXTRA_TARGET, targetId);
+        voip.putExtra(SingleCallActivity.EXTRA_AUDIO_ONLY, isAudioOnly);
 
         if (context instanceof Activity) {
             context.startActivity(voip);

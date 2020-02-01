@@ -31,7 +31,7 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
-public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
+public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
 
     @BindView(R.id.pip_video_view)
     FrameLayout pipRenderer;
@@ -72,9 +72,9 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
     private Toast logToast;
     private static final String TAG = "VideoFragment";
 
-    public static VideoFragment newInstance(String targetId, boolean isOutgoing) {
+    public static SingleVideoFragment newInstance(String targetId, boolean isOutgoing) {
 
-        VideoFragment fragment = new VideoFragment();
+        SingleVideoFragment fragment = new SingleVideoFragment();
         Bundle args = new Bundle();
         args.putBoolean("outgoing", isOutgoing);
         args.putString("targetId", targetId);
@@ -85,8 +85,8 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isOutgoing = ((SingleVoipCallActivity) getActivity()).isOutgoing();
-        targetId = ((SingleVoipCallActivity) getActivity()).getTargetId();
+        isOutgoing = ((SingleCallActivity) getActivity()).isOutgoing();
+        targetId = ((SingleCallActivity) getActivity()).getTargetId();
     }
 
     @Nullable
@@ -200,12 +200,12 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
 
     @OnClick({R.id.incomingAudioOnlyImageView})
     public void audioAccept() {
-        ((SingleVoipCallActivity) getActivity()).audioAccept();
+        ((SingleCallActivity) getActivity()).audioAccept();
     }
 
     @OnClick({R.id.outgoingAudioOnlyImageView, R.id.connectedAudioOnlyImageView})
     public void audioCall() {
-        ((SingleVoipCallActivity) getActivity()).audioCall();
+        ((SingleCallActivity) getActivity()).audioCall();
     }
 
     // callFragment.OnCallEvents interface implementation.
@@ -262,7 +262,7 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
     @OnClick(R.id.minimizeImageView)
     public void minimize() {
         gEngineKit.getCurrentSession().stopVideoSource();
-        ((SingleVoipCallActivity) getActivity()).showFloatingView();
+        ((SingleCallActivity) getActivity()).showFloatingView();
     }
 
     // Log |msg| and Toast about it.
@@ -287,7 +287,7 @@ public class VideoFragment extends Fragment implements AVEngineKit.CallSessionCa
     }
 
     private void init() {
-        gEngineKit = ((SingleVoipCallActivity) getActivity()).getEngineKit();
+        gEngineKit = ((SingleCallActivity) getActivity()).getEngineKit();
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             getActivity().finish();
