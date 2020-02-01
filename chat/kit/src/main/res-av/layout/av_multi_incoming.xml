@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
     android:background="@color/black"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <LinearLayout
@@ -64,17 +66,14 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <GridView
+
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/participantGridView"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="100dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
-        android:columnWidth="90dp"
-        android:horizontalSpacing="10dp"
-        android:numColumns="9"
-        android:verticalSpacing="10dp" />
-
+        android:gravity="center" />
 
     <RelativeLayout
         android:layout_width="match_parent"

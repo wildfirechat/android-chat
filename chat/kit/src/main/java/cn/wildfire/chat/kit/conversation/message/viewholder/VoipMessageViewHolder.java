@@ -59,6 +59,6 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
         if (((CallStartMessageContent) message.message.content).getStatus() == 1) {
             return;
         }
-        WfcUIKit.onCall(fragment.getContext(), message.message.conversation.target, true, false);
+        WfcUIKit.singleCall(fragment.getContext(), message.message.conversation.target, true, false);
     }
 }
