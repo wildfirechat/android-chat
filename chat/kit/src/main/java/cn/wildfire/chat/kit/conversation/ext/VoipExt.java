@@ -72,7 +72,7 @@ public class VoipExt extends ConversationExt {
         GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
         intent.putExtra("groupInfo", groupInfo);
-        intent.putExtra("maxCount", 1);
+        intent.putExtra("maxCount", 9);
         startActivityForResult(intent, REQUEST_CODE_GROUP_AUDIO_CHAT);
     }
 
@@ -81,16 +81,16 @@ public class VoipExt extends ConversationExt {
         GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
         intent.putExtra("groupInfo", groupInfo);
-        intent.putExtra("maxCount", 1);
+        intent.putExtra("maxCount", 9);
         startActivityForResult(intent, REQUEST_CODE_GROUP_VIDEO_CHAT);
     }
 
     private void audioChat(String targetId) {
-        WfcUIKit.onCall(activity, targetId, true, true);
+        WfcUIKit.singleCall(activity, targetId, true, true);
     }
 
     private void videoChat(String targetId) {
-        WfcUIKit.onCall(activity, targetId, true, false);
+        WfcUIKit.singleCall(activity, targetId, true, false);
     }
 
     @Override
@@ -113,13 +113,13 @@ public class VoipExt extends ConversationExt {
             case REQUEST_CODE_GROUP_AUDIO_CHAT:
                 memberIds = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
                 if (memberIds != null && memberIds.size() > 0) {
-                    audioChat(memberIds.get(0));
+                    WfcUIKit.multiCall(activity, conversation.target, memberIds, true);
                 }
                 break;
             case REQUEST_CODE_GROUP_VIDEO_CHAT:
                 memberIds = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
                 if (memberIds != null && memberIds.size() > 0) {
-                    videoChat(memberIds.get(0));
+                    WfcUIKit.multiCall(activity, conversation.target, memberIds, false);
                 }
                 break;
             default:
