@@ -9,5 +9,6 @@ public interface WfcIntent {
     String ACTION_USER_INFO = BuildConfig.APPLICATION_ID + ".user.info";
     String ACTION_GROUP_INFO = BuildConfig.APPLICATION_ID + ".group.info";
     String ACTION_VOIP_SINGLE = BuildConfig.APPLICATION_ID + ".kit.voip.single";
+    String ACTION_VOIP_MULTI = BuildConfig.APPLICATION_ID + ".kit.voip.multi";
     String ACTION_VIEW = BuildConfig.APPLICATION_ID + ".webview";
 }

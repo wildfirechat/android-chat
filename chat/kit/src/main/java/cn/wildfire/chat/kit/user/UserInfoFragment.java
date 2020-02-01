@@ -150,7 +150,7 @@ public class UserInfoFragment extends Fragment {
 
     @OnClick(R.id.voipChatButton)
     void voipChat() {
-        WfcUIKit.onCall(getActivity(), userInfo.uid, true, false);
+        WfcUIKit.singleCall(getActivity(), userInfo.uid, true, false);
     }
 
     @OnClick(R.id.aliasOptionItemView)
