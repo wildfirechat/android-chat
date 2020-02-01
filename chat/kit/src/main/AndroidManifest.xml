@@ -247,6 +247,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-        <service android:name="cn.wildfire.chat.kit.voip.FloatingVoipService" />
+        <service android:name="cn.wildfire.chat.kit.voip.FloatingSingleCallService" />
     </application>
 </manifest>
