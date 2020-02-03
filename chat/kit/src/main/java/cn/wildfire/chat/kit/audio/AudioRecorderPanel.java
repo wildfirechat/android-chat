@@ -261,7 +261,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
                 }
             }
             updateVolume();
-            handler.postDelayed(this::tick, 1000);
+            handler.postDelayed(this::tick, 100);
         }
     }
 
