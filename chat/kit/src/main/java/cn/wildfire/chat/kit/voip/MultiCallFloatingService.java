@@ -31,8 +31,6 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 
-import static org.webrtc.RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
-
 public class MultiCallFloatingService extends Service {
     private static boolean isStarted = false;
     private static final int NOTIFICATION_ID = 1;
@@ -42,7 +40,6 @@ public class MultiCallFloatingService extends Service {
     private WindowManager.LayoutParams params;
     private AVEngineKit.CallSession session;
     private Intent resumeActivityIntent;
-    private String targetId;
 
     private Handler handler = new Handler();
 
@@ -69,12 +66,7 @@ public class MultiCallFloatingService extends Service {
             stopSelf();
         }
 
-        resumeActivityIntent = new Intent(this, SingleCallActivity.class);
-        resumeActivityIntent.putExtra(SingleCallActivity.EXTRA_FROM_FLOATING_VIEW, true);
-        resumeActivityIntent.putExtra(SingleCallActivity.EXTRA_MO, intent.getBooleanExtra(SingleCallActivity.EXTRA_MO, false));
-        resumeActivityIntent.putExtra(SingleCallActivity.EXTRA_AUDIO_ONLY, intent.getBooleanExtra(SingleCallActivity.EXTRA_AUDIO_ONLY, false));
-        targetId = intent.getStringExtra(SingleCallActivity.EXTRA_TARGET);
-        resumeActivityIntent.putExtra(SingleCallActivity.EXTRA_TARGET, targetId);
+        resumeActivityIntent = new Intent(this, MultiCallActivity.class);
         resumeActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resumeActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -138,11 +130,7 @@ public class MultiCallFloatingService extends Service {
         view = LayoutInflater.from(this).inflate(R.layout.av_voip_float_view, null);
         view.setOnTouchListener(onTouchListener);
         wm.addView(view, params);
-        if (session.isAudioOnly()) {
-            showAudioInfo();
-        } else {
-//            showVideoInfo();
-        }
+        showCallInfo();
         session.setCallback(new AVEngineKit.CallSessionCallback() {
             @Override
             public void didCallEndWithReason(AVEngineKit.CallEndReason reason) {
@@ -166,7 +154,6 @@ public class MultiCallFloatingService extends Service {
 
             @Override
             public void didChangeMode(boolean audioOnly) {
-                handler.post(() -> showAudioInfo());
             }
 
             @Override
@@ -200,14 +187,12 @@ public class MultiCallFloatingService extends Service {
         stopSelf();
     }
 
-    private void showAudioInfo() {
+    private void showCallInfo() {
         FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
         if (remoteVideoFrameLayout.getVisibility() == View.VISIBLE) {
-            session.setupRemoteVideo(targetId, null, SCALE_ASPECT_BALANCED);
             remoteVideoFrameLayout.setVisibility(View.GONE);
             wm.removeView(view);
             wm.addView(view, params);
-//            wm.updateViewLayout(view, params);
         }
 
         view.findViewById(R.id.audioLinearLayout).setVisibility(View.VISIBLE);
@@ -223,7 +208,8 @@ public class MultiCallFloatingService extends Service {
 
     private void refreshCallDurationInfo(TextView timeView) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session == null || !session.isAudioOnly()) {
+        if (session == null) {
+            hideFloatBox();
             return;
         }
 
