@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.voip;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -123,5 +124,15 @@ public class MultiCallActivity extends VoipBaseActivity {
         postAction(() -> {
             currentCallSessionCallback.didGetStats(statsReports);
         });
+    }
+
+    public void showFloatingView() {
+        if (!checkOverlayPermission()) {
+            return;
+        }
+
+        Intent intent = new Intent(this, MultiCallFloatingService.class);
+        startService(intent);
+        finish();
     }
 }
