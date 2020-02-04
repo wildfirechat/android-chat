@@ -262,6 +262,8 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @OnClick(R.id.minimizeImageView)
     public void minimize() {
         gEngineKit.getCurrentSession().stopVideoSource();
+        gEngineKit.getCurrentSession().setupLocalVideo(null, scalingType);
+        gEngineKit.getCurrentSession().setupRemoteVideo(targetId, null, scalingType);
         ((SingleCallActivity) getActivity()).showFloatingView();
     }
 
