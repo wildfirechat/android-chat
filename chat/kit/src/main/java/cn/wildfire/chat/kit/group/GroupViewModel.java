@@ -345,8 +345,9 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         boolean showManagerCategory = false;
         for (UserInfo userInfo : userInfos) {
             UIUserInfo info = new UIUserInfo(userInfo);
-            if (!TextUtils.isEmpty(userInfo.displayName)) {
-                String pinyin = PinyinUtils.getPinyin(userInfo.displayName);
+            String name = ChatManager.Instance().getGroupMemberDisplayName(groupId, userInfo.uid);
+            if (!TextUtils.isEmpty(name)) {
+                String pinyin = PinyinUtils.getPinyin(name);
                 char c = pinyin.toUpperCase().charAt(0);
                 if (c >= 'A' && c <= 'Z') {
                     info.setSortName(pinyin);
