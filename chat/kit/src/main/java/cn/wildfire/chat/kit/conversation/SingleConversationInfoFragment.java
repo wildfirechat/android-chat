@@ -82,7 +82,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         String userId = conversationInfo.conversation.target;
-        conversationMemberAdapter = new ConversationMemberAdapter(true, false);
+        conversationMemberAdapter = new ConversationMemberAdapter(conversationInfo, true, false);
         List<UserInfo> members = Collections.singletonList(userViewModel.getUserInfo(userId, true));
         conversationMemberAdapter.setMembers(members);
         conversationMemberAdapter.setOnMemberClickListener(this);

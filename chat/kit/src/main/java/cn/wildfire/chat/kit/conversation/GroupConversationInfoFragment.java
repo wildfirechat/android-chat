@@ -302,7 +302,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             memberIds = memberIds.subList(0, maxShowMemberCount);
         }
 
-        conversationMemberAdapter = new ConversationMemberAdapter(enableAddMember, enableRemoveMember);
+        conversationMemberAdapter = new ConversationMemberAdapter(conversationInfo, enableAddMember, enableRemoveMember);
         List<UserInfo> members = UserViewModel.getUsers(memberIds, groupInfo.target);
 
         conversationMemberAdapter.setMembers(members);
