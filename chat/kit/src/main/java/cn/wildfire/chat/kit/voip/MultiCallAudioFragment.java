@@ -98,7 +98,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R.id.addParticipantImageView)
     void addParticipant() {
-
+        ((MultiCallActivity) getActivity()).addParticipant();
     }
 
     @OnClick(R.id.muteImageView)

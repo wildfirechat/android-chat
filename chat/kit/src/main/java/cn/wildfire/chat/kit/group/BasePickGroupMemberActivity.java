@@ -17,6 +17,12 @@ import cn.wildfirechat.model.GroupInfo;
 public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     protected GroupInfo groupInfo;
     protected List<String> unCheckableMemberIds;
+    protected List<String> checkedMemberIds;
+
+    public static final String GROUP_INFO = "groupInfo";
+    public static final String UNCHECKABLE_MEMBER_IDS = "unCheckableMemberIds";
+    public static final String CHECKED_MEMBER_IDS = "checkedMemberIds";
+    public static final String MAX_COUNT = "maxCount";
 
     protected PickUserViewModel pickUserViewModel;
     private Observer<UIUserInfo> userCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
@@ -43,6 +49,7 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     protected void afterViews() {
         groupInfo = getIntent().getParcelableExtra("groupInfo");
         unCheckableMemberIds = getIntent().getStringArrayListExtra("unCheckableMemberIds");
+        checkedMemberIds = getIntent().getStringArrayListExtra(CHECKED_MEMBER_IDS);
         int maxPickCount = getIntent().getIntExtra("maxCount", Integer.MAX_VALUE);
         if (groupInfo == null) {
             finish();
@@ -51,10 +58,15 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
 
         pickUserViewModel = ViewModelProviders.of(this).get(PickUserViewModel.class);
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(userCheckStatusUpdateLiveDataObserver);
+        if (checkedMemberIds != null && !checkedMemberIds.isEmpty()) {
+            pickUserViewModel.setInitialCheckedIds(checkedMemberIds);
+            pickUserViewModel.setUncheckableIds(checkedMemberIds);
+        }
+
         if (unCheckableMemberIds != null && !unCheckableMemberIds.isEmpty()) {
             pickUserViewModel.setUncheckableIds(unCheckableMemberIds);
         } else {
-            UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
+            UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
             List<String> list = new ArrayList<>();
             list.add(userViewModel.getUserId());
             pickUserViewModel.setUncheckableIds(list);
