@@ -39,6 +39,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @BindView(R.id.focusVideoContainerFrameLayout)
     FrameLayout focusVideoContainerFrameLayout;
 
+
     private List<String> participants;
     private UserInfo me;
     private UserViewModel userViewModel;
@@ -124,7 +125,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R.id.addParticipantImageView)
     void addParticipant() {
-
+        ((MultiCallActivity) getActivity()).addParticipant();
     }
 
     @OnClick(R.id.muteImageView)
