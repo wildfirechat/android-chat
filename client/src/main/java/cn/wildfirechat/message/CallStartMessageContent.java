@@ -22,7 +22,8 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_S
 @ContentTag(type = ContentType_Call_Start, flag = PersistFlag.Persist)
 public class CallStartMessageContent extends MessageContent {
     private String callId;
-    private String targetId;
+    //    private String targetId;
+    // 多人视音频是有效
     private List<String> targetIds;
     private long connectTime;
     private long endTime;
@@ -83,13 +84,13 @@ public class CallStartMessageContent extends MessageContent {
         this.status = status;
     }
 
-    public String getTargetId() {
-        return targetId;
-    }
-
-    public void setTargetId(String targetId) {
-        this.targetId = targetId;
-    }
+//    public String getTargetId() {
+//        return targetId;
+//    }
+//
+//    public void setTargetId(String targetId) {
+//        this.targetId = targetId;
+//    }
 
     public boolean isAudioOnly() {
         return audioOnly;
