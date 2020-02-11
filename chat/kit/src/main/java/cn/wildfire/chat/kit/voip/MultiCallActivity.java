@@ -18,6 +18,7 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class MultiCallActivity extends VoipBaseActivity {
 
@@ -154,6 +155,7 @@ public class MultiCallActivity extends VoipBaseActivity {
         GroupInfo groupInfo = groupViewModel.getGroupInfo(groupId, false);
         intent.putExtra(PickGroupMemberActivity.GROUP_INFO, groupInfo);
         List<String> participants = getEngineKit().getCurrentSession().getParticipantIds();
+        participants.add(ChatManager.Instance().getUserId());
         intent.putStringArrayListExtra(PickGroupMemberActivity.CHECKED_MEMBER_IDS, (ArrayList<String>) participants);
         intent.putStringArrayListExtra(PickGroupMemberActivity.UNCHECKABLE_MEMBER_IDS, (ArrayList<String>) participants);
         intent.putExtra(PickGroupMemberActivity.MAX_COUNT, 9);
