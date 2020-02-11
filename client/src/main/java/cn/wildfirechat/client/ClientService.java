@@ -262,7 +262,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         throw new IllegalArgumentException("messageContent type duplicate");
                     }
                     contentMapper.put(tag.type(), cls);
-                    ProtoLogic.registerMessageFlag(tag.type(), tag.flag().getValue());
+                    try {
+                        ProtoLogic.registerMessageFlag(tag.type(), tag.flag().getValue());
+                    } catch (Throwable e) {
+                        // ref to: https://github.com/Tencent/mars/issues/334
+                        ProtoLogic.registerMessageFlag(tag.type(), tag.flag().getValue());
+                    }
                 } else {
                     throw new IllegalStateException("ContentTag annotation must be set!");
                 }
@@ -1838,6 +1843,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     public void onCreate() {
         super.onCreate();
 
+        Mars.loadDefaultMarsLibrary();
         AppLogic.setCallBack(this);
         SdtLogic.setCallBack(this);
         // Initialize the Mars PlatformComm
