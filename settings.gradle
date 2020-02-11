@@ -5,3 +5,5 @@ include ':client',
         ':emojilibrary',
         ':imagepicker',
         ':avenginekit'
+
+//project(':avenginekit').projectDir = new File('../android-av/avenginekit')
