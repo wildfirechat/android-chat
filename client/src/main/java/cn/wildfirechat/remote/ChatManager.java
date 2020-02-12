@@ -606,7 +606,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取clientId, 火信用clientId唯一表示用户设备
+     * 获取clientId, 野火IM用clientId唯一表示用户设备
      */
     public String getClientId() {
         if (clientId != null) {
