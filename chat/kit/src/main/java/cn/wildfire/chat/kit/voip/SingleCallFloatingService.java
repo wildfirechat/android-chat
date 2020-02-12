@@ -70,12 +70,10 @@ public class SingleCallFloatingService extends Service {
             stopSelf();
         }
 
+        targetId = session.getParticipantIds().get(0);
+
         resumeActivityIntent = new Intent(this, SingleCallActivity.class);
         resumeActivityIntent.putExtra(SingleCallActivity.EXTRA_FROM_FLOATING_VIEW, true);
-        resumeActivityIntent.putExtra(SingleCallActivity.EXTRA_MO, intent.getBooleanExtra(SingleCallActivity.EXTRA_MO, false));
-        resumeActivityIntent.putExtra(SingleCallActivity.EXTRA_AUDIO_ONLY, intent.getBooleanExtra(SingleCallActivity.EXTRA_AUDIO_ONLY, false));
-        targetId = intent.getStringExtra(SingleCallActivity.EXTRA_TARGET);
-        resumeActivityIntent.putExtra(SingleCallActivity.EXTRA_TARGET, targetId);
         resumeActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resumeActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
