@@ -12,6 +12,7 @@ import cn.wildfirechat.model.Conversation;
 public abstract class ConversationExt {
     protected FragmentActivity activity;
     protected ConversationExtension extension;
+    protected Fragment fragment;
     private int index;
     protected Conversation conversation;
     protected MessageViewModel messageViewModel;
@@ -40,6 +41,7 @@ public abstract class ConversationExt {
 
     protected final void onBind(Fragment fragment, MessageViewModel messageViewModel, Conversation conversation, ConversationExtension conversationExtension, int index) {
         this.activity = fragment.getActivity();
+        this.fragment = fragment;
         this.messageViewModel = messageViewModel;
         this.conversation = conversation;
         this.extension = conversationExtension;
@@ -48,6 +50,7 @@ public abstract class ConversationExt {
 
     protected final void onDestroy() {
         this.activity = null;
+        this.fragment = null;
         this.messageViewModel = null;
         this.conversation = null;
         this.extension = null;
