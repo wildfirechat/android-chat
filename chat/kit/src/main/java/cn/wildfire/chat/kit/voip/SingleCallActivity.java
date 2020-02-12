@@ -12,7 +12,6 @@ package cn.wildfire.chat.kit.voip;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -20,10 +19,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.webrtc.StatsReport;
 
-import java.util.Collections;
-
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.Conversation;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -33,14 +29,8 @@ public class SingleCallActivity extends VoipBaseActivity {
     private static final String TAG = "P2PVideoActivity";
     private static final int REQUEST_CODE_DRAW_OVERLAY = 100;
 
-    public static final String EXTRA_TARGET = "TARGET";
-    public static final String EXTRA_MO = "ISMO";
-    public static final String EXTRA_AUDIO_ONLY = "audioOnly";
     public static final String EXTRA_FROM_FLOATING_VIEW = "fromFloatingView";
 
-    private boolean isOutgoing;
-    private String targetId;
-    private boolean isAudioOnly;
     private boolean isFromFloatingView;
 
     @Override
@@ -48,22 +38,17 @@ public class SingleCallActivity extends VoipBaseActivity {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
 
-        targetId = intent.getStringExtra(EXTRA_TARGET);
         isFromFloatingView = intent.getBooleanExtra(EXTRA_FROM_FLOATING_VIEW, false);
         if (isFromFloatingView) {
             Intent serviceIntent = new Intent(this, SingleCallFloatingService.class);
             stopService(serviceIntent);
-            initFromFloatView();
-        } else {
-            isOutgoing = intent.getBooleanExtra(EXTRA_MO, false);
-            isAudioOnly = intent.getBooleanExtra(EXTRA_AUDIO_ONLY, false);
-            init(targetId, isOutgoing, isAudioOnly);
         }
+        init();
     }
 
     private AVEngineKit.CallSessionCallback currentCallback;
 
-    private void initFromFloatView() {
+    private void init() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             finish();
@@ -84,40 +69,6 @@ public class SingleCallActivity extends VoipBaseActivity {
         fragmentManager.beginTransaction()
                 .add(android.R.id.content, fragment)
                 .commit();
-    }
-
-    private void init(String targetId, boolean outgoing, boolean audioOnly) {
-        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-
-        Fragment fragment;
-        if (audioOnly) {
-            fragment = new SingleAudioFragment();
-        } else {
-            fragment = new SingleVideoFragment();
-        }
-
-        currentCallback = (AVEngineKit.CallSessionCallback) fragment;
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .add(android.R.id.content, fragment)
-                .commit();
-
-        if (outgoing) {
-            try {
-                Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetId);
-                gEngineKit.startCall(conversation, Collections.singletonList(targetId), audioOnly, SingleCallActivity.this);
-                session.startPreview();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, e.getMessage());
-            }
-        } else {
-            if (session == null) {
-                finish();
-            } else {
-                session.setCallback(SingleCallActivity.this);
-            }
-        }
     }
 
     // Activity interfaces
@@ -222,14 +173,6 @@ public class SingleCallActivity extends VoipBaseActivity {
         audioAccept();
     }
 
-    public boolean isOutgoing() {
-        return isOutgoing;
-    }
-
-    public String getTargetId() {
-        return targetId;
-    }
-
     public void showFloatingView() {
 
         if (!checkOverlayPermission()) {
@@ -237,9 +180,6 @@ public class SingleCallActivity extends VoipBaseActivity {
         }
 
         Intent intent = new Intent(this, SingleCallFloatingService.class);
-        intent.putExtra(EXTRA_TARGET, targetId);
-        intent.putExtra(EXTRA_AUDIO_ONLY, isAudioOnly);
-        intent.putExtra(EXTRA_MO, isOutgoing);
         startService(intent);
         finish();
     }
