@@ -64,7 +64,7 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
         if (message.message.conversation.type == Conversation.ConversationType.Single) {
             WfcUIKit.singleCall(fragment.getContext(), message.message.conversation.target, callStartMessageContent.isAudioOnly());
         } else {
-            WfcUIKit.multiCall(fragment.getContext(), message.message.conversation.target, callStartMessageContent.getTargetIds(), callStartMessageContent.isAudioOnly());
+            fragment.pickGroupMemberToVoipChat(callStartMessageContent.isAudioOnly());
         }
     }
 }

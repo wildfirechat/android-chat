@@ -47,6 +47,7 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.multimsg.MultiMessageAction;
 import cn.wildfire.chat.kit.conversation.multimsg.MultiMessageActionManager;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -54,6 +55,7 @@ import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
@@ -78,6 +80,8 @@ public class ConversationFragment extends Fragment implements
         ConversationMessageAdapter.OnMessageCheckListener {
 
     public static final int REQUEST_PICK_MENTION_CONTACT = 100;
+    public static final int REQUEST_CODE_GROUP_VIDEO_CHAT = 101;
+    public static final int REQUEST_CODE_GROUP_AUDIO_CHAT = 102;
 
     private Conversation conversation;
     private boolean loadingNewMessage;
@@ -580,22 +584,25 @@ public class ConversationFragment extends Fragment implements
         if (requestCode >= ConversationExtension.REQUEST_CODE_MIN) {
             inputPanel.extension.onActivityResult(requestCode, resultCode, data);
             return;
-        } else if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_PICK_MENTION_CONTACT) {
-            boolean isMentionAll = data.getBooleanExtra("mentionAll", false);
-            SpannableString spannableString;
-            if (isMentionAll) {
-                spannableString = mentionAllSpannable();
-            } else {
-                String userId = data.getStringExtra("userId");
-                UserInfo userInfo = userViewModel.getUserInfo(userId, false);
-                spannableString = mentionSpannable(userInfo);
+        } else if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_PICK_MENTION_CONTACT) {
+                boolean isMentionAll = data.getBooleanExtra("mentionAll", false);
+                SpannableString spannableString;
+                if (isMentionAll) {
+                    spannableString = mentionAllSpannable();
+                } else {
+                    String userId = data.getStringExtra("userId");
+                    UserInfo userInfo = userViewModel.getUserInfo(userId, false);
+                    spannableString = mentionSpannable(userInfo);
+                }
+                int position = inputPanel.editText.getSelectionEnd();
+                position = position > 0 ? position - 1 : 0;
+                inputPanel.editText.getEditableText().replace(position, position + 1, spannableString);
+
+            } else if (requestCode == REQUEST_CODE_GROUP_AUDIO_CHAT || requestCode == REQUEST_CODE_GROUP_VIDEO_CHAT) {
+                onPickGroupMemberToVoipChat(data, requestCode == REQUEST_CODE_GROUP_AUDIO_CHAT);
             }
-            int position = inputPanel.editText.getSelectionEnd();
-            position = position > 0 ? position - 1 : 0;
-            inputPanel.editText.getEditableText().replace(position, position + 1, spannableString);
-            return;
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private SpannableString mentionAllSpannable() {
@@ -818,6 +825,26 @@ public class ConversationFragment extends Fragment implements
         }
         if (view.isClickable()) {
             view.setEnabled(enable);
+        }
+    }
+
+    public void pickGroupMemberToVoipChat(boolean isAudioOnly) {
+        Intent intent = new Intent(getActivity(), PickGroupMemberActivity.class);
+        GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
+        intent.putExtra("groupInfo", groupInfo);
+        int maxCount = AVEngineKit.isSupportMultiCall() ? (isAudioOnly ? 9 : 4) : 1;
+        intent.putExtra("maxCount", maxCount);
+        startActivityForResult(intent, isAudioOnly ? REQUEST_CODE_GROUP_AUDIO_CHAT : REQUEST_CODE_GROUP_VIDEO_CHAT);
+    }
+
+    private void onPickGroupMemberToVoipChat(Intent intent, boolean isAudioOnly) {
+        List<String> memberIds = intent.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
+        if (memberIds != null && memberIds.size() > 0) {
+            if (AVEngineKit.isSupportMultiCall()) {
+                WfcUIKit.multiCall(getActivity(), conversation.target, memberIds, isAudioOnly);
+            } else {
+                WfcUIKit.singleCall(getActivity(), memberIds.get(0), isAudioOnly);
+            }
         }
     }
 }
