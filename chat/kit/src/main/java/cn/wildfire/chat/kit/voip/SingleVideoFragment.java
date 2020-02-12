@@ -61,7 +61,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     // True if local view is in the fullscreen renderer.
     private boolean isSwappedFeeds;
-    private boolean isOutgoing;
     private String targetId;
     private AVEngineKit gEngineKit;
 
@@ -85,8 +84,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isOutgoing = ((SingleCallActivity) getActivity()).isOutgoing();
-        targetId = ((SingleCallActivity) getActivity()).getTargetId();
     }
 
     @Nullable
@@ -145,7 +142,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         if (surfaceView != null) {
             surfaceView.setZOrderMediaOverlay(true);
             localSurfaceView = surfaceView;
-            if (isOutgoing && remoteSurfaceView == null) {
+            if (gEngineKit.getCurrentSession().getState() == AVEngineKit.CallState.Outgoing && remoteSurfaceView == null) {
                 fullscreenRenderer.addView(surfaceView);
             } else {
                 pipRenderer.addView(surfaceView);
@@ -162,7 +159,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @Override
     public void didReceiveRemoteVideoTrack(String userId) {
         pipRenderer.setVisibility(View.VISIBLE);
-        if (isOutgoing && localSurfaceView != null) {
+        if (gEngineKit.getCurrentSession().getState() == AVEngineKit.CallState.Outgoing && localSurfaceView != null) {
             ((ViewGroup) localSurfaceView.getParent()).removeView(localSurfaceView);
             pipRenderer.addView(localSurfaceView);
             gEngineKit.getCurrentSession().setupLocalVideo(localSurfaceView, scalingType);
@@ -304,7 +301,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             didCreateLocalVideoTrack();
             didReceiveRemoteVideoTrack(targetId);
         } else {
-            if (isOutgoing) {
+            if (session.getState() == AVEngineKit.CallState.Outgoing) {
                 incomingActionContainer.setVisibility(View.GONE);
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 connectedActionContainer.setVisibility(View.GONE);
