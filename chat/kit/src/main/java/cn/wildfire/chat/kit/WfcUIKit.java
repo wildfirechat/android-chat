@@ -33,6 +33,8 @@ import java.util.List;
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
+import cn.wildfire.chat.kit.voip.MultiCallActivity;
+import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.NotInitializedExecption;
@@ -163,7 +165,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetId);
         AVEngineKit.Instance().startCall(conversation, Collections.singletonList(targetId), isAudioOnly, null);
 
-        Intent voip = new Intent(WfcIntent.ACTION_VOIP_SINGLE);
+        Intent voip = new Intent(context, SingleCallActivity.class);
         startActivity(context, voip);
     }
 
@@ -174,7 +176,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         }
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId);
         AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
-        Intent intent = new Intent(WfcIntent.ACTION_VOIP_MULTI);
+        Intent intent = new Intent(context, MultiCallActivity.class);
         startActivity(context, intent);
     }
 

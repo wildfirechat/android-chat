@@ -1,30 +1,19 @@
 package cn.wildfire.chat.kit.conversation.ext;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.view.View;
-
-import androidx.lifecycle.ViewModelProviders;
-
-import java.util.ArrayList;
 
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
+import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
-import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
-import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
 
 public class VoipExt extends ConversationExt {
-    private static final int REQUEST_CODE_GROUP_VIDEO_CHAT = 0;
-    public static final int REQUEST_CODE_GROUP_AUDIO_CHAT = 1;
 
     @ExtContextMenuItem(title = "视频通话")
     public void video(View containerView, Conversation conversation) {
@@ -40,7 +29,7 @@ public class VoipExt extends ConversationExt {
                 videoChat(conversation.target);
                 break;
             case Group:
-                pickGroupMemberToVideoChat();
+                ((ConversationFragment) fragment).pickGroupMemberToVoipChat(false);
                 break;
             default:
                 break;
@@ -61,31 +50,11 @@ public class VoipExt extends ConversationExt {
                 audioChat(conversation.target);
                 break;
             case Group:
-                pickGroupMemberToAudioChat();
+                ((ConversationFragment) fragment).pickGroupMemberToVoipChat(true);
                 break;
             default:
                 break;
         }
-    }
-
-    private void pickGroupMemberToAudioChat() {
-        Intent intent = new Intent(activity, PickGroupMemberActivity.class);
-        GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
-        GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-        intent.putExtra("groupInfo", groupInfo);
-        int maxCount = AVEngineKit.isSupportMultiCall() ? 9 : 1;
-        intent.putExtra("maxCount", maxCount);
-        startActivityForResult(intent, REQUEST_CODE_GROUP_AUDIO_CHAT);
-    }
-
-    private void pickGroupMemberToVideoChat() {
-        Intent intent = new Intent(activity, PickGroupMemberActivity.class);
-        GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
-        GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-        intent.putExtra("groupInfo", groupInfo);
-        int maxCount = AVEngineKit.isSupportMultiCall() ? 9 : 1;
-        intent.putExtra("maxCount", maxCount);
-        startActivityForResult(intent, REQUEST_CODE_GROUP_VIDEO_CHAT);
     }
 
     private void audioChat(String targetId) {
@@ -104,38 +73,6 @@ public class VoipExt extends ConversationExt {
     @Override
     public int iconResId() {
         return R.mipmap.ic_func_video;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
-        ArrayList<String> memberIds;
-        switch (requestCode) {
-            case REQUEST_CODE_GROUP_AUDIO_CHAT:
-                memberIds = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
-                if (memberIds != null && memberIds.size() > 0) {
-                    if (AVEngineKit.isSupportMultiCall()) {
-                        WfcUIKit.multiCall(activity, conversation.target, memberIds, true);
-                    } else {
-                        WfcUIKit.singleCall(activity, memberIds.get(0), true);
-                    }
-                }
-                break;
-            case REQUEST_CODE_GROUP_VIDEO_CHAT:
-                memberIds = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
-                if (memberIds != null && memberIds.size() > 0) {
-                    if (AVEngineKit.isSupportMultiCall()) {
-                        WfcUIKit.multiCall(activity, conversation.target, memberIds, false);
-                    } else {
-                        WfcUIKit.singleCall(activity, memberIds.get(0), false);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
     }
 
     @Override
