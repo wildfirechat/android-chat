@@ -17,6 +17,7 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.CallStartMessageContent;
+import cn.wildfirechat.model.Conversation;
 
 @MessageContentType(CallStartMessageContent.class)
 @ReceiveLayoutRes(resId = R.layout.conversation_item_voip_receive)
@@ -59,6 +60,11 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
         if (((CallStartMessageContent) message.message.content).getStatus() == 1) {
             return;
         }
-        WfcUIKit.singleCall(fragment.getContext(), message.message.conversation.target, true, false);
+        CallStartMessageContent callStartMessageContent = (CallStartMessageContent) message.message.content;
+        if (message.message.conversation.type == Conversation.ConversationType.Single) {
+            WfcUIKit.singleCall(fragment.getContext(), message.message.conversation.target, callStartMessageContent.isAudioOnly());
+        } else {
+            WfcUIKit.multiCall(fragment.getContext(), message.message.conversation.target, callStartMessageContent.getTargetIds(), callStartMessageContent.isAudioOnly());
+        }
     }
 }

@@ -17,6 +17,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
@@ -72,7 +73,8 @@ public class VoipExt extends ConversationExt {
         GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
         intent.putExtra("groupInfo", groupInfo);
-        intent.putExtra("maxCount", 9);
+        int maxCount = AVEngineKit.isSupportMultiCall() ? 9 : 1;
+        intent.putExtra("maxCount", maxCount);
         startActivityForResult(intent, REQUEST_CODE_GROUP_AUDIO_CHAT);
     }
 
@@ -81,16 +83,17 @@ public class VoipExt extends ConversationExt {
         GroupViewModel groupViewModel = ViewModelProviders.of(activity).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
         intent.putExtra("groupInfo", groupInfo);
-        intent.putExtra("maxCount", 9);
+        int maxCount = AVEngineKit.isSupportMultiCall() ? 9 : 1;
+        intent.putExtra("maxCount", maxCount);
         startActivityForResult(intent, REQUEST_CODE_GROUP_VIDEO_CHAT);
     }
 
     private void audioChat(String targetId) {
-        WfcUIKit.singleCall(activity, targetId, true, true);
+        WfcUIKit.singleCall(activity, targetId, true);
     }
 
     private void videoChat(String targetId) {
-        WfcUIKit.singleCall(activity, targetId, true, false);
+        WfcUIKit.singleCall(activity, targetId, false);
     }
 
     @Override
@@ -113,13 +116,21 @@ public class VoipExt extends ConversationExt {
             case REQUEST_CODE_GROUP_AUDIO_CHAT:
                 memberIds = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
                 if (memberIds != null && memberIds.size() > 0) {
-                    WfcUIKit.multiCall(activity, conversation.target, memberIds, true);
+                    if (AVEngineKit.isSupportMultiCall()) {
+                        WfcUIKit.multiCall(activity, conversation.target, memberIds, true);
+                    } else {
+                        WfcUIKit.singleCall(activity, memberIds.get(0), true);
+                    }
                 }
                 break;
             case REQUEST_CODE_GROUP_VIDEO_CHAT:
                 memberIds = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
                 if (memberIds != null && memberIds.size() > 0) {
-                    WfcUIKit.multiCall(activity, conversation.target, memberIds, false);
+                    if (AVEngineKit.isSupportMultiCall()) {
+                        WfcUIKit.multiCall(activity, conversation.target, memberIds, false);
+                    } else {
+                        WfcUIKit.singleCall(activity, memberIds.get(0), false);
+                    }
                 }
                 break;
             default:

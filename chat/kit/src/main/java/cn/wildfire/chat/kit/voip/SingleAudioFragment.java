@@ -182,12 +182,18 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
 
     private void init() {
         gEngineKit = ((SingleCallActivity) getActivity()).getEngineKit();
-        if (gEngineKit.getCurrentSession() != null && gEngineKit.getCurrentSession().getState() == AVEngineKit.CallState.Connected) {
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            getActivity().finish();
+            return;
+        }
+        if (session.getState() == AVEngineKit.CallState.Connected) {
             descTextView.setVisibility(View.GONE);
             outgoingActionContainer.setVisibility(View.VISIBLE);
             durationTextView.setVisibility(View.VISIBLE);
+            minimizeImageView.setVisibility(View.VISIBLE);
         } else {
-            if (((SingleCallActivity) getActivity()).isOutgoing()) {
+            if (session.getState() == AVEngineKit.CallState.Outgoing) {
                 descTextView.setText(R.string.av_waiting);
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 incomingActionContainer.setVisibility(View.GONE);
@@ -197,7 +203,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
                 incomingActionContainer.setVisibility(View.VISIBLE);
             }
         }
-        String targetId = ((SingleCallActivity) getActivity()).getTargetId();
+        String targetId = session.getParticipantIds().get(0);
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
         Glide.with(this).load(userInfo.portrait).into(portraitImageView);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
