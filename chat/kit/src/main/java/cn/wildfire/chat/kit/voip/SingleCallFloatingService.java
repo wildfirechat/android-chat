@@ -192,6 +192,11 @@ public class SingleCallFloatingService extends Service {
             public void didGetStats(StatsReport[] reports) {
 
             }
+
+            @Override
+            public void didVideoMuted(String s, boolean b) {
+
+            }
         });
     }
 
