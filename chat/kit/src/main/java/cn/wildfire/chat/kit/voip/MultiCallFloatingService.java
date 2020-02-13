@@ -180,6 +180,11 @@ public class MultiCallFloatingService extends Service {
             public void didGetStats(StatsReport[] reports) {
 
             }
+
+            @Override
+            public void didVideoMuted(String s, boolean b) {
+
+            }
         });
     }
 
