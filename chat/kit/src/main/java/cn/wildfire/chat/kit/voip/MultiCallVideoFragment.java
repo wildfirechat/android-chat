@@ -252,6 +252,15 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     }
 
+    @Override
+    public void didVideoMuted(String userId, boolean enable) {
+        if (enable) {
+            didReceiveRemoteVideoTrack(userId);
+        } else {
+            didRemoveRemoteVideoTrack(userId);
+        }
+    }
+
     private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {

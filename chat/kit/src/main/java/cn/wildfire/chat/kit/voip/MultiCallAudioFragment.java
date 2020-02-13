@@ -144,9 +144,12 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
                     }
                 }
             }
+            View view = audioContainerGridLayout.findViewWithTag(userViewModel.getUserId());
+            ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
         } else if (callState == AVEngineKit.CallState.Idle) {
             getActivity().finish();
         }
+        Toast.makeText(getActivity(), "" + callState.name(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -215,6 +218,11 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didGetStats(StatsReport[] statsReports) {
+
+    }
+
+    @Override
+    public void didVideoMuted(String s, boolean b) {
 
     }
 }

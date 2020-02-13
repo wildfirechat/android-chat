@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -26,15 +25,17 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_A
 @ContentTag(type = ContentType_Call_Add_Participant, flag = PersistFlag.Persist)
 public class AddParticipantsMessageContent extends NotificationMessageContent {
     public static class ParticipantStatus implements Parcelable {
-        public ParticipantStatus(String userId, long acceptTime, long joinTime) {
+        public ParticipantStatus(String userId, long acceptTime, long joinTime, boolean videoMuted) {
             this.userId = userId;
             this.acceptTime = acceptTime;
             this.joinTime = joinTime;
+            this.videoMuted = videoMuted;
         }
 
         public String userId;
         public long acceptTime;
         public long joinTime;
+        public boolean videoMuted;
 
         @Override
         public int describeContents() {
@@ -46,12 +47,14 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
             dest.writeString(this.userId);
             dest.writeLong(this.acceptTime);
             dest.writeLong(this.joinTime);
+            dest.writeInt(videoMuted ? 1 : 0);
         }
 
         protected ParticipantStatus(Parcel in) {
             this.userId = in.readString();
             this.acceptTime = in.readLong();
             this.joinTime = in.readLong();
+            this.videoMuted = in.readInt() > 0;
         }
 
         public static final Creator<ParticipantStatus> CREATOR = new Creator<ParticipantStatus>() {
@@ -145,6 +148,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
                 jsonObject.put("userId", status.userId);
                 jsonObject.put("acceptTime", status.acceptTime);
                 jsonObject.put("joinTime", status.joinTime);
+                jsonObject.put("videoMuted", status.videoMuted);
                 array.put(jsonObject);
             }
 
@@ -177,7 +181,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
                 existParticipants = new ArrayList<>();
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject object = array.getJSONObject(i);
-                    ParticipantStatus status = new ParticipantStatus(object.getString("userId"), object.getLong("acceptTime"), object.getLong("joinTime"));
+                    ParticipantStatus status = new ParticipantStatus(object.getString("userId"), object.getLong("acceptTime"), object.getLong("joinTime"), object.optBoolean("videoMuted"));
                     existParticipants.add(status);
                 }
             }
