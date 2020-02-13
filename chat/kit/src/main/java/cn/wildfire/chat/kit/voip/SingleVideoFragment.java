@@ -71,16 +71,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     private Toast logToast;
     private static final String TAG = "VideoFragment";
 
-    public static SingleVideoFragment newInstance(String targetId, boolean isOutgoing) {
-
-        SingleVideoFragment fragment = new SingleVideoFragment();
-        Bundle args = new Bundle();
-        args.putBoolean("outgoing", isOutgoing);
-        args.putString("targetId", targetId);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -297,15 +287,21 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             inviteeInfoContainer.setVisibility(View.GONE);
             minimizeImageView.setVisibility(View.VISIBLE);
 
+            targetId = session.getParticipantIds().get(0);
+
             session.startVideoSource();
             didCreateLocalVideoTrack();
             didReceiveRemoteVideoTrack(targetId);
         } else {
+            targetId = session.getParticipantIds().get(0);
+
             if (session.getState() == AVEngineKit.CallState.Outgoing) {
                 incomingActionContainer.setVisibility(View.GONE);
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 connectedActionContainer.setVisibility(View.GONE);
                 descTextView.setText(R.string.av_waiting);
+
+                gEngineKit.getCurrentSession().startPreview();
             } else {
                 incomingActionContainer.setVisibility(View.VISIBLE);
                 outgoingActionContainer.setVisibility(View.GONE);
