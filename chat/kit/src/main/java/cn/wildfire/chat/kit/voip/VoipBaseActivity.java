@@ -135,6 +135,11 @@ public class VoipBaseActivity extends FragmentActivity implements AVEngineKit.Ca
     }
 
     @Override
+    public void didVideoMuted(String s, boolean b) {
+
+    }
+
+    @Override
     public void didChangeMode(boolean audioOnly) {
     }
 
