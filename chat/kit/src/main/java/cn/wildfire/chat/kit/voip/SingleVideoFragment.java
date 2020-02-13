@@ -175,6 +175,11 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         // TODO
     }
 
+    @Override
+    public void didVideoMuted(String s, boolean b) {
+
+    }
+
     @OnClick(R.id.acceptImageView)
     public void accept() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
