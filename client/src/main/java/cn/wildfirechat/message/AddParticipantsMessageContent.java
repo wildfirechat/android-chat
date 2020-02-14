@@ -175,7 +175,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
                     participants.add(array.getString(i));
                 }
 
-                audioOnly = (jsonObject.optInt("audioOnly", 0) == 0);
+                audioOnly = (jsonObject.optInt("audioOnly", 0) == 1);
 
                 array = jsonObject.getJSONArray("existParticipants");
                 existParticipants = new ArrayList<>();
