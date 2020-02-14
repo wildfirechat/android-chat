@@ -76,7 +76,8 @@ public class MultiCallIncomingActivity extends VoipBaseActivity {
 
     @OnClick(R.id.acceptImageView)
     void accept() {
-        getEngineKit().getCurrentSession().answerCall(false);
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        session.answerCall(session.isAudioOnly());
         Intent intent = new Intent(this, MultiCallActivity.class);
         startActivity(intent);
         finish();
