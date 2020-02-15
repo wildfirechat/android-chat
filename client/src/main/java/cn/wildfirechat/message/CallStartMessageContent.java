@@ -22,11 +22,6 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_S
 @ContentTag(type = ContentType_Call_Start, flag = PersistFlag.Persist)
 public class CallStartMessageContent extends MessageContent {
     private String callId;
-    /**
-     * 为了兼容旧版本单人音视频
-     */
-    @Deprecated
-    private String targetId;
     // 多人视音频是有效
     private List<String> targetIds;
     private long connectTime;
@@ -88,16 +83,6 @@ public class CallStartMessageContent extends MessageContent {
         this.status = status;
     }
 
-    @Deprecated
-    public String getTargetId() {
-        return targetId;
-    }
-
-    @Deprecated
-    public void setTargetId(String targetId) {
-        this.targetId = targetId;
-    }
-
     public boolean isAudioOnly() {
         return audioOnly;
     }
@@ -133,7 +118,7 @@ public class CallStartMessageContent extends MessageContent {
                 objWrite.put("s", status);
             }
 
-            objWrite.put("t", targetId);
+            objWrite.put("t", targetIds.get(0));
             JSONArray ts = new JSONArray(targetIds);
             objWrite.put("ts", ts);
             objWrite.put("a", audioOnly ? 1 : 0);
@@ -156,12 +141,15 @@ public class CallStartMessageContent extends MessageContent {
                 connectTime = jsonObject.optLong("c", 0);
                 endTime = jsonObject.optLong("e", 0);
                 status = jsonObject.optInt("s", 0);
-                targetId = jsonObject.optString("t");
                 JSONArray array = jsonObject.optJSONArray("ts");
                 targetIds = new ArrayList<>();
-                for (int i = 0; i < array.length(); i++) {
-                    if (array.get(i) instanceof String) {
-                        targetIds.add((String) array.get(i));
+                if (array == null) {
+                    targetIds.add(jsonObject.getString("t"));
+                } else {
+                    for (int i = 0; i < array.length(); i++) {
+                        if (array.get(i) instanceof String) {
+                            targetIds.add((String) array.get(i));
+                        }
                     }
                 }
                 audioOnly = jsonObject.optInt("a") > 0;
@@ -186,7 +174,6 @@ public class CallStartMessageContent extends MessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.callId);
-        dest.writeString(this.targetId);
         dest.writeStringList(this.targetIds);
         dest.writeLong(this.connectTime);
         dest.writeLong(this.endTime);
@@ -197,7 +184,6 @@ public class CallStartMessageContent extends MessageContent {
     protected CallStartMessageContent(Parcel in) {
         super(in);
         this.callId = in.readString();
-        this.targetId = in.readString();
         this.targetIds = new ArrayList<>();
         in.readStringList(this.targetIds);
         this.connectTime = in.readLong();
