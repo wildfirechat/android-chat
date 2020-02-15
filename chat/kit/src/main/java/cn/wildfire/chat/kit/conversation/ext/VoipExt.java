@@ -10,6 +10,7 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 
@@ -78,7 +79,7 @@ public class VoipExt extends ConversationExt {
     @Override
     public boolean filter(Conversation conversation) {
         if (conversation.type == Conversation.ConversationType.Single
-                || conversation.type == Conversation.ConversationType.Group) {
+                || (conversation.type == Conversation.ConversationType.Group && AVEngineKit.Instance().isSupportMultiCall())) {
             return false;
         }
         return true;
