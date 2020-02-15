@@ -608,13 +608,17 @@ public class ChatManager {
     /**
      * 获取clientId, 野火IM用clientId唯一表示用户设备
      */
-    public String getClientId() {
+    public synchronized String getClientId() {
         if (clientId != null) {
             return clientId;
         }
         String imei = PreferenceManager.getDefaultSharedPreferences(gContext).getString("mars_core_uid", "");
         if (TextUtils.isEmpty(imei)) {
-            imei = Settings.Secure.getString(gContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+            try {
+                imei = Settings.Secure.getString(gContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (TextUtils.isEmpty(imei)) {
                 imei = UUID.randomUUID().toString();
             }
