@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/android-chat.iml" filepath="$PROJECT_DIR$/android-chat.iml" />
-      <module fileurl="file://$PROJECT_DIR$/avenginekit/avenginekit.iml" filepath="$PROJECT_DIR$/avenginekit/avenginekit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../android-av/avenginekit/avenginekit.iml" filepath="$PROJECT_DIR$/../android-av/avenginekit/avenginekit.iml" />
       <module fileurl="file://$PROJECT_DIR$/chat/chat.iml" filepath="$PROJECT_DIR$/chat/chat.iml" />
       <module fileurl="file://$PROJECT_DIR$/client/client.iml" filepath="$PROJECT_DIR$/client/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/emojilibrary/emojilibrary.iml" filepath="$PROJECT_DIR$/emojilibrary/emojilibrary.iml" />
