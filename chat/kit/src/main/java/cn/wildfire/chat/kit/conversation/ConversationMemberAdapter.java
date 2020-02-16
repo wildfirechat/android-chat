@@ -19,15 +19,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class ConversationMemberAdapter extends RecyclerView.Adapter<ConversationMemberAdapter.MemberViewHolder> {
     private List<UserInfo> members;
+    private ConversationInfo conversationInfo;
     private boolean enableAddMember;
     private boolean enableRemoveMember;
     private OnMemberClickListener onMemberClickListener;
 
-    public ConversationMemberAdapter(boolean enableAddMember, boolean enableRemoveMember) {
+    public ConversationMemberAdapter(ConversationInfo conversationInfo, boolean enableAddMember, boolean enableRemoveMember) {
+        this.conversationInfo = conversationInfo;
         this.enableAddMember = enableAddMember;
         this.enableRemoveMember = enableRemoveMember;
     }
@@ -163,7 +168,11 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
             this.userInfo = userInfo;
             this.type = TYPE_USER;
             nameTextView.setVisibility(View.VISIBLE);
-            nameTextView.setText(userInfo.displayName);
+            if (conversationInfo.conversation.type == Conversation.ConversationType.Group) {
+                nameTextView.setText(ChatManager.Instance().getGroupMemberDisplayName(conversationInfo.conversation.target, userInfo.uid));
+            } else {
+                nameTextView.setText(ChatManager.Instance().getUserDisplayName(userInfo.uid));
+            }
             Glide.with(portraitImageView).load(userInfo.portrait).apply(new RequestOptions().centerCrop().placeholder(R.mipmap.default_header)).into(portraitImageView);
         }
 

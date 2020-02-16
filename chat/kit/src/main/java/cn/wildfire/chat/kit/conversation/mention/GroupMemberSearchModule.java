@@ -81,7 +81,9 @@ public class GroupMemberSearchModule extends SearchableModule<UserInfo, UserView
         List<UserInfo> resultUserInfos = new ArrayList<>();
         if (userInfos != null) {
             for (UserInfo userInfo : userInfos) {
-                if (userInfo.displayName != null && userInfo.displayName.contains(keyword)) {
+                if ((userInfo.displayName != null && userInfo.displayName.contains(keyword))
+                        || (userInfo.friendAlias != null && userInfo.friendAlias.contains(keyword))
+                        || (userInfo.groupAlias != null && userInfo.groupAlias.contains(keyword))) {
                     resultUserInfos.add(userInfo);
                 }
             }
