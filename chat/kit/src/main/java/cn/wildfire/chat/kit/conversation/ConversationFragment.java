@@ -456,7 +456,7 @@ public class ConversationFragment extends Fragment implements
                             String userId = userViewModel.getUserId();
                             UserInfo userInfo = userViewModel.getUserInfo(userId, false);
                             if (userInfo != null) {
-                                content.tip = String.format(welcome, userInfo.displayName);
+                                content.tip = String.format(welcome, userViewModel.getUserDisplayName(userInfo));
                             } else {
                                 content.tip = String.format(welcome, "<" + userId + ">");
                             }
@@ -478,7 +478,7 @@ public class ConversationFragment extends Fragment implements
         String userId = userViewModel.getUserId();
         UserInfo userInfo = userViewModel.getUserInfo(userId, false);
         if (userInfo != null) {
-            content.tip = String.format(welcome, userInfo.displayName);
+            content.tip = String.format(welcome, userViewModel.getUserDisplayName(userInfo));
         } else {
             content.tip = String.format(welcome, "<" + userId + ">");
         }

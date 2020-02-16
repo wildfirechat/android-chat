@@ -15,13 +15,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.bumptech.glide.Glide;
-
 import org.webrtc.StatsReport;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
@@ -210,7 +209,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
         String targetId = session.getParticipantIds().get(0);
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
-        Glide.with(this).load(userInfo.portrait).into(portraitImageView);
+        GlideApp.with(this).load(userInfo.portrait).error(R.mipmap.default_header).into(portraitImageView);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
         muteImageView.setSelected(!micEnabled);

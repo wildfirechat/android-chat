@@ -1,6 +1,5 @@
 package cn.wildfire.chat.kit.search.viewHolder;
 
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,7 +16,9 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class MessageViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.portraitImageView)
@@ -42,11 +43,13 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public void onBind(Message message) {
         UserInfo sender = userViewModel.getUserInfo(message.sender, false);
         if (sender != null) {
-            if (!TextUtils.isEmpty(sender.displayName)) {
-                nameTextView.setText(sender.displayName);
+            String senderName;
+            if (message.conversation.type == Conversation.ConversationType.Group) {
+                senderName = ChatManager.Instance().getGroupMemberDisplayName(message.conversation.target, sender.uid);
             } else {
-                nameTextView.setText("<" + sender.uid + ">");
+                senderName = ChatManager.Instance().getUserDisplayName(sender);
             }
+            nameTextView.setText(senderName);
             GlideApp.with(portraitImageView).load(sender.portrait).error(R.mipmap.default_header).into(portraitImageView);
         }
         if (message.content instanceof NotificationMessageContent) {
