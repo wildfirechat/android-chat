@@ -25,8 +25,11 @@ import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import java.io.File;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -609,24 +612,41 @@ public class ChatManager {
      * 获取clientId, 野火IM用clientId唯一表示用户设备
      */
     public synchronized String getClientId() {
-        if (clientId != null) {
-            return clientId;
+        if (this.clientId != null) {
+            return this.clientId;
         }
-        String imei = PreferenceManager.getDefaultSharedPreferences(gContext).getString("mars_core_uid", "");
-        if (TextUtils.isEmpty(imei)) {
-            try {
-                imei = Settings.Secure.getString(gContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+        String imei = null;
+        try (
+                RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsoluteFile() + "/.clientId", "rw");
+        ) {
+
+            FileChannel chan = fw.getChannel();
+            FileLock lock = chan.lock();
+            imei = fw.readLine();
             if (TextUtils.isEmpty(imei)) {
-                imei = UUID.randomUUID().toString();
+                // 迁移就的clientId
+                imei = PreferenceManager.getDefaultSharedPreferences(gContext).getString("mars_core_uid", "");
+                if (TextUtils.isEmpty(imei)) {
+                    try {
+                        imei = Settings.Secure.getString(gContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (TextUtils.isEmpty(imei)) {
+                        imei = UUID.randomUUID().toString();
+                    }
+                    imei += System.currentTimeMillis();
+                }
+                fw.writeChars(imei);
             }
-            imei += System.currentTimeMillis();
-            PreferenceManager.getDefaultSharedPreferences(gContext).edit().putString("mars_core_uid", imei).commit();
+            lock.release();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Log.e("getClientError", "" + ex.getMessage());
         }
-        clientId = imei;
-        return clientId;
+        this.clientId = imei;
+        return imei;
     }
 
     /**
