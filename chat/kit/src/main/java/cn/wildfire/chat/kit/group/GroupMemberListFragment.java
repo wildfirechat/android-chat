@@ -50,7 +50,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     protected void afterViews(View view) {
         super.afterViews(view);
         ButterKnife.bind(this, view);
-        groupMemberListAdapter = new GroupMemberListAdapter();
+        groupMemberListAdapter = new GroupMemberListAdapter(groupInfo);
         memberRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
         memberRecyclerView.setAdapter(groupMemberListAdapter);
         groupMemberListAdapter.setOnMemberClickListener(this);

@@ -27,7 +27,7 @@ public class BlacklistViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(String userId) {
         UserInfo userInfo = ChatManager.Instance().getUserInfo(userId, false);
-        userNameTextView.setText(userInfo.displayName == null ? "< " + userInfo.uid + "> " : userInfo.displayName);
+        userNameTextView.setText(ChatManager.Instance().getUserDisplayName(userInfo));
         Glide.with(itemView.getContext()).load(userInfo.portrait).into(portraitImageView);
     }
 }
