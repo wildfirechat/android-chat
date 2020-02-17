@@ -34,6 +34,10 @@
         android:protectionLevel="signature" />
     <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
 
+    <!--    Oppo push-->
+    <uses-permission android:name="com.coloros.mcs.permission.RECIEVE_MCS_MESSAGE"/>
+    <uses-permission android:name="com.heytap.mcs.permission.RECIEVE_MCS_MESSAGE"/>
+
     <application>
 
         <!--huawei-->
@@ -190,6 +194,29 @@
         <meta-data
             android:name="com.vivo.push.app_id"
             android:value="${VIVO_APP_ID}" />
+
+
+        <!--        Oppo push-->
+        <service
+            android:name="com.heytap.mcssdk.PushService"     android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE">
+            <intent-filter>
+                <action android:name="com.coloros.mcs.action.RECEIVE_MCS_MESSAGE"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.heytap.mcssdk.AppPushService"     android:permission="com.heytap.mcs.permission.SEND_MCS_MESSAGE">
+            <intent-filter>
+                <action android:name="com.heytap.mcs.action.RECEIVE_MCS_MESSAGE"/>
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="OPPO_APP_PUSH_KEY"
+            android:value="${OPPO_APP_KEY}" />
+        <meta-data
+            android:name="OPPO_APP_PUSH_SECRET"
+            android:value="${OPPO_APP_SECRET}" />
 
     </application>
 
