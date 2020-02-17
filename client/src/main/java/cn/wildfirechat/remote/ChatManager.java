@@ -618,7 +618,7 @@ public class ChatManager {
 
         String imei = null;
         try (
-                RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsoluteFile() + "/.clientId", "rw");
+                RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsoluteFile() + "/.wfcClientId", "rw");
         ) {
 
             FileChannel chan = fw.getChannel();
@@ -638,7 +638,7 @@ public class ChatManager {
                     }
                     imei += System.currentTimeMillis();
                 }
-                fw.writeChars(imei);
+                fw.writeBytes(imei);
             }
             lock.release();
         } catch (Exception ex) {
