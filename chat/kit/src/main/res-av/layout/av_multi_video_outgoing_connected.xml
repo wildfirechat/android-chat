@@ -60,6 +60,6 @@
         </LinearLayout>
     </FrameLayout>
 
-    <include layout="@layout/av_multi_outgoing_connected_action" />
+    <include layout="@layout/av_multi_video_outgoing_connected_action" />
 
 </LinearLayout>
