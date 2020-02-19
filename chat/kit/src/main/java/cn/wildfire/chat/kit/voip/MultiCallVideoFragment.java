@@ -1,5 +1,7 @@
 package cn.wildfire.chat.kit.voip;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -7,6 +9,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +41,12 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     LinearLayout participantLinearLayout;
     @BindView(R.id.focusVideoContainerFrameLayout)
     FrameLayout focusVideoContainerFrameLayout;
-
+    @BindView(R.id.speakerImageView)
+    ImageView speakerImageView;
+    @BindView(R.id.muteImageView)
+    ImageView muteImageView;
+    @BindView(R.id.videoImageView)
+    ImageView videoImageView;
 
     private List<String> participants;
     private UserInfo me;
@@ -48,6 +56,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     private MultiCallItem focusMultiCallItem;
 
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+    private boolean micEnabled = true;
+    private boolean videoEnabled = true;
+    private boolean isSpeakerOn;
 
     @Nullable
     @Override
@@ -130,17 +141,31 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R.id.muteImageView)
     void mute() {
-
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+            session.muteAudio(!micEnabled);
+            micEnabled = !micEnabled;
+            muteImageView.setSelected(micEnabled);
+        }
     }
 
     @OnClick(R.id.speakerImageView)
     void speaker() {
-
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        isSpeakerOn = !isSpeakerOn;
+        audioManager.setMode(isSpeakerOn ? AudioManager.MODE_NORMAL : AudioManager.MODE_IN_COMMUNICATION);
+        speakerImageView.setSelected(isSpeakerOn);
+        audioManager.setSpeakerphoneOn(isSpeakerOn);
     }
 
     @OnClick(R.id.videoImageView)
     void video() {
-
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+            session.muteVideo(!videoEnabled);
+            videoEnabled = !videoEnabled;
+            videoImageView.setSelected(videoEnabled);
+        }
     }
 
     @OnClick(R.id.hangupImageView)

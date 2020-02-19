@@ -51,6 +51,6 @@
 
     </androidx.gridlayout.widget.GridLayout>
 
-    <include layout="@layout/av_multi_outgoing_connected_action" />
+    <include layout="@layout/av_multi_audio_outgoing_connected_action" />
 
 </LinearLayout>
