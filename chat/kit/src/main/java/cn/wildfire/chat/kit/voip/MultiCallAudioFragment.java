@@ -1,10 +1,13 @@
 package cn.wildfire.chat.kit.voip;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,10 +37,16 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     TextView durationTextView;
     @BindView(R.id.audioContainerGridLayout)
     GridLayout audioContainerGridLayout;
+    @BindView(R.id.speakerImageView)
+    ImageView speakerImageView;
+    @BindView(R.id.muteImageView)
+    ImageView muteImageView;
 
     private List<String> participants;
     private UserInfo me;
     private UserViewModel userViewModel;
+    private boolean isSpeakerOn;
+    private boolean micEnabled = true;
 
     @Nullable
     @Override
@@ -57,6 +66,11 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
         }
 
         updateParticipantStatus(session);
+
+        muteImageView.setSelected(session.isEnableAudio());
+
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        muteImageView.setSelected(audioManager.getMode() == AudioManager.MODE_NORMAL);
     }
 
     private void updateParticipantStatus(AVEngineKit.CallSession session) {
@@ -103,12 +117,22 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R.id.muteImageView)
     void mute() {
-
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+            if (session.muteAudio(!micEnabled)) {
+                micEnabled = !micEnabled;
+            }
+            muteImageView.setSelected(!micEnabled);
+        }
     }
 
     @OnClick(R.id.speakerImageView)
     void speaker() {
-
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        isSpeakerOn = !isSpeakerOn;
+        audioManager.setMode(isSpeakerOn ? AudioManager.MODE_NORMAL : AudioManager.MODE_IN_COMMUNICATION);
+        speakerImageView.setSelected(isSpeakerOn);
+        audioManager.setSpeakerphoneOn(isSpeakerOn);
     }
 
     @OnClick(R.id.videoImageView)
