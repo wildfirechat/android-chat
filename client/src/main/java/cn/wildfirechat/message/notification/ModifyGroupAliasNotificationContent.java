@@ -31,7 +31,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
         if (fromSelf) {
             sb.append("您");
         } else {
-            sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, operateUser));
+            sb.append(ChatManager.Instance().getUserDisplayName(operateUser));
         }
         sb.append("修改群名片为");
         sb.append(alias);
