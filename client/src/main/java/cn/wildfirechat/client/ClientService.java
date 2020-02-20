@@ -259,7 +259,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 if (tag != null) {
                     Class curClazz = contentMapper.get(tag.type());
                     if (curClazz != null && !curClazz.equals(cls)) {
-                        throw new IllegalArgumentException("messageContent type duplicate");
+                        throw new IllegalArgumentException("messageContent type duplicate "  + msgContentCls);
                     }
                     contentMapper.put(tag.type(), cls);
                     try {
