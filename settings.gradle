@@ -6,4 +6,4 @@ include ':client',
         ':imagepicker',
         ':avenginekit'
 
-project(':avenginekit').projectDir = new File('../android-av/avenginekit')
+//project(':avenginekit').projectDir = new File('../android-av/avenginekit')
