@@ -64,6 +64,7 @@ public class MultiCallFloatingService extends Service {
         session = AVEngineKit.Instance().getCurrentSession();
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             stopSelf();
+            return START_NOT_STICKY;
         }
 
         resumeActivityIntent = new Intent(this, MultiCallActivity.class);

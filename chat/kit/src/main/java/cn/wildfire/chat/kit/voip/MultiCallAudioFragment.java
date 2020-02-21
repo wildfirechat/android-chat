@@ -1,10 +1,14 @@
 package cn.wildfire.chat.kit.voip;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,10 +38,16 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     TextView durationTextView;
     @BindView(R.id.audioContainerGridLayout)
     GridLayout audioContainerGridLayout;
+    @BindView(R.id.speakerImageView)
+    ImageView speakerImageView;
+    @BindView(R.id.muteImageView)
+    ImageView muteImageView;
 
     private List<String> participants;
     private UserInfo me;
     private UserViewModel userViewModel;
+    private boolean isSpeakerOn;
+    private boolean micEnabled = true;
 
     @Nullable
     @Override
@@ -56,10 +66,12 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
             return;
         }
 
+        initParticipantsView(session);
         updateParticipantStatus(session);
+        updateCallDuration();
     }
 
-    private void updateParticipantStatus(AVEngineKit.CallSession session) {
+    private void initParticipantsView(AVEngineKit.CallSession session) {
 
         me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
 
@@ -78,16 +90,25 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
             multiCallItem.setTag(userInfo.uid);
 
             multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
-            multiCallItem.getStatusTextView().setText(userInfo.displayName);
+            multiCallItem.getStatusTextView().setText(R.string.connecting);
             GlideApp.with(multiCallItem).load(userInfo.portrait).into(multiCallItem.getPortraitImageView());
+            audioContainerGridLayout.addView(multiCallItem);
+        }
+    }
 
-            if (!me.uid.equals(userInfo.uid)) {
-                PeerConnectionClient client = session.getClient(userInfo.uid);
+    private void updateParticipantStatus(AVEngineKit.CallSession session) {
+        int count = audioContainerGridLayout.getChildCount();
+        for (int i = 0; i < count; i++) {
+            View view = audioContainerGridLayout.getChildAt(i);
+            String userId = (String) view.getTag();
+            if (me.uid.equals(userId)) {
+                ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
+            } else {
+                PeerConnectionClient client = session.getClient(userId);
                 if (client.state == AVEngineKit.CallState.Connected) {
-                    multiCallItem.getStatusTextView().setVisibility(View.GONE);
+                    ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
                 }
             }
-            audioContainerGridLayout.addView(multiCallItem);
         }
     }
 
@@ -103,17 +124,22 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R.id.muteImageView)
     void mute() {
-
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+            if (session.muteAudio(!micEnabled)) {
+                micEnabled = !micEnabled;
+            }
+            muteImageView.setSelected(!micEnabled);
+        }
     }
 
     @OnClick(R.id.speakerImageView)
     void speaker() {
-
-    }
-
-    @OnClick(R.id.videoImageView)
-    void video() {
-
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        isSpeakerOn = !isSpeakerOn;
+        audioManager.setMode(isSpeakerOn ? AudioManager.MODE_NORMAL : AudioManager.MODE_IN_COMMUNICATION);
+        speakerImageView.setSelected(isSpeakerOn);
+        audioManager.setSpeakerphoneOn(isSpeakerOn);
     }
 
     @OnClick(R.id.hangupImageView)
@@ -130,22 +156,11 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
         // do nothing
     }
 
-    // 自己的状态
     @Override
     public void didChangeState(AVEngineKit.CallState callState) {
+        AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
         if (callState == AVEngineKit.CallState.Connected) {
-            for (String participant : participants) {
-                PeerConnectionClient client = AVEngineKit.Instance().getCurrentSession().getClient(participant);
-                // 自己时，是空的
-                if (client != null) {
-                    if (client.state == AVEngineKit.CallState.Connected) {
-                        View view = audioContainerGridLayout.findViewWithTag(participant);
-                        ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
-                    }
-                }
-            }
-            View view = audioContainerGridLayout.findViewWithTag(userViewModel.getUserId());
-            ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
+            updateParticipantStatus(callSession);
         } else if (callState == AVEngineKit.CallState.Idle) {
             getActivity().finish();
         }
@@ -171,7 +186,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
                 multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
 
-                multiCallItem.getStatusTextView().setText(info.displayName);
+                multiCallItem.getStatusTextView().setText(R.string.connecting);
                 GlideApp.with(multiCallItem).load(info.portrait).into(multiCallItem.getPortraitImageView());
                 audioContainerGridLayout.addView(multiCallItem, i);
                 break;
@@ -224,5 +239,23 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     @Override
     public void didVideoMuted(String s, boolean b) {
 
+    }
+
+    private Handler handler = new Handler();
+
+    private void updateCallDuration() {
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
+            long s = System.currentTimeMillis() - session.getConnectedTime();
+            s = s / 1000;
+            String text;
+            if (s > 3600) {
+                text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+            } else {
+                text = String.format("%02d:%02d", s / 60, (s % 60));
+            }
+            durationTextView.setText(text);
+        }
+        handler.postDelayed(this::updateCallDuration, 1000);
     }
 }
