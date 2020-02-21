@@ -159,6 +159,11 @@ public class MultiCallActivity extends VoipBaseActivity {
         });
     }
 
+    @Override
+    public void didVideoMuted(String s, boolean b) {
+        postAction(() -> currentCallSessionCallback.didVideoMuted(s, b));
+    }
+
     public void showFloatingView() {
         if (!checkOverlayPermission()) {
             return;
