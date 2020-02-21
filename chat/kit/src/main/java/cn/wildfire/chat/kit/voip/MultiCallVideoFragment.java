@@ -95,6 +95,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         updateCallDuration();
         updateParticipantStatus(session);
         bringParticipantVideoFront();
+        session.startPreview();
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
@@ -348,19 +349,21 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                 int clickedIndex = participantLinearLayout.indexOfChild(v);
                 participantLinearLayout.removeView(clickedMultiCallItem);
                 participantLinearLayout.endViewTransition(clickedMultiCallItem);
-                focusVideoContainerFrameLayout.removeView(focusMultiCallItem);
 
-                DisplayMetrics dm = getResources().getDisplayMetrics();
-                int with = dm.widthPixels;
+                if (focusMultiCallItem != null) {
+                    focusVideoContainerFrameLayout.removeView(focusMultiCallItem);
+                    focusVideoContainerFrameLayout.endViewTransition(focusMultiCallItem);
+                    DisplayMetrics dm = getResources().getDisplayMetrics();
+                    int with = dm.widthPixels;
+                    participantLinearLayout.addView(focusMultiCallItem, clickedIndex, new FrameLayout.LayoutParams(with / 3, with / 3));
+                    focusMultiCallItem.setOnClickListener(clickListener);
+                }
                 focusVideoContainerFrameLayout.addView(clickedMultiCallItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 clickedMultiCallItem.setOnClickListener(null);
-                participantLinearLayout.addView(focusMultiCallItem, clickedIndex, new FrameLayout.LayoutParams(with / 3, with / 3));
-                focusMultiCallItem.setOnClickListener(clickListener);
                 focusMultiCallItem = clickedMultiCallItem;
                 focusVideoUserId = userId;
 
                 bringParticipantVideoFront();
-
             } else {
                 // do nothing
 
@@ -369,7 +372,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     };
 
     private void bringParticipantVideoFront() {
-        SurfaceView focusSurfaceView= focusMultiCallItem.findViewWithTag("v_" + focusVideoUserId);
+        SurfaceView focusSurfaceView = focusMultiCallItem.findViewWithTag("v_" + focusVideoUserId);
         if (focusSurfaceView != null) {
             focusSurfaceView.setZOrderOnTop(false);
             focusSurfaceView.setZOrderMediaOverlay(false);
