@@ -264,10 +264,13 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didReceiveRemoteVideoTrack(String userId) {
+        MultiCallItem view = participantLinearLayout.findViewWithTag(userId);
+        if (view == null) {
+            return;
+        }
         SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
         if (surfaceView != null) {
             surfaceView.setZOrderMediaOverlay(false);
-            MultiCallItem view = participantLinearLayout.findViewWithTag(userId);
             view.addView(surfaceView);
             surfaceView.setTag("v_" + userId);
             getEngineKit().getCurrentSession().setupRemoteVideo(userId, surfaceView, scalingType);
