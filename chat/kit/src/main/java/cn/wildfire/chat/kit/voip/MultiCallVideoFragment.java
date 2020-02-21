@@ -1,12 +1,14 @@
 package cn.wildfire.chat.kit.voip;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +40,10 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     LinearLayout participantLinearLayout;
     @BindView(R.id.focusVideoContainerFrameLayout)
     FrameLayout focusVideoContainerFrameLayout;
-
+    @BindView(R.id.muteImageView)
+    ImageView muteImageView;
+    @BindView(R.id.videoImageView)
+    ImageView videoImageView;
 
     private List<String> participants;
     private UserInfo me;
@@ -48,6 +53,8 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     private MultiCallItem focusMultiCallItem;
 
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+    private boolean micEnabled = true;
+    private boolean videoEnabled = true;
 
     @Nullable
     @Override
@@ -70,10 +77,12 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             return;
         }
 
+        initParticipantsView(session);
+        updateCallDuration();
         updateParticipantStatus(session);
     }
 
-    private void updateParticipantStatus(AVEngineKit.CallSession session) {
+    private void initParticipantsView(AVEngineKit.CallSession session) {
         me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -88,14 +97,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             multiCallItem.setTag(userInfo.uid);
 
             multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
-            multiCallItem.getStatusTextView().setText(userInfo.displayName);
+            multiCallItem.getStatusTextView().setText(R.string.connecting);
             multiCallItem.setOnClickListener(clickListener);
             GlideApp.with(multiCallItem).load(userInfo.portrait).into(multiCallItem.getPortraitImageView());
-
-            PeerConnectionClient client = session.getClient(userInfo.uid);
-            if (client.state == AVEngineKit.CallState.Connected) {
-                multiCallItem.getStatusTextView().setVisibility(View.GONE);
-            }
             participantLinearLayout.addView(multiCallItem);
         }
 
@@ -110,6 +114,24 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         focusMultiCallItem = multiCallItem;
         focusVideoUserId = me.uid;
     }
+
+    private void updateParticipantStatus(AVEngineKit.CallSession session) {
+        int count = participantLinearLayout.getChildCount();
+        String meUid = userViewModel.getUserId();
+        for (int i = 0; i < count; i++) {
+            View view = participantLinearLayout.getChildAt(i);
+            String userId = (String) view.getTag();
+            if (meUid.equals(userId)) {
+                ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
+            } else {
+                PeerConnectionClient client = session.getClient(userId);
+                if (client.state == AVEngineKit.CallState.Connected) {
+                    ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
+                }
+            }
+        }
+    }
+
 
     @OnClick(R.id.minimizeImageView)
     void minimize() {
@@ -130,17 +152,30 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R.id.muteImageView)
     void mute() {
-
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+            session.muteAudio(!micEnabled);
+            micEnabled = !micEnabled;
+            muteImageView.setSelected(micEnabled);
+        }
     }
 
-    @OnClick(R.id.speakerImageView)
-    void speaker() {
-
+    @OnClick(R.id.switchCameraImageView)
+    void switchCamera() {
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session != null) {
+            session.switchCamera();
+        }
     }
 
     @OnClick(R.id.videoImageView)
     void video() {
-
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+            session.muteVideo(!videoEnabled);
+            videoEnabled = !videoEnabled;
+            videoImageView.setSelected(videoEnabled);
+        }
     }
 
     @OnClick(R.id.hangupImageView)
@@ -157,10 +192,15 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         // do nothing
     }
 
-    // 自己的状态
     @Override
     public void didChangeState(AVEngineKit.CallState callState) {
-        // TODO
+        AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
+        if (callState == AVEngineKit.CallState.Connected) {
+            updateParticipantStatus(callSession);
+        } else if (callState == AVEngineKit.CallState.Idle) {
+            getActivity().finish();
+        }
+        Toast.makeText(getActivity(), "" + callState.name(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -306,5 +346,23 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             }
         }
 
+    }
+
+    private Handler handler = new Handler();
+
+    private void updateCallDuration() {
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
+            long s = System.currentTimeMillis() - session.getConnectedTime();
+            s = s / 1000;
+            String text;
+            if (s > 3600) {
+                text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+            } else {
+                text = String.format("%02d:%02d", s / 60, (s % 60));
+            }
+            durationTextView.setText(text);
+        }
+        handler.postDelayed(this::updateCallDuration, 1000);
     }
 }
