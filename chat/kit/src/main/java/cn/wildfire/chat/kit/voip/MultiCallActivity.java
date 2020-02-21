@@ -1,6 +1,5 @@
 package cn.wildfire.chat.kit.voip;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -26,10 +25,31 @@ public class MultiCallActivity extends VoipBaseActivity {
     private String groupId;
     private AVEngineKit.CallSessionCallback currentCallSessionCallback;
 
+    private boolean isAddParticipant = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
+    }
+
+    public void setAddParticipant(boolean addParticipant) {
+        isAddParticipant = addParticipant;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle && !isAddParticipant) {
+            showFloatingView();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideFloatingView();
     }
 
     private void init() {
@@ -149,7 +169,13 @@ public class MultiCallActivity extends VoipBaseActivity {
         finish();
     }
 
+    public void hideFloatingView() {
+        Intent intent = new Intent(this, MultiCallFloatingService.class);
+        stopService(intent);
+    }
+
     void addParticipant() {
+        isAddParticipant = true;
         Intent intent = new Intent(this, PickGroupMemberActivity.class);
         GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(groupId, false);
@@ -165,11 +191,14 @@ public class MultiCallActivity extends VoipBaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_ADD_PARTICIPANT && resultCode == Activity.RESULT_OK) {
-            List<String> newParticipants = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
-            if (newParticipants != null && !newParticipants.isEmpty()) {
-                AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-                session.inviteNewParticipants(newParticipants);
+        if (requestCode == REQUEST_CODE_ADD_PARTICIPANT) {
+            isAddParticipant = false;
+            if (resultCode == RESULT_OK) {
+                List<String> newParticipants = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
+                if (newParticipants != null && !newParticipants.isEmpty()) {
+                    AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+                    session.inviteNewParticipants(newParticipants);
+                }
             }
         }
     }
