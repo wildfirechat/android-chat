@@ -34,6 +34,8 @@ import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
 
 public class MultiCallVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
+    @BindView(R.id.rootView)
+    LinearLayout rootLinearLayout;
     @BindView(R.id.durationTextView)
     TextView durationTextView;
     @BindView(R.id.participantLinearLayout)
@@ -78,8 +80,21 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         }
 
         initParticipantsView(session);
+
+        List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
+        for (AVEngineKit.ParticipantProfile profile : profiles) {
+            if (profile.getState() == AVEngineKit.CallState.Connected) {
+                didReceiveRemoteVideoTrack(profile.getUserId());
+            }
+        }
+        AVEngineKit.ParticipantProfile profile = session.getMyProfile();
+        if (profile.getState() == AVEngineKit.CallState.Connected) {
+            didCreateLocalVideoTrack();
+        }
+
         updateCallDuration();
         updateParticipantStatus(session);
+        bringParticipantVideoFront();
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
@@ -127,6 +142,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                 PeerConnectionClient client = session.getClient(userId);
                 if (client.state == AVEngineKit.CallState.Connected) {
                     ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
+                } else if (client.videoMuted) {
+                    ((MultiCallItem) view).getStatusTextView().setText("关闭摄像头");
+                    ((MultiCallItem) view).getStatusTextView().setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -253,35 +271,48 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didCreateLocalVideoTrack() {
+        MultiCallItem item = rootLinearLayout.findViewWithTag(me.uid);
+        if (item.findViewWithTag("v_" + me.uid) != null) {
+            return;
+        }
+
         SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
         if (surfaceView != null) {
             surfaceView.setZOrderMediaOverlay(false);
             surfaceView.setTag("v_" + me.uid);
-            focusMultiCallItem.addView(surfaceView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            item.addView(surfaceView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             getEngineKit().getCurrentSession().setupLocalVideo(surfaceView, scalingType);
         }
     }
 
     @Override
     public void didReceiveRemoteVideoTrack(String userId) {
-        MultiCallItem view = participantLinearLayout.findViewWithTag(userId);
-        if (view == null) {
+        MultiCallItem item = rootLinearLayout.findViewWithTag(userId);
+        if (item == null) {
             return;
         }
+
         SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
         if (surfaceView != null) {
             surfaceView.setZOrderMediaOverlay(false);
-            view.addView(surfaceView);
+            item.addView(surfaceView);
             surfaceView.setTag("v_" + userId);
             getEngineKit().getCurrentSession().setupRemoteVideo(userId, surfaceView, scalingType);
         }
+        bringParticipantVideoFront();
     }
 
     @Override
     public void didRemoveRemoteVideoTrack(String userId) {
-        View view = participantLinearLayout.findViewWithTag(userId);
-        if (view != null) {
-            participantLinearLayout.removeView(view);
+        MultiCallItem item = rootLinearLayout.findViewWithTag(userId);
+        if (item != null) {
+            View view = item.findViewWithTag("v_" + userId);
+            if (view != null) {
+                item.removeView(view);
+            }
+
+            item.getStatusTextView().setText("关闭摄像头");
+            item.getStatusTextView().setVisibility(View.VISIBLE);
         }
     }
 
@@ -296,11 +327,15 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     }
 
     @Override
-    public void didVideoMuted(String userId, boolean enable) {
-        if (enable) {
-            didReceiveRemoteVideoTrack(userId);
-        } else {
+    public void didVideoMuted(String userId, boolean videoMuted) {
+        if (videoMuted) {
             didRemoveRemoteVideoTrack(userId);
+        } else {
+            if (userId.equals(me.uid)) {
+                didCreateLocalVideoTrack();
+            } else {
+                didReceiveRemoteVideoTrack(userId);
+            }
         }
     }
 
@@ -324,11 +359,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                 focusMultiCallItem = clickedMultiCallItem;
                 focusVideoUserId = userId;
 
-                SurfaceView surfaceView = focusMultiCallItem.findViewWithTag("v_" + focusVideoUserId);
-                if (surfaceView != null) {
-                    surfaceView.setZOrderOnTop(false);
-                    surfaceView.setZOrderMediaOverlay(false);
-                }
                 bringParticipantVideoFront();
 
             } else {
@@ -339,6 +369,11 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     };
 
     private void bringParticipantVideoFront() {
+        SurfaceView focusSurfaceView= focusMultiCallItem.findViewWithTag("v_" + focusVideoUserId);
+        if (focusSurfaceView != null) {
+            focusSurfaceView.setZOrderOnTop(false);
+            focusSurfaceView.setZOrderMediaOverlay(false);
+        }
         int count = participantLinearLayout.getChildCount();
         for (int i = 0; i < count; i++) {
             MultiCallItem callItem = (MultiCallItem) participantLinearLayout.getChildAt(i);
@@ -348,7 +383,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                 surfaceView.setZOrderOnTop(true);
             }
         }
-
     }
 
     private Handler handler = new Handler();
