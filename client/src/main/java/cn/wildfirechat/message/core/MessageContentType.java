@@ -54,6 +54,7 @@ public interface MessageContentType {
     int ContentType_Call_Modify = 404;
     int ContentType_Call_Accept_T = 405;
     int ContentType_Call_Add_Participant = 406;
+    int ContentType_CALL_MUTE_VIDEO = 407;
 
     //自定义消息type要做1000以上
 }
