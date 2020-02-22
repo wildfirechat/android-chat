@@ -249,7 +249,9 @@
             android:name="cn.wildfire.chat.kit.contact.pick.PickContactActivity"
             android:label="联系人选择" />
         <activity android:name="cn.wildfire.chat.kit.group.SetGroupAnnouncementActivity" />
-        <activity android:name="cn.wildfire.chat.kit.voip.MultiCallActivity" />
+        <activity
+            android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -260,6 +262,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
         <service android:name="cn.wildfire.chat.kit.voip.SingleCallFloatingService" />
         <service android:name="cn.wildfire.chat.kit.voip.MultiCallFloatingService" />
     </application>
