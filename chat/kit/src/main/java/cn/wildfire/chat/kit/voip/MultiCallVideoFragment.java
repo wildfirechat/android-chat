@@ -230,21 +230,15 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         int count = participantLinearLayout.getChildCount();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int with = dm.widthPixels;
-        for (int i = 0; i < count; i++) {
-            View view = participantLinearLayout.getChildAt(i);
-            if (me.uid.equals(view.getTag())) {
 
-                UserInfo userInfo = userViewModel.getUserInfo(userId, false);
-                MultiCallItem multiCallItem = new MultiCallItem(getActivity());
-                multiCallItem.setTag(userInfo.uid);
-                multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
-                multiCallItem.getStatusTextView().setText(userInfo.displayName);
-                multiCallItem.setOnClickListener(clickListener);
-                GlideApp.with(multiCallItem).load(userInfo.portrait).into(multiCallItem.getPortraitImageView());
-                participantLinearLayout.addView(multiCallItem, i);
-                break;
-            }
-        }
+        UserInfo userInfo = userViewModel.getUserInfo(userId, false);
+        MultiCallItem multiCallItem = new MultiCallItem(getActivity());
+        multiCallItem.setTag(userInfo.uid);
+        multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+        multiCallItem.getStatusTextView().setText(userInfo.displayName);
+        multiCallItem.setOnClickListener(clickListener);
+        GlideApp.with(multiCallItem).load(userInfo.portrait).into(multiCallItem.getPortraitImageView());
+        participantLinearLayout.addView(multiCallItem);
         participants.add(userId);
     }
 
