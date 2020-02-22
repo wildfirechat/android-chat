@@ -148,7 +148,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @Override
     public void didReceiveRemoteVideoTrack(String userId) {
         pipRenderer.setVisibility(View.VISIBLE);
-        if (gEngineKit.getCurrentSession().getState() == AVEngineKit.CallState.Outgoing && localSurfaceView != null) {
+        if (localSurfaceView != null) {
             ((ViewGroup) localSurfaceView.getParent()).removeView(localSurfaceView);
             pipRenderer.addView(localSurfaceView);
             gEngineKit.getCurrentSession().setupLocalVideo(localSurfaceView, scalingType);
