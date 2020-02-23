@@ -46,6 +46,7 @@ public class MultiCallIncomingActivity extends VoipBaseActivity {
             finish();
             return;
         }
+        session.setCallback(this);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo invitor = userViewModel.getUserInfo(session.initiator, false);
         invitorTextView.setText(invitor.displayName);
