@@ -32,6 +32,7 @@ import java.util.List;
 
 import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
+import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.MultiCallActivity;
 import cn.wildfire.chat.kit.voip.SingleCallActivity;
@@ -88,6 +89,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         viewModelStore = new ViewModelStore();
         ViewModelProvider.Factory factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application);
         viewModelProvider = new ViewModelProvider(viewModelStore, factory);
+        OKHttpHelper.init(application.getApplicationContext());
     }
 
     private void initWFClient(Application application) {
