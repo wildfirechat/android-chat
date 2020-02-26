@@ -1,18 +1,30 @@
 package cn.wildfire.chat.kit.net;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.net.base.ResultWrapper;
 import cn.wildfire.chat.kit.net.base.StatusResult;
 import okhttp3.Call;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -26,10 +38,50 @@ import okhttp3.Response;
  */
 
 public class OKHttpHelper {
+    private static final Map<String, List<Cookie>> cookieStore = new ConcurrentHashMap<>();
+
+    private static WeakReference<Context>  AppContext;
+    public static void init(Context context) {
+        AppContext = new WeakReference<>(context);
+    }
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
+            .cookieJar(new CookieJar() {
+                @Override
+                public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+                    cookieStore.put(url.host(), cookies);
+                    if (AppContext != null && AppContext.get() != null) {
+                        SharedPreferences sp = AppContext.get().getSharedPreferences("WFC_OK_HTTP_COOKIES", 0);
+                        Set<String>  set = new HashSet<>();
+                        for (Cookie k:cookies) {
+                            set.add(gson.toJson(k));
+                        }
+                        sp.edit().putStringSet(url.host(), set).apply();
+                    }
+                }
+
+                @Override
+                public List<Cookie> loadForRequest(HttpUrl url) {
+                    List<Cookie> cookies = cookieStore.get(url.host());
+                    if (cookies == null) {
+                        if (AppContext != null && AppContext.get() != null) {
+                            SharedPreferences sp = AppContext.get().getSharedPreferences("WFC_OK_HTTP_COOKIES", 0);
+                            Set<String>  set = sp.getStringSet(url.host(), new HashSet<>());
+                            cookies = new ArrayList<>();
+                            for (String s:set) {
+                                Cookie cookie = gson.fromJson(s, Cookie.class);
+                                cookies.add(cookie);
+                            }
+                            cookieStore.put(url.host(), cookies);
+                        }
+                    }
+
+                    return cookies;
+                }
+            })
             .build();
+
     private static Gson gson = new Gson();
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
