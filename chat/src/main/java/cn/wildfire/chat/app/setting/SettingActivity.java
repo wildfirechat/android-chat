@@ -29,7 +29,8 @@ public class SettingActivity extends WfcBaseActivity {
 
     @OnClick(R.id.exitOptionItemView)
     void exit() {
-        ChatManagerHolder.gChatManager.disconnect(true);
+        //不要清除session，这样再次登录时能够保留历史记录。如果需要清除掉本地历史记录和服务器信息这里使用true
+        ChatManagerHolder.gChatManager.disconnect(false);
         SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
         sp.edit().clear().apply();
 
