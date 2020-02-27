@@ -164,6 +164,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean connect(String userName, String userPwd) throws RemoteException {
             if (logined) {
+                if (!accountInfo.userName.equals(userName)) {
+                    Log.e("ClientService", "Error, 错误，且户用户时一定要先disconnect，再connect");
+                }
                 return false;
             }
 
