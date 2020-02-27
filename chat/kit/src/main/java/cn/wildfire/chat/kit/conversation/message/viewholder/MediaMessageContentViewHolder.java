@@ -16,7 +16,6 @@ import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
-import cn.wildfirechat.message.core.MessageDirection;
 
 public class MediaMessageContentViewHolder extends NormalMessageContentViewHolder {
 
@@ -26,14 +25,10 @@ public class MediaMessageContentViewHolder extends NormalMessageContentViewHolde
 
     @Override
     protected void onBind(UiMessage message) {
-        if (message.message.direction == MessageDirection.Receive) {
-            if (message.isDownloading) {
-                progressBar.setVisibility(View.VISIBLE);
-            } else {
-                progressBar.setVisibility(View.GONE);
-            }
+        if (message.isDownloading) {
+            progressBar.setVisibility(View.VISIBLE);
         } else {
-            // todo
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -47,7 +42,7 @@ public class MediaMessageContentViewHolder extends NormalMessageContentViewHolde
         for (int i = 0; i < messages.size(); i++) {
             msg = messages.get(i);
             if (msg.message.content.getType() != MessageContentType.ContentType_Image
-                    && msg.message.content.getType() != MessageContentType.ContentType_Video) {
+                && msg.message.content.getType() != MessageContentType.ContentType_Video) {
                 continue;
             }
             MediaEntry entry = new MediaEntry();
