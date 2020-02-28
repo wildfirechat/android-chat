@@ -10,6 +10,7 @@
 
 package cn.wildfire.chat.kit.voip;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -42,8 +43,12 @@ import cn.wildfirechat.client.NotInitializedExecption;
 public class VoipBaseActivity extends FragmentActivity implements AVEngineKit.CallSessionCallback {
 
     // List of mandatory application permissions.
-    private static final String[] MANDATORY_PERMISSIONS = {"android.permission.MODIFY_AUDIO_SETTINGS",
-        "android.permission.RECORD_AUDIO", "android.permission.INTERNET"};
+    private static final String[] MANDATORY_PERMISSIONS = {
+        Manifest.permission.MODIFY_AUDIO_SETTINGS,
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.CAMERA,
+        Manifest.permission.INTERNET
+    };
 
     protected AVEngineKit gEngineKit;
     protected PowerManager.WakeLock wakeLock;
