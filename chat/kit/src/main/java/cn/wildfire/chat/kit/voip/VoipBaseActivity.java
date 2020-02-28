@@ -43,7 +43,7 @@ public class VoipBaseActivity extends FragmentActivity implements AVEngineKit.Ca
 
     // List of mandatory application permissions.
     private static final String[] MANDATORY_PERMISSIONS = {"android.permission.MODIFY_AUDIO_SETTINGS",
-            "android.permission.RECORD_AUDIO", "android.permission.INTERNET"};
+        "android.permission.RECORD_AUDIO", "android.permission.INTERNET"};
 
     protected AVEngineKit gEngineKit;
     protected PowerManager.WakeLock wakeLock;
@@ -59,14 +59,14 @@ public class VoipBaseActivity extends FragmentActivity implements AVEngineKit.Ca
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(
-                PowerManager.ACQUIRE_CAUSES_WAKEUP |
-                        PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "bright");
+            PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "bright");
         if (wakeLock != null) {
             wakeLock.acquire();
         }
 
         getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN | LayoutParams.FLAG_KEEP_SCREEN_ON
-                | LayoutParams.FLAG_SHOW_WHEN_LOCKED | LayoutParams.FLAG_TURN_SCREEN_ON);
+            | LayoutParams.FLAG_SHOW_WHEN_LOCKED | LayoutParams.FLAG_TURN_SCREEN_ON);
         getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility());
 
         try {
@@ -189,5 +189,10 @@ public class VoipBaseActivity extends FragmentActivity implements AVEngineKit.Ca
             }
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing
     }
 }
