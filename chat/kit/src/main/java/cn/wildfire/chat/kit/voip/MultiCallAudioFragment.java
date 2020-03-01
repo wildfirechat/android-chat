@@ -196,6 +196,11 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     }
 
     @Override
+    public void didParticipantConnected(String userId) {
+        
+    }
+
+    @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason) {
         View view = audioContainerGridLayout.findViewWithTag(userId);
         if (view != null) {
