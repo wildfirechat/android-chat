@@ -91,6 +91,11 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     }
 
     @Override
+    public void didParticipantConnected(String userId) {
+
+    }
+
+    @Override
     public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
 
     }

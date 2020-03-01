@@ -159,6 +159,11 @@ public class SingleCallFloatingService extends Service {
             }
 
             @Override
+            public void didParticipantConnected(String userId) {
+
+            }
+
+            @Override
             public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
 
             }

@@ -243,6 +243,11 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     }
 
     @Override
+    public void didParticipantConnected(String userId) {
+
+    }
+
+    @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason) {
         View view = participantLinearLayout.findViewWithTag(userId);
         if (view != null) {
