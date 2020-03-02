@@ -1205,6 +1205,43 @@ public class ChatManager {
     }
 
     /**
+     * 更新消息状态。一般情况下协议栈会自动处理好状态，不建议手动处理状态。
+     *
+     * @param messageId     消息id
+     * @param status 新的消息状态，需要与消息方向对应。
+     * @return
+     */
+    public boolean updateMessage(long messageId, MessageStatus status) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            Message message = mClient.getMessage(messageId);
+            if (message == null) {
+                return false;
+            }
+
+            if ((message.direction == MessageDirection.Send && status.value() >= MessageStatus.Mentioned.value()) ||
+                    message.direction == MessageDirection.Receive && status.value() < MessageStatus.Mentioned.value()) {
+                return false;
+            }
+
+            message.status = status;
+            boolean result = mClient.updateMessage(message);
+            mainHandler.post(() -> {
+                for (OnMessageUpdateListener listener : messageUpdateListeners) {
+                    listener.onMessageUpdate(message);
+                }
+            });
+            return result;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * 连接服务器
      * userId和token都不允许为空
      * 需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
