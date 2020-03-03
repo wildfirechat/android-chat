@@ -21,7 +21,7 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
     private boolean multiGroupMode = false;
     private MenuItem menuItem;
 
-    private PickUserViewModel pickUserViewModel;
+    protected PickUserViewModel pickUserViewModel;
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
         @Override
         public void onChanged(@Nullable UIUserInfo userInfo) {
@@ -82,8 +82,8 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
         PickConversationTargetFragment fragment = PickConversationTargetFragment.newInstance(pickGroupForResult, multiGroupMode);
         fragment.setOnGroupPickListener(this);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, fragment)
-                .commit();
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 
     @Override
