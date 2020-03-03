@@ -106,12 +106,12 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         }
     }
 
-    public MutableLiveData<OperateResult<String>> createGroup(Context context, List<UIUserInfo> checkedUsers, MessageContent notifyMsg, List<Integer> lines) {
+    public MutableLiveData<OperateResult<String>> createGroup(Context context, List<UserInfo> checkedUsers, MessageContent notifyMsg, List<Integer> lines) {
         List<String> selectedIds = new ArrayList<>(checkedUsers.size());
         List<UserInfo> selectedUsers = new ArrayList<>();
-        for (UIUserInfo userInfo : checkedUsers) {
-            selectedIds.add(userInfo.getUserInfo().uid);
-            selectedUsers.add(userInfo.getUserInfo());
+        for (UserInfo userInfo : checkedUsers) {
+            selectedIds.add(userInfo.uid);
+            selectedUsers.add(userInfo);
         }
         String id = ChatManager.Instance().getUserId();
         if (!selectedIds.contains(id)) {

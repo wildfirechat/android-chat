@@ -58,6 +58,10 @@ public class PickUserViewModel extends ViewModel {
         updateUserStatus();
     }
 
+    public List<String> getInitialCheckedIds() {
+        return initialCheckedIds;
+    }
+
     public void setUsers(List<UIUserInfo> users) {
         this.users = users;
         updateUserStatus();

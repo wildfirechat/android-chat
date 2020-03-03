@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.UserInfo;
 
 public class PickConversationTargetToForwardActivity extends PickConversationTargetActivity {
     // TODO 多选，单选
@@ -32,8 +34,12 @@ public class PickConversationTargetToForwardActivity extends PickConversationTar
                     .progress(true, 100)
                     .build();
             dialog.show();
+            List<UserInfo> userInfos = new ArrayList<>();
+            for (UIUserInfo info : newlyCheckedUserInfos) {
+                userInfos.add(info.getUserInfo());
+            }
             GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
-            groupViewModel.createGroup(this, newlyCheckedUserInfos, null, Arrays.asList(0))
+            groupViewModel.createGroup(this, userInfos, null, Arrays.asList(0))
                     .observe(this, new Observer<OperateResult<String>>() {
                         @Override
                         public void onChanged(@Nullable OperateResult<String> result) {
