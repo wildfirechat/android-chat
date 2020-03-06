@@ -191,6 +191,11 @@ public class MultiCallFloatingService extends Service {
             public void didVideoMuted(String s, boolean b) {
 
             }
+
+            @Override
+            public void didReportAudioVolume(String userId, int volume) {
+
+            }
         });
     }
 

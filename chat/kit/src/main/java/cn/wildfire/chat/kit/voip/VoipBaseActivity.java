@@ -145,6 +145,11 @@ public class VoipBaseActivity extends FragmentActivity implements AVEngineKit.Ca
     }
 
     @Override
+    public void didReportAudioVolume(String userId, int volume) {
+
+    }
+
+    @Override
     public void didChangeMode(boolean audioOnly) {
     }
 
