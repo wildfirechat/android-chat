@@ -237,7 +237,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     private void updateCallDuration() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            long s = System.currentTimeMillis() - session.getEndTime();
+            long s = System.currentTimeMillis() - session.getConnectedTime();
             s = s / 1000;
             String text;
             if (s > 3600) {
