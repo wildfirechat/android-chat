@@ -339,6 +339,11 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         }
     }
 
+    @Override
+    public void didReportAudioVolume(String userId, int volume) {
+
+    }
+
     private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
