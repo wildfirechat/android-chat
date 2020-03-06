@@ -1222,10 +1222,10 @@ public class ChatManager {
                 return false;
             }
 
-            if ((message.direction == MessageDirection.Send && status.value() >= MessageStatus.Mentioned.value()) ||
-                    message.direction == MessageDirection.Receive && status.value() < MessageStatus.Mentioned.value()) {
-                return false;
-            }
+//            if ((message.direction == MessageDirection.Send && status.value() >= MessageStatus.Mentioned.value()) ||
+//                    message.direction == MessageDirection.Receive && status.value() < MessageStatus.Mentioned.value()) {
+//                return false;
+//            }
 
             message.status = status;
             boolean result = mClient.updateMessage(message);
