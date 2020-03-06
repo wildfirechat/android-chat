@@ -30,6 +30,10 @@ public interface Config {
 
     int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 120;
 
+    // 支持多人音视频时有效
+    int MAX_VIDEO_PARTICIPANT_COUNT = 9;
+    int MAX_AUDIO_PARTICIPANT_COUNT = 9;
+
     String VIDEO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/video";
     String AUDIO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/audio";
     String PHOTO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/photo";
