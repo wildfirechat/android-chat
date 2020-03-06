@@ -109,6 +109,13 @@ public class MultiCallActivity extends VoipBaseActivity {
     }
 
     @Override
+    public void didReportAudioVolume(String userId, int volume) {
+        postAction(()->{
+            currentCallSessionCallback.didReportAudioVolume(userId, volume);
+        });
+    }
+
+    @Override
     public void didChangeMode(boolean audioOnly) {
         postAction(() -> {
             if (audioOnly) {

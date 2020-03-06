@@ -3,6 +3,7 @@ package cn.wildfire.chat.kit.voip;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
@@ -57,6 +58,8 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
     private boolean micEnabled = true;
     private boolean videoEnabled = true;
+
+    public static final String TAG = "MultiCallVideoFragment";
 
     @Nullable
     @Override
@@ -341,7 +344,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-
+        Log.d(TAG, userId + " volume " + volume);
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {

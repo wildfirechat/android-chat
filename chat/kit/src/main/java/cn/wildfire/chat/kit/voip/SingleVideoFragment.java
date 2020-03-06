@@ -186,7 +186,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-
+        Log.d(TAG, "voip audio " + userId + " " + volume);
     }
 
     @OnClick(R.id.acceptImageView)
@@ -211,8 +211,8 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     // callFragment.OnCallEvents interface implementation.
     @OnClick({R.id.connectedHangupImageView,
-            R.id.outgoingHangupImageView,
-            R.id.incomingHangupImageView})
+        R.id.outgoingHangupImageView,
+        R.id.incomingHangupImageView})
     public void hangUp() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null) {
