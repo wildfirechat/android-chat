@@ -197,7 +197,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didParticipantConnected(String userId) {
-        
+
     }
 
     @Override
@@ -243,6 +243,11 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didVideoMuted(String s, boolean b) {
+
+    }
+
+    @Override
+    public void didReportAudioVolume(String userId, int volume) {
 
     }
 
