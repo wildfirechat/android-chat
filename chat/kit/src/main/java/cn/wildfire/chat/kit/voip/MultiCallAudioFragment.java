@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,8 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     private UserViewModel userViewModel;
     private boolean isSpeakerOn;
     private boolean micEnabled = true;
+
+    public static final String TAG = "MultiCallVideoFragment";
 
     @Nullable
     @Override
@@ -248,7 +251,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-
+        Log.d(TAG, userId + " volume " + volume);
     }
 
     private Handler handler = new Handler();

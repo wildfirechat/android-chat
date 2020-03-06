@@ -148,6 +148,11 @@ public class SingleCallActivity extends VoipBaseActivity {
         postAction(() -> currentCallback.didReceiveRemoteVideoTrack(s));
     }
 
+    @Override
+    public void didReportAudioVolume(String userId, int volume) {
+        postAction(()->currentCallback.didReportAudioVolume(userId, volume));
+    }
+
     public void audioAccept() {
         SingleAudioFragment fragment = new SingleAudioFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();

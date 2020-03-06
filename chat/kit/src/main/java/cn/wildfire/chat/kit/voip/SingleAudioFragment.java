@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,8 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     TextView descTextView;
     @BindView(R.id.durationTextView)
     TextView durationTextView;
+
+    private static final String TAG = "AudioFragment";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -140,6 +143,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
+        Log.d(TAG, "voip audio " + userId + " " + volume);
 
     }
 
