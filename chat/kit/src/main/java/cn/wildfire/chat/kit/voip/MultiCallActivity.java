@@ -71,8 +71,8 @@ public class MultiCallActivity extends VoipBaseActivity {
         currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .add(android.R.id.content, fragment)
-                .commit();
+            .add(android.R.id.content, fragment)
+            .commit();
     }
 
 
@@ -110,7 +110,7 @@ public class MultiCallActivity extends VoipBaseActivity {
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-        postAction(()->{
+        postAction(() -> {
             currentCallSessionCallback.didReportAudioVolume(userId, volume);
         });
     }
@@ -123,8 +123,8 @@ public class MultiCallActivity extends VoipBaseActivity {
                 currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction()
-                        .replace(android.R.id.content, fragment)
-                        .commit();
+                    .replace(android.R.id.content, fragment)
+                    .commit();
             } else {
                 // never called
             }
@@ -186,7 +186,7 @@ public class MultiCallActivity extends VoipBaseActivity {
         stopService(intent);
     }
 
-    void addParticipant() {
+    void addParticipant(int maxNewInviteParticipantCount) {
         isAddParticipant = true;
         Intent intent = new Intent(this, PickGroupMemberActivity.class);
         GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
@@ -196,7 +196,7 @@ public class MultiCallActivity extends VoipBaseActivity {
         participants.add(ChatManager.Instance().getUserId());
         intent.putStringArrayListExtra(PickGroupMemberActivity.CHECKED_MEMBER_IDS, (ArrayList<String>) participants);
         intent.putStringArrayListExtra(PickGroupMemberActivity.UNCHECKABLE_MEMBER_IDS, (ArrayList<String>) participants);
-        intent.putExtra(PickGroupMemberActivity.MAX_COUNT, 9);
+        intent.putExtra(PickGroupMemberActivity.MAX_COUNT, maxNewInviteParticipantCount);
         startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
     }
 

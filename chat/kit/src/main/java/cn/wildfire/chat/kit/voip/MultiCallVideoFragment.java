@@ -27,6 +27,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -111,11 +112,12 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
         participants = session.getParticipantIds();
         List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
+        int size = with / Math.max(participantUserInfos.size(), 3);
         for (UserInfo userInfo : participantUserInfos) {
             MultiCallItem multiCallItem = new MultiCallItem(getActivity());
             multiCallItem.setTag(userInfo.uid);
 
-            multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+            multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(size, size));
             multiCallItem.getStatusTextView().setText(R.string.connecting);
             multiCallItem.setOnClickListener(clickListener);
             GlideApp.with(multiCallItem).load(userInfo.portrait).into(multiCallItem.getPortraitImageView());
@@ -169,7 +171,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R.id.addParticipantImageView)
     void addParticipant() {
-        ((MultiCallActivity) getActivity()).addParticipant();
+        ((MultiCallActivity) getActivity()).addParticipant(Config.MAX_VIDEO_PARTICIPANT_COUNT - participants.size() - 1);
     }
 
     @OnClick(R.id.muteImageView)
