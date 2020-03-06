@@ -184,6 +184,11 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     }
 
+    @Override
+    public void didReportAudioVolume(String userId, int volume) {
+
+    }
+
     @OnClick(R.id.acceptImageView)
     public void accept() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
