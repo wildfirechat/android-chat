@@ -1191,7 +1191,7 @@ public class ChatManager {
         try {
             Message message = mClient.getMessage(messageId);
             message.content = newMsgContent;
-            boolean result = mClient.updateMessage(message);
+            boolean result = mClient.updateMessageContent(message);
             mainHandler.post(() -> {
                 for (OnMessageUpdateListener listener : messageUpdateListeners) {
                     listener.onMessageUpdate(message);
@@ -1227,8 +1227,7 @@ public class ChatManager {
 //                return false;
 //            }
 
-            message.status = status;
-            boolean result = mClient.updateMessage(message);
+            boolean result = mClient.updateMessageStatus(messageId, status.ordinal());
             mainHandler.post(() -> {
                 for (OnMessageUpdateListener listener : messageUpdateListeners) {
                     listener.onMessageUpdate(message);
