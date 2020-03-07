@@ -344,9 +344,23 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         }
     }
 
+    private MultiCallItem getUserMultiCallItem(String userId) {
+        return participantLinearLayout.findViewWithTag(userId);
+    }
+
     @Override
     public void didReportAudioVolume(String userId, int volume) {
         Log.d(TAG, userId + " volume " + volume);
+        MultiCallItem multiCallItem = getUserMultiCallItem(userId);
+        if (multiCallItem != null) {
+            if (volume > 1000) {
+                multiCallItem.getStatusTextView().setVisibility(View.VISIBLE);
+                multiCallItem.getStatusTextView().setText("正在说话");
+            } else {
+                multiCallItem.getStatusTextView().setVisibility(View.GONE);
+                multiCallItem.getStatusTextView().setText("");
+            }
+        }
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
