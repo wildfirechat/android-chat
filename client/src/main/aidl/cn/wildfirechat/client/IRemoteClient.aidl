@@ -114,11 +114,12 @@ interface IRemoteClient {
     List<FriendRequest> getFriendRequest(in boolean incomming);
     String getFriendAlias(in String userId);
     oneway void setFriendAlias(in String userId, in String alias, in IGeneralCallback callback);
+    String getFriendExtra(in String userId);
     oneway void clearUnreadFriendRequestStatus();
     int getUnreadFriendRequestStatus();
     oneway void removeFriend(in String userId, in IGeneralCallback callback);
     oneway void sendFriendRequest(in String userId, in String reason, in IGeneralCallback callback);
-    oneway void handleFriendRequest(in String userId, in boolean accept, in IGeneralCallback callback);
+    oneway void handleFriendRequest(in String userId, in boolean accept, in String extra, in IGeneralCallback callback);
     oneway void deleteFriend(in String userId, in IGeneralCallback callback);
 
     boolean isBlackListed(in String userId);
