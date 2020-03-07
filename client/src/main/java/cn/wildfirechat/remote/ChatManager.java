@@ -2273,7 +2273,8 @@ public class ChatManager {
         }
     }
 
-    public void handleFriendRequest(String userId, boolean accept, final GeneralCallback callback) {
+    // 当接受好友请求时，extra会更新到好友的extra中，建议用json格式，为以后继续扩展保留空间
+    public void handleFriendRequest(String userId, boolean accept, String extra, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -2281,7 +2282,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.handleFriendRequest(userId, accept, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.handleFriendRequest(userId, accept, extra, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
