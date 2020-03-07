@@ -787,6 +787,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public String getFriendExtra(String userId) throws RemoteException {
+            return ProtoLogic.getFriendExtra(userId);
+        }
+
+        @Override
         public void setFriendAlias(String userId, String alias, IGeneralCallback callback) throws RemoteException {
             ProtoLogic.setFriendAlias(userId, alias, new ProtoLogic.IGeneralCallback() {
                 @Override
@@ -870,8 +875,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void handleFriendRequest(String userId, boolean accept, final IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.handleFriendRequest(userId, accept, new ProtoLogic.IGeneralCallback() {
+        public void handleFriendRequest(String userId, boolean accept, String extra, final IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.handleFriendRequest(userId, accept, extra, new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
