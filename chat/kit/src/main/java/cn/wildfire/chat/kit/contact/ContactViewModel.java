@@ -110,7 +110,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
     public MutableLiveData<Boolean> acceptFriendRequest(String friendId) {
 
         MutableLiveData<Boolean> result = new MutableLiveData<>();
-        ChatManager.Instance().handleFriendRequest(friendId, true, new GeneralCallback() {
+        ChatManager.Instance().handleFriendRequest(friendId, true, null, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 ChatManager.Instance().loadFriendRequestFromRemote();
