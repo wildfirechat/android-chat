@@ -1,5 +1,7 @@
 package cn.wildfire.chat.kit.voip;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -100,6 +102,10 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         updateParticipantStatus(session);
         bringParticipantVideoFront();
         session.startPreview();
+
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMode(AudioManager.MODE_NORMAL);
+        audioManager.setSpeakerphoneOn(true);
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
@@ -177,7 +183,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @OnClick(R.id.muteImageView)
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             session.muteAudio(!micEnabled);
             micEnabled = !micEnabled;
             muteImageView.setSelected(micEnabled);
@@ -187,7 +193,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @OnClick(R.id.switchCameraImageView)
     void switchCamera() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null) {
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             session.switchCamera();
         }
     }
@@ -195,7 +201,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @OnClick(R.id.videoImageView)
     void video() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             session.muteVideo(!videoEnabled);
             videoEnabled = !videoEnabled;
             videoImageView.setSelected(videoEnabled);

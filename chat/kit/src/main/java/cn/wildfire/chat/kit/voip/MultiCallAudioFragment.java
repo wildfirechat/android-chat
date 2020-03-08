@@ -130,7 +130,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     @OnClick(R.id.muteImageView)
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             if (session.muteAudio(!micEnabled)) {
                 micEnabled = !micEnabled;
             }
@@ -140,11 +140,14 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R.id.speakerImageView)
     void speaker() {
-        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-        isSpeakerOn = !isSpeakerOn;
-        audioManager.setMode(isSpeakerOn ? AudioManager.MODE_NORMAL : AudioManager.MODE_IN_COMMUNICATION);
-        speakerImageView.setSelected(isSpeakerOn);
-        audioManager.setSpeakerphoneOn(isSpeakerOn);
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
+            AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+            isSpeakerOn = !isSpeakerOn;
+            audioManager.setMode(isSpeakerOn ? AudioManager.MODE_NORMAL : AudioManager.MODE_IN_COMMUNICATION);
+            speakerImageView.setSelected(isSpeakerOn);
+            audioManager.setSpeakerphoneOn(isSpeakerOn);
+        }
     }
 
     @OnClick(R.id.hangupImageView)
