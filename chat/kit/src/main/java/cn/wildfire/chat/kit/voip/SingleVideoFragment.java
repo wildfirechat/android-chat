@@ -1,5 +1,7 @@
 package cn.wildfire.chat.kit.voip;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -192,10 +194,17 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @OnClick(R.id.acceptImageView)
     public void accept() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Incoming) {
+        if (session == null) {
+            if (getActivity() != null && !getActivity().isFinishing()) {
+                getActivity().finish();
+            }
+            return;
+        }
+        if (session.getState() == AVEngineKit.CallState.Incoming) {
             session.answerCall(false);
-        } else {
-            getActivity().finish();
+            AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setMode(AudioManager.MODE_NORMAL);
+            audioManager.setSpeakerphoneOn(true);
         }
     }
 
