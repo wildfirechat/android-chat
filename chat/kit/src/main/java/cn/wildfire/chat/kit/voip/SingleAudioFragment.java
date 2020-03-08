@@ -150,7 +150,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     @OnClick(R.id.muteImageView)
     public void mute() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             if (session.muteAudio(!micEnabled)) {
                 micEnabled = !micEnabled;
             }
@@ -171,10 +171,14 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     @OnClick(R.id.acceptImageView)
     public void onCallConnect() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Incoming) {
+        if (session == null) {
+            if (getActivity() != null && !getActivity().isFinishing()) {
+                getActivity().finish();
+            }
+            return;
+        }
+        if (session.getState() == AVEngineKit.CallState.Incoming) {
             session.answerCall(false);
-        } else {
-            getActivity().finish();
         }
     }
 
@@ -185,6 +189,10 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
 
     @OnClick(R.id.speakerImageView)
     public void speakerClick() {
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
+            return;
+        }
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         if (isSpeakerOn) {
             isSpeakerOn = false;
