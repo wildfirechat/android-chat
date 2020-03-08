@@ -67,8 +67,8 @@ public class SingleCallActivity extends VoipBaseActivity {
         currentCallback = (AVEngineKit.CallSessionCallback) fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .add(android.R.id.content, fragment)
-                .commit();
+            .add(android.R.id.content, fragment)
+            .commit();
     }
 
     // Activity interfaces
@@ -122,9 +122,9 @@ public class SingleCallActivity extends VoipBaseActivity {
                 SingleAudioFragment fragment = new SingleAudioFragment();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction()
-                        .replace(android.R.id.content, fragment)
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .commit();
+                    .replace(android.R.id.content, fragment)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
                 currentCallback = fragment;
             } else {
                 // never called
@@ -150,16 +150,19 @@ public class SingleCallActivity extends VoipBaseActivity {
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-        postAction(()->currentCallback.didReportAudioVolume(userId, volume));
+        postAction(() -> currentCallback.didReportAudioVolume(userId, volume));
     }
 
     public void audioAccept() {
+        if (currentCallback instanceof SingleAudioFragment) {
+            return;
+        }
         SingleAudioFragment fragment = new SingleAudioFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(android.R.id.content, fragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commit();
+            .replace(android.R.id.content, fragment)
+            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            .commit();
         currentCallback = fragment;
 
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
