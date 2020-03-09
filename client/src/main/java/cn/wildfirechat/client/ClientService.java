@@ -118,15 +118,15 @@ import static com.tencent.mars.xlog.Xlog.AppednerModeAsync;
  */
 
 public class ClientService extends Service implements SdtLogic.ICallBack,
-        AppLogic.ICallBack,
-        ProtoLogic.IConnectionStatusCallback,
-        ProtoLogic.IReceiveMessageCallback,
-        ProtoLogic.IUserInfoUpdateCallback,
-        ProtoLogic.ISettingUpdateCallback,
-        ProtoLogic.IFriendRequestListUpdateCallback,
-        ProtoLogic.IFriendListUpdateCallback,
-        ProtoLogic.IGroupInfoUpdateCallback,
-        ProtoLogic.IChannelInfoUpdateCallback, ProtoLogic.IGroupMembersUpdateCallback {
+    AppLogic.ICallBack,
+    ProtoLogic.IConnectionStatusCallback,
+    ProtoLogic.IReceiveMessageCallback,
+    ProtoLogic.IUserInfoUpdateCallback,
+    ProtoLogic.ISettingUpdateCallback,
+    ProtoLogic.IFriendRequestListUpdateCallback,
+    ProtoLogic.IFriendListUpdateCallback,
+    ProtoLogic.IGroupInfoUpdateCallback,
+    ProtoLogic.IChannelInfoUpdateCallback, ProtoLogic.IGroupMembersUpdateCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
     private int mConnectionStatus;
@@ -262,7 +262,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 if (tag != null) {
                     Class curClazz = contentMapper.get(tag.type());
                     if (curClazz != null && !curClazz.equals(cls)) {
-                        throw new IllegalArgumentException("messageContent type duplicate "  + msgContentCls);
+                        throw new IllegalArgumentException("messageContent type duplicate " + msgContentCls);
                     }
                     contentMapper.put(tag.type(), cls);
                     try {
@@ -2046,6 +2046,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
 
             info.language = locale.getLanguage();
+            info.language = TextUtils.isDigitsOnly(info.language) ? "zh_CN" : info.language;
         }
         return info;
     }
