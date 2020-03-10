@@ -73,11 +73,14 @@ public class ImageMessageContent extends MediaMessageContent {
                     e.printStackTrace();
                 }
             } else {
-                // TODO 缩略图
-                Bitmap thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), 200, 200);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-                payload.binaryContent = baos.toByteArray();
+                try {
+                    Bitmap thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), 200, 200);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+                    payload.binaryContent = baos.toByteArray();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             if (!TextUtils.isEmpty(thumbPara) && imageHeight > 0 && imageWidth > 0) {

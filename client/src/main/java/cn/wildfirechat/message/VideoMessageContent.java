@@ -42,7 +42,7 @@ public class VideoMessageContent extends MediaMessageContent {
             if (!TextUtils.isEmpty(localPath)) {
                 thumbnail = ThumbnailUtils.createVideoThumbnail(localPath, MediaStore.Video.Thumbnails.MICRO_KIND);
                 thumbnail = ThumbnailUtils.extractThumbnail(thumbnail, 320, 240,
-                        ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+                    ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
             }
         }
         return thumbnail;
@@ -53,11 +53,15 @@ public class VideoMessageContent extends MediaMessageContent {
         MessagePayload payload = super.encode();
         payload.searchableContent = "[视频]";
         if (thumbnailBytes == null && !TextUtils.isEmpty(localPath)) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(localPath, MediaStore.Video.Thumbnails.MICRO_KIND);
-//        thumbnail = ThumbnailUtils.extractThumbnail(thumbnail, 320, 240, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-            thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-            payload.binaryContent = baos.toByteArray();
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(localPath, MediaStore.Video.Thumbnails.MICRO_KIND);
+//              thumbnail = ThumbnailUtils.extractThumbnail(thumbnail, 320, 240, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+                payload.binaryContent = baos.toByteArray();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             payload.binaryContent = thumbnailBytes;
         }
