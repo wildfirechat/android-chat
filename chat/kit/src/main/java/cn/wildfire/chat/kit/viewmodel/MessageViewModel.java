@@ -114,6 +114,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         return clearMessageLiveData;
     }
 
+
     @Override
     public void onRecallMessage(Message message) {
         if (message != null) {

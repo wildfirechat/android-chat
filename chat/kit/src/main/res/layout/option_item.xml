@@ -43,6 +43,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginLeft="10dp"
+                android:layout_centerVertical="true"
                 android:background="@drawable/shape_red_dot"
                 android:gravity="center"
                 android:text="99"

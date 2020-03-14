@@ -32,4 +32,12 @@
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_channel"
         app:title="频道" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/momentOptionItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_common_item"
+        app:start_src="@mipmap/ic_channel"
+        app:title="朋友圈" />
 </LinearLayout>
