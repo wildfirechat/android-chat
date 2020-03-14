@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -61,6 +62,9 @@ public class UserInfoFragment extends Fragment {
 
     @BindView(R.id.qrCodeOptionItemView)
     OptionItemView qrCodeOptionItemView;
+
+    @BindView(R.id.momentButton)
+    Button momentButton;
 
     private UserInfo userInfo;
     private UserViewModel userViewModel;
@@ -109,6 +113,7 @@ public class UserInfoFragment extends Fragment {
             inviteButton.setVisibility(View.GONE);
         } else {
             // stranger
+            momentButton.setVisibility(View.GONE);
             chatButton.setVisibility(View.GONE);
             voipChatButton.setVisibility(View.GONE);
             inviteButton.setVisibility(View.VISIBLE);
@@ -126,6 +131,10 @@ public class UserInfoFragment extends Fragment {
             }
         });
         userViewModel.getUserInfo(userInfo.uid, true);
+
+        if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {
+            momentButton.setVisibility(View.GONE);
+        }
     }
 
     private void setUserInfo(UserInfo userInfo) {
@@ -146,6 +155,13 @@ public class UserInfoFragment extends Fragment {
         intent.putExtra("conversation", conversation);
         startActivity(intent);
         getActivity().finish();
+    }
+
+    @OnClick(R.id.momentButton)
+    void moment() {
+        Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
+        intent.putExtra("userInfo", userInfo);
+        startActivity(intent);
     }
 
     @OnClick(R.id.voipChatButton)

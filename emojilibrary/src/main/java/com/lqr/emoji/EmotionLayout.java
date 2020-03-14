@@ -310,7 +310,7 @@ public class EmotionLayout extends LinearLayout implements View.OnClickListener 
     private EmotionViewPagerAdapter adapter;
 
     private void fillVpEmotioin(int tabPosi) {
-        adapter = new EmotionViewPagerAdapter(mMeasuredWidth, mMeasuredHeight, mEmotionSelectedListener);
+        adapter = new EmotionViewPagerAdapter(mMeasuredWidth, mMeasuredHeight, stickerVisible, mEmotionSelectedListener);
         mVpEmotioin.setAdapter(adapter);
         mVpEmotioin.setOffscreenPageLimit(1);
         setCurPageCommon(0);

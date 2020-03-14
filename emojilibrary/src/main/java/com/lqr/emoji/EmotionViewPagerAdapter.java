@@ -31,14 +31,15 @@ public class EmotionViewPagerAdapter extends PagerAdapter {
 
     private IEmotionSelectedListener listener;
 
-    public EmotionViewPagerAdapter(int emotionLayoutWidth, int emotionLayoutHeight, IEmotionSelectedListener listener) {
+    public EmotionViewPagerAdapter(int emotionLayoutWidth, int emotionLayoutHeight, boolean stickerVisible, IEmotionSelectedListener listener) {
         mEmotionLayoutWidth = emotionLayoutWidth;
         mEmotionLayoutHeight = emotionLayoutHeight;
         mPageCount = (int) Math.ceil(EmojiManager.getDisplayCount() / (float) EMOJI_PER_PAGE);
-        for (int i = 0; i < StickerManager.getInstance().getStickerCategories().size(); i++) {
-            mPageCount += StickerManager.getInstance().getStickerCategories().get(i).getStickers().size() / STICKER_PER_PAGE;
+        if (stickerVisible) {
+            for (int i = 0; i < StickerManager.getInstance().getStickerCategories().size(); i++) {
+                mPageCount += StickerManager.getInstance().getStickerCategories().get(i).getStickers().size() / STICKER_PER_PAGE;
+            }
         }
-
         this.listener = listener;
     }
 
