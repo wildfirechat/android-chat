@@ -1,9 +1,11 @@
 include ':client',
-        ':push',
-        ':chat',
-        ':mars-core-release',
-        ':emojilibrary',
-        ':imagepicker',
-        ':avenginekit'
+    ':push',
+    ':chat',
+    ':mars-core-release',
+    ':emojilibrary',
+    ':imagepicker',
+    ':momentclient',
+    ':avenginekit'
 
 //project(':avenginekit').projectDir = new File('../android-av/avenginekit')
+project(':momentclient').projectDir = new File('../android-moment/momentclient')
