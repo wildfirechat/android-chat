@@ -11,4 +11,6 @@ public interface WfcIntent {
     String ACTION_VOIP_SINGLE = BuildConfig.APPLICATION_ID + ".kit.voip.single";
     String ACTION_VOIP_MULTI = BuildConfig.APPLICATION_ID + ".kit.voip.multi";
     String ACTION_VIEW = BuildConfig.APPLICATION_ID + ".webview";
+
+    String ACTION_MOMENT = BuildConfig.APPLICATION_ID + ".moment";
 }

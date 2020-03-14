@@ -56,5 +56,8 @@ public interface MessageContentType {
     int ContentType_Call_Add_Participant = 406;
     int ContentType_CALL_MUTE_VIDEO = 407;
 
+    int MESSAGE_CONTENT_TYPE_FEED = 501;
+    int MESSAGE_CONTENT_TYPE_FEED_COMMENT = 502;
+
     //自定义消息type要做1000以上
 }
