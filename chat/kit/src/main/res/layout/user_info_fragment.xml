@@ -101,6 +101,20 @@
             app:end_src="@mipmap/qr_code"
             app:title="二维码" />
 
+        <Button
+            android:id="@+id/momentButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/shape_user_info_send_msg"
+            android:text="朋友圈"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
 
         <Button
             android:id="@+id/chatButton"

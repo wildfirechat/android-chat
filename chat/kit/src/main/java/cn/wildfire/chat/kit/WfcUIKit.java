@@ -25,6 +25,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.lqr.emoji.LQREmotionKit;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -55,6 +58,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private ViewModelStore viewModelStore;
     private AppServiceProvider appServiceProvider;
     private static WfcUIKit wfcUIKit;
+    private boolean isSupportMoment = false;
 
     private WfcUIKit() {
     }
@@ -66,10 +70,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         return wfcUIKit;
     }
 
-
     public void init(Application application) {
         this.application = application;
         initWFClient(application);
+        initMomentClient(application);
         //初始化表情控件
         LQREmotionKit.init(application, (context, path, imageView) -> Glide.with(context).load(path).apply(new RequestOptions().centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE).dontAnimate()).into(imageView));
 
@@ -90,6 +94,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         ViewModelProvider.Factory factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application);
         viewModelProvider = new ViewModelProvider(viewModelStore, factory);
         OKHttpHelper.init(application.getApplicationContext());
+    }
+
+    public boolean isSupportMoment() {
+        return isSupportMoment;
     }
 
     private void initWFClient(Application application) {
@@ -115,6 +123,28 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             }
         } catch (NotInitializedExecption notInitializedExecption) {
             notInitializedExecption.printStackTrace();
+        }
+    }
+
+    private void initMomentClient(Application application) {
+        String momentClientClassName = "cn.wildfirechat.moment.MomentClient";
+        try {
+            Class clazz = Class.forName(momentClientClassName);
+            Constructor constructor = clazz.getConstructor();
+            Object o = constructor.newInstance();
+            Method method = clazz.getMethod("init", Context.class);
+            method.invoke(o, application);
+            isSupportMoment = true;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
     }
 
@@ -216,7 +246,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             while (iterator.hasNext()) {
                 Message message = iterator.next();
                 if (message.content.getPersistFlag() == PersistFlag.No_Persist
-                        || now - (message.serverTime - delta) > 10 * 1000) {
+                    || now - (message.serverTime - delta) > 10 * 1000) {
                     iterator.remove();
                 }
             }

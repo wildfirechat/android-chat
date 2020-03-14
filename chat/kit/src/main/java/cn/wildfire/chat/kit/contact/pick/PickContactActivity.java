@@ -1,6 +1,7 @@
 package cn.wildfire.chat.kit.contact.pick;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -114,8 +115,8 @@ public class PickContactActivity extends WfcBaseActivity {
         onContactPicked(newlyCheckedUserInfos);
     }
 
-    public static Intent buildPickIntent(int maxCount, ArrayList<String> initialChecedIds, ArrayList<String> uncheckableIds) {
-        Intent intent = new Intent();
+    public static Intent buildPickIntent(Context context, int maxCount, ArrayList<String> initialChecedIds, ArrayList<String> uncheckableIds) {
+        Intent intent = new Intent(context, PickContactActivity.class);
         intent.putExtra(PARAM_MAX_COUNT, maxCount);
         intent.putExtra(PARAM_INITIAL_CHECKED_IDS, initialChecedIds);
         intent.putExtra(PARA_UNCHECKABLE_IDS, uncheckableIds);

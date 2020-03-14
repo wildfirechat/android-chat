@@ -31,6 +31,7 @@ import com.king.zxing.Intents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,6 +39,7 @@ import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
@@ -53,9 +55,13 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
+import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.core.MessageContentType;
+import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -76,6 +82,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private QBadgeView unreadMessageUnreadBadgeView;
     private QBadgeView unreadFriendRequestBadgeView;
+    private QBadgeView discoveryBadgeView;
 
     private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
     private static final int REQUEST_IGNORE_BATTERY_CODE = 101;
@@ -106,6 +113,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             contactViewModel.reloadFriendRequestStatus();
             conversationListViewModel.reloadConversationUnreadStatus();
         }
+        updateMomentBadgeView();
     }
 
     @Override
@@ -117,6 +125,13 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             if (status == ConnectionStatus.ConnectionStatusTokenIncorrect || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch || status == ConnectionStatus.ConnectionStatusRejected || status == ConnectionStatus.ConnectionStatusLogout) {
                 ChatManager.Instance().disconnect(true);
                 reLogin();
+            }
+        });
+        MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
+        messageViewModel.messageLiveData().observe(this, uiMessage -> {
+            if (uiMessage.message.content.getType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
+                || uiMessage.message.content.getType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT) {
+                updateMomentBadgeView();
             }
         });
     }
@@ -135,8 +150,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         initView();
 
         conversationListViewModel = ViewModelProviders
-                .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
-                .get(ConversationListViewModel.class);
+            .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
+            .get(ConversationListViewModel.class);
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
 
             if (unreadCount != null && unreadCount.unread > 0) {
@@ -177,6 +192,27 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         }
     }
 
+    private void updateMomentBadgeView() {
+        if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {
+            return;
+        }
+        List<Message> messages = ChatManager.Instance().getMessagesEx2(Collections.singletonList(Conversation.ConversationType.Single), Collections.singletonList(1), MessageStatus.Unread, 0, true, 100, null);
+        int count = messages == null ? 0 : messages.size();
+        if (count > 0) {
+            if (discoveryBadgeView == null) {
+                BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
+                View view = bottomNavigationMenuView.getChildAt(2);
+                discoveryBadgeView = new QBadgeView(MainActivity.this);
+                discoveryBadgeView.bindTarget(view);
+            }
+            discoveryBadgeView.setBadgeNumber(count);
+        } else {
+            if (discoveryBadgeView != null) {
+                discoveryBadgeView.hide(true);
+                discoveryBadgeView = null;
+            }
+        }
+    }
 
     private void showUnreadFriendRequestBadgeView(int count) {
         if (unreadFriendRequestBadgeView == null) {
@@ -352,7 +388,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100 && grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startActivityForResult(new Intent(this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
         }
     }
@@ -425,16 +461,16 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private void updateDisplayName() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("修改个人昵称？")
-                .positiveText("修改")
-                .negativeText("取消")
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Intent intent = new Intent(MainActivity.this, ChangeMyNameActivity.class);
-                        startActivity(intent);
-                    }
-                }).build();
+            .content("修改个人昵称？")
+            .positiveText("修改")
+            .negativeText("取消")
+            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                @Override
+                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    Intent intent = new Intent(MainActivity.this, ChangeMyNameActivity.class);
+                    startActivity(intent);
+                }
+            }).build();
         dialog.show();
     }
 
