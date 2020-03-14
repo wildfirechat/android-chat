@@ -254,16 +254,16 @@
             android:screenOrientation="portrait" />
 
         <!--moment-->
-        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
-        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />
-        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />
-        <activity android:name="cn.wildfire.chat.moment.FeedListActivity">
-            <intent-filter>
-                <action android:name="${applicationId}.moment" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />
+<!--        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />-->
+<!--        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />-->
+<!--        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />-->
+<!--        <activity android:name="cn.wildfire.chat.moment.FeedListActivity">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="${applicationId}.moment" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+<!--        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />-->
 
         <provider
             android:name="androidx.core.content.FileProvider"

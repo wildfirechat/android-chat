@@ -61,8 +61,8 @@ android {
             // wfc kit end
 
             // moment start
-            java.srcDirs += ['../../android-momentkit/src/main/java']
-            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
+//            java.srcDirs += ['../../android-momentkit/src/main/java']
+//            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
             // moment end
         }
     }
@@ -113,7 +113,7 @@ dependencies {
     implementation project(':avenginekit')
     implementation project(':emojilibrary')
     implementation project(':imagepicker')
-    implementation project(':momentclient')
+//    implementation project(':momentclient')
 
     implementation 'com.king.zxing:zxing-lite:1.1.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
@@ -124,7 +124,7 @@ dependencies {
 
     // moment start
     //over scroller helper
-    api 'me.everything:overscroll-decor-android:1.0.4'
+//    api 'me.everything:overscroll-decor-android:1.0.4'
     // moment end
 
 }
