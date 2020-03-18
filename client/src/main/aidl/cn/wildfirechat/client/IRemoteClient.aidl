@@ -49,10 +49,10 @@ import java.util.Map;
 
 interface IRemoteClient {
     boolean connect(in String userId, in String token);
-    oneway void disconnect(in boolean clearSession);
-    oneway void setForeground(in int isForeground);
-    oneway void onNetworkChange();
-    oneway void setServerAddress(in String host);
+    void disconnect(in boolean clearSession);
+    void setForeground(in int isForeground);
+    void onNetworkChange();
+    void setServerAddress(in String host);
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
     oneway void setOnConnectionStatusChangeListener(in IOnConnectionStatusChangeListener listener);
@@ -88,14 +88,14 @@ interface IRemoteClient {
     UnreadCount getUnreadCountEx(in int[] conversationTypes, in int[] lines);
     boolean clearUnreadStatus(in int conversationType, in String target, in int line);
     boolean clearUnreadStatusEx(in int[] conversationTypes, in int[] lines);
-    oneway void clearAllUnreadStatus();
-    oneway void clearMessages(in int conversationType, in String target, in int line);
-    oneway void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
-    oneway void setMediaMessagePlayed(in long messageId);
-    oneway void removeConversation(in int conversationType, in String target, in int line, in boolean clearMsg);
-    oneway void setConversationTop(in int conversationType, in String target, in int line, in boolean top);
-    oneway void setConversationDraft(in int conversationType, in String target, in int line, in String draft);
-    oneway void setConversationSilent(in int conversationType, in String target, in int line, in boolean silent);
+    void clearAllUnreadStatus();
+    void clearMessages(in int conversationType, in String target, in int line);
+    void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
+    void setMediaMessagePlayed(in long messageId);
+    void removeConversation(in int conversationType, in String target, in int line, in boolean clearMsg);
+    oneway void setConversationTop(in int conversationType, in String target, in int line, in boolean top, in IGeneralCallback callback);
+    void setConversationDraft(in int conversationType, in String target, in int line, in String draft);
+    oneway void setConversationSilent(in int conversationType, in String target, in int line, in boolean silent,  in IGeneralCallback callback);
 
     oneway void searchUser(in String keyword, in int searchType, in int page, in ISearchUserCallback callback);
 
@@ -115,7 +115,7 @@ interface IRemoteClient {
     String getFriendAlias(in String userId);
     oneway void setFriendAlias(in String userId, in String alias, in IGeneralCallback callback);
     String getFriendExtra(in String userId);
-    oneway void clearUnreadFriendRequestStatus();
+    void clearUnreadFriendRequestStatus();
     int getUnreadFriendRequestStatus();
     oneway void removeFriend(in String userId, in IGeneralCallback callback);
     oneway void sendFriendRequest(in String userId, in String reason, in IGeneralCallback callback);

@@ -350,8 +350,8 @@ public class ChatManager {
             }
             for (Message message : messages) {
                 if ((message.content instanceof QuitGroupNotificationContent && ((QuitGroupNotificationContent) message.content).operator.equals(getUserId()))
-                        || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(getUserId()))
-                        || message.content instanceof DismissGroupNotificationContent) {
+                    || (message.content instanceof KickoffGroupMemberNotificationContent && ((KickoffGroupMemberNotificationContent) message.content).kickedMembers.contains(getUserId()))
+                    || message.content instanceof DismissGroupNotificationContent) {
                     for (OnRemoveConversationListener l : removeConversationListeners) {
                         l.onConversationRemove(message.conversation);
                     }
@@ -618,7 +618,7 @@ public class ChatManager {
 
         String imei = null;
         try (
-                RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsoluteFile() + "/.wfcClientId", "rw");
+            RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsoluteFile() + "/.wfcClientId", "rw");
         ) {
 
             FileChannel chan = fw.getChannel();
@@ -652,7 +652,7 @@ public class ChatManager {
     /**
      * 创建频道
      *
-     * @param channelId       频道id，如果传null，火信会自动生成id；否则，使用用户提供的id，需要保证此id的唯一性
+     * @param channelId       频道id，如果传null，野火会自动生成id；否则，使用用户提供的id，需要保证此id的唯一性
      * @param channelName     频道名称
      * @param channelPortrait 频道头像的网络地址
      * @param desc            频道描述
@@ -1207,8 +1207,8 @@ public class ChatManager {
     /**
      * 更新消息状态。一般情况下协议栈会自动处理好状态，不建议手动处理状态。
      *
-     * @param messageId     消息id
-     * @param status 新的消息状态，需要与消息方向对应。
+     * @param messageId 消息id
+     * @param status    新的消息状态，需要与消息方向对应。
      * @return
      */
     public boolean updateMessage(long messageId, MessageStatus status) {
@@ -1263,9 +1263,9 @@ public class ChatManager {
             try {
                 SharedPreferences sp = gContext.getSharedPreferences("wildfirechat.config", Context.MODE_PRIVATE);
                 sp.edit()
-                        .putString("userId", userId)
-                        .putString("token", token)
-                        .commit();
+                    .putString("userId", userId)
+                    .putString("token", token)
+                    .commit();
                 return mClient.connect(this.userId, this.token);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -1524,7 +1524,7 @@ public class ChatManager {
         }
 
         if (conversationTypes == null || conversationTypes.size() == 0 ||
-                lines == null || lines.size() == 0) {
+            lines == null || lines.size() == 0) {
             Log.e(TAG, "Invalid conversation type and lines");
             return new ArrayList<>();
         }
@@ -1574,7 +1574,7 @@ public class ChatManager {
      *
      * @param conversation
      * @param fromIndex    消息起始id(messageId)
-     * @param before       true, 获取fromInde之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count        获取消息条数
      * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @return
@@ -1599,8 +1599,8 @@ public class ChatManager {
         }
 
         if (conversationTypes == null || conversationTypes.size() == 0 ||
-                lines == null || lines.size() == 0 ||
-                contentTypes == null || contentTypes.size() == 0) {
+            lines == null || lines.size() == 0 ||
+            contentTypes == null || contentTypes.size() == 0) {
             Log.e(TAG, "Invalid conversation type or lines or contentType");
             return null;
         }
@@ -1635,7 +1635,7 @@ public class ChatManager {
         }
 
         if (conversationTypes == null || conversationTypes.size() == 0 ||
-                lines == null || lines.size() == 0) {
+            lines == null || lines.size() == 0) {
             Log.e(TAG, "Invalid conversation type or lines");
             return null;
         }
@@ -1925,28 +1925,47 @@ public class ChatManager {
         }
     }
 
+    public void setConversationTop(Conversation conversation, boolean top) {
+        setConversationTop(conversation, top, null);
+    }
+
     /**
      * 会话置顶
      *
      * @param conversation
      * @param top          true，置顶；false，取消置顶
      */
-    public void setConversationTop(Conversation conversation, boolean top) {
+    public void setConversationTop(Conversation conversation, boolean top, GeneralCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
 
         try {
-            mClient.setConversationTop(conversation.type.ordinal(), conversation.target, conversation.line, top);
+            mClient.setConversationTop(conversation.type.ordinal(), conversation.target, conversation.line, top, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    ConversationInfo conversationInfo = getConversation(conversation);
+                    mainHandler.post(() -> {
+                        for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
+                            listener.onConversationTopUpdate(conversationInfo, top);
+                        }
+                    });
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
         } catch (RemoteException e) {
             e.printStackTrace();
         }
 
-        ConversationInfo conversationInfo = getConversation(conversation);
-        conversationInfo.isTop = top;
-        for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
-            listener.onConversationTopUpdate(conversationInfo, top);
-        }
     }
 
     /**
@@ -1966,16 +1985,7 @@ public class ChatManager {
             e.printStackTrace();
         }
 
-        // 由于aidl中将setConversationDraft定义为oneway, 该调用是异步调用, 所以调用setConversationDraft之后，立即调用getConversation,
-        // 获取到的信息，可能还是更新之前的。两个解决方案：
-        // 1. 将oneway去掉
-        // 2. 这儿强制置一个值
-        // 这儿采用第二种方案
         ConversationInfo conversationInfo = getConversation(conversation);
-        if (conversationInfo == null) {
-            return;
-        }
-        conversationInfo.draft = draft;
         for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
             listener.onConversationDraftUpdate(conversationInfo, draft);
         }
@@ -3467,18 +3477,38 @@ public class ChatManager {
     }
 
     public void setConversationSilent(Conversation conversation, boolean silent) {
+        setConversationSilent(conversation, silent, null);
+    }
+
+    public void setConversationSilent(Conversation conversation, boolean silent, GeneralCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
 
         try {
-            mClient.setConversationSilent(conversation.type.ordinal(), conversation.target, conversation.line, silent);
+            mClient.setConversationSilent(conversation.type.ordinal(), conversation.target, conversation.line, silent, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    mainHandler.post(() -> {
+                        ConversationInfo conversationInfo = getConversation(conversation);
+                        for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
+                            listener.onConversationSilentUpdate(conversationInfo, silent);
+                        }
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
         } catch (RemoteException e) {
             e.printStackTrace();
-        }
-        ConversationInfo conversationInfo = getConversation(conversation);
-        for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
-            listener.onConversationSilentUpdate(conversationInfo, silent);
         }
     }
 
