@@ -589,8 +589,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void setConversationTop(int conversationType, String target, int line, boolean top) throws RemoteException {
-            setUserSetting(ConversationTop, conversationType + "-" + line + "-" + target, top ? "1" : "0", null);
+        public void setConversationTop(int conversationType, String target, int line, boolean top, IGeneralCallback callback) throws RemoteException {
+            setUserSetting(ConversationTop, conversationType + "-" + line + "-" + target, top ? "1" : "0", callback);
         }
 
         @Override
@@ -599,8 +599,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void setConversationSilent(int conversationType, String target, int line, boolean silent) throws RemoteException {
-            setUserSetting(ConversationSilent, conversationType + "-" + line + "-" + target, silent ? "1" : "0", null);
+        public void setConversationSilent(int conversationType, String target, int line, boolean silent, IGeneralCallback callback) throws RemoteException {
+            setUserSetting(ConversationSilent, conversationType + "-" + line + "-" + target, silent ? "1" : "0", callback);
         }
 
         @Override
