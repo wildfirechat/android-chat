@@ -26,12 +26,12 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
     protected void afterViews() {
         super.afterViews();
 
-        switchMsgNotification.setChecked(!ChatManager.Instance().isGlobalSlient());
+        switchMsgNotification.setChecked(!ChatManager.Instance().isGlobalSilent());
         switchShowMsgDetail.setChecked(!ChatManager.Instance().isHiddenNotificationDetail());
 
 
         switchMsgNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            ChatManager.Instance().setGlobalSlient(!isChecked, new GeneralCallback() {
+            ChatManager.Instance().setGlobalSilent(!isChecked, new GeneralCallback() {
                 @Override
                 public void onSuccess() {
 
