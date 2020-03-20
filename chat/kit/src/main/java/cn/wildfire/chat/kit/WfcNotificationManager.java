@@ -88,7 +88,7 @@ public class WfcNotificationManager {
             return;
         }
 
-        if(ChatManager.Instance().isGlobalSlient()) {
+        if(ChatManager.Instance().isGlobalSilent()) {
             return;
         }
 
