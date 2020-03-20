@@ -195,17 +195,17 @@ public class ChatManager {
      * 例如：example.com或www.example.com是支持的；xx.example.com或xx.yy.example.com是不支持的。
      *
      * @param context
-     * @param serverHost
+     * @param imServerHost im server的域名或ip
      * @return
      */
 
-    public static void init(Application context, String serverHost) {
+    public static void init(Application context, String imServerHost) {
         if (INST != null) {
             // TODO: Already initialized
             return;
         }
         gContext = context.getApplicationContext();
-        INST = new ChatManager(serverHost);
+        INST = new ChatManager(imServerHost);
         INST.mainHandler = new Handler();
         HandlerThread thread = new HandlerThread("workHandler");
         thread.start();
@@ -259,6 +259,11 @@ public class ChatManager {
         this.userSource = userSource;
     }
 
+    /**
+     * 获取当前的连接状态
+     *
+     * @return 连接状态，参考{@link cn.wildfirechat.client.ConnectionStatus}
+     */
     public int getConnectionStatus() {
         return connectionStatus;
     }
@@ -396,6 +401,12 @@ public class ChatManager {
         });
     }
 
+    /**
+     * 群成员信息更新
+     *
+     * @param groupId
+     * @param groupMembers
+     */
     private void onGroupMembersUpdate(String groupId, List<GroupMember> groupMembers) {
         if (groupMembers == null || groupMembers.isEmpty()) {
             return;
@@ -535,12 +546,22 @@ public class ChatManager {
         groupInfoUpdateListeners.remove(listener);
     }
 
+    /**
+     * 添加群成员更新监听
+     *
+     * @param listener
+     */
     public void addGroupMembersUpdateListener(OnGroupMembersUpdateListener listener) {
         if (listener != null) {
             groupMembersUpdateListeners.add(listener);
         }
     }
 
+    /**
+     * 删除群成员更新监听
+     *
+     * @param listener
+     */
     public void removeGroupMembersUpdateListener(OnGroupMembersUpdateListener listener) {
         groupMembersUpdateListeners.remove(listener);
     }
@@ -1067,6 +1088,11 @@ public class ChatManager {
         messageUpdateListeners.remove(listener);
     }
 
+    /**
+     * 添加删除消息监听
+     *
+     * @param listener
+     */
     public void addClearMessageListener(OnClearMessageListener listener) {
         if (listener == null) {
             return;
@@ -1075,10 +1101,20 @@ public class ChatManager {
         clearMessageListeners.add(listener);
     }
 
+    /**
+     * 移除删除消息监听
+     *
+     * @param listener
+     */
     public void removeClearMessageListener(OnClearMessageListener listener) {
         clearMessageListeners.remove(listener);
     }
 
+    /**
+     * 添加删除会话监听
+     *
+     * @param listener
+     */
     public void addRemoveConversationListener(OnRemoveConversationListener listener) {
         if (listener == null) {
             return;
@@ -1086,11 +1122,21 @@ public class ChatManager {
         removeConversationListeners.add(listener);
     }
 
+    /**
+     * 移除删除会话监听
+     *
+     * @param listener
+     */
     public void removeRemoveConversationListener(OnRemoveConversationListener listener) {
         removeConversationListeners.remove(listener);
     }
 
 
+    /**
+     * 添加im服务进程监听监听
+     *
+     * @param listener
+     */
     public void addIMServiceStatusListener(IMServiceStatusListener listener) {
         if (listener == null) {
             return;
@@ -1098,6 +1144,11 @@ public class ChatManager {
         imServiceStatusListeners.add(listener);
     }
 
+    /**
+     * 移除im服务进程状态监听
+     *
+     * @param listener
+     */
     public void removeIMServiceStatusListener(IMServiceStatusListener listener) {
         imServiceStatusListeners.remove(listener);
     }
@@ -1659,6 +1710,14 @@ public class ChatManager {
     }
 
 
+    /**
+     * 获取远程历史消息
+     *
+     * @param conversation    会话
+     * @param beforeMessageId 起始消息的消息id
+     * @param count           获取消息的条数
+     * @param callback
+     */
     public void getRemoteMessages(Conversation conversation, long beforeMessageId, int count, GetRemoteMessageCallback callback) {
         if (!checkRemoteService()) {
             return;
@@ -1864,6 +1923,11 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 清除会话消息
+     *
+     * @param conversation
+     */
     public void clearMessages(Conversation conversation) {
         if (!checkRemoteService()) {
             return;
@@ -1880,6 +1944,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 清除会话消息
+     *
+     * @param conversation
+     * @param beforeTime
+     */
     public void clearMessages(Conversation conversation, long beforeTime) {
         if (!checkRemoteService()) {
             return;
@@ -1991,6 +2061,14 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 搜索用户
+     *
+     * @param keyword
+     * @param searchUserType
+     * @param page
+     * @param callback
+     */
     public void searchUser(String keyword, SearchUserType searchUserType, int page, final SearchUserCallback callback) {
         if (userSource != null) {
             userSource.searchUser(keyword, callback);
@@ -2035,6 +2113,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 判断是否是好友关系
+     *
+     * @param userId
+     * @return
+     */
     public boolean isMyFriend(String userId) {
         if (!checkRemoteService()) {
             return false;
@@ -2048,6 +2132,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取好友id列表
+     *
+     * @param refresh 是否强制刷新好友列表，如果强制刷新好友列表，切好友列表有更新的话，会通过{@link OnFriendUpdateListener}回调通知
+     * @return
+     */
     public List<String> getMyFriendList(boolean refresh) {
         if (!checkRemoteService()) {
             return null;
@@ -2095,6 +2185,12 @@ public class ChatManager {
         return getUserDisplayName(userInfo);
     }
 
+    /**
+     * 获取好友别名
+     *
+     * @param userId
+     * @return
+     */
     public String getFriendAlias(String userId) {
         if (!checkRemoteService()) {
             return null;
@@ -2109,6 +2205,13 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 设置好友别名
+     *
+     * @param userId
+     * @param alias
+     * @param callback
+     */
     public void setFriendAlias(String userId, String alias, GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null) {
@@ -2140,6 +2243,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取好友列表
+     *
+     * @param refresh
+     * @return
+     */
     public List<UserInfo> getMyFriendListInfo(boolean refresh) {
         if (!checkRemoteService()) {
             return null;
@@ -2153,6 +2262,9 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 从服务端加载好友请求
+     */
     public void loadFriendRequestFromRemote() {
         if (!checkRemoteService()) {
             return;
@@ -2165,19 +2277,28 @@ public class ChatManager {
         }
     }
 
-    public List<FriendRequest> getFriendRequest(boolean incomming) {
+    /**
+     * 获取好友请求列表
+     *
+     * @param incoming true，只包含收到的好友请求；false，所有好友请求
+     * @return
+     */
+    public List<FriendRequest> getFriendRequest(boolean incoming) {
         if (!checkRemoteService()) {
             return null;
         }
 
         try {
-            return mClient.getFriendRequest(incomming);
+            return mClient.getFriendRequest(incoming);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    /**
+     * 清除好友请求未读状态
+     */
     public void clearUnreadFriendRequestStatus() {
         if (!checkRemoteService()) {
             return;
@@ -2190,6 +2311,11 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取未读好友请求数
+     *
+     * @return
+     */
     public int getUnreadFriendRequestStatus() {
         if (!checkRemoteService()) {
             return 0;
@@ -2203,6 +2329,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 删除好友
+     *
+     * @param userId
+     * @param callback
+     */
     public void removeFriend(String userId, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -2243,6 +2375,13 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 发送好友请求
+     *
+     * @param userId
+     * @param reason
+     * @param callback
+     */
     public void sendFriendRequest(String userId, String reason, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -2283,7 +2422,14 @@ public class ChatManager {
         }
     }
 
-    // 当接受好友请求时，extra会更新到好友的extra中，建议用json格式，为以后继续扩展保留空间
+    /**
+     * 处理好友请求
+     *
+     * @param userId
+     * @param accept
+     * @param extra    当接受好友请求时，extra会更新到好友的extra中，建议用json格式，为以后继续扩展保留空间
+     * @param callback
+     */
     public void handleFriendRequest(String userId, boolean accept, String extra, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -2324,6 +2470,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 判断用户是否被加入了黑名单
+     *
+     * @param userId
+     * @return
+     */
     public boolean isBlackListed(String userId) {
         if (!checkRemoteService()) {
             return false;
@@ -2338,6 +2490,12 @@ public class ChatManager {
         return false;
     }
 
+    /**
+     * 获取黑名单列表
+     *
+     * @param refresh
+     * @return
+     */
     public List<String> getBlackList(boolean refresh) {
         if (!checkRemoteService()) {
             return null;
@@ -2351,6 +2509,13 @@ public class ChatManager {
         return null;
     }
 
+    /**
+     * 将用户加入或移除黑名单
+     *
+     * @param userId
+     * @param isBlacked
+     * @param callback
+     */
     public void setBlackList(String userId, boolean isBlacked, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -2391,6 +2556,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 删除好友
+     *
+     * @param userId
+     * @param callback
+     */
     public void deleteFriend(String userId, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -2432,6 +2603,13 @@ public class ChatManager {
     }
 
 
+    /**
+     * 获取群信息
+     *
+     * @param groupId
+     * @param refresh
+     * @return
+     */
     public @Nullable
     GroupInfo getGroupInfo(String groupId, boolean refresh) {
         if (!checkRemoteService()) {
@@ -2450,6 +2628,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 加入聊天室
+     *
+     * @param chatRoomId
+     * @param callback
+     */
     public void joinChatRoom(String chatRoomId, GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
@@ -2472,6 +2656,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 退出聊天室
+     *
+     * @param chatRoomId
+     * @param callback
+     */
     public void quitChatRoom(String chatRoomId, GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
@@ -2495,6 +2685,13 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取聊天室信息
+     *
+     * @param chatRoomId
+     * @param updateDt
+     * @param callback
+     */
     public void getChatRoomInfo(String chatRoomId, long updateDt, GetChatRoomInfoCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
@@ -2519,6 +2716,13 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取聊天室成员信息
+     *
+     * @param chatRoomId
+     * @param maxCount   最多获取多少个成员信息
+     * @param callback
+     */
     public void getChatRoomMembersInfo(String chatRoomId, int maxCount, GetChatRoomMembersInfoCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
@@ -2542,7 +2746,13 @@ public class ChatManager {
         }
     }
 
-
+    /**
+     * 获取用户信息
+     *
+     * @param userId
+     * @param refresh
+     * @return
+     */
     public UserInfo getUserInfo(String userId, boolean refresh) {
         return getUserInfo(userId, null, refresh);
     }
@@ -2647,6 +2857,13 @@ public class ChatManager {
         return null;
     }
 
+    /**
+     * 上传媒体文件
+     *
+     * @param mediaPath
+     * @param mediaType 媒体类型，可选值，参考{@link cn.wildfirechat.message.MessageContentMediaType}
+     * @param callback
+     */
     public void uploadMediaFile(String mediaPath, int mediaType, final UploadMediaCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -2704,7 +2921,7 @@ public class ChatManager {
 
     /**
      * @param data      不能超过1M，为了安全，实际只有900K
-     * @param mediaType
+     * @param mediaType 媒体类型，可选值参考{@link cn.wildfirechat.message.MessageContentMediaType}
      * @param callback
      */
     public void uploadMedia(String fileName, byte[] data, int mediaType, final GeneralCallback2 callback) {
@@ -2758,7 +2975,12 @@ public class ChatManager {
         }
     }
 
-    // 修改个人信息，好像不能多端同步
+    /**
+     * 修改个人信息
+     *
+     * @param values
+     * @param callback
+     */
     public void modifyMyInfo(List<ModifyMyInfoEntry> values, final GeneralCallback callback) {
         userInfoCache.remove(userId);
         if (userSource != null) {
@@ -2809,6 +3031,12 @@ public class ChatManager {
 
     }
 
+    /**
+     * 删除消息
+     *
+     * @param message
+     * @return
+     */
     public boolean deleteMessage(Message message) {
         if (!checkRemoteService()) {
             return false;
@@ -2827,6 +3055,14 @@ public class ChatManager {
 
     }
 
+    /**
+     * 搜索会话
+     *
+     * @param keyword
+     * @param conversationTypes
+     * @param lines
+     * @return
+     */
     public List<ConversationSearchResult> searchConversation(String keyword, List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
         if (!checkRemoteService()) {
             return null;
@@ -2849,6 +3085,13 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 搜索消息
+     *
+     * @param conversation
+     * @param keyword
+     * @return
+     */
     public List<Message> searchMessage(Conversation conversation, String keyword) {
         if (!checkRemoteService()) {
             return null;
@@ -2862,6 +3105,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 搜索群组
+     *
+     * @param keyword
+     * @return
+     */
     public List<GroupSearchResult> searchGroups(String keyword) {
         if (!checkRemoteService()) {
             return null;
@@ -2875,6 +3124,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 搜索好友
+     *
+     * @param keyword
+     * @return
+     */
     public List<UserInfo> searchFriends(String keyword) {
         if (!checkRemoteService()) {
             return null;
@@ -2901,6 +3156,18 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 创建群组
+     *
+     * @param groupId
+     * @param groupName
+     * @param groupPortrait 已上传到文件存储的群头像的的链接地址
+     * @param groupType
+     * @param memberIds
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
     public void createGroup(String groupId, String groupName, String groupPortrait, GroupInfo.GroupType groupType, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -2946,6 +3213,15 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 添加群成员
+     *
+     * @param groupId
+     * @param memberIds
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
     public void addGroupMembers(String groupId, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -3000,6 +3276,15 @@ public class ChatManager {
         return payload;
     }
 
+    /**
+     * 移除群成员
+     *
+     * @param groupId
+     * @param memberIds
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
     public void removeGroupMembers(String groupId, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -3045,7 +3330,14 @@ public class ChatManager {
         }
     }
 
-    // FIXME: 2018/5/19 notifyMsg应当是在这儿组装，上层只用传几个必要参数吧
+    /**
+     * 退出群组
+     *
+     * @param groupId
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
     public void quitGroup(String groupId, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -3090,6 +3382,14 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 解散群组
+     *
+     * @param groupId
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
     public void dismissGroup(String groupId, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -3135,6 +3435,16 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 修改 群信息
+     *
+     * @param groupId
+     * @param modifyType
+     * @param newValue
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
     public void modifyGroupInfo(String groupId, ModifyGroupInfoType modifyType, String newValue, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -3179,8 +3489,15 @@ public class ChatManager {
         }
     }
 
-    // Attention
-    // 回调成功只表示服务器修改成功了，本地可能还没更新，等本地将服务器端的改动拉下来之后，会有更新通知回调
+    /**
+     * 修改我在群里面的别名
+     *
+     * @param groupId
+     * @param alias
+     * @param lines
+     * @param notifyMsg
+     * @param callback  回调成功只表示服务器修改成功了，本地可能还没更新。本地将服务器端的改动拉下来之后，会有{@link OnGroupMembersUpdateListener}通知回调
+     */
     public void modifyGroupAlias(String groupId, String alias, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -3226,6 +3543,13 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取群成员列表
+     *
+     * @param groupId
+     * @param forceUpdate
+     * @return
+     */
     public List<GroupMember> getGroupMembers(String groupId, boolean forceUpdate) {
         if (!checkRemoteService()) {
             return null;
@@ -3243,6 +3567,13 @@ public class ChatManager {
         return memberId + "@" + groupId;
     }
 
+    /**
+     * 获取群成员信息
+     *
+     * @param groupId
+     * @param memberId
+     * @return
+     */
     public GroupMember getGroupMember(String groupId, String memberId) {
         if (TextUtils.isEmpty(groupId) || TextUtils.isEmpty(memberId)) {
             return null;
@@ -3267,6 +3598,15 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 转让群组
+     *
+     * @param groupId
+     * @param newOwner
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
     public void transferGroup(String groupId, String newOwner, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -3312,6 +3652,16 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 设置群管理员
+     *
+     * @param groupId
+     * @param isSet
+     * @param memberIds
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
     public void setGroupManager(String groupId, boolean isSet, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -3387,6 +3737,13 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取用户设置
+     *
+     * @param scope 相当于设置的命名空间，可选值参考{@link UserSettingScope}
+     * @param key
+     * @return
+     */
     public String getUserSetting(int scope, String key) {
         if (!checkRemoteService()) {
             return null;
@@ -3400,6 +3757,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取用户设置
+     *
+     * @param scope 可选值参考{@link UserSettingScope}
+     * @return
+     */
     public Map<String, String> getUserSettings(int scope) {
         if (!checkRemoteService()) {
             return null;
@@ -3413,6 +3776,11 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取保存到通讯录的群组信息
+     *
+     * @param callback
+     */
     public void getMyGroups(final GetGroupsCallback callback) {
         if (callback == null) {
             return;
@@ -3440,6 +3808,14 @@ public class ChatManager {
         });
     }
 
+    /**
+     * 设置用户设置信息
+     *
+     * @param scope
+     * @param key
+     * @param value
+     * @param callback
+     */
     public void setUserSetting(int scope, String key, String value, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             return;
@@ -3476,10 +3852,23 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 会话免打扰
+     *
+     * @param conversation
+     * @param silent
+     */
     public void setConversationSilent(Conversation conversation, boolean silent) {
         setConversationSilent(conversation, silent, null);
     }
 
+    /**
+     * 会话免打扰
+     *
+     * @param conversation
+     * @param silent
+     * @param callback
+     */
     public void setConversationSilent(Conversation conversation, boolean silent, GeneralCallback callback) {
         if (!checkRemoteService()) {
             return;
@@ -3541,6 +3930,12 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取会话消息数
+     *
+     * @param conversation
+     * @return
+     */
     public int getMessageCount(Conversation conversation) {
         if (!checkRemoteService()) {
             return 0;
@@ -3554,7 +3949,12 @@ public class ChatManager {
         return 0;
     }
 
-    public boolean begainTransaction() {
+    /**
+     * 开启事务，数据库备份、批量插入数据时，可使用事务，那样效率更高。
+     *
+     * @return
+     */
+    public boolean beginTransaction() {
         if (!checkRemoteService()) {
             return false;
         }
@@ -3567,6 +3967,9 @@ public class ChatManager {
         return false;
     }
 
+    /**
+     * 提交事务
+     */
     public void commitTransaction() {
         if (!checkRemoteService()) {
             return;
@@ -3636,6 +4039,12 @@ public class ChatManager {
         return paths;
     }
 
+    /**
+     * 设置第三方推送设备token
+     *
+     * @param token
+     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.PushType}
+     */
     public void setDeviceToken(String token, int pushType) {
         deviceToken = token;
         this.pushType = pushType;
@@ -3651,7 +4060,12 @@ public class ChatManager {
         }
     }
 
-    public boolean isGlobalSlient() {
+    /**
+     * 判断是否是是全局免打扰
+     *
+     * @return
+     */
+    public boolean isGlobalSilent() {
         if (!checkRemoteService()) {
             return false;
         }
@@ -3664,7 +4078,13 @@ public class ChatManager {
         return false;
     }
 
-    public void setGlobalSlient(boolean isSlient, final GeneralCallback callback) {
+    /**
+     * 设置全局免打扰
+     *
+     * @param isSlient
+     * @param callback
+     */
+    public void setGlobalSilent(boolean isSlient, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
@@ -3687,6 +4107,11 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 判断是否隐藏通知详情
+     *
+     * @return
+     */
     public boolean isHiddenNotificationDetail() {
         if (!checkRemoteService()) {
             return false;
@@ -3700,14 +4125,20 @@ public class ChatManager {
         return false;
     }
 
-    public void setHiddenNotificationDetail(boolean isSlient, final GeneralCallback callback) {
+    /**
+     * 设置隐藏通知详情
+     *
+     * @param isHidden
+     * @param callback
+     */
+    public void setHiddenNotificationDetail(boolean isHidden, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
 
         try {
-            mClient.setUserSetting(UserSettingScope.HiddenNotificationDetail, "", isSlient ? "1" : "0", new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.setUserSetting(UserSettingScope.HiddenNotificationDetail, "", isHidden ? "1" : "0", new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     callback.onSuccess();
