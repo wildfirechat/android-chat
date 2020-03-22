@@ -248,7 +248,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
         multiCallItem.getStatusTextView().setText(userInfo.displayName);
         multiCallItem.setOnClickListener(clickListener);
-        GlideApp.with(multiCallItem).load(userInfo.portrait).into(multiCallItem.getPortraitImageView());
+        GlideApp.with(multiCallItem).load(userInfo.portrait).error(R.mipmap.default_header).into(multiCallItem.getPortraitImageView());
         participantLinearLayout.addView(multiCallItem);
         participants.add(userId);
     }
