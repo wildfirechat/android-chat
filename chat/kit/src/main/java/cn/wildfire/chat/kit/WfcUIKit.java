@@ -40,6 +40,7 @@ import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.MultiCallActivity;
 import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
@@ -208,6 +209,11 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             return;
         }
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId);
+        if(participants.size() >= 4){
+            AVEngineKit.Instance().setVideoProfile(VideoProfile.VP240P, false);
+        }else if(participants.size() >= 6){
+            AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P, false);
+        }
         AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
         Intent intent = new Intent(context, MultiCallActivity.class);
         startActivity(context, intent);
