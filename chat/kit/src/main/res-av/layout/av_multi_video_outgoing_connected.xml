@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -49,15 +50,18 @@
             android:layout_height="wrap_content"
             android:background="@color/green1" />
 
-        <LinearLayout
-            android:id="@+id/participantLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:gravity="center"
-            android:orientation="horizontal">
 
-        </LinearLayout>
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/videoContainerGridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_gravity="center"
+            android:animateLayoutChanges="true"
+            app:alignmentMode="alignBounds"
+            app:columnCount="3"
+            app:orientation="horizontal"
+            app:rowCount="3"
+            app:useDefaultMargins="false" />
     </FrameLayout>
 
     <include layout="@layout/av_multi_outgoing_connected_action" />
