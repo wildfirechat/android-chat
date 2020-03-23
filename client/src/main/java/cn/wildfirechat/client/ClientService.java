@@ -2151,6 +2151,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     onReceiveMessageInternal(msgs, msgs.size() < messages.size());
                     totalLength = 0;
                     msgs = new ArrayList<>();
+                    msgs.add(convertProtoMessage(pmsg));
                 } else {
                     msgs.add(convertProtoMessage(pmsg));
                 }
