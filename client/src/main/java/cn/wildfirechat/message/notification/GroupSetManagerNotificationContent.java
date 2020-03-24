@@ -18,7 +18,7 @@ import cn.wildfirechat.remote.ChatManager;
 import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_SET_MANAGER;
 
 @ContentTag(type = CONTENT_TYPE_SET_MANAGER, flag = PersistFlag.Persist)
-public class GroupSetManagerChatNotificationContent extends GroupNotificationMessageContent {
+public class GroupSetManagerNotificationContent extends GroupNotificationMessageContent {
     public String operator;
     // 1, 设置为管理员；0，取消管理员
     public int type;
@@ -105,25 +105,25 @@ public class GroupSetManagerChatNotificationContent extends GroupNotificationMes
         dest.writeStringList(this.memberIds);
     }
 
-    public GroupSetManagerChatNotificationContent() {
+    public GroupSetManagerNotificationContent() {
     }
 
-    protected GroupSetManagerChatNotificationContent(Parcel in) {
+    protected GroupSetManagerNotificationContent(Parcel in) {
         super(in);
         this.operator = in.readString();
         this.type = in.readInt();
         this.memberIds = in.createStringArrayList();
     }
 
-    public static final Creator<GroupSetManagerChatNotificationContent> CREATOR = new Creator<GroupSetManagerChatNotificationContent>() {
+    public static final Creator<GroupSetManagerNotificationContent> CREATOR = new Creator<GroupSetManagerNotificationContent>() {
         @Override
-        public GroupSetManagerChatNotificationContent createFromParcel(Parcel source) {
-            return new GroupSetManagerChatNotificationContent(source);
+        public GroupSetManagerNotificationContent createFromParcel(Parcel source) {
+            return new GroupSetManagerNotificationContent(source);
         }
 
         @Override
-        public GroupSetManagerChatNotificationContent[] newArray(int size) {
-            return new GroupSetManagerChatNotificationContent[size];
+        public GroupSetManagerNotificationContent[] newArray(int size) {
+            return new GroupSetManagerNotificationContent[size];
         }
     };
 }
