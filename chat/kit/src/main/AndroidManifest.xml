@@ -258,7 +258,6 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <service android:name="cn.wildfire.chat.kit.voip.SingleCallFloatingService" />
-        <service android:name="cn.wildfire.chat.kit.voip.MultiCallFloatingService" />
+        <service android:name="cn.wildfire.chat.kit.voip.VoipCallService" />
     </application>
 </manifest>

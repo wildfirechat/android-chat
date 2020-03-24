@@ -127,6 +127,7 @@
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="${applicationId}.kit.voip.single" />
@@ -135,6 +136,7 @@
         </activity>
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallIncomingActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="${applicationId}.kit.voip.multi" />
@@ -251,7 +253,10 @@
         <activity android:name="cn.wildfire.chat.kit.group.SetGroupAnnouncementActivity" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
+        <activity android:name="cn.wildfire.chat.kit.voip.VoipDummyActivity"
+            android:launchMode="singleInstance"/>
 
         <!--moment-->
 <!--        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />-->
@@ -275,7 +280,6 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <service android:name="cn.wildfire.chat.kit.voip.SingleCallFloatingService" />
-        <service android:name="cn.wildfire.chat.kit.voip.MultiCallFloatingService" />
+        <service android:name="cn.wildfire.chat.kit.voip.VoipCallService" />
     </application>
 </manifest>

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:padding="20dp"
         android:src="@drawable/av_minimize"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <LinearLayout
         android:layout_width="wrap_content"
