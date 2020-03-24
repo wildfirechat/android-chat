@@ -40,16 +40,11 @@ public class MultiCallActivity extends VoipBaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session != null && session.getState() != AVEngineKit.CallState.Idle && !isAddParticipant) {
-            showFloatingView();
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        hideFloatingView();
     }
 
     private void init() {
@@ -58,7 +53,6 @@ public class MultiCallActivity extends VoipBaseActivity {
             finish();
             return;
         }
-        session.setCallback(this);
         groupId = session.getConversation().target;
 
         Fragment fragment;
@@ -169,21 +163,6 @@ public class MultiCallActivity extends VoipBaseActivity {
     @Override
     public void didVideoMuted(String s, boolean b) {
         postAction(() -> currentCallSessionCallback.didVideoMuted(s, b));
-    }
-
-    public void showFloatingView() {
-        if (!checkOverlayPermission()) {
-            return;
-        }
-
-        Intent intent = new Intent(this, MultiCallFloatingService.class);
-        startService(intent);
-        finish();
-    }
-
-    public void hideFloatingView() {
-        Intent intent = new Intent(this, MultiCallFloatingService.class);
-        stopService(intent);
     }
 
     void addParticipant(int maxNewInviteParticipantCount) {

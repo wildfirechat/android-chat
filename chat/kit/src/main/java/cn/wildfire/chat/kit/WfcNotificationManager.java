@@ -56,8 +56,8 @@ public class WfcNotificationManager {
         String channelId = "wfc_notification";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
-                    "wildfire chat message",
-                    NotificationManager.IMPORTANCE_HIGH);
+                "wildfire chat message",
+                NotificationManager.IMPORTANCE_HIGH);
 
             channel.enableLights(true); //是否在桌面icon右上角展示小红点
             channel.setLightColor(Color.GREEN); //小红点颜色
@@ -67,10 +67,10 @@ public class WfcNotificationManager {
 
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(true)
-                .setCategory(CATEGORY_MESSAGE)
-                .setDefaults(DEFAULT_ALL);
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setAutoCancel(true)
+            .setCategory(CATEGORY_MESSAGE)
+            .setDefaults(DEFAULT_ALL);
         builder.setContentIntent(pendingIntent);
         builder.setContentTitle(title);
         builder.setContentText(content);
@@ -88,7 +88,7 @@ public class WfcNotificationManager {
             return;
         }
 
-        if(ChatManager.Instance().isGlobalSilent()) {
+        if (ChatManager.Instance().isGlobalSilent()) {
             return;
         }
 

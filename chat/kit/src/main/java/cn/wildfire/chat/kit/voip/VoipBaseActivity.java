@@ -40,7 +40,7 @@ import cn.wildfirechat.client.NotInitializedExecption;
  * Activity for peer connection call setup, call waiting
  * and call view.
  */
-public class VoipBaseActivity extends FragmentActivity implements AVEngineKit.CallSessionCallback {
+public abstract class VoipBaseActivity extends FragmentActivity implements AVEngineKit.CallSessionCallback {
 
     // List of mandatory application permissions.
     private static final String[] MANDATORY_PERMISSIONS = {
@@ -111,6 +111,28 @@ public class VoipBaseActivity extends FragmentActivity implements AVEngineKit.Ca
             flags |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         }
         return flags;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            finish();
+            return;
+        }
+        session.setCallback(this);
+        hideFloatingView();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+            session.setCallback(null);
+            showFloatingView();
+        }
     }
 
     @Override
@@ -209,5 +231,22 @@ public class VoipBaseActivity extends FragmentActivity implements AVEngineKit.Ca
     @Override
     public void onBackPressed() {
         // do nothing
+    }
+
+    public void showFloatingView() {
+        if (!checkOverlayPermission()) {
+            return;
+        }
+
+        Intent intent = new Intent(this, VoipCallService.class);
+        intent.putExtra("showFloatingView", true);
+        startService(intent);
+        finish();
+    }
+
+    public void hideFloatingView() {
+        Intent intent = new Intent(this, VoipCallService.class);
+        intent.putExtra("showFloatingView", false);
+        startService(intent);
     }
 }
