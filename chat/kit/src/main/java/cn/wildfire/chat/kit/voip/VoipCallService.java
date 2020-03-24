@@ -26,24 +26,22 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import org.webrtc.StatsReport;
-
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.model.Conversation;
 
 import static org.webrtc.RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
 
-public class SingleCallFloatingService extends Service {
-    private static boolean isStarted = false;
+public class VoipCallService extends Service {
     private static final int NOTIFICATION_ID = 1;
 
     private WindowManager wm;
     private View view;
     private WindowManager.LayoutParams params;
-    private AVEngineKit.CallSession session;
     private Intent resumeActivityIntent;
-    private String targetId;
+    private boolean initialized = false;
+    private boolean showFloatingWindow = false;
 
     private Handler handler = new Handler();
 
@@ -58,21 +56,67 @@ public class SingleCallFloatingService extends Service {
         return null;
     }
 
+    // 可以多次调用
+    public static void start(Context context, boolean showFloatingView) {
+        Intent intent = new Intent(context, VoipCallService.class);
+        intent.putExtra("showFloatingView", showFloatingView);
+        context.startService(intent);
+    }
+
+    public static void stop(Context context) {
+        Intent intent = new Intent(context, VoipCallService.class);
+        context.stopService(intent);
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (isStarted) {
-            return START_NOT_STICKY;
-        }
-
-        isStarted = true;
-        session = AVEngineKit.Instance().getCurrentSession();
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             stopSelf();
+        } else {
+            if (!initialized) {
+                initialized = true;
+                startForeground(NOTIFICATION_ID, buildNotification(session));
+                checkCallState();
+            }
+            showFloatingWindow = intent.getBooleanExtra("showFloatingView", false);
+            if (showFloatingWindow) {
+                try {
+                    showFloatingWindow(session);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                hideFloatBox();
+            }
         }
+        return START_NOT_STICKY;
+    }
 
-        targetId = session.getParticipantIds().get(0);
+    private void checkCallState() {
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
+            stopSelf();
+        } else {
+            updateNotification(session);
+            if (showFloatingWindow) {
+                if (session.isAudioOnly() || session.getConversation().type == Conversation.ConversationType.Group) {
+                    showAudioView(session);
+                } else {
+                    showVideoView(session);
+                }
+            }
+            handler.postDelayed(this::checkCallState, 1000);
+        }
+    }
 
-        resumeActivityIntent = new Intent(this, SingleCallActivity.class);
+    private void updateNotification(AVEngineKit.CallSession session) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, buildNotification(session));
+    }
+
+    private Notification buildNotification(AVEngineKit.CallSession session) {
+        resumeActivityIntent = new Intent(this, VoipDummyActivity.class);
         resumeActivityIntent.putExtra(SingleCallActivity.EXTRA_FROM_FLOATING_VIEW, true);
         resumeActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -82,7 +126,7 @@ public class SingleCallFloatingService extends Service {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             channelId = BuildConfig.APPLICATION_ID + ".voip";
             String channelName = "voip";
-            NotificationChannel chan = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel chan = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW);
             chan.setLightColor(Color.BLUE);
             chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -91,28 +135,41 @@ public class SingleCallFloatingService extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
 
-        builder.setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("通话中...")
-                .setContentIntent(pendingIntent)
-                .setOngoing(true)
-                .build();
-        startForeground(NOTIFICATION_ID, builder.build());
-        try {
-            showFloatingWindow();
-        } catch (Exception e) {
-            e.printStackTrace();
+        String title;
+        switch (session.getState()) {
+            case Outgoing:
+                title = "等待对方接听...";
+                break;
+            case Incoming:
+                title = "邀请您进行通话...";
+                break;
+            case Connecting:
+                title = "接听中...";
+                break;
+            default:
+                title = "通话中...";
+                break;
         }
-        return START_NOT_STICKY;
+        return builder.setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title)
+            .setContentIntent(pendingIntent)
+            .setOngoing(true)
+            .build();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        wm.removeView(view);
-        isStarted = false;
+        if (wm != null && view != null) {
+            wm.removeView(view);
+        }
     }
 
-    private void showFloatingWindow() {
+    private void showFloatingWindow(AVEngineKit.CallSession session) {
+        if (wm != null) {
+            return;
+        }
+
         wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         params = new WindowManager.LayoutParams();
 
@@ -124,8 +181,8 @@ public class SingleCallFloatingService extends Service {
         }
         params.type = type;
         params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+            | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+            | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
 
         params.format = PixelFormat.TRANSLUCENT;
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -137,87 +194,24 @@ public class SingleCallFloatingService extends Service {
         view = LayoutInflater.from(this).inflate(R.layout.av_voip_float_view, null);
         view.setOnTouchListener(onTouchListener);
         wm.addView(view, params);
-        if (session.isAudioOnly()) {
-            showAudioInfo();
+        if (session.isAudioOnly() || session.getConversation().type == Conversation.ConversationType.Group) {
+            showAudioView(session);
         } else {
-            showVideoInfo();
+            showVideoView(session);
         }
-        session.setCallback(new AVEngineKit.CallSessionCallback() {
-            @Override
-            public void didCallEndWithReason(AVEngineKit.CallEndReason reason) {
-                hideFloatBox();
-            }
-
-            @Override
-            public void didChangeState(AVEngineKit.CallState state) {
-
-            }
-
-            @Override
-            public void didParticipantJoined(String s) {
-
-            }
-
-            @Override
-            public void didParticipantConnected(String userId) {
-
-            }
-
-            @Override
-            public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
-
-            }
-
-            @Override
-            public void didChangeMode(boolean audioOnly) {
-                handler.post(() -> showAudioInfo());
-            }
-
-            @Override
-            public void didCreateLocalVideoTrack() {
-
-            }
-
-            @Override
-            public void didReceiveRemoteVideoTrack(String userId) {
-
-            }
-
-            @Override
-            public void didRemoveRemoteVideoTrack(String s) {
-
-            }
-
-            @Override
-            public void didError(String error) {
-                hideFloatBox();
-            }
-
-            @Override
-            public void didGetStats(StatsReport[] reports) {
-
-            }
-
-            @Override
-            public void didVideoMuted(String s, boolean b) {
-
-            }
-
-            @Override
-            public void didReportAudioVolume(String userId, int volume) {
-
-            }
-        });
     }
 
     public void hideFloatBox() {
-        stopSelf();
+        if (wm != null && view != null) {
+            wm.removeView(view);
+            wm = null;
+            view = null;
+        }
     }
 
-    private void showAudioInfo() {
+    private void showAudioView(AVEngineKit.CallSession session) {
         FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
         if (remoteVideoFrameLayout.getVisibility() == View.VISIBLE) {
-            session.setupRemoteVideo(targetId, null, SCALE_ASPECT_BALANCED);
             remoteVideoFrameLayout.setVisibility(View.GONE);
             wm.removeView(view);
             wm.addView(view, params);
@@ -225,32 +219,9 @@ public class SingleCallFloatingService extends Service {
         }
 
         view.findViewById(R.id.audioLinearLayout).setVisibility(View.VISIBLE);
-        TextView timeV = view.findViewById(R.id.durationTextView);
+        TextView timeView = view.findViewById(R.id.durationTextView);
         ImageView mediaIconV = view.findViewById(R.id.av_media_type);
         mediaIconV.setImageResource(R.drawable.av_float_audio);
-        refreshCallDurationInfo(timeV);
-    }
-
-    private void showVideoInfo() {
-        view.findViewById(R.id.audioLinearLayout).setVisibility(View.GONE);
-        FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
-        remoteVideoFrameLayout.setVisibility(View.VISIBLE);
-        SurfaceView surfaceView = session.createRendererView();
-        if (surfaceView != null) {
-            remoteVideoFrameLayout.addView(surfaceView);
-            session.setupRemoteVideo(targetId, surfaceView, SCALE_ASPECT_BALANCED);
-        }
-    }
-
-    private void clickToResume() {
-        startActivity(resumeActivityIntent);
-    }
-
-    private void refreshCallDurationInfo(TextView timeView) {
-        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session == null || !session.isAudioOnly()) {
-            return;
-        }
 
         long duration = (System.currentTimeMillis() - session.getStartTime()) / 1000;
         if (duration >= 3600) {
@@ -258,7 +229,26 @@ public class SingleCallFloatingService extends Service {
         } else {
             timeView.setText(String.format("%02d:%02d", (duration % 3600) / 60, (duration % 60)));
         }
-        handler.postDelayed(() -> refreshCallDurationInfo(timeView), 1000);
+    }
+
+    private void showVideoView(AVEngineKit.CallSession session) {
+        view.findViewById(R.id.audioLinearLayout).setVisibility(View.GONE);
+        FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
+        remoteVideoFrameLayout.setVisibility(View.VISIBLE);
+        SurfaceView surfaceView = session.createRendererView();
+        if (surfaceView != null) {
+            remoteVideoFrameLayout.addView(surfaceView);
+            String targetId = session.getParticipantIds().get(0);
+            if (session.getState() == AVEngineKit.CallState.Connected) {
+                session.setupRemoteVideo(targetId, surfaceView, SCALE_ASPECT_BALANCED);
+            } else {
+                session.setupLocalVideo(surfaceView, SCALE_ASPECT_BALANCED);
+            }
+        }
+    }
+
+    private void clickToResume() {
+        startActivity(resumeActivityIntent);
     }
 
     View.OnTouchListener onTouchListener = new View.OnTouchListener() {
@@ -289,7 +279,6 @@ public class SingleCallFloatingService extends Service {
                 int newOffsetY = params.y;
                 if (Math.abs(oldOffsetX - newOffsetX) <= 20 && Math.abs(oldOffsetY - newOffsetY) <= 20) {
                     clickToResume();
-                    hideFloatBox();
                 } else {
                     tag = 0;
                 }

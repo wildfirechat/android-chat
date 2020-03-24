@@ -38,8 +38,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     FrameLayout pipRenderer;
     @BindView(R.id.fullscreen_video_view)
     FrameLayout fullscreenRenderer;
-    @BindView(R.id.minimizeImageView)
-    ImageView minimizeImageView;
     @BindView(R.id.outgoingActionContainer)
     ViewGroup outgoingActionContainer;
     @BindView(R.id.incomingActionContainer)
@@ -103,7 +101,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             outgoingActionContainer.setVisibility(View.GONE);
             connectedActionContainer.setVisibility(View.VISIBLE);
             inviteeInfoContainer.setVisibility(View.GONE);
-            minimizeImageView.setVisibility(View.VISIBLE);
         } else {
             // do nothing now
         }
@@ -308,7 +305,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             outgoingActionContainer.setVisibility(View.GONE);
             connectedActionContainer.setVisibility(View.VISIBLE);
             inviteeInfoContainer.setVisibility(View.GONE);
-            minimizeImageView.setVisibility(View.VISIBLE);
 
             targetId = session.getParticipantIds().get(0);
 
@@ -323,8 +319,11 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 connectedActionContainer.setVisibility(View.GONE);
                 descTextView.setText(R.string.av_waiting);
-
-                gEngineKit.getCurrentSession().startPreview();
+                if (session.isLocalVideoCreated()) {
+                    didCreateLocalVideoTrack();
+                } else {
+                    gEngineKit.getCurrentSession().startPreview();
+                }
             } else {
                 incomingActionContainer.setVisibility(View.VISIBLE);
                 outgoingActionContainer.setVisibility(View.GONE);

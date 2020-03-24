@@ -88,21 +88,25 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
         initParticipantsView(session);
 
-        List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
-        for (AVEngineKit.ParticipantProfile profile : profiles) {
-            if (profile.getState() == AVEngineKit.CallState.Connected) {
-                didReceiveRemoteVideoTrack(profile.getUserId());
+        if (session.getState() == AVEngineKit.CallState.Connected) {
+            List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
+            for (AVEngineKit.ParticipantProfile profile : profiles) {
+                if (profile.getState() == AVEngineKit.CallState.Connected) {
+                    didReceiveRemoteVideoTrack(profile.getUserId());
+                }
             }
-        }
-        AVEngineKit.ParticipantProfile profile = session.getMyProfile();
-        if (profile.getState() == AVEngineKit.CallState.Connected) {
             didCreateLocalVideoTrack();
+        } else {
+            if (session.isLocalVideoCreated()) {
+                didCreateLocalVideoTrack();
+            } else {
+                session.startPreview();
+            }
         }
 
         updateCallDuration();
         updateParticipantStatus(session);
         bringParticipantVideoFront();
-        session.startPreview();
 
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_NORMAL);
