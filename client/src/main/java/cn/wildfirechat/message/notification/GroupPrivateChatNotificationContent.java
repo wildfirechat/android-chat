@@ -17,7 +17,7 @@ import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_CHANG
 public class GroupPrivateChatNotificationContent extends GroupNotificationMessageContent {
     public String operator;
 
-    //是否运行群中普通成员私聊。0 运行，1不允许
+    //是否运行群中普通成员私聊。0 允许，1不允许
     public int type;
 
     @Override

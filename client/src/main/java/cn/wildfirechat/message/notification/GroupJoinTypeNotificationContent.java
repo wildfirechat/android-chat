@@ -30,7 +30,7 @@ public class GroupJoinTypeNotificationContent extends GroupNotificationMessageCo
         }
         switch (type) {
             case 0:
-                sb.append("开发了加入群组功能");
+                sb.append("开放了加入群组功能");
                 break;
             case 1:
                 sb.append("仅允许群成员邀请加入群组");
