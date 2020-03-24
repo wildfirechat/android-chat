@@ -4275,7 +4275,7 @@ public class ChatManager {
             checkRemoteService();
             mainHandler.post(() -> {
                 for (IMServiceStatusListener listener : imServiceStatusListeners) {
-                    listener.onServiceConnected();
+                    listener.onServiceDisconnected();
                 }
             });
         }
