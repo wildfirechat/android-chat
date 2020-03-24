@@ -41,8 +41,6 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     ImageView muteImageView;
     @BindView(R.id.speakerImageView)
     ImageView spearImageView;
-    @BindView(R.id.minimizeImageView)
-    ImageView minimizeImageView;
     @BindView(R.id.incomingActionContainer)
     ViewGroup incomingActionContainer;
     @BindView(R.id.outgoingActionContainer)
@@ -81,7 +79,6 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 descTextView.setVisibility(View.GONE);
                 durationTextView.setVisibility(View.VISIBLE);
-                minimizeImageView.setVisibility(View.VISIBLE);
             } else {
                 // do nothing now
             }
@@ -217,7 +214,6 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
             descTextView.setVisibility(View.GONE);
             outgoingActionContainer.setVisibility(View.VISIBLE);
             durationTextView.setVisibility(View.VISIBLE);
-            minimizeImageView.setVisibility(View.VISIBLE);
         } else {
             if (session.getState() == AVEngineKit.CallState.Outgoing) {
                 descTextView.setText(R.string.av_waiting);

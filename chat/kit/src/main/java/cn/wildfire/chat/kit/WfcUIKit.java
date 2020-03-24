@@ -39,6 +39,7 @@ import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.MultiCallActivity;
 import cn.wildfire.chat.kit.voip.SingleCallActivity;
+import cn.wildfire.chat.kit.voip.VoipCallService;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.chat.R;
@@ -83,6 +84,12 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             public void onForeground() {
                 WfcNotificationManager.getInstance().clearAllNotification(application);
                 isBackground = false;
+
+                // 处理没有后台弹出界面权限
+                AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+                if (session != null) {
+                    onReceiveCall(session);
+                }
             }
 
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -174,6 +181,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             Intent intent = new Intent(WfcIntent.ACTION_VOIP_MULTI);
             startActivity(application, intent);
         }
+        VoipCallService.start(application, false);
     }
 
     private AsyncPlayer ringPlayer;
@@ -201,6 +209,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
         Intent voip = new Intent(context, SingleCallActivity.class);
         startActivity(context, voip);
+
+        VoipCallService.start(context, false);
     }
 
     public static void multiCall(Context context, String groupId, List<String> participants, boolean isAudioOnly) {
@@ -209,9 +219,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             return;
         }
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId);
-        if(participants.size() >= 4){
+        if (participants.size() >= 4) {
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP240P, false);
-        }else if(participants.size() >= 6){
+        } else if (participants.size() >= 6) {
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P, false);
         }
         AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
