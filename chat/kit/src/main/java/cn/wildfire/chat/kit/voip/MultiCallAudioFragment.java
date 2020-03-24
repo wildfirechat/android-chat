@@ -166,13 +166,16 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didChangeState(AVEngineKit.CallState callState) {
+        if (getActivity() == null || getActivity().isFinishing()) {
+            return;
+        }
+        Toast.makeText(getActivity(), "" + callState.name(), Toast.LENGTH_SHORT).show();
         AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
         if (callState == AVEngineKit.CallState.Connected) {
             updateParticipantStatus(callSession);
         } else if (callState == AVEngineKit.CallState.Idle) {
             getActivity().finish();
         }
-        Toast.makeText(getActivity(), "" + callState.name(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

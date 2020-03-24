@@ -31,18 +31,11 @@ public class SingleCallActivity extends VoipBaseActivity {
 
     public static final String EXTRA_FROM_FLOATING_VIEW = "fromFloatingView";
 
-    private boolean isFromFloatingView;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
 
-        isFromFloatingView = intent.getBooleanExtra(EXTRA_FROM_FLOATING_VIEW, false);
-        if (isFromFloatingView) {
-            Intent serviceIntent = new Intent(this, SingleCallFloatingService.class);
-            stopService(serviceIntent);
-        }
         init();
     }
 
@@ -53,8 +46,6 @@ public class SingleCallActivity extends VoipBaseActivity {
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             finish();
             return;
-        } else {
-            session.setCallback(SingleCallActivity.this);
         }
 
         Fragment fragment;
@@ -181,14 +172,4 @@ public class SingleCallActivity extends VoipBaseActivity {
         audioAccept();
     }
 
-    public void showFloatingView() {
-
-        if (!checkOverlayPermission()) {
-            return;
-        }
-
-        Intent intent = new Intent(this, SingleCallFloatingService.class);
-        startService(intent);
-        finish();
-    }
 }
