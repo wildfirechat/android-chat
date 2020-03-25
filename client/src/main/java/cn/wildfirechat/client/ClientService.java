@@ -574,7 +574,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void setMediaMessagePlayed(long messageId) {
             try {
                 Message message = getMessage(messageId);
-                if (message == null || message.direction == MessageDirection.Send || !(message.content instanceof MediaMessageContent)) {
+                if (message == null) {
                     return;
                 }
                 ProtoLogic.setMediaMessagePlayed(messageId);
