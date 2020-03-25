@@ -172,6 +172,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         if (participants == null || participants.isEmpty()) {
             return;
         }
+        AudioManager audioManager = (AudioManager) application.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMode(session.isAudioOnly() ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
+        audioManager.setSpeakerphoneOn(!session.isAudioOnly());
 
         Conversation conversation = session.getConversation();
         if (conversation.type == Conversation.ConversationType.Single) {
