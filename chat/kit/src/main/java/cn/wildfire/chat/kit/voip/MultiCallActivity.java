@@ -49,14 +49,16 @@ public class MultiCallActivity extends VoipBaseActivity {
 
     private void init() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session == null) {
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             finish();
             return;
         }
         groupId = session.getConversation().target;
 
         Fragment fragment;
-        if (session.isAudioOnly()) {
+        if (session.getState() == AVEngineKit.CallState.Incoming) {
+            fragment = new MultiCallIncomingFragment();
+        } else if (session.isAudioOnly()) {
             fragment = new MultiCallAudioFragment();
         } else {
             fragment = new MultiCallVideoFragment();
@@ -158,6 +160,36 @@ public class MultiCallActivity extends VoipBaseActivity {
         postAction(() -> {
             currentCallSessionCallback.didGetStats(statsReports);
         });
+    }
+
+    void hangup() {
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+            session.endCall();
+        }
+        finish();
+    }
+
+    void accept() {
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            finish();
+            return;
+        }
+
+        Fragment fragment;
+        if (session.isAudioOnly()) {
+            fragment = new MultiCallAudioFragment();
+        } else {
+            fragment = new MultiCallVideoFragment();
+        }
+        currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+            .replace(android.R.id.content, fragment)
+            .commit();
+
+        session.answerCall(session.isAudioOnly());
     }
 
     @Override

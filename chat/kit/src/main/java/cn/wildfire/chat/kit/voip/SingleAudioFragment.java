@@ -30,7 +30,7 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     private AVEngineKit gEngineKit;
-    private boolean micEnabled = true;
+    private boolean audioEnable = true;
     private boolean isSpeakerOn = false;
 
     @BindView(R.id.portraitImageView)
@@ -148,10 +148,9 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     public void mute() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            if (session.muteAudio(!micEnabled)) {
-                micEnabled = !micEnabled;
-            }
-            muteImageView.setSelected(!micEnabled);
+            session.muteAudio(audioEnable);
+            audioEnable = !audioEnable;
+            muteImageView.setSelected(!audioEnable);
         }
     }
 
@@ -230,8 +229,13 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         GlideApp.with(this).load(userInfo.portrait).error(R.mipmap.default_header).into(portraitImageView);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
-        muteImageView.setSelected(!micEnabled);
+        audioEnable = session.isEnableAudio();
+        muteImageView.setSelected(!audioEnable);
         updateCallDuration();
+
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        isSpeakerOn = audioManager.getMode() == AudioManager.MODE_NORMAL;
+        spearImageView.setSelected(isSpeakerOn);
     }
 
     private void runOnUiThread(Runnable runnable) {
