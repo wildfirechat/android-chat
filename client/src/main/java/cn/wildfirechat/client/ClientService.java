@@ -2128,7 +2128,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onReceiveMessage(List<ProtoMessage> messages, boolean hasMore) {
-        if (mConnectionStatus == ConnectionStatusReceiveing) {
+        if (mConnectionStatus == ConnectionStatusReceiveing && hasMore) {
             return;
         }
         if (messages.isEmpty()) {

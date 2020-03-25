@@ -93,6 +93,12 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             }
         }
 
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            finish();
+            return;
+        }
+        session.setCallback(this);
     }
 
     @Override
@@ -139,7 +145,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
 
     @Override
     protected void onDestroy() {
-        Thread.setDefaultUncaughtExceptionHandler(null);
+//        Thread.setDefaultUncaughtExceptionHandler(null);
         super.onDestroy();
         if (wakeLock != null) {
             wakeLock.release();
