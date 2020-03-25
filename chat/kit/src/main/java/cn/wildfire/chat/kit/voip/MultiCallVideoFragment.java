@@ -81,7 +81,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     private void init() {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session == null) {
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             getActivity().finish();
             return;
         }
