@@ -135,16 +135,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="cn.wildfire.chat.kit.voip.MultiCallIncomingActivity"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="${applicationId}.kit.voip.multi" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <activity
             android:name="cn.wildfire.chat.kit.conversation.CreateConversationActivity"
             android:label="创建会话" />
         <activity
@@ -254,21 +244,27 @@
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait" />
-        <activity android:name="cn.wildfire.chat.kit.voip.VoipDummyActivity"
-            android:launchMode="singleInstance"/>
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="${applicationId}.kit.voip.multi" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="cn.wildfire.chat.kit.voip.VoipDummyActivity"
+            android:launchMode="singleInstance" />
 
         <!--moment-->
-<!--        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />-->
-<!--        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />-->
-<!--        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />-->
-<!--        <activity android:name="cn.wildfire.chat.moment.FeedListActivity">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="${applicationId}.moment" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
-<!--        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />-->
+        <!--        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />-->
+        <!--        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />-->
+        <!--        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />-->
+        <!--        <activity android:name="cn.wildfire.chat.moment.FeedListActivity">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="${applicationId}.moment" />-->
+        <!--                <category android:name="android.intent.category.DEFAULT" />-->
+        <!--            </intent-filter>-->
+        <!--        </activity>-->
+        <!--        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />-->
 
         <provider
             android:name="androidx.core.content.FileProvider"
