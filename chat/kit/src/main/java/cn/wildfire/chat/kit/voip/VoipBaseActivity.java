@@ -12,9 +12,11 @@ package cn.wildfire.chat.kit.voip;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -150,6 +152,9 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
 
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason reason) {
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMode(AudioManager.MODE_NORMAL);
+        audioManager.setSpeakerphoneOn(false);
         finish();
     }
 
