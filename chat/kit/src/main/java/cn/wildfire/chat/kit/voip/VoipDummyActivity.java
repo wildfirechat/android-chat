@@ -21,11 +21,7 @@ public class VoipDummyActivity extends FragmentActivity {
             if (session.getConversation().type == Conversation.ConversationType.Single) {
                 intent = new Intent(this, SingleCallActivity.class);
             } else {
-                if (session.getState() == AVEngineKit.CallState.Incoming) {
-                    intent = new Intent(this, MultiCallIncomingActivity.class);
-                } else {
-                    intent = new Intent(this, MultiCallActivity.class);
-                }
+                intent = new Intent(this, MultiCallActivity.class);
             }
             startActivity(intent);
             finish();
