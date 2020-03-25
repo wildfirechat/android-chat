@@ -49,7 +49,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     private UserInfo me;
     private UserViewModel userViewModel;
     private boolean isSpeakerOn;
-    private boolean micEnabled = true;
+    private boolean audioEnable = false;
 
     public static final String TAG = "MultiCallVideoFragment";
 
@@ -70,9 +70,16 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
             return;
         }
 
+        audioEnable = session.isEnableAudio();
+        muteImageView.setSelected(!audioEnable);
+
         initParticipantsView(session);
         updateParticipantStatus(session);
         updateCallDuration();
+
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        isSpeakerOn = audioManager.getMode() == AudioManager.MODE_NORMAL;
+        speakerImageView.setSelected(isSpeakerOn);
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
@@ -131,10 +138,9 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            if (session.muteAudio(!micEnabled)) {
-                micEnabled = !micEnabled;
-            }
-            muteImageView.setSelected(!micEnabled);
+            session.muteAudio(audioEnable);
+            audioEnable = !audioEnable;
+            muteImageView.setSelected(!audioEnable);
         }
     }
 

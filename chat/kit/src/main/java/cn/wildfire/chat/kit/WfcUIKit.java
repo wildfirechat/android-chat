@@ -204,6 +204,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     // pls refer to https://stackoverflow.com/questions/11124119/android-starting-new-activity-from-application-class
     public static void singleCall(Context context, String targetId, boolean isAudioOnly) {
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMode(isAudioOnly ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
+        audioManager.setSpeakerphoneOn(!isAudioOnly);
+
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetId);
         AVEngineKit.Instance().startCall(conversation, Collections.singletonList(targetId), isAudioOnly, null);
 
@@ -218,6 +222,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             Log.e("WfcKit", "avenginekit not support multi call");
             return;
         }
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMode(AudioManager.MODE_NORMAL);
+        audioManager.setSpeakerphoneOn(true);
+
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId);
         if (participants.size() >= 4) {
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP240P, false);
