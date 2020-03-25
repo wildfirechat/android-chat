@@ -1892,7 +1892,7 @@ public class ChatManager {
     }
 
     /**
-     * 设置audio获取media等媒体消息的播放状态
+     * 设置audio获取media等媒体消息的播放状态(其实是可以设置所有类型的消息为已播放，可以根据业务需求来处理)
      *
      * @param messageId
      */
