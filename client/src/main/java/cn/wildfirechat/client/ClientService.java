@@ -295,7 +295,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             protoMessage.setContent(payload.toProtoContent());
             protoMessage.setMessageId(msg.messageId);
             protoMessage.setDirection(msg.direction.ordinal());
-            protoMessage.setStatus(msg.status.ordinal());
+            protoMessage.setStatus(msg.status.value());
             protoMessage.setMessageUid(msg.messageUid);
             protoMessage.setTimestamp(msg.serverTime);
 
