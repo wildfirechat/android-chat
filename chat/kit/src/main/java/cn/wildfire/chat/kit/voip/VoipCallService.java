@@ -99,7 +99,7 @@ public class VoipCallService extends Service {
             stopSelf();
         } else {
             updateNotification(session);
-            if (showFloatingWindow) {
+            if (showFloatingWindow && session.getState() == AVEngineKit.CallState.Connected) {
                 if (session.isAudioOnly() || session.getConversation().type == Conversation.ConversationType.Group) {
                     showAudioView(session);
                 } else {
@@ -194,10 +194,14 @@ public class VoipCallService extends Service {
         view = LayoutInflater.from(this).inflate(R.layout.av_voip_float_view, null);
         view.setOnTouchListener(onTouchListener);
         wm.addView(view, params);
-        if (session.isAudioOnly() || session.getConversation().type == Conversation.ConversationType.Group) {
-            showAudioView(session);
+        if (session.getState() != AVEngineKit.CallState.Connected) {
+            showUnConnectedCallInfo(session);
         } else {
-            showVideoView(session);
+            if (session.isAudioOnly() || session.getConversation().type == Conversation.ConversationType.Group) {
+                showAudioView(session);
+            } else {
+                showVideoView(session);
+            }
         }
     }
 
@@ -207,6 +211,35 @@ public class VoipCallService extends Service {
             wm = null;
             view = null;
         }
+    }
+
+    private void showUnConnectedCallInfo(AVEngineKit.CallSession session) {
+        FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
+        if (remoteVideoFrameLayout.getVisibility() == View.VISIBLE) {
+            remoteVideoFrameLayout.setVisibility(View.GONE);
+            wm.removeView(view);
+            wm.addView(view, params);
+//            wm.updateViewLayout(view, params);
+        }
+
+        view.findViewById(R.id.audioLinearLayout).setVisibility(View.VISIBLE);
+        TextView timeView = view.findViewById(R.id.durationTextView);
+        ImageView mediaIconV = view.findViewById(R.id.av_media_type);
+        mediaIconV.setImageResource(R.drawable.av_float_audio);
+
+        String title = "";
+        switch (session.getState()) {
+            case Outgoing:
+                title = "等待接听";
+                break;
+            case Incoming:
+                title = "等待接听";
+                break;
+            case Connecting:
+                title = "接听中";
+                break;
+        }
+        timeView.setText(title);
     }
 
     private void showAudioView(AVEngineKit.CallSession session) {
