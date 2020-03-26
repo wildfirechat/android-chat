@@ -1607,21 +1607,19 @@ public class ChatManager {
      */
     public @Nullable
     ConversationInfo getConversation(Conversation conversation) {
+        ConversationInfo conversationInfo = null;
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
             return null;
         }
 
-
         try {
-            ConversationInfo conversationInfo = mClient.getConversation(conversation.type.getValue(), conversation.target, conversation.line);
-            if (conversationInfo == null) {
-                return new NullConversationInfo(conversation);
-            }
+            conversationInfo = mClient.getConversation(conversation.type.getValue(), conversation.target, conversation.line);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        return null;
+        conversationInfo = conversationInfo != null ? conversationInfo:new NullConversationInfo(conversation);
+        return conversationInfo;
     }
 
     /**
