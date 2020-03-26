@@ -56,6 +56,8 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     protected PowerManager.WakeLock wakeLock;
     private Handler handler = new Handler();
 
+    protected boolean isInvitingNewParticipant;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +126,9 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     protected void onResume() {
         super.onResume();
+        if (isInvitingNewParticipant) {
+            return;
+        }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             finish();
@@ -136,6 +141,9 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     protected void onStop() {
         super.onStop();
+        if (isInvitingNewParticipant) {
+            return;
+        }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             session.setCallback(null);
