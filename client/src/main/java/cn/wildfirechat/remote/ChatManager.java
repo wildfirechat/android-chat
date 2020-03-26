@@ -80,6 +80,7 @@ import cn.wildfirechat.model.ModifyChannelInfoType;
 import cn.wildfirechat.model.ModifyGroupInfoType;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.NullChannelInfo;
+import cn.wildfirechat.model.NullConversationInfo;
 import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.UnreadCount;
@@ -1613,7 +1614,10 @@ public class ChatManager {
 
 
         try {
-            return mClient.getConversation(conversation.type.getValue(), conversation.target, conversation.line);
+            ConversationInfo conversationInfo = mClient.getConversation(conversation.type.getValue(), conversation.target, conversation.line);
+            if (conversationInfo == null) {
+                return new NullConversationInfo(conversation);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
