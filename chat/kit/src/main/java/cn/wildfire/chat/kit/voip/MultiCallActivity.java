@@ -25,16 +25,10 @@ public class MultiCallActivity extends VoipBaseActivity {
     private String groupId;
     private AVEngineKit.CallSessionCallback currentCallSessionCallback;
 
-    private boolean isAddParticipant = false;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
-    }
-
-    public void setAddParticipant(boolean addParticipant) {
-        isAddParticipant = addParticipant;
     }
 
     @Override
@@ -198,7 +192,7 @@ public class MultiCallActivity extends VoipBaseActivity {
     }
 
     void addParticipant(int maxNewInviteParticipantCount) {
-        isAddParticipant = true;
+        isInvitingNewParticipant = true;
         Intent intent = new Intent(this, PickGroupMemberActivity.class);
         GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(groupId, false);
@@ -215,7 +209,7 @@ public class MultiCallActivity extends VoipBaseActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_ADD_PARTICIPANT) {
-            isAddParticipant = false;
+            isInvitingNewParticipant = false;
             if (resultCode == RESULT_OK) {
                 List<String> newParticipants = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
                 if (newParticipants != null && !newParticipants.isEmpty()) {
