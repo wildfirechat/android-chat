@@ -56,6 +56,10 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @BindView(R.id.checkbox)
     CheckBox checkBox;
 
+    @BindView(R.id.receiptImageView)
+    @Nullable
+    ImageView receiptImageView;
+
     public NormalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
     }
@@ -122,12 +126,12 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @OnClick(R.id.errorLinearLayout)
     public void onRetryClick(View itemView) {
         new MaterialDialog.Builder(fragment.getContext())
-                .content("重新发送?")
-                .negativeText("取消")
-                .positiveText("重发")
-                .onPositive((dialog, which) -> messageViewModel.resendMessage(message.message))
-                .build()
-                .show();
+            .content("重新发送?")
+            .negativeText("取消")
+            .positiveText("重发")
+            .onPositive((dialog, which) -> messageViewModel.resendMessage(message.message))
+            .build()
+            .show();
     }
 
 
@@ -172,7 +176,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 }
                 GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
                 if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Manager
-                        || groupMember.type == GroupMember.GroupMemberType.Owner)) {
+                    || groupMember.type == GroupMember.GroupMemberType.Owner)) {
                     return false;
                 }
             }
@@ -180,8 +184,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             long delta = ChatManager.Instance().getServerDeltaTime();
             long now = System.currentTimeMillis();
             if (message.direction == MessageDirection.Send
-                    && TextUtils.equals(message.sender, ChatManager.Instance().getUserId())
-                    && now - (message.serverTime - delta) < 60 * 1000) {
+                && TextUtils.equals(message.sender, ChatManager.Instance().getUserId())
+                && now - (message.serverTime - delta) < 60 * 1000) {
                 return false;
             } else {
                 return true;
@@ -191,7 +195,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         // 只有channel 主可以发起
         if (MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT.equals(tag)) {
             if (uiMessage.message.conversation.type == Conversation.ConversationType.Channel
-                    && uiMessage.message.direction == MessageDirection.Receive) {
+                && uiMessage.message.direction == MessageDirection.Receive) {
                 return false;
             }
             return true;
@@ -204,11 +208,11 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(item.sender, false);
         if (portraitImageView != null) {
             GlideApp
-                    .with(fragment)
-                    .load(userInfo.portrait)
-                    .transforms(new CenterCrop(), new RoundedCorners(10))
-                    .error(R.mipmap.default_header)
-                    .into(portraitImageView);
+                .with(fragment)
+                .load(userInfo.portrait)
+                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .error(R.mipmap.default_header)
+                .into(portraitImageView);
         }
     }
 
@@ -241,15 +245,26 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     protected void setSendStatus(Message item) {
         MessageStatus sentStatus = item.status;
+        if(item.direction == MessageDirection.Receive){
+            return;
+        }
+
         if (sentStatus == MessageStatus.Sending) {
             progressBar.setVisibility(View.VISIBLE);
             errorLinearLayout.setVisibility(View.GONE);
+            receiptImageView.setVisibility(View.GONE);
         } else if (sentStatus == MessageStatus.Send_Failure) {
             progressBar.setVisibility(View.GONE);
             errorLinearLayout.setVisibility(View.VISIBLE);
+            receiptImageView.setVisibility(View.GONE);
         } else if (sentStatus == MessageStatus.Sent) {
             progressBar.setVisibility(View.GONE);
             errorLinearLayout.setVisibility(View.GONE);
+            receiptImageView.setVisibility(View.GONE);
+        }else if(sentStatus == MessageStatus.Readed){
+            progressBar.setVisibility(View.GONE);
+            errorLinearLayout.setVisibility(View.GONE);
+            receiptImageView.setVisibility(View.VISIBLE);
         }
     }
 }
