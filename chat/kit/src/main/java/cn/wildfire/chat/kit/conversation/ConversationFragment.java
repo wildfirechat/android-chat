@@ -267,17 +267,9 @@ public class ConversationFragment extends Fragment implements
             }
         };
 
-        settingUpdateLiveDataObserver = o -> {
-            boolean show = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
-            if (showGroupMemberName != show) {
-                showGroupMemberName = show;
-                adapter.notifyDataSetChanged();
-            }
-        };
 
         groupViewModel.groupInfoUpdateLiveData().observeForever(groupInfosUpdateLiveDataObserver);
         groupViewModel.groupMembersUpdateLiveData().observeForever(groupMembersUpdateLiveDataObserver);
-        settingViewModel.settingUpdatedLiveData().observeForever(settingUpdateLiveDataObserver);
     }
 
     private void unInitGroupObservers() {
@@ -286,7 +278,6 @@ public class ConversationFragment extends Fragment implements
         }
         groupViewModel.groupInfoUpdateLiveData().removeObserver(groupInfosUpdateLiveDataObserver);
         groupViewModel.groupMembersUpdateLiveData().removeObserver(groupMembersUpdateLiveDataObserver);
-        settingViewModel.settingUpdatedLiveData().removeObserver(settingUpdateLiveDataObserver);
     }
 
     private boolean isMessageInCurrentConversation(UiMessage message) {
@@ -376,6 +367,16 @@ public class ConversationFragment extends Fragment implements
 
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
+
+        settingUpdateLiveDataObserver = o -> {
+//            boolean show = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
+//            if (showGroupMemberName != show) {
+//                showGroupMemberName = show;
+//                adapter.notifyDataSetChanged();
+//            }
+            reloadMessage();
+        };
+        settingViewModel.settingUpdatedLiveData().observeForever(settingUpdateLiveDataObserver);
     }
 
     private void setupConversation(Conversation conversation) {
@@ -644,6 +645,7 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.mediaUpdateLiveData().removeObserver(mediaUploadedLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoUpdateLiveDataObserver);
         conversationViewModel.clearConversationMessageLiveData().removeObserver(clearConversationMessageObserver);
+        settingViewModel.settingUpdatedLiveData().removeObserver(settingUpdateLiveDataObserver);
 
         unInitGroupObservers();
         inputPanel.onDestroy();
