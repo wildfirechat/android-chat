@@ -5,7 +5,6 @@ package cn.wildfirechat.message.core;
  */
 
 public enum MessageStatus {
-    All(-1),
     Sending(0),
     Sent(1),
     Send_Failure(2),
@@ -14,7 +13,6 @@ public enum MessageStatus {
     Unread(5),
     Readed(6),
     Played(7);
-
 
     private int value;
 
