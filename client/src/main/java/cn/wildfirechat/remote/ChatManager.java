@@ -1279,7 +1279,7 @@ public class ChatManager {
 //                return false;
 //            }
 
-            boolean result = mClient.updateMessageStatus(messageId, status.ordinal());
+            boolean result = mClient.updateMessageStatus(messageId, status.value());
             mainHandler.post(() -> {
                 for (OnMessageUpdateListener listener : messageUpdateListeners) {
                     listener.onMessageUpdate(message);
