@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_margin_left_and_right"
@@ -24,30 +24,28 @@
             android:src="@mipmap/default_header" />
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/nameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/item_margin_left_and_right"
                 android:layout_weight="1"
                 android:singleLine="true"
-                android:textColor="@color/gray0"
-                android:textSize="16sp"
+                android:textColor="@color/black1"
+                android:textSize="15sp"
                 tools:text="imndx" />
 
             <TextView
                 android:id="@+id/descTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/item_margin_left_and_right"
                 android:layout_weight="1"
                 android:singleLine="true"
-                android:textColor="@color/gray0"
+                android:textColor="@color/gray11"
                 android:textSize="12sp"
                 tools:text="2条记录" />
         </LinearLayout>
@@ -57,8 +55,7 @@
     <View
         android:id="@+id/dividerLine"
         style="@style/Line"
-        android:layout_marginLeft="@dimen/item_margin_left_and_right"
-        android:layout_marginRight="@dimen/item_margin_left_and_right"
+        android:layout_marginLeft="76dp"
         android:visibility="visible" />
 
 </LinearLayout>

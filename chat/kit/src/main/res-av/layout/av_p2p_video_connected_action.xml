@@ -6,6 +6,7 @@
     android:layout_marginTop="30dp"
     android:layout_marginRight="30dp"
     android:layout_marginBottom="30dp"
+    android:background="@drawable/video_bottom"
     android:gravity="center"
     android:orientation="vertical">
 
@@ -13,7 +14,9 @@
         android:id="@+id/durationTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00" />
+        android:text="00:00"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +41,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="切到语音通话" />
+                android:text="切到语音通话"
+                android:textColor="@color/gray22" />
 
         </LinearLayout>
 
@@ -59,7 +63,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="挂断" />
+                android:text="挂断"
+                android:textColor="@color/gray22" />
 
         </LinearLayout>
 
@@ -80,7 +85,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="旋转摄像头" />
+                android:text="旋转摄像头"
+                android:textColor="@color/gray22" />
 
         </LinearLayout>
     </LinearLayout>

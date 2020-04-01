@@ -54,6 +54,10 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     TextView descTextView;
     @BindView(R.id.durationTextView)
     TextView durationTextView;
+    @BindView(R.id.bg_top)
+    View topBg;
+    @BindView(R.id.bg_bottom)
+    View bottomBg;
 
     SurfaceView localSurfaceView;
     SurfaceView remoteSurfaceView;
@@ -101,6 +105,8 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             outgoingActionContainer.setVisibility(View.GONE);
             connectedActionContainer.setVisibility(View.VISIBLE);
             inviteeInfoContainer.setVisibility(View.GONE);
+            topBg.setVisibility(View.GONE);
+            bottomBg.setVisibility(View.GONE);
         } else {
             // do nothing now
         }
@@ -319,7 +325,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 connectedActionContainer.setVisibility(View.GONE);
                 descTextView.setText(R.string.av_waiting);
-                if (session.isLocalVideoCreated()) {
+                if (AVEngineKit.CallState.Connected == session.getState()) {
                     didCreateLocalVideoTrack();
                 } else {
                     gEngineKit.getCurrentSession().startPreview();

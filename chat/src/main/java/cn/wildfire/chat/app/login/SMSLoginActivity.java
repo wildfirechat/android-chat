@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.text.Editable;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -29,13 +30,18 @@ public class SMSLoginActivity extends WfcBaseActivity {
     @BindView(R.id.authCodeEditText)
     EditText authCodeEditText;
     @BindView(R.id.requestAuthCodeButton)
-    Button requestAuthCodeButton;
+    TextView requestAuthCodeButton;
 
     private String phoneNumber;
 
     @Override
     protected int contentLayout() {
         return R.layout.login_activity_sms;
+    }
+
+    @Override
+    protected void afterViews() {
+        getSupportActionBar().hide();
     }
 
     @OnTextChanged(value = R.id.phoneNumberEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)

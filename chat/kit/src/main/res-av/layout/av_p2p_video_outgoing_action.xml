@@ -45,7 +45,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="取消"
-            android:textSize="10sp" />
+            android:textColor="@color/white"
+            android:textSize="14sp" />
 
     </LinearLayout>
 

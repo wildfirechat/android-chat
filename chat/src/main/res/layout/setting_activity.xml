@@ -11,7 +11,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@color/white"
         android:orientation="vertical">
 
@@ -19,6 +18,7 @@
             android:id="@+id/privacySettingOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
+            app:show_arrow_indicator="true"
             app:title="隐私设置" />
     </LinearLayout>
 
@@ -33,6 +33,7 @@
             android:id="@+id/aboutOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
+            app:show_arrow_indicator="true"
             app:title="关于" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
@@ -40,6 +41,7 @@
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
             android:clickable="true"
+            app:show_arrow_indicator="true"
             app:title="诊断" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
@@ -47,6 +49,7 @@
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
             android:clickable="true"
+            app:show_arrow_indicator="true"
             app:title="上传日志" />
     </LinearLayout>
 
@@ -57,16 +60,19 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <View
-            style="@style/Line"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" />
+        <View style="@style/Line" />
 
-        <cn.wildfire.chat.kit.widget.OptionItemView
+        <TextView
             android:id="@+id/exitOptionItemView"
-            style="@style/OptionItem"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:background="@drawable/selector_option_item"
-            app:title="@string/exit" />
+            android:gravity="center"
+            android:text="@string/exit"
+            android:textColor="@color/black1"
+            android:textSize="16sp" />
+
+        <View style="@style/Line" />
     </LinearLayout>
 
 </LinearLayout>

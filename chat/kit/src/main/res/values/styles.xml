@@ -13,9 +13,10 @@
     </style>
 
     <style name="AppTheme.Appbar">
-        <item name="actionMenuTextColor">@color/menu_text_color</item>
+        <item name="actionMenuTextColor">@color/gray15</item>
         <item name="overlapAnchor">false</item>
-        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="titleTextColor">@color/black2</item>
+        <item name="android:textColorPrimary">@color/black2</item>
         <item name="colorControlNormal">@color/white</item>
     </style>
 
@@ -37,7 +38,7 @@
     <!--实下滑线样式-->
     <style name="Line">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_height">0.5dp</item>
         <item name="android:background">@color/line</item>
     </style>
 
@@ -45,6 +46,23 @@
     <style name="OptionItem">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Switch">
+        <item name="android:thumb">@drawable/switch_thumb</item>
+        <item name="android:track">@drawable/switch_track</item>
+    </style>
+
+    <style name="IosSwitch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="kswBackDrawable">@drawable/ios_back_drawable</item>
+        <item name="kswBackMeasureRatio">1.5</item>
+        <item name="kswThumbDrawable">@drawable/ios_thumb_selector</item>
+        <item name="kswThumbMarginBottom">-8dp</item>
+        <item name="kswThumbMarginLeft">-5dp</item>
+        <item name="kswThumbMarginRight">-5dp</item>
+        <item name="kswThumbMarginTop">-2dp</item>
     </style>
 
 </resources>

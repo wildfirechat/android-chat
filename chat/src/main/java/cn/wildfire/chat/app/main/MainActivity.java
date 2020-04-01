@@ -118,6 +118,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     @Override
     protected void afterViews() {
+        bottomNavigationView.setItemIconTintList(null);
         IMServiceStatusViewModel imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
         imServiceStatusViewModel.imServiceStatusLiveData().observe(this, imStatusLiveDataObserver);
         IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
@@ -130,7 +131,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         messageViewModel.messageLiveData().observe(this, uiMessage -> {
             if (uiMessage.message.content.getType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
-                || uiMessage.message.content.getType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT) {
+                    || uiMessage.message.content.getType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT) {
                 updateMomentBadgeView();
             }
         });
@@ -270,15 +271,23 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             switch (item.getItemId()) {
                 case R.id.conversation_list:
                     contentViewPager.setCurrentItem(0);
+                    setTitle("野火");
+                    setTitleBackgroundResource(R.color.gray5);
                     break;
                 case R.id.contact:
                     contentViewPager.setCurrentItem(1);
+                    setTitle("通讯录");
+                    setTitleBackgroundResource(R.color.gray5);
                     break;
                 case R.id.discovery:
                     contentViewPager.setCurrentItem(2);
+                    setTitle("发现");
+                    setTitleBackgroundResource(R.color.gray5);
                     break;
                 case R.id.me:
                     contentViewPager.setCurrentItem(3);
+                    setTitle("");
+                    setTitleBackgroundResource(R.color.white);
                     break;
                 default:
                     break;
@@ -388,7 +397,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100 && grantResults.length > 0
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startActivityForResult(new Intent(this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
         }
     }

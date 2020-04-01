@@ -27,7 +27,7 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.nameTextView)
     TextView nameTextView;
     @BindView(R.id.categoryTextView)
-    TextView categoryTextView;
+    protected TextView categoryTextView;
 
     protected UIUserInfo userInfo;
 

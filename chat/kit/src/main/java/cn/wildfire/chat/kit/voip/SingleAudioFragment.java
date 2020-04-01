@@ -16,12 +16,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CenterInside;
+import com.bumptech.glide.load.resource.bitmap.FitCenter;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+
 import org.webrtc.StatsReport;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
@@ -33,14 +39,18 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     private boolean audioEnable = true;
     private boolean isSpeakerOn = false;
 
+    @BindView(R.id.bigPortraitImageView)
+    ImageView bigPortraitImageView;
     @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
     @BindView(R.id.nameTextView)
     TextView nameTextView;
     @BindView(R.id.muteImageView)
-    ImageView muteImageView;
+    View muteImageView;
     @BindView(R.id.speakerImageView)
-    ImageView spearImageView;
+    View spearImageView;
+    @BindView(R.id.minimizeImageView)
+    ImageView minimizeImageView;
     @BindView(R.id.incomingActionContainer)
     ViewGroup incomingActionContainer;
     @BindView(R.id.outgoingActionContainer)
@@ -77,8 +87,11 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
             if (state == AVEngineKit.CallState.Connected) {
                 incomingActionContainer.setVisibility(View.GONE);
                 outgoingActionContainer.setVisibility(View.VISIBLE);
-                descTextView.setVisibility(View.GONE);
+                descTextView.setVisibility(View.INVISIBLE);
                 durationTextView.setVisibility(View.VISIBLE);
+                minimizeImageView.setVisibility(View.VISIBLE);
+                muteImageView.setVisibility(View.VISIBLE);
+                spearImageView.setVisibility(View.VISIBLE);
             } else {
                 // do nothing now
             }
@@ -210,7 +223,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
             return;
         }
         if (session.getState() == AVEngineKit.CallState.Connected) {
-            descTextView.setVisibility(View.GONE);
+            descTextView.setVisibility(View.INVISIBLE);
             outgoingActionContainer.setVisibility(View.VISIBLE);
             durationTextView.setVisibility(View.VISIBLE);
         } else {
@@ -226,7 +239,16 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
         String targetId = session.getParticipantIds().get(0);
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
-        GlideApp.with(this).load(userInfo.portrait).error(R.mipmap.default_header).into(portraitImageView);
+        GlideApp.with(this)
+                .load(userInfo.portrait)
+                .placeholder(R.mipmap.default_header)
+                .transforms(new FitCenter())
+                .into(bigPortraitImageView);
+        GlideApp.with(this)
+                .load(userInfo.portrait)
+                .placeholder(UIUtils.getRoundedDrawable(R.mipmap.default_header, 6))
+                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(6)))
+                .into(portraitImageView);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
         audioEnable = session.isEnableAudio();

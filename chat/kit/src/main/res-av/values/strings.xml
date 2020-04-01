@@ -1,5 +1,5 @@
 <resources>
-    <string name="av_waiting">正在等待对方接受邀请.</string>
+    <string name="av_waiting">正在等待对方接受邀请...</string>
     <string name="av_audio_invite">邀请你进行语音通话</string>
     <string name="av_video_invite">邀请你进行视频通话</string>
     <string name="connecting">连接中...</string>

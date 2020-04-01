@@ -11,6 +11,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -26,8 +27,8 @@ public class UnknownConversationViewHolder extends ConversationViewHolder {
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
         GlideApp
                 .with(fragment)
-                .load(R.mipmap.avatar_def)
-                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .load(UIUtils.getRoundedDrawable(R.mipmap.avatar_def, 4))
+                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(4)))
                 .into(portraitImageView);
         nameTextView.setText("未知会话类型(" + conversationInfo.conversation.type.getValue() + ")或线路(" + conversationInfo.conversation.line + ")");
     }
