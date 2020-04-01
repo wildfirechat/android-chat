@@ -204,7 +204,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
                 multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
 
                 multiCallItem.getStatusTextView().setText(R.string.connecting);
-                GlideApp.with(multiCallItem).load(info.portrait).into(multiCallItem.getPortraitImageView());
+                GlideApp.with(multiCallItem).load(info.portrait).error(R.mipmap.default_header).into(multiCallItem.getPortraitImageView());
                 audioContainerGridLayout.addView(multiCallItem, i);
                 break;
             }
