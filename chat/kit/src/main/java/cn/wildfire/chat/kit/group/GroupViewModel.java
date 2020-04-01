@@ -249,9 +249,9 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return result;
     }
 
-    public MutableLiveData<OperateResult<Boolean>> preventPrivateChat(String groupId, boolean preventPrivateChat, MessageContent notifyMsg, List<Integer> notifyLines) {
+    public MutableLiveData<OperateResult<Boolean>> enablePrivateChat(String groupId, boolean enablePrivateChat, MessageContent notifyMsg, List<Integer> notifyLines) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
-        ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_PrivateChat, preventPrivateChat ? "1" : "0", notifyLines, notifyMsg, new GeneralCallback() {
+        ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_PrivateChat, enablePrivateChat ? "0" : "1", notifyLines, notifyMsg, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 result.setValue(new OperateResult<>(0));
