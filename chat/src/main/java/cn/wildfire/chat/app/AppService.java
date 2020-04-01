@@ -256,28 +256,29 @@ public class AppService implements AppServiceProvider {
         Collections.sort(filePaths);
         for (int i = 0; i < filePaths.size(); i++) {
             String path = filePaths.get(i);
+            File file = new File(path);
+            if (!file.exists()) {
+                continue;
+            }
             // 重复上传最后一个日志文件，因为上传之后，还会追加内容
             if (!sp.contains(path) || i == filePaths.size() - 1) {
                 toUploadCount++;
-                File file = new File(path);
-                if (file.exists()) {
-                    OKHttpHelper.upload(url, null, file, MediaType.get("application/octet-stream"), new SimpleCallback<Void>() {
-                        @Override
-                        public void onUiSuccess(Void aVoid) {
-                            if (callback != null) {
-                                callback.onSuccess(url);
-                            }
-                            sp.edit().putBoolean(path, true).commit();
+                OKHttpHelper.upload(url, null, file, MediaType.get("application/octet-stream"), new SimpleCallback<Void>() {
+                    @Override
+                    public void onUiSuccess(Void aVoid) {
+                        if (callback != null) {
+                            callback.onSuccess(url);
                         }
+                        sp.edit().putBoolean(path, true).commit();
+                    }
 
-                        @Override
-                        public void onUiFailure(int code, String msg) {
-                            if (callback != null) {
-                                callback.onUiFailure(code, msg);
-                            }
+                    @Override
+                    public void onUiFailure(int code, String msg) {
+                        if (callback != null) {
+                            callback.onUiFailure(code, msg);
                         }
-                    });
-                }
+                    }
+                });
             }
         }
         if (toUploadCount == 0) {
