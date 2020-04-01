@@ -245,6 +245,8 @@ public class ChatManager {
         SharedPreferences sp = gContext.getSharedPreferences("wildfirechat.config", Context.MODE_PRIVATE);
         INST.userId = sp.getString("userId", null);
         INST.token = sp.getString("token", null);
+
+        INST.cleanLogFiles();
     }
 
     public Context getApplicationContext() {
@@ -1618,7 +1620,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        conversationInfo = conversationInfo != null ? conversationInfo:new NullConversationInfo(conversation);
+        conversationInfo = conversationInfo != null ? conversationInfo : new NullConversationInfo(conversation);
         return conversationInfo;
     }
 
@@ -4173,6 +4175,22 @@ public class ChatManager {
         }
 
         return false;
+    }
+
+    private void cleanLogFiles() {
+        List<String> filePaths = ChatManager.Instance().getLogFilesPath();
+        if (filePaths == null || filePaths.isEmpty()) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        long LOG_KEEP_DURATION = 7 * 24 * 60 * 60 * 1000;
+        for (String path : filePaths) {
+            File file = new File(path);
+            if (file.exists() && file.lastModified() > 0 && now - file.lastModified() > LOG_KEEP_DURATION) {
+                file.deleteOnExit();
+            }
+        }
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
