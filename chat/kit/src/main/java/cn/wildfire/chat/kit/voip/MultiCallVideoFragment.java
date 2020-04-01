@@ -130,7 +130,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
             multiCallItem.getStatusTextView().setText(R.string.connecting);
             multiCallItem.setOnClickListener(clickListener);
-            GlideApp.with(multiCallItem).load(userInfo.portrait).into(multiCallItem.getPortraitImageView());
+            GlideApp.with(multiCallItem).load(userInfo.portrait).error(R.mipmap.default_header).into(multiCallItem.getPortraitImageView());
             participantGridView.addView(multiCallItem);
         }
 
@@ -138,7 +138,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         multiCallItem.setTag(me.uid);
         multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with, with));
         multiCallItem.getStatusTextView().setText(me.displayName);
-        GlideApp.with(multiCallItem).load(me.portrait).into(multiCallItem.getPortraitImageView());
+        GlideApp.with(multiCallItem).load(me.portrait).error(R.mipmap.default_header).into(multiCallItem.getPortraitImageView());
 
         focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(with, with));
         focusVideoContainerFrameLayout.addView(multiCallItem);
