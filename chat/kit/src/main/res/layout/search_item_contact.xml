@@ -45,7 +45,7 @@
             android:singleLine="true"
             android:text="wfc"
             android:textColor="@color/black1"
-            android:textSize="17sp" />
+            android:textSize="16sp" />
 
         <CheckBox
             android:id="@+id/checkbox"

@@ -7,8 +7,8 @@
     <cn.wildfire.chat.kit.widget.SearchView
         android:id="@+id/search_view"
         android:layout_width="0dp"
-        android:layout_height="32dp"
-        android:layout_marginLeft="8dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="10dp"
         android:layout_weight="1" />
 
     <TextView
@@ -16,10 +16,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="取消"
         android:textColor="@color/blue3"
-        android:textSize="16sp" />
+        android:textSize="15sp" />
 
 </LinearLayout>
