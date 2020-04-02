@@ -12,6 +12,22 @@
         android:visibility="gone" />
 
     <LinearLayout
+        android:id="@+id/descLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="center"
+            android:text="输入关键词开始搜索" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/emptyLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
