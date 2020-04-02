@@ -286,7 +286,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                     break;
                 case R.id.me:
                     contentViewPager.setCurrentItem(3);
-                    setTitle("");
+                    setTitle("我的");
                     setTitleBackgroundResource(R.color.white);
                     break;
                 default:
