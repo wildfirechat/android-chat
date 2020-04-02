@@ -27,6 +27,8 @@ public class SearchFragment extends Fragment {
     RecyclerView recyclerView;
     @BindView(R.id.emptyLinearLayout)
     LinearLayout emptyLinearLayout;
+    @BindView(R.id.descLinearLayout)
+    LinearLayout descLinearLayout;
     private SearchResultAdapter adapter;
     private SearchViewModel searchViewModel;
     private Observer<SearchResult> searchResultObserver = this::onSearchResult;
@@ -35,7 +37,7 @@ public class SearchFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.search_result_fragment, container, false);
+        View view = inflater.inflate(R.layout.search_fragment, container, false);
         searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
         searchViewModel.getResultLiveData().observeForever(searchResultObserver);
         ButterKnife.bind(this, view);
@@ -60,6 +62,7 @@ public class SearchFragment extends Fragment {
         if (adapter != null) {
             adapter.reset();
         }
+        descLinearLayout.setVisibility(View.GONE);
         searchViewModel.search(keyword, searchableModules);
     }
 
@@ -67,6 +70,7 @@ public class SearchFragment extends Fragment {
         if (adapter != null) {
             adapter.reset();
         }
+        descLinearLayout.setVisibility(View.VISIBLE);
         emptyLinearLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
     }
