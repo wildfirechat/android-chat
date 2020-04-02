@@ -20,6 +20,7 @@ public interface Config {
     String APP_SERVER_ADDRESS = "http://wildfirechat.cn:8888";
 
     String ICE_ADDRESS = "turn:turn.wildfirechat.cn:3478";
+    String ICE_ADDRESS2 = "turn:117.51.153.82:3478";
     String ICE_USERNAME = "wfchat";
     String ICE_PASSWORD = "wfchat";
 
