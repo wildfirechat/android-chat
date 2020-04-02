@@ -9,9 +9,9 @@
     <dimen name="item_margin_top_and_bottom">7dp</dimen>
 
     <!--选项间距-->
-    <dimen name="option_item_margin_top">21dp</dimen>
-    <dimen name="option_item_margin_left">20dp</dimen>
-    <dimen name="option_item_margin_right">20dp</dimen>
+    <dimen name="option_item_margin_top">10dp</dimen>
+    <dimen name="option_item_margin_left">16dp</dimen>
+    <dimen name="option_item_margin_right">16dp</dimen>
 
     <dimen name="min_keyboard_size">50dp</dimen>
     <dimen name="default_custom_keyboard_size">220dp</dimen>

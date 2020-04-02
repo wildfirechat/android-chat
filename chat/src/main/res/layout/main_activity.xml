@@ -32,8 +32,7 @@
                 android:id="@+id/bottomNavigationView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                app:itemIconTint="@null"
+                android:background="@color/gray14"
                 app:itemTextColor="@color/bottom_nav_color"
                 app:labelVisibilityMode="labeled"
                 app:menu="@menu/main_bottom_navigation" />

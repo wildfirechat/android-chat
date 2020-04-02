@@ -25,7 +25,7 @@ public class UserSearchModule extends SearchableModule<UserInfo, UserViewHolder>
     @Override
     public UserViewHolder onCreateViewHolder(Fragment fragment, @NonNull ViewGroup parent, int viewType) {
         View itemView;
-        itemView = LayoutInflater.from(fragment.getActivity()).inflate(R.layout.contact_item_contact, parent, false);
+        itemView = LayoutInflater.from(fragment.getActivity()).inflate(R.layout.search_item_contact, parent, false);
         return new UserViewHolder(fragment, null, itemView);
     }
 

@@ -3,17 +3,17 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#E5E5E5"
+    android:background="@color/gray5"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/categoryTextView"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_margin_left_and_right"
         android:text="category"
-        android:textColor="#989898"
+        android:textColor="@color/gray12"
         android:textSize="13sp"
         android:visibility="visible" />
 
