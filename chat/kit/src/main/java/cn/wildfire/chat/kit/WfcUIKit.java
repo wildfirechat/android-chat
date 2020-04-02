@@ -120,6 +120,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             AVEngineKit.init(application, this);
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
             ChatManagerHolder.gAVEngine.addIceServer(Config.ICE_ADDRESS, Config.ICE_USERNAME, Config.ICE_PASSWORD);
+            ChatManagerHolder.gAVEngine.addIceServer(Config.ICE_ADDRESS2, Config.ICE_USERNAME, Config.ICE_PASSWORD);
 
             SharedPreferences sp = application.getSharedPreferences("config", Context.MODE_PRIVATE);
             String id = sp.getString("id", null);
