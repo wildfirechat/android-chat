@@ -73,7 +73,7 @@
                 android:maxLines="1"
                 android:text="wfc"
                 android:textColor="@color/black1"
-                android:textSize="17sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/timeTextView"
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="3dp"
                 android:layout_toLeftOf="@id/slient"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
