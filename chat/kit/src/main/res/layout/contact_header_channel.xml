@@ -22,11 +22,11 @@
 
             <ImageView
                 android:id="@+id/portraitImageView"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/ic_channel" />
+                android:src="@mipmap/ic_channel_1" />
 
             <TextView
                 android:id="@+id/unreadFriendRequestCountTextView"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
             android:text="频道"
-            android:textColor="@color/black0"
+            android:textColor="@color/black1"
             android:textSize="16sp" />
 
     </LinearLayout>
@@ -60,6 +60,6 @@
     <View
         android:visibility="gone"
         style="@style/Line"
-        android:layout_marginLeft="72dp" />
+        android:layout_marginLeft="68dp" />
 
 </LinearLayout>

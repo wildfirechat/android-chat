@@ -1,6 +1,7 @@
 package cn.wildfire.chat.kit.group;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -78,8 +79,12 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
 
     private void initView() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, PickGroupMemberFragment.newInstance(groupInfo))
+                .replace(R.id.containerFrameLayout, getFragment())
                 .commit();
+    }
+
+    protected Fragment getFragment() {
+        return PickGroupMemberFragment.newInstance(groupInfo);
     }
 
     @Override

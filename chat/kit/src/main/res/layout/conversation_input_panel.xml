@@ -29,6 +29,7 @@
                 android:layout_height="35dp"
                 android:layout_gravity="bottom"
                 android:layout_margin="5dp"
+                android:scaleType="centerInside"
                 android:src="@mipmap/ic_cheat_voice" />
 
             <RelativeLayout
@@ -70,6 +71,7 @@
                 android:layout_height="35dp"
                 android:layout_gravity="bottom"
                 android:layout_margin="5dp"
+                android:scaleType="centerInside"
                 android:src="@mipmap/ic_cheat_emo" />
 
             <ImageView

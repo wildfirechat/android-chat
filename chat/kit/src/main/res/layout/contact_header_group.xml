@@ -50,13 +50,13 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
             android:text="@string/group_cheat"
-            android:textColor="@color/black0"
+            android:textColor="@color/black1"
             android:textSize="16sp" />
 
     </LinearLayout>
 
     <View
         style="@style/Line"
-        android:layout_marginLeft="72dp" />
+        android:layout_marginLeft="68dp" />
 
 </LinearLayout>

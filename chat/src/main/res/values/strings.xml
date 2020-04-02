@@ -7,7 +7,7 @@
 
     <!--设置-->
     <string name="new_message_remind">新消息提醒</string>
-    <string name="exit">退出</string>
+    <string name="exit">退出登陆</string>
 
     <!--关于-->
     <string name="app_name_in_about">野火即时通讯</string>
@@ -15,5 +15,7 @@
     <string name="complaint">投诉</string>
     <string name="check_update">检查更新</string>
     <string name="terms_of_use_and_privacy_policy">使用条款和隐私政策</string>
+    <string name="name">火信</string>
+    <string name="slogan">沟通如此简单</string>
 
 </resources>

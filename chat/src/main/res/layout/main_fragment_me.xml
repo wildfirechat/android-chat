@@ -10,16 +10,14 @@
         android:id="@+id/meLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="90dp"
-        android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
-        android:gravity="center_vertical"
         android:paddingRight="3dp">
 
         <ImageView
             android:id="@+id/portraitImageView"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginLeft="15dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginRight="@dimen/option_item_margin_right"
             android:scaleType="centerCrop"
             android:src="@mipmap/default_header" />
@@ -28,18 +26,19 @@
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_weight="1"
-            android:gravity="center_vertical"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/nameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:layout_marginBottom="3dp"
                 android:singleLine="true"
                 android:text="wfc"
                 android:textColor="@color/gray0"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/accountTextView"
@@ -54,6 +53,13 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="20dp"
+            android:src="@mipmap/ic_right" />
+
     </LinearLayout>
 
 
@@ -62,6 +68,7 @@
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
+        app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_notification"
         app:title="消息通知" />
 
@@ -71,15 +78,18 @@
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
         app:divider_align_to_title="true"
-        app:start_src="@mipmap/ic_account_setting"
+        app:show_arrow_indicator="true"
+        app:start_src="@mipmap/ic_account"
         app:title="账号与安全" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/settintOptionItemView"
         style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
         android:clickable="true"
-        app:start_src="@mipmap/me_press"
+        app:show_arrow_indicator="true"
+        app:start_src="@mipmap/ic_setting"
         app:title="@string/setting" />
 
 </LinearLayout>

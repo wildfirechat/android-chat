@@ -18,6 +18,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
@@ -36,6 +38,7 @@ import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
@@ -52,9 +55,9 @@ public class UserInfoFragment extends Fragment {
     @BindView(R.id.nickyName)
     TextView nickyNameTextView;
     @BindView(R.id.chatButton)
-    Button chatButton;
+    View chatButton;
     @BindView(R.id.voipChatButton)
-    Button voipChatButton;
+    View voipChatButton;
     @BindView(R.id.inviteButton)
     Button inviteButton;
     @BindView(R.id.aliasOptionItemView)
@@ -64,7 +67,7 @@ public class UserInfoFragment extends Fragment {
     OptionItemView qrCodeOptionItemView;
 
     @BindView(R.id.momentButton)
-    Button momentButton;
+    View momentButton;
 
     private UserInfo userInfo;
     private UserViewModel userViewModel;
@@ -138,7 +141,13 @@ public class UserInfoFragment extends Fragment {
     }
 
     private void setUserInfo(UserInfo userInfo) {
-        Glide.with(this).load(userInfo.portrait).apply(new RequestOptions().placeholder(R.mipmap.avatar_def).centerCrop()).into(portraitImageView);
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(UIUtils.getRoundedDrawable(R.mipmap.avatar_def, 10))
+                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(10)));
+        Glide.with(this)
+                .load(userInfo.portrait)
+                .apply(requestOptions)
+                .into(portraitImageView);
         nameTextView.setText("野火ID" + userInfo.name);
         nameTextView.setVisibility(View.GONE);
         nickyNameTextView.setText(userViewModel.getUserDisplayName(userInfo));

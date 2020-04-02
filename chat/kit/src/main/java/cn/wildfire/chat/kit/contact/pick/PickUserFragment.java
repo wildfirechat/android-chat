@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.contact.pick;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -8,10 +9,12 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import butterknife.BindView;
@@ -20,6 +23,7 @@ import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.chat.R;
 
@@ -28,17 +32,21 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
     protected PickUserViewModel pickUserViewModel;
 
     @BindView(R.id.pickedUserRecyclerView)
-    RecyclerView pickedUserRecyclerView;
+    protected RecyclerView pickedUserRecyclerView;
     @BindView(R.id.searchEditText)
     EditText searchEditText;
     @BindView(R.id.searchFrameLayout)
     FrameLayout searchUserFrameLayout;
+    @BindView(R.id.hint_view)
+    protected View hintView;
 
     private boolean isSearchFragmentShowing = false;
+    private PickedUserAdapter pickedUserAdapter;
 
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = userInfo -> {
         ((CheckableUserListAdapter) userListAdapter).updateUserStatus(userInfo);
         hideSearchContactFragment();
+        updatePickedUserView(userInfo);
     };
 
     @Override
@@ -62,8 +70,19 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
     }
 
     private void initView() {
-        RecyclerView.LayoutManager pickedContactRecyclerViewLayoutManager = new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL, false);
+        configPickedUserRecyclerView();
+        pickedUserAdapter = getPickedUserAdapter();
+        pickedUserRecyclerView.setAdapter(pickedUserAdapter);
+    }
+
+    protected void configPickedUserRecyclerView() {
+        RecyclerView.LayoutManager pickedContactRecyclerViewLayoutManager = new LinearLayoutManager(getActivity(), GridLayoutManager.HORIZONTAL, false);
         pickedUserRecyclerView.setLayoutManager(pickedContactRecyclerViewLayoutManager);
+        pickedUserRecyclerView.addItemDecoration(new Decoration());
+    }
+
+    protected PickedUserAdapter getPickedUserAdapter() {
+        return new PickedUserAdapter();
     }
 
     @OnFocusChange(R.id.searchEditText)
@@ -75,6 +94,15 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
             showSearchContactFragment();
         } else {
             hideSearchContactFragment();
+        }
+        handleHintView(focus);
+    }
+
+    protected void handleHintView(boolean focus) {
+        if (pickedUserAdapter.getItemCount() == 0 && !focus) {
+            hintView.setVisibility(View.VISIBLE);
+        } else {
+            hintView.setVisibility(View.GONE);
         }
     }
 
@@ -133,6 +161,36 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         if (userInfo.isCheckable()) {
             if (!pickUserViewModel.checkUser(userInfo, !userInfo.isChecked())) {
                 Toast.makeText(getActivity(), "选人超限", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    protected void handleEditText() {
+        if (pickedUserAdapter.getItemCount() == 0) {
+            searchEditText.setHint("");
+        } else {
+            searchEditText.setHint("搜索");
+        }
+    }
+
+    private void updatePickedUserView(UIUserInfo userInfo) {
+        if (userInfo.isChecked()) {
+            pickedUserAdapter.addUser(userInfo);
+        } else {
+            pickedUserAdapter.removeUser(userInfo);
+        }
+        handleHintView(false);
+        handleEditText();
+    }
+
+    private static class Decoration extends RecyclerView.ItemDecoration {
+        @Override
+        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view);
+            if (position < parent.getAdapter().getItemCount() - 1) {
+                outRect.right = UIUtils.dip2Px(4);
+            } else {
+                outRect.right = 0;
             }
         }
     }
