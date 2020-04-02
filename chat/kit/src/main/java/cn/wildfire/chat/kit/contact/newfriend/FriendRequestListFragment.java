@@ -60,7 +60,6 @@ public class FriendRequestListFragment extends Fragment {
             adapter = new FriendRequestListAdapter(FriendRequestListFragment.this);
             adapter.setFriendRequests(requests);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
             recyclerView.setAdapter(adapter);
         } else {
             noNewFriendLinearLayout.setVisibility(View.VISIBLE);

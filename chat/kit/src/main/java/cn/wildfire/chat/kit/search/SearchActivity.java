@@ -1,76 +1,92 @@
 package cn.wildfire.chat.kit.search;
 
+import android.os.Build;
+import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
 
-import androidx.appcompat.widget.SearchView;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.WfcBaseActivity;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.wildfire.chat.kit.widget.SearchView;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.remote.ChatManager;
 
 /**
  * 如果启动{@link android.content.Intent}里面包含keyword，直接开始搜索
  */
-public abstract class SearchActivity extends WfcBaseActivity {
+public abstract class SearchActivity extends AppCompatActivity {
     private SearchFragment searchFragment;
     private List<SearchableModule> modules = new ArrayList<>();
-    protected SearchView searchView;
+
+    @BindView(R.id.search_view)
+    SearchView searchView;
+
+    @OnClick(R.id.cancel)
+    public void onCancelClick() {
+        finish();
+    }
 
     @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStatusBarColor(R.color.gray5);
+        beforeViews();
+        setContentView(contentLayout());
+        ButterKnife.bind(this);
+        initView();
+        initSearchView();
+        afterViews();
+    }
+
+    /**
+     * 子类如果替换布局，它的布局中必须要包含 R.layout.search_bar
+     *
+     * @return 布局资源id
+     */
     protected int contentLayout() {
         return R.layout.search_portal_activity;
     }
 
-    @Override
+    protected void beforeViews() {
+
+    }
+
     protected void afterViews() {
-        initView();
-    }
-
-    @Override
-    protected int menu() {
-        return R.menu.search_portal;
-    }
-
-    @Override
-    protected void afterMenus(Menu menu) {
-        MenuItem searchItem = menu.findItem(R.id.menu_search);
-        //通过MenuItem得到SearchView
-        searchView = (SearchView) searchItem.getActionView();
-        initSearchView();
         String initialKeyword = getIntent().getStringExtra("keyword");
-        if (!TextUtils.isEmpty(initialKeyword)) {
-            searchView.setQuery(initialKeyword, true);
+        ChatManager.Instance().getMainHandler().post(() -> {
+            if (!TextUtils.isEmpty(initialKeyword)) {
+                searchView.setQuery(initialKeyword);
+            }
+        });
+    }
+
+    /**
+     * 设置状态栏的颜色
+     *
+     * @param resId 颜色资源id
+     */
+    protected void setStatusBarColor(int resId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(this, resId));
         }
     }
 
     private void initSearchView() {
-        searchView.onActionViewExpanded();
-        searchView.setQueryHint("Search");
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                search(s);
-                return true;
-            }
-        });
-
+        searchView.setOnQueryTextListener(this::search);
     }
 
     private void initView() {
         searchFragment = new SearchFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, searchFragment)
-                .commit();
+            .replace(R.id.containerFrameLayout, searchFragment)
+            .commit();
         initSearchModule(modules);
     }
 

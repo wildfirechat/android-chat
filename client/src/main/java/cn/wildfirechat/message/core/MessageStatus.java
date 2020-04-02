@@ -12,7 +12,8 @@ public enum MessageStatus {
     AllMentioned(4),
     Unread(5),
     Readed(6),
-    Played(7);
+    Played(7),
+    All(-1);
 
     private int value;
 

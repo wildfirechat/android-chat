@@ -2,8 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/add"
-        android:title="确定"
         android:enabled="false"
+        android:title="确定"
+        app:actionLayout="@layout/menu_confirm"
         app:showAsAction="always" />
 
 </menu>

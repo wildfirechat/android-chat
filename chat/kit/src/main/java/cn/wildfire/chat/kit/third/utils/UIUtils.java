@@ -2,13 +2,20 @@ package cn.wildfire.chat.kit.third.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.Toast;
 
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+
 import cn.wildfire.chat.app.BaseApp;
 import cn.wildfire.chat.app.MyApp;
+import cn.wildfirechat.chat.R;
 
 //import static io.rong.imlib.statistics.Statistics.TAG;
 
@@ -174,6 +181,20 @@ public class UIUtils {
         float density = getResource().getDisplayMetrics().density;
         int px = (int) (dip * density + 0.5f);
         return px;
+    }
+
+    /**
+     * 获取圆角Drawable
+     *
+     * @param resId 资源id
+     * @param radiusDp 圆角角度
+     * @return 圆角Drawable
+     */
+    public static Drawable getRoundedDrawable(int resId, int radiusDp) {
+        Bitmap placeHolder = BitmapFactory.decodeResource(getResource(), resId);
+        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResource(), placeHolder);
+        roundedBitmapDrawable.setCornerRadius(UIUtils.dip2Px(radiusDp));
+        return roundedBitmapDrawable;
     }
 
     /**

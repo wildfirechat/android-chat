@@ -29,4 +29,8 @@
         <attr name="divider_align_to_title" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="MaxSizeRecyclerView">
+        <attr name="maxWidth" format="dimension" />
+        <attr name="maxHeight" format="dimension" />
+    </declare-styleable>
 </resources>

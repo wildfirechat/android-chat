@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingRight="16dp">
+
+    <TextView
+        android:id="@+id/confirm_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/confirm_bg"
+        android:paddingLeft="11dp"
+        android:paddingTop="5dp"
+        android:paddingRight="11dp"
+        android:paddingBottom="5dp"
+        android:text="完成"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
+
+</FrameLayout>

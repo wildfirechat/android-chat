@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootFrameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -50,32 +51,59 @@
         <!--这个地方有bug，recyclerView元素的的时候，会把edit顶出去，可能用ConstraintLayout能解决-->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#80ffffff"
+            android:layout_height="40dp"
+            android:background="#ffffff"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
             android:visibility="visible">
 
             <!--被选中的联系人头像列表-->
-            <androidx.recyclerview.widget.RecyclerView
+            <cn.wildfire.chat.kit.widget.MaxSizeRecyclerView
                 android:id="@+id/pickedUserRecyclerView"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:visibility="gone" />
+                android:layout_height="match_parent"
+                android:paddingLeft="16dp"
+                app:maxWidth="300dp" />
 
-            <EditText
-                android:id="@+id/searchEditText"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#80ffffff"
-                android:drawableLeft="@mipmap/ic_search1"
-                android:drawablePadding="10dp"
-                android:hint="@string/search"
-                android:paddingLeft="10dp"
-                android:textColorHint="@color/gray2"
-                android:textSize="14sp" />
+                android:layout_height="match_parent">
+
+                <EditText
+                    android:id="@+id/searchEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:drawablePadding="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/gray23"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:id="@+id/hint_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/ic_search2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dp"
+                        android:text="搜索"
+                        android:textColor="@color/gray23"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
         </LinearLayout>
 
