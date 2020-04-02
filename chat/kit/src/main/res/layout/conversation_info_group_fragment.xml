@@ -96,7 +96,7 @@
                             android:layout_weight="1"
                             android:text="@string/group_announcement"
                             android:textColor="@color/black1"
-                            android:textSize="17sp" />
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/groupNoticeTextView"

@@ -52,7 +52,7 @@
             android:layout_marginLeft="6dp"
             android:text="频道"
             android:textColor="@color/black1"
-            android:textSize="17sp" />
+            android:textSize="16sp" />
 
     </LinearLayout>
 
