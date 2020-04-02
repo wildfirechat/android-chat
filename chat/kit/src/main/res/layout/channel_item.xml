@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -51,14 +51,13 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
             android:text="频道"
-            android:textColor="@color/black0"
-            android:textSize="16sp" />
+            android:textColor="@color/black1"
+            android:textSize="17sp" />
 
     </LinearLayout>
 
     <View
         style="@style/Line"
-        android:layout_marginLeft="@dimen/item_margin_left_and_right"
-        android:layout_marginRight="@dimen/item_margin_left_and_right" />
+        android:layout_marginLeft="68dp" />
 
 </LinearLayout>

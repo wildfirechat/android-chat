@@ -13,6 +13,7 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
@@ -36,8 +37,8 @@ public class SingleConversationViewHolder extends ConversationViewHolder {
         GlideApp
                 .with(fragment)
                 .load(portrait)
-                .placeholder(R.mipmap.avatar_def)
-                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .placeholder(UIUtils.getRoundedDrawable(R.mipmap.avatar_def, 4))
+                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(4)))
                 .into(portraitImageView);
         nameTextView.setText(name);
     }

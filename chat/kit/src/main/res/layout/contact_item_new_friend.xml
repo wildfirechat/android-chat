@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="60dp"
         android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <ImageView
             android:id="@+id/portraitImageView"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_centerVertical="true"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
@@ -27,6 +28,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -34,21 +36,19 @@
                 android:id="@+id/nameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
                 android:singleLine="true"
                 android:text="wfc"
-                android:textColor="@color/gray0"
-                android:textSize="16sp" />
+                android:textColor="@color/black1"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/introTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
                 android:layout_marginTop="3dp"
                 android:singleLine="true"
                 android:text="对方请求添加你为朋友"
-                android:textColor="@color/gray3"
+                android:textColor="@color/gray11"
                 android:textSize="12sp" />
 
         </LinearLayout>
@@ -68,14 +68,20 @@
         <Button
             android:id="@+id/acceptButton"
             style="?android:attr/borderlessButtonStyle"
-            android:layout_width="60dp"
-            android:layout_height="30dp"
+            android:layout_width="46dp"
+            android:layout_height="27dp"
             android:layout_marginLeft="10dp"
             android:background="@drawable/shape_new_friend_agree"
             android:text="接受"
             android:textColor="@color/white"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:visibility="gone"
             tools:visibility="visible" />
     </LinearLayout>
-</FrameLayout>
+
+    <View
+        android:id="@+id/dividerLine"
+        style="@style/Line"
+        android:layout_marginLeft="76dp"
+        android:visibility="visible" />
+</LinearLayout>

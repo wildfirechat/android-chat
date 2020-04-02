@@ -2,6 +2,7 @@ package cn.wildfire.chat.kit.conversation;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,7 +95,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     SwitchButton showGroupMemberNickNameSwitchButton;
 
     @BindView(R.id.quitButton)
-    Button quitGroupButton;
+    TextView quitGroupButton;
 
     @BindView(R.id.markGroupLinearLayout)
     LinearLayout markGroupLinearLayout;
@@ -232,12 +233,16 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 if (getActivity() == null || getActivity().isFinishing()) {
                     return;
                 }
-                noticeTextView.setText(announcement.text);
+                if (TextUtils.isEmpty(announcement.text)) {
+                    noticeTextView.setVisibility(View.GONE);
+                } else {
+                    noticeTextView.setText(announcement.text);
+                }
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-
+                noticeTextView.setVisibility(View.GONE);
             }
         });
     }

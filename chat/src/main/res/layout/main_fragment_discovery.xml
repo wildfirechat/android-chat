@@ -6,9 +6,18 @@
     android:orientation="vertical">
 
     <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/momentOptionItemView"
+        style="@style/OptionItem"
+        android:background="@drawable/selector_common_item"
+        app:show_arrow_indicator="true"
+        android:layout_marginBottom="10dp"
+        app:start_src="@mipmap/ic_moment"
+        app:title="朋友圈" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/chatRoomOptionItemView"
         style="@style/OptionItem"
-        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/selector_common_item"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_chatroom"
@@ -17,7 +26,7 @@
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/robotOptionItemView"
         style="@style/OptionItem"
-        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/selector_common_item"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_robot"
@@ -26,18 +35,10 @@
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/channelOptionItemView"
         style="@style/OptionItem"
-        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/selector_common_item"
         app:divider_align_to_title="false"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_channel"
         app:title="频道" />
-
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/momentOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        app:start_src="@mipmap/ic_channel"
-        app:title="朋友圈" />
 </LinearLayout>

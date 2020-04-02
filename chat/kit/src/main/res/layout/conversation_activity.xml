@@ -3,7 +3,6 @@
     android:id="@+id/rootLinearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
     <!--内容-->
