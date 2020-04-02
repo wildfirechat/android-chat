@@ -4034,10 +4034,12 @@ public class ChatManager {
         //遍历path目录下的所有日志文件，以wflog开头的
         File dir = new File(path);
         File[] subFile = dir.listFiles();
-        for (File file : subFile) {
-            //wflog为ChatService中定义的，如果修改需要对应修改
-            if (file.isFile() && file.getName().startsWith("wflog_")) {
-                paths.add(file.getAbsolutePath());
+        if (subFile != null) {
+            for (File file : subFile) {
+                //wflog为ChatService中定义的，如果修改需要对应修改
+                if (file.isFile() && file.getName().startsWith("wflog_")) {
+                    paths.add(file.getAbsolutePath());
+                }
             }
         }
         return paths;
