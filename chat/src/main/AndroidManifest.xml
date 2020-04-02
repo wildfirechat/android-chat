@@ -151,7 +151,7 @@
             android:label="群列表" />
         <activity
             android:name="cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity"
-            android:label="好友请求" />
+            android:label="新朋友" />
         <activity
             android:name="cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity"
             android:label="搜索用户" />
@@ -216,7 +216,9 @@
         </activity>
         <activity android:name="cn.wildfire.chat.kit.search.SearchMessageActivity" />
         <activity android:name="cn.wildfire.chat.kit.channel.SearchChannelActivity" />
-        <activity android:name="cn.wildfire.chat.kit.group.PickGroupMemberActivity" />
+        <activity
+            android:name="cn.wildfire.chat.kit.group.PickGroupMemberActivity"
+            android:label="选择成员" />
 
         <activity
             android:name="cn.wildfire.chat.app.main.PCLoginActivity"

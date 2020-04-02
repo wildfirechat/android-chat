@@ -1,13 +1,19 @@
 package cn.wildfire.chat.kit.contact.pick;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -20,6 +26,7 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
     private boolean pickGroupForResult = true;
     private boolean multiGroupMode = false;
     private MenuItem menuItem;
+    private TextView confirmTv;
 
     protected PickUserViewModel pickUserViewModel;
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
@@ -32,10 +39,10 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
 
     protected void updatePickStatus(List<UIUserInfo> userInfos) {
         if (userInfos == null || userInfos.isEmpty()) {
-            menuItem.setTitle("确定");
+            confirmTv.setText("完成");
             menuItem.setEnabled(false);
         } else {
-            menuItem.setTitle("确定(" + userInfos.size() + ")");
+            confirmTv.setText("完成(" + userInfos.size() + ")");
             menuItem.setEnabled(true);
         }
     }
@@ -70,6 +77,14 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        View view = menuItem.getActionView();
+        confirmTv = view.findViewById(R.id.confirm_tv);
+        confirmTv.setOnClickListener(v -> onOptionsItemSelected(menuItem));
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.confirm) {
             onConfirmClick();
@@ -82,8 +97,8 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
         PickConversationTargetFragment fragment = PickConversationTargetFragment.newInstance(pickGroupForResult, multiGroupMode);
         fragment.setOnGroupPickListener(this);
         getSupportFragmentManager().beginTransaction()
-            .replace(R.id.containerFrameLayout, fragment)
-            .commit();
+                .replace(R.id.containerFrameLayout, fragment)
+                .commit();
     }
 
     @Override

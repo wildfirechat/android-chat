@@ -4,34 +4,40 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingLeft="20dp"
     android:paddingTop="20dp"
-    android:paddingRight="20dp"
-    android:paddingBottom="20dp">
+    android:paddingBottom="52dp">
 
     <TextView xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/durationTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
+        android:textColor="@color/gray22"
+        android:textSize="12sp"
         android:visibility="invisible"
         tools:visibility="visible" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="60" />
+
         <LinearLayout
+            android:id="@+id/muteImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="invisible">
 
             <ImageView
-                android:id="@+id/muteImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/av_mute_selector" />
@@ -39,10 +45,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="静音" />
+                android:layout_marginTop="6dp"
+                android:text="静音"
+                android:textColor="@color/gray22"
+                android:textSize="10sp" />
 
         </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="53" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -61,19 +74,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="挂断" />
+                android:text="取消"
+                android:textColor="@color/white" />
 
         </LinearLayout>
 
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="53" />
+
         <LinearLayout
+            android:id="@+id/speakerImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="invisible">
 
             <ImageView
-                android:id="@+id/speakerImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/av_speaker_selector" />
@@ -81,10 +101,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="免提" />
+                android:layout_marginTop="6dp"
+                android:text="免提"
+                android:textColor="@color/gray22"
+                android:textSize="10sp" />
 
         </LinearLayout>
-    </RelativeLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="60" />
+    </LinearLayout>
 
 </LinearLayout>

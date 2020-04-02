@@ -16,6 +16,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
@@ -25,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.setting.SettingActivity;
 import cn.wildfire.chat.kit.settings.MessageNotifySettingActivity;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
@@ -77,7 +80,13 @@ public class MeFragment extends Fragment {
     }
 
     private void updateUserInfo(UserInfo userInfo) {
-        Glide.with(this).load(userInfo.portrait).apply(new RequestOptions().placeholder(R.mipmap.avatar_def).centerCrop()).into(portraitImageView);
+        RequestOptions options = new RequestOptions()
+                .placeholder(UIUtils.getRoundedDrawable(R.mipmap.avatar_def, 10))
+                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(10)));
+        Glide.with(this)
+                .load(userInfo.portrait)
+                .apply(options)
+                .into(portraitImageView);
         nameTextView.setText(userInfo.displayName);
         accountTextView.setText("账号: " + userInfo.name);
     }

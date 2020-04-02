@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray">
+    android:background="@color/black5">
+
+    <ImageView
+        android:id="@+id/bigPortraitImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:src="@mipmap/default_header"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#EE1F2026"/>
 
     <ImageView
         android:id="@+id/minimizeImageView"
@@ -16,32 +27,35 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <ImageView
             android:id="@+id/portraitImageView"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_marginTop="80dp"
-            android:src="@mipmap/default_header" />
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:background="@drawable/rect_f0f0f0_10dp"
+            android:padding="1dp"
+            tools:src="@mipmap/default_header" />
 
         <TextView
             android:id="@+id/nameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="voip"
-            android:textColor="@color/white" />
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:textSize="27sp"
+            android:textStyle="bold"
+            tools:text="Linda" />
 
         <TextView
             android:id="@+id/descTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="8dp"
             android:text="邀请你进行语音通话"
-            android:textColor="@color/white" />
+            android:textColor="#CCFFFFFF" />
     </LinearLayout>
 
     <include

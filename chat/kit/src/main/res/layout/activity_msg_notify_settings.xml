@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray5"
@@ -14,45 +13,58 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <View
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@color/gray" />
-        <Switch
-            android:id="@+id/switchMsgNotification"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:paddingLeft="5dp"
-            android:switchMinWidth="45dp"
-            android:checked="false"
-            android:text="接收新消息通知" />
+            android:layout_height="50dp"
+            android:paddingLeft="@dimen/item_margin_left_and_right"
+            android:paddingRight="@dimen/item_margin_left_and_right">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="接收新消息通知"
+                android:textColor="@color/black1"
+                android:textSize="16sp" />
+
+            <com.kyleduo.switchbutton.SwitchButton
+                android:id="@+id/switchMsgNotification"
+                style="@style/IosSwitch"
+                android:layout_gravity="center_vertical|right" />
+
+        </FrameLayout>
+
+        <View style="@style/Line" />
 
         <View
-            style="@style/Line"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" />
-        <View
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@color/gray" />
+            android:layout_height="10dp"
+            android:background="@color/gray5" />
 
-        <View
-            style="@style/Line"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" />
+        <View style="@style/Line" />
 
-        <Switch
-            android:id="@+id/switchShowMsgDetail"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:switchMinWidth="45dp"
-            android:layout_height="40dp"
-            android:paddingLeft="5dp"
-            android:checked="false"
-            android:text="通知显示消息详情" />
-        <View
-            style="@style/Line"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" />
+            android:layout_height="50dp"
+            android:paddingLeft="@dimen/item_margin_left_and_right"
+            android:paddingRight="@dimen/item_margin_left_and_right">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="通知显示消息详情"
+                android:textColor="@color/black1"
+                android:textSize="16sp" />
+
+            <com.kyleduo.switchbutton.SwitchButton
+                android:id="@+id/switchShowMsgDetail"
+                style="@style/IosSwitch"
+                android:layout_gravity="center_vertical|right" />
+
+        </FrameLayout>
+
+        <View style="@style/Line" />
 
     </LinearLayout>
 </LinearLayout>

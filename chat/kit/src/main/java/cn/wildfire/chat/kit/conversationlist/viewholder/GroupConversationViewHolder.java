@@ -11,6 +11,7 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -39,8 +40,8 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
         GlideApp
                 .with(fragment)
                 .load(portrait)
-                .placeholder(R.mipmap.ic_group_cheat)
-                .transforms(new CenterCrop(), new RoundedCorners(10))
+                .placeholder(UIUtils.getRoundedDrawable(R.mipmap.ic_group_cheat, 4))
+                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(4)))
                 .into(portraitImageView);
         nameTextView.setText(name);
     }

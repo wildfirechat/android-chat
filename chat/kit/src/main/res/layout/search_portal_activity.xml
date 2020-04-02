@@ -5,7 +5,7 @@
     android:background="@color/gray5"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar" />
+    <include layout="@layout/search_bar" />
 
     <FrameLayout
         android:id="@+id/containerFrameLayout"

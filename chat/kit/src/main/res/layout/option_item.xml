@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/contactLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
         android:paddingTop="@dimen/item_margin_top_and_bottom"
@@ -17,10 +17,9 @@
 
         <ImageView
             android:id="@+id/leftImageView"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/item_margin_left_and_right"
-            android:scaleType="centerCrop"
             android:visibility="gone" />
 
         <LinearLayout
@@ -35,15 +34,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:singleLine="true"
-                android:textColor="@color/gray0"
+                android:textColor="@color/black1"
                 android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/badgeTextView"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:layout_marginLeft="10dp"
                 android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
                 android:background="@drawable/shape_red_dot"
                 android:gravity="center"
                 android:text="99"
@@ -57,17 +56,17 @@
             android:id="@+id/descTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:paddingRight="5dp"
+            android:layout_marginRight="13dp"
             android:singleLine="true"
-            android:textColor="@color/gray0"
-            android:textSize="14sp"
+            android:textColor="@color/gray17"
+            android:textSize="15sp"
             android:visibility="gone" />
 
         <ImageView
             android:id="@+id/rightImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="13dp"
             android:src="@mipmap/ic_right_arrow"
             android:visibility="gone" />
 
@@ -76,6 +75,8 @@
             android:id="@+id/arrowImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            android:src="@mipmap/ic_right"
             android:visibility="gone" />
 
     </LinearLayout>
@@ -83,7 +84,6 @@
     <View
         android:id="@+id/dividerLine"
         style="@style/Line"
-        android:layout_marginRight="@dimen/item_margin_left_and_right"
         android:visibility="visible" />
 
 </LinearLayout>

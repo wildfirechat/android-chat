@@ -11,7 +11,6 @@ public class FriendRequestListActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        setTitle(UIUtils.getString(R.string.new_friend));
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.containerFrameLayout, new FriendRequestListFragment())
                 .commit();

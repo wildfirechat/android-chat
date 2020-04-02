@@ -5,12 +5,12 @@
     <item
         android:id="@+id/conversation_list"
         android:icon="@drawable/bottom_conversation_menu_selector"
-        android:title="会话"
+        android:title="野火"
         app:showAsAction="never" />
     <item
         android:id="@+id/contact"
         android:icon="@drawable/bottom_contact_menu_selector"
-        android:title="联系人" />
+        android:title="通讯录" />
     <item
         android:id="@+id/discovery"
         android:icon="@drawable/bottom_discovery_menu_selector"
@@ -18,6 +18,6 @@
     <item
         android:id="@+id/me"
         android:icon="@drawable/bottom_me_menu_selector"
-        android:title="我" />
+        android:title="我的" />
 
 </menu>

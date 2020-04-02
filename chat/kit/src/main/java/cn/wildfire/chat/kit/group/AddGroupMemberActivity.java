@@ -3,6 +3,8 @@ package cn.wildfire.chat.kit.group;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
@@ -23,6 +25,7 @@ import cn.wildfirechat.model.GroupInfo;
 
 public class AddGroupMemberActivity extends WfcBaseActivity {
     private MenuItem menuItem;
+    private TextView confirmTv;
 
     private GroupInfo groupInfo;
     public static final int RESULT_ADD_SUCCESS = 2;
@@ -35,10 +38,10 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
         public void onChanged(@Nullable UIUserInfo userInfo) {
             List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
             if (list == null || list.isEmpty()) {
-                menuItem.setTitle("确定");
+                confirmTv.setText("完成");
                 menuItem.setEnabled(false);
             } else {
-                menuItem.setTitle("确定(" + list.size() + ")");
+                confirmTv.setText("完成(" + list.size() + ")");
                 menuItem.setEnabled(true);
             }
         }
@@ -83,6 +86,15 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.add);
+        View actionView = item.getActionView();
+        confirmTv = actionView.findViewById(R.id.confirm_tv);
+        confirmTv.setOnClickListener(v -> onOptionsItemSelected(menuItem));
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

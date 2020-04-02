@@ -18,7 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,51 +64,61 @@
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
                     app:desc="@string/untitled"
+                    app:show_arrow_indicator="true"
                     app:title="@string/group_name" />
 
                 <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/groupQRCodeOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
+                    app:end_src="@mipmap/qr_code"
+                    app:show_arrow_indicator="true"
                     app:title="二维码" />
 
-                <View
-                    style="@style/Line"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp" />
-
                 <LinearLayout
-                    android:id="@+id/groupNoticeLinearLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
 
-
-                    <TextView
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:id="@+id/groupNoticeLinearLayout"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/option_item_margin_left"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
                         android:layout_weight="1"
-                        android:text="@string/group_announcement"
-                        android:textColor="@color/black0"
-                        android:textSize="16sp" />
+                        android:background="@color/white"
+                        android:orientation="vertical"
+                        android:paddingLeft="@dimen/option_item_margin_left">
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/group_announcement"
+                            android:textColor="@color/black1"
+                            android:textSize="17sp" />
 
-                    <TextView
-                        android:id="@+id/groupNoticeTextView"
-                        android:layout_width="match_parent"
+                        <TextView
+                            android:id="@+id/groupNoticeTextView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="10dp"
+                            android:text=""
+                            android:textColor="@color/gray17"
+                            android:textSize="12sp"
+                            android:visibility="visible"
+                            tools:text="群公告"
+                            tools:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="25dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginRight="25dp"
-                        android:layout_marginBottom="5dp"
-                        android:text=""
-                        android:textColor="@color/gray2"
-                        android:textSize="14sp"
-                        android:visibility="visible"
-                        tools:text="群公告"
-                        tools:visibility="visible" />
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="20dp"
+                        android:src="@mipmap/ic_right" />
 
                 </LinearLayout>
 
@@ -123,6 +134,7 @@
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
                     android:visibility="gone"
+                    app:show_arrow_indicator="true"
                     app:title="群管理" />
             </LinearLayout>
 
@@ -132,6 +144,7 @@
                 style="@style/OptionItem"
                 android:layout_marginTop="@dimen/option_item_margin_top"
                 android:background="@drawable/selector_option_item"
+                app:show_arrow_indicator="true"
                 app:title="查找聊天记录" />
 
             <LinearLayout
@@ -158,23 +171,12 @@
 
                     <com.kyleduo.switchbutton.SwitchButton
                         android:id="@+id/silentSwitchButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/option_item_margin_right"
-                        app:kswBackDrawable="@drawable/ios_back_drawable"
-                        app:kswBackMeasureRatio="1.8"
-                        app:kswThumbDrawable="@drawable/ios_thumb_selector"
-                        app:kswThumbMarginBottom="-4dp"
-                        app:kswThumbMarginLeft="-2dp"
-                        app:kswThumbMarginRight="-2dp"
-                        app:kswThumbMarginTop="-0dp"
-                        app:kswThumbWidth="10dp" />
+                        style="@style/IosSwitch" />
                 </LinearLayout>
 
                 <View
-                    style="@style/Line"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp" />
+                    style="@style/Line" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -192,23 +194,12 @@
 
                     <com.kyleduo.switchbutton.SwitchButton
                         android:id="@+id/stickTopSwitchButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/option_item_margin_right"
-                        app:kswBackDrawable="@drawable/ios_back_drawable"
-                        app:kswBackMeasureRatio="1.8"
-                        app:kswThumbDrawable="@drawable/ios_thumb_selector"
-                        app:kswThumbMarginBottom="-4dp"
-                        app:kswThumbMarginLeft="-2dp"
-                        app:kswThumbMarginRight="-2dp"
-                        app:kswThumbMarginTop="-0dp"
-                        app:kswThumbWidth="10dp" />
+                        style="@style/IosSwitch" />
                 </LinearLayout>
 
                 <View
-                    style="@style/Line"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp" />
+                    style="@style/Line" />
 
                 <LinearLayout
                     android:id="@+id/markGroupLinearLayout"
@@ -229,17 +220,8 @@
 
                     <com.kyleduo.switchbutton.SwitchButton
                         android:id="@+id/markGroupSwitchButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="15dp"
-                        app:kswBackDrawable="@drawable/ios_back_drawable"
-                        app:kswBackMeasureRatio="1.8"
-                        app:kswThumbDrawable="@drawable/ios_thumb_selector"
-                        app:kswThumbMarginBottom="-4dp"
-                        app:kswThumbMarginLeft="-2dp"
-                        app:kswThumbMarginRight="-2dp"
-                        app:kswThumbMarginTop="-0dp"
-                        app:kswThumbWidth="10dp" />
+                        android:layout_marginRight="16dp"
+                        style="@style/IosSwitch" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -257,13 +239,8 @@
                     android:id="@+id/myGroupNickNameOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
+                    app:show_arrow_indicator="true"
                     app:title="@string/my_nickname_in_this_group" />
-
-
-                <View
-                    style="@style/Line"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -283,41 +260,34 @@
 
                     <com.kyleduo.switchbutton.SwitchButton
                         android:id="@+id/showGroupMemberAliasSwitchButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/option_item_margin_right"
-                        android:clickable="true"
-                        app:kswBackDrawable="@drawable/ios_back_drawable"
-                        app:kswBackMeasureRatio="1.8"
-                        app:kswThumbDrawable="@drawable/ios_thumb_selector"
-                        app:kswThumbMarginBottom="-4dp"
-                        app:kswThumbMarginLeft="-2dp"
-                        app:kswThumbMarginRight="-2dp"
-                        app:kswThumbMarginTop="-0dp"
-                        app:kswThumbWidth="10dp" />
+                        style="@style/IosSwitch" />
                 </LinearLayout>
 
             </LinearLayout>
 
-            <cn.wildfire.chat.kit.widget.OptionItemView
+            <TextView
                 android:id="@+id/clearMessagesOptionItemView"
-                style="@style/OptionItem"
-                android:layout_marginTop="@dimen/option_item_margin_top"
-                android:background="@drawable/selector_option_item"
-                app:title="@string/clear_chat_log" />
-
-            <Button
-                android:id="@+id/quitButton"
-                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_marginLeft="@dimen/option_item_margin_left"
-                android:layout_marginTop="@dimen/option_item_margin_top"
-                android:layout_marginRight="@dimen/option_item_margin_right"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/selector_common_item"
+                android:gravity="center"
+                android:text="@string/clear_chat_log"
+                android:textColor="@color/red0"
+                android:textSize="16sp" />
+
+            <View style="@style/Line" />
+
+            <TextView
+                android:id="@+id/quitButton"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/shape_btn_delete"
+                android:background="@drawable/selector_common_item"
+                android:gravity="center"
                 android:text="@string/delete_and_exit"
-                android:textColor="@color/white"
+                android:textColor="@color/red0"
                 android:textSize="16sp"
                 android:visibility="gone"
                 tools:visibility="visible" />

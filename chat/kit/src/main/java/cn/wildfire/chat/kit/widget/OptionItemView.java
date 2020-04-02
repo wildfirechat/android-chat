@@ -102,6 +102,7 @@ public class OptionItemView extends LinearLayout {
                     resId = typedArray.getResourceId(attr, 0);
                     if (resId != 0) {
                         endImageView.setImageResource(resId);
+                        endImageView.setVisibility(View.VISIBLE);
                     }
                     break;
                 case R.styleable.OptionItemView_show_arrow_indicator:

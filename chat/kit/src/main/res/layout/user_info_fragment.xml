@@ -1,166 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/gray5"
+    android:orientation="vertical">
 
-    <!--内容-->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/gray5"
+        android:layout_height="100dp"
+        android:background="@drawable/selector_common_item"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <ImageView
+            android:id="@+id/portraitImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="14dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/default_header" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="18dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/nameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="wfc"
+                    android:textColor="@color/black1"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/genderImageView"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/ic_gender_female"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/nickyName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/nickname_colon"
+                android:textColor="@color/black1"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/mobileTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:singleLine="true"
+                android:text="@string/my_chat_account"
+                android:textColor="@color/gray12"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <View style="@style/Line" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/aliasOptionItemView"
+        style="@style/OptionItem"
+        android:background="@drawable/selector_common_item"
+        app:show_arrow_indicator="true"
+        app:title="设置昵称或别名" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/qrCodeOptionItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/selector_common_item"
+        android:visibility="gone"
+        app:end_src="@mipmap/qr_code"
+        app:title="二维码" />
+
+    <LinearLayout
+        android:id="@+id/momentButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:orientation="vertical">
+
+        <View style="@style/Line" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_height="70dp"
             android:background="@drawable/selector_common_item"
-            android:padding="10dp">
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:text="朋友圈"
+                android:textColor="@color/black1"
+                android:textSize="16sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <ImageView
-                android:id="@+id/portraitImageView"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginLeft="5dp"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/default_header" />
-
-            <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginRight="20dp"
+                android:src="@mipmap/ic_right" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/nameTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:gravity="center"
-                        android:singleLine="true"
-                        android:text="wfc"
-                        android:textColor="@color/gray0"
-                        android:textSize="15sp" />
-
-                    <ImageView
-                        android:id="@+id/genderImageView"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:scaleType="centerCrop"
-                        android:src="@mipmap/ic_gender_female"
-                        android:visibility="gone" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/nickyName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:singleLine="true"
-                    android:text="@string/nickname_colon"
-                    android:textColor="@color/gray2"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/mobileTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:text="@string/my_chat_account"
-                    android:textColor="@color/gray2"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
-
-
-            </LinearLayout>
         </LinearLayout>
 
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/aliasOptionItemView"
-            style="@style/OptionItem"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/selector_common_item"
-            app:title="设置昵称或别名" />
+        <View style="@style/Line" />
 
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/qrCodeOptionItemView"
-            style="@style/OptionItem"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/selector_common_item"
-            android:visibility="gone"
-            app:end_src="@mipmap/qr_code"
-            app:title="二维码" />
-
-        <Button
-            android:id="@+id/momentButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/shape_user_info_send_msg"
-            android:text="朋友圈"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-
-
-        <Button
-            android:id="@+id/chatButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/shape_user_info_send_msg"
-            android:text="@string/send_message"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-
-        <Button
-            android:id="@+id/voipChatButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/shape_session_btn_voice_normal"
-            android:text="视频聊天"
-            android:textColor="@color/gray0"
-            android:textSize="16sp"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <Button
-            android:id="@+id/inviteButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/shape_user_info_add_to_contact"
-            android:text="@string/add_to_contact"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:visibility="gone"
-            tools:visibility="visible" />
     </LinearLayout>
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/chatButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <View style="@style/Line" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_common_item">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:drawableLeft="@mipmap/ic_start_message"
+                android:drawablePadding="6dp"
+                android:text="@string/send_message"
+                android:textColor="@color/blue3"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <View style="@style/Line" />
+
+    <FrameLayout
+        android:id="@+id/voipChatButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/selector_common_item"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/white"
+            android:drawableLeft="@mipmap/ic_start_voip"
+            android:drawablePadding="6dp"
+            android:text="视频聊天"
+            android:textColor="@color/blue3"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/inviteButton"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/white"
+        android:text="@string/add_to_contact"
+        android:textColor="@color/blue3"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:visibility="visible" />
+</LinearLayout>

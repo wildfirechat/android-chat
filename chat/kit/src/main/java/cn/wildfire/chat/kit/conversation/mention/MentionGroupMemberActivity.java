@@ -27,12 +27,6 @@ public class MentionGroupMemberActivity extends SearchActivity {
     }
 
     @Override
-    protected void afterMenus(Menu menu) {
-        super.afterMenus(menu);
-        searchView.setIconified(true);
-    }
-
-    @Override
     protected void initSearchModule(List<SearchableModule> modules) {
         modules.add(new GroupMemberSearchModule(groupInfo.target));
     }

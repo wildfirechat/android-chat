@@ -2,8 +2,13 @@ package cn.wildfire.chat.kit.group;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,17 +18,30 @@ import cn.wildfirechat.chat.R;
 
 public class PickGroupMemberActivity extends BasePickGroupMemberActivity {
     private MenuItem menuItem;
+    private TextView confirmTv;
     private List<UIUserInfo> checkedGroupMembers;
     public static final String EXTRA_RESULT = "pickedMemberIds";
+
+    @Override
+    protected void afterViews() {
+        super.afterViews();
+        setTitleBackgroundResource(R.color.black5);
+        setTitleTextColor(Color.WHITE);
+    }
+
+    @Override
+    protected Fragment getFragment() {
+        return PickGroupMemberBlackFragment.newInstance(groupInfo);
+    }
 
     @Override
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
         this.checkedGroupMembers = checkedUserInfos;
         if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
-            menuItem.setTitle("确定");
+            confirmTv.setText("完成");
             menuItem.setEnabled(false);
         } else {
-            menuItem.setTitle("确定(" + checkedUserInfos.size() + ")");
+            confirmTv.setText("完成(" + checkedUserInfos.size() + ")");
             menuItem.setEnabled(true);
         }
     }
@@ -37,6 +55,14 @@ public class PickGroupMemberActivity extends BasePickGroupMemberActivity {
     protected void afterMenus(Menu menu) {
         menuItem = menu.findItem(R.id.confirm);
         menuItem.setEnabled(false);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.confirm);
+        confirmTv = item.getActionView().findViewById(R.id.confirm_tv);
+        confirmTv.setOnClickListener(v -> onOptionsItemSelected(menuItem));
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
