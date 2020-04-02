@@ -10,6 +10,7 @@
         android:background="@drawable/search_view_bg"
         android:paddingLeft="34dp"
         android:paddingRight="34dp"
+        android:hint="搜索"
         android:singleLine="true"
         android:textColor="@color/black6"
         android:textSize="16sp" />
