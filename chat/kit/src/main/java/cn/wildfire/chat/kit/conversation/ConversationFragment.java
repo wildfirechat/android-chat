@@ -395,36 +395,38 @@ public class ConversationFragment extends Fragment implements
 
         inputPanel.setupConversation(conversation);
 
-        MutableLiveData<List<UiMessage>> messages;
-        if (initialFocusedMessageId != -1) {
-            shouldContinueLoadNewMessage = true;
-            messages = conversationViewModel.loadAroundMessages(conversation, channelPrivateChatUser, initialFocusedMessageId, MESSAGE_LOAD_AROUND);
-        } else {
-            messages = conversationViewModel.getMessages(conversation, channelPrivateChatUser);
-        }
+        if (conversation.type != Conversation.ConversationType.ChatRoom) {
 
-        // load message
-        swipeRefreshLayout.setRefreshing(true);
-        messages.observe(this, uiMessages -> {
-            swipeRefreshLayout.setRefreshing(false);
-            adapter.setMessages(uiMessages);
-            adapter.notifyDataSetChanged();
-
-            if (adapter.getItemCount() > 1) {
-                int initialMessagePosition;
-                if (initialFocusedMessageId != -1) {
-                    initialMessagePosition = adapter.getMessagePosition(initialFocusedMessageId);
-                    if (initialMessagePosition != -1) {
-                        recyclerView.scrollToPosition(initialMessagePosition);
-                        adapter.highlightFocusMessage(initialMessagePosition);
-                    }
-                } else {
-                    moveToBottom = true;
-                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-                }
+            MutableLiveData<List<UiMessage>> messages;
+            if (initialFocusedMessageId != -1) {
+                shouldContinueLoadNewMessage = true;
+                messages = conversationViewModel.loadAroundMessages(conversation, channelPrivateChatUser, initialFocusedMessageId, MESSAGE_LOAD_AROUND);
+            } else {
+                messages = conversationViewModel.getMessages(conversation, channelPrivateChatUser);
             }
-        });
-        if (conversation.type == Conversation.ConversationType.ChatRoom) {
+
+            // load message
+            swipeRefreshLayout.setRefreshing(true);
+            messages.observe(this, uiMessages -> {
+                swipeRefreshLayout.setRefreshing(false);
+                adapter.setMessages(uiMessages);
+                adapter.notifyDataSetChanged();
+
+                if (adapter.getItemCount() > 1) {
+                    int initialMessagePosition;
+                    if (initialFocusedMessageId != -1) {
+                        initialMessagePosition = adapter.getMessagePosition(initialFocusedMessageId);
+                        if (initialMessagePosition != -1) {
+                            recyclerView.scrollToPosition(initialMessagePosition);
+                            adapter.highlightFocusMessage(initialMessagePosition);
+                        }
+                    } else {
+                        moveToBottom = true;
+                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                    }
+                }
+            });
+        } else {
             joinChatRoom();
         }
 
