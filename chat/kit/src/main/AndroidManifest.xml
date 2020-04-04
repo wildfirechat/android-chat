@@ -198,7 +198,7 @@
         <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
-            android:label="火信"
+            android:label="野火IM"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="${applicationId}.main" />
