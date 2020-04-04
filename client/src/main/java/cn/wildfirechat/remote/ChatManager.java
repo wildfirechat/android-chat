@@ -43,6 +43,7 @@ import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGetMessageCallback;
 import cn.wildfirechat.client.IGetRemoteMessageCallback;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
@@ -1627,13 +1628,14 @@ public class ChatManager {
     /**
      * 获取会话消息
      *
-     * @param conversation
+     * @param conversation 会话
      * @param fromIndex    消息起始id(messageId)
      * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count        获取消息条数
      * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
-     * @return
+     * @return 由于ipc大小限制，本接口获取到的消息列表可能不完整，请使用异步获取
      */
+    @Deprecated
     public List<Message> getMessages(Conversation conversation, long fromIndex, boolean before, int count, String withUser) {
         if (!checkRemoteService()) {
             return null;
@@ -1647,6 +1649,7 @@ public class ChatManager {
         return null;
     }
 
+    @Deprecated()
     public List<Message> getMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, long fromIndex, boolean before, int count, String withUser) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
@@ -1661,28 +1664,19 @@ public class ChatManager {
         }
 
         int[] intypes = new int[conversationTypes.size()];
-        int[] inlines = new int[lines.size()];
-        int[] inCntTypes = new int[contentTypes.size()];
         for (int i = 0; i < conversationTypes.size(); i++) {
             intypes[i] = conversationTypes.get(i).ordinal();
         }
 
-        for (int j = 0; j < lines.size(); j++) {
-            inlines[j] = lines.get(j);
-        }
-
-        for (int k = 0; k < contentTypes.size(); k++) {
-            inCntTypes[k] = contentTypes.get(k);
-        }
-
         try {
-            return mClient.getMessagesEx(intypes, inlines, inCntTypes, fromIndex, before, count, withUser);
+            return mClient.getMessagesEx(intypes, convertIntegers(lines), convertIntegers(contentTypes), fromIndex, before, count, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    @Deprecated
     public List<Message> getMessagesEx2(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, MessageStatus messageStatus, long fromIndex, boolean before, int count, String withUser) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
@@ -1696,21 +1690,160 @@ public class ChatManager {
         }
 
         int[] intypes = new int[conversationTypes.size()];
-        int[] inlines = new int[lines.size()];
         for (int i = 0; i < conversationTypes.size(); i++) {
             intypes[i] = conversationTypes.get(i).ordinal();
         }
 
-        for (int j = 0; j < lines.size(); j++) {
-            inlines[j] = lines.get(j);
-        }
-
         try {
-            return mClient.getMessagesEx2(intypes, inlines, messageStatus == null ? -1 : messageStatus.value(), fromIndex, before, count, withUser);
+            return mClient.getMessagesEx2(intypes, convertIntegers(lines), messageStatus == null ? -1 : messageStatus.value(), fromIndex, before, count, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 获取会话消息
+     *
+     * @param conversation
+     * @param fromIndex    消息起始id(messageId)
+     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count        获取消息条数
+     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getMessages(Conversation conversation, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getMessagesAsync(conversation, fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    callback.onSuccess(messages, hasMore);
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    callback.onFail(errorCode);
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+        }
+    }
+
+    /**
+     * 获取消息
+     *
+     * @param conversationTypes 会话类型
+     * @param lines             会话线路
+     * @param contentTypes      消息类型
+     * @param fromIndex         消息起始id(messageId)
+     * @param before            true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count             获取消息条数
+     * @param withUser          只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            Log.e(TAG, "Remote service not available");
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        if (conversationTypes == null || conversationTypes.size() == 0 ||
+            lines == null || lines.size() == 0 ||
+            contentTypes == null || contentTypes.size() == 0) {
+            Log.e(TAG, "Invalid conversation type or lines or contentType");
+            callback.onFail(ErrorCode.INVALID_PARAMETER);
+            return;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+
+        try {
+            mClient.getMessagesExAsync(intypes, convertIntegers(lines), convertIntegers(contentTypes), fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    callback.onSuccess(messages, hasMore);
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    callback.onFail(errorCode);
+
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+        }
+    }
+
+    /**
+     * 获取消息
+     *
+     * @param conversationTypes 会话类型
+     * @param lines             会话线路
+     * @param messageStatus     消息状态
+     * @param fromIndex         消息起始id(messageId)
+     * @param before            true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count             获取消息条数
+     * @param withUser          只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getMessagesEx2(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, MessageStatus messageStatus, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+
+        if (!checkRemoteService()) {
+            Log.e(TAG, "Remote service not available");
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        if (conversationTypes == null || conversationTypes.size() == 0 ||
+            lines == null || lines.size() == 0) {
+            Log.e(TAG, "Invalid conversation type or lines");
+            callback.onFail(ErrorCode.INVALID_PARAMETER);
+            return;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+
+        try {
+            mClient.getMessagesEx2Async(intypes, convertIntegers(lines), messageStatus == null ? -1 : messageStatus.value(), fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    callback.onSuccess(messages, hasMore);
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    callback.onFail(errorCode);
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+        }
     }
 
 
@@ -4302,4 +4435,12 @@ public class ChatManager {
             });
         }
     };
+
+    private static int[] convertIntegers(List<Integer> integers) {
+        int[] ret = new int[integers.size()];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = integers.get(i).intValue();
+        }
+        return ret;
+    }
 }
