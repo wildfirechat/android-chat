@@ -27,13 +27,13 @@ public class ChatRoomListFragment extends Fragment {
     @OnClick({R.id.chatRoomTextView_0, R.id.chatRoomTextView_1, R.id.chatRoomTextView_2})
     void joinChatRoom(View view) {
         String roomId = "chatroom1";
-        String title = "火信聊天室1";
+        String title = "野火IM聊天室1";
         if (view.getId() == R.id.chatRoomTextView_1) {
             roomId = "chatroom2";
-            title = "火信聊天室2";
+            title = "野火IM聊天室2";
         } else if (view.getId() == R.id.chatRoomTextView_2) {
             roomId = "chatroom3";
-            title = "火信聊天室3";
+            title = "野火IM聊天室3";
         }
 
         //todo 这里应该是先进入到ConversationActivity界面，然后在界面内joinchatroom？
