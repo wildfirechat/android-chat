@@ -15,6 +15,7 @@ import cn.wildfirechat.client.IGetGroupInfoCallback;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ISearchChannelCallback;
 import cn.wildfirechat.client.IGetRemoteMessageCallback;
+import cn.wildfirechat.client.IGetMessageCallback;
 
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
@@ -74,6 +75,10 @@ interface IRemoteClient {
     List<Message> getMessages(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser);
     List<Message> getMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser);
     List<Message> getMessagesEx2(in int[] conversationTypes, in int[] lines, in int messageStatus, in long fromIndex, in boolean before, in int count, in String withUser);
+
+    oneway void getMessagesAsync(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void getMessagesExAsync(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void getMessagesEx2Async(in int[] conversationTypes, in int[] lines, in int messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
 
     oneway void getRemoteMessages(in Conversation conversation, in long beforeMessageUid, in int count, in IGetRemoteMessageCallback callback);
 
