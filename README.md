@@ -93,8 +93,6 @@
 
 <img src="http://static.wildfirechat.cn/android-view11.png" width = 50% height = 50% />
 
-## 协议栈的编译
-工程中已经包括了编译好的协议栈，你也可以自己编译[协议栈](https://github.com/wildfirechat/proto)，编译方法请参考协议栈工程。
 
 ## 集成
 1. client部分，自行下载代码，并将client module引入你们自己的项目。
