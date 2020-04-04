@@ -43,7 +43,6 @@ import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.ImageTextMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
-import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
@@ -438,48 +437,67 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             return out;
         }
 
-        private List<Message> buildSafeIPCMessages(ProtoMessage[] messages, boolean before) {
-            List<Message> msgs = new ArrayList<>();
-            int totalLength = 0;
-            int messageContentLength;
-            if (messages == null || messages.length == 0) {
-                return msgs;
-            }
-
-            for (int i = 0; i < messages.length; i++) {
-                ProtoMessage pmsg;
-                if (before) {
-                    pmsg = messages[messages.length - i - 1];
-                } else {
-                    pmsg = messages[i];
-                }
-                messageContentLength = getProtoMessageLength(pmsg);
-                if (messageContentLength > MAX_IPC_SIZE) {
-                    android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageContentLength);
-                    continue;
-                }
-                totalLength += messageContentLength;
-                if (totalLength <= MAX_IPC_SIZE) {
-                    if (before) {
-                        msgs.add(0, convertProtoMessage(pmsg));
-                    } else {
-                        msgs.add(convertProtoMessage(pmsg));
-                    }
-                }
-            }
-            return msgs;
-        }
-
         @Override
         public List<Message> getMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser);
-            return buildSafeIPCMessages(protoMessages, before);
+            SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
+            return entry.messages;
         }
 
         @Override
         public List<Message> getMessagesEx2(int[] conversationTypes, int[] lines, int messageStatus, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser);
-            return buildSafeIPCMessages(protoMessages, before);
+            SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
+            return entry.messages;
+        }
+
+        @Override
+        public void getMessagesAsync(Conversation conversation, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.getMessages(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser);
+            try {
+                SafeIPCMessageEntry entry;
+                int startIndex = 0;
+                do {
+                    entry = buildSafeIPCMessages(protoMessages, startIndex, before);
+                    callback.onSuccess(entry.messages, entry.messages.size() > 0 && startIndex != protoMessages.length - 1);
+                    startIndex = entry.index + 1;
+                } while (entry.index > 0 && entry.index < protoMessages.length - 1);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void getMessagesExAsync(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser);
+            try {
+                SafeIPCMessageEntry entry;
+                int startIndex = 0;
+                do {
+                    entry = buildSafeIPCMessages(protoMessages, startIndex, before);
+                    callback.onSuccess(entry.messages, entry.messages.size() > 0 && startIndex != protoMessages.length - 1);
+                    startIndex = entry.index + 1;
+                } while (entry.index > 0 && entry.index < protoMessages.length - 1);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        @Override
+        public void getMessagesEx2Async(int[] conversationTypes, int[] lines, int messageStatus, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser);
+            try {
+                SafeIPCMessageEntry entry;
+                int startIndex = 0;
+                do {
+                    entry = buildSafeIPCMessages(protoMessages, startIndex, before);
+                    callback.onSuccess(entry.messages, entry.messages.size() > 0 && startIndex != protoMessages.length - 1);
+                    startIndex = entry.index + 1;
+                } while (entry.index > 0 && entry.index < protoMessages.length - 1);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -488,7 +506,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 @Override
                 public void onSuccess(ProtoMessage[] list) {
                     try {
-                        callback.onSuccess(buildSafeIPCMessages(list, false));
+                        SafeIPCMessageEntry entry;
+                        int startIndex = 0;
+                        do {
+                            entry = buildSafeIPCMessages(list, startIndex, false);
+                            callback.onSuccess(entry.messages);
+                            startIndex = entry.index + 1;
+                        } while (entry.index > 0 && entry.index < list.length - 1);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -504,6 +528,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             });
         }
+
 
         @Override
         public cn.wildfirechat.message.Message getMessage(long messageId) throws RemoteException {
@@ -2336,5 +2361,50 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         length += content.getRemoteMediaUrl() != null ? content.getRemoteMediaUrl().length() : 0;
         length += content.getLocalContent() != null ? content.getLocalContent().length() : 0;
         return length;
+    }
+
+    private SafeIPCMessageEntry buildSafeIPCMessages(ProtoMessage[] messages, int startIndex, boolean before) {
+        SafeIPCMessageEntry entry = new SafeIPCMessageEntry();
+        int totalLength = 0;
+        int messageContentLength;
+        if (messages == null || messages.length == 0) {
+            return entry;
+        }
+
+        for (int i = startIndex; i < messages.length; i++) {
+            ProtoMessage pmsg;
+            if (before) {
+                pmsg = messages[messages.length - i - 1];
+            } else {
+                pmsg = messages[i];
+            }
+            messageContentLength = getProtoMessageLength(pmsg);
+            if (messageContentLength > MAX_IPC_SIZE) {
+                android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageContentLength);
+                continue;
+            }
+            totalLength += messageContentLength;
+            if (totalLength <= MAX_IPC_SIZE) {
+                if (before) {
+                    entry.messages.add(0, convertProtoMessage(pmsg));
+                } else {
+                    entry.messages.add(convertProtoMessage(pmsg));
+                }
+                entry.index = i;
+            } else {
+                break;
+            }
+        }
+        return entry;
+    }
+
+    private static class SafeIPCMessageEntry {
+        public SafeIPCMessageEntry() {
+            messages = new ArrayList<>();
+            index = 0;
+        }
+
+        List<Message> messages;
+        int index;
     }
 }

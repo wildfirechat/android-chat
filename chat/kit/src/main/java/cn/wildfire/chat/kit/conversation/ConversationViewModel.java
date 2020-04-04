@@ -13,6 +13,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GetMessageCallback;
 import cn.wildfirechat.remote.GetRemoteMessageCallback;
 
 public class ConversationViewModel extends ViewModel implements AppScopeViewModel {
@@ -35,34 +36,43 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     public MutableLiveData<List<UiMessage>> loadOldMessages(Conversation conversation, String withUser, long fromMessageId, long fromMessageUid, int count) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<Message> messageList = ChatManager.Instance().getMessages(conversation, fromMessageId, true, count, withUser);
-            if (messageList != null && !messageList.isEmpty()) {
-                List<UiMessage> messages = new ArrayList<>();
-                for (Message msg : messageList) {
-                    messages.add(new UiMessage(msg));
-                }
-                result.postValue(messages);
-            } else {
-                ChatManager.Instance().getRemoteMessages(conversation, fromMessageUid, count, new GetRemoteMessageCallback() {
-                    @Override
-                    public void onSuccess(List<Message> messages) {
-                        if (messages != null && !messages.isEmpty()) {
-                            List<UiMessage> msgs = new ArrayList<>();
-                            for (Message msg : messages) {
-                                msgs.add(new UiMessage(msg));
-                            }
-                            result.postValue(msgs);
-                        } else {
-                            result.postValue(new ArrayList<UiMessage>());
+            ChatManager.Instance().getMessages(conversation, fromMessageId, true, count, withUser, new GetMessageCallback() {
+                @Override
+                public void onSuccess(List<Message> messageList, boolean hasMore) {
+                    if (messageList != null && !messageList.isEmpty()) {
+                        List<UiMessage> messages = new ArrayList<>();
+                        for (Message msg : messageList) {
+                            messages.add(new UiMessage(msg));
                         }
-                    }
+                        result.postValue(messages);
+                    } else {
+                        ChatManager.Instance().getRemoteMessages(conversation, fromMessageUid, count, new GetRemoteMessageCallback() {
+                            @Override
+                            public void onSuccess(List<Message> messages) {
+                                if (messages != null && !messages.isEmpty()) {
+                                    List<UiMessage> msgs = new ArrayList<>();
+                                    for (Message msg : messages) {
+                                        msgs.add(new UiMessage(msg));
+                                    }
+                                    result.postValue(msgs);
+                                } else {
+                                    result.postValue(new ArrayList<UiMessage>());
+                                }
+                            }
 
-                    @Override
-                    public void onFail(int errorCode) {
-                        result.postValue(new ArrayList<UiMessage>());
+                            @Override
+                            public void onFail(int errorCode) {
+                                result.postValue(new ArrayList<UiMessage>());
+                            }
+                        });
                     }
-                });
-            }
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+
+                }
+            });
         });
         return result;
     }
@@ -119,14 +129,24 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     public MutableLiveData<List<UiMessage>> loadNewMessages(Conversation conversation, String withUser, long startIndex, int count) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<Message> messageList = ChatManager.Instance().getMessages(conversation, startIndex, false, count, withUser);
-            List<UiMessage> messages = new ArrayList<>();
-            if (messageList != null) {
-                for (Message msg : messageList) {
-                    messages.add(new UiMessage(msg));
+            ChatManager.Instance().getMessages(conversation, startIndex, false, count, withUser, new GetMessageCallback() {
+                @Override
+                public void onSuccess(List<Message> messageList, boolean hasMore) {
+                    List<UiMessage> messages = new ArrayList<>();
+                    if (messageList != null) {
+                        for (Message msg : messageList) {
+                            messages.add(new UiMessage(msg));
+                        }
+                    }
+                    result.postValue(messages);
+
                 }
-            }
-            result.postValue(messages);
+
+                @Override
+                public void onFail(int errorCode) {
+
+                }
+            });
         });
         return result;
     }
