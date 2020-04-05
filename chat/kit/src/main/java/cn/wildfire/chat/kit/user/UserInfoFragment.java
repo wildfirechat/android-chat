@@ -43,17 +43,14 @@ import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
 
 public class UserInfoFragment extends Fragment {
     @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
     @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @BindView(R.id.mobileTextView)
-    TextView mobileTextView;
-    @BindView(R.id.nickyName)
-    TextView nickyNameTextView;
+    @BindView(R.id.accountTextView)
+    TextView accountTextView;
     @BindView(R.id.chatButton)
     View chatButton;
     @BindView(R.id.voipChatButton)
@@ -142,19 +139,14 @@ public class UserInfoFragment extends Fragment {
 
     private void setUserInfo(UserInfo userInfo) {
         RequestOptions requestOptions = new RequestOptions()
-                .placeholder(UIUtils.getRoundedDrawable(R.mipmap.avatar_def, 10))
-                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(10)));
+            .placeholder(UIUtils.getRoundedDrawable(R.mipmap.avatar_def, 10))
+            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(10)));
         Glide.with(this)
-                .load(userInfo.portrait)
-                .apply(requestOptions)
-                .into(portraitImageView);
-        nameTextView.setText("野火ID" + userInfo.name);
-        nameTextView.setVisibility(View.GONE);
-        nickyNameTextView.setText(userViewModel.getUserDisplayName(userInfo));
-        if (ChatManager.Instance().isMyFriend(userInfo.uid)) {
-            mobileTextView.setText("电话:" + userInfo.mobile);
-            mobileTextView.setVisibility(View.VISIBLE);
-        }
+            .load(userInfo.portrait)
+            .apply(requestOptions)
+            .into(portraitImageView);
+        nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
+        accountTextView.setText("野火ID:" + userInfo.name);
     }
 
     @OnClick(R.id.chatButton)

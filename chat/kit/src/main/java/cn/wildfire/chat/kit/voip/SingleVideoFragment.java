@@ -337,7 +337,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             getActivity().finish();
             return;
         }
-        GlideApp.with(this).load(userInfo.portrait).error(R.mipmap.default_header).into(portraitImageView);
+        GlideApp.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
 
         updateCallDuration();

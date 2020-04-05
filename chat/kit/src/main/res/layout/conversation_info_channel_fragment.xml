@@ -22,7 +22,7 @@
                 android:layout_height="60dp"
                 android:layout_marginLeft="@dimen/option_item_margin_left"
                 android:layout_marginTop="@dimen/option_item_margin_top"
-                android:src="@mipmap/default_header" />
+                android:src="@mipmap/avatar_def" />
 
             <LinearLayout
                 android:layout_width="match_parent"

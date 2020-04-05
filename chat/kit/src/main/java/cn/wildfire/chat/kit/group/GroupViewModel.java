@@ -490,7 +490,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         for (UserInfo userInfo : userInfos) {
             Drawable drawable;
             try {
-                drawable = GlideApp.with(context).load(userInfo.portrait).error(R.mipmap.avatar_def).submit(60, 60).get();
+                drawable = GlideApp.with(context).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
             } catch (Exception e) {
                 e.printStackTrace();
                 drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();

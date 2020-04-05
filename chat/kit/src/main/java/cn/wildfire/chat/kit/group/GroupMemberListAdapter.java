@@ -122,13 +122,13 @@ public class GroupMemberListAdapter extends RecyclerView.Adapter<GroupMemberList
         public void bindUserInfo(UserInfo userInfo) {
             if (userInfo == null) {
                 nameTextView.setText("");
-                portraitImageView.setImageResource(R.mipmap.default_header);
+                portraitImageView.setImageResource(R.mipmap.avatar_def);
                 return;
             }
             this.userInfo = userInfo;
             nameTextView.setVisibility(View.VISIBLE);
             nameTextView.setText(ChatManager.Instance().getGroupMemberDisplayName(groupInfo.target, userInfo.uid));
-            Glide.with(portraitImageView).load(userInfo.portrait).apply(new RequestOptions().centerCrop().placeholder(R.mipmap.default_header)).into(portraitImageView);
+            Glide.with(portraitImageView).load(userInfo.portrait).apply(new RequestOptions().centerCrop().placeholder(R.mipmap.avatar_def)).into(portraitImageView);
         }
 
     }

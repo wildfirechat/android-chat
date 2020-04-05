@@ -58,7 +58,7 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo invitor = userViewModel.getUserInfo(session.initiator, false);
         invitorTextView.setText(invitor.displayName);
-        GlideApp.with(this).load(invitor.portrait).error(R.mipmap.default_header).into(invitorImageView);
+        GlideApp.with(this).load(invitor.portrait).placeholder(R.mipmap.avatar_def).into(invitorImageView);
 
         List<String> participants = session.getParticipantIds();
         participants.remove(invitor.uid);

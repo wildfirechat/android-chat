@@ -50,7 +50,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
                 senderName = ChatManager.Instance().getUserDisplayName(sender);
             }
             nameTextView.setText(senderName);
-            GlideApp.with(portraitImageView).load(sender.portrait).error(R.mipmap.default_header).into(portraitImageView);
+            GlideApp.with(portraitImageView).load(sender.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
         }
         if (message.content instanceof NotificationMessageContent) {
             contentTextView.setText(((NotificationMessageContent) message.content).formatNotification(message));
