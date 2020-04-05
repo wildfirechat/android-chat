@@ -12,11 +12,21 @@
         <item name="colorBackgroundFloating">@color/white</item>
     </style>
 
-    <style name="AppTheme.Appbar">
+    <style name="AppTheme.LightAppbar">
         <item name="actionMenuTextColor">@color/gray15</item>
         <item name="overlapAnchor">false</item>
         <item name="titleTextColor">@color/black2</item>
         <item name="android:textColorPrimary">@color/black2</item>
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
+    <style name="AppTheme.DarkAppbar">
+        <item name="actionMenuTextColor">@color/white</item>
+        <item name="overlapAnchor">false</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="iconTint">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
         <item name="colorControlNormal">@color/white</item>
     </style>
 

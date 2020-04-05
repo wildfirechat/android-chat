@@ -13,6 +13,6 @@
         android:layout_height="?attr/actionBarSize"
         app:contentInsetStartWithNavigation="0dp"
         app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:theme="@style/AppTheme.Appbar" />
+        app:theme="@style/AppTheme.DarkAppbar" />
 
 </com.google.android.material.appbar.AppBarLayout>
