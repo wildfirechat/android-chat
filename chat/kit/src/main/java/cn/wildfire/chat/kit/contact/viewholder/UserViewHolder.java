@@ -48,9 +48,9 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         }
         UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo.getUserInfo()));
-        GlideApp.with(fragment).load(userInfo.getUserInfo().portrait).error(R.mipmap.default_header)
-                .transforms(new CenterCrop(), new RoundedCorners(10))
-                .into(portraitImageView);
+        GlideApp.with(fragment).load(userInfo.getUserInfo().portrait).placeholder(R.mipmap.avatar_def)
+            .transforms(new CenterCrop(), new RoundedCorners(10))
+            .into(portraitImageView);
     }
 
     public UIUserInfo getBindContact() {

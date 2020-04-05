@@ -10,7 +10,7 @@
         android:id="@+id/portraitImageView"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:src="@mipmap/default_header" />
+        android:src="@mipmap/avatar_def" />
 
     <TextView
         android:id="@+id/nameTextView"
