@@ -6,11 +6,15 @@
     android:background="@color/gray5"
     android:orientation="vertical">
 
+    <!--
+    使用LightAppBar 主题时，layout_height="110dp"，paddingTop="0dp" 更协调
+    -->
     <LinearLayout
         android:id="@+id/meLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_height="100dp"
         android:background="@drawable/selector_common_item"
+        android:paddingTop="20dp"
         android:paddingRight="3dp">
 
         <ImageView
