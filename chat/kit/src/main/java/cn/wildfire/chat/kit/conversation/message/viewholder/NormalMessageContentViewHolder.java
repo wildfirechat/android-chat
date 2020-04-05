@@ -211,7 +211,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 .with(fragment)
                 .load(userInfo.portrait)
                 .transforms(new CenterCrop(), new RoundedCorners(10))
-                .error(R.mipmap.default_header)
+                .placeholder(R.mipmap.avatar_def)
                 .into(portraitImageView);
         }
     }

@@ -28,7 +28,7 @@ public class PickedUserAdapter extends RecyclerView.Adapter {
     public PickedUserAdapter() {
         this.mData = new ArrayList<>();
         mOptions = new RequestOptions()
-                .placeholder(UIUtils.getRoundedDrawable(R.mipmap.default_header, 4))
+                .placeholder(UIUtils.getRoundedDrawable(R.mipmap.avatar_def, 4))
                 .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(4)));
     }
 

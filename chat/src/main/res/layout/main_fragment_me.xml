@@ -20,7 +20,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="@dimen/option_item_margin_right"
             android:scaleType="centerCrop"
-            android:src="@mipmap/default_header" />
+            android:src="@mipmap/avatar_def" />
 
         <LinearLayout
             android:layout_width="0dp"

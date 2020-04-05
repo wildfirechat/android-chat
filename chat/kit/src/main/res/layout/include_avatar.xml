@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--<de.hdodenhof.circleimageview.CircleImageView xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:id="@+id/ivAvatar"--><!--android:layout_width="40dp"--><!--android:layout_height="40dp"--><!--android:focusable="false"--><!--android:focusableInTouchMode="false"--><!--android:src="@mipmap/default_header"/>-->
+<?xml version="1.0" encoding="utf-8"?><!--<de.hdodenhof.circleimageview.CircleImageView xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:id="@+id/ivAvatar"--><!--android:layout_width="40dp"--><!--android:layout_height="40dp"--><!--android:focusable="false"--><!--android:focusableInTouchMode="false"--><!--android:src="@mipmap/avatar_def"/>-->
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/portraitImageView"
     android:layout_width="40dp"
@@ -6,4 +6,4 @@
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:scaleType="centerCrop"
-    android:src="@mipmap/default_header" />
+    android:src="@mipmap/avatar_def" />

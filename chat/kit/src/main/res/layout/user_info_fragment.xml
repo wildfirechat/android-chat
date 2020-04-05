@@ -20,7 +20,7 @@
             android:layout_height="60dp"
             android:layout_marginTop="14dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/default_header" />
+            android:src="@mipmap/avatar_def" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -57,25 +57,13 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/nickyName"
+                android:id="@+id/accountTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:text="@string/nickname_colon"
                 android:textColor="@color/black1"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/mobileTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:singleLine="true"
-                android:text="@string/my_chat_account"
-                android:textColor="@color/gray12"
-                android:textSize="14sp"
-                android:visibility="gone" />
+                android:textSize="14sp" />
 
 
         </LinearLayout>
