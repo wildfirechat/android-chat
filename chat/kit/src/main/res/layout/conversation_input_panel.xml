@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:background="#F8F8F8"
         android:gravity="center_vertical"
+        android:animateLayoutChanges="true"
         android:orientation="vertical">
 
         <LinearLayout
