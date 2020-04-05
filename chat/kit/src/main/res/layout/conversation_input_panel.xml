@@ -46,7 +46,7 @@
                     android:layout_centerInParent="true"
                     android:background="@drawable/shape_session_text_input"
                     android:maxLines="5"
-                    android:minHeight="44dp"
+                    android:minHeight="42dp"
                     android:paddingLeft="5dp"
                     android:textSize="16sp"
                     android:visibility="visible" />
@@ -109,11 +109,12 @@
             android:text="全员禁言中"
             android:visibility="gone" />
 
+        <View style="@style/Line" />
+
         <cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout
             android:id="@+id/emotionContainerFrameLayout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_custom_keyboard_size"
-            android:background="@color/white"
             android:visibility="gone">
             <!--表情-->
             <com.lqr.emoji.EmotionLayout
@@ -127,7 +128,6 @@
             android:id="@+id/extContainerContainerLayout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_custom_keyboard_size"
-            android:background="@color/white"
             android:visibility="gone">
 
             <!--其他功能-->
