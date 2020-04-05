@@ -33,7 +33,6 @@ public class UserInfoActivity extends WfcBaseActivity {
                     .replace(R.id.containerFrameLayout, UserInfoFragment.newInstance(userInfo))
                     .commit();
         }
-        setTitleBackgroundResource(R.color.white);
     }
 
     @Override
