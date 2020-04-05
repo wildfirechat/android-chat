@@ -272,22 +272,18 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 case R.id.conversation_list:
                     contentViewPager.setCurrentItem(0);
                     setTitle("野火");
-                    setTitleBackgroundResource(R.color.gray5);
                     break;
                 case R.id.contact:
                     contentViewPager.setCurrentItem(1);
                     setTitle("通讯录");
-                    setTitleBackgroundResource(R.color.gray5);
                     break;
                 case R.id.discovery:
                     contentViewPager.setCurrentItem(2);
                     setTitle("发现");
-                    setTitleBackgroundResource(R.color.gray5);
                     break;
                 case R.id.me:
                     contentViewPager.setCurrentItem(3);
                     setTitle("我的");
-                    setTitleBackgroundResource(R.color.white);
                     break;
                 default:
                     break;
