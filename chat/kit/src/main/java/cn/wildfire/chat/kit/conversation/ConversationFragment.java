@@ -541,9 +541,10 @@ public class ConversationFragment extends Fragment implements
 
     @OnTouch({R.id.contentLayout, R.id.msgRecyclerView})
     boolean onTouch(View view, MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN && inputPanel.extension.canHideOnScroll()) {
-            inputPanel.collapse();
-        }
+//        if (event.getAction() == MotionEvent.ACTION_DOWN && inputPanel.extension.canHideOnScroll()) {
+//            inputPanel.collapse();
+//        }
+        inputPanel.closeConversationInputPanel();
         return false;
     }
 
@@ -657,7 +658,7 @@ public class ConversationFragment extends Fragment implements
         boolean consumed = true;
         if (rootLinearLayout.getCurrentInput() != null) {
             rootLinearLayout.hideAttachedInput(true);
-            inputPanel.collapse();
+            inputPanel.closeConversationInputPanel();
         } else if (multiMessageActionContainerLinearLayout.getVisibility() == View.VISIBLE) {
             toggleConversationMode();
         } else {

@@ -147,7 +147,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     public void disableInput(String tip) {
-        collapse();
+        closeConversationInputPanel();
         inputContainerLinearLayout.setVisibility(GONE);
         disableInputTipTextView.setVisibility(VISIBLE);
         disableInputTipTextView.setText(tip);
@@ -489,7 +489,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-    void collapse() {
+    void closeConversationInputPanel() {
         extension.reset();
         emotionImageView.setImageResource(R.mipmap.ic_cheat_emo);
         rootLinearLayout.hideAttachedInput(true);
