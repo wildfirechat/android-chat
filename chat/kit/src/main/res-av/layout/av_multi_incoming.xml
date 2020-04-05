@@ -50,7 +50,7 @@
             android:id="@+id/invitorImageView"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:src="@mipmap/default_header" />
+            android:src="@mipmap/avatar_def" />
 
         <TextView
             android:id="@+id/invitorTextView"

@@ -226,7 +226,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
         String targetId = session.getParticipantIds().get(0);
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
-        GlideApp.with(this).load(userInfo.portrait).error(R.mipmap.default_header).into(portraitImageView);
+        GlideApp.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
         audioEnable = session.isEnableAudio();

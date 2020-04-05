@@ -20,7 +20,7 @@
             android:layout_height="60dp"
             android:layout_marginLeft="5dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/default_header" />
+            android:src="@mipmap/avatar_def" />
 
 
         <TextView

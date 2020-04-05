@@ -22,7 +22,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/default_header" />
+            android:src="@mipmap/avatar_def" />
 
 
         <LinearLayout
