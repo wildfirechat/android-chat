@@ -29,7 +29,8 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(TextMessageContentViewHolder.class);
         registerMessageViewHolder(VideoMessageContentViewHolder.class);
         registerMessageViewHolder(VoipMessageViewHolder.class);
-        registerMessageViewHolder(SimpleNotificationMessageContentViewHolder.class);
+//        registerMessageViewHolder(SimpleNotificationMessageContentViewHolder.class);
+        registerMessageViewHolder(RecallMessageContentViewHolder.class);
     }
 
     private SparseArray<Class<? extends MessageContentViewHolder>> messageViewHolders = new SparseArray<>();
