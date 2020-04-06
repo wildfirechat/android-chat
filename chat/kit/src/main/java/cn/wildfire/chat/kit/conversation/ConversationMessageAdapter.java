@@ -35,7 +35,6 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageContentViewHo
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
-import cn.wildfire.chat.kit.conversation.message.viewholder.SimpleNotificationMessageContentViewHolder;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.UserInfo;
@@ -249,11 +248,13 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         try {
             Constructor constructor = viewHolderClazz.getConstructor(ConversationFragment.class, RecyclerView.Adapter.class, View.class);
             MessageContentViewHolder viewHolder = (MessageContentViewHolder) constructor.newInstance(fragment, this, itemView);
-            if (viewHolder instanceof SimpleNotificationMessageContentViewHolder) {
+            if (viewHolder instanceof NotificationMessageContentViewHolder) {
                 return viewHolder;
             }
 
-            processCheckClick(viewHolder, itemView);
+            if (mode == MODE_CHECKABLE) {
+                processCheckClick(viewHolder, itemView);
+            }
             processContentLongClick(viewHolderClazz, viewHolder, itemView);
             if (viewHolder instanceof NormalMessageContentViewHolder) {
                 processPortraitClick(viewHolder, itemView);
@@ -323,14 +324,14 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     private void processPortraitLongClick(MessageContentViewHolder viewHolder, View itemView) {
         itemView.findViewById(R.id.portraitImageView).setOnLongClickListener(v -> {
-                    if (onPortraitLongClickListener != null) {
-                        int position = viewHolder.getAdapterPosition();
-                        UiMessage message = getItem(position);
-                        onPortraitLongClickListener.onPortraitLongClick(ChatManager.Instance().getUserInfo(message.message.sender, false));
-                        return true;
-                    }
-                    return false;
+                if (onPortraitLongClickListener != null) {
+                    int position = viewHolder.getAdapterPosition();
+                    UiMessage message = getItem(position);
+                    onPortraitLongClickListener.onPortraitLongClick(ChatManager.Instance().getUserInfo(message.message.sender, false));
+                    return true;
                 }
+                return false;
+            }
         );
     }
 
@@ -408,23 +409,23 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                                     content = menuItem.contextMenuItem.confirmPrompt();
                                 }
                                 new MaterialDialog.Builder(fragment.getContext())
-                                        .content(content)
-                                        .negativeText("取消")
-                                        .positiveText("确认")
-                                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                            @Override
-                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                try {
-                                                    menuItem.method.invoke(viewHolder, itemView, message);
-                                                } catch (IllegalAccessException e) {
-                                                    e.printStackTrace();
-                                                } catch (InvocationTargetException e) {
-                                                    e.printStackTrace();
-                                                }
+                                    .content(content)
+                                    .negativeText("取消")
+                                    .positiveText("确认")
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            try {
+                                                menuItem.method.invoke(viewHolder, itemView, message);
+                                            } catch (IllegalAccessException e) {
+                                                e.printStackTrace();
+                                            } catch (InvocationTargetException e) {
+                                                e.printStackTrace();
                                             }
-                                        })
-                                        .build()
-                                        .show();
+                                        }
+                                    })
+                                    .build()
+                                    .show();
 
                             } else {
                                 contextMenus.get(position).method.invoke(viewHolder, itemView, message);

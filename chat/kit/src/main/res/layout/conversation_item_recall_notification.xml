@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_notification_bg"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/notificationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="wfc 撤回了一条消息"
+        android:textColor="#fff" />
+
+    <TextView
+        android:id="@+id/reeditTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/selector_reedit_textview"
+        android:gravity="center"
+        android:paddingRight="5dp"
+        android:text="重新编辑"
+        android:textColor="@color/black8" />
+
+</LinearLayout>

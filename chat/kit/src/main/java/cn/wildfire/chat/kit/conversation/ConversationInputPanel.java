@@ -416,6 +416,16 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         editText.requestFocus();
     }
 
+    public void setInputText(String text) {
+        if (TextUtils.isEmpty(text)) {
+            return;
+        }
+        editText.setText(text);
+        editText.setSelection(text.length());
+        editText.requestFocus();
+        rootLinearLayout.showSoftkey(editText);
+    }
+
     public void onActivityPause() {
         Editable editable = editText.getText();
         if (TextUtils.isEmpty(editable.toString().trim())) {

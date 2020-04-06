@@ -70,9 +70,9 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:visibility="gone"
-            android:layout_gravity="center"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="2dp"
             android:scaleType="center"
-            android:layout_marginRight="10dp"
             android:src="@mipmap/receipt" />
 
         <LinearLayout

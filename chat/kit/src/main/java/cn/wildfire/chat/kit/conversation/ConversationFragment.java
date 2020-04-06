@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -161,7 +162,7 @@ public class ConversationFragment extends Fragment implements
                 resetConversationTitle();
             }
 
-            if (uiMessage.message.direction == MessageDirection.Receive) {
+            if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && uiMessage.message.direction == MessageDirection.Receive) {
                 conversationViewModel.clearUnreadStatus(conversation);
             }
         }
@@ -299,6 +300,14 @@ public class ConversationFragment extends Fragment implements
         ButterKnife.bind(this, view);
         initView();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (conversationViewModel != null && conversation != null) {
+            conversationViewModel.clearUnreadStatus(conversation);
+        }
     }
 
     public void setupConversation(Conversation conversation, String title, long focusMessageId, String target) {
@@ -781,6 +790,10 @@ public class ConversationFragment extends Fragment implements
         adapter.setMode(ConversationMessageAdapter.MODE_NORMAL);
         adapter.clearMessageCheckStatus();
         adapter.notifyDataSetChanged();
+    }
+
+    public void setInputText(String text) {
+        inputPanel.setInputText(text);
     }
 
     private void setupMultiMessageAction() {
