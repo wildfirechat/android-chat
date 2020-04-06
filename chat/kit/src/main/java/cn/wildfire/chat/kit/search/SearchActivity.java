@@ -1,19 +1,13 @@
 package cn.wildfire.chat.kit.search;
 
-import android.os.Build;
-import android.os.Bundle;
 import android.text.TextUtils;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
 import cn.wildfire.chat.kit.widget.SearchView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.remote.ChatManager;
@@ -21,7 +15,7 @@ import cn.wildfirechat.remote.ChatManager;
 /**
  * 如果启动{@link android.content.Intent}里面包含keyword，直接开始搜索
  */
-public abstract class SearchActivity extends AppCompatActivity {
+public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
     private SearchFragment searchFragment;
     private List<SearchableModule> modules = new ArrayList<>();
 
@@ -31,18 +25,6 @@ public abstract class SearchActivity extends AppCompatActivity {
     @OnClick(R.id.cancel)
     public void onCancelClick() {
         finish();
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStatusBarColor(R.color.gray5);
-        beforeViews();
-        setContentView(contentLayout());
-        ButterKnife.bind(this);
-        initView();
-        initSearchView();
-        afterViews();
     }
 
     /**
@@ -55,10 +37,12 @@ public abstract class SearchActivity extends AppCompatActivity {
     }
 
     protected void beforeViews() {
-
+        setStatusBarColor(R.color.gray5);
     }
 
     protected void afterViews() {
+        initSearchView();
+        initSearchFragment();
         String initialKeyword = getIntent().getStringExtra("keyword");
         ChatManager.Instance().getMainHandler().post(() -> {
             if (!TextUtils.isEmpty(initialKeyword)) {
@@ -67,22 +51,11 @@ public abstract class SearchActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * 设置状态栏的颜色
-     *
-     * @param resId 颜色资源id
-     */
-    protected void setStatusBarColor(int resId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, resId));
-        }
-    }
-
     private void initSearchView() {
         searchView.setOnQueryTextListener(this::search);
     }
 
-    private void initView() {
+    private void initSearchFragment() {
         searchFragment = new SearchFragment();
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, searchFragment)
