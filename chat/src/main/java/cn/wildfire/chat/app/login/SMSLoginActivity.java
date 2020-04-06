@@ -19,10 +19,10 @@ import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
 import cn.wildfirechat.chat.R;
 
-public class SMSLoginActivity extends WfcBaseActivity {
+public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     @BindView(R.id.loginButton)
     Button loginButton;
     @BindView(R.id.phoneNumberEditText)
@@ -41,7 +41,8 @@ public class SMSLoginActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        getSupportActionBar().hide();
+        setStatusBarTheme(this, false);
+        setStatusBarColor(R.color.white);
     }
 
     @OnTextChanged(value = R.id.phoneNumberEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
@@ -62,11 +63,6 @@ public class SMSLoginActivity extends WfcBaseActivity {
         }
     }
 
-    @Override
-    protected boolean showHomeMenuItem() {
-        return false;
-    }
-
     @OnClick(R.id.loginButton)
     void login() {
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
@@ -74,10 +70,10 @@ public class SMSLoginActivity extends WfcBaseActivity {
 
         loginButton.setEnabled(false);
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("登录中...")
-                .progress(true, 100)
-                .cancelable(false)
-                .build();
+            .content("登录中...")
+            .progress(true, 100)
+            .cancelable(false)
+            .build();
         dialog.show();
 
 
@@ -92,9 +88,9 @@ public class SMSLoginActivity extends WfcBaseActivity {
                 ChatManagerHolder.gChatManager.connect(loginResult.getUserId(), loginResult.getToken());
                 SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
                 sp.edit()
-                        .putString("id", loginResult.getUserId())
-                        .putString("token", loginResult.getToken())
-                        .apply();
+                    .putString("id", loginResult.getUserId())
+                    .putString("token", loginResult.getToken())
+                    .apply();
                 Intent intent = new Intent(SMSLoginActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
