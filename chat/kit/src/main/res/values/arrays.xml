@@ -11,4 +11,9 @@
         <item>不允许查找</item>
     </string-array>
 
+    <string-array name="themes">
+        <item>浅色主题</item>
+        <item>深色主题</item>
+    </string-array>
+
 </resources>

@@ -1,6 +1,8 @@
 package cn.wildfire.chat.kit;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -35,7 +37,16 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         setContentView(contentLayout());
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        customToolbarAndStatusBarBackgroundColor(true);
+        SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+        if (sp.getBoolean("darkTheme", true)) {
+            // dark
+            toolbar.getContext().setTheme(R.style.AppTheme_DarkAppbar);
+            customToolbarAndStatusBarBackgroundColor(true);
+        } else {
+            // light
+            toolbar.getContext().setTheme(R.style.AppTheme_LightAppbar);
+            customToolbarAndStatusBarBackgroundColor(false);
+        }
         afterViews();
     }
 
@@ -49,6 +60,7 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 drawable.setTint(Color.WHITE);
             }
+            toolbar.setTitleTextColor(Color.WHITE);
         }
         getSupportActionBar().setHomeAsUpIndicator(drawable);
         if (showHomeMenuItem()) {
@@ -70,8 +82,9 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         setStatusBarTheme(this, dark);
     }
 
-    protected void setTitleTextColor(int color) {
-        toolbar.setTitleTextColor(color);
+    protected boolean isDarkTheme() {
+        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+        return sp.getBoolean("darkTheme", true);
     }
 
     @Override

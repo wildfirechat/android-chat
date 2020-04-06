@@ -3,9 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/gray5</item>
+        <item name="colorPrimaryDark">@color/gray5</item>
         <!-- 设置activity切换动画 -->
         <!--<item name="android:windowAnimationStyle">@style/activityAnimation</item>-->
         <!-- Customize color of navigation drawer icon and back arrow -->
@@ -13,20 +12,21 @@
     </style>
 
     <style name="AppTheme.LightAppbar">
+        <item name="colorPrimary">@color/gray5</item>
+        <item name="colorPrimaryDark">@color/gray5</item>
         <item name="actionMenuTextColor">@color/gray15</item>
         <item name="overlapAnchor">false</item>
         <item name="titleTextColor">@color/black2</item>
         <item name="android:textColorPrimary">@color/black2</item>
-        <item name="colorControlNormal">@color/white</item>
     </style>
 
     <style name="AppTheme.DarkAppbar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="actionMenuTextColor">@color/white</item>
         <item name="overlapAnchor">false</item>
         <item name="titleTextColor">@color/white</item>
         <item name="iconTint">@color/white</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColorSecondary">@color/white</item>
         <item name="colorControlNormal">@color/white</item>
     </style>
 
