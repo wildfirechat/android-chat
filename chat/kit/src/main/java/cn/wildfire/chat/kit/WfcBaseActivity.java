@@ -61,6 +61,10 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
                 drawable.setTint(Color.WHITE);
             }
             toolbar.setTitleTextColor(Color.WHITE);
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                drawable.setTintList(null);
+            }
         }
         getSupportActionBar().setHomeAsUpIndicator(drawable);
         if (showHomeMenuItem()) {
