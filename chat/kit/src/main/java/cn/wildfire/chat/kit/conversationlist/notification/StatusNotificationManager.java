@@ -6,7 +6,7 @@ import java.util.Map;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.StatusNotificationType;
 import cn.wildfire.chat.kit.conversationlist.notification.viewholder.ConnectionNotificationViewHolder;
-import cn.wildfire.chat.kit.conversationlist.notification.viewholder.PCOlineNotificationViewHolder;
+import cn.wildfire.chat.kit.conversationlist.notification.viewholder.PCOnlineNotificationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.notification.viewholder.StatusNotificationViewHolder;
 
 public class StatusNotificationManager {
@@ -26,7 +26,7 @@ public class StatusNotificationManager {
 
     private void init() {
         notificationViewHolders = new HashMap<>();
-        registerNotificationViewHolder(PCOlineNotificationViewHolder.class);
+        registerNotificationViewHolder(PCOnlineNotificationViewHolder.class);
         registerNotificationViewHolder(ConnectionNotificationViewHolder.class);
     }
 
