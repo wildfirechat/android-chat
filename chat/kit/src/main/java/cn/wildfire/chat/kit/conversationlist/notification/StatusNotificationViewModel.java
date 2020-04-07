@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
@@ -39,7 +40,26 @@ public class StatusNotificationViewModel extends ViewModel implements AppScopeVi
         }
     }
 
-    public void removeStatusNotification(StatusNotification notification) {
+    public void clearStatusNotificationByType(Class<? extends StatusNotification> statusNotificationClass) {
+        if (notificationItems == null || notificationItems.isEmpty()) {
+            return;
+        }
+        Iterator<StatusNotification> iterator = notificationItems.iterator();
+        boolean cleared = false;
+        while (iterator.hasNext()) {
+            if (iterator.next().getClass().equals(statusNotificationClass)) {
+                iterator.remove();
+                cleared = true;
+            }
+        }
+        if (cleared) {
+            if (statusNotificationLiveData != null) {
+                statusNotificationLiveData.postValue(new Object());
+            }
+        }
+    }
+
+    public void hideStatusNotification(StatusNotification notification) {
         if (notificationItems == null || notificationItems.isEmpty() || !notificationItems.contains(notification)) {
             return;
         }

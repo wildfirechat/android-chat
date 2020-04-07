@@ -15,6 +15,11 @@ public interface UserSettingScope {
     int My_Channel = 8;
     //不能直接使用，协议栈内会使用此值
     int Listened_Channel = 9;
+    int PCOnline = 10;
+    //不能直接使用，协议栈内会使用此值
+    int ConversationReaded = 11;
+    int WebOnline = 12;
+
 
     int kUserSettingCustomBegin = 1000;
 }

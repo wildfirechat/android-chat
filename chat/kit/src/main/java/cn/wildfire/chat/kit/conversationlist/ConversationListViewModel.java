@@ -19,7 +19,6 @@ import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnRemoveConversationListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
-import cn.wildfirechat.remote.OnSettingUpdateListener;
 import cn.wildfirechat.remote.RemoveMessageListener;
 
 /**
@@ -32,7 +31,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         OnSendMessageListener,
         OnRecallMessageListener,
         RemoveMessageListener,
-        OnSettingUpdateListener,
         OnConversationInfoUpdateListener,
         OnRemoveConversationListener,
         OnConnectionStatusChangeListener,
@@ -51,7 +49,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addOnReceiveMessageListener(this);
         ChatManager.Instance().addSendMessageListener(this);
         ChatManager.Instance().addConversationInfoUpdateListener(this);
-        ChatManager.Instance().addSettingUpdateListener(this);
         ChatManager.Instance().addRecallMessageListener(this);
         ChatManager.Instance().addConnectionChangeListener(this);
         ChatManager.Instance().addRemoveMessageListener(this);
@@ -65,7 +62,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeOnReceiveMessageListener(this);
         ChatManager.Instance().removeSendMessageListener(this);
         ChatManager.Instance().removeConversationInfoUpdateListener(this);
-        ChatManager.Instance().removeSettingUpdateListener(this);
         ChatManager.Instance().removeConnectionChangeListener(this);
         ChatManager.Instance().removeRecallMessageListener(this);
         ChatManager.Instance().removeRemoveMessageListener(this);
@@ -236,13 +232,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     @Override
     public void onConversationUnreadStatusClear(ConversationInfo conversationInfo) {
         reloadConversationList();
-        reloadConversationUnreadStatus();
-    }
-
-    @Override
-    public void onSettingUpdate() {
-        // 可能是会话同步
-        reloadConversationList(true);
         reloadConversationUnreadStatus();
     }
 
