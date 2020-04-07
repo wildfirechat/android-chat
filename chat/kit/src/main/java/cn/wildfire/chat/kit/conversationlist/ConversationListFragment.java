@@ -3,6 +3,7 @@ package cn.wildfire.chat.kit.conversationlist;
 import android.view.View;
 
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,14 +14,17 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionStatusNotification;
+import cn.wildfire.chat.kit.conversationlist.notification.PCOnlineStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotificationViewModel;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -28,11 +32,12 @@ public class ConversationListFragment extends ProgressFragment {
     private RecyclerView recyclerView;
     private ConversationListAdapter adapter;
     private static final List<Conversation.ConversationType> types = Arrays.asList(Conversation.ConversationType.Single,
-            Conversation.ConversationType.Group,
-            Conversation.ConversationType.Channel);
+        Conversation.ConversationType.Group,
+        Conversation.ConversationType.Channel);
     private static final List<Integer> lines = Arrays.asList(0);
 
     private ConversationListViewModel conversationListViewModel;
+    private SettingViewModel settingViewModel;
     private LinearLayoutManager layoutManager;
 
     @Override
@@ -63,8 +68,8 @@ public class ConversationListFragment extends ProgressFragment {
     private void init() {
         adapter = new ConversationListAdapter(this);
         conversationListViewModel = ViewModelProviders
-                .of(getActivity(), new ConversationListViewModelFactory(types, lines))
-                .get(ConversationListViewModel.class);
+            .of(getActivity(), new ConversationListViewModelFactory(types, lines))
+            .get(ConversationListViewModel.class);
         conversationListViewModel.conversationListLiveData().observe(this, conversationInfos -> {
             showContent();
             adapter.setConversationInfos(conversationInfos);
@@ -113,7 +118,7 @@ public class ConversationListFragment extends ProgressFragment {
                     statusNotificationViewModel.showStatusNotification(connectionStatusNotification);
                     break;
                 case ConnectionStatus.ConnectionStatusConnected:
-                    statusNotificationViewModel.removeStatusNotification(connectionStatusNotification);
+                    statusNotificationViewModel.hideStatusNotification(connectionStatusNotification);
                     break;
                 case ConnectionStatus.ConnectionStatusUnconnected:
                     connectionStatusNotification.setValue("连接失败");
@@ -121,6 +126,23 @@ public class ConversationListFragment extends ProgressFragment {
                     break;
                 default:
                     break;
+            }
+        });
+        settingViewModel = new ViewModelProvider(this).get(SettingViewModel.class);
+        settingViewModel.settingUpdatedLiveData().observe(this, o -> {
+            if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusReceiveing) {
+                return;
+            }
+            conversationListViewModel.reloadConversationList(true);
+            conversationListViewModel.reloadConversationUnreadStatus();
+
+            List<PCOnlineInfo> infos = ChatManager.Instance().getPOnlineInfos();
+            statusNotificationViewModel.clearStatusNotificationByType(PCOnlineStatusNotification.class);
+            if (infos.size() > 0) {
+                for (PCOnlineInfo info : infos) {
+                    PCOnlineStatusNotification notification = new PCOnlineStatusNotification(info);
+                    statusNotificationViewModel.showStatusNotification(notification);
+                }
             }
         });
     }
