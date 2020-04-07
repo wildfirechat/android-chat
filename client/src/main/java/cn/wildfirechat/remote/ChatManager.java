@@ -84,6 +84,7 @@ import cn.wildfirechat.model.NullChannelInfo;
 import cn.wildfirechat.model.NullConversationInfo;
 import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
+import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 
@@ -4291,6 +4292,28 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<PCOnlineInfo> getPOnlineInfos() {
+        String pcOnline = getUserSetting(UserSettingScope.PCOnline, "PC");
+        String webOnline = getUserSetting(UserSettingScope.PCOnline, "Web");
+        String wxOnline = getUserSetting(UserSettingScope.PCOnline, "WX");
+
+        List<PCOnlineInfo> infos = new ArrayList<>();
+        PCOnlineInfo info = PCOnlineInfo.infoFromStr(pcOnline, PCOnlineInfo.PCOnlineType.PC_Online);
+        if (info != null) {
+            infos.add(info);
+        }
+        info = PCOnlineInfo.infoFromStr(pcOnline, PCOnlineInfo.PCOnlineType.Web_Online);
+        if (info != null) {
+            infos.add(info);
+        }
+        info = PCOnlineInfo.infoFromStr(pcOnline, PCOnlineInfo.PCOnlineType.WX_Online);
+        if (info != null) {
+            infos.add(info);
+        }
+
+        return infos;
     }
 
     private boolean checkRemoteService() {
