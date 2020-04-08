@@ -77,6 +77,7 @@ interface IRemoteClient {
     List<Message> getMessagesEx2(in int[] conversationTypes, in int[] lines, in int messageStatus, in long fromIndex, in boolean before, in int count, in String withUser);
 
     oneway void getMessagesAsync(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void getMessagesInTypesAsync(in Conversation conversation, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesExAsync(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesEx2Async(in int[] conversationTypes, in int[] lines, in int messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
 

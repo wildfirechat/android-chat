@@ -1741,6 +1741,44 @@ public class ChatManager {
     }
 
     /**
+     * 获取会话消息
+     *
+     * @param conversation 会话
+     * @param contentTypes 消息类型列表
+     * @param fromIndex    消息起始id(messageId)
+     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count        获取消息条数
+     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getMessages(Conversation conversation, List<Integer> contentTypes, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getMessagesInTypesAsync(conversation, convertIntegers(contentTypes), fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    callback.onSuccess(messages, hasMore);
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    callback.onFail(errorCode);
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+        }
+    }
+
+    /**
      * 获取消息
      *
      * @param conversationTypes 会话类型
