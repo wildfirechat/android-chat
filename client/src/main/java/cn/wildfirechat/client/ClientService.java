@@ -452,52 +452,27 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void getMessagesInTypesAsync(Conversation conversation, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesIntypes(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, fromIndex, before, count, withUser);
+            safeMessagesCallback(protoMessages, before, callback);
+        }
+
+        @Override
         public void getMessagesAsync(Conversation conversation, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessages(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser);
-            try {
-                SafeIPCMessageEntry entry;
-                int startIndex = 0;
-                do {
-                    entry = buildSafeIPCMessages(protoMessages, startIndex, before);
-                    callback.onSuccess(entry.messages, entry.messages.size() > 0 && startIndex != protoMessages.length - 1);
-                    startIndex = entry.index + 1;
-                } while (entry.index > 0 && entry.index < protoMessages.length - 1);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
         public void getMessagesExAsync(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser);
-            try {
-                SafeIPCMessageEntry entry;
-                int startIndex = 0;
-                do {
-                    entry = buildSafeIPCMessages(protoMessages, startIndex, before);
-                    callback.onSuccess(entry.messages, entry.messages.size() > 0 && startIndex != protoMessages.length - 1);
-                    startIndex = entry.index + 1;
-                } while (entry.index > 0 && entry.index < protoMessages.length - 1);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
         public void getMessagesEx2Async(int[] conversationTypes, int[] lines, int messageStatus, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser);
-            try {
-                SafeIPCMessageEntry entry;
-                int startIndex = 0;
-                do {
-                    entry = buildSafeIPCMessages(protoMessages, startIndex, before);
-                    callback.onSuccess(entry.messages, entry.messages.size() > 0 && startIndex != protoMessages.length - 1);
-                    startIndex = entry.index + 1;
-                } while (entry.index > 0 && entry.index < protoMessages.length - 1);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
@@ -2361,6 +2336,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         length += content.getRemoteMediaUrl() != null ? content.getRemoteMediaUrl().length() : 0;
         length += content.getLocalContent() != null ? content.getLocalContent().length() : 0;
         return length;
+    }
+
+    private void safeMessagesCallback(ProtoMessage[] protoMessages, boolean before, IGetMessageCallback callback) {
+        try {
+            SafeIPCMessageEntry entry;
+            int startIndex = 0;
+            do {
+                entry = buildSafeIPCMessages(protoMessages, startIndex, before);
+                callback.onSuccess(entry.messages, entry.messages.size() > 0 && startIndex != protoMessages.length - 1);
+                startIndex = entry.index + 1;
+            } while (entry.index > 0 && entry.index < protoMessages.length - 1);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private SafeIPCMessageEntry buildSafeIPCMessages(ProtoMessage[] messages, int startIndex, boolean before) {
