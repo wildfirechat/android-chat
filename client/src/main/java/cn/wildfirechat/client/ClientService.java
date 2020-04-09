@@ -453,7 +453,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void getMessagesInTypesAsync(Conversation conversation, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.getMessagesIntypes(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, fromIndex, before, count, withUser);
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesInTypes(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, fromIndex, before, count, withUser);
             safeMessagesCallback(protoMessages, before, callback);
         }
 
