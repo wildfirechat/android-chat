@@ -19,7 +19,7 @@
         android:paddingTop="2dp"
         android:paddingRight="5dp"
         android:paddingBottom="2dp"
-        android:text="下午 5点"
+        tools:text="下午 5点"
         android:textColor="@color/gray11"
         android:textSize="14sp" />
 
@@ -55,7 +55,7 @@
             <include layout="@layout/include_error" />
         </LinearLayout>
 
-        <ProgressBar xmlns:tools="http://schemas.android.com/tools"
+        <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="20dp"
@@ -89,7 +89,7 @@
                 android:ellipsize="end"
                 android:maxLength="20"
                 android:singleLine="true"
-                android:text="imndx"
+                tools:text="imndx"
                 android:textColor="#666666"
                 android:textSize="12sp"
                 android:visibility="gone"
