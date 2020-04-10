@@ -19,7 +19,7 @@
         android:paddingTop="2dp"
         android:paddingRight="5dp"
         android:paddingBottom="2dp"
-        android:text="下午 5点"
+        tools:text="下午 5点"
         android:textColor="@color/gray11"
         android:textSize="14sp" />
 
@@ -50,7 +50,7 @@
                 android:ellipsize="end"
                 android:maxLength="20"
                 android:singleLine="true"
-                android:text="imndx"
+                tools:text="imndx"
                 android:textColor="#666666"
                 android:textSize="12sp"
                 android:visibility="gone"
