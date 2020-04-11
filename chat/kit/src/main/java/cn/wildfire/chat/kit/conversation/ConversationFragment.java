@@ -473,8 +473,9 @@ public class ConversationFragment extends Fragment implements
                         } else {
                             content.tip = String.format(welcome, "<" + userId + ">");
                         }
-                        messageViewModel.sendMessage(conversation, content);
-                        loadMoreOldMessages();
+                        handler.postDelayed(() -> {
+                            messageViewModel.sendMessage(conversation, content);
+                        }, 1000);
                         setChatRoomConversationTitle();
 
                     } else {
