@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.net.base.ResultWrapper;
 import cn.wildfire.chat.kit.net.base.StatusResult;
 import okhttp3.Call;
@@ -33,11 +32,13 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+
 /**
  * Created by imndx on 2017/12/15.
  */
 
 public class OKHttpHelper {
+    private static final String WFC_OKHTTP_COOKIE_CONFIG = "WFC_OK_HTTP_COOKIES";
     private static final Map<String, List<Cookie>> cookieStore = new ConcurrentHashMap<>();
 
     private static WeakReference<Context>  AppContext;
@@ -52,7 +53,7 @@ public class OKHttpHelper {
                 public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
                     cookieStore.put(url.host(), cookies);
                     if (AppContext != null && AppContext.get() != null) {
-                        SharedPreferences sp = AppContext.get().getSharedPreferences("WFC_OK_HTTP_COOKIES", 0);
+                        SharedPreferences sp = AppContext.get().getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, 0);
                         Set<String>  set = new HashSet<>();
                         for (Cookie k:cookies) {
                             set.add(gson.toJson(k));
@@ -66,7 +67,7 @@ public class OKHttpHelper {
                     List<Cookie> cookies = cookieStore.get(url.host());
                     if (cookies == null) {
                         if (AppContext != null && AppContext.get() != null) {
-                            SharedPreferences sp = AppContext.get().getSharedPreferences("WFC_OK_HTTP_COOKIES", 0);
+                            SharedPreferences sp = AppContext.get().getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, 0);
                             Set<String>  set = sp.getStringSet(url.host(), new HashSet<>());
                             cookies = new ArrayList<>();
                             for (String s:set) {
@@ -193,6 +194,12 @@ public class OKHttpHelper {
                 handleResponse(url, call, response, callback);
             }
         });
+    }
+
+    public static void clearCookies(){
+        SharedPreferences sp = AppContext.get().getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, 0);
+        sp.edit().clear().apply();
+        cookieStore.clear();
     }
 
     private static <T> void handleResponse(String url, Call call, okhttp3.Response response, Callback<T> callback) {
