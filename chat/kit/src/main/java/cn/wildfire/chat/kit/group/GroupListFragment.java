@@ -54,7 +54,7 @@ public class GroupListFragment extends Fragment implements OnGroupItemClickListe
         recyclerView.setAdapter(groupListAdapter);
         groupListAdapter.setOnGroupItemClickListener(this);
 
-        ChatManager.Instance().getMyGroups(new GetGroupsCallback() {
+        ChatManager.Instance().getFavGroups(new GetGroupsCallback() {
             @Override
             public void onSuccess(List<GroupInfo> groupInfos) {
                 if (groupInfos == null || groupInfos.isEmpty()) {

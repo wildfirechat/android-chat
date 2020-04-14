@@ -3957,7 +3957,7 @@ public class ChatManager {
      *
      * @param callback
      */
-    public void getMyGroups(final GetGroupsCallback callback) {
+    public void getFavGroups(final GetGroupsCallback callback) {
         if (callback == null) {
             return;
         }
@@ -3982,6 +3982,14 @@ public class ChatManager {
             }
             mainHandler.post(() -> callback.onSuccess(groups));
         });
+    }
+
+    /*
+    获取收藏群组，此方法已废弃，请使用 getFavGroups
+     */
+    @Deprecated
+    public void getMyGroups(final GetGroupsCallback callback) {
+        getFavGroups(callback);
     }
 
     /**
