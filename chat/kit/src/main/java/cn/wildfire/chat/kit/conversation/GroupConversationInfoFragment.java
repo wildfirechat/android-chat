@@ -183,7 +183,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     private void observerFavGroupsUpdate() {
-        groupViewModel.getMyGroups().observe(this, listOperateResult -> {
+        groupViewModel.getFavGroups().observe(this, listOperateResult -> {
             if (listOperateResult.isSuccess()) {
                 for (GroupInfo info : listOperateResult.getResult()) {
                     if (groupInfo.target.equals(info.target)) {

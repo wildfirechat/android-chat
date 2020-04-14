@@ -388,9 +388,9 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return ChatManager.Instance().getGroupMemberDisplayName(groupId, memberId);
     }
 
-    public MutableLiveData<OperateResult<List<GroupInfo>>> getMyGroups() {
+    public MutableLiveData<OperateResult<List<GroupInfo>>> getFavGroups() {
         MutableLiveData<OperateResult<List<GroupInfo>>> result = new MutableLiveData<>();
-        ChatManager.Instance().getMyGroups(new GetGroupsCallback() {
+        ChatManager.Instance().getFavGroups(new GetGroupsCallback() {
             @Override
             public void onSuccess(List<GroupInfo> groupInfos) {
                 result.setValue(new OperateResult<>(groupInfos, 0));
