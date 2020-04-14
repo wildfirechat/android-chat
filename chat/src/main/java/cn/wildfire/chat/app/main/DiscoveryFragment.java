@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
@@ -72,6 +74,12 @@ public class DiscoveryFragment extends Fragment {
     void channel() {
 
     }
+
+    @OnClick(R.id.cookbookOptionItemView)
+    void cookbook() {
+        WfcWebViewActivity.loadUrl(getContext(), "野火IM开发文档", "https://docs.wildfirechat.cn");
+    }
+
 
     private void initMoment() {
         if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {

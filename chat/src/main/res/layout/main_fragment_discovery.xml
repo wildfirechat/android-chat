@@ -41,4 +41,13 @@
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_channel"
         app:title="频道" />
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/cookbookOptionItemView"
+        style="@style/OptionItem"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/selector_common_item"
+        app:divider_align_to_title="false"
+        app:show_arrow_indicator="true"
+        app:start_src="@mipmap/ic_dev_docs"
+        app:title="开发手册" />
 </LinearLayout>
