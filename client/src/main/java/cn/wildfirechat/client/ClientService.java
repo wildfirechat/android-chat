@@ -427,20 +427,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public List<cn.wildfirechat.message.Message> getMessages(Conversation conversation, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessages(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser);
-            List<cn.wildfirechat.message.Message> out = new ArrayList<>();
-            for (ProtoMessage protoMessage : protoMessages) {
-                cn.wildfirechat.message.Message msg = convertProtoMessage(protoMessage);
-                if (msg != null) {
-                    out.add(msg);
-                }
+            SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
+            if(entry.messages.size() != protoMessages.length){
+                android.util.Log.e(TAG, "getMessages, drop messages " + (protoMessages.length - entry.messages.size()));
             }
-            return out;
+            return entry.messages;
         }
 
         @Override
         public List<Message> getMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser);
             SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
+            if(entry.messages.size() != protoMessages.length){
+                android.util.Log.e(TAG, "getMessagesEx, drop messages " + (protoMessages.length - entry.messages.size()));
+            }
             return entry.messages;
         }
 
@@ -448,6 +448,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public List<Message> getMessagesEx2(int[] conversationTypes, int[] lines, int messageStatus, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser);
             SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
+            if(entry.messages.size() != protoMessages.length){
+                android.util.Log.e(TAG, "getMessagesEx2, drop messages " + (protoMessages.length - entry.messages.size()));
+            }
             return entry.messages;
         }
 
