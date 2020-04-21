@@ -3046,15 +3046,6 @@ public class ChatManager {
                 callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
-        File file = new File(mediaPath);
-        if (!file.exists()) {
-            callback.onFail(ErrorCode.FILE_NOT_EXIST);
-            return;
-        }
-        if (file.length() > 900 * 1024) {
-            callback.onFail(ErrorCode.FILE_TOO_LARGE);
-            return;
-        }
 
         try {
             mClient.uploadMediaFile(mediaPath, mediaType, new IUploadMediaCallback.Stub() {
