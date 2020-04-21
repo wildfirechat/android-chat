@@ -1775,9 +1775,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (cls != null) {
             try {
                 return cls.newInstance();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
+                android.util.Log.e(TAG, "create message content instance failed, fall back to UnknownMessageContent, the message content class must have a default constructor. " + type);
                 e.printStackTrace();
             }
         }
@@ -1823,6 +1822,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             msg.content.extra = payload.extra;
         } catch (Exception e) {
+            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + protoMessage.getContent().getType());
             e.printStackTrace();
             if (msg.content.getPersistFlag() == PersistFlag.Persist || msg.content.getPersistFlag() == PersistFlag.Persist_And_Count) {
                 msg.content = new UnknownMessageContent();
