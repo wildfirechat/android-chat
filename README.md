@@ -2,8 +2,7 @@
 
 ## 特别注意
 
-1. ```com.android.tools.build:gradle:3.5.0``` 可能存在bug，会导致音视频crash，请勿升级到此版本，若已升级到此版本，请降级到```3.4.2```，对应gradle版本为```5.1.1```
-2. 待修复这问题之后，野火IM会升级所使用的```gradle```和```Android Gradle plugin```的版本
+1. ```com.android.tools.build:gradle:3.5.0``` 可能存在bug，会导致音视频crash，请勿升级到此版本
 
 野火IM是一套跨平台、核心功能开源的即时通讯解决方案，主要包含以下内容。
 
