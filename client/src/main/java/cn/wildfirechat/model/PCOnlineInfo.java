@@ -47,7 +47,7 @@ public class PCOnlineInfo {
         if (TextUtils.isEmpty(value)) {
             return null;
         }
-        String[] parts = value.split("|");
+        String[] parts = value.split("\\|");
         if (parts.length >= 4) {
             PCOnlineInfo info = new PCOnlineInfo();
             info.type = type;
