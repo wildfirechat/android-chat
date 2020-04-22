@@ -9,6 +9,7 @@
         <!--<item name="android:windowAnimationStyle">@style/activityAnimation</item>-->
         <!-- Customize color of navigation drawer icon and back arrow -->
         <item name="colorBackgroundFloating">@color/white</item>
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.LightAppbar">
