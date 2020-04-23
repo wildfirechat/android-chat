@@ -4331,7 +4331,7 @@ public class ChatManager {
         }
     }
 
-    public List<PCOnlineInfo> getPOnlineInfos() {
+    public List<PCOnlineInfo> getPCOnlineInfos() {
         String pcOnline = getUserSetting(UserSettingScope.PCOnline, "PC");
         String webOnline = getUserSetting(UserSettingScope.PCOnline, "Web");
         String wxOnline = getUserSetting(UserSettingScope.PCOnline, "WX");
@@ -4341,11 +4341,11 @@ public class ChatManager {
         if (info != null) {
             infos.add(info);
         }
-        info = PCOnlineInfo.infoFromStr(pcOnline, PCOnlineInfo.PCOnlineType.Web_Online);
+        info = PCOnlineInfo.infoFromStr(webOnline, PCOnlineInfo.PCOnlineType.Web_Online);
         if (info != null) {
             infos.add(info);
         }
-        info = PCOnlineInfo.infoFromStr(pcOnline, PCOnlineInfo.PCOnlineType.WX_Online);
+        info = PCOnlineInfo.infoFromStr(wxOnline, PCOnlineInfo.PCOnlineType.WX_Online);
         if (info != null) {
             infos.add(info);
         }
