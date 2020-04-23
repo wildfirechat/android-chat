@@ -428,7 +428,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public List<cn.wildfirechat.message.Message> getMessages(Conversation conversation, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessages(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser);
             SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
-            if(entry.messages.size() != protoMessages.length){
+            if (entry.messages.size() != protoMessages.length) {
                 android.util.Log.e(TAG, "getMessages, drop messages " + (protoMessages.length - entry.messages.size()));
             }
             return entry.messages;
@@ -438,7 +438,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public List<Message> getMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser);
             SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
-            if(entry.messages.size() != protoMessages.length){
+            if (entry.messages.size() != protoMessages.length) {
                 android.util.Log.e(TAG, "getMessagesEx, drop messages " + (protoMessages.length - entry.messages.size()));
             }
             return entry.messages;
@@ -448,7 +448,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public List<Message> getMessagesEx2(int[] conversationTypes, int[] lines, int messageStatus, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser);
             SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
-            if(entry.messages.size() != protoMessages.length){
+            if (entry.messages.size() != protoMessages.length) {
                 android.util.Log.e(TAG, "getMessagesEx2, drop messages " + (protoMessages.length - entry.messages.size()));
             }
             return entry.messages;
@@ -1769,7 +1769,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         userInfo.type = protoUserInfo.getType();
         userInfo.friendAlias = protoUserInfo.getFriendAlias();
         userInfo.groupAlias = protoUserInfo.getGroupAlias();
-        userInfo.deleted= protoUserInfo.getDeleted();
+        userInfo.deleted = protoUserInfo.getDeleted();
         return userInfo;
     }
 
@@ -2112,14 +2112,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         });
     }
 
-    private void onReceiveMessageInternal(List<Message> messages, boolean hasMore) {
+    private void onReceiveMessageInternal(ProtoMessage[] protoMessages) {
         int receiverCount = onReceiveMessageListeners.beginBroadcast();
         IOnReceiveMessageListener listener;
         while (receiverCount > 0) {
             receiverCount--;
             listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
             try {
-                listener.onReceive(messages, hasMore);
+                SafeIPCMessageEntry entry;
+                int startIndex = 0;
+                do {
+                    entry = buildSafeIPCMessages(protoMessages, startIndex, false);
+                    listener.onReceive(entry.messages, entry.messages.size() > 0 && startIndex != protoMessages.length - 1);
+                    startIndex = entry.index + 1;
+                } while (entry.index > 0 && entry.index < protoMessages.length - 1);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -2137,32 +2143,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (messages.isEmpty()) {
             return;
         }
-        handler.post(() -> {
-            int totalLength = 0;
-            int messageContentLength;
-            int maxIpcMessageLength = MAX_IPC_SIZE;
-
-            List<Message> msgs = new ArrayList<>();
-            for (ProtoMessage pmsg : messages) {
-                messageContentLength = getProtoMessageLength(pmsg);
-                if (messageContentLength > maxIpcMessageLength) {
-                    android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageContentLength);
-                    continue;
-                }
-                totalLength += messageContentLength;
-                if (totalLength >= maxIpcMessageLength) {
-                    onReceiveMessageInternal(msgs, msgs.size() < messages.size());
-                    totalLength = 0;
-                    msgs = new ArrayList<>();
-                    msgs.add(convertProtoMessage(pmsg));
-                } else {
-                    msgs.add(convertProtoMessage(pmsg));
-                }
-            }
-            if (!msgs.isEmpty()) {
-                onReceiveMessageInternal(msgs, false);
-            }
-        });
+        handler.post(() -> onReceiveMessageInternal(messages.toArray(new ProtoMessage[0])));
     }
 
     @Override
