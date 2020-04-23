@@ -136,7 +136,7 @@ public class ConversationListFragment extends ProgressFragment {
             conversationListViewModel.reloadConversationList(true);
             conversationListViewModel.reloadConversationUnreadStatus();
 
-            List<PCOnlineInfo> infos = ChatManager.Instance().getPOnlineInfos();
+            List<PCOnlineInfo> infos = ChatManager.Instance().getPCOnlineInfos();
             statusNotificationViewModel.clearStatusNotificationByType(PCOnlineStatusNotification.class);
             if (infos.size() > 0) {
                 for (PCOnlineInfo info : infos) {
