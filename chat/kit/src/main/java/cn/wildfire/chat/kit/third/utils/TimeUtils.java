@@ -18,6 +18,10 @@ public class TimeUtils {
      * @return
      */
     public static String getMsgFormatTime(long msgTimeMillis) {
+        if (msgTimeMillis == 0) {
+            return "";
+        }
+
         long now = System.currentTimeMillis();
         DateTime nowTime = new DateTime(now);
         DateTime msgTime = new DateTime(msgTimeMillis);
@@ -29,30 +33,34 @@ public class TimeUtils {
         } else if ((int) (msgTimeMillis / dayMillis) + 1 == (int) (now / dayMillis)) {
             //昨天
             return "昨天 " + getTime(msgTime);
-        } else if (nowTime.getYearOfCentury() == msgTime.getYearOfCentury() && nowTime.getWeekOfWeekyear() == msgTime.getWeekOfWeekyear()) {
-            //星期
-            switch (msgTime.getDayOfWeek()) {
-                case DateTimeConstants.SUNDAY:
-                    return "周日 " + getTime(msgTime);
-                case DateTimeConstants.MONDAY:
-                    return "周一 " + getTime(msgTime);
-                case DateTimeConstants.TUESDAY:
-                    return "周二 " + getTime(msgTime);
-                case DateTimeConstants.WEDNESDAY:
-                    return "周三 " + getTime(msgTime);
-                case DateTimeConstants.THURSDAY:
-                    return "周四 " + getTime(msgTime);
-                case DateTimeConstants.FRIDAY:
-                    return "周五 " + getTime(msgTime);
-                case DateTimeConstants.SATURDAY:
-                    return "周六 " + getTime(msgTime);
-                default:
-                    break;
+        } else if (nowTime.getYearOfCentury() == msgTime.getYearOfCentury()) {
+            if (nowTime.getWeekOfWeekyear() == msgTime.getWeekOfWeekyear()) {
+                //星期
+                switch (msgTime.getDayOfWeek()) {
+                    case DateTimeConstants.SUNDAY:
+                        return "周日 " + getTime(msgTime);
+                    case DateTimeConstants.MONDAY:
+                        return "周一 " + getTime(msgTime);
+                    case DateTimeConstants.TUESDAY:
+                        return "周二 " + getTime(msgTime);
+                    case DateTimeConstants.WEDNESDAY:
+                        return "周三 " + getTime(msgTime);
+                    case DateTimeConstants.THURSDAY:
+                        return "周四 " + getTime(msgTime);
+                    case DateTimeConstants.FRIDAY:
+                        return "周五 " + getTime(msgTime);
+                    case DateTimeConstants.SATURDAY:
+                        return "周六 " + getTime(msgTime);
+                    default:
+                        break;
+                }
+                return "";
+            } else {
+                //12月22日
+                return msgTime.toString("MM月dd日 HH:mm");
             }
-            return "";
         } else {
-            //12月22日
-            return msgTime.toString("MM月dd日 HH:mm");
+            return msgTime.toString("yyyy年MM月dd日 HH:mm");
         }
     }
 
