@@ -1651,6 +1651,52 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void kickoffPCClient(String pcClientId, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.kickoffPCClient(pcClientId, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void getApplicationId(String applicationId, IGeneralCallback2 callback) throws RemoteException {
+            ProtoLogic.getApplicationToken(applicationId, new ProtoLogic.IGeneralCallback2() {
+                @Override
+                public void onSuccess(String s) {
+                    try {
+                        callback.onSuccess(s);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public int getMessageCount(Conversation conversation) throws RemoteException {
             return ProtoLogic.getMessageCount(conversation.type.getValue(), conversation.target, conversation.line);
         }

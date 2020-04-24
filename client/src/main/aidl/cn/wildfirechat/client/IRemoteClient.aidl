@@ -180,6 +180,9 @@ interface IRemoteClient {
 
     String getImageThumbPara();
 
+    void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
+    void getApplicationId(in String applicationId, in IGeneralCallback2 callback);
+
     int getMessageCount(in Conversation conversation);
     boolean begainTransaction();
     void commitTransaction();
