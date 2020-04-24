@@ -145,6 +145,13 @@ public class ConversationListFragment extends ProgressFragment {
                 }
             }
         });
+        List<PCOnlineInfo> pcOnlineInfos = ChatManager.Instance().getPCOnlineInfos();
+        if (pcOnlineInfos != null && !pcOnlineInfos.isEmpty()) {
+            for (PCOnlineInfo info : pcOnlineInfos) {
+                PCOnlineStatusNotification notification = new PCOnlineStatusNotification(info);
+                statusNotificationViewModel.showStatusNotification(notification);
+            }
+        }
     }
 
     private void reloadConversations() {
