@@ -49,7 +49,7 @@ public class PCOnlineNotificationViewHolder extends StatusNotificationViewHolder
         statusTextView.setText(desc);
     }
 
-    @OnClick(R.id.startingTextView)
+    @OnClick(R.id.statusTextView)
     public void showPCSessionInfo() {
         Intent intent = new Intent(fragment.getActivity(), PCSessionActivity.class);
         intent.putExtra("pcOnlineInfo", pcOnlineInfo);

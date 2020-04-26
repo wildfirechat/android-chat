@@ -759,7 +759,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -901,7 +901,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -948,7 +948,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -1503,11 +1503,13 @@ public class ChatManager {
             e.printStackTrace();
             if (callback != null) {
                 msg.status = MessageStatus.Send_Failure;
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
             }
-            for (OnSendMessageListener listener : sendMessageListeners) {
-                listener.onSendFail(msg, ErrorCode.SERVICE_EXCEPTION);
-            }
+            mainHandler.post(()->{
+                for (OnSendMessageListener listener : sendMessageListeners) {
+                    listener.onSendFail(msg, ErrorCode.SERVICE_EXCEPTION);
+                }
+            });
         }
     }
 
@@ -1522,17 +1524,23 @@ public class ChatManager {
             mClient.recall(msg.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    msg.content = new RecallMessageContent(userId, msg.messageUid);
-                    ((RecallMessageContent) msg.content).fromSelf = true;
-                    callback.onSuccess();
-                    for (OnRecallMessageListener listener : recallMessageListeners) {
-                        listener.onRecallMessage(msg);
-                    }
+                    mainHandler.post(()->{
+                        msg.content = new RecallMessageContent(userId, msg.messageUid);
+                        ((RecallMessageContent) msg.content).fromSelf = true;
+                        if(callback != null){
+                            callback.onSuccess();
+                        }
+                        for (OnRecallMessageListener listener : recallMessageListeners) {
+                            listener.onRecallMessage(msg);
+                        }
+                    });
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    if(callback != null){
+                        mainHandler.post(()->callback.onFail(errorCode));
+                    }
                 }
             });
         } catch (RemoteException e) {
@@ -1726,17 +1734,17 @@ public class ChatManager {
             mClient.getMessagesAsync(conversation, fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
-                    callback.onSuccess(messages, hasMore);
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -1764,17 +1772,17 @@ public class ChatManager {
             mClient.getMessagesInTypesAsync(conversation, convertIntegers(contentTypes), fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
-                    callback.onSuccess(messages, hasMore);
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -1817,18 +1825,18 @@ public class ChatManager {
             mClient.getMessagesExAsync(intypes, convertIntegers(lines), convertIntegers(contentTypes), fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
-                    callback.onSuccess(messages, hasMore);
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    mainHandler.post(() -> callback.onFail(errorCode));
 
                 }
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -1871,17 +1879,17 @@ public class ChatManager {
             mClient.getMessagesEx2Async(intypes, convertIntegers(lines), messageStatus == null ? -1 : messageStatus.value(), fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
-                    callback.onSuccess(messages, hasMore);
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -2195,10 +2203,11 @@ public class ChatManager {
                         for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                             listener.onConversationTopUpdate(conversationInfo, top);
                         }
+
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
                     });
-                    if (callback != null) {
-                        callback.onSuccess();
-                    }
                 }
 
                 @Override
@@ -2285,7 +2294,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -2594,7 +2603,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -2642,7 +2651,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -2728,7 +2737,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -2774,7 +2783,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -2847,17 +2856,23 @@ public class ChatManager {
             mClient.quitChatRoom(chatRoomId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess());
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess());
+                    }
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> callback.onFail(errorCode));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
                 }
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
         }
     }
 
@@ -2870,7 +2885,9 @@ public class ChatManager {
      */
     public void getChatRoomInfo(String chatRoomId, long updateDt, GetChatRoomInfoCallback callback) {
         if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
             return;
         }
 
@@ -2878,17 +2895,23 @@ public class ChatManager {
             mClient.getChatRoomInfo(chatRoomId, updateDt, new cn.wildfirechat.client.IGetChatRoomInfoCallback.Stub() {
                 @Override
                 public void onSuccess(ChatRoomInfo chatRoomInfo) throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess(chatRoomInfo));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(chatRoomInfo));
+                    }
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> callback.onFail(errorCode));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
                 }
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
         }
     }
 
@@ -2901,24 +2924,32 @@ public class ChatManager {
      */
     public void getChatRoomMembersInfo(String chatRoomId, int maxCount, GetChatRoomMembersInfoCallback callback) {
         if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
             return;
         }
         try {
             mClient.getChatRoomMembersInfo(chatRoomId, maxCount, new cn.wildfirechat.client.IGetChatRoomMembersInfoCallback.Stub() {
                 @Override
                 public void onSuccess(ChatRoomMembersInfo chatRoomMembersInfo) throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess(chatRoomMembersInfo));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(chatRoomMembersInfo));
+                    }
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> callback.onFail(errorCode));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
                 }
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
         }
     }
 
@@ -3081,7 +3112,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3138,7 +3169,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3193,7 +3224,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
 
     }
@@ -3376,7 +3407,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3430,7 +3461,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3493,7 +3524,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3545,7 +3576,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3598,7 +3629,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3652,7 +3683,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3706,7 +3737,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3815,7 +3846,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null)
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -3860,7 +3891,7 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             if (callback != null) {
-                callback.onFail(ErrorCode.SERVICE_EXCEPTION);
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
             }
         }
     }
@@ -4263,7 +4294,9 @@ public class ChatManager {
      */
     public void setGlobalSilent(boolean isSlient, final GeneralCallback callback) {
         if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
             return;
         }
 
@@ -4271,12 +4304,16 @@ public class ChatManager {
             mClient.setUserSetting(UserSettingScope.GlobalSilent, "", isSlient ? "1" : "0", new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    callback.onSuccess();
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess());
+                    }
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
                 }
             });
         } catch (RemoteException e) {
@@ -4310,7 +4347,9 @@ public class ChatManager {
      */
     public void setHiddenNotificationDetail(boolean isHidden, final GeneralCallback callback) {
         if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
             return;
         }
 
@@ -4318,12 +4357,16 @@ public class ChatManager {
             mClient.setUserSetting(UserSettingScope.HiddenNotificationDetail, "", isHidden ? "1" : "0", new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    callback.onSuccess();
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess());
+                    }
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
                 }
             });
         } catch (RemoteException e) {
@@ -4353,7 +4396,7 @@ public class ChatManager {
         return infos;
     }
 
-    public void kickoffPCClient(String pcClientId, final  GeneralCallback callback) {
+    public void kickoffPCClient(String pcClientId, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
@@ -4363,12 +4406,12 @@ public class ChatManager {
             mClient.kickoffPCClient(pcClientId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    callback.onSuccess();
+                    mainHandler.post(callback::onSuccess);
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
@@ -4376,7 +4419,7 @@ public class ChatManager {
         }
     }
 
-    public void getApplicationId(String applicationId, final  GeneralCallback2 callback) {
+    public void getApplicationId(String applicationId, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
@@ -4386,12 +4429,12 @@ public class ChatManager {
             mClient.getApplicationId(applicationId, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
                 @Override
                 public void onSuccess(String s) throws RemoteException {
-                    callback.onSuccess(s);
+                    mainHandler.post(() -> callback.onSuccess(s));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
