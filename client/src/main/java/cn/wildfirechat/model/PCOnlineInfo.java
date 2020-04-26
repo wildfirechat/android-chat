@@ -1,8 +1,10 @@
 package cn.wildfirechat.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
-public class PCOnlineInfo {
+public class PCOnlineInfo implements Parcelable {
 
     /**
      * PC在线类型
@@ -61,4 +63,42 @@ public class PCOnlineInfo {
         return null;
     }
 
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.type == null ? -1 : this.type.ordinal());
+        dest.writeByte(this.isOnline ? (byte) 1 : (byte) 0);
+        dest.writeString(this.clientId);
+        dest.writeString(this.clientName);
+        dest.writeLong(this.timestamp);
+    }
+
+    public PCOnlineInfo() {
+    }
+
+    protected PCOnlineInfo(Parcel in) {
+        int tmpType = in.readInt();
+        this.type = tmpType == -1 ? null : PCOnlineType.values()[tmpType];
+        this.isOnline = in.readByte() != 0;
+        this.clientId = in.readString();
+        this.clientName = in.readString();
+        this.timestamp = in.readLong();
+    }
+
+    public static final Creator<PCOnlineInfo> CREATOR = new Creator<PCOnlineInfo>() {
+        @Override
+        public PCOnlineInfo createFromParcel(Parcel source) {
+            return new PCOnlineInfo(source);
+        }
+
+        @Override
+        public PCOnlineInfo[] newArray(int size) {
+            return new PCOnlineInfo[size];
+        }
+    };
 }
