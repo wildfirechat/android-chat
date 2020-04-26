@@ -267,6 +267,7 @@
         <!--            </intent-filter>-->
         <!--        </activity>-->
         <!--        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />-->
+        <activity android:name="cn.wildfire.chat.app.main.PCSessionActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
