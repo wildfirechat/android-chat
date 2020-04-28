@@ -1333,12 +1333,13 @@ public class ChatManager {
     /**
      * 主动断开连接
      *
+     * @param disablePush  是否停止推送，在cleanSession为true时无意义
      * @param cleanSession 是否清除会话session，清除之后，所有之前的会话信息会被删除
      */
-    public void disconnect(boolean cleanSession) {
+    public void disconnect(boolean disablePush, boolean cleanSession) {
         if (mClient != null) {
             try {
-                mClient.disconnect(cleanSession);
+                mClient.disconnect(disablePush, cleanSession);
                 SharedPreferences sp = gContext.getSharedPreferences("wildfirechat.config", Context.MODE_PRIVATE);
                 sp.edit().clear().commit();
             } catch (RemoteException e) {
