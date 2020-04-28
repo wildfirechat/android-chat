@@ -122,6 +122,11 @@ public class MultiCallActivity extends VoipBaseActivity {
     }
 
     @Override
+    public void didChangeInitiator(String initiator) {
+
+    }
+
+    @Override
     public void didCreateLocalVideoTrack() {
         postAction(() -> {
             currentCallSessionCallback.didCreateLocalVideoTrack();
