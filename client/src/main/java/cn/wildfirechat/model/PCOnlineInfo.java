@@ -101,4 +101,28 @@ public class PCOnlineInfo implements Parcelable {
             return new PCOnlineInfo[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PCOnlineInfo that = (PCOnlineInfo) o;
+
+        if (isOnline != that.isOnline) return false;
+        if (timestamp != that.timestamp) return false;
+        if (type != that.type) return false;
+        if (!clientId.equals(that.clientId)) return false;
+        return clientName.equals(that.clientName);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + (isOnline ? 1 : 0);
+        result = 31 * result + clientId.hashCode();
+        result = 31 * result + clientName.hashCode();
+        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+        return result;
+    }
 }

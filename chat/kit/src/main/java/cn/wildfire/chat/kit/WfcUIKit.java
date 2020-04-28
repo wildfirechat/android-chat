@@ -154,6 +154,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -193,8 +195,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private AsyncPlayer ringPlayer;
 
     @Override
-    public void shouldStartRing(boolean isIncomming) {
-        if (isIncomming) {
+    public void shouldStartRing(boolean isIncoming) {
+        if (isIncoming) {
             Uri uri = Uri.parse("android.resource://" + application.getPackageName() + "/" + R.raw.incoming_call_ring);
             ringPlayer.play(application, uri, true, AudioManager.STREAM_RING);
         } else {
