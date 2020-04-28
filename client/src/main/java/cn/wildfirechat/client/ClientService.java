@@ -222,7 +222,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void disconnect(boolean clearSession) throws RemoteException {
+        public void disconnect(boolean disablePush, boolean clearSession) throws RemoteException {
             onConnectionStatusChanged(ConnectionStatusLogout);
 
             logined = false;
@@ -232,8 +232,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 //            if (mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusConnected && mars::stn::getConnectionStatus() != mars::stn::kConnectionStatusReceiveing) {
 //                [self destroyMars];
 //            }
+            int flag = 0;
+            if (clearSession) {
+                flag = 8;
+            } else if(disablePush) {
+                flag = 1;
+            }
 
-            ProtoLogic.disconnect(clearSession ? 8 : 0);
+            ProtoLogic.disconnect(flag);
 
             resetProto();
         }
