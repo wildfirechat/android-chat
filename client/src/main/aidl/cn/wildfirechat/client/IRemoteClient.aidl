@@ -50,7 +50,7 @@ import java.util.Map;
 
 interface IRemoteClient {
     boolean connect(in String userId, in String token);
-    void disconnect(in boolean clearSession);
+    void disconnect(in boolean disablePush, in boolean clearSession);
     void setForeground(in int isForeground);
     void onNetworkChange();
     void setServerAddress(in String host);
