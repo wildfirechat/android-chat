@@ -37,14 +37,18 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.OnClearMessageListener;
+import cn.wildfirechat.remote.OnDeleteMessageListener;
 import cn.wildfirechat.remote.OnMessageUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
 
 public class MessageViewModel extends ViewModel implements OnReceiveMessageListener,
-        OnSendMessageListener,
-        OnRecallMessageListener, OnMessageUpdateListener, OnClearMessageListener {
+    OnSendMessageListener,
+    OnDeleteMessageListener,
+    OnRecallMessageListener,
+    OnMessageUpdateListener,
+    OnClearMessageListener {
     private MutableLiveData<UiMessage> messageLiveData;
     private MutableLiveData<UiMessage> messageUpdateLiveData;
     private MutableLiveData<UiMessage> messageRemovedLiveData;
@@ -143,6 +147,13 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
                 // TODO 撤回失败
             }
         });
+    }
+
+    @Override
+    public void onDeleteMessage(Message message) {
+        if (messageRemovedLiveData != null) {
+            messageRemovedLiveData.setValue(new UiMessage(message));
+        }
     }
 
     public void deleteMessage(Message message) {

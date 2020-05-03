@@ -130,7 +130,6 @@ public class ChatManager {
     private List<OnConversationInfoUpdateListener> conversationInfoUpdateListeners = new ArrayList<>();
     private List<OnRecallMessageListener> recallMessageListeners = new ArrayList<>();
     private List<OnDeleteMessageListener> deleteMessageListeners = new ArrayList<>();
-    private List<RemoveMessageListener> removeMessageListeners = new ArrayList<>();
     private List<OnChannelInfoUpdateListener> channelInfoUpdateListeners = new ArrayList<>();
     private List<OnMessageUpdateListener> messageUpdateListeners = new ArrayList<>();
     private List<OnClearMessageListener> clearMessageListeners = new ArrayList<>();
@@ -1053,7 +1052,7 @@ public class ChatManager {
     }
 
     /**
-     * 添加消息远端删除监听
+     * 添加消息删除监听
      *
      * @param listener
      */
@@ -1065,33 +1064,12 @@ public class ChatManager {
     }
 
     /**
-     * 删除消息远端删除监听
+     * 删除消息删除监听
      *
      * @param listener
      */
     public void removeDeleteMessageListener(OnDeleteMessageListener listener) {
         deleteMessageListeners.remove(listener);
-    }
-
-    /**
-     * 添加主动删除消息监听
-     *
-     * @param listener
-     */
-    public void addRemoveMessageListener(RemoveMessageListener listener) {
-        if (listener == null) {
-            return;
-        }
-        removeMessageListeners.add(listener);
-    }
-
-    /**
-     * 删除删除消息监听
-     *
-     * @param listener
-     */
-    public void removeRemoveMessageListener(RemoveMessageListener listener) {
-        removeMessageListeners.remove(listener);
     }
 
     /**
@@ -3286,8 +3264,8 @@ public class ChatManager {
 
         try {
             mClient.deleteMessage(message.messageId);
-            for (RemoveMessageListener listener : removeMessageListeners) {
-                listener.onMessagedRemove(message);
+            for (OnDeleteMessageListener listener : deleteMessageListeners) {
+                listener.onDeleteMessage(message);
             }
             return true;
         } catch (RemoteException e) {
@@ -3318,8 +3296,8 @@ public class ChatManager {
                             @Override
                             public void run() {
                                 callback.onSuccess();
-                                for (RemoveMessageListener listener : removeMessageListeners) {
-                                    listener.onMessagedRemove(message);
+                                for (OnDeleteMessageListener listener : deleteMessageListeners) {
+                                    listener.onDeleteMessage(message);
                                 }
                             }
                         });
