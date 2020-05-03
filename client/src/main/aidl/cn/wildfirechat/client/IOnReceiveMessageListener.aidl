@@ -7,4 +7,5 @@ import cn.wildfirechat.message.Message;
 interface IOnReceiveMessageListener {
     void onReceive(in List<Message> messages, boolean hasMore);
     void onRecall(in long messageUid);
+    void onDelete(in long messageUid);
 }

@@ -129,6 +129,7 @@ public class ChatManager {
     private List<OnFriendUpdateListener> friendUpdateListeners = new ArrayList<>();
     private List<OnConversationInfoUpdateListener> conversationInfoUpdateListeners = new ArrayList<>();
     private List<OnRecallMessageListener> recallMessageListeners = new ArrayList<>();
+    private List<OnDeleteMessageListener> deleteMessageListeners = new ArrayList<>();
     private List<RemoveMessageListener> removeMessageListeners = new ArrayList<>();
     private List<OnChannelInfoUpdateListener> channelInfoUpdateListeners = new ArrayList<>();
     private List<OnMessageUpdateListener> messageUpdateListeners = new ArrayList<>();
@@ -334,6 +335,27 @@ public class ChatManager {
             public void run() {
                 for (OnRecallMessageListener listener : recallMessageListeners) {
                     listener.onRecallMessage(message);
+                }
+            }
+        });
+    }
+
+    /**
+     * 消息被撤回
+     *
+     * @param messageUid
+     */
+    private void onDeleteMessage(final long messageUid) {
+        Message message = getMessageByUid(messageUid);
+        // 想撤回的消息已经被删除
+        if (message == null) {
+            return;
+        }
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (OnDeleteMessageListener listener : deleteMessageListeners) {
+                    listener.onDeleteMessage(message);
                 }
             }
         });
@@ -1028,6 +1050,27 @@ public class ChatManager {
      */
     public void removeRecallMessageListener(OnRecallMessageListener listener) {
         recallMessageListeners.remove(listener);
+    }
+
+    /**
+     * 添加消息远端删除监听
+     *
+     * @param listener
+     */
+    public void addDeleteMessageListener(OnDeleteMessageListener listener) {
+        if (listener == null) {
+            return;
+        }
+        deleteMessageListeners.add(listener);
+    }
+
+    /**
+     * 删除消息远端删除监听
+     *
+     * @param listener
+     */
+    public void removeDeleteMessageListener(OnDeleteMessageListener listener) {
+        deleteMessageListeners.remove(listener);
     }
 
     /**
@@ -3255,6 +3298,55 @@ public class ChatManager {
     }
 
     /**
+     * 删除消息
+     *
+     * @param message
+     * @return
+     */
+    public void deleteMessage(Message message, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.deleteRemoteMessage(message.messageId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess();
+                                for (RemoveMessageListener listener : removeMessageListeners) {
+                                    listener.onMessagedRemove(message);
+                                }
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+
+    }
+
+    /**
      * 搜索会话
      *
      * @param keyword
@@ -4508,6 +4600,11 @@ public class ChatManager {
                     @Override
                     public void onRecall(long messageUid) throws RemoteException {
                         onRecallMessage(messageUid);
+                    }
+
+                    @Override
+                    public void onDelete(long messageUid) throws RemoteException {
+                        onDeleteMessage(messageUid);
                     }
                 });
                 mClient.setOnConnectionStatusChangeListener(new IOnConnectionStatusChangeListener.Stub() {
