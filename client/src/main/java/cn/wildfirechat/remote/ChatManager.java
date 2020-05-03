@@ -350,12 +350,9 @@ public class ChatManager {
         if (message == null) {
             return;
         }
-        mainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (OnDeleteMessageListener listener : deleteMessageListeners) {
-                    listener.onDeleteMessage(message);
-                }
+        mainHandler.post(() -> {
+            for (OnDeleteMessageListener listener : deleteMessageListeners) {
+                listener.onDeleteMessage(message);
             }
         });
     }
@@ -3252,7 +3249,7 @@ public class ChatManager {
     }
 
     /**
-     * 删除消息
+     * 删除本地消息
      *
      * @param message
      * @return
@@ -3276,7 +3273,7 @@ public class ChatManager {
     }
 
     /**
-     * 删除消息
+     * 删除远程消息
      *
      * @param message
      * @return
@@ -3292,15 +3289,7 @@ public class ChatManager {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onSuccess();
-                                for (OnDeleteMessageListener listener : deleteMessageListeners) {
-                                    listener.onDeleteMessage(message);
-                                }
-                            }
-                        });
+                        callback.onSuccess();
                     }
                 }
 
