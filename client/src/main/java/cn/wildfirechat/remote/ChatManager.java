@@ -3285,7 +3285,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.deleteRemoteMessage(message.messageId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.deleteRemoteMessage(message.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
@@ -4246,6 +4246,18 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isCommercialServer(){
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return mClient.isCommercialServer();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**

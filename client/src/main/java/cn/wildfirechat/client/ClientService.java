@@ -1156,8 +1156,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void deleteRemoteMessage(long messageId, IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.deleteRemoteMessage(messageId, new ProtoLogic.IGeneralCallback() {
+        public void deleteRemoteMessage(long messageUid, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.deleteRemoteMessage(messageUid, new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -1740,6 +1740,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ProtoLogic.commitTransaction();
         }
 
+        @Override
+        public boolean isCommercialServer() throws RemoteException {
+            return ProtoLogic.isCommercialServer();
+        }
     }
 
     private ChannelInfo converProtoChannelInfo(ProtoChannelInfo protoChannelInfo) {
