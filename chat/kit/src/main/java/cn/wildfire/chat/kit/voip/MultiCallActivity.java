@@ -121,7 +121,7 @@ public class MultiCallActivity extends VoipBaseActivity {
         });
     }
 
-    @Override
+    //@Override
     public void didChangeInitiator(String initiator) {
 
     }
