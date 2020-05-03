@@ -15,11 +15,11 @@ import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.OnClearMessageListener;
 import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
 import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
+import cn.wildfirechat.remote.OnDeleteMessageListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnRemoveConversationListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
-import cn.wildfirechat.remote.RemoveMessageListener;
 
 /**
  * how
@@ -30,7 +30,7 @@ import cn.wildfirechat.remote.RemoveMessageListener;
 public class ConversationListViewModel extends ViewModel implements OnReceiveMessageListener,
         OnSendMessageListener,
         OnRecallMessageListener,
-        RemoveMessageListener,
+    OnDeleteMessageListener,
         OnConversationInfoUpdateListener,
         OnRemoveConversationListener,
         OnConnectionStatusChangeListener,
@@ -51,7 +51,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addConversationInfoUpdateListener(this);
         ChatManager.Instance().addRecallMessageListener(this);
         ChatManager.Instance().addConnectionChangeListener(this);
-        ChatManager.Instance().addRemoveMessageListener(this);
+        ChatManager.Instance().addDeleteMessageListener(this);
         ChatManager.Instance().addClearMessageListener(this);
         ChatManager.Instance().addRemoveConversationListener(this);
     }
@@ -64,7 +64,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeConversationInfoUpdateListener(this);
         ChatManager.Instance().removeConnectionChangeListener(this);
         ChatManager.Instance().removeRecallMessageListener(this);
-        ChatManager.Instance().removeRemoveMessageListener(this);
+        ChatManager.Instance().removeDeleteMessageListener(this);
         ChatManager.Instance().removeClearMessageListener(this);
         ChatManager.Instance().removeRemoveConversationListener(this);
     }
@@ -209,7 +209,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     @Override
-    public void onMessagedRemove(Message message) {
+    public void onDeleteMessage(Message message) {
         reloadConversationList();
         reloadConversationUnreadStatus();
     }
