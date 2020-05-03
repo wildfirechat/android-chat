@@ -1156,6 +1156,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void deleteRemoteMessage(long messageId, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.deleteRemoteMessage(messageId, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public List<ConversationSearchResult> searchConversation(String keyword, int[] conversationTypes, int[] lines) throws RemoteException {
             ProtoConversationSearchresult[] protoResults = ProtoLogic.searchConversation(keyword, conversationTypes, lines);
             List<ConversationSearchResult> output = new ArrayList<>();
@@ -2156,6 +2179,24 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
                 try {
                     listener.onRecall(messageUid);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onReceiveMessageListeners.finishBroadcast();
+        });
+    }
+
+    @Override
+    public void onDeleteMessage(long messageUid) {
+        handler.post(() -> {
+            int receiverCount = onReceiveMessageListeners.beginBroadcast();
+            IOnReceiveMessageListener listener;
+            while (receiverCount > 0) {
+                receiverCount--;
+                listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
+                try {
+                    listener.onDelete(messageUid);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
