@@ -3273,47 +3273,6 @@ public class ChatManager {
     }
 
     /**
-     * 删除远程消息
-     *
-     * @param message
-     * @return
-     */
-    public void deleteMessage(Message message, final GeneralCallback callback) {
-        if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
-            return;
-        }
-
-        try {
-            mClient.deleteRemoteMessage(message.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
-                @Override
-                public void onSuccess() throws RemoteException {
-                    if (callback != null) {
-                        callback.onSuccess();
-                    }
-                }
-
-                @Override
-                public void onFailure(final int errorCode) throws RemoteException {
-                    if (callback != null) {
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onFail(errorCode);
-                            }
-                        });
-                    }
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            if (callback != null)
-                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
-        }
-
-    }
-
-    /**
      * 搜索会话
      *
      * @param keyword

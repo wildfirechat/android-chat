@@ -158,32 +158,14 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
 
     /**
      * 删除消息
-     * 社区版IM Server执行本地删除，社区版不支持远程删除
-     * 商业版IM Server执行远程删除
+     *
      * @param message
      */
     public void deleteMessage(Message message) {
-        if (ChatManager.Instance().isCommercialServer()) {
-            ChatManager.Instance().deleteMessage(message, new GeneralCallback() {
-                @Override
-                public void onSuccess() {
-                    if (messageRemovedLiveData != null) {
-                        messageRemovedLiveData.setValue(new UiMessage(message));
-                    }
-                }
-
-                @Override
-                public void onFail(int errorCode) {
-                    Log.e("deleteMessage", "delete message error " + errorCode);
-                }
-            });
-
-        } else {
-            if (messageRemovedLiveData != null) {
-                messageRemovedLiveData.setValue(new UiMessage(message));
-            }
-            ChatManager.Instance().deleteMessage(message);
+        if (messageRemovedLiveData != null) {
+            messageRemovedLiveData.setValue(new UiMessage(message));
         }
+        ChatManager.Instance().deleteMessage(message);
     }
 
     public void playAudioMessage(UiMessage message) {
