@@ -170,10 +170,19 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         int position = -1;
         for (int i = 0; i < messages.size(); i++) {
             msg = messages.get(i);
-            if (msg.equals(message)) {
-                messages.remove(msg);
-                position = i;
-                break;
+
+            if (msg.message.messageUid > 0 || message.message.messageUid > 0) {
+                if (msg.message.messageUid == message.message.messageUid) {
+                    messages.remove(msg);
+                    position = i;
+                    break;
+                }
+            } else {
+                if (msg.message.messageId == message.message.messageId) {
+                    messages.remove(msg);
+                    position = i;
+                    break;
+                }
             }
         }
         if (position >= 0) {

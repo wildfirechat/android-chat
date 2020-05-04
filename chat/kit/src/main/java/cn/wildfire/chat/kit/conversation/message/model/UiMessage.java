@@ -1,7 +1,6 @@
 package cn.wildfire.chat.kit.conversation.message.model;
 
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
 
 public class UiMessage {
     public boolean isPlaying;
@@ -18,17 +17,4 @@ public class UiMessage {
         this.message = message;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UiMessage uiMessage = (UiMessage) o;
-        return Conversation.equals(message, uiMessage.message);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Conversation.hashCode(message);
-    }
 }

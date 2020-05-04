@@ -182,10 +182,11 @@ public class ConversationFragment extends Fragment implements
     private Observer<UiMessage> messageRemovedLiveDataObserver = new Observer<UiMessage>() {
         @Override
         public void onChanged(@Nullable UiMessage uiMessage) {
-            if (!isMessageInCurrentConversation(uiMessage)) {
+            // 当通过server api删除消息时，只知道消息的uid
+            if (uiMessage.message.conversation != null && !isMessageInCurrentConversation(uiMessage)) {
                 return;
             }
-            if (isDisplayableMessage(uiMessage)) {
+            if (uiMessage.message.messageId == 0 || isDisplayableMessage(uiMessage)) {
                 adapter.removeMessage(uiMessage);
             }
         }
