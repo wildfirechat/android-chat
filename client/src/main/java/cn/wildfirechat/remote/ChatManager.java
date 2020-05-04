@@ -345,11 +345,8 @@ public class ChatManager {
      * @param messageUid
      */
     private void onDeleteMessage(final long messageUid) {
-        Message message = getMessageByUid(messageUid);
-        // 想撤回的消息已经被删除
-        if (message == null) {
-            return;
-        }
+        Message message = new Message();
+        message.messageUid = messageUid;
         mainHandler.post(() -> {
             for (OnDeleteMessageListener listener : deleteMessageListeners) {
                 listener.onDeleteMessage(message);
