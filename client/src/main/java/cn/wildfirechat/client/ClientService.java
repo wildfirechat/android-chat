@@ -1156,29 +1156,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void deleteRemoteMessage(long messageUid, IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.deleteRemoteMessage(messageUid, new ProtoLogic.IGeneralCallback() {
-                @Override
-                public void onSuccess() {
-                    try {
-                        callback.onSuccess();
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-
-        @Override
         public List<ConversationSearchResult> searchConversation(String keyword, int[] conversationTypes, int[] lines) throws RemoteException {
             ProtoConversationSearchresult[] protoResults = ProtoLogic.searchConversation(keyword, conversationTypes, lines);
             List<ConversationSearchResult> output = new ArrayList<>();
