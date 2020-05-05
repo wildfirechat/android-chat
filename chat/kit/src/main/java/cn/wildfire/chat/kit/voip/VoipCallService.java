@@ -71,6 +71,8 @@ public class VoipCallService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        rendererInitialized = false;
+        lastState = null;
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             stopSelf();
         } else {
@@ -264,12 +266,21 @@ public class VoipCallService extends Service {
         }
     }
 
+    private boolean rendererInitialized = false;
+    private AVEngineKit.CallState lastState = null;
+
     private void showVideoView(AVEngineKit.CallSession session) {
         view.findViewById(R.id.audioLinearLayout).setVisibility(View.GONE);
         FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
         remoteVideoFrameLayout.setVisibility(View.VISIBLE);
-        SurfaceView surfaceView = session.createRendererView();
-        if (surfaceView != null) {
+
+        if (!rendererInitialized || lastState != session.getState()) {
+            rendererInitialized = true;
+            if (lastState != session.getState()) {
+                session.resetRenderer();
+            }
+            lastState = session.getState();
+            SurfaceView surfaceView = session.createRendererView();
             remoteVideoFrameLayout.addView(surfaceView);
             String targetId = session.getParticipantIds().get(0);
             if (session.getState() == AVEngineKit.CallState.Connected) {
@@ -281,6 +292,12 @@ public class VoipCallService extends Service {
     }
 
     private void clickToResume() {
+        if (rendererInitialized) {
+            AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+            if (session != null) {
+                session.resetRenderer();
+            }
+        }
         startActivity(resumeActivityIntent);
     }
 
