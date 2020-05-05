@@ -127,8 +127,7 @@
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="${applicationId}.kit.voip.single" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -245,8 +244,7 @@
         <activity android:name="cn.wildfire.chat.kit.group.SetGroupAnnouncementActivity" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
+            android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="${applicationId}.kit.voip.multi" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -257,16 +255,17 @@
             android:launchMode="singleInstance" />
 
         <!--moment-->
-        <!--        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />-->
-        <!--        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />-->
-        <!--        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />-->
-        <!--        <activity android:name="cn.wildfire.chat.moment.FeedListActivity">-->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="${applicationId}.moment" />-->
-        <!--                <category android:name="android.intent.category.DEFAULT" />-->
-        <!--            </intent-filter>-->
-        <!--        </activity>-->
-        <!--        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />-->
+                <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
+                <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />
+                <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />
+                <activity android:name="cn.wildfire.chat.moment.FeedListActivity">
+                    <intent-filter>
+                        <action android:name="${applicationId}.moment" />
+                        <category android:name="android.intent.category.DEFAULT" />
+                    </intent-filter>
+                </activity>
+                <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />
+
         <activity android:name="cn.wildfire.chat.app.main.PCSessionActivity" />
 
         <provider
