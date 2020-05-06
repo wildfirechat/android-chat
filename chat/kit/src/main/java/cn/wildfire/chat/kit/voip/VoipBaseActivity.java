@@ -148,7 +148,9 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             session.resetRenderer();
             session.setCallback(null);
-            showFloatingView();
+            if (!isChangingConfigurations()) {
+                showFloatingView();
+            }
         }
     }
 
