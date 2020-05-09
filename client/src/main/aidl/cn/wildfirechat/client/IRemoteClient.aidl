@@ -68,6 +68,7 @@ interface IRemoteClient {
     oneway void registerMessageContent(in String msgContentCls);
 
     oneway void send(in Message msg, in ISendMessageCallback callback, in int expireDuration);
+    oneway void sendSavedMessage(in Message msg, in int expireDuration, in ISendMessageCallback callback);
     oneway void recall(in long messageUid, IGeneralCallback callback);
     long getServerDeltaTime();
     List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines);
