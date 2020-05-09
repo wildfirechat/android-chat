@@ -235,7 +235,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             int flag = 0;
             if (clearSession) {
                 flag = 8;
-            } else if(disablePush) {
+            } else if (disablePush) {
                 flag = 1;
             }
 
@@ -307,58 +307,71 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             return protoMessage;
         }
 
+        private class SendMessageCallback implements ProtoLogic.ISendMessageCallback {
+            private ISendMessageCallback callback;
+
+            SendMessageCallback(ISendMessageCallback callback) {
+                this.callback = callback;
+            }
+
+            @Override
+            public void onSuccess(long messageUid, long timestamp) {
+                try {
+                    callback.onSuccess(messageUid, timestamp);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int errorCode) {
+                try {
+                    callback.onFailure(errorCode);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPrepared(long messageId, long savedTime) {
+                try {
+                    callback.onPrepared(messageId, savedTime);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onProgress(long uploaded, long total) {
+                try {
+                    callback.onProgress(uploaded, total);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onMediaUploaded(String remoteUrl) {
+                try {
+                    callback.onMediaUploaded(remoteUrl);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void sendSavedMessage(Message msg, int expireDuration, ISendMessageCallback callback) throws RemoteException {
+            ProtoLogic.sendMessageEx(msg.messageId, expireDuration, new SendMessageCallback(callback));
+        }
+
         @Override
         public void send(cn.wildfirechat.message.Message msg, final ISendMessageCallback callback, int expireDuration) throws RemoteException {
 
             msg.sender = userId;
             ProtoMessage protoMessage = convertMessage(msg);
 
-            ProtoLogic.sendMessage(protoMessage, expireDuration, new ProtoLogic.ISendMessageCallback() {
-                @Override
-                public void onSuccess(long messageUid, long timestamp) {
-                    try {
-                        callback.onSuccess(messageUid, timestamp);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onFailure(int errorCode) {
-                    try {
-                        callback.onFailure(errorCode);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onPrepared(long messageId, long savedTime) {
-                    try {
-                        callback.onPrepared(messageId, savedTime);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onProgress(long uploaded, long total) {
-                    try {
-                        callback.onProgress(uploaded, total);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onMediaUploaded(String remoteUrl) {
-                    try {
-                        callback.onMediaUploaded(remoteUrl);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            ProtoLogic.sendMessage(protoMessage, expireDuration, new SendMessageCallback(callback));
         }
 
         @Override

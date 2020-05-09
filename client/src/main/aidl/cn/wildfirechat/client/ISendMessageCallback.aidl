@@ -4,7 +4,7 @@ package cn.wildfirechat.client;
 
 
 interface ISendMessageCallback {
-    void onSuccess(long messageId, long timestamp);
+    void onSuccess(long messageUid, long timestamp);
     void onFailure(int errorCode);
     void onPrepared(long messageId, long savedTime);
     void onProgress(long uploaded, long total);

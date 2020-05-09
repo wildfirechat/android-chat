@@ -1366,6 +1366,61 @@ public class ChatManager {
     }
 
     /**
+     * 发送已经保存的消息
+     *
+     * @param conversation
+     * @param content
+     * @param toUsers        定向发送给会话中的某些用户；为空，则发给所有人
+     * @param expireDuration
+     * @param callback
+     */
+    public void sendSavedMessage(Message msg, int expireDuration, SendMessageCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                msg.status = MessageStatus.Send_Failure;
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            for (OnSendMessageListener listener : sendMessageListeners) {
+                listener.onSendFail(msg, ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+
+        try {
+            mClient.sendSavedMessage(msg, expireDuration, new cn.wildfirechat.client.ISendMessageCallback.Stub() {
+                @Override
+                public void onSuccess(long messageUid, long timestamp) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(messageUid, timestamp));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+
+                @Override
+                public void onPrepared(long messageId, long savedTime) throws RemoteException {
+                }
+
+                @Override
+                public void onProgress(long uploaded, long total) throws RemoteException {
+                }
+
+                @Override
+                public void onMediaUploaded(String remoteUrl) throws RemoteException {
+
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 发送消息
      *
      * @param conversation
@@ -1521,7 +1576,7 @@ public class ChatManager {
                 msg.status = MessageStatus.Send_Failure;
                 mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
             }
-            mainHandler.post(()->{
+            mainHandler.post(() -> {
                 for (OnSendMessageListener listener : sendMessageListeners) {
                     listener.onSendFail(msg, ErrorCode.SERVICE_EXCEPTION);
                 }
@@ -1540,10 +1595,10 @@ public class ChatManager {
             mClient.recall(msg.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    mainHandler.post(()->{
+                    mainHandler.post(() -> {
                         msg.content = new RecallMessageContent(userId, msg.messageUid);
                         ((RecallMessageContent) msg.content).fromSelf = true;
-                        if(callback != null){
+                        if (callback != null) {
                             callback.onSuccess();
                         }
                         for (OnRecallMessageListener listener : recallMessageListeners) {
@@ -1554,8 +1609,8 @@ public class ChatManager {
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    if(callback != null){
-                        mainHandler.post(()->callback.onFail(errorCode));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
                     }
                 }
             });
@@ -4204,7 +4259,7 @@ public class ChatManager {
         }
     }
 
-    public boolean isCommercialServer(){
+    public boolean isCommercialServer() {
         if (!checkRemoteService()) {
             return false;
         }
