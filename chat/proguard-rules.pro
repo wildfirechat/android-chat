@@ -28,6 +28,8 @@
 -keep public class com.tencent.bugly.**{*;}
 
 -dontshrink
+-keep class org.webrtc.**  { *; }
+-keepclasseswithmembernames class * { native <methods>; }
 
 #-keep class !cn.wildfire.chat.moment.**,!cn.wildfirechat.moment.**, **{ *; }
 -keep class cn.wildfirechat.moment.MomentClient {
