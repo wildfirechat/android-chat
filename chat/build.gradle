@@ -106,7 +106,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
 
     // ViewModel and LiveData
-    def lifecycle_version = '2.2.0-alpha05'
+    def lifecycle_version = '2.2.0'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
     implementation project(':client')
