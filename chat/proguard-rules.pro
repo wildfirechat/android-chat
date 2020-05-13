@@ -27,7 +27,29 @@
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
 
--keep class !cn.wildfire.chat.moment.**,!cn.wildfirechat.moment.**, **{ *; }
+-dontshrink
+
+#-keep class !cn.wildfire.chat.moment.**,!cn.wildfirechat.moment.**, **{ *; }
 -keep class cn.wildfirechat.moment.MomentClient {
     public void init(***);
 }
+
+-keep class com.tencent.**{*;}
+-keepclassmembers class com.tenncent.mars.** {
+  *;
+}
+
+-keep class cn.wildfirechat.model.** {*;}
+-keepclassmembers class cn.wildfirechat.model.** {
+  *;
+}
+
+-keepclassmembers class cn.wildfirechat.** {
+    <init>(...);
+}
+
+-keepclassmembers class cn.wildfire.** {
+    <init>(...);
+}
+
+-keep class net.sourceforge.pinyin4j.** { *;}
