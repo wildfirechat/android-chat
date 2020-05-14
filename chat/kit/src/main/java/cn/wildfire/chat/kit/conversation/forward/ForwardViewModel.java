@@ -1,9 +1,10 @@
 package cn.wildfire.chat.kit.conversation.forward;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
