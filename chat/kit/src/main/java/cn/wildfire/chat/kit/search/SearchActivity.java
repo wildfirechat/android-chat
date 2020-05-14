@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.search;
 
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
@@ -27,6 +28,10 @@ public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
         finish();
     }
 
+    protected boolean hideSearchDescView(){
+        return false;
+    }
+
     /**
      * 子类如果替换布局，它的布局中必须要包含 R.layout.search_bar
      *
@@ -49,14 +54,21 @@ public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
                 searchView.setQuery(initialKeyword);
             }
         });
+        if(hideSearchDescView()){
+            searchView.clearFocus();
+            hideInputMethod();
+        }
     }
 
     private void initSearchView() {
         searchView.setOnQueryTextListener(this::search);
     }
 
-    private void initSearchFragment() {
+    protected void initSearchFragment() {
         searchFragment = new SearchFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(SearchFragment.HIDE_SEARCH_DESC_VIEW, hideSearchDescView());
+        searchFragment.setArguments(args);
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, searchFragment)
             .commit();

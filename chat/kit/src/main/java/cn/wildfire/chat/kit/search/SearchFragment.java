@@ -34,6 +34,17 @@ public class SearchFragment extends Fragment {
     private Observer<SearchResult> searchResultObserver = this::onSearchResult;
     private InputMethodManager inputManager;
 
+    private boolean hideSearchDescView = false;
+
+    public static final String HIDE_SEARCH_DESC_VIEW = "hideSearchDescView";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        hideSearchDescView = args != null && args.getBoolean(HIDE_SEARCH_DESC_VIEW);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,6 +59,7 @@ public class SearchFragment extends Fragment {
                 inputManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
+        descLinearLayout.setVisibility(hideSearchDescView ? View.GONE: View.VISIBLE);
         return view;
     }
 

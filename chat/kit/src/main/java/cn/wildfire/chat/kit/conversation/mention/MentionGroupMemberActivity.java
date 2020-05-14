@@ -1,7 +1,5 @@
 package cn.wildfire.chat.kit.conversation.mention;
 
-import android.view.Menu;
-
 import java.util.List;
 
 import cn.wildfire.chat.kit.search.SearchActivity;
@@ -19,11 +17,16 @@ public class MentionGroupMemberActivity extends SearchActivity {
     }
 
     @Override
+    protected boolean hideSearchDescView() {
+        return true;
+    }
+
+    @Override
     protected void afterViews() {
         super.afterViews();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.mentionGroupMemberContainer, MentionGroupMemberFragment.newInstance(groupInfo))
-                .commit();
+            .replace(R.id.mentionGroupMemberContainer, MentionGroupMemberFragment.newInstance(groupInfo))
+            .commit();
     }
 
     @Override
