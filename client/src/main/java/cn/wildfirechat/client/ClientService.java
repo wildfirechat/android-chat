@@ -368,6 +368,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void send(cn.wildfirechat.message.Message msg, final ISendMessageCallback callback, int expireDuration) throws RemoteException {
 
+            msg.messageId = 0;
+            msg.messageUid = 0;
             msg.sender = userId;
             ProtoMessage protoMessage = convertMessage(msg);
 
