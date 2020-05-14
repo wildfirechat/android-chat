@@ -31,13 +31,33 @@
 -keep class org.webrtc.**  { *; }
 -keepclasseswithmembernames class * { native <methods>; }
 
+-keep class okhttp3.** {*;}
+-keepclassmembers class okhttp3.** {
+  *;
+}
+
+-keep class com.tencent.**{*;}
+-keepclassmembers class com.tenncent.mars.** {
+  *;
+}
+
 #-keep class !cn.wildfire.chat.moment.**,!cn.wildfirechat.moment.**, **{ *; }
 -keep class cn.wildfirechat.moment.MomentClient {
     public void init(***);
 }
 
--keep class com.tencent.**{*;}
--keepclassmembers class com.tenncent.mars.** {
+-keep class cn.wildfire.chat.app.login.model.** {*;}
+-keepclassmembers class cn.wildfire.chat.app.login.model.** {
+  *;
+}
+
+-keep class cn.wildfire.chat.kit.net.base.** {*;}
+-keepclassmembers class cn.wildfire.chat.kit.net.base.** {
+  *;
+}
+
+-keep class cn.wildfire.chat.kit.group.GroupAnnouncement {*;}
+-keepclassmembers class cn.wildfire.chat.kit.group.GroupAnnouncement {
   *;
 }
 
