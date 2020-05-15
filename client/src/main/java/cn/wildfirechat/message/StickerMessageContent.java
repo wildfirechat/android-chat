@@ -25,7 +25,7 @@ public class StickerMessageContent extends MediaMessageContent {
 
     public StickerMessageContent(String localPath) {
         this.localPath = localPath;
-        this.mediaType = MessageContentMediaType.FILE;
+        this.mediaType = MessageContentMediaType.STICKER;
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
