@@ -11,7 +11,9 @@ public enum MessageContentMediaType {
     VIDEO(3),
     FILE(4),
     PORTRAIT(5),
-    FAVORITE(6);
+    FAVORITE(6),
+    STICKER(7),
+    MOMENTS(8);
 
     private int value;
 
