@@ -1,0 +1,27 @@
+{
+	"agcgw":{
+		"backurl":"connect-drcn.dbankcloud.cn",
+		"url":"connect-drcn.hispace.hicloud.com"
+	},
+	"client":{
+		"cp_id":"890086000102114683",
+		"product_id":"9105385871708008303",
+		"client_id":"363427384201839680",
+		"client_secret":"D438F2D56536240581DC197C468900E6EA0E0FF37F563B79D7765B34A5077B7F",
+		"app_id":"100221325",
+		"package_name":"cn.wildfirechat.chat",
+		"api_key":"CV7m3BB7QS4BJqCKyrCkda06gp0tWFCMYzZP+a7I5NJHi7l4dTk0rP87aDCDh3dRU1sDrLOMiZr2bMNNKQ34zuwJ6KjT"
+	},
+	"service":{
+		"analytics":{
+			"collector_url":"datacollector-drcn.dt.hicloud.com,datacollector-drcn.dt.dbankcloud.cn",
+			"resource_id":"p1",
+			"channel_id":""
+		},
+		"ml":{
+			"mlservice_url":"ml-api-drcn.ai.dbankcloud.com,ml-api-drcn.ai.dbankcloud.cn"
+		}
+	},
+	"region":"CN",
+	"configuration_version":"1.0"
+}
