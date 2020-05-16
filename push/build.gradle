@@ -46,13 +46,12 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.huawei.android.hms:push:2.5.3.305'
-    implementation 'com.huawei.android.hms:base:2.5.3.305'
+    implementation 'com.huawei.hms:push:4.0.3.301'
 
     implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
     implementation project(':client')
     implementation 'com.meizu.flyme.internet:push-internal:3.4.2@aar'
 
-    def lifecycle_version = '2.2.0-alpha05'
+    def lifecycle_version = '2.2.0'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 }
