@@ -16,6 +16,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -181,6 +182,12 @@ public class MultiCallActivity extends VoipBaseActivity {
             fragment = new MultiCallAudioFragment();
         } else {
             fragment = new MultiCallVideoFragment();
+            List<String> participants = session.getParticipantIds();
+            if (participants.size() >= 4) {
+                AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P, false);
+            } else if (participants.size() >= 6) {
+                AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P_3, false);
+            }
         }
         currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
