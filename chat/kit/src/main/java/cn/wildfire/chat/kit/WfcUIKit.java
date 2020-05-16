@@ -236,9 +236,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId);
         if (participants.size() >= 4) {
-            AVEngineKit.Instance().setVideoProfile(VideoProfile.VP240P, false);
-        } else if (participants.size() >= 6) {
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P, false);
+        } else if (participants.size() >= 6) {
+            AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P_3, false);
         }
         AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
         Intent intent = new Intent(context, MultiCallActivity.class);
