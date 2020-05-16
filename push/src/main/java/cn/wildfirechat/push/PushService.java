@@ -8,7 +8,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -20,12 +19,10 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import com.heytap.mcssdk.PushManager;
 import com.heytap.mcssdk.callback.PushCallback;
 import com.heytap.mcssdk.mode.SubscribeResult;
-import com.huawei.hms.api.ConnectionResult;
+import com.huawei.agconnect.config.AGConnectServicesConfig;
+import com.huawei.hms.aaid.HmsInstanceId;
 import com.huawei.hms.api.HuaweiApiClient;
-import com.huawei.hms.support.api.client.PendingResult;
-import com.huawei.hms.support.api.client.ResultCallback;
-import com.huawei.hms.support.api.push.HuaweiPush;
-import com.huawei.hms.support.api.push.TokenResult;
+import com.huawei.hms.common.ApiException;
 import com.meizu.cloud.pushsdk.util.MzSystemUtils;
 import com.vivo.push.IPushActionListener;
 import com.vivo.push.PushClient;
@@ -40,8 +37,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Properties;
 
-import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.PushType;
+import cn.wildfirechat.remote.ChatManager;
 
 /**
  * Created by heavyrain.lee on 2018/2/26.
@@ -70,7 +67,7 @@ public class PushService {
         } else if (SYS_VIVO.equalsIgnoreCase(sys)) {
             INST.pushServiceType = PushServiceType.VIVO;
             INST.initVIVO(gContext);
-        } else if(PushManager.isSupportPush(gContext)) {
+        } else if (PushManager.isSupportPush(gContext)) {
             INST.pushServiceType = PushServiceType.OPPO;
             INST.initOPPO(gContext);
         } else /*if (SYS_MIUI.equals(sys) && INST.isXiaomiConfigured(gContext))*/ {
@@ -172,56 +169,20 @@ public class PushService {
     }
 
     private void initHMS(final Context context) {
-        HMSClient = new HuaweiApiClient.Builder(context)
-                .addApi(HuaweiPush.PUSH_API)
-                .addConnectionCallbacks(new HuaweiApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected() {
-                        new Handler(context.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                // 此方法必须在主线程调用
-                                if (!hasHMSToken && HMSClient != null) {
-                                    PendingResult<TokenResult> tokenResult = HuaweiPush.HuaweiPushApi.getToken(HMSClient);
-                                    tokenResult.setResultCallback(new ResultCallback<TokenResult>() {
-
-                                        @Override
-                                        public void onResult(TokenResult result) {
-                                            //这边的结果只表明接口调用成功，是否能收到响应结果只在广播中接收
-                                            hasHMSToken = true;
-                                        }
-                                    });
-                                }
-                            }
-                        });
-
+        String appId = AGConnectServicesConfig.fromContext(context).getString("client/app_id");
+        ChatManager.Instance().getWorkHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String token = HmsInstanceId.getInstance(context).getToken(appId, "HCM");
+                    if(!TextUtils.isEmpty(token)){
+                        ChatManager.Instance().setDeviceToken(token, PushType.HMS);
                     }
-
-                    @Override
-                    public void onConnectionSuspended(int i) {
-                        new Handler(context.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                // 此方法必须在主线程调用
-                                if (HMSClient != null) {
-                                    HMSClient.connect();
-                                }
-                            }
-                        });
-
-                    }
-                })
-                .addOnConnectionFailedListener(new HuaweiApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(ConnectionResult connectionResult) {
-                        android.util.Log.e("ChatManager", "init HMS feilure with code" + connectionResult.getErrorCode());
-                    }
-                })
-                .build();
-
-        //建议在oncreate的时候连接华为移动服务
-        //业务可以根据自己业务的形态来确定client的连接和断开的时机，但是确保connect和disconnect必须成对出现
-        HMSClient.connect();
+                } catch (ApiException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private boolean isMZConfigured(Context context) {
@@ -380,12 +341,12 @@ public class PushService {
 
             prop.load(new FileInputStream(new File(Environment.getRootDirectory(), "build.prop")));
             if (prop.getProperty(KEY_MIUI_VERSION_CODE, null) != null
-                    || prop.getProperty(KEY_MIUI_VERSION_NAME, null) != null
-                    || prop.getProperty(KEY_MIUI_INTERNAL_STORAGE, null) != null) {
+                || prop.getProperty(KEY_MIUI_VERSION_NAME, null) != null
+                || prop.getProperty(KEY_MIUI_INTERNAL_STORAGE, null) != null) {
                 SYS = SYS_MIUI;//小米
             } else if (prop.getProperty(KEY_EMUI_API_LEVEL, null) != null
-                    || prop.getProperty(KEY_EMUI_VERSION, null) != null
-                    || prop.getProperty(KEY_EMUI_CONFIG_HW_SYS_VERSION, null) != null) {
+                || prop.getProperty(KEY_EMUI_VERSION, null) != null
+                || prop.getProperty(KEY_EMUI_CONFIG_HW_SYS_VERSION, null) != null) {
                 SYS = SYS_EMUI;//华为
             } else if (getMeizuFlymeOSFlag().toLowerCase().contains("flyme")) {
                 SYS = SYS_FLYME;//魅族

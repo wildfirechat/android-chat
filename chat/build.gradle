@@ -9,13 +9,13 @@ android {
             storePassword 'wildfirechat'
         }
     }
-    compileSdkVersion 28
+    compileSdkVersion 29
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
     defaultConfig {
         applicationId "cn.wildfirechat.chat"
-        minSdkVersion 16
-        targetSdkVersion 28 //当targetversion大于23时，需要使用fileprovider
+        minSdkVersion 17
+        targetSdkVersion 29 //当targetversion大于23时，需要使用fileprovider
         versionCode 24
         versionName "0.7.0"
         multiDexEnabled true
@@ -128,3 +128,5 @@ dependencies {
     // moment end
 
 }
+
+apply plugin: 'com.huawei.agconnect'
