@@ -97,7 +97,9 @@ import cn.wildfirechat.model.ProtoGroupMember;
 import cn.wildfirechat.model.ProtoGroupSearchResult;
 import cn.wildfirechat.model.ProtoMessage;
 import cn.wildfirechat.model.ProtoMessageContent;
+import cn.wildfirechat.model.ProtoReadEntry;
 import cn.wildfirechat.model.ProtoUserInfo;
+import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.RecoverReceiver;
@@ -625,6 +627,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setConversationSilent(int conversationType, String target, int line, boolean silent, IGeneralCallback callback) throws RemoteException {
             setUserSetting(ConversationSilent, conversationType + "-" + line + "-" + target, silent ? "1" : "0", callback);
+        }
+
+        @Override
+        public Map getConversationRead(int conversationType, String target, int line) throws RemoteException {
+            return ProtoLogic.GetConversationRead(conversationType, target, line);
+        }
+
+        @Override
+        public Map getMessageDelivery(int conversationType, String target) throws RemoteException {
+            return ProtoLogic.GetDelivery(conversationType, target);
         }
 
         @Override
@@ -2193,6 +2205,51 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
                 try {
                     listener.onDelete(messageUid);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onReceiveMessageListeners.finishBroadcast();
+        });
+    }
+
+    @Override
+    public void onUserReceivedMessage(Map<String, Long> map) {
+        handler.post(() -> {
+            int receiverCount = onReceiveMessageListeners.beginBroadcast();
+            IOnReceiveMessageListener listener;
+            while (receiverCount > 0) {
+                receiverCount--;
+                listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
+                try {
+                    listener.onDelivered(map);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onReceiveMessageListeners.finishBroadcast();
+        });
+    }
+
+    @Override
+    public void onUserReadedMessage(List<ProtoReadEntry> list) {
+        handler.post(() -> {
+            List<ReadEntry> l = new ArrayList<>();
+            for (ProtoReadEntry entry:list) {
+                ReadEntry r = new ReadEntry();
+                r.conversation = new Conversation(Conversation.ConversationType.type(entry.conversationType), entry.target, entry.line);
+                r.userId = entry.userId;
+                r.readDt = entry.readDt;
+                l.add(r);
+            }
+
+            int receiverCount = onReceiveMessageListeners.beginBroadcast();
+            IOnReceiveMessageListener listener;
+            while (receiverCount > 0) {
+                receiverCount--;
+                listener = onReceiveMessageListeners.getBroadcastItem(receiverCount);
+                try {
+                    listener.onReaded(l);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
