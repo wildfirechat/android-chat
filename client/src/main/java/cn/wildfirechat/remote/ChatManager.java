@@ -85,6 +85,7 @@ import cn.wildfirechat.model.NullConversationInfo;
 import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
+import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 
@@ -385,6 +386,17 @@ public class ChatManager {
         });
     }
 
+    private void onMsgDelivered(Map<String, Long> deliverys) {
+        mainHandler.post(() -> {
+            Log.d("msg delivered", deliverys.toString());
+        });
+    }
+
+    private void onMsgReaded(List<ReadEntry> readEntries) {
+        mainHandler.post(() -> {
+            Log.d("msg readed", readEntries.toString());
+        });
+    }
     /**
      * 用户信息更新
      *
@@ -2314,6 +2326,32 @@ public class ChatManager {
         ConversationInfo conversationInfo = getConversation(conversation);
         for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
             listener.onConversationDraftUpdate(conversationInfo, draft);
+        }
+    }
+
+    public Map<String, Long> getConversationRead(Conversation conversation) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getConversationRead(conversation.type.getValue(), conversation.target, conversation.line);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Map<String, Long> getMessageDelivery(Conversation conversation) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getMessageDelivery(conversation.type.getValue(), conversation.target);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -4595,6 +4633,16 @@ public class ChatManager {
                     @Override
                     public void onDelete(long messageUid) throws RemoteException {
                         onDeleteMessage(messageUid);
+                    }
+
+                    @Override
+                    public void onDelivered(Map deliveryMap) throws RemoteException {
+                        onMsgDelivered(deliveryMap);
+                    }
+
+                    @Override
+                    public void onReaded(List<ReadEntry> readEntrys) throws RemoteException {
+                        onMsgReaded(readEntrys);
                     }
                 });
                 mClient.setOnConnectionStatusChangeListener(new IOnConnectionStatusChangeListener.Stub() {
