@@ -104,6 +104,8 @@ interface IRemoteClient {
     void setConversationDraft(in int conversationType, in String target, in int line, in String draft);
     oneway void setConversationSilent(in int conversationType, in String target, in int line, in boolean silent,  in IGeneralCallback callback);
 
+    Map getConversationRead(in int conversationType, in String target, in int line);
+    Map getMessageDelivery(in int conversationType, in String target);
     oneway void searchUser(in String keyword, in int searchType, in int page, in ISearchUserCallback callback);
 
     boolean isMyFriend(in String userId);
