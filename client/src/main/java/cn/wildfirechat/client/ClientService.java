@@ -1748,6 +1748,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public boolean isCommercialServer() throws RemoteException {
             return ProtoLogic.isCommercialServer();
         }
+
+        @Override
+        public boolean isReceiptEnabled() throws RemoteException {
+            return ProtoLogic.isReceiptEnabled();
+        }
     }
 
     private ChannelInfo converProtoChannelInfo(ProtoChannelInfo protoChannelInfo) {
