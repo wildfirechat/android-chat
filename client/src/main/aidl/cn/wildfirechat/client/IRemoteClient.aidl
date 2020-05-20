@@ -191,4 +191,5 @@ interface IRemoteClient {
     void commitTransaction();
 
     boolean isCommercialServer();
+    boolean isReceiptEnabled();
 }

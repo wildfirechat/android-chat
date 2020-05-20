@@ -4309,6 +4309,21 @@ public class ChatManager {
         return false;
     }
 
+    /*
+    是否开启了已送达报告和已读报告功能
+     */
+    public boolean isReceiptEnabled() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return mClient.isReceiptEnabled();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     /**
      * IM服务进程是否bind成功
      *
