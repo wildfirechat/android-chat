@@ -55,6 +55,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     private OnPortraitClickListener onPortraitClickListener;
     private OnMessageCheckListener onMessageCheckListener;
     private OnPortraitLongClickListener onPortraitLongClickListener;
+    private OnMessageReceiptClickListener onMessageReceiptClickListener;
 
     public ConversationMessageAdapter(ConversationFragment fragment) {
         super();
@@ -131,6 +132,10 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setOnPortraitLongClickListener(OnPortraitLongClickListener onPortraitLongClickListener) {
         this.onPortraitLongClickListener = onPortraitLongClickListener;
+    }
+
+    public void setOnMessageReceiptClickListener(OnMessageReceiptClickListener onMessageReceiptClickListener) {
+        this.onMessageReceiptClickListener = onMessageReceiptClickListener;
     }
 
     public void addNewMessage(UiMessage message) {
@@ -335,6 +340,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 onPortraitClickListener.onPortraitClick(ChatManager.Instance().getUserInfo(message.message.sender, false));
             }
         });
+    }
+
+    public void onGroupMessageReceiptClick(Message message) {
+        if (onMessageReceiptClickListener != null) {
+            onMessageReceiptClickListener.onMessageReceiptCLick(message);
+        }
     }
 
     private void processCheckClick(MessageContentViewHolder holder, View itemView) {
@@ -586,5 +597,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public interface OnMessageCheckListener {
         void onMessageCheck(UiMessage uiMessage, boolean checked);
+    }
+
+    public interface OnMessageReceiptClickListener {
+        void onMessageReceiptCLick(Message message);
     }
 }
