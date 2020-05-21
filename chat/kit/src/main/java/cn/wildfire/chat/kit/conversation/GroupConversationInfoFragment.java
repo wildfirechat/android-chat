@@ -384,7 +384,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "解散群组失败", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
