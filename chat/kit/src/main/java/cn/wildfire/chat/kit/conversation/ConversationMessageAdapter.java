@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
@@ -49,6 +50,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     // check or normal
     private int mode;
     private List<UiMessage> messages = new ArrayList<>();
+    private Map<String, Long> deliveries;
+    private Map<String, Long> readEntries;
     private OnPortraitClickListener onPortraitClickListener;
     private OnMessageCheckListener onMessageCheckListener;
     private OnPortraitLongClickListener onPortraitLongClickListener;
@@ -96,6 +99,26 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (this.messages == null) {
             this.messages = new ArrayList<>();
         }
+    }
+
+    public void setDeliveries(Map<String, Long> deliveries) {
+        // TODO diff
+        this.deliveries = deliveries;
+        notifyDataSetChanged();
+    }
+
+    public void setReadEntries(Map<String, Long> readEntries) {
+        // TODO diff
+        this.readEntries = readEntries;
+        notifyDataSetChanged();
+    }
+
+    public Map<String, Long> getDeliveries() {
+        return deliveries;
+    }
+
+    public Map<String, Long> getReadEntries() {
+        return readEntries;
     }
 
     public void setOnPortraitClickListener(OnPortraitClickListener onPortraitClickListener) {
