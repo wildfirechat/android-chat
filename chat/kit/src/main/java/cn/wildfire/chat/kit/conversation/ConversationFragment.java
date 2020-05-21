@@ -59,6 +59,7 @@ import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -69,7 +70,6 @@ import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.UserSettingScope;
@@ -80,7 +80,7 @@ public class ConversationFragment extends Fragment implements
     ConversationMessageAdapter.OnPortraitClickListener,
     ConversationMessageAdapter.OnPortraitLongClickListener,
     ConversationInputPanel.OnConversationInputPanelStateChangeListener,
-    ConversationMessageAdapter.OnMessageCheckListener {
+    ConversationMessageAdapter.OnMessageCheckListener, ConversationMessageAdapter.OnMessageReceiptClickListener {
 
     public static final int REQUEST_PICK_MENTION_CONTACT = 100;
     public static final int REQUEST_CODE_GROUP_VIDEO_CHAT = 101;
@@ -335,6 +335,7 @@ public class ConversationFragment extends Fragment implements
         // message list
         adapter = new ConversationMessageAdapter(this);
         adapter.setOnPortraitClickListener(this);
+        adapter.setOnMessageReceiptClickListener(this);
         adapter.setOnPortraitLongClickListener(this);
         adapter.setOnMessageCheckListener(this);
         layoutManager = new LinearLayoutManager(getActivity());
@@ -390,11 +391,11 @@ public class ConversationFragment extends Fragment implements
         userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
 
         settingUpdateLiveDataObserver = o -> {
-//            boolean show = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
-//            if (showGroupMemberName != show) {
-//                showGroupMemberName = show;
-//                adapter.notifyDataSetChanged();
-//            }
+            boolean show = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
+            if (showGroupMemberName != show) {
+                showGroupMemberName = show;
+                adapter.notifyDataSetChanged();
+            }
             reloadMessage();
         };
         settingViewModel.settingUpdatedLiveData().observeForever(settingUpdateLiveDataObserver);
@@ -428,6 +429,8 @@ public class ConversationFragment extends Fragment implements
 
             // load message
             swipeRefreshLayout.setRefreshing(true);
+            adapter.setDeliveries(ChatManager.Instance().getMessageDelivery(conversation));
+            adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
             messages.observe(this, uiMessages -> {
                 swipeRefreshLayout.setRefreshing(false);
                 adapter.setMessages(uiMessages);
@@ -878,5 +881,45 @@ public class ConversationFragment extends Fragment implements
                 WfcUIKit.singleCall(getActivity(), memberIds.get(0), isAudioOnly);
             }
         }
+    }
+
+    @Override
+    public void onMessageReceiptCLick(Message message) {
+        Map<String, Long> deliveries = adapter.getDeliveries();
+        Map<String, Long> readEntries = adapter.getReadEntries();
+        int deliveryCount = 0;
+        if (deliveries != null) {
+            for (Map.Entry<String, Long> delivery : deliveries.entrySet()) {
+                if (delivery.getValue() >= message.serverTime) {
+                    deliveryCount++;
+                }
+            }
+        }
+        int readCount = 0;
+        if (readEntries != null) {
+            for (Map.Entry<String, Long> readEntry : readEntries.entrySet()) {
+                if (readEntry.getValue() >= message.serverTime) {
+                    readCount++;
+                }
+            }
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("已送达人数：")
+            .append(deliveryCount)
+            .append("\n")
+            .append("未送达人数：")
+            .append(groupInfo.memberCount - 1 - deliveryCount)
+            .append("\n")
+            .append("已读人数：")
+            .append(readCount)
+            .append("\n")
+            .append("未读人数：")
+            .append(groupInfo.memberCount - 1 - readCount)
+        ;
+        new MaterialDialog.Builder(getActivity())
+            .title("消息回执")
+            .content(builder.toString())
+            .build()
+            .show();
     }
 }

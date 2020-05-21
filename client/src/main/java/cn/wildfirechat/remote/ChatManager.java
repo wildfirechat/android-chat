@@ -118,6 +118,7 @@ public class ChatManager {
 
     private boolean startLog;
     private int connectionStatus;
+    private int receiptStatus = -1; // 1, enable
 
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
@@ -391,13 +392,21 @@ public class ChatManager {
 
     private void onMsgDelivered(Map<String, Long> deliveries) {
         mainHandler.post(() -> {
-            Log.d("msg delivered", deliveries.toString());
+            if (messageDeliverListeners != null) {
+                for (OnMessageDeliverListener listener : messageDeliverListeners) {
+                    listener.onMessageDelivered(deliveries);
+                }
+            }
         });
     }
 
     private void onMsgReaded(List<ReadEntry> readEntries) {
         mainHandler.post(() -> {
-            Log.d("msg readed", readEntries.toString());
+            if (messageReadListeners != null) {
+                for (OnMessageReadListener listener : messageReadListeners) {
+                    listener.onMessageRead(readEntries);
+                }
+            }
         });
     }
 
@@ -4374,8 +4383,14 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return false;
         }
+        if (receiptStatus != -1) {
+            return receiptStatus == 1;
+        }
+
         try {
-            return mClient.isReceiptEnabled();
+            boolean isReceiptEnabled = mClient.isReceiptEnabled();
+            receiptStatus = isReceiptEnabled ? 1 : 0;
+            return isReceiptEnabled;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
