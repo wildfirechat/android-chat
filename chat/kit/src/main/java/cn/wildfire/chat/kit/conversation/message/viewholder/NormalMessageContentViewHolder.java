@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -19,6 +20,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.ChatManagerHolder;
@@ -26,6 +29,7 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
+import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -56,9 +60,20 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @BindView(R.id.checkbox)
     CheckBox checkBox;
 
-    @BindView(R.id.receiptImageView)
+    @BindView(R.id.singleReceiptImageView)
     @Nullable
-    ImageView receiptImageView;
+    ImageView singleReceiptImageView;
+
+    @BindView(R.id.groupReceiptFrameLayout)
+    @Nullable
+    FrameLayout groupReceiptFrameLayout;
+
+    @BindView(R.id.deliveryProgressBar)
+    @Nullable
+    ProgressBar deliveryProgressBar;
+    @BindView(R.id.readProgressBar)
+    @Nullable
+    ProgressBar readProgressBar;
 
     public NormalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -245,26 +260,71 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     protected void setSendStatus(Message item) {
         MessageStatus sentStatus = item.status;
-        if(item.direction == MessageDirection.Receive){
+        if (item.direction == MessageDirection.Receive) {
             return;
         }
-
         if (sentStatus == MessageStatus.Sending) {
             progressBar.setVisibility(View.VISIBLE);
             errorLinearLayout.setVisibility(View.GONE);
-            receiptImageView.setVisibility(View.GONE);
         } else if (sentStatus == MessageStatus.Send_Failure) {
             progressBar.setVisibility(View.GONE);
             errorLinearLayout.setVisibility(View.VISIBLE);
-            receiptImageView.setVisibility(View.GONE);
         } else if (sentStatus == MessageStatus.Sent) {
             progressBar.setVisibility(View.GONE);
             errorLinearLayout.setVisibility(View.GONE);
-            receiptImageView.setVisibility(View.GONE);
-        }else if(sentStatus == MessageStatus.Readed){
+        } else if (sentStatus == MessageStatus.Readed) {
             progressBar.setVisibility(View.GONE);
             errorLinearLayout.setVisibility(View.GONE);
-            receiptImageView.setVisibility(View.VISIBLE);
+        }
+
+        if (item.conversation.type == Conversation.ConversationType.Single) {
+            singleReceiptImageView.setVisibility(View.VISIBLE);
+            groupReceiptFrameLayout.setVisibility(View.GONE);
+            if (sentStatus == MessageStatus.Readed) {
+                progressBar.setVisibility(View.GONE);
+                errorLinearLayout.setVisibility(View.GONE);
+                singleReceiptImageView.setVisibility(View.VISIBLE);
+            } else {
+                singleReceiptImageView.setVisibility(View.GONE);
+            }
+        } else if (item.conversation.type == Conversation.ConversationType.Group) {
+            singleReceiptImageView.setVisibility(View.GONE);
+            if (!ChatManager.Instance().isReceiptEnabled()) {
+                return;
+            }
+            groupReceiptFrameLayout.setVisibility(View.VISIBLE);
+
+            if (sentStatus == MessageStatus.Sent) {
+                Map<String, Long> deliveries = ((ConversationMessageAdapter) adapter).getDeliveries();
+                Map<String, Long> readEntries = ((ConversationMessageAdapter) adapter).getReadEntries();
+                int deliveryCount = 0;
+                if (deliveries != null) {
+                    for (Map.Entry<String, Long> delivery : deliveries.entrySet()) {
+                        if (delivery.getValue() > item.serverTime) {
+                            deliveryCount++;
+                        }
+                    }
+                }
+                int readCount = 0;
+                if (readEntries != null) {
+                    for (Map.Entry<String, Long> readEntry : readEntries.entrySet()) {
+                        if (readEntry.getValue() > item.serverTime) {
+                            readCount++;
+                        }
+                    }
+                }
+
+                GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(item.conversation.target, false);
+                if (groupInfo == null) {
+                    return;
+                }
+                deliveryProgressBar.setMax(groupInfo.memberCount);
+                deliveryProgressBar.setProgress(deliveryCount > 1 ? deliveryCount : 1);
+                readProgressBar.setMax(groupInfo.memberCount);
+                readProgressBar.setProgress(readCount > 1 ? readCount : 1);
+            } else {
+                groupReceiptFrameLayout.setVisibility(View.GONE);
+            }
         }
     }
 }

@@ -19,9 +19,9 @@
         android:paddingTop="2dp"
         android:paddingRight="5dp"
         android:paddingBottom="2dp"
-        tools:text="下午 5点"
         android:textColor="@color/gray11"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        tools:text="下午 5点" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -66,14 +66,47 @@
             tools:visibility="visible" />
 
         <ImageView
-            android:id="@+id/receiptImageView"
+            android:id="@+id/singleReceiptImageView"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:visibility="gone"
             android:layout_gravity="bottom"
             android:layout_marginBottom="2dp"
             android:scaleType="center"
-            android:src="@mipmap/receipt" />
+            android:src="@mipmap/receipt"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/groupReceiptFrameLayout"
+            android:visibility="gone"
+            android:layout_width="40dp"
+            android:layout_height="40dp">
+
+            <ProgressBar
+                android:id="@+id/deliveryProgressBar"
+                style="?android:progressBarStyleHorizontal"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="50"
+                android:progressDrawable="@drawable/circle"
+                android:visibility="visible"
+                tools:visibility="visible" />
+
+            <ProgressBar
+                android:id="@+id/readProgressBar"
+                style="?android:progressBarStyleHorizontal"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="90"
+                android:progressDrawable="@drawable/circle"
+                android:visibility="visible"
+                tools:visibility="visible" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -89,17 +122,17 @@
                 android:ellipsize="end"
                 android:maxLength="20"
                 android:singleLine="true"
-                tools:text="imndx"
                 android:textColor="#666666"
                 android:textSize="12sp"
                 android:visibility="gone"
+                tools:text="imndx"
                 tools:visibility="visible" />
 
             <FrameLayout
                 android:id="@+id/contentFrameLayout"
                 android:layout_width="wrap_content"
-                android:layout_marginRight="4dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dp">
 
                 <ViewStub
                     android:id="@+id/contentViewStub"
