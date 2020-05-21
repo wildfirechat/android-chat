@@ -69,6 +69,7 @@ import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
+import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.UserSettingScope;
@@ -374,6 +375,16 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
         messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
+
+        messageViewModel.messageDeliverLiveData().observe(getActivity(), stringLongMap -> {
+            Map<String, Long> deliveries = ChatManager.Instance().getMessageDelivery(conversation);
+            adapter.setDeliveries(deliveries);
+        });
+
+        messageViewModel.messageReadLiveData().observe(getActivity(), readEntries -> {
+            Map<String, Long> convReadEntities = ChatManager.Instance().getConversationRead(conversation);
+            adapter.setReadEntries(convReadEntities);
+        });
 
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);

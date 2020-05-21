@@ -76,4 +76,8 @@
         <item name="kswThumbMarginTop">-2dp</item>
     </style>
 
+    <style name="deliveryProgress" parent="Widget.MaterialProgressBar.ProgressBar.Small">
+
+    </style>
+
 </resources>

@@ -26,7 +26,7 @@ public class ReadEntry implements Parcelable {
         int type = source.readInt();
         String target = source.readString();
         int line = source.readInt();
-        conversation = new Conversation(Conversation.ConversationType.type(type),target, line);
+        conversation = new Conversation(Conversation.ConversationType.type(type), target, line);
         readDt = source.readLong();
     }
 
