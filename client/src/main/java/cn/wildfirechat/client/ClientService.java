@@ -640,6 +640,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setConversationTimestamp(int conversationType, String target, int line, long timestamp) throws RemoteException {
+            ProtoLogic.setConversationTimestamp(conversationType, target, line, timestamp);
+        }
+
+        @Override
         public void searchUser(String keyword, int searchType, int page, final ISearchUserCallback callback) throws RemoteException {
             ProtoLogic.searchUser(keyword, searchType, page, new ProtoLogic.ISearchUserCallback() {
                 @Override
