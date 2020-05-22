@@ -85,6 +85,7 @@ import cn.wildfirechat.model.NullConversationInfo;
 import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
+import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 
@@ -117,6 +118,7 @@ public class ChatManager {
 
     private boolean startLog;
     private int connectionStatus;
+    private int receiptStatus = -1; // 1, enable
 
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
@@ -136,6 +138,9 @@ public class ChatManager {
     private List<OnRemoveConversationListener> removeConversationListeners = new ArrayList<>();
 
     private List<IMServiceStatusListener> imServiceStatusListeners = new ArrayList<>();
+    private List<OnMessageDeliverListener> messageDeliverListeners = new ArrayList<>();
+    private List<OnMessageReadListener> messageReadListeners = new ArrayList<>();
+
 
     // key = userId
     private LruCache<String, UserInfo> userInfoCache;
@@ -380,6 +385,26 @@ public class ChatManager {
                     for (OnRemoveConversationListener l : removeConversationListeners) {
                         l.onConversationRemove(message.conversation);
                     }
+                }
+            }
+        });
+    }
+
+    private void onMsgDelivered(Map<String, Long> deliveries) {
+        mainHandler.post(() -> {
+            if (messageDeliverListeners != null) {
+                for (OnMessageDeliverListener listener : messageDeliverListeners) {
+                    listener.onMessageDelivered(deliveries);
+                }
+            }
+        });
+    }
+
+    private void onMsgReaded(List<ReadEntry> readEntries) {
+        mainHandler.post(() -> {
+            if (messageReadListeners != null) {
+                for (OnMessageReadListener listener : messageReadListeners) {
+                    listener.onMessageRead(readEntries);
                 }
             }
         });
@@ -1171,6 +1196,48 @@ public class ChatManager {
      */
     public void removeIMServiceStatusListener(IMServiceStatusListener listener) {
         imServiceStatusListeners.remove(listener);
+    }
+
+    /**
+     * 添加消息已送达监听
+     *
+     * @param listener
+     */
+    public void addMessageDeliverListener(OnMessageDeliverListener listener) {
+        if (listener == null) {
+            return;
+        }
+        messageDeliverListeners.add(listener);
+    }
+
+    /**
+     * 移除消息已送达监听
+     *
+     * @param listener
+     */
+    public void removeMessageDeliverListener(OnMessageDeliverListener listener) {
+        messageDeliverListeners.remove(listener);
+    }
+
+    /**
+     * 添加消息已读监听
+     *
+     * @param listener
+     */
+    public void addMessageReadListener(OnMessageReadListener listener) {
+        if (listener == null) {
+            return;
+        }
+        messageReadListeners.add(listener);
+    }
+
+    /**
+     * 移除消息已读监听
+     *
+     * @param listener
+     */
+    public void removeMessageReadListener(OnMessageReadListener listener) {
+        messageReadListeners.remove(listener);
     }
 
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
@@ -2314,6 +2381,44 @@ public class ChatManager {
         ConversationInfo conversationInfo = getConversation(conversation);
         for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
             listener.onConversationDraftUpdate(conversationInfo, draft);
+        }
+    }
+
+    /**
+     * 获取会话的已读情况
+     *
+     * @param conversation 会话，目前支持单聊和群聊
+     * @return key-value, 分别表示userId和该用户已经读到了那个时间节点，可用该值和消息的server进行比较，比消息的serverTime大时，表示消息已读
+     */
+    public Map<String, Long> getConversationRead(Conversation conversation) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getConversationRead(conversation.type.getValue(), conversation.target, conversation.line);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 获取会话的送达情况
+     *
+     * @param conversation 会话，目前支持单聊和群聊
+     * @return
+     */
+    public Map<String, Long> getMessageDelivery(Conversation conversation) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getMessageDelivery(conversation.type.getValue(), conversation.target);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -4271,6 +4376,27 @@ public class ChatManager {
         return false;
     }
 
+    /*
+    是否开启了已送达报告和已读报告功能
+     */
+    public boolean isReceiptEnabled() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        if (receiptStatus != -1) {
+            return receiptStatus == 1;
+        }
+
+        try {
+            boolean isReceiptEnabled = mClient.isReceiptEnabled();
+            receiptStatus = isReceiptEnabled ? 1 : 0;
+            return isReceiptEnabled;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     /**
      * IM服务进程是否bind成功
      *
@@ -4595,6 +4721,16 @@ public class ChatManager {
                     @Override
                     public void onDelete(long messageUid) throws RemoteException {
                         onDeleteMessage(messageUid);
+                    }
+
+                    @Override
+                    public void onDelivered(Map deliveryMap) throws RemoteException {
+                        onMsgDelivered(deliveryMap);
+                    }
+
+                    @Override
+                    public void onReaded(List<ReadEntry> readEntrys) throws RemoteException {
+                        onMsgReaded(readEntrys);
                     }
                 });
                 mClient.setOnConnectionStatusChangeListener(new IOnConnectionStatusChangeListener.Stub() {

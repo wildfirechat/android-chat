@@ -134,8 +134,8 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
 
     private void stickTop(boolean top) {
         ConversationListViewModel conversationListViewModel = ViewModelProviders
-                .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
-                .get(ConversationListViewModel.class);
+            .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
+            .get(ConversationListViewModel.class);
         conversationListViewModel.setConversationTop(conversationInfo, top);
     }
 

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.LayoutRes;
@@ -49,9 +50,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     // check or normal
     private int mode;
     private List<UiMessage> messages = new ArrayList<>();
+    private Map<String, Long> deliveries;
+    private Map<String, Long> readEntries;
     private OnPortraitClickListener onPortraitClickListener;
     private OnMessageCheckListener onMessageCheckListener;
     private OnPortraitLongClickListener onPortraitLongClickListener;
+    private OnMessageReceiptClickListener onMessageReceiptClickListener;
 
     public ConversationMessageAdapter(ConversationFragment fragment) {
         super();
@@ -98,6 +102,26 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
+    public void setDeliveries(Map<String, Long> deliveries) {
+        // TODO diff
+        this.deliveries = deliveries;
+        notifyDataSetChanged();
+    }
+
+    public void setReadEntries(Map<String, Long> readEntries) {
+        // TODO diff
+        this.readEntries = readEntries;
+        notifyDataSetChanged();
+    }
+
+    public Map<String, Long> getDeliveries() {
+        return deliveries;
+    }
+
+    public Map<String, Long> getReadEntries() {
+        return readEntries;
+    }
+
     public void setOnPortraitClickListener(OnPortraitClickListener onPortraitClickListener) {
         this.onPortraitClickListener = onPortraitClickListener;
     }
@@ -108,6 +132,10 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setOnPortraitLongClickListener(OnPortraitLongClickListener onPortraitLongClickListener) {
         this.onPortraitLongClickListener = onPortraitLongClickListener;
+    }
+
+    public void setOnMessageReceiptClickListener(OnMessageReceiptClickListener onMessageReceiptClickListener) {
+        this.onMessageReceiptClickListener = onMessageReceiptClickListener;
     }
 
     public void addNewMessage(UiMessage message) {
@@ -312,6 +340,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 onPortraitClickListener.onPortraitClick(ChatManager.Instance().getUserInfo(message.message.sender, false));
             }
         });
+    }
+
+    public void onGroupMessageReceiptClick(Message message) {
+        if (onMessageReceiptClickListener != null) {
+            onMessageReceiptClickListener.onMessageReceiptCLick(message);
+        }
     }
 
     private void processCheckClick(MessageContentViewHolder holder, View itemView) {
@@ -563,5 +597,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public interface OnMessageCheckListener {
         void onMessageCheck(UiMessage uiMessage, boolean checked);
+    }
+
+    public interface OnMessageReceiptClickListener {
+        void onMessageReceiptCLick(Message message);
     }
 }
