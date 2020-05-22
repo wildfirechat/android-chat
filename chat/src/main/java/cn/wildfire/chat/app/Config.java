@@ -24,7 +24,7 @@ public interface Config {
     String ICE_USERNAME = "wfchat";
     String ICE_PASSWORD = "wfchat";
 
-    // 二次开发时，一定记得替换为你们自己的，ID请从BUGLY官网申请
+    // 一定记得替换为你们自己的，ID请从BUGLY官网申请。关于BUGLY，可以从BUGLY官网了解，或者百度。
     String BUGLY_ID = "34490ba79f";
 
     int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 120;
