@@ -103,6 +103,7 @@ interface IRemoteClient {
     oneway void setConversationTop(in int conversationType, in String target, in int line, in boolean top, in IGeneralCallback callback);
     void setConversationDraft(in int conversationType, in String target, in int line, in String draft);
     oneway void setConversationSilent(in int conversationType, in String target, in int line, in boolean silent,  in IGeneralCallback callback);
+    void setConversationTimestamp(in int conversationType, in String target, in int line, in long timestamp);
 
     Map getConversationRead(in int conversationType, in String target, in int line);
     Map getMessageDelivery(in int conversationType, in String target);

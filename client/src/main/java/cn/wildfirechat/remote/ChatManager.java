@@ -2423,6 +2423,24 @@ public class ChatManager {
     }
 
     /**
+     * 设置会话时间戳
+     *
+     * @param conversation
+     * @param timestamp
+     */
+    public void setConversationTimestamp(Conversation conversation, long timestamp) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setConversationTimestamp(conversation.type.ordinal(), conversation.target, conversation.line, timestamp);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 搜索用户
      *
      * @param keyword
