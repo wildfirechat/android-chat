@@ -244,7 +244,6 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     }
 
     public void sendTextMsg(Conversation conversation, TextMessageContent txtContent) {
-        txtContent.extra = "hello extra";
         sendMessage(conversation, txtContent);
         ChatManager.Instance().setConversationDraft(conversation, null);
     }

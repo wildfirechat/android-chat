@@ -25,6 +25,8 @@ public abstract class MessageContent implements Parcelable {
 
     //提醒对象，mentionedType 1时有效
     public List<String> mentionedTargets;
+
+    //一定要用json，保留未来的可扩展性
     public String extra;
     public String pushContent;
 
