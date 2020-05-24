@@ -168,6 +168,7 @@ interface IRemoteClient {
     GroupMember getGroupMember(in String groupId, in String memberId);
     oneway void transferGroup(in String groupId, in String newOwner, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void setGroupManager(in String groupId, in boolean isSet, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
+    oneway void muteGroupMember(in String groupId, in boolean isSet, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     byte[] encodeData(in byte[] data);
     byte[] decodeData(in byte[] data);
 
