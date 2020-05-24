@@ -19,6 +19,7 @@ public interface UserSettingScope {
     //不能直接使用，协议栈内会使用此值
     int ConversationReaded = 11;
     int WebOnline = 12;
+    int DisableReceipt = 13;
 
 
     int kUserSettingCustomBegin = 1000;
