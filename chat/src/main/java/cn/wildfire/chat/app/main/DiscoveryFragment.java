@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +17,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.WfcIntent;
+import cn.wildfire.chat.app.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
