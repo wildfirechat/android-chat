@@ -2423,7 +2423,7 @@ public class ChatManager {
     }
 
     /**
-     * 设置会话时间戳
+     * 设置会话时间戳, 如果会话不存在，会创建一个对应的会话
      *
      * @param conversation
      * @param timestamp
