@@ -288,15 +288,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             if (viewHolder instanceof NotificationMessageContentViewHolder) {
                 return viewHolder;
             }
-
-            if (mode == MODE_CHECKABLE) {
-                processCheckClick(viewHolder, itemView);
-            }
-            processContentLongClick(viewHolderClazz, viewHolder, itemView);
-            if (viewHolder instanceof NormalMessageContentViewHolder) {
-                processPortraitClick(viewHolder, itemView);
-                processPortraitLongClick(viewHolder, itemView);
-            }
             return viewHolder;
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
@@ -492,6 +483,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof MessageContentViewHolder) {
+            MessageContentViewHolder viewHolder = (MessageContentViewHolder) holder;
             ((MessageContentViewHolder) holder).onBind(getItem(position), position);
             MessageItemView itemView = (MessageItemView) holder.itemView;
             CheckBox checkBox = itemView.findViewById(R.id.checkbox);
@@ -505,6 +497,16 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 checkBox.setChecked(message.isChecked);
             } else {
                 checkBox.setVisibility(View.GONE);
+            }
+
+            if (getMode() == MODE_CHECKABLE) {
+                processCheckClick(viewHolder, itemView);
+            } else {
+                processContentLongClick(viewHolder.getClass(), viewHolder, itemView);
+                if (holder instanceof NormalMessageContentViewHolder) {
+                    processPortraitClick(viewHolder, itemView);
+                    processPortraitLongClick(viewHolder, itemView);
+                }
             }
         } else {
             // bottom loading progress bar, do nothing
