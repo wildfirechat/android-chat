@@ -30,6 +30,8 @@ import com.tencent.mars.xlog.Xlog;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -265,6 +267,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void registerMessageContent(String msgContentCls) throws RemoteException {
             try {
                 Class cls = Class.forName(msgContentCls);
+                Constructor c = cls.getConstructor();
+                if (c.getModifiers() != Modifier.PUBLIC) {
+                    throw new IllegalArgumentException("the default constructor of your custom messageContent class should be public");
+                }
                 ContentTag tag = (ContentTag) cls.getAnnotation(ContentTag.class);
                 if (tag != null) {
                     Class curClazz = contentMapper.get(tag.type());
@@ -282,7 +288,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     throw new IllegalStateException("ContentTag annotation must be set!");
                 }
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                throw new IllegalArgumentException("custom messageContent class can not found: " + msgContentCls);
+            } catch (NoSuchMethodException e) {
+                throw new IllegalArgumentException("custom messageContent class must have a default constructor");
             }
         }
 
@@ -2273,7 +2281,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     public void onUserReadedMessage(List<ProtoReadEntry> list) {
         handler.post(() -> {
             List<ReadEntry> l = new ArrayList<>();
-            for (ProtoReadEntry entry:list) {
+            for (ProtoReadEntry entry : list) {
                 ReadEntry r = new ReadEntry();
                 r.conversation = new Conversation(Conversation.ConversationType.type(entry.conversationType), entry.target, entry.line);
                 r.userId = entry.userId;
