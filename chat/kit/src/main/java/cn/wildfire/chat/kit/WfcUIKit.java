@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.wildfire.chat.app.Config;
+import cn.wildfire.chat.app.WfcIntent;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;

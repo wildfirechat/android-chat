@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit;
+package cn.wildfire.chat.app;
 
 import cn.wildfirechat.chat.BuildConfig;
 
