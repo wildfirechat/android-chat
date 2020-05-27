@@ -3852,6 +3852,8 @@ public class ChatManager {
             mClient.modifyGroupInfo(groupId, modifyType.ordinal(), newValue, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
+                    GroupInfo groupInfo = mClient.getGroupInfo(groupId, false);
+                    onGroupInfoUpdated(Collections.singletonList(groupInfo));
                     if (callback != null) {
                         mainHandler.post(new Runnable() {
                             @Override
@@ -4648,7 +4650,7 @@ public class ChatManager {
     }
 
     /**
-     * 判断当前用户是否开启回执
+     * 判断当前用户是否开启消息回执
      *
      * @return
      */
@@ -4667,7 +4669,7 @@ public class ChatManager {
     }
 
     /**
-     * 设置当前用户是否开启回执
+     * 设置当前用户是否开启消息回执
      *
      * @param enable
      * @param callback
