@@ -327,6 +327,29 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return data;
     }
 
+    public List<GroupMember> getGroupManagers(String groupId) {
+        List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, false);
+        List<GroupMember> managers = new ArrayList<>();
+        if (members != null) {
+            for (GroupMember member : members) {
+                if (member.type == GroupMember.GroupMemberType.Manager) {
+                    managers.add(member);
+                }
+            }
+        }
+        return managers;
+    }
+
+    public List<String> getGroupManagerIds(String groupId) {
+        List<GroupMember> managers = getGroupManagers(groupId);
+        List<String> mangerIds = new ArrayList<>();
+        if (managers != null) {
+            for (GroupMember manager : managers) {
+                mangerIds.add(manager.memberId);
+            }
+        }
+        return mangerIds;
+    }
 
     private List<UIUserInfo> memberToUIUserInfo(String groupId, List<GroupMember> members) {
         if (members == null || members.isEmpty()) {
