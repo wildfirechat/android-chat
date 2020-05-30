@@ -6,6 +6,8 @@
     android:background="@color/gray5"
     android:orientation="vertical">
 
+    <include layout="@layout/toolbar" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -37,4 +39,9 @@
             app:kswThumbMarginTop="-0dp"
             app:kswThumbWidth="10dp" />
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/containerFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

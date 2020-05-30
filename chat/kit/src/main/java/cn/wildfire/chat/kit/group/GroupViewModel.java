@@ -233,6 +233,22 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return result;
     }
 
+    public MutableLiveData<OperateResult<Boolean>> muteGroupMember(String groupId, boolean mute, List<String> memberIds, NotificationMessageContent notifyMsg, List<Integer> lines) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().muteGroupMember(groupId, mute, memberIds, lines, notifyMsg, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return result;
+    }
+
     public MutableLiveData<OperateResult<Boolean>> muteAll(String groupId, boolean mute, MessageContent notifyMsg, List<Integer> notifyLines) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
         ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_Mute, mute ? "1" : "0", notifyLines, notifyMsg, new GeneralCallback() {
@@ -319,8 +335,19 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     public MutableLiveData<List<UIUserInfo>> getGroupManagerUIUserInfosLiveData(String groupId, boolean refresh) {
         MutableLiveData<List<UIUserInfo>> data = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, false);
-            List<UIUserInfo> userInfos = memberToUIUserInfo(groupId, members);
+            List<GroupMember> managers = getGroupManagers(groupId);
+            List<UIUserInfo> userInfos = managerMemberToUIUserInfo(groupId, managers);
+            data.postValue(userInfos);
+        });
+
+        return data;
+    }
+
+    public MutableLiveData<List<UIUserInfo>> getMutedMemberUIUserInfosLiveData(String groupId, boolean refresh) {
+        MutableLiveData<List<UIUserInfo>> data = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<GroupMember> mutedMembers = getMutedMembers(groupId);
+            List<UIUserInfo> userInfos = mutedMemberToUIUserInfo(groupId, mutedMembers);
             data.postValue(userInfos);
         });
 
@@ -332,7 +359,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         List<GroupMember> managers = new ArrayList<>();
         if (members != null) {
             for (GroupMember member : members) {
-                if (member.type == GroupMember.GroupMemberType.Manager) {
+                if (member.type == GroupMember.GroupMemberType.Manager || member.type == GroupMember.GroupMemberType.Owner) {
                     managers.add(member);
                 }
             }
@@ -351,16 +378,41 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return mangerIds;
     }
 
-    private List<UIUserInfo> memberToUIUserInfo(String groupId, List<GroupMember> members) {
+
+    public List<GroupMember> getMutedMembers(String groupId) {
+        List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, false);
+        List<GroupMember> managers = new ArrayList<>();
+        if (members != null) {
+            for (GroupMember member : members) {
+                if (member.type == GroupMember.GroupMemberType.Silent) {
+                    managers.add(member);
+                }
+            }
+        }
+        return managers;
+    }
+
+
+    public List<String> getMutedMemberIds(String groupId) {
+        List<GroupMember> mutedMembers = getMutedMembers(groupId);
+        List<String> mutedIds = new ArrayList<>();
+        if (mutedMembers != null) {
+            for (GroupMember manager : mutedMembers) {
+                mutedIds.add(manager.memberId);
+            }
+        }
+        return mutedIds;
+
+    }
+
+    private List<UIUserInfo> managerMemberToUIUserInfo(String groupId, List<GroupMember> members) {
         if (members == null || members.isEmpty()) {
             return null;
         }
 
         List<String> memberIds = new ArrayList<>(members.size());
         for (GroupMember member : members) {
-            if (member.type == GroupMember.GroupMemberType.Owner || member.type == GroupMember.GroupMemberType.Manager) {
-                memberIds.add(member.memberId);
-            }
+            memberIds.add(member.memberId);
         }
 
         List<UIUserInfo> uiUserInfos = new ArrayList<>();
@@ -368,7 +420,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         boolean showManagerCategory = false;
         for (UserInfo userInfo : userInfos) {
             UIUserInfo info = new UIUserInfo(userInfo);
-            String name = ChatManager.Instance().getGroupMemberDisplayName(groupId, userInfo.uid);
+            String name = ChatManager.Instance().getGroupMemberDisplayName(userInfo);
             if (!TextUtils.isEmpty(name)) {
                 String pinyin = PinyinUtils.getPinyin(name);
                 char c = pinyin.toUpperCase().charAt(0);
@@ -399,6 +451,44 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
                     break;
                 }
             }
+        }
+        return uiUserInfos;
+    }
+
+    private List<UIUserInfo> mutedMemberToUIUserInfo(String groupId, List<GroupMember> members) {
+        if (members == null || members.isEmpty()) {
+            return null;
+        }
+
+        List<String> memberIds = new ArrayList<>(members.size());
+        for (GroupMember member : members) {
+            memberIds.add(member.memberId);
+        }
+
+        List<UIUserInfo> uiUserInfos = new ArrayList<>();
+        List<UserInfo> userInfos = UserViewModel.getUsers(memberIds, groupId);
+        boolean showManagerCategory = false;
+        for (UserInfo userInfo : userInfos) {
+            UIUserInfo info = new UIUserInfo(userInfo);
+            String name = ChatManager.Instance().getGroupMemberDisplayName(userInfo);
+            if (!TextUtils.isEmpty(name)) {
+                String pinyin = PinyinUtils.getPinyin(name);
+                char c = pinyin.toUpperCase().charAt(0);
+                if (c >= 'A' && c <= 'Z') {
+                    info.setSortName(pinyin);
+                } else {
+                    // 为了让排序排到最后
+                    info.setSortName("{" + pinyin);
+                }
+            } else {
+                info.setSortName("");
+            }
+            info.setCategory("禁言列表");
+            if (!showManagerCategory) {
+                showManagerCategory = true;
+                info.setShowCategory(true);
+            }
+            uiUserInfos.add(info);
         }
         return uiUserInfos;
     }
