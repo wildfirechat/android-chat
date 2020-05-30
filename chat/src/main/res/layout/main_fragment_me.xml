@@ -74,7 +74,7 @@
         android:background="@drawable/selector_common_item"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_notification"
-        app:title="消息通知" />
+        app:title="消息与通知" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/passwordOptionItemView"

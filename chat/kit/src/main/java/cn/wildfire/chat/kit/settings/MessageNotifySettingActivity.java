@@ -1,6 +1,6 @@
 package cn.wildfire.chat.kit.settings;
 
-import android.widget.Switch;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.kyleduo.switchbutton.SwitchButton;
@@ -16,13 +16,13 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
     SwitchButton switchMsgNotification;
     @BindView(R.id.switchShowMsgDetail)
     SwitchButton switchShowMsgDetail;
+    @BindView(R.id.switchUserReceipt)
+    SwitchButton switchUserReceipt;
 
     @Override
     protected int contentLayout() {
         return R.layout.activity_msg_notify_settings;
     }
-
-
 
     @Override
     protected void afterViews() {
@@ -58,6 +58,23 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
                     Toast.makeText(MessageNotifySettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
                 }
             });
+        });
+
+        switchUserReceipt.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                ChatManager.Instance().setUserEnableReceipt(b, new GeneralCallback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onFail(int errorCode) {
+                        Toast.makeText(MessageNotifySettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+                    }
+                });
+            }
         });
     }
 }

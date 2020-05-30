@@ -34,14 +34,10 @@
 
         </FrameLayout>
 
-        <View style="@style/Line" />
-
         <View
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:background="@color/gray5" />
-
-        <View style="@style/Line" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -64,7 +60,27 @@
 
         </FrameLayout>
 
-        <View style="@style/Line" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="@dimen/item_margin_left_and_right"
+            android:paddingRight="@dimen/item_margin_left_and_right">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="消息回执"
+                android:textColor="@color/black1"
+                android:textSize="16sp" />
+
+            <com.kyleduo.switchbutton.SwitchButton
+                android:id="@+id/switchUserReceipt"
+                style="@style/IosSwitch"
+                android:layout_gravity="center_vertical|right" />
+
+        </FrameLayout>
+
 
     </LinearLayout>
 </LinearLayout>
