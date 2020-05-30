@@ -2547,6 +2547,17 @@ public class ChatManager {
         return "<" + memberId + ">";
     }
 
+    public String getGroupMemberDisplayName(UserInfo userInfo){
+        if (!TextUtils.isEmpty(userInfo.groupAlias)) {
+            return userInfo.groupAlias;
+        } else if (!TextUtils.isEmpty(userInfo.friendAlias)) {
+            return userInfo.friendAlias;
+        } else if (!TextUtils.isEmpty(userInfo.displayName)) {
+            return userInfo.displayName;
+        }
+        return "<" + userInfo.uid + ">";
+    }
+
     public String getUserDisplayName(UserInfo userInfo) {
         if (userInfo == null) {
             return "";
