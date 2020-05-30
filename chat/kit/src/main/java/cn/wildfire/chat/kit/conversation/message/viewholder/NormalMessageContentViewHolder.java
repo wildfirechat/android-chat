@@ -289,7 +289,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             return;
         }
 
-        if (!ChatManager.Instance().isReceiptEnabled()) {
+        if (!ChatManager.Instance().isReceiptEnabled() && !ChatManager.Instance().isUserEnableReceipt()) {
             return;
         }
 

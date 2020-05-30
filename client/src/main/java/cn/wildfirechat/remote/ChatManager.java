@@ -119,6 +119,7 @@ public class ChatManager {
     private boolean startLog;
     private int connectionStatus;
     private int receiptStatus = -1; // 1, enable
+    private int userReceiptStatus = -1; //1, enable
 
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
@@ -4669,9 +4670,13 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return false;
         }
+        if (userReceiptStatus != -1) {
+            return userReceiptStatus == 1;
+        }
 
         try {
             boolean disable = "1".equals(mClient.getUserSetting(UserSettingScope.DisableReceipt, ""));
+            userReceiptStatus  = disable ? 0 : 1;
             return !disable;
         } catch (RemoteException e) {
             e.printStackTrace();
