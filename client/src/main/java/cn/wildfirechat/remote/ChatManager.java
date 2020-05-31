@@ -2548,7 +2548,7 @@ public class ChatManager {
         return "<" + memberId + ">";
     }
 
-    public String getGroupMemberDisplayName(UserInfo userInfo){
+    public String getGroupMemberDisplayName(UserInfo userInfo) {
         if (!TextUtils.isEmpty(userInfo.groupAlias)) {
             return userInfo.groupAlias;
         } else if (!TextUtils.isEmpty(userInfo.friendAlias)) {
@@ -4676,7 +4676,7 @@ public class ChatManager {
 
         try {
             boolean disable = "1".equals(mClient.getUserSetting(UserSettingScope.DisableReceipt, ""));
-            userReceiptStatus  = disable ? 0 : 1;
+            userReceiptStatus = disable ? 0 : 1;
             return !disable;
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -4703,7 +4703,10 @@ public class ChatManager {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(() -> callback.onSuccess());
+                        mainHandler.post(() -> {
+                            userReceiptStatus = enable ? 1 : 0;
+                            callback.onSuccess();
+                        });
                     }
                 }
 

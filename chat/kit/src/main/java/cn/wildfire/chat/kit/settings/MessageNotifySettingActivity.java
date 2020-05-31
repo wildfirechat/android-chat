@@ -1,6 +1,5 @@
 package cn.wildfire.chat.kit.settings;
 
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.kyleduo.switchbutton.SwitchButton;
@@ -31,7 +30,6 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
         switchMsgNotification.setChecked(!ChatManager.Instance().isGlobalSilent());
         switchShowMsgDetail.setChecked(!ChatManager.Instance().isHiddenNotificationDetail());
 
-
         switchMsgNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
             ChatManager.Instance().setGlobalSilent(!isChecked, new GeneralCallback() {
                 @Override
@@ -60,21 +58,17 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
             });
         });
 
-        switchUserReceipt.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchUserReceipt.setChecked(ChatManager.Instance().isUserEnableReceipt());
+        switchUserReceipt.setOnCheckedChangeListener((compoundButton, b) -> ChatManager.Instance().setUserEnableReceipt(b, new GeneralCallback() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                ChatManager.Instance().setUserEnableReceipt(b, new GeneralCallback() {
-                    @Override
-                    public void onSuccess() {
+            public void onSuccess() {
 
-                    }
-
-                    @Override
-                    public void onFail(int errorCode) {
-                        Toast.makeText(MessageNotifySettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
-                    }
-                });
             }
-        });
+
+            @Override
+            public void onFail(int errorCode) {
+                Toast.makeText(MessageNotifySettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+            }
+        }));
     }
 }
