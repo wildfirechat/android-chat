@@ -72,6 +72,7 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="2dp"
             android:scaleType="center"
+            android:tint="@color/gray"
             android:src="@mipmap/receipt"
             tools:visibility="visible"
             android:visibility="gone" />
