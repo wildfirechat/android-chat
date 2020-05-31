@@ -76,7 +76,7 @@ public class GroupMemberMuteListFragment extends BaseUserListFragment {
         new MaterialDialog.Builder(getActivity())
             .items(Collections.singleton("取消禁言"))
             .itemsCallback((dialog, itemView, position, text) -> {
-                groupViewModel.setGroupManager(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
+                groupViewModel.muteGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
             })
             .cancelable(true)
             .build()
