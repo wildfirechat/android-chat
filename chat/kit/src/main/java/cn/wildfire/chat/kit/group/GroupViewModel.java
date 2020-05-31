@@ -384,7 +384,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         List<GroupMember> managers = new ArrayList<>();
         if (members != null) {
             for (GroupMember member : members) {
-                if (member.type == GroupMember.GroupMemberType.Silent) {
+                if (member.type == GroupMember.GroupMemberType.Muted) {
                     managers.add(member);
                 }
             }

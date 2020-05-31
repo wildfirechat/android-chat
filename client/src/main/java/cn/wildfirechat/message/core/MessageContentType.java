@@ -46,6 +46,8 @@ public interface MessageContentType {
     int CONTENT_TYPE_CHANGE_PRIVATECHAT = 115;
     int CONTENT_TYPE_CHANGE_SEARCHABLE = 116;
     int CONTENT_TYPE_SET_MANAGER = 117;
+    //禁言/取消禁言群成员的通知消息
+    int CONTENT_TYPE_MUTE_MEMBER = 118;
 
     int ContentType_Call_Start = 400;
     int ContentType_Call_End = 402;
