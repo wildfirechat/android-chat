@@ -13,7 +13,7 @@ public class GroupMember implements Parcelable {
         Normal(0),
         Manager(1),
         Owner(2),
-        Silent(3),
+        Muted(3),
         Removed(4);
 
         private int value;
