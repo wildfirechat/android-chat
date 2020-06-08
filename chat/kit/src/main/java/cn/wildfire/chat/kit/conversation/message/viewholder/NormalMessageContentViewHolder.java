@@ -40,8 +40,10 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -267,6 +269,11 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         nameTextView.setTag(sender);
     }
 
+    protected boolean showMessageReceipt(Message message) {
+        ContentTag tag = message.content.getClass().getAnnotation(ContentTag.class);
+        return (tag != null && (tag.flag() == PersistFlag.Persist_And_Count));
+    }
+
     protected void setSendStatus(Message item) {
         MessageStatus sentStatus = item.status;
         if (item.direction == MessageDirection.Receive) {
@@ -289,7 +296,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             return;
         }
 
-        if (!ChatManager.Instance().isReceiptEnabled() || !ChatManager.Instance().isUserEnableReceipt()) {
+        if (!ChatManager.Instance().isReceiptEnabled() || !ChatManager.Instance().isUserEnableReceipt() || !showMessageReceipt(message.message)) {
             return;
         }
 
