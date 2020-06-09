@@ -27,11 +27,12 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.View;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
+
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-import androidx.appcompat.widget.LinearLayoutCompat;
 import cn.wildfire.chat.kit.utils.ServiceUtil;
 import cn.wildfirechat.chat.R;
 
@@ -125,9 +126,9 @@ public class KeyboardAwareLinearLayout extends LinearLayoutCompat {
                 return insets.bottom;
             }
         } catch (NoSuchFieldException nsfe) {
-            Log.w(TAG, "field reflection error when measuring view inset", nsfe);
+//            Log.w(TAG, "field reflection error when measuring view inset", nsfe);
         } catch (IllegalAccessException iae) {
-            Log.w(TAG, "access reflection error when measuring view inset", iae);
+//            Log.w(TAG, "access reflection error when measuring view inset", iae);
         }
         return 0;
     }
