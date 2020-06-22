@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -21,7 +22,7 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Recall
  */
 
 @ContentTag(type = ContentType_Delete, flag = PersistFlag.No_Persist)
-public class DeleteMessageContent extends NotificationMessageContent {
+public class DeleteMessageContent extends MessageContent {
     private String operatorId;
     private long messageUid;
 
@@ -48,6 +49,11 @@ public class DeleteMessageContent extends NotificationMessageContent {
         messageUid = Long.parseLong(new String(payload.binaryContent));
     }
 
+    @Override
+    public String digest(Message message) {
+        return null;
+    }
+
     public String getOperatorId() {
         return operatorId;
     }
@@ -63,13 +69,6 @@ public class DeleteMessageContent extends NotificationMessageContent {
     public void setMessageUid(long messageUid) {
         this.messageUid = messageUid;
     }
-
-    @Override
-    public String formatNotification(Message message) {
-        String notification = "消息已删除";
-        return notification;
-    }
-
 
     @Override
     public int describeContents() {
