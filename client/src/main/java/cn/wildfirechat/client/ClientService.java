@@ -63,6 +63,7 @@ import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
 import cn.wildfirechat.message.notification.CreateGroupNotificationContent;
+import cn.wildfirechat.message.notification.DeleteMessageContent;
 import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
 import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteMemberNotificationContent;
@@ -2018,6 +2019,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             mBinder.registerMessageContent(ModifyGroupAliasNotificationContent.class.getName());
             mBinder.registerMessageContent(QuitGroupNotificationContent.class.getName());
             mBinder.registerMessageContent(RecallMessageContent.class.getName());
+            mBinder.registerMessageContent(DeleteMessageContent.class.getName());
             mBinder.registerMessageContent(SoundMessageContent.class.getName());
             mBinder.registerMessageContent(StickerMessageContent.class.getName());
             mBinder.registerMessageContent(TextMessageContent.class.getName());
