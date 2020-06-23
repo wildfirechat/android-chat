@@ -170,15 +170,15 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public void updateMessage(UiMessage message) {
         int index = -1;
         for (int i = messages.size() - 1; i >= 0; i--) {
-            if (message.message.messageId > 0) {
-                if (messages.get(i).message.messageId == message.message.messageId) {
+            if (message.message.messageUid > 0) {
+                // 聊天室消息收到的消息
+                if (messages.get(i).message.messageUid == message.message.messageUid) {
                     messages.set(i, message);
                     index = i;
                     break;
                 }
-            } else if (message.message.messageUid > 0) {
-                // 聊天室消息收到的消息
-                if (messages.get(i).message.messageUid == message.message.messageUid) {
+            }else if (message.message.messageId > 0) {
+                if (messages.get(i).message.messageId == message.message.messageId) {
                     messages.set(i, message);
                     index = i;
                     break;
