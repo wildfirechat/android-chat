@@ -3,6 +3,7 @@ package cn.wildfire.chat.kit.conversation.ext;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 
 import com.lqr.imagepicker.ImagePicker;
@@ -45,17 +46,17 @@ public class ImageExt extends ConversationExt {
                     ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
                     for (ImageItem imageItem : images) {
                         File imageFileThumb;
-                        File imageFileSource;
+                        File imageFileSource = null;
                         // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
                         if (compress) {
                             imageFileSource = ImageUtils.compressImage(imageItem.path);
-                        } else {
-                            imageFileSource = new File(imageItem.path);
                         }
+                        imageFileSource = imageFileSource == null ? new File(imageItem.path) : imageFileSource;
 //                    if (isOrig) {
 //                    imageFileSource = new File(imageItem.path);
                         imageFileThumb = ImageUtils.genThumbImgFile(imageItem.path);
                         if (imageFileThumb == null) {
+                            Log.e("ImageExt", "gen image thumb fail");
                             return;
                         }
 //                    } else {
@@ -66,7 +67,8 @@ public class ImageExt extends ConversationExt {
 //                        imageFileThumb = imageFileSource;
 //                    }
 //                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
-                        UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource));
+                        File finalImageFileSource = imageFileSource;
+                        UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
 
                     }
 

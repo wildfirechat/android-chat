@@ -346,7 +346,7 @@ public class ChatManager {
     }
 
     /**
-     * 消息被撤回
+     * 消息被通过server api 删除
      *
      * @param messageUid
      */

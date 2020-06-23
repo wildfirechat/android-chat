@@ -6,6 +6,9 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.os.SystemClock;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,7 +55,7 @@ public class ImageUtils {
         return imageFileThumb;
     }
 
-    public static File compressImage(String srcImgPath) {
+    public static @Nullable File compressImage(String srcImgPath) {
         //先取得原始照片的旋轉角度
         int rotate = 0;
         try {
@@ -100,6 +103,10 @@ public class ImageUtils {
 
         //取出原檔的 Bitmap(若寬高超過會 resize)並設定原始的旋轉角度
         Bitmap srcBitmap = BitmapFactory.decodeFile(srcImgPath, options);
+        if(srcBitmap == null){
+            Log.e("ImageUtils", "decode file error " + srcImgPath);
+            return null;
+        }
         Matrix matrix = new Matrix();
         matrix.postRotate(rotate);
         Bitmap outBitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(), srcBitmap.getHeight(), matrix, false);
