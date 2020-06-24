@@ -3,10 +3,10 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.text.Html;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,8 +30,8 @@ import cn.wildfirechat.message.TextMessageContent;
 
 
 @MessageContentType(value = {
-        TextMessageContent.class,
-        PTextMessageContent.class
+    TextMessageContent.class,
+    PTextMessageContent.class
 
 })
 @SendLayoutRes(resId = R.layout.conversation_item_text_send)
@@ -47,7 +47,12 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
 
     @Override
     public void onBind(UiMessage message) {
-        MoonUtils.identifyFaceExpression(fragment.getContext(), contentTextView, ((TextMessageContent) message.message.content).getContent(), ImageSpan.ALIGN_BOTTOM);
+        String content = ((TextMessageContent) message.message.content).getContent();
+        if (content.startsWith("<") && content.endsWith(">")) {
+            contentTextView.setText(Html.fromHtml(content));
+        } else {
+            MoonUtils.identifyFaceExpression(fragment.getContext(), contentTextView, ((TextMessageContent) message.message.content).getContent(), ImageSpan.ALIGN_BOTTOM);
+        }
         contentTextView.setMovementMethod(new LinkTextViewMovementMethod(new LinkClickListener() {
             @Override
             public boolean onLinkClick(String link) {
@@ -59,7 +64,9 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
 
     @OnClick(R.id.contentTextView)
     public void onClickTest(View view) {
-        Toast.makeText(fragment.getContext(), "onTextMessage click: " + ((TextMessageContent) message.message.content).getContent(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(fragment.getContext(), "onTextMessage click: " + ((TextMessageContent) message.message.content).getContent(), Toast.LENGTH_SHORT).show();
+        String content = ((TextMessageContent) message.message.content).getContent();
+        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", content);
     }
 
 
