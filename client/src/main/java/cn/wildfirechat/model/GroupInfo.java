@@ -58,6 +58,12 @@ public class GroupInfo implements Parcelable {
     //是否可以搜索到该群，功能暂未实现
     public int searchable;
 
+    //是否可以查看群历史消息, 0 不允许，1允许。仅专业版有效
+    public int historyMessage;
+
+    //群最大成员数。仅专业版有效
+    public int maxMemberCount;
+
     public GroupInfo() {
     }
 
@@ -81,6 +87,8 @@ public class GroupInfo implements Parcelable {
         dest.writeInt(this.joinType);
         dest.writeInt(this.privateChat);
         dest.writeInt(this.searchable);
+        dest.writeInt(this.historyMessage);
+        dest.writeInt(this.maxMemberCount);
     }
 
     protected GroupInfo(Parcel in) {
@@ -97,6 +105,8 @@ public class GroupInfo implements Parcelable {
         this.joinType = in.readInt();
         this.privateChat = in.readInt();
         this.searchable = in.readInt();
+        this.historyMessage = in.readInt();
+        this.maxMemberCount = in.readInt();
     }
 
     public static final Creator<GroupInfo> CREATOR = new Creator<GroupInfo>() {
