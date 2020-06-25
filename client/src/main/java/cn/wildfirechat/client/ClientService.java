@@ -1456,7 +1456,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     member.alias = protoMember.getAlias();
                     member.type = GroupMember.GroupMemberType.type(protoMember.getType());
                     member.updateDt = protoMember.getUpdateDt();
-
+                    member.createDt = protoMember.getCreateDt();
                     out.add(member);
                 }
             }
@@ -1832,6 +1832,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         groupInfo.joinType = protoGroupInfo.getJoinType();
         groupInfo.privateChat = protoGroupInfo.getPrivateChat();
         groupInfo.searchable = protoGroupInfo.getSearchable();
+        groupInfo.historyMessage = protoGroupInfo.getHistoryMessage();
+        groupInfo.maxMemberCount = protoGroupInfo.getMaxMemberCount();
         return groupInfo;
     }
 
@@ -1845,6 +1847,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         member.alias = protoGroupMember.getAlias();
         member.type = GroupMember.GroupMemberType.type(protoGroupMember.getType());
         member.updateDt = protoGroupMember.getUpdateDt();
+        member.createDt = protoGroupMember.getCreateDt();
         return member;
 
     }
