@@ -40,6 +40,7 @@ public class GroupMember implements Parcelable {
     public String alias;
     public GroupMemberType type;
     public long updateDt;
+    public long createDt;
 
 
     public GroupMember() {
@@ -57,6 +58,7 @@ public class GroupMember implements Parcelable {
         dest.writeString(this.alias);
         dest.writeInt(this.type == null ? -1 : this.type.ordinal());
         dest.writeLong(this.updateDt);
+        dest.writeLong(this.createDt);
     }
 
     protected GroupMember(Parcel in) {
@@ -66,6 +68,7 @@ public class GroupMember implements Parcelable {
         int tmpType = in.readInt();
         this.type = tmpType == -1 ? null : GroupMemberType.values()[tmpType];
         this.updateDt = in.readLong();
+        this.createDt = in.readLong();
     }
 
     public static final Creator<GroupMember> CREATOR = new Creator<GroupMember>() {
