@@ -101,8 +101,8 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             outgoingActionContainer.setVisibility(View.GONE);
             connectedActionContainer.setVisibility(View.VISIBLE);
             inviteeInfoContainer.setVisibility(View.GONE);
-        } else {
-            // do nothing now
+        } else if (state == AVEngineKit.CallState.Idle) {
+            getActivity().finish();
         }
     }
 
