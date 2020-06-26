@@ -180,7 +180,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
 
     @OnClick(R.id.minimizeImageView)
     public void minimize() {
-        ((SingleCallActivity) getActivity()).showFloatingView();
+        ((SingleCallActivity) getActivity()).showFloatingView(null);
     }
 
     @OnClick(R.id.speakerImageView)
