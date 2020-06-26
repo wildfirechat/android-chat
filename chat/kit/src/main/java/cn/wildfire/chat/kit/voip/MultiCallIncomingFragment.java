@@ -29,6 +29,7 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.CallSessionCallback {
 
@@ -62,6 +63,9 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
 
         List<String> participants = session.getParticipantIds();
         participants.remove(invitor.uid);
+        
+        //把自己也加入到用户列表中
+        participants.add(ChatManager.Instance().getUserId());
         List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
 
         FlexboxLayoutManager manager = new FlexboxLayoutManager(getActivity(), FlexDirection.ROW);
