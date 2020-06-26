@@ -188,9 +188,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            session.muteAudio(!micEnabled);
             micEnabled = !micEnabled;
-            muteImageView.setSelected(micEnabled);
+            session.muteAudio(!micEnabled);
+            muteImageView.setSelected(!micEnabled);
         }
     }
 
@@ -224,6 +224,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason callEndReason) {
         // do nothing
+        getActivity().finish();
     }
 
     @Override

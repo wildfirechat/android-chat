@@ -79,8 +79,8 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 descTextView.setVisibility(View.GONE);
                 durationTextView.setVisibility(View.VISIBLE);
-            } else {
-                // do nothing now
+            } else if(state == AVEngineKit.CallState.Idle) {
+                getActivity().finish();
             }
         });
     }
@@ -148,8 +148,8 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     public void mute() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            session.muteAudio(audioEnable);
             audioEnable = !audioEnable;
+            session.muteAudio(!audioEnable);
             muteImageView.setSelected(!audioEnable);
         }
     }
