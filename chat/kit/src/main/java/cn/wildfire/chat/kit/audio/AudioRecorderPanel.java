@@ -252,6 +252,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             long now = System.currentTimeMillis();
             if (now - startTime > maxDuration) {
                 timeout();
+                return;
             } else if (now - startTime > (maxDuration - countDown)) {
                 int tmp = (int) ((maxDuration - (now - startTime)) / 1000);
                 tmp = tmp > 1 ? tmp : 1;
@@ -266,7 +267,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     }
 
     private void updateVolume() {
-        if (isToCancel) {
+        if (isToCancel || recorder == null) {
             return;
         }
         // refer to https://www.cnblogs.com/lqminn/archive/2012/10/10/2717904.html
