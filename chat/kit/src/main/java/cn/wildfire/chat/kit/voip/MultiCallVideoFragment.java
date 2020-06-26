@@ -176,7 +176,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         for (String participant : participants) {
             session.setupRemoteVideo(participant, null, scalingType);
         }
-        ((MultiCallActivity) getActivity()).showFloatingView();
+        ((MultiCallActivity) getActivity()).showFloatingView(focusVideoUserId);
     }
 
     @OnClick(R.id.addParticipantImageView)

@@ -269,7 +269,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @OnClick(R.id.minimizeImageView)
     public void minimize() {
         gEngineKit.getCurrentSession().stopVideoSource();
-        ((SingleCallActivity) getActivity()).showFloatingView();
+        ((SingleCallActivity) getActivity()).showFloatingView(null);
     }
 
     // Log |msg| and Toast about it.

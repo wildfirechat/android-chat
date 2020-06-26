@@ -12,6 +12,7 @@ import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -43,6 +44,8 @@ public class VoipCallService extends Service {
     private boolean initialized = false;
     private boolean showFloatingWindow = false;
 
+    private String focusTargetId;
+
     private Handler handler = new Handler();
 
     @Override
@@ -73,6 +76,7 @@ public class VoipCallService extends Service {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         rendererInitialized = false;
         lastState = null;
+        focusTargetId = intent.getStringExtra("focusTargetId");
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             stopSelf();
         } else {
@@ -102,7 +106,7 @@ public class VoipCallService extends Service {
         } else {
             updateNotification(session);
             if (showFloatingWindow && session.getState() == AVEngineKit.CallState.Connected) {
-                if (session.isAudioOnly() || session.getConversation().type == Conversation.ConversationType.Group) {
+                if (session.isAudioOnly()) {
                     showAudioView(session);
                 } else {
                     showVideoView(session);
@@ -199,7 +203,7 @@ public class VoipCallService extends Service {
         if (session.getState() != AVEngineKit.CallState.Connected) {
             showUnConnectedCallInfo(session);
         } else {
-            if (session.isAudioOnly() || session.getConversation().type == Conversation.ConversationType.Group) {
+            if (session.isAudioOnly()) {
                 showAudioView(session);
             } else {
                 showVideoView(session);
@@ -283,6 +287,17 @@ public class VoipCallService extends Service {
             SurfaceView surfaceView = session.createRendererView();
             remoteVideoFrameLayout.addView(surfaceView);
             String targetId = session.getParticipantIds().get(0);
+            if (!TextUtils.isEmpty(focusTargetId) && session.getParticipantIds().contains(focusTargetId)) {
+                targetId = focusTargetId;
+            } else if (session.getConversation().type == Conversation.ConversationType.Group) {
+                for (AVEngineKit.ParticipantProfile profile:session.getParticipantProfiles()) {
+                    if (profile.getState() == AVEngineKit.CallState.Connected) {
+                        targetId = profile.getUserId();
+                        break;
+                    }
+                }
+            }
+
             if (session.getState() == AVEngineKit.CallState.Connected) {
                 session.setupRemoteVideo(targetId, surfaceView, SCALE_ASPECT_BALANCED);
             } else {
