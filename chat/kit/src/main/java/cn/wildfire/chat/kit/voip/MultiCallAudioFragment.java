@@ -126,7 +126,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R.id.minimizeImageView)
     void minimize() {
-        ((MultiCallActivity) getActivity()).showFloatingView();
+        ((MultiCallActivity) getActivity()).showFloatingView(null);
     }
 
     @OnClick(R.id.addParticipantImageView)

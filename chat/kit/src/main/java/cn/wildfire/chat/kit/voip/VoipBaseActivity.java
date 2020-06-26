@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
@@ -149,7 +150,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             session.resetRenderer();
             session.setCallback(null);
             if (!isChangingConfigurations()) {
-                showFloatingView();
+                showFloatingView(null);
             }
         }
     }
@@ -255,13 +256,16 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         // do nothing
     }
 
-    public void showFloatingView() {
+    public void showFloatingView(String focusTargetId) {
         if (!checkOverlayPermission()) {
             return;
         }
 
         Intent intent = new Intent(this, VoipCallService.class);
         intent.putExtra("showFloatingView", true);
+        if (!TextUtils.isEmpty(focusTargetId)) {
+            intent.putExtra("focusTargetId", focusTargetId);
+        }
         startService(intent);
         finish();
     }
