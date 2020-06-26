@@ -50,7 +50,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     public void onBind(UiMessage message) {
         super.onBind(message);
         SoundMessageContent voiceMessage = (SoundMessageContent) message.message.content;
-        int increment = UIUtils.getDisplayWidth() / 2 / Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * voiceMessage.getDuration();
+        int increment = UIUtils.getDisplayWidth() / 3 / Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * voiceMessage.getDuration();
 
         durationTextView.setText(voiceMessage.getDuration() + "''");
         ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
