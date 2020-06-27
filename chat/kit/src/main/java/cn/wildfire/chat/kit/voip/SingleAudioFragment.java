@@ -81,6 +81,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
                 durationTextView.setVisibility(View.VISIBLE);
             } else if(state == AVEngineKit.CallState.Idle) {
                 getActivity().finish();
+                getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
     }
@@ -161,6 +162,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
             session.endCall();
         } else {
             getActivity().finish();
+            getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
     }
 
@@ -170,6 +172,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         if (session == null) {
             if (getActivity() != null && !getActivity().isFinishing()) {
                 getActivity().finish();
+                getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
             return;
         }
@@ -207,6 +210,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             getActivity().finish();
+            getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             return;
         }
         if (session.getState() == AVEngineKit.CallState.Connected) {
