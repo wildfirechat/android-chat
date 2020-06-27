@@ -249,6 +249,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private static void startActivity(Context context, Intent intent) {
         if (context instanceof Activity) {
             context.startActivity(intent);
+            ((Activity)context).overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } else {
             Intent main = new Intent(WfcIntent.ACTION_MAIN);
 //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

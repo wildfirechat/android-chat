@@ -83,6 +83,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             getActivity().finish();
+            getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             return;
         }
 
@@ -225,6 +226,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     public void didCallEndWithReason(AVEngineKit.CallEndReason callEndReason) {
         // do nothing
         getActivity().finish();
+        getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     @Override
@@ -234,6 +236,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             updateParticipantStatus(callSession);
         } else if (callState == AVEngineKit.CallState.Idle) {
             getActivity().finish();
+            getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
         Toast.makeText(getActivity(), "" + callState.name(), Toast.LENGTH_SHORT).show();
     }

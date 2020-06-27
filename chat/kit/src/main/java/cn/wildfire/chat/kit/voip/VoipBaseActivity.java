@@ -75,15 +75,16 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             wakeLock.acquire();
         }
 
-        getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN | LayoutParams.FLAG_KEEP_SCREEN_ON
-            | LayoutParams.FLAG_SHOW_WHEN_LOCKED | LayoutParams.FLAG_TURN_SCREEN_ON);
-        getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility());
+        //Todo 把标题栏改成黑色
+//        getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN | LayoutParams.FLAG_KEEP_SCREEN_ON
+//            | LayoutParams.FLAG_SHOW_WHEN_LOCKED | LayoutParams.FLAG_TURN_SCREEN_ON);
+//        getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility());
 
         try {
             gEngineKit = AVEngineKit.Instance();
         } catch (NotInitializedExecption notInitializedExecption) {
             notInitializedExecption.printStackTrace();
-            finish();
+            finishFadeout();
         }
 
         // Check for mandatory permissions.
@@ -98,7 +99,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
 
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
-            finish();
+            finishFadeout();
             return;
         }
         session.setCallback(this);
@@ -109,7 +110,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         for (int result : grantResults) {
             if (result != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "需要录音和摄像头权限，才能进行语音通话", Toast.LENGTH_SHORT).show();
-                finish();
+                finishFadeout();
                 return;
             }
         }
@@ -132,7 +133,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
-            finish();
+            finishFadeout();
             return;
         }
         session.setCallback(this);
@@ -173,7 +174,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_NORMAL);
         audioManager.setSpeakerphoneOn(false);
-        finish();
+        finishFadeout();
     }
 
     @Override
@@ -267,12 +268,17 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             intent.putExtra("focusTargetId", focusTargetId);
         }
         startService(intent);
-        finish();
+        finishFadeout();
     }
 
     public void hideFloatingView() {
         Intent intent = new Intent(this, VoipCallService.class);
         intent.putExtra("showFloatingView", false);
         startService(intent);
+    }
+
+    protected void finishFadeout() {
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

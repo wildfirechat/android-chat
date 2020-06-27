@@ -44,7 +44,7 @@ public class SingleCallActivity extends VoipBaseActivity {
     private void init() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
-            finish();
+            finishFadeout();
             return;
         }
 
@@ -164,7 +164,7 @@ public class SingleCallActivity extends VoipBaseActivity {
                 session.setAudioOnly(true);
             }
         } else {
-            finish();
+            finishFadeout();
         }
     }
 
