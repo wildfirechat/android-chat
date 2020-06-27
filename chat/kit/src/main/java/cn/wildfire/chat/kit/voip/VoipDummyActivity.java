@@ -23,8 +23,9 @@ public class VoipDummyActivity extends FragmentActivity {
             } else {
                 intent = new Intent(this, MultiCallActivity.class);
             }
-            startActivity(intent);
             finish();
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
     }
 }
