@@ -8,7 +8,7 @@
         <!-- Customize color of navigation drawer icon and back arrow -->
         <item name="colorBackgroundFloating">@color/white</item>
         <item name="android:navigationBarColor">@color/black</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 </resources>
