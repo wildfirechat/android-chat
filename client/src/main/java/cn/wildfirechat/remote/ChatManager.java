@@ -43,8 +43,11 @@ import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGetGroupCallback;
+import cn.wildfirechat.client.IGetGroupMemberCallback;
 import cn.wildfirechat.client.IGetMessageCallback;
 import cn.wildfirechat.client.IGetRemoteMessageCallback;
+import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
 import cn.wildfirechat.client.IOnFriendUpdateListener;
@@ -3019,6 +3022,30 @@ public class ChatManager {
         }
     }
 
+    public void getGroupInfo(String groupId, boolean refresh, GetGroupInfoCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.getGroupInfoEx(groupId, refresh, new IGetGroupCallback.Stub() {
+                @Override
+                public void onSuccess(GroupInfo userInfo) throws RemoteException {
+                    callback.onSuccess(userInfo);
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    callback.onFail(errorCode);
+                }
+            });
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+
+        }
+    }
+
     /**
      * 加入聊天室
      *
@@ -3268,6 +3295,30 @@ public class ChatManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void getUserInfo(String userId, boolean refresh, GetUserInfoCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+        try {
+            mClient.getUserInfoEx(userId, refresh, new IGetUserCallback.Stub() {
+                @Override
+                public void onSuccess(UserInfo userInfo) throws RemoteException {
+                    callback.onSuccess(userInfo);
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    callback.onFail(errorCode);
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -3966,6 +4017,28 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void getGroupMembers(String groupId, boolean forceUpdate, GetGroupMembersCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
+                @Override
+                public void onSuccess(List<GroupMember> groupMembers) throws RemoteException {
+                    callback.onSuccess(groupMembers);
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    callback.onFail(errorCode);
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
