@@ -16,6 +16,9 @@ import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ISearchChannelCallback;
 import cn.wildfirechat.client.IGetRemoteMessageCallback;
 import cn.wildfirechat.client.IGetMessageCallback;
+import cn.wildfirechat.client.IGetUserCallback;
+import cn.wildfirechat.client.IGetGroupCallback;
+import cn.wildfirechat.client.IGetGroupMemberCallback;
 
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
@@ -142,8 +145,10 @@ interface IRemoteClient {
     oneway void getChatRoomInfo(in String chatRoomId, in long updateDt, in IGetChatRoomInfoCallback callback);
     oneway void getChatRoomMembersInfo(in String chatRoomId, in int maxCount, in IGetChatRoomMembersInfoCallback callback);
     GroupInfo getGroupInfo(in String groupId, in boolean refresh);
+    oneway void getGroupInfoEx(in String groupId, in boolean refresh, in IGetGroupCallback callback);
     UserInfo getUserInfo(in String userId, in String groupId, in boolean refresh);
     List<UserInfo> getUserInfos(in List<String> userIds, in String groupId);
+    oneway void getUserInfoEx(in String userId, in boolean refresh, in IGetUserCallback callback);
 
     oneway void uploadMedia(in String fileName, in byte[] data, int mediaType, in IUploadMediaCallback callback);
     oneway void uploadMediaFile(in String mediaPath, int mediaType, in IUploadMediaCallback callback);
@@ -166,6 +171,7 @@ interface IRemoteClient {
     oneway void modifyGroupAlias(in String groupId, in String newAlias, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     List<GroupMember> getGroupMembers(in String groupId, in boolean forceUpdate);
     GroupMember getGroupMember(in String groupId, in String memberId);
+    oneway void getGroupMemberEx(in String groupId, in boolean forceUpdate, in IGetGroupMemberCallback callback);
     oneway void transferGroup(in String groupId, in String newOwner, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void setGroupManager(in String groupId, in boolean isSet, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void muteGroupMember(in String groupId, in boolean isSet, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
