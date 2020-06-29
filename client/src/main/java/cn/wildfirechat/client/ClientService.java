@@ -1096,6 +1096,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void getGroupInfoEx(String groupId, boolean refresh, IGetGroupCallback callback) throws RemoteException {
+            ProtoLogic.getGroupInfoEx(groupId, refresh, new ProtoLogic.IGetGroupInfoCallback() {
+                @Override
+                public void onSuccess(ProtoGroupInfo protoGroupInfo) {
+                    try {
+                        callback.onSuccess(convertProtoGroupInfo(protoGroupInfo));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public UserInfo getUserInfo(String userId, String groupId, boolean refresh) throws RemoteException {
             return convertProtoUserInfo(ProtoLogic.getUserInfo(userId, groupId == null ? "" : groupId, refresh));
         }
@@ -1114,6 +1137,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 userInfos.add(userInfo);
             }
             return userInfos;
+        }
+
+        @Override
+        public void getUserInfoEx(String userId, boolean refresh, IGetUserCallback callback) throws RemoteException {
+            ProtoLogic.getUserInfoEx(userId, refresh, new ProtoLogic.IGetUserInfoCallback() {
+                @Override
+                public void onSuccess(ProtoUserInfo protoUserInfo) {
+                    try {
+                        callback.onSuccess(convertProtoUserInfo(protoUserInfo));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
@@ -1450,13 +1496,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             List<GroupMember> out = new ArrayList<>();
             for (ProtoGroupMember protoMember : protoGroupMembers) {
                 if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
-                    GroupMember member = new GroupMember();
-                    member.groupId = groupId;
-                    member.memberId = protoMember.getMemberId();
-                    member.alias = protoMember.getAlias();
-                    member.type = GroupMember.GroupMemberType.type(protoMember.getType());
-                    member.updateDt = protoMember.getUpdateDt();
-                    member.createDt = protoMember.getCreateDt();
+                    GroupMember member = covertProtoGroupMember(protoMember);
                     out.add(member);
                 }
             }
@@ -1471,6 +1511,36 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             } else {
                 return covertProtoGroupMember(protoGroupMember);
             }
+        }
+
+        @Override
+        public void getGroupMemberEx(String groupId, boolean forceUpdate, IGetGroupMemberCallback callback) throws RemoteException {
+            ProtoLogic.getGroupMemberEx(groupId, forceUpdate, new ProtoLogic.IGetGroupMemberCallback() {
+                @Override
+                public void onSuccess(ProtoGroupMember[] protoGroupMembers) {
+                    List<GroupMember> out = new ArrayList<>();
+                    for (ProtoGroupMember protoMember : protoGroupMembers) {
+                        if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
+                            GroupMember member = covertProtoGroupMember(protoMember);
+                            out.add(member);
+                        }
+                    }
+                    try {
+                        callback.onSuccess(out);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
