@@ -28,6 +28,10 @@ public interface MessageContentType {
 
     //正在输入消息
     int ContentType_Typing = 91;
+    //以上是打招呼的内容
+    int ContentType_Friend_Greeting = 92;
+    //您已经添加XXX为好友了，可以愉快地聊天了
+    int ContentType_Friend_Added = 93;
 
     //通知消息类型
     int ContentType_General_Notification = 100;
