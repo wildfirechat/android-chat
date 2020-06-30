@@ -65,6 +65,8 @@ import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationConte
 import cn.wildfirechat.message.notification.CreateGroupNotificationContent;
 import cn.wildfirechat.message.notification.DeleteMessageContent;
 import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
+import cn.wildfirechat.message.notification.FriendAddedMessageContent;
+import cn.wildfirechat.message.notification.FriendGreetingMessageContent;
 import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteMemberNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
@@ -2098,6 +2100,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             mBinder.registerMessageContent(TextMessageContent.class.getName());
             mBinder.registerMessageContent(PTextMessageContent.class.getName());
             mBinder.registerMessageContent(TipNotificationContent.class.getName());
+            mBinder.registerMessageContent(FriendAddedMessageContent.class.getName());
+            mBinder.registerMessageContent(FriendGreetingMessageContent.class.getName());
             mBinder.registerMessageContent(TransferGroupOwnerNotificationContent.class.getName());
             mBinder.registerMessageContent(VideoMessageContent.class.getName());
             mBinder.registerMessageContent(TypingMessageContent.class.getName());
