@@ -100,7 +100,20 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
 
     @Override
     public void didParticipantJoined(String userId) {
-
+        List<UserInfo> participants = ((MultiCallParticipantAdapter)participantRecyclerView.getAdapter()).getParticipants();
+        boolean exist = false;
+        for (UserInfo user :
+                participants) {
+            if (user.uid.equals(userId)) {
+                exist = true;
+                break;
+            }
+        }
+        if (!exist) {
+            UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+            participants.add(userViewModel.getUserInfo(userId, false));
+            participantRecyclerView.getAdapter().notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -110,7 +123,19 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
 
     @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason reason) {
-
+        List<UserInfo> participants = ((MultiCallParticipantAdapter)participantRecyclerView.getAdapter()).getParticipants();
+        for (UserInfo user :
+                participants) {
+            if (user.uid.equals(userId)) {
+                participants.remove(user);
+                participantRecyclerView.getAdapter().notifyDataSetChanged();
+                break;
+            }
+        }
+        if (AVEngineKit.Instance().getCurrentSession()!= null && AVEngineKit.Instance().getCurrentSession().getInitiator() == null) {
+            invitorTextView.setText("");
+            invitorImageView.setImageBitmap(null);
+        }
     }
 
     @Override
