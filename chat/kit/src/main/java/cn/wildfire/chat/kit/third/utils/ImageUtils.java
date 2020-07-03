@@ -300,7 +300,7 @@ public class ImageUtils {
                             long timestamp = Long.parseLong(arr[1]);
 
                             long now = System.currentTimeMillis();
-                            if (now - timestamp > 60*1000 || timestamp < groupInfo.updateDt) {
+                            if (now - timestamp > 7*24*3600*1000 || timestamp < groupInfo.updateDt) {
                                 ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
                                     @Override
                                     public void onSuccess(List<GroupMember> groupMembers) {
