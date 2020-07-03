@@ -1439,9 +1439,7 @@ public class ChatManager {
     /**
      * 发送已经保存的消息
      *
-     * @param conversation
-     * @param content
-     * @param toUsers        定向发送给会话中的某些用户；为空，则发给所有人
+     * @param msg
      * @param expireDuration
      * @param callback
      */
