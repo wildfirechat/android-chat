@@ -3031,12 +3031,12 @@ public class ChatManager {
             mClient.getGroupInfoEx(groupId, refresh, new IGetGroupCallback.Stub() {
                 @Override
                 public void onSuccess(GroupInfo userInfo) throws RemoteException {
-                    callback.onSuccess(userInfo);
+                    mainHandler.post(() -> callback.onSuccess(userInfo));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
 
@@ -3308,12 +3308,12 @@ public class ChatManager {
             mClient.getUserInfoEx(userId, refresh, new IGetUserCallback.Stub() {
                 @Override
                 public void onSuccess(UserInfo userInfo) throws RemoteException {
-                    callback.onSuccess(userInfo);
+                    mainHandler.post(() -> callback.onSuccess(userInfo));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
@@ -4029,12 +4029,12 @@ public class ChatManager {
             mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
                 @Override
                 public void onSuccess(List<GroupMember> groupMembers) throws RemoteException {
-                    callback.onSuccess(groupMembers);
+                    mainHandler.post(() -> callback.onSuccess(groupMembers));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    callback.onFail(errorCode);
+                    mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
