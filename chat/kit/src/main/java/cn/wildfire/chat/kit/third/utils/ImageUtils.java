@@ -15,8 +15,6 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.google.zxing.common.StringUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -202,7 +200,7 @@ public class ImageUtils {
                                     ex.printStackTrace();
                                 }
                             }
-                            if (drawable != null && drawable instanceof BitmapDrawable) {
+                            if (drawable instanceof BitmapDrawable) {
                                 bitmaps.add(((BitmapDrawable) drawable).getBitmap());
                             }
                             latch.countDown();
@@ -227,7 +225,7 @@ public class ImageUtils {
                     });
 
                     try {
-                        latch.wait();
+                        latch.await();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
