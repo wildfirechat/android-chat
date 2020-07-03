@@ -224,4 +224,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    public Fragment getFragment() {
+        return fragment;
+    }
 }
