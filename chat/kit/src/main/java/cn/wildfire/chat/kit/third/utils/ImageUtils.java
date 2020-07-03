@@ -165,6 +165,7 @@ public class ImageUtils {
     }
 
     private static long lastGenerateTime = 0;
+
     private static void generateNewGroupPortrait(Context context, String groupId, int width) {
         if (System.currentTimeMillis() - lastGenerateTime < 15 * 1000) {
             return;
@@ -280,9 +281,6 @@ public class ImageUtils {
         });
     }
     public static String getGroupGridPortrait(Context context, String groupId, int width) {
-        if(lastGenerateTime < 5) {
-            lastGenerateTime ++;
-        }
         SharedPreferences sp = context.getSharedPreferences("wfc", Context.MODE_PRIVATE);
         String path = sp.getString("wfc_group_generated_portrait_"+groupId+"_"+width, null);
         if (TextUtils.isEmpty(path)) {
@@ -302,7 +300,7 @@ public class ImageUtils {
                             long timestamp = Long.parseLong(arr[1]);
 
                             long now = System.currentTimeMillis();
-                            if (now - timestamp > 7*24*3600*1000 || timestamp < groupInfo.updateDt) {
+                            if (now - timestamp > 60*1000 || timestamp < groupInfo.updateDt) {
                                 ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
                                     @Override
                                     public void onSuccess(List<GroupMember> groupMembers) {
@@ -310,36 +308,38 @@ public class ImageUtils {
                                             return;
                                         }
 
-                                        final String[] fullPath = {""};
-                                        for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
-                                            String memberId = groupMembers.get(i).memberId;
-                                            CountDownLatch latch = new CountDownLatch(1);
+                                        new Thread(()->{
+                                            final String[] fullPath = {""};
+                                            for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
+                                                String memberId = groupMembers.get(i).memberId;
+                                                CountDownLatch latch = new CountDownLatch(1);
 
-                                            ChatManager.Instance().getUserInfo(memberId, false, new GetUserInfoCallback() {
-                                                @Override
-                                                public void onSuccess(UserInfo userInfo) {
-                                                    new Thread(()->{
-                                                        fullPath[0] += userInfo.portrait;
-                                                        latch.countDown();
-                                                    }).start();
-                                                }
+                                                ChatManager.Instance().getUserInfo(memberId, false, new GetUserInfoCallback() {
+                                                    @Override
+                                                    public void onSuccess(UserInfo userInfo) {
+                                                        new Thread(()->{
+                                                            fullPath[0] += userInfo.portrait;
+                                                            latch.countDown();
+                                                        }).start();
+                                                    }
 
-                                                @Override
-                                                public void onFail(int errorCode) {
-                                                    new Thread(()->{
-                                                        latch.countDown();
-                                                    }).start();
+                                                    @Override
+                                                    public void onFail(int errorCode) {
+                                                        new Thread(()->{
+                                                            latch.countDown();
+                                                        }).start();
+                                                    }
+                                                });
+                                                try {
+                                                    latch.await();
+                                                } catch (InterruptedException e) {
+                                                    e.printStackTrace();
                                                 }
-                                            });
-                                            try {
-                                                latch.await();
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
                                             }
-                                        }
-                                        if (!arr[3].equals(getDigest(fullPath[0]))) {
-                                            generateNewGroupPortrait(context, groupId, width);
-                                        }
+                                            if (!arr[3].equals(getDigest(fullPath[0]))) {
+                                                generateNewGroupPortrait(context, groupId, width);
+                                            }
+                                        }).start();
                                     }
 
                                     @Override
