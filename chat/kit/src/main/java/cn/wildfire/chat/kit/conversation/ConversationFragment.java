@@ -391,6 +391,9 @@ public class ConversationFragment extends Fragment implements
         userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
 
         settingUpdateLiveDataObserver = o -> {
+            if(groupInfo == null){
+               return;
+            }
             boolean show = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
             if (showGroupMemberName != show) {
                 showGroupMemberName = show;
