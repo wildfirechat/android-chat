@@ -25,7 +25,7 @@ public class MyApp extends BaseApp {
         if ("wildfirechat.cn".equals(Config.IM_SERVER_HOST)) {
             CrashReport.initCrashReport(getApplicationContext(), Config.BUGLY_ID, false);
         }
-        // 只在主进程初始化
+        // 只在主进程初始化，否则会导致重复收到消息
         if (getCurProcessName(this).equals(BuildConfig.APPLICATION_ID)) {
             WfcUIKit wfcUIKit = WfcUIKit.getWfcUIKit();
             wfcUIKit.init(this);
