@@ -126,6 +126,7 @@ public class UserInfoActivity extends WfcBaseActivity {
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
                         Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        invalidateOptionsMenu();
                     } else {
                         Toast.makeText(this, "add blacklist error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
                     }
@@ -137,6 +138,7 @@ public class UserInfoActivity extends WfcBaseActivity {
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
                         Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        invalidateOptionsMenu();
                     } else {
                         Toast.makeText(this, "remove blacklist error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
                     }
