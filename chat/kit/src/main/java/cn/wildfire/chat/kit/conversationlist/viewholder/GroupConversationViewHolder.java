@@ -40,7 +40,7 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
             portrait = null;
         }
 
-        if (false/*TextUtils.isEmpty(portrait)*/) {
+        if (TextUtils.isEmpty(portrait)) {
             portrait = ImageUtils.getGroupGridPortrait(getFragment().getContext(), conversationInfo.conversation.target, 60);
         }
 
