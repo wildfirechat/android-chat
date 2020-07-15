@@ -19,6 +19,7 @@ public class MessagePayload implements Parcelable {
     public /*MessageContentType*/ int contentType;
     public String searchableContent;
     public String pushContent;
+    public String pushData;
     public String content;
     public byte[] binaryContent;
 
@@ -44,6 +45,7 @@ public class MessagePayload implements Parcelable {
         this.contentType = protoMessageContent.getType();
         this.searchableContent = protoMessageContent.getSearchableContent();
         this.pushContent = protoMessageContent.getPushContent();
+        this.pushData = protoMessageContent.getPushData();
         this.content = protoMessageContent.getContent();
         this.binaryContent = protoMessageContent.getBinaryContent();
         this.localContent = protoMessageContent.getLocalContent();
@@ -64,6 +66,7 @@ public class MessagePayload implements Parcelable {
         out.setType(contentType);
         out.setSearchableContent(searchableContent);
         out.setPushContent(pushContent);
+        out.setPushData(pushData);
         out.setContent(content);
         out.setBinaryContent(binaryContent);
         out.setRemoteMediaUrl(remoteMediaUrl);
@@ -93,6 +96,7 @@ public class MessagePayload implements Parcelable {
         dest.writeInt(this.contentType);
         dest.writeString(this.searchableContent);
         dest.writeString(this.pushContent);
+        dest.writeString(this.pushData);
         dest.writeString(this.content);
         dest.writeByteArray(this.binaryContent);
         dest.writeInt(this.mentionedType);
@@ -108,6 +112,7 @@ public class MessagePayload implements Parcelable {
         this.contentType = in.readInt();
         this.searchableContent = in.readString();
         this.pushContent = in.readString();
+        this.pushData = in.readString();
         this.content = in.readString();
         this.binaryContent = in.createByteArray();
         this.mentionedType = in.readInt();
