@@ -595,9 +595,11 @@ public class ConversationFragment extends Fragment implements
                 return;
             }
         }
-        Intent intent = new Intent(getActivity(), UserInfoActivity.class);
-        intent.putExtra("userInfo", userInfo);
-        startActivity(intent);
+        if (userInfo.deleted ==0) {
+            Intent intent = new Intent(getActivity(), UserInfoActivity.class);
+            intent.putExtra("userInfo", userInfo);
+            startActivity(intent);
+        }
     }
 
     @Override

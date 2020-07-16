@@ -1962,22 +1962,31 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         UserInfo userInfo = new UserInfo();
         userInfo.uid = protoUserInfo.getUid();
         userInfo.name = protoUserInfo.getName();
-        userInfo.displayName = protoUserInfo.getDisplayName();
+
         userInfo.portrait = protoUserInfo.getPortrait();
-        userInfo.gender = protoUserInfo.getGender();
-        userInfo.mobile = protoUserInfo.getMobile();
-        userInfo.email = protoUserInfo.getEmail();
-        userInfo.address = protoUserInfo.getAddress();
-        userInfo.company = protoUserInfo.getCompany();
-        userInfo.social = protoUserInfo.getSocial();
+        userInfo.deleted = protoUserInfo.getDeleted();
+        if (protoUserInfo.getDeleted() > 0) {
+            userInfo.displayName = "已删除用户";
+        } else {
+            userInfo.displayName = protoUserInfo.getDisplayName();
+            userInfo.gender = protoUserInfo.getGender();
+            userInfo.mobile = protoUserInfo.getMobile();
+            userInfo.email = protoUserInfo.getEmail();
+            userInfo.address = protoUserInfo.getAddress();
+            userInfo.company = protoUserInfo.getCompany();
+            userInfo.social = protoUserInfo.getSocial();
+        }
+
         userInfo.extra = protoUserInfo.getExtra();
         userInfo.updateDt = protoUserInfo.getUpdateDt();
         userInfo.type = protoUserInfo.getType();
         userInfo.friendAlias = protoUserInfo.getFriendAlias();
         userInfo.groupAlias = protoUserInfo.getGroupAlias();
-        userInfo.deleted = protoUserInfo.getDeleted();
+
         return userInfo;
     }
+
+    
 
     private MessageContent contentOfType(int type) {
         Class<? extends MessageContent> cls = contentMapper.get(type);
