@@ -18,6 +18,7 @@ import com.bumptech.glide.request.RequestOptions;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfire.chat.kit.utils.WfcTextUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
@@ -85,7 +86,7 @@ public class ForwardPromptView extends LinearLayout {
         } else {
             contentImageView.setVisibility(GONE);
             contentTextView.setVisibility(VISIBLE);
-            contentTextView.setText(message.digest());
+            contentTextView.setText(WfcTextUtils.htmlToText(message.digest()));
         }
         invalidate();
     }
