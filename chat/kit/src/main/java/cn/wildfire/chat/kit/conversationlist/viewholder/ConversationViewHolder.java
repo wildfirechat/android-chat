@@ -24,6 +24,7 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
+import cn.wildfire.chat.kit.utils.WfcTextUtils;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -139,6 +140,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                content = WfcTextUtils.htmlToText(content);
                 MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
 
                 switch (lastMessage.status) {
