@@ -117,7 +117,7 @@ public class ForwardActivity extends WfcBaseActivity {
     public void forward(UserInfo targetUser) {
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetUser.uid);
         conversation.line = 0;
-        forward(targetUser.name, targetUser.portrait, conversation);
+        forward(targetUser.displayName, targetUser.portrait, conversation);
     }
 
     public void forward(GroupInfo targetGroup) {
