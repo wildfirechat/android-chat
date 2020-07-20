@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#ffffff</color>
+    <color name="line">#E5E5E5</color>
+    <color name="primary_background">#EDEDED</color>
+
+    <color name="primary_item_pressed_color">#E8E8E8</color>
+    <color name="primary_item_stick_top_color">#F7F7F7</color>
+
+    <color name="gray0">#464646</color>
+    <color name="gray1">#7e7e7e</color>
+    <color name="gray2">#969696</color>
+    <color name="gray3">#c8969696</color>
+    <color name="gray4">#F5F5F5</color>
+    <color name="gray5">#EDEDED</color>
+    <color name="gray7">#999999</color>
+    <color name="gray8">#D9D9D9</color>
+    <color name="gray10">#EBEFEF</color>
+    <color name="gray11">#B3B3B3</color>
+    <color name="gray12">#828282</color>
+    <color name="gray13">#B7B7B7</color>
+    <color name="gray14">#F7F7F7</color>
+    <color name="gray15">#585858</color>
+    <color name="gray16">#787878</color>
+    <color name="gray17">#9B9A9A</color>
+    <color name="gray18">#F0F0F0</color>
+    <color name="gray19">#E7E7E7</color>
+    <color name="gray20">#E5E5E5</color>
+    <color name="gray21">#DADADA</color>
+    <color name="gray22">#F5F6F8</color>
+    <color name="gray23">#ADADAD</color>
+
+    <color name="red0">#F95569</color>
+    <color name="red6">#D54A47</color>
+    <color name="red7">#E64340</color>
+    <color name="red8">#FF3E3E</color>
+
+    <color name="green1">#45C01A</color>
+    <color name="green2">#A3DEA3</color>
+    <color name="green3">#1AAD19</color>
+    <color name="green4">#35D96C</color>
+
+    <color name="blue0">#576B95</color>
+    <color name="blue1">#3B62E0</color>
+    <color name="blue2">#3E65E4</color>
+    <color name="blue3">#5B6E8E</color>
+
+    <color name="black0">#000000</color>
+    <color name="black1">#1D1D1D</color>
+    <color name="black2">#0C0C0C</color>
+    <color name="black3">#191919</color>
+    <color name="black4">#171717</color>
+    <color name="black5">#1F2026</color>
+    <color name="black6">#666666</color>
+    <color name="black7">#3A3A3C</color>
+    <color name="black8">#313236</color>
+
+
+    <!--遮盖层颜色-->
+
+    <!--快速索引bar颜色-->
+    <color name="side_bar">#4E4E4E</color>
+    <color name="side_bar_pressed">#BFBFBF</color>
+
+    <color name="colorPrimary">#3B62E0</color>
+    <color name="colorPrimaryDark">#3B62E0</color>
+    <color name="colorAccent">#7e7e7e</color>
+</resources>

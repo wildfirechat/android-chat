@@ -4,7 +4,7 @@ import android.widget.Toast;
 
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.R;
+import cn.wildfirechat.chat.app.R;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;

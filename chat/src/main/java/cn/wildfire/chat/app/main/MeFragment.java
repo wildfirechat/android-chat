@@ -34,7 +34,7 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfirechat.chat.R;
+import cn.wildfirechat.chat.app.R;
 import cn.wildfirechat.model.UserInfo;
 
 public class MeFragment extends Fragment {
@@ -84,8 +84,8 @@ public class MeFragment extends Fragment {
 
     private void updateUserInfo(UserInfo userInfo) {
         RequestOptions options = new RequestOptions()
-            .placeholder(UIUtils.getRoundedDrawable(R.mipmap.avatar_def, 10))
-            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(10)));
+            .placeholder(R.mipmap.avatar_def)
+            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(getContext(), 10)));
         Glide.with(this)
             .load(userInfo.portrait)
             .apply(options)
@@ -97,7 +97,7 @@ public class MeFragment extends Fragment {
     private void init() {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.getUserInfoAsync(userViewModel.getUserId(), true)
-            .observe(this, info -> {
+            .observe(getViewLifecycleOwner(), info -> {
                 userInfo = info;
                 if (userInfo != null) {
                     updateUserInfo(userInfo);
@@ -140,7 +140,7 @@ public class MeFragment extends Fragment {
     }
 
     private void restart() {
-        Intent i = getActivity().getApplicationContext().getPackageManager().getLaunchIntentForPackage( getActivity().getApplicationContext().getPackageName() );
+        Intent i = getActivity().getApplicationContext().getPackageManager().getLaunchIntentForPackage(getActivity().getApplicationContext().getPackageName());
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
     }

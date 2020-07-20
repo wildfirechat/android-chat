@@ -22,15 +22,15 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import butterknife.ButterKnife;
 import cn.wildfire.chat.app.login.SMSLoginActivity;
-import cn.wildfirechat.chat.R;
+import cn.wildfirechat.chat.app.R;
 
 import static cn.wildfire.chat.app.BaseApp.getContext;
 
 public class SplashActivity extends AppCompatActivity {
 
     private static String[] permissions = {
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
     private static final int REQUEST_CODE_DRAW_OVERLAY = 101;
 
@@ -116,7 +116,7 @@ public class SplashActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
-                android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
+            android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
         startActivity(intent, bundle);
         finish();
     }
@@ -125,7 +125,7 @@ public class SplashActivity extends AppCompatActivity {
         Intent intent;
         intent = new Intent(this, SMSLoginActivity.class);
         Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
-                android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
+            android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
         startActivity(intent, bundle);
         finish();
     }

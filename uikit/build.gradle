@@ -1,0 +1,130 @@
+apply plugin: 'com.android.library'
+
+android {
+    signingConfigs {
+        wfc {
+            keyAlias 'wfc'
+            keyPassword 'wildfirechat'
+            storeFile file('../wfc.keystore')
+            storePassword 'wildfirechat'
+        }
+    }
+    compileSdkVersion 29
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
+    defaultConfig {
+//        applicationId "cn.wildfirechat.chat"
+        minSdkVersion 17
+        targetSdkVersion 29 //当targetversion大于23时，需要使用fileprovider
+        versionCode 24
+        versionName "0.7.0"
+        multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
+        signingConfig signingConfigs.wfc
+
+//        buildConfigField("String", "BuglyId", '"34490ba79f"')
+
+        ndk {
+            abiFilters "armeabi-v7a", 'x86', 'x86_64' // ，'armeabi', 'arm64-v8a', 'x86', 'x86_64'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.wfc
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.wfc
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        abortOnError false
+    }
+    sourceSets {
+        main {
+            // wfc kit start
+//            jniLibs.srcDirs += ['libs', 'kit/libs']
+            res.srcDirs += ['src/main/res-av']
+//            assets.srcDirs += ['kit/src/main/assets']
+//            java.srcDirs += ['kit/src/main/java']
+            // wfc kit end
+
+            // moment start
+            java.srcDirs += ['../../android-momentkit/src/main/java']
+            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
+            // moment end
+        }
+    }
+    productFlavors {
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/TencentLocationSDK_v4.9.7.12_r247861_161205_1104.jar')
+    implementation files('libs/TencentMapSDK_Raster_v_1.2.7_51ae0e7.jar')
+    implementation files('libs/TencentSearch1.1.3.jar')
+
+    implementation 'com.lqr.adapter:library:1.0.2'
+    implementation 'com.jaeger.statusbaruitl:library:1.3.5'
+
+    // wfc kit start
+    implementation 'q.rorbin:badgeview:1.1.3'
+    implementation fileTree(include: ['*.jar'], dir: 'kit/libs')
+    api 'androidx.appcompat:appcompat:1.1.0-beta01'
+    api 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'cjt.library.wheel:camera:1.1.9'
+    implementation 'com.kyleduo.switchbutton:library:1.4.4'
+    api 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'com.squareup.okio:okio:1.14.0'
+    api 'com.jakewharton:butterknife:10.2.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
+    api 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    implementation 'org.webrtc:google-webrtc:1.0.30039'
+    api 'com.afollestad.material-dialogs:core:0.9.6.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    // ViewModel and LiveData
+    def lifecycle_version = '2.2.0'
+    api "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+
+    api project(':client')
+    api project(':avenginekit')
+    implementation project(':emojilibrary')
+    implementation project(':imagepicker')
+    implementation project(':momentclient')
+
+    api 'com.king.zxing:zxing-lite:1.1.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
+    implementation 'com.google.android:flexbox:2.0.1'
+    // kit wfc end
+
+
+    // moment start
+    //over scroller helper
+    api 'me.everything:overscroll-decor-android:1.0.4'
+    // moment end
+
+}
+
+apply plugin: 'com.huawei.agconnect'
+apply plugin: 'com.jakewharton.butterknife'

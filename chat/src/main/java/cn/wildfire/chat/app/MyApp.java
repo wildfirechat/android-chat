@@ -7,10 +7,12 @@ import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 
-import cn.wildfire.chat.app.third.location.viewholder.LocationMessageContentViewHolder;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
-import cn.wildfirechat.chat.BuildConfig;
+import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
+import cn.wildfirechat.chat.app.BuildConfig;
+import cn.wildfirechat.chat.app.R;
 import cn.wildfirechat.push.PushService;
 
 
@@ -31,7 +33,7 @@ public class MyApp extends BaseApp {
             wfcUIKit.init(this);
             wfcUIKit.setAppServiceProvider(AppService.Instance());
             PushService.init(this, BuildConfig.APPLICATION_ID);
-            MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class);
+            MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
             setupWFCDirs();
         }
     }

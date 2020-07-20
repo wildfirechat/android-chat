@@ -19,7 +19,7 @@ import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.R;
+import cn.wildfirechat.chat.app.R;
 
 /**
  * use {@link SMSLoginActivity} instead
@@ -69,10 +69,10 @@ public class LoginActivity extends WfcBaseActivity {
         String password = passwordEditText.getText().toString().trim();
 
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("登录中...")
-                .progress(true, 10)
-                .cancelable(false)
-                .build();
+            .content("登录中...")
+            .progress(true, 10)
+            .cancelable(false)
+            .build();
         dialog.show();
 
         AppService.Instance().namePwdLogin(account, password, new AppService.LoginCallback() {
@@ -86,9 +86,9 @@ public class LoginActivity extends WfcBaseActivity {
                 ChatManagerHolder.gChatManager.connect(loginResult.getUserId(), loginResult.getToken());
                 SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
                 sp.edit()
-                        .putString("id", loginResult.getUserId())
-                        .putString("token", loginResult.getToken())
-                        .apply();
+                    .putString("id", loginResult.getUserId())
+                    .putString("token", loginResult.getToken())
+                    .apply();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

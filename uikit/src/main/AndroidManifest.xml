@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="cn.wildfirechat.chat">
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <!-- 通过GPS得到精确位置 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 通过网络得到粗略位置 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 访问网络. 某些位置信息需要从网络服务器获取 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 访问WiFi状态. 需要WiFi信息用于网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 修改WiFi状态. 发起WiFi扫描, 需要WiFi信息用于网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!-- 访问网络状态, 检测网络的可用性. 需要网络运营商相关信息用于网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 访问网络的变化, 需要某些信息用于网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <!-- 访问手机当前状态, 需要某些信息用于网络定位 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!-- 蓝牙分享所需的权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+
+        <meta-data
+            android:name="design_width"
+            android:value="720" />
+        <meta-data
+            android:name="design_height"
+            android:value="1280" />
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+
+        <meta-data
+            android:name="android.webkit.WebView.EnableSafeBrowsing"
+            android:value="true" />
+
+        <!--地图-->
+        <meta-data
+            android:name="TencentMapSDK"
+            android:value="TOEBZ-67IR4-ZDHUV-DSDXX-TJZU7-UYFE7" />
+
+        <activity
+            android:name="cn.wildfire.chat.kit.conversation.ConversationActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.user.SetAliasActivity"
+            android:label="设置用户备注"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.user.ChangeMyNameActivity"
+            android:label="修改昵称"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="cn.wildfire.chat.kit.mm.TakePhotoActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen" />
+        <activity
+            android:name="cn.wildfire.chat.kit.group.SetGroupNameActivity"
+            android:label="修改群名称"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="cn.wildfire.chat.kit.mm.MMPreviewActivity"
+            android:theme="@style/AppTheme.FullScreen" />
+        <activity
+            android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="${applicationId}.kit.voip.single" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name="cn.wildfire.chat.kit.conversation.CreateConversationActivity"
+            android:label="创建会话" />
+        <activity
+            android:name="cn.wildfire.chat.kit.group.AddGroupMemberActivity"
+            android:label="添加新成员" />
+        <activity
+            android:name="cn.wildfire.chat.kit.group.RemoveGroupMemberActivity"
+            android:label="删除群成员" />
+        <activity
+            android:name="cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity"
+            android:label="选择群成员" />
+        <activity
+            android:name="cn.wildfire.chat.kit.group.GroupListActivity"
+            android:label="群列表" />
+        <activity
+            android:name="cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity"
+            android:label="好友请求" />
+        <activity
+            android:name="cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity"
+            android:label="搜索用户" />
+        <activity
+            android:name="cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity"
+            android:label="邀请好友" />
+        <activity
+            android:name="cn.wildfire.chat.kit.user.UserInfoActivity"
+            android:label="用户信息" />
+        <activity
+            android:name="cn.wildfire.chat.kit.settings.PrivacySettingActivity"
+            android:label="隐私设置" />
+        <activity
+            android:name="cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity"
+            android:label="黑名单" />
+        <activity
+            android:name="cn.wildfire.chat.kit.settings.MessageNotifySettingActivity"
+            android:label="新消息通知" />
+        <activity
+            android:name="cn.wildfire.chat.kit.conversation.ConversationInfoActivity"
+            android:label="会话详情" />
+        <activity
+            android:name="cn.wildfire.chat.kit.chatroom.ChatRoomListActivity"
+            android:label="聊天室列表" />
+        <activity
+            android:name="cn.wildfire.chat.kit.search.SearchPortalActivity"
+            android:label="搜索中心" />
+        <activity
+            android:name="cn.wildfire.chat.kit.conversation.forward.ForwardActivity"
+            android:label="转发" />
+        <activity
+            android:name="cn.wildfire.chat.kit.conversation.forward.PickConversationTargetToForwardActivity"
+            android:label="选取会话" />
+        <activity
+            android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"
+            android:label="频道列表" />
+
+        <activity
+            android:name="cn.wildfire.chat.kit.channel.CreateChannelActivity"
+            android:label="创建频道"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|stateHidden|adjustResize" />
+
+        <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
+        <activity android:name="cn.wildfire.chat.kit.WfcWebViewActivity">
+            <intent-filter>
+                <action android:name="${applicationId}.webview" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="cn.wildfire.chat.kit.search.SearchMessageActivity" />
+        <activity android:name="cn.wildfire.chat.kit.channel.SearchChannelActivity" />
+        <activity android:name="cn.wildfire.chat.kit.group.PickGroupMemberActivity" />
+        <activity android:name="cn.wildfire.chat.kit.qrcode.QRCodeActivity" />
+        <activity
+            android:name="cn.wildfire.chat.kit.group.GroupInfoActivity"
+            android:label="群信息" />
+        <activity
+            android:name="cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity"
+            android:label="扫一扫" />
+        <activity android:name="cn.wildfire.chat.kit.group.manage.GroupManageActivity" />
+        <activity android:name="cn.wildfire.chat.kit.group.manage.GroupManagerListActivity" />
+        <activity android:name="cn.wildfire.chat.kit.group.manage.AddGroupManagerActivity" />
+        <activity android:name="cn.wildfire.chat.kit.group.manage.GroupMuteActivity" />
+        <activity android:name="cn.wildfire.chat.kit.group.manage.GroupMemberPermissionActivity" />
+        <activity
+            android:name="cn.wildfire.chat.kit.group.GroupMemberListActivity"
+            android:label="群成员列表"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.wildfire.chat.kit.contact.pick.PickContactActivity"
+            android:label="联系人选择" />
+        <activity
+            android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="${applicationId}.kit.voip.multi" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <service android:name="cn.wildfire.chat.kit.voip.VoipCallService" />
+    </application>
+</manifest>
