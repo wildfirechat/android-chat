@@ -110,4 +110,13 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         }
     }
 
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_audio_send;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return R.layout.conversation_item_audio_receive;
+    }
 }

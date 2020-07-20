@@ -51,19 +51,19 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
 
         if (!TextUtils.isEmpty(imageMessage.localPath)) {
             GlideApp.with(fragment)
-                    .load(imageMessage.localPath)
-                    .centerCrop()
-                    .into(imageView);
+                .load(imageMessage.localPath)
+                .centerCrop()
+                .into(imageView);
         } else {
             GlideRequest<Drawable> request = GlideApp.with(fragment)
-                    .load(imageMessage.remoteUrl);
+                .load(imageMessage.remoteUrl);
             if (thumbnail != null) {
                 request = request.placeholder(new BitmapDrawable(fragment.getResources(), imageMessage.getThumbnail()));
             } else {
                 request = request.placeholder(R.mipmap.img_error);
             }
             request.centerCrop()
-                    .into(imageView);
+                .into(imageView);
         }
     }
 
@@ -96,5 +96,15 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
                 imageView.showShadow(false);
             }
         }
+    }
+
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_image_send;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return R.layout.conversation_item_image_receive;
     }
 }

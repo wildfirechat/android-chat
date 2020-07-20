@@ -46,16 +46,16 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
                 return;
             }
             GlideApp.with(fragment).load(stickerMessage.localPath)
-                    .into(imageView);
+                .into(imageView);
             path = stickerMessage.localPath;
         } else {
             CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
             progressDrawable.start();
             GlideApp.with(fragment)
-                    .load(stickerMessage.remoteUrl)
-                    .placeholder(progressDrawable)
-                    .into(imageView);
+                .load(stickerMessage.remoteUrl)
+                .placeholder(progressDrawable)
+                .into(imageView);
         }
     }
 
@@ -74,5 +74,15 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
         Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("message", message.message);
         fragment.startActivity(intent);
+    }
+
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_sticker_send;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return R.layout.conversation_item_sticker_send;
     }
 }

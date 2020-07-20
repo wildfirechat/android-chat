@@ -61,4 +61,14 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
             fragment.pickGroupMemberToVoipChat(callStartMessageContent.isAudioOnly());
         }
     }
+
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_voip_send;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return  R.layout.conversation_item_voip_receive;
+    }
 }

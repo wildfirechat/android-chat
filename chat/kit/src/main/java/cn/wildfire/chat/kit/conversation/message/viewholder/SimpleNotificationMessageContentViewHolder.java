@@ -91,4 +91,14 @@ public class SimpleNotificationMessageContentViewHolder extends NotificationMess
         }
         notificationTextView.setText(notification);
     }
+
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_notification;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return R.layout.conversation_item_notification;
+    }
 }

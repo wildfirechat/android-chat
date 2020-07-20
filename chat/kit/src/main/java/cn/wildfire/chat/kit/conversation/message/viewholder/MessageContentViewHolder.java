@@ -3,6 +3,7 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,6 +55,12 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
     public void onViewRecycled() {
         // you can do some clean up here
     }
+
+    public abstract @LayoutRes
+    int sendLayoutResId();
+
+    public abstract @LayoutRes
+    int receiveLayoutResId();
 
     protected void setMessageTime(Message item, int position) {
         long msgTime = item.serverTime;
