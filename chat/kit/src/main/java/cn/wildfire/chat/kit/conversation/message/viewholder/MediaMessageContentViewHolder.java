@@ -17,7 +17,7 @@ import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 
-public class MediaMessageContentViewHolder extends NormalMessageContentViewHolder {
+public abstract class MediaMessageContentViewHolder extends NormalMessageContentViewHolder {
 
     public MediaMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);

@@ -31,4 +31,14 @@ public class UnkownMessageContentViewHolder extends NormalMessageContentViewHold
     public void onBind(UiMessage message) {
         contentTextView.setText("unknown message");
     }
+
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_unknown_send;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return R.layout.conversation_item_unknown_receive;
+    }
 }

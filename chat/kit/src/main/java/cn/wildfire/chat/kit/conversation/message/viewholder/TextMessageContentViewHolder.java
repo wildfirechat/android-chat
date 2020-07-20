@@ -80,4 +80,14 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         ClipData clipData = ClipData.newPlainText("messageContent", content.getContent());
         clipboardManager.setPrimaryClip(clipData);
     }
+
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_text_send;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return R.layout.conversation_item_text_receive;
+    }
 }

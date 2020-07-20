@@ -63,4 +63,14 @@ public class LocationMessageContentViewHolder extends NormalMessageContentViewHo
         intent.putExtra("title", content.getTitle());
         fragment.startActivity(intent);
     }
+
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_location_send;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return R.layout.conversation_item_location_send;
+    }
 }

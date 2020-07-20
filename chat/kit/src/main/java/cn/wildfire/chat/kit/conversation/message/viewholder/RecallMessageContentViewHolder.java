@@ -51,4 +51,14 @@ public class RecallMessageContentViewHolder extends NotificationMessageContentVi
     public boolean contextMenuItemFilter(UiMessage uiMessage, String itemTitle) {
         return false;
     }
+
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_recall_notification;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return R.layout.conversation_item_recall_notification;
+    }
 }
