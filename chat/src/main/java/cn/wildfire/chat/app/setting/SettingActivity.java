@@ -8,15 +8,15 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.AppService;
-import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.main.SplashActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.settings.PrivacySettingActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfirechat.chat.R;
+import cn.wildfirechat.chat.app.R;
 
 public class SettingActivity extends WfcBaseActivity {
     @BindView(R.id.diagnoseOptionItemView)

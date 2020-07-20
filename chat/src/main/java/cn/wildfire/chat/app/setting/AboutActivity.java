@@ -6,10 +6,10 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.wildfire.chat.app.Config;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
-import cn.wildfirechat.chat.R;
+import cn.wildfirechat.chat.app.R;
 
 public class AboutActivity extends WfcBaseActivity {
 
@@ -27,10 +27,10 @@ public class AboutActivity extends WfcBaseActivity {
         try {
             PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), PackageManager.GET_CONFIGURATIONS);
             String info = packageInfo.packageName + "\n"
-                    + packageInfo.versionCode + " " + packageInfo.versionName + "\n"
-                    + Config.IM_SERVER_HOST + "\n"
-                    + Config.APP_SERVER_ADDRESS +  "\n"
-                    + Config.ICE_ADDRESS + " " + Config.ICE_USERNAME + " " + Config.ICE_PASSWORD + "\n";
+                + packageInfo.versionCode + " " + packageInfo.versionName + "\n"
+                + Config.IM_SERVER_HOST + "\n"
+                + Config.APP_SERVER_ADDRESS + "\n"
+                + Config.ICE_ADDRESS + " " + Config.ICE_USERNAME + " " + Config.ICE_PASSWORD + "\n";
 
             infoTextView.setText(info);
 
