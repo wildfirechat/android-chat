@@ -4,22 +4,17 @@ import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.lifecycle.ViewModelProviders;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.AppService;
-import cn.wildfire.chat.app.Config;
 import cn.wildfire.chat.app.login.model.PCSession;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.net.OKHttpHelper;
-import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.chat.R;
+import cn.wildfirechat.chat.app.R;
 
 public class PCLoginActivity extends WfcBaseActivity {
     private String token;
@@ -47,15 +42,15 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     @OnClick(R.id.confirmButton)
     void confirmPCLogin() {
-        UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         confirmPCLogin(token, userViewModel.getUserId());
     }
 
     private void scanPCLogin(String token) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("处理中")
-                .progress(true, 100)
-                .build();
+            .content("处理中")
+            .progress(true, 100)
+            .build();
         dialog.show();
 
         AppService.Instance().scanPCLogin(token, new AppService.ScanPCCallback() {

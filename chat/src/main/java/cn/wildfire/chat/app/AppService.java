@@ -13,6 +13,7 @@ import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.login.model.PCSession;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
