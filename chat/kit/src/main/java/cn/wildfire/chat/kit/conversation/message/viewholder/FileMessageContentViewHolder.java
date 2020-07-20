@@ -69,4 +69,14 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
             messageViewModel.downloadMedia(message, file);
         }
     }
+
+    @Override
+    public int sendLayoutResId() {
+        return R.layout.conversation_item_file_send;
+    }
+
+    @Override
+    public int receiveLayoutResId() {
+        return R.layout.conversation_item_file_receive;
+    }
 }
