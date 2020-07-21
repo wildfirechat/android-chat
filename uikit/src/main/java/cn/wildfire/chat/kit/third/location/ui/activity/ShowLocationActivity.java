@@ -27,8 +27,8 @@ import butterknife.BindView;
 import cn.wildfire.chat.kit.third.location.ui.base.BaseActivity;
 import cn.wildfire.chat.kit.third.location.ui.presenter.MyLocationAtPresenter;
 import cn.wildfire.chat.kit.third.location.ui.view.IMyLocationAtView;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 /**
  * @创建者 CSDN_LQR

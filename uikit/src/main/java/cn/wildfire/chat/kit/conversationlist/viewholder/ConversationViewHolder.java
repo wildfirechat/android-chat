@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.conversationlist.viewholder;
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
@@ -25,8 +26,8 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
@@ -68,8 +69,8 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         this.adapter = adapter;
         ButterKnife.bind(this, itemView);
         conversationListViewModel = ViewModelProviders
-                .of(fragment.getActivity(), new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
-                .get(ConversationListViewModel.class);
+            .of(fragment.getActivity(), new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
+            .get(ConversationListViewModel.class);
     }
 
     final public void onBind(ConversationInfo conversationInfo, int position) {
@@ -130,8 +131,8 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                 // the message maybe invalid
                 try {
                     if (conversationInfo.conversation.type == Conversation.ConversationType.Group
-                            && lastMessage.direction == MessageDirection.Receive
-                            && !(lastMessage.content instanceof NotificationMessageContent)) {
+                        && lastMessage.direction == MessageDirection.Receive
+                        && !(lastMessage.content instanceof NotificationMessageContent)) {
                         GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
                         String senderDisplayName = groupViewModel.getGroupMemberDisplayName(conversationInfo.conversation.target, conversationInfo.lastMessage.sender);
                         content = senderDisplayName + ":" + lastMessage.digest();
@@ -172,31 +173,73 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     }
 
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_REMOVE,
-            title = "删除会话",
-            confirm = true,
-            confirmPrompt = "确认删除会话？",
-            priority = 0)
+        confirm = true,
+        priority = 0)
     public void removeConversation(View itemView, ConversationInfo conversationInfo) {
         conversationListViewModel.removeConversation(conversationInfo, true);
     }
 
-    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_REMOVE,
-            title = "清空会话",
-            confirm = true,
-            confirmPrompt = "确认清空会话？",
-            priority = 0)
+    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_CLEAR,
+        confirm = true,
+        priority = 0)
     public void clearMessages(View itemView, ConversationInfo conversationInfo) {
         conversationListViewModel.clearMessages(conversationInfo.conversation);
     }
 
-    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_TOP, title = "置顶", priority = 1)
+    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_TOP, priority = 1)
     public void stickConversationTop(View itemView, ConversationInfo conversationInfo) {
         conversationListViewModel.setConversationTop(conversationInfo, true);
     }
 
-    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_CANCEL_TOP, title = "取消置顶", priority = 2)
+    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_CANCEL_TOP, priority = 2)
     public void cancelStickConversationTop(View itemView, ConversationInfo conversationInfo) {
         conversationListViewModel.setConversationTop(conversationInfo, false);
+    }
+
+    /**
+     * 长按触发的context menu的标题
+     *
+     * @param tag
+     * @return
+     */
+    public String contextMenuTitle(Context context, String tag) {
+        String title = "未设置";
+        switch (tag) {
+            case ConversationContextMenuItemTags.TAG_CLEAR:
+                title = "清空会话";
+                break;
+            case ConversationContextMenuItemTags.TAG_REMOVE:
+                title = "删除会话";
+                break;
+            case ConversationContextMenuItemTags.TAG_TOP:
+                title = "置顶";
+                break;
+            case ConversationContextMenuItemTags.TAG_CANCEL_TOP:
+                title = "取消置顶";
+            default:
+                break;
+
+        }
+        return title;
+    }
+
+    /**
+     * 执行长按menu操作，需要确认时的提示信息。比如长按会话 -> 删除 -> 提示框进行二次确认
+     *
+     * @param tag
+     * @return
+     */
+    public String contextConfirmPrompt(Context context, String tag) {
+        String title = "未设置";
+        switch (tag) {
+            case ConversationContextMenuItemTags.TAG_CLEAR:
+                title = "确认清空会话？";
+                break;
+            case ConversationContextMenuItemTags.TAG_REMOVE:
+                title = "确认删除会话?";
+                break;
+        }
+        return title;
     }
 
     /**

@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 
 public class OptionItemView extends LinearLayout {
     private ImageView startImageView;

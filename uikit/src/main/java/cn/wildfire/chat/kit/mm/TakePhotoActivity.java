@@ -18,7 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import cn.wildfire.chat.kit.Config;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 
 public class TakePhotoActivity extends AppCompatActivity {
     private JCameraView mJCameraView;

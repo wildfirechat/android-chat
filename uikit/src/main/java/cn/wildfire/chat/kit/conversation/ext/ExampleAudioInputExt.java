@@ -7,8 +7,7 @@ import android.widget.FrameLayout;
 
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.Conversation;
 
 //用来演示类似微信语音输入那种扩展
@@ -18,7 +17,7 @@ public class ExampleAudioInputExt extends ConversationExt {
      * @param containerView 扩展view的container
      * @param conversation
      */
-    @ExtContextMenuItem(title = "Example")
+    @ExtContextMenuItem
     public void image(View containerView, Conversation conversation) {
         FrameLayout frameLayout = (FrameLayout) containerView;
         View view = LayoutInflater.from(activity).inflate(R.layout.conversatioin_ext_example_layout, frameLayout, false);
@@ -46,5 +45,10 @@ public class ExampleAudioInputExt extends ConversationExt {
     @Override
     public String title(Context context) {
         return "Example";
+    }
+
+    @Override
+    public String contextMenuTitle(Context context, String tag) {
+        return title(context);
     }
 }

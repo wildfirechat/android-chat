@@ -1,7 +1,13 @@
 ## 野火IM解决方案
 
-## 特别注意
+## 升级注意
+v0.8.0 版本，对代码结构及部分实现机制进行了大量调整，变动如下：
 
+1. ```applicationId```由```cn.wildfire.chat```变更为```cn.wildfire.chat.app```
+2. 将```chat``` application module 拆分为两部分：```uikit``` library module 和 ```chat``` application module
+3. 移除```LayoutRes```、```SendLayoutRes```、```ReceiveLayoutRes```等注解，并更新```MessageViewHolder```等的实现机制
+
+## 特别注意
 1. ```com.android.tools.build:gradle:3.5.0``` 可能存在bug，会导致音视频crash，请勿使用此版本
 
 野火IM是一套跨平台、核心功能开源的即时通讯解决方案，主要包含以下内容。
@@ -93,8 +99,7 @@
 
 ## 集成
 1. client部分，自行下载代码，并将client module引入你们自己的项目。
-2. UI(chat)部分，需要你自行下载，并将代码移动到你自己的项目，且必须是application module，不能作为library module引入的原因是注解中使用了R.xx.yyyy，
-而library module中，R.xx.yyy并不是一个常量。后续会采用butterKnife的方式，引入R2.xx.yyyy。详细集成方案，请参考[集成](https://docs.wildfirechat.cn/faq/android/q2.html)
+2. uikit部分，自行下载代码，并将uikit module引入你们自己的项目，
 
 ## 贡献
 欢迎提交pull request，一起打造一个更好的开源IM。

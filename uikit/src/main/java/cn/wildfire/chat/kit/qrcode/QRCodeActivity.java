@@ -16,8 +16,8 @@ import androidx.annotation.Nullable;
 import butterknife.BindView;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class QRCodeActivity extends WfcBaseActivity {
     private String title;

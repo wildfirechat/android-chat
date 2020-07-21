@@ -1,28 +1,55 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
-
-    defaultConfig {
-        applicationId "cn.wildfire.chat.app"
-        minSdkVersion 17
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
-        multiDexEnabled true
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    signingConfigs {
+        wfc {
+            keyAlias 'wfc'
+            keyPassword 'wildfirechat'
+            storeFile file('../wfc.keystore')
+            storePassword 'wildfirechat'
+        }
     }
+    compileSdkVersion 29
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
+    defaultConfig {
+        applicationId "cn.wildfirechat.chat.app"
+        minSdkVersion 17
+        targetSdkVersion 29 //当targetversion大于23时，需要使用fileprovider
+        versionCode 25
+        versionName "0.8.0.rc"
+        multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
+        signingConfig signingConfigs.wfc
 
+        ndk {
+            abiFilters "armeabi-v7a", 'x86', 'x86_64' // ，'armeabi', 'arm64-v8a', 'x86', 'x86_64'
+        }
+    }
     buildTypes {
         release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.wfc
+        }
+        debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.wfc
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        abortOnError false
+    }
+    productFlavors {
     }
 }
 

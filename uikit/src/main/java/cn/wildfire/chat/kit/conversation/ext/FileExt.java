@@ -14,8 +14,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 
@@ -25,7 +24,7 @@ public class FileExt extends ConversationExt {
      * @param containerView 扩展view的container
      * @param conversation
      */
-    @ExtContextMenuItem(title = "文件")
+    @ExtContextMenuItem
     public void pickFile(View containerView, Conversation conversation) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");//无类型限制
@@ -83,5 +82,10 @@ public class FileExt extends ConversationExt {
     @Override
     public String title(Context context) {
         return "文件";
+    }
+
+    @Override
+    public String contextMenuTitle(Context context, String tag) {
+        return title(context);
     }
 }

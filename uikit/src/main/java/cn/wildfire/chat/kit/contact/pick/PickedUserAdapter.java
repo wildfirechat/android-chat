@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 
 public class PickedUserAdapter extends RecyclerView.Adapter {
 

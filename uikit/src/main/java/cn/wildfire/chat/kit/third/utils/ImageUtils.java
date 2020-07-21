@@ -28,8 +28,8 @@ import java.util.concurrent.ExecutionException;
 
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;

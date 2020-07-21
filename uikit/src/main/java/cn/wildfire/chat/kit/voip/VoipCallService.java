@@ -28,8 +28,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.chat.BuildConfig;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.BuildConfig;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.Conversation;
 
 import static org.webrtc.RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
