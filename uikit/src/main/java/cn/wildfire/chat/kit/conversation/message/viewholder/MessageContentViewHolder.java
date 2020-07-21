@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
@@ -14,7 +15,7 @@ import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.Message;
 
 public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
@@ -50,6 +51,10 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
      */
 
     public abstract boolean contextMenuItemFilter(UiMessage uiMessage, String tag);
+
+    public abstract String contextMenuTitle(Context context, String tag);
+
+    public abstract String contextConfirmPrompt(Context context, String tag);
 
     public void onViewRecycled() {
         // you can do some clean up here

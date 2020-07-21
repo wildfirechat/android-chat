@@ -22,7 +22,7 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.widget.LinkClickListener;
 import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 
@@ -66,7 +66,7 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
     }
 
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, title = "复制", confirm = false, priority = 12)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, confirm = false, priority = 12)
     public void clip(View itemView, UiMessage message) {
         ClipboardManager clipboardManager = (ClipboardManager) fragment.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboardManager == null) {
@@ -75,5 +75,13 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         TextMessageContent content = (TextMessageContent) message.message.content;
         ClipData clipData = ClipData.newPlainText("messageContent", content.getContent());
         clipboardManager.setPrimaryClip(clipData);
+    }
+
+    @Override
+    public String contextMenuTitle(Context context, String tag) {
+        if (MessageContextMenuItemTags.TAG_CLIP.equals(tag)) {
+            return "复制";
+        }
+        return super.contextMenuTitle(context, tag);
     }
 }

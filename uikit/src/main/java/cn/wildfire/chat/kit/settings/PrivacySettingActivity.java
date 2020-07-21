@@ -5,8 +5,8 @@ import android.content.Intent;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class PrivacySettingActivity extends WfcBaseActivity {
 

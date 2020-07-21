@@ -61,11 +61,7 @@ public class ConversationExtension {
             } else {
                 List<String> titles = new ArrayList<>(extMenuItems.size());
                 for (ExtMenuItemWrapper itemWrapper : extMenuItems) {
-                    if (itemWrapper.extContextMenuItem.titleResId() != 0) {
-                        titles.add(context.getString(itemWrapper.extContextMenuItem.titleResId()));
-                    } else {
-                        titles.add(itemWrapper.extContextMenuItem.title());
-                    }
+                    titles.add(ext.contextMenuTitle(context, itemWrapper.extContextMenuItem.tag()));
                 }
                 // TODO sort
                 new MaterialDialog.Builder(context).items(titles).itemsCallback((dialog, v, position, text) -> {

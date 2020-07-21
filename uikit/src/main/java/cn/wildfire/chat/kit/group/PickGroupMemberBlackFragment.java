@@ -13,7 +13,7 @@ import cn.wildfire.chat.kit.contact.pick.CheckableUserListBlackAdapter;
 import cn.wildfire.chat.kit.contact.pick.PickedUserAdapter;
 import cn.wildfire.chat.kit.contact.pick.PickedUserBlackAdapter;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.GroupInfo;
 
 public class PickGroupMemberBlackFragment extends PickGroupMemberFragment {

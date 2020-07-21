@@ -8,8 +8,8 @@ import butterknife.BindView;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.CheckableUserListAdapter;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class CheckableUserViewHolder extends UserViewHolder {
     @BindView(R2.id.checkbox)

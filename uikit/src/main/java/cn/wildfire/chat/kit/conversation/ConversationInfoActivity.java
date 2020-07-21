@@ -4,8 +4,8 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.ConversationInfo;
 
 public class ConversationInfoActivity extends WfcBaseActivity {

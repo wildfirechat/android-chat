@@ -13,37 +13,24 @@ android {
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
     defaultConfig {
-//        applicationId "cn.wildfirechat.chat"
         minSdkVersion 17
         targetSdkVersion 29 //当targetversion大于23时，需要使用fileprovider
-        versionCode 24
-        versionName "0.7.0"
+        versionCode 25
+        versionName "0.8.0.rc"
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
                 includeCompileClasspath true
             }
         }
-        signingConfig signingConfigs.wfc
 
-//        buildConfigField("String", "BuglyId", '"34490ba79f"')
+        signingConfig signingConfigs.wfc
 
         ndk {
             abiFilters "armeabi-v7a", 'x86', 'x86_64' // ，'armeabi', 'arm64-v8a', 'x86', 'x86_64'
         }
     }
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.wfc
-        }
-        debug {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.wfc
-        }
-    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -53,25 +40,15 @@ android {
     }
     sourceSets {
         main {
-            // wfc kit start
-//            jniLibs.srcDirs += ['libs', 'kit/libs']
             res.srcDirs += ['src/main/res-av']
-//            assets.srcDirs += ['kit/src/main/assets']
-//            java.srcDirs += ['kit/src/main/java']
-            // wfc kit end
 
             // moment start
-            java.srcDirs += ['../../android-momentkit/src/main/java']
-            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
+//            java.srcDirs += ['../../android-momentkit/src/main/java']
+//            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
             // moment end
         }
     }
     productFlavors {
-    }
-
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
     }
 }
 
@@ -87,14 +64,14 @@ dependencies {
     // wfc kit start
     implementation 'q.rorbin:badgeview:1.1.3'
     implementation fileTree(include: ['*.jar'], dir: 'kit/libs')
-    api 'androidx.appcompat:appcompat:1.1.0-beta01'
-    api 'com.google.android.material:material:1.1.0-alpha10'
+    api 'androidx.appcompat:appcompat:1.3.0-alpha01'
+    api 'com.google.android.material:material:1.3.0-alpha01'
     implementation 'cjt.library.wheel:camera:1.1.9'
     implementation 'com.kyleduo.switchbutton:library:1.4.4'
     api 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okio:okio:1.14.0'
-    api 'com.jakewharton:butterknife:10.2.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
+    api 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
     api 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
@@ -110,18 +87,18 @@ dependencies {
     api project(':avenginekit')
     implementation project(':emojilibrary')
     implementation project(':imagepicker')
-    implementation project(':momentclient')
 
     api 'com.king.zxing:zxing-lite:1.1.1'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'com.google.android:flexbox:2.0.1'
     // kit wfc end
 
 
     // moment start
+//    implementation project(':momentclient')
     //over scroller helper
-    api 'me.everything:overscroll-decor-android:1.0.4'
+//    api 'me.everything:overscroll-decor-android:1.0.4'
     // moment end
 
 }

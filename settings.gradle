@@ -1,7 +1,7 @@
-include ':app'
+include ':chat'
 include ':client',
     ':push',
-    ':chat',
+    ':uikit',
     ':mars-core-release',
     ':emojilibrary',
     ':imagepicker',

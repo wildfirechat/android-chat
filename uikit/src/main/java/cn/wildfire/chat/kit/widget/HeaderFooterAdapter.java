@@ -51,7 +51,6 @@ public abstract class HeaderFooterAdapter extends RecyclerView.Adapter<RecyclerV
         if (viewType < headerCount()) {
             Class<? extends HeaderViewHolder> clazz = headerViewHolders.get(viewType);
             LayoutRes layoutRes = clazz.getAnnotation(LayoutRes.class);
-            // FIXME: 2020/7/20 jyj
             itemView = LayoutInflater.from(fragment.getActivity()).inflate(layoutRes.resId(), parent, false);
             try {
                 Constructor constructor = clazz.getConstructor(Fragment.class, HeaderFooterAdapter.class, View.class);

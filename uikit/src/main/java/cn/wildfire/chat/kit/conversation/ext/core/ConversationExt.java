@@ -17,11 +17,35 @@ public abstract class ConversationExt {
     protected Conversation conversation;
     protected MessageViewModel messageViewModel;
 
+    /**
+     * ext 优先级
+     *
+     * @return
+     */
     public abstract int priority();
 
+    /**
+     * ext icon资源id
+     *
+     * @return
+     */
     public abstract int iconResId();
 
+    /**
+     * ext 标题
+     *
+     * @param context
+     * @return
+     */
     public abstract String title(Context context);
+
+    /**
+     * 长按Ext，弹出的 context menu 的标题
+     *
+     * @param tag
+     * @return
+     */
+    public abstract String contextMenuTitle(Context context, String tag);
 
     /**
      * 当前会话是否显示此扩展
@@ -79,4 +103,5 @@ public abstract class ConversationExt {
         }
         extension.startActivityForResult(intent, requestCode, index);
     }
+
 }

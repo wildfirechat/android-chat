@@ -8,14 +8,13 @@ import androidx.fragment.app.Fragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.StatusNotificationType;
 import cn.wildfire.chat.kit.conversationlist.notification.PCOnlineStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.pc.PCSessionActivity;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.PCOnlineInfo;
 
-@LayoutRes(resId = R2.layout.conversationlist_item_notification_pc_online)
 @StatusNotificationType(PCOnlineStatusNotification.class)
 public class PCOnlineNotificationViewHolder extends StatusNotificationViewHolder {
     @BindView(R2.id.statusTextView)
@@ -50,9 +49,7 @@ public class PCOnlineNotificationViewHolder extends StatusNotificationViewHolder
 
     @OnClick(R2.id.statusTextView)
     public void showPCSessionInfo() {
-        // FIXME: 2020/7/20 jyj
-//        Intent intent = new Intent(fragment.getActivity(), PCSessionActivity.class);
-        Intent intent = new Intent(fragment.getActivity(), null);
+        Intent intent = new Intent(fragment.getActivity(), PCSessionActivity.class);
         intent.putExtra("pcOnlineInfo", pcOnlineInfo);
         fragment.startActivity(intent);
     }

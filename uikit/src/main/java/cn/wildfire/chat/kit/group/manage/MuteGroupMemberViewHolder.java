@@ -4,13 +4,10 @@ import android.view.View;
 
 import androidx.fragment.app.Fragment;
 
-import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
-import cn.wildfirechat.chat.R2;
 
-@LayoutRes(resId = R2.layout.group_manage_item_mute_member)
 public class MuteGroupMemberViewHolder extends FooterViewHolder<FooterValue> {
 
     public MuteGroupMemberViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {

@@ -15,8 +15,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.mm.TakePhotoActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 
@@ -28,7 +27,7 @@ public class ShootExt extends ConversationExt {
      * @param containerView 扩展view的container
      * @param conversation
      */
-    @ExtContextMenuItem(title = "拍摄")
+    @ExtContextMenuItem
     public void shoot(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -74,5 +73,10 @@ public class ShootExt extends ConversationExt {
     @Override
     public String title(Context context) {
         return "拍摄";
+    }
+
+    @Override
+    public String contextMenuTitle(Context context, String tag) {
+        return title(context);
     }
 }

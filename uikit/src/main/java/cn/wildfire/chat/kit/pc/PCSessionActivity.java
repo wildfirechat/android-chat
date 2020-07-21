@@ -1,10 +1,11 @@
-package cn.wildfire.chat.app.main;
+package cn.wildfire.chat.kit.pc;
 
 import android.widget.Toast;
 
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.app.R;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
@@ -26,7 +27,7 @@ public class PCSessionActivity extends WfcBaseActivity {
         return R.layout.pc_session_activity;
     }
 
-    @OnClick(R.id.kickOffPCButton)
+    @OnClick(R2.id.kickOffPCButton)
     void kickOffPC() {
         ChatManager.Instance().kickoffPCClient(pcOnlineInfo.getClientId(), new GeneralCallback() {
             @Override
