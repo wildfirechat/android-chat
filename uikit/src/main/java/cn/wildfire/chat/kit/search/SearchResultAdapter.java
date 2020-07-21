@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.kit.search.viewHolder.CategoryViewHolder;
 import cn.wildfire.chat.kit.search.viewHolder.ExpandViewHolder;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class SearchResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_CATEGORY = 0;

@@ -42,7 +42,7 @@ import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfire.chat.kit.voip.VoipCallService;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -255,7 +255,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             context.startActivity(intent);
             ((Activity) context).overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } else {
-            Intent main = new Intent(WfcIntent.ACTION_MAIN);
+            Intent main = new Intent(context.getPackageName() + ".main");
 //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivities(context, 100, new Intent[]{main, intent}, PendingIntent.FLAG_UPDATE_CURRENT);
             try {

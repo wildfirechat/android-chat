@@ -21,8 +21,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class SearchAndPickUserFragment extends Fragment implements UserListAdapter.OnUserClickListener {
     private CheckableUserListAdapter contactAdapter;

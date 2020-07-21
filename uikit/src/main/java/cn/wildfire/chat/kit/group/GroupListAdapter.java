@@ -4,13 +4,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+
+import java.util.List;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.GroupInfo;
 
 public class GroupListAdapter extends RecyclerView.Adapter<GroupViewHolder> {

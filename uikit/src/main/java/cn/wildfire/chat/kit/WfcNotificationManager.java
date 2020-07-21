@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
@@ -122,8 +122,7 @@ public class WfcNotificationManager {
             } else {
                 title = "新消息";
             }
-            // FIXME: 2020/7/20 jyj
-            Intent mainIntent = new Intent(context, null);
+            Intent mainIntent = new Intent(context.getPackageName() + ".main");
             Intent conversationIntent = new Intent(context, ConversationActivity.class);
             conversationIntent.putExtra("conversation", message.conversation);
             PendingIntent pendingIntent = PendingIntent.getActivities(context, notificationId(message.conversation), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT);

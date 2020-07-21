@@ -1,9 +1,6 @@
 package cn.wildfire.chat.kit;
 
-import cn.wildfirechat.chat.BuildConfig;
-
 public interface WfcIntent {
-    String ACTION_MAIN = BuildConfig.LIBRARY_PACKAGE_NAME + ".main";
     String ACTION_CONVERSATION = BuildConfig.LIBRARY_PACKAGE_NAME + ".conversation";
     String ACTION_CONTACT = BuildConfig.LIBRARY_PACKAGE_NAME + ".contact";
     String ACTION_USER_INFO = BuildConfig.LIBRARY_PACKAGE_NAME + ".user.info";

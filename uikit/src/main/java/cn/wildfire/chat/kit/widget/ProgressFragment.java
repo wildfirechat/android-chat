@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public abstract class ProgressFragment extends Fragment {
 

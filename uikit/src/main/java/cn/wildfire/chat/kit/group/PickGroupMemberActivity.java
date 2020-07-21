@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class PickGroupMemberActivity extends BasePickGroupMemberActivity {
     private MenuItem menuItem;

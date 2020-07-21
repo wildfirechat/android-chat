@@ -29,8 +29,8 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.UserInfo;
 
 public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {

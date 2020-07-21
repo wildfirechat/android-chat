@@ -13,18 +13,16 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
-import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.StickerMessageContent;
 
 @MessageContentType(StickerMessageContent.class)
-@LayoutRes(resId = R2.layout.conversation_item_sticker_send)
 @EnableContextMenu
 public class ExampleRichNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder {
     private String path;
@@ -69,7 +67,7 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
         return false;
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FORWARD, title = "转发", priority = 11)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FORWARD, priority = 11)
     public void forwardMessage(View itemView, UiMessage message) {
         Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("message", message.message);

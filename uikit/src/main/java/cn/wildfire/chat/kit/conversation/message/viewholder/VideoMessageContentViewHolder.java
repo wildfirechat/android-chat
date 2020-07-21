@@ -12,8 +12,8 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.VideoMessageContent;
 
 @MessageContentType(VideoMessageContent.class)

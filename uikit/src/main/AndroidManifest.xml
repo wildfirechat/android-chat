@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="cn.wildfirechat.chat">
+    package="cn.wildfire.chat.kit">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -100,10 +100,10 @@
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="${applicationId}.kit.voip.single" />
+                <action android:name="${packageName}.kit.voip.single" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
@@ -172,7 +172,7 @@
         <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
         <activity android:name="cn.wildfire.chat.kit.WfcWebViewActivity">
             <intent-filter>
-                <action android:name="${applicationId}.webview" />
+                <action android:name="${packageName}.webview" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -200,13 +200,27 @@
             android:label="联系人选择" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="${applicationId}.kit.voip.multi" />
+                <action android:name="${packageName}.kit.voip.multi" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name="cn.wildfire.chat.kit.pc.PCSessionActivity" />
+
+        <!--moment start-->
+        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
+        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />
+        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />
+        <activity android:name="cn.wildfire.chat.moment.FeedListActivity">
+            <intent-filter>
+                <action android:name="${packageName}.moment" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />
+        <!--moment end-->
 
         <provider
             android:name="androidx.core.content.FileProvider"

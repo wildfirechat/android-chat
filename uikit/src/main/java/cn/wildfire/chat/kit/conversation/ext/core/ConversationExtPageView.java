@@ -17,8 +17,8 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class ConversationExtPageView extends LinearLayout implements View.OnClickListener {
     private OnExtViewClickListener listener;

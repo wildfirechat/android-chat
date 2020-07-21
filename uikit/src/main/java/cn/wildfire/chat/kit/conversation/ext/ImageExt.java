@@ -16,8 +16,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
@@ -28,7 +27,7 @@ public class ImageExt extends ConversationExt {
      * @param containerView 扩展view的container
      * @param conversation
      */
-    @ExtContextMenuItem(title = "照片")
+    @ExtContextMenuItem
     public void pickImage(View containerView, Conversation conversation) {
         Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(activity);
         startActivityForResult(intent, 100);
@@ -92,5 +91,10 @@ public class ImageExt extends ConversationExt {
     @Override
     public String title(Context context) {
         return "照片";
+    }
+
+    @Override
+    public String contextMenuTitle(Context context, String tag) {
+        return title(context);
     }
 }

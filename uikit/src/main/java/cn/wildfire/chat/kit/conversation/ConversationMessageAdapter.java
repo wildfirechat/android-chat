@@ -33,7 +33,7 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageContentViewHo
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -408,11 +408,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 Collections.sort(contextMenus, (o1, o2) -> o1.contextMenuItem.priority() - o2.contextMenuItem.priority());
                 List<String> titles = new ArrayList<>(contextMenus.size());
                 for (ContextMenuItemWrapper itemWrapper : contextMenus) {
-                    if (itemWrapper.contextMenuItem.titleResId() != 0) {
-                        titles.add(fragment.getString(itemWrapper.contextMenuItem.titleResId()));
-                    } else {
-                        titles.add(itemWrapper.contextMenuItem.title());
-                    }
+                    titles.add(viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag()));
                 }
                 new MaterialDialog.Builder(fragment.getContext()).items(titles).itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
@@ -421,11 +417,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                             ContextMenuItemWrapper menuItem = contextMenus.get(position);
                             if (menuItem.contextMenuItem.confirm()) {
                                 String content;
-                                if (menuItem.contextMenuItem.confirmPromptResId() != 0) {
-                                    content = fragment.getString(menuItem.contextMenuItem.confirmPromptResId());
-                                } else {
-                                    content = menuItem.contextMenuItem.confirmPrompt();
-                                }
+                                content = viewHolder.contextConfirmPrompt(fragment.getContext(), menuItem.contextMenuItem.tag());
                                 new MaterialDialog.Builder(fragment.getContext())
                                     .content(content)
                                     .negativeText("取消")

@@ -20,7 +20,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.GroupInfo;
 
 public class AddGroupMemberActivity extends WfcBaseActivity {

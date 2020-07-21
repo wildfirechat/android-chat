@@ -20,8 +20,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class SearchFragment extends Fragment {
     @BindView(R2.id.recyclerView)

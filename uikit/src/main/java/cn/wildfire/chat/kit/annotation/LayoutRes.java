@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
  * <p>
  * 一般用户设置通知类消息和对应消息体的映射关系
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface LayoutRes {

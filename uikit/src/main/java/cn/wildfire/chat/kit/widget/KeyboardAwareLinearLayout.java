@@ -34,8 +34,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import cn.wildfire.chat.kit.utils.ServiceUtil;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 /**
  * LinearLayout that, when a view container, will report back when it thinks a soft keyboard

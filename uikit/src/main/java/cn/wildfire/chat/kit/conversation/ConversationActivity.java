@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;

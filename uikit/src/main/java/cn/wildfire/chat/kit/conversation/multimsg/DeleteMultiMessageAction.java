@@ -8,8 +8,8 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class DeleteMultiMessageAction extends MultiMessageAction {
 

@@ -11,13 +11,12 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.Conversation;
 
 public class VoipExt extends ConversationExt {
 
-    @ExtContextMenuItem(title = "视频通话")
+    @ExtContextMenuItem(tag = ConversationExtMenuTags.TAG_VOIP_VIDEO)
     public void video(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -38,7 +37,7 @@ public class VoipExt extends ConversationExt {
         }
     }
 
-    @ExtContextMenuItem(title = "语音通话")
+    @ExtContextMenuItem(tag = ConversationExtMenuTags.TAG_VOIP_AUDIO)
     public void audio(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -80,7 +79,7 @@ public class VoipExt extends ConversationExt {
     @Override
     public boolean filter(Conversation conversation) {
         if (conversation.type == Conversation.ConversationType.Single
-                || (conversation.type == Conversation.ConversationType.Group && AVEngineKit.Instance().isSupportMultiCall())) {
+            || (conversation.type == Conversation.ConversationType.Group && AVEngineKit.Instance().isSupportMultiCall())) {
             return false;
         }
         return true;
@@ -90,5 +89,14 @@ public class VoipExt extends ConversationExt {
     @Override
     public String title(Context context) {
         return "视频通话";
+    }
+
+    @Override
+    public String contextMenuTitle(Context context, String tag) {
+        if (ConversationExtMenuTags.TAG_VOIP_AUDIO.equals(tag)) {
+            return "语音通话";
+        } else {
+            return "视频通话";
+        }
     }
 }

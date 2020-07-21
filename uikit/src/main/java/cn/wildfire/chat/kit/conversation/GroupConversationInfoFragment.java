@@ -51,8 +51,8 @@ import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -390,9 +390,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         if (groupInfo != null && userViewModel.getUserId().equals(groupInfo.owner)) {
             groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
                 if (aBoolean != null && aBoolean) {
-                    // FIXME: 2020/7/20 jyj
-//                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    startActivity(null);
+                    Intent intent = new Intent(getContext().getPackageName() + ".main");
+                    startActivity(intent);
                 } else {
                     Toast.makeText(getActivity(), "解散群组失败", Toast.LENGTH_SHORT).show();
                 }
@@ -400,9 +399,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         } else {
             groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
                 if (aBoolean != null && aBoolean) {
-                    // FIXME: 2020/7/20 jyj
-//                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    startActivity(null);
+                    Intent intent = new Intent(getContext().getPackageName() + ".main");
+                    startActivity(intent);
                 } else {
                     Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
                 }

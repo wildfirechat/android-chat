@@ -17,7 +17,7 @@ import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;

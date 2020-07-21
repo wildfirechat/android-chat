@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 收到的消息的布局
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ReceiveLayoutRes {

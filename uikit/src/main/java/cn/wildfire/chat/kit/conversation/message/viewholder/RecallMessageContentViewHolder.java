@@ -11,7 +11,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 

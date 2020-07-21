@@ -4,7 +4,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import cn.wildfire.chat.kit.annotation.MessageContentType;
-import cn.wildfirechat.chat.R;
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 

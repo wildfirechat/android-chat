@@ -8,14 +8,11 @@ import androidx.fragment.app.Fragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.annotation.LayoutRes;
 import cn.wildfire.chat.kit.annotation.StatusNotificationType;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R2;
 
-@LayoutRes(resId = R2.layout.conversationlist_item_notification_connection_status)
 @StatusNotificationType(ConnectionStatusNotification.class)
 public class ConnectionNotificationViewHolder extends StatusNotificationViewHolder {
     public ConnectionNotificationViewHolder(Fragment fragment) {

@@ -6,8 +6,8 @@ import com.kyleduo.switchbutton.SwitchButton;
 
 import butterknife.BindView;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 

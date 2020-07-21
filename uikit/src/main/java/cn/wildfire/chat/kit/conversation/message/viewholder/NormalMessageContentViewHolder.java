@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.text.TextUtils;
@@ -38,8 +39,8 @@ import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -162,32 +163,70 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         ((ConversationMessageAdapter) adapter).onGroupMessageReceiptClick(message.message);
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_RECALL, title = "撤回", priority = 10)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_RECALL, priority = 10)
     public void recall(View itemView, UiMessage message) {
         messageViewModel.recallMessage(message.message);
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, title = "删除", confirm = true, confirmPrompt = "确认删除此消息", priority = 11)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, confirm = true, priority = 11)
     public void removeMessage(View itemView, UiMessage message) {
         messageViewModel.deleteMessage(message.message);
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FORWARD, title = "转发", priority = 11)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FORWARD, priority = 11)
     public void forwardMessage(View itemView, UiMessage message) {
         Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("message", message.message);
         fragment.startActivity(intent);
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_MULTI_CHECK, title = "多选", priority = 13)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_MULTI_CHECK, priority = 13)
     public void checkMessage(View itemView, UiMessage message) {
         fragment.toggleMultiMessageMode(message);
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT, title = "私聊", priority = 12)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT, priority = 12)
     public void startChanelPrivateChat(View itemView, UiMessage message) {
         Intent intent = ConversationActivity.buildConversationIntent(fragment.getContext(), Conversation.ConversationType.Channel, message.message.conversation.target, message.message.conversation.line, message.message.sender);
         fragment.startActivity(intent);
+    }
+
+    @Override
+    public String contextMenuTitle(Context context, String tag) {
+        String title = "未设置";
+        switch (tag) {
+            case MessageContextMenuItemTags.TAG_RECALL:
+                title = "撤回";
+                break;
+            case MessageContextMenuItemTags.TAG_DELETE:
+                title = "删除";
+                break;
+            case MessageContextMenuItemTags.TAG_FORWARD:
+                title = "转发";
+                break;
+            case MessageContextMenuItemTags.TAG_MULTI_CHECK:
+                title = "多选";
+                break;
+            case MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT:
+                title = "私聊";
+                break;
+            default:
+                break;
+        }
+        return title;
+    }
+
+    @Override
+    public String contextConfirmPrompt(Context context, String tag) {
+        String title = "未设置";
+        switch (tag) {
+            case MessageContextMenuItemTags.TAG_DELETE:
+                title = "确认删除此消息";
+                break;
+            default:
+                break;
+        }
+        return title;
     }
 
     @Override

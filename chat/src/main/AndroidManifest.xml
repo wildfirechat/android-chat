@@ -109,7 +109,7 @@
             android:name="cn.wildfire.chat.app.main.PCLoginActivity"
             android:label="PC登录" />
 
-        <activity android:name="cn.wildfire.chat.app.main.PCSessionActivity" />
+        <activity android:name="cn.wildfire.chat.app.login.SMSLoginActivity" />
 
     </application>
 </manifest>

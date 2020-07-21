@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.view.MenuItem;
 
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.R;
-import cn.wildfirechat.chat.R2;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 
 public class BlacklistListActivity extends WfcBaseActivity {
 
