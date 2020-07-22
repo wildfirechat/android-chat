@@ -3,9 +3,8 @@
 ## 升级注意
 v0.8.0 版本，对代码结构及部分实现机制进行了大量调整，变动如下：
 
-1. ```applicationId```由```cn.wildfire.chat```变更为```cn.wildfire.chat.app```
-2. 将```chat``` application module 拆分为两部分：```uikit``` library module 和 ```chat``` application module
-3. 移除```LayoutRes```、```SendLayoutRes```、```ReceiveLayoutRes```等注解，并更新```MessageViewHolder```等的实现机制
+1. 将```chat``` application module 拆分为两部分：```uikit``` library module 和 ```chat``` application module。```uikit```可以library的方式导入项目，里面包含了大量可重用的UI。
+2. 移除```LayoutRes```、```SendLayoutRes```、```ReceiveLayoutRes```等注解，并更新```MessageViewHolder```等的实现机制
 
 ## 特别注意
 1. ```com.android.tools.build:gradle:3.5.0``` 可能存在bug，会导致音视频crash，请勿使用此版本
