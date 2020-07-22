@@ -13,7 +13,7 @@ android {
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
     defaultConfig {
-        applicationId "cn.wildfirechat.chat.app"
+        applicationId "cn.wildfirechat.chat"
         minSdkVersion 17
         targetSdkVersion 29 //当targetversion大于23时，需要使用fileprovider
         versionCode 25
