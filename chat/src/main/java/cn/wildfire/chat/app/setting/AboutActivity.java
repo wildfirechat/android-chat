@@ -9,7 +9,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
-import cn.wildfirechat.chat.app.R;
+import cn.wildfirechat.chat.R;
 
 public class AboutActivity extends WfcBaseActivity {
 

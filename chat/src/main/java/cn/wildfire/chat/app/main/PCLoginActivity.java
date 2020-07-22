@@ -14,7 +14,7 @@ import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.PCSession;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.chat.app.R;
+import cn.wildfirechat.chat.R;
 
 public class PCLoginActivity extends WfcBaseActivity {
     private String token;

@@ -19,7 +19,7 @@ import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.chat.app.R;
+import cn.wildfirechat.chat.R;
 
 /**
  * use {@link SMSLoginActivity} instead

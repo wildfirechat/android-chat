@@ -11,8 +11,8 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
-import cn.wildfirechat.chat.app.BuildConfig;
-import cn.wildfirechat.chat.app.R;
+import cn.wildfirechat.chat.BuildConfig;
+import cn.wildfirechat.chat.R;
 import cn.wildfirechat.push.PushService;
 
 
