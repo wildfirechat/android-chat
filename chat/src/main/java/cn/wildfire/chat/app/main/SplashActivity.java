@@ -22,7 +22,7 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import butterknife.ButterKnife;
 import cn.wildfire.chat.app.login.SMSLoginActivity;
-import cn.wildfirechat.chat.app.R;
+import cn.wildfirechat.chat.R;
 
 import static cn.wildfire.chat.app.BaseApp.getContext;
 
