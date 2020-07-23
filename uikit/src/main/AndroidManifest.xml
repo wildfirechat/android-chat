@@ -207,6 +207,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name="cn.wildfire.chat.kit.voip.VoipDummyActivity" />
         <activity android:name="cn.wildfire.chat.kit.pc.PCSessionActivity" />
 
         <!--moment start-->
