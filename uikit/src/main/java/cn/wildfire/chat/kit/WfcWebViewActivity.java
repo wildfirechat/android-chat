@@ -3,12 +3,11 @@ package cn.wildfire.chat.kit;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import butterknife.BindView;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class WfcWebViewActivity extends WfcBaseActivity {
     private String url;
@@ -49,6 +48,8 @@ public class WfcWebViewActivity extends WfcBaseActivity {
         if (!TextUtils.isEmpty(title)) {
             setTitle(title);
         }
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
