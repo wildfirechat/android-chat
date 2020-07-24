@@ -27,7 +27,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -59,6 +58,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     private Handler handler = new Handler();
 
     protected boolean isInvitingNewParticipant;
+    private String focusVideoUserId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -160,7 +160,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             session.resetRenderer();
             session.setCallback(null);
             if (!isChangingConfigurations()) {
-                showFloatingView(null);
+                showFloatingView(focusVideoUserId);
             }
         }
     }
@@ -289,5 +289,13 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     protected void finishFadeout() {
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    public void setFocusVideoUserId(String focusVideoUserId){
+        this.focusVideoUserId = focusVideoUserId;
+    }
+
+    public String getFocusVideoUserId() {
+        return focusVideoUserId;
     }
 }
