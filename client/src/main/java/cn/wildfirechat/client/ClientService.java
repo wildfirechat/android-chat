@@ -1986,7 +1986,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         return userInfo;
     }
 
-    
+
 
     private MessageContent contentOfType(int type) {
         Class<? extends MessageContent> cls = contentMapper.get(type);
@@ -2430,9 +2430,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onFriendListUpdated(String[] friendList) {
-        if (friendList == null || friendList.length == 0) {
-            return;
-        }
+//        if (friendList == null || friendList.length == 0) {
+//            return;
+//        }
         handler.post(() -> {
             int i = onFriendUpdateListenerRemoteCallbackList.beginBroadcast();
             IOnFriendUpdateListener listener;
