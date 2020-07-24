@@ -31,6 +31,7 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfire.chat.kit.BuildConfig;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.remote.ChatManager;
 
 import static org.webrtc.RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
 
@@ -287,7 +288,7 @@ public class VoipCallService extends Service {
             SurfaceView surfaceView = session.createRendererView();
             remoteVideoFrameLayout.addView(surfaceView);
             String targetId = session.getParticipantIds().get(0);
-            if (!TextUtils.isEmpty(focusTargetId) && session.getParticipantIds().contains(focusTargetId)) {
+            if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId) || ChatManager.Instance().getUserId().equals(focusTargetId))) {
                 targetId = focusTargetId;
             } else if (session.getConversation().type == Conversation.ConversationType.Group) {
                 for (AVEngineKit.ParticipantProfile profile : session.getParticipantProfiles()) {
@@ -298,7 +299,7 @@ public class VoipCallService extends Service {
                 }
             }
 
-            if (session.getState() == AVEngineKit.CallState.Connected) {
+            if (session.getState() == AVEngineKit.CallState.Connected && !targetId.equals(ChatManager.Instance().getUserId())) {
                 session.setupRemoteVideo(targetId, surfaceView, SCALE_ASPECT_BALANCED);
             } else {
                 session.setupLocalVideo(surfaceView, SCALE_ASPECT_BALANCED);

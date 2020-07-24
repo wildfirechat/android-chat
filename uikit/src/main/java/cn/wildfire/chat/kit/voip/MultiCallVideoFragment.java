@@ -57,7 +57,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     private UserInfo me;
     private UserViewModel userViewModel;
 
-    private String focusVideoUserId;
     private MultiCallItem focusMultiCallItem;
 
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
@@ -146,7 +145,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(with, with));
         focusVideoContainerFrameLayout.addView(multiCallItem);
         focusMultiCallItem = multiCallItem;
-        focusVideoUserId = me.uid;
+        ((VoipBaseActivity) getActivity()).setFocusVideoUserId(me.uid);
     }
 
     private void updateParticipantStatus(AVEngineKit.CallSession session) {
@@ -178,7 +177,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         for (String participant : participants) {
             session.setupRemoteVideo(participant, null, scalingType);
         }
-        ((MultiCallActivity) getActivity()).showFloatingView(focusVideoUserId);
+        ((MultiCallActivity) getActivity()).showFloatingView(((VoipBaseActivity) getActivity()).getFocusVideoUserId());
     }
 
     @OnClick(R2.id.addParticipantImageView)
@@ -277,8 +276,8 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         }
         participants.remove(userId);
 
-        if (userId.equals(focusVideoUserId)) {
-            focusVideoUserId = null;
+        if (userId.equals(((VoipBaseActivity) getActivity()).getFocusVideoUserId())) {
+            ((VoipBaseActivity) getActivity()).setFocusVideoUserId(null);
             focusVideoContainerFrameLayout.removeView(focusMultiCallItem);
             focusMultiCallItem = null;
         }
@@ -384,7 +383,8 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         @Override
         public void onClick(View v) {
             String userId = (String) v.getTag();
-            if (!userId.equals(focusVideoUserId)) {
+
+            if (!userId.equals(((VoipBaseActivity) getActivity()).getFocusVideoUserId())) {
                 MultiCallItem clickedMultiCallItem = (MultiCallItem) v;
                 int clickedIndex = participantGridView.indexOfChild(v);
                 participantGridView.removeView(clickedMultiCallItem);
@@ -401,7 +401,8 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                 focusVideoContainerFrameLayout.addView(clickedMultiCallItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 clickedMultiCallItem.setOnClickListener(null);
                 focusMultiCallItem = clickedMultiCallItem;
-                focusVideoUserId = userId;
+                ((VoipBaseActivity) getActivity()).setFocusVideoUserId(userId);
+
 
                 bringParticipantVideoFront();
             } else {
@@ -412,7 +413,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     };
 
     private void bringParticipantVideoFront() {
-        SurfaceView focusSurfaceView = focusMultiCallItem.findViewWithTag("v_" + focusVideoUserId);
+        SurfaceView focusSurfaceView = focusMultiCallItem.findViewWithTag("v_" + ((VoipBaseActivity) getActivity()).getFocusVideoUserId());
         if (focusSurfaceView != null) {
             focusSurfaceView.setZOrderOnTop(false);
             focusSurfaceView.setZOrderMediaOverlay(false);
