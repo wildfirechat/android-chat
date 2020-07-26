@@ -46,11 +46,6 @@
     public void init(***);
 }
 
--keep class cn.wildfire.chat.app.login.model.** {*;}
--keepclassmembers class cn.wildfire.chat.app.login.model.** {
-  *;
-}
-
 -keep class cn.wildfire.chat.kit.net.base.** {*;}
 -keepclassmembers class cn.wildfire.chat.kit.net.base.** {
   *;
