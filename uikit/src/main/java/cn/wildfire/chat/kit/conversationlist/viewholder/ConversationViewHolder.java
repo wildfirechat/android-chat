@@ -18,6 +18,8 @@ import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.Draft;
@@ -26,8 +28,6 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
@@ -105,7 +105,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         } else {
             if (conversationInfo.unreadCount.unread > 0) {
                 unreadCountTextView.setVisibility(View.VISIBLE);
-                unreadCountTextView.setText(conversationInfo.unreadCount.unread + "");
+                unreadCountTextView.setText(conversationInfo.unreadCount.unread > 99 ? "99+" : conversationInfo.unreadCount.unread + "");
             } else {
                 unreadCountTextView.setVisibility(View.GONE);
             }
