@@ -65,11 +65,6 @@
             android:name="android.webkit.WebView.EnableSafeBrowsing"
             android:value="true" />
 
-        <!--地图-->
-        <meta-data
-            android:name="TencentMapSDK"
-            android:value="TOEBZ-67IR4-ZDHUV-DSDXX-TJZU7-UYFE7" />
-
         <activity
             android:name="cn.wildfire.chat.kit.conversation.ConversationActivity"
             android:launchMode="singleTask"
@@ -209,6 +204,7 @@
         </activity>
         <activity android:name="cn.wildfire.chat.kit.voip.VoipDummyActivity" />
         <activity android:name="cn.wildfire.chat.kit.pc.PCSessionActivity" />
+        <activity android:name=".third.location.ui.activity.MyLocationActivity" />
 
         <!--moment start-->
         <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
