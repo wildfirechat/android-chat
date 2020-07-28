@@ -2,7 +2,6 @@ package cn.wildfire.chat.kit;
 
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 
 /**
  * Created by heavyrain lee on 2017/11/24.
@@ -38,16 +37,16 @@ public class Config {
     public static void validateConfig() {
         if (TextUtils.isEmpty(IM_SERVER_HOST)
             || IM_SERVER_HOST.startsWith("http")
+            || IM_SERVER_HOST.contains(":")
             || TextUtils.isEmpty(APP_SERVER_ADDRESS)
             || (!APP_SERVER_ADDRESS.startsWith("http") && !APP_SERVER_ADDRESS.startsWith("https"))
             || IM_SERVER_HOST.equals("127.0.0.1")
             || APP_SERVER_ADDRESS.contains("127.0.0.1")
+            || (!IM_SERVER_HOST.contains("wildfirechat.cn") || APP_SERVER_ADDRESS.contains("wildfirechat.cn"))
+            || (IM_SERVER_HOST.contains("wildfirechat.cn") || !APP_SERVER_ADDRESS.contains("wildfirechat.cn"))
+            || !ICE_ADDRESS.startsWith("turn")
         ) {
-            throw new IllegalStateException("im server host config error");
-        }
-
-        if(Config.IM_SERVER_HOST.contains(":")){
-            Log.e("WFC", "!!!!IM_SERVER_HOST不能配置端口!!!!");
+            throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读Config.java中的注释，并检查配置!\n");
         }
     }
 }
