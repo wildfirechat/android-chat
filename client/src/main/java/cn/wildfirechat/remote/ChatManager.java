@@ -219,6 +219,8 @@ public class ChatManager {
         gContext = context.getApplicationContext();
         INST = new ChatManager(imServerHost);
         INST.mainHandler = new Handler();
+        INST.userInfoCache = new LruCache<>(1024);
+        INST.groupMemberCache = new LruCache<>(1024);
         HandlerThread thread = new HandlerThread("workHandler");
         thread.start();
         INST.workHandler = new Handler(thread.getLooper());
@@ -1398,8 +1400,6 @@ public class ChatManager {
         }
         this.userId = userId;
         this.token = token;
-        this.userInfoCache = new LruCache<>(1024);
-        this.groupMemberCache = new LruCache<>(1024);
 
         if (mClient != null) {
             try {
@@ -3278,11 +3278,11 @@ public class ChatManager {
             for (int i = 0; i <= userIds.size() / step; i++) {
                 startIndex = i * step;
                 endIndex = (i + 1) * step;
-                endIndex = endIndex > userIds.size() ? userIds.size() : endIndex;
+                endIndex = Math.min(endIndex, userIds.size());
                 List<UserInfo> us = mClient.getUserInfos(userIds.subList(startIndex, endIndex), groupId);
                 userInfos.addAll(us);
             }
-            if (userInfos != null && userInfos.size() > 0) {
+            if (userInfos.size() > 0) {
                 for (UserInfo info : userInfos) {
                     if (info != null) {
                         if (TextUtils.isEmpty(groupId)) {
