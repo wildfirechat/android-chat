@@ -42,8 +42,8 @@ public class Config {
             || (!APP_SERVER_ADDRESS.startsWith("http") && !APP_SERVER_ADDRESS.startsWith("https"))
             || IM_SERVER_HOST.equals("127.0.0.1")
             || APP_SERVER_ADDRESS.contains("127.0.0.1")
-            || (!IM_SERVER_HOST.contains("wildfirechat.cn") || APP_SERVER_ADDRESS.contains("wildfirechat.cn"))
-            || (IM_SERVER_HOST.contains("wildfirechat.cn") || !APP_SERVER_ADDRESS.contains("wildfirechat.cn"))
+            || (!IM_SERVER_HOST.contains("wildfirechat.cn") && APP_SERVER_ADDRESS.contains("wildfirechat.cn"))
+            || (IM_SERVER_HOST.contains("wildfirechat.cn") && !APP_SERVER_ADDRESS.contains("wildfirechat.cn"))
             || !ICE_ADDRESS.startsWith("turn")
         ) {
             throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读Config.java中的注释，并检查配置!\n");
