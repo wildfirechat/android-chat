@@ -4026,6 +4026,19 @@ public class ChatManager {
         }
     }
 
+    public List<GroupMember> getGroupMembersByType(String groupId, GroupMember.GroupMemberType type) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getGroupMembersByType(groupId, type.value());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public void getGroupMembers(String groupId, boolean forceUpdate, GetGroupMembersCallback callback) {
         if (!checkRemoteService()) {
             return;
