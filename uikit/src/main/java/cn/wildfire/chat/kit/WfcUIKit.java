@@ -42,7 +42,6 @@ import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfire.chat.kit.voip.VoipCallService;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.PersistFlag;
@@ -103,6 +102,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         ViewModelProvider.Factory factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application);
         viewModelProvider = new ViewModelProvider(viewModelStore, factory);
         OKHttpHelper.init(application.getApplicationContext());
+
+        Log.d("WfcUIKit", "init end");
     }
 
     public boolean isSupportMoment() {
