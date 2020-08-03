@@ -43,6 +43,7 @@ import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGetFileRecordCallback;
 import cn.wildfirechat.client.IGetGroupCallback;
 import cn.wildfirechat.client.IGetGroupMemberCallback;
 import cn.wildfirechat.client.IGetMessageCallback;
@@ -62,6 +63,7 @@ import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -76,6 +78,7 @@ import cn.wildfirechat.model.ChatRoomMembersInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.ConversationSearchResult;
+import cn.wildfirechat.model.FileRecord;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -2071,6 +2074,122 @@ public class ChatManager {
             e.printStackTrace();
         }
     }
+
+    public void getConversationFileRecords(Conversation conversation, long beforeMessageId, int count, GetFileRecordCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.getConversationFileRecords(conversation, beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+                @Override
+                public void onSuccess(List<FileRecord> messages) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess(messages);
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getMyFileRecords(long beforeMessageId, int count, GetFileRecordCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.getMyFileRecords(beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+                @Override
+                public void onSuccess(List<FileRecord> messages) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess(messages);
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    public void deleteFileRecord(long messageUid, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.deleteFileRecord(messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+
+//    - (void)getConversationFiles:(WFCCConversation *)conversation
+//    beforeMessageUid:(long long)messageUid
+//    count:(int)count
+//    success:(void(^)(NSArray<WFCCFileRecord *> *files))successBlock
+//    error:(void(^)(int error_code))errorBlock;
+//
+//- (void)getMyFiles:(long long)beforeMessageUid
+//    count:(int)count
+//    success:(void(^)(NSArray<WFCCFileRecord *> *files))successBlock
+//    error:(void(^)(int error_code))errorBlock;
+//
+//- (void)deleteFileRecord:(long long)messageUid
+//    success:(void(^)(void))successBlock
+//    error:(void(^)(int error_code))errorBlock;
+
 
     /**
      * 根据消息id，获取消息
@@ -4818,6 +4937,45 @@ public class ChatManager {
         }
     }
 
+    public void getAuthorizedMediaUrl(long messageUid, MessageContentMediaType mediaType, String mediaPath, final GeneralCallback2 callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getAuthorizedMediaUrl(messageUid, mediaType.getValue(), mediaPath, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
+                @Override
+                public void onSuccess(String authorizedUrl) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(authorizedUrl);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
 
     public List<PCOnlineInfo> getPCOnlineInfos() {
         String pcOnline = getUserSetting(UserSettingScope.PCOnline, "PC");

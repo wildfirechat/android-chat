@@ -85,6 +85,7 @@ import cn.wildfirechat.model.ChatRoomMembersInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.ConversationSearchResult;
+import cn.wildfirechat.model.FileRecord;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -97,6 +98,7 @@ import cn.wildfirechat.model.ProtoChatRoomInfo;
 import cn.wildfirechat.model.ProtoChatRoomMembersInfo;
 import cn.wildfirechat.model.ProtoConversationInfo;
 import cn.wildfirechat.model.ProtoConversationSearchresult;
+import cn.wildfirechat.model.ProtoFileRecord;
 import cn.wildfirechat.model.ProtoFriendRequest;
 import cn.wildfirechat.model.ProtoGroupInfo;
 import cn.wildfirechat.model.ProtoGroupMember;
@@ -526,6 +528,92 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                             callback.onSuccess(entry.messages);
                             startIndex = entry.index + 1;
                         } while (entry.index > 0 && entry.index < list.length - 1);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        private List<FileRecord> convertProtoFileRecord(ProtoFileRecord[] protoFileRecords) {
+            List<FileRecord> records = new ArrayList<>();
+            for (ProtoFileRecord pfr:protoFileRecords) {
+                FileRecord fr = new FileRecord();
+                fr.userId = pfr.userId;
+                fr.conversation = new Conversation(Conversation.ConversationType.type(pfr.conversationType), pfr.target, pfr.line);
+                fr.messageUid = pfr.messageUid;
+                fr.name = pfr.name;
+                fr.url = pfr.url;
+                fr.size = pfr.size;
+                fr.downloadCount = pfr.downloadCount;
+                fr.timestamp = pfr.timestamp;
+
+                records.add(fr);
+            }
+            return records;
+        }
+
+        @Override
+        public void getConversationFileRecords(Conversation conversation, long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.getConversationFileRecords(conversation.type.getValue(), conversation.target, conversation.line, beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+                @Override
+                public void onSuccess(ProtoFileRecord[] protoFileRecords) {
+                    try {
+                        callback.onSuccess(convertProtoFileRecord(protoFileRecords));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void getMyFileRecords(long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.getMyFileRecords(beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+                @Override
+                public void onSuccess(ProtoFileRecord[] protoFileRecords) {
+                    try {
+                        callback.onSuccess(convertProtoFileRecord(protoFileRecords));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void deleteFileRecord(long messageUid, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.deleteFileRecords(messageUid, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -1837,6 +1925,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void getApplicationId(String applicationId, IGeneralCallback2 callback) throws RemoteException {
             ProtoLogic.getApplicationToken(applicationId, new ProtoLogic.IGeneralCallback2() {
+                @Override
+                public void onSuccess(String s) {
+                    try {
+                        callback.onSuccess(s);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void getAuthorizedMediaUrl(long messageUid, int mediaType, String mediaPath, IGeneralCallback2 callback) throws RemoteException {
+            ProtoLogic.getAuthorizedMediaUrl(messageUid, mediaType, mediaPath, new ProtoLogic.IGeneralCallback2() {
                 @Override
                 public void onSuccess(String s) {
                     try {

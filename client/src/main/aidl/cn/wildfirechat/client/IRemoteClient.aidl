@@ -15,6 +15,8 @@ import cn.wildfirechat.client.IGetGroupInfoCallback;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ISearchChannelCallback;
 import cn.wildfirechat.client.IGetRemoteMessageCallback;
+import cn.wildfirechat.client.IGetFileRecordCallback;
+
 import cn.wildfirechat.client.IGetMessageCallback;
 import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IGetGroupCallback;
@@ -86,6 +88,9 @@ interface IRemoteClient {
     oneway void getMessagesEx2Async(in int[] conversationTypes, in int[] lines, in int messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
 
     oneway void getRemoteMessages(in Conversation conversation, in long beforeMessageUid, in int count, in IGetRemoteMessageCallback callback);
+    oneway void getConversationFileRecords(in Conversation conversation, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
+    oneway void getMyFileRecords(in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
+    oneway void deleteFileRecord(in long messageUid, in IGeneralCallback callback);
 
     Message getMessage(in long messageId);
     Message getMessageByUid(in long messageUid);
@@ -194,6 +199,7 @@ interface IRemoteClient {
 
     void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
     void getApplicationId(in String applicationId, in IGeneralCallback2 callback);
+    oneway void getAuthorizedMediaUrl(in long messageUid, in int mediaType, in String mediaPath, in IGeneralCallback2 callback);
 
     int getMessageCount(in Conversation conversation);
     boolean begainTransaction();
