@@ -67,6 +67,7 @@ import cn.wildfirechat.message.notification.DeleteMessageContent;
 import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
 import cn.wildfirechat.message.notification.FriendAddedMessageContent;
 import cn.wildfirechat.message.notification.FriendGreetingMessageContent;
+import cn.wildfirechat.message.notification.GroupAllowMemberNotificationContent;
 import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteMemberNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
@@ -1697,13 +1698,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void muteGroupMember(String groupId, boolean isSet, List<String> memberIds, int[] notifyLines, MessagePayload notifyMsg, IGeneralCallback callback) throws RemoteException {
+        public void muteOrAllowGroupMember(String groupId, boolean isSet, List<String> memberIds, boolean isAllow, int[] notifyLines, MessagePayload notifyMsg, IGeneralCallback callback) throws RemoteException {
             String[] memberArray = new String[memberIds.size()];
             for (int i = 0; i < memberIds.size(); i++) {
                 memberArray[i] = memberIds.get(i);
             }
 
-            ProtoLogic.muteGroupMember(groupId, isSet, memberArray, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+            ProtoLogic.muteOrAllowGroupMember(groupId, isSet, isAllow, memberArray, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -2243,6 +2244,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             mBinder.registerMessageContent(GroupPrivateChatNotificationContent.class.getName());
             mBinder.registerMessageContent(GroupSetManagerNotificationContent.class.getName());
             mBinder.registerMessageContent(GroupMuteMemberNotificationContent.class.getName());
+            mBinder.registerMessageContent(GroupAllowMemberNotificationContent.class.getName());
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -54,6 +54,7 @@ public interface MessageContentType {
     int CONTENT_TYPE_SET_MANAGER = 117;
     //禁言/取消禁言群成员的通知消息
     int CONTENT_TYPE_MUTE_MEMBER = 118;
+    int CONTENT_TYPE_ALLOW_MEMBER = 119;
 
     int ContentType_Call_Start = 400;
     int ContentType_Call_End = 402;
