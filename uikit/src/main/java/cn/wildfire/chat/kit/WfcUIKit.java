@@ -213,6 +213,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void shouldSopRing() {
+        Log.d("wfcUIKit", "showStopRing");
         ringPlayer.stop();
     }
 
