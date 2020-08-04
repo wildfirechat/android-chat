@@ -74,7 +74,9 @@ public class AsyncPlayer {
                         break;
                     case STOP:
 
+                        Log.e(mTag, "STOP CMD");
                         if (mPlayer != null) {
+                            Log.e("AsyncPlayer", "mediaPlayer stop & release");
                             mPlayer.stop();
                             mPlayer.release();
                             mPlayer = null;
@@ -126,6 +128,7 @@ public class AsyncPlayer {
     }
 
     public void stop() {
+        Log.e(mTag, "stop");
         synchronized (mCmdQueue) {
             if (mState != STOP) {
                 Command cmd = new Command();
