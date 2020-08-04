@@ -4342,7 +4342,53 @@ public class ChatManager {
         }
 
         try {
-            mClient.muteGroupMember(groupId, isSet, memberIds, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.muteOrAllowGroupMember(groupId, isSet, memberIds, false, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess());
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
+        }
+    }
+
+    /**
+     * 禁言群成员
+     *
+     * @param groupId
+     * @param isSet
+     * @param memberIds
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
+    public void allowGroupMember(String groupId, boolean isSet, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        int[] inlines = new int[lines.size()];
+        for (int j = 0; j < lines.size(); j++) {
+            inlines[j] = lines.get(j);
+        }
+
+        try {
+            mClient.muteOrAllowGroupMember(groupId, isSet, memberIds, true, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
