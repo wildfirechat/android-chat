@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
+import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
@@ -119,6 +120,13 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     @OnClick(R2.id.searchMessageOptionItemView)
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
+        intent.putExtra("conversation", conversationInfo.conversation);
+        startActivity(intent);
+    }
+
+    @OnClick(R2.id.fileRecordOptionItemView)
+    void fileRecord(){
+        Intent intent = new Intent(getActivity(), FileRecordActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
     }

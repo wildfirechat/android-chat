@@ -86,10 +86,10 @@
             android:name="cn.wildfire.chat.kit.group.SetGroupNameActivity"
             android:label="修改群名称"
             android:screenOrientation="portrait" />
-        <activity android:name=".group.SetGroupAnnouncementActivity"
+        <activity
+            android:name=".group.SetGroupAnnouncementActivity"
             android:label="修改群公告"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity"
             android:screenOrientation="portrait" />
@@ -209,6 +209,9 @@
         <activity android:name="cn.wildfire.chat.kit.voip.VoipDummyActivity" />
         <activity android:name="cn.wildfire.chat.kit.pc.PCSessionActivity" />
         <activity android:name=".third.location.ui.activity.MyLocationActivity" />
+        <activity
+            android:name=".conversation.file.FileRecordActivity"
+            android:label="文件记录" />
 
         <!--moment start-->
         <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />

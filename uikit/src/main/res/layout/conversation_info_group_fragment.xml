@@ -147,6 +147,13 @@
                 app:show_arrow_indicator="true"
                 app:title="查找聊天记录" />
 
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/fileRecordOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                android:background="@drawable/selector_option_item"
+                app:title="文件记录" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
