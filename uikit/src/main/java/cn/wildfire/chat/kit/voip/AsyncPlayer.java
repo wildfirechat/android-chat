@@ -44,6 +44,7 @@ public class AsyncPlayer {
             player.prepare();
             player.start();
             if (mPlayer != null) {
+                mPlayer.stop();
                 mPlayer.release();
             }
             mPlayer = player;

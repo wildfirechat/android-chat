@@ -4,6 +4,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -12,15 +13,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
     private MenuItem menuItem;
     private List<UIUserInfo> checkedGroupMembers;
+    private boolean groupMuted = false;
 
     @Override
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
@@ -32,6 +34,12 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
             menuItem.setTitle("确定(" + checkedUserInfos.size() + ")");
             menuItem.setEnabled(true);
         }
+    }
+
+    @Override
+    protected void afterViews() {
+        super.afterViews();
+        groupMuted = getIntent().getBooleanExtra("groupMuted", false);
     }
 
     @Override
@@ -48,32 +56,39 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.confirm) {
-            muteGroupMembers();
+            muteOrAllowGroupMembers();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void muteGroupMembers() {
+    private void muteOrAllowGroupMembers() {
         GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         List<String> memberIds = new ArrayList<>(checkedGroupMembers.size());
         for (UIUserInfo info : checkedGroupMembers) {
             memberIds.add(info.getUserInfo().uid);
         }
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("禁言中...")
+            .content(groupMuted ? "加入白名单中..." : "禁言中...")
             .progress(true, 100)
             .cancelable(false)
             .build();
         dialog.show();
-        groupViewModel.muteGroupMember(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
-            .observe(this, booleanOperateResult -> {
+        Observer<OperateResult<Boolean>> observer =
+            booleanOperateResult -> {
                 dialog.dismiss();
                 if (booleanOperateResult.isSuccess()) {
                     finish();
                 } else {
-                    Toast.makeText(this, "设置禁言错误 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, groupMuted ? "添加白名单错误" : "设置禁言错误 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
                 }
-            });
+            };
+        if (groupMuted) {
+            groupViewModel.allowGroupMember(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
+                .observe(this, observer);
+        } else {
+            groupViewModel.muteGroupMember(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
+                .observe(this, observer);
+        }
     }
 }

@@ -85,7 +85,7 @@ public class GroupManageFragment extends Fragment {
 
     @OnClick(R2.id.muteOptionItemView)
     void showGroupMuteSetting() {
-        Intent intent = new Intent(getActivity(), GroupMuteActivity.class);
+        Intent intent = new Intent(getActivity(), GroupMuteOrAllowActivity.class);
         intent.putExtra("groupInfo", groupInfo);
         startActivity(intent);
 
