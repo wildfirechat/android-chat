@@ -188,7 +188,7 @@
         <activity android:name="cn.wildfire.chat.kit.group.manage.GroupManageActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.manage.GroupManagerListActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.manage.AddGroupManagerActivity" />
-        <activity android:name="cn.wildfire.chat.kit.group.manage.GroupMuteActivity" />
+        <activity android:name="cn.wildfire.chat.kit.group.manage.GroupMuteOrAllowActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.manage.GroupMemberPermissionActivity" />
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupMemberListActivity"

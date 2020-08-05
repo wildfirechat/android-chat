@@ -11,13 +11,13 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
-import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfirechat.model.GroupInfo;
 
-public class GroupMuteActivity extends WfcBaseActivity {
+public class GroupMuteOrAllowActivity extends WfcBaseActivity {
     private GroupInfo groupInfo;
     private GroupViewModel groupViewModel;
 
@@ -49,7 +49,7 @@ public class GroupMuteActivity extends WfcBaseActivity {
                             groupInfo = info;
 
                             if (oMuted != nMuted) {
-                                initGroupMemberMuteListFragment(!nMuted);
+                                initGroupMemberMuteListFragment(true);
                             }
                             break;
                         }
@@ -68,26 +68,17 @@ public class GroupMuteActivity extends WfcBaseActivity {
             });
         });
 
-        if (groupInfo.mute == 0) {
-            initGroupMemberMuteListFragment(true);
-        }
+        initGroupMemberMuteListFragment(false);
     }
 
-    private GroupMemberMuteListFragment fragment;
+    private GroupMemberMuteOrAllowListFragment fragment;
 
-    private void initGroupMemberMuteListFragment(boolean show) {
-        if (show) {
-            if (fragment == null) {
-                fragment = GroupMemberMuteListFragment.newInstance(groupInfo);
-            }
-            getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, fragment)
-                .commit();
-        } else {
-            if (fragment != null) {
-                getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-                fragment = null;
-            }
+    private void initGroupMemberMuteListFragment(boolean forceUpdate) {
+        if (fragment == null || forceUpdate) {
+            fragment = GroupMemberMuteOrAllowListFragment.newInstance(groupInfo);
         }
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 }

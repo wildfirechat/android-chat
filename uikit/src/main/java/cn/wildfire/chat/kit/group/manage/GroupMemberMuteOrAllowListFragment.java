@@ -12,6 +12,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
@@ -19,20 +20,20 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.remote.ChatManager;
 
-public class GroupMemberMuteListFragment extends BaseUserListFragment {
+public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment {
     private GroupViewModel groupViewModel;
     private GroupInfo groupInfo;
     private GroupMember groupMember;
+    private boolean groupMuted = false;
 
-    public static GroupMemberMuteListFragment newInstance(GroupInfo groupInfo) {
+    public static GroupMemberMuteOrAllowListFragment newInstance(GroupInfo groupInfo) {
         Bundle args = new Bundle();
         args.putParcelable("groupInfo", groupInfo);
-        GroupMemberMuteListFragment fragment = new GroupMemberMuteListFragment();
+        GroupMemberMuteOrAllowListFragment fragment = new GroupMemberMuteOrAllowListFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,6 +42,7 @@ public class GroupMemberMuteListFragment extends BaseUserListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
+        groupMuted = groupInfo.mute == 1;
         showQuickIndexBar(false);
 
         groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
@@ -62,7 +64,7 @@ public class GroupMemberMuteListFragment extends BaseUserListFragment {
     @Override
     public void initFooterViewHolders() {
         if (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager) {
-            addFooterViewHolder(MuteGroupMemberViewHolder.class, R.layout.group_manage_item_mute_member, new FooterValue());
+            addFooterViewHolder(MuteGroupMemberViewHolder.class, R.layout.group_manage_item_mute_member, new FooterValue(groupInfo));
         }
     }
 
@@ -75,9 +77,13 @@ public class GroupMemberMuteListFragment extends BaseUserListFragment {
         }
 
         new MaterialDialog.Builder(getActivity())
-            .items(Collections.singleton("取消禁言"))
+            .items(Collections.singleton(groupMuted ? "移除白名单" : "取消禁言"))
             .itemsCallback((dialog, itemView, position, text) -> {
-                groupViewModel.muteGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
+                if (groupMuted) {
+                    groupViewModel.allowGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
+                } else {
+                    groupViewModel.muteGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
+                }
             })
             .cancelable(true)
             .build()
@@ -88,11 +94,12 @@ public class GroupMemberMuteListFragment extends BaseUserListFragment {
     public void onFooterClick(int index) {
         Intent intent = new Intent(getActivity(), MuteGroupMemberActivity.class);
         intent.putExtra(BasePickGroupMemberActivity.GROUP_INFO, groupInfo);
+        intent.putExtra("groupMuted", groupMuted);
 
         ArrayList<String> uncheckableMemberIds = new ArrayList<>();
         uncheckableMemberIds.add(groupInfo.owner);
-        uncheckableMemberIds.addAll(groupViewModel.getMutedMemberIds(groupInfo.target));
         uncheckableMemberIds.addAll(groupViewModel.getGroupManagerIds(groupInfo.target));
+        uncheckableMemberIds.addAll(groupViewModel.getMutedOrAllowedMemberIds(groupInfo.target, groupMuted));
         intent.putExtra(BasePickGroupMemberActivity.UNCHECKABLE_MEMBER_IDS, uncheckableMemberIds);
         startActivity(intent);
     }
@@ -106,7 +113,7 @@ public class GroupMemberMuteListFragment extends BaseUserListFragment {
     }
 
     private void loadAndShowGroupMembers(boolean refresh) {
-        groupViewModel.getMutedMemberUIUserInfosLiveData(groupInfo.target, refresh).observe(this, uiUserInfos -> {
+        groupViewModel.getMutedOrAllowedMemberUIUserInfosLiveData(groupInfo.target, groupMuted, refresh).observe(this, uiUserInfos -> {
             showContent();
             userListAdapter.setUsers(uiUserInfos);
             userListAdapter.notifyDataSetChanged();

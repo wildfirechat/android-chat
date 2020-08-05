@@ -18,13 +18,12 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
@@ -250,6 +249,22 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return result;
     }
 
+    public MutableLiveData<OperateResult<Boolean>> allowGroupMember(String groupId, boolean allow, List<String> memberIds, NotificationMessageContent notifyMsg, List<Integer> lines) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().allowGroupMember(groupId, allow, memberIds, lines, notifyMsg, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return result;
+    }
+
     public MutableLiveData<OperateResult<Boolean>> muteAll(String groupId, boolean mute, MessageContent notifyMsg, List<Integer> notifyLines) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
         ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_Mute, mute ? "1" : "0", notifyLines, notifyMsg, new GeneralCallback() {
@@ -344,11 +359,11 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return data;
     }
 
-    public MutableLiveData<List<UIUserInfo>> getMutedMemberUIUserInfosLiveData(String groupId, boolean refresh) {
+    public MutableLiveData<List<UIUserInfo>> getMutedOrAllowedMemberUIUserInfosLiveData(String groupId, boolean muted, boolean refresh) {
         MutableLiveData<List<UIUserInfo>> data = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<GroupMember> mutedMembers = getMutedMembers(groupId);
-            List<UIUserInfo> userInfos = mutedMemberToUIUserInfo(groupId, mutedMembers);
+            List<GroupMember> mutedMembers = getMutedOrAllowedMembers(groupId, muted);
+            List<UIUserInfo> userInfos = mutedOrAllowedMemberToUIUserInfo(groupId, muted, mutedMembers);
             data.postValue(userInfos);
         });
 
@@ -380,12 +395,13 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     }
 
 
-    public List<GroupMember> getMutedMembers(String groupId) {
+    public List<GroupMember> getMutedOrAllowedMembers(String groupId, boolean muted) {
         List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, false);
         List<GroupMember> managers = new ArrayList<>();
         if (members != null) {
             for (GroupMember member : members) {
-                if (member.type == GroupMember.GroupMemberType.Muted) {
+                if ((muted && member.type == GroupMember.GroupMemberType.Allowed)
+                    || !muted && member.type == GroupMember.GroupMemberType.Muted) {
                     managers.add(member);
                 }
             }
@@ -394,8 +410,8 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     }
 
 
-    public List<String> getMutedMemberIds(String groupId) {
-        List<GroupMember> mutedMembers = getMutedMembers(groupId);
+    public List<String> getMutedOrAllowedMemberIds(String groupId, boolean muted) {
+        List<GroupMember> mutedMembers = getMutedOrAllowedMembers(groupId, muted);
         List<String> mutedIds = new ArrayList<>();
         if (mutedMembers != null) {
             for (GroupMember manager : mutedMembers) {
@@ -456,7 +472,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return uiUserInfos;
     }
 
-    private List<UIUserInfo> mutedMemberToUIUserInfo(String groupId, List<GroupMember> members) {
+    private List<UIUserInfo> mutedOrAllowedMemberToUIUserInfo(String groupId, boolean muted, List<GroupMember> members) {
         if (members == null || members.isEmpty()) {
             return null;
         }
@@ -484,7 +500,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
             } else {
                 info.setSortName("");
             }
-            info.setCategory("禁言列表");
+            info.setCategory(muted ? "白名单列表" : "禁言列表");
             if (!showManagerCategory) {
                 showManagerCategory = true;
                 info.setShowCategory(true);
