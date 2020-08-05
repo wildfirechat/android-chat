@@ -24,9 +24,11 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
+import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
+import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
@@ -112,6 +114,13 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         Glide.with(this).load(channelInfo.portrait).into(portraitImageView);
     }
 
+    @OnClick(R2.id.searchMessageOptionItemView)
+    void searchGroupMessage() {
+        Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
+        intent.putExtra("conversation", conversationInfo.conversation);
+        startActivity(intent);
+    }
+
     @OnClick(R2.id.clearMessagesOptionItemView)
     void clearMessage() {
         conversationViewModel.clearConversationMessage(conversationInfo.conversation);
@@ -121,6 +130,13 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     void showChannelQRCode() {
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_CHANNEL + channelInfo.channelId;
         Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "频道二维码", channelInfo.portrait, qrCodeValue);
+        startActivity(intent);
+    }
+
+    @OnClick(R2.id.fileRecordOptionItemView)
+    void fileRecord(){
+        Intent intent = new Intent(getActivity(), FileRecordActivity.class);
+        intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
     }
 
