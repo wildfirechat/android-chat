@@ -4366,7 +4366,7 @@ public class ChatManager {
     }
 
     /**
-     * 禁言群成员
+     * 群全局禁言之后，允许白名单成员发言
      *
      * @param groupId
      * @param isSet
