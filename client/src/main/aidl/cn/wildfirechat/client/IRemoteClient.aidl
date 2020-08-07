@@ -160,7 +160,7 @@ interface IRemoteClient {
     oneway void modifyMyInfo(in List<ModifyMyInfoEntry> values, in IGeneralCallback callback);
     boolean deleteMessage(in long messageId);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
-    List<Message> searchMessage(in Conversation conversation, in String keyword);
+    List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
 
     List<GroupSearchResult> searchGroups(in String keyword);
     List<UserInfo> searchFriends(in String keyworkd);
