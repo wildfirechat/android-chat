@@ -53,7 +53,7 @@ public class SearchViewModel extends ViewModel {
     public LiveData<List<Message>> searchMessage(Conversation conversation, String keyword) {
         MutableLiveData<List<Message>> result = new MutableLiveData<>();
         workHandler.post(() -> {
-            List<Message> messages = ChatManager.Instance().searchMessage(conversation, keyword);
+            List<Message> messages = ChatManager.Instance().searchMessage(conversation, keyword, true, 100, 0);
             result.postValue(messages);
         });
         return result;

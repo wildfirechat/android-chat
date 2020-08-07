@@ -3668,17 +3668,20 @@ public class ChatManager {
     /**
      * 搜索消息
      *
-     * @param conversation
+     * @param conversation 会话为空时，搜索所有会话消息
      * @param keyword
+     * @param desc
+     * @param limit
+     * @param offset
      * @return
      */
-    public List<Message> searchMessage(Conversation conversation, String keyword) {
+    public List<Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset) {
         if (!checkRemoteService()) {
             return null;
         }
 
         try {
-            return mClient.searchMessage(conversation, keyword);
+            return mClient.searchMessage(conversation, keyword, desc, limit, offset);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
