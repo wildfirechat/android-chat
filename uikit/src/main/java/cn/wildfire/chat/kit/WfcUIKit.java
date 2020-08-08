@@ -125,8 +125,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             ringPlayer = new AsyncPlayer(null);
             AVEngineKit.init(application, this);
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
-            ChatManagerHolder.gAVEngine.addIceServer(Config.ICE_ADDRESS, Config.ICE_USERNAME, Config.ICE_PASSWORD);
-            ChatManagerHolder.gAVEngine.addIceServer(Config.ICE_ADDRESS2, Config.ICE_USERNAME, Config.ICE_PASSWORD);
+            for (String[] server : Config.ICE_SERVERS) {
+                ChatManagerHolder.gAVEngine.addIceServer(server[0], server[1], server[2]);
+            }
 
             SharedPreferences sp = application.getSharedPreferences("config", Context.MODE_PRIVATE);
             String id = sp.getString("id", null);

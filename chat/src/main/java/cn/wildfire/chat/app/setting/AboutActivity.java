@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
@@ -29,9 +30,11 @@ public class AboutActivity extends WfcBaseActivity {
             String info = packageInfo.packageName + "\n"
                 + packageInfo.versionCode + " " + packageInfo.versionName + "\n"
                 + Config.IM_SERVER_HOST + "\n"
-                + Config.APP_SERVER_ADDRESS + "\n"
-                + Config.ICE_ADDRESS + " " + Config.ICE_USERNAME + " " + Config.ICE_PASSWORD + "\n";
+                + AppService.APP_SERVER_ADDRESS + "\n";
 
+            for (String[] ice : Config.ICE_SERVERS) {
+                info += ice[0] + " " + ice[1] + " " + ice[2] + "\n";
+            }
             infoTextView.setText(info);
 
         } catch (PackageManager.NameNotFoundException e) {
