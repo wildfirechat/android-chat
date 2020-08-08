@@ -379,11 +379,17 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
 
         messageViewModel.messageDeliverLiveData().observe(getActivity(), stringLongMap -> {
+            if(conversation == null){
+                return;
+            }
             Map<String, Long> deliveries = ChatManager.Instance().getMessageDelivery(conversation);
             adapter.setDeliveries(deliveries);
         });
 
         messageViewModel.messageReadLiveData().observe(getActivity(), readEntries -> {
+            if(conversation == null){
+                return;
+            }
             Map<String, Long> convReadEntities = ChatManager.Instance().getConversationRead(conversation);
             adapter.setReadEntries(convReadEntities);
         });

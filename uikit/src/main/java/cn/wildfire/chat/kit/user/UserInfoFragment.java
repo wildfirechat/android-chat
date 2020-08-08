@@ -24,11 +24,14 @@ import com.bumptech.glide.request.RequestOptions;
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -40,8 +43,6 @@ import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 
@@ -122,7 +123,7 @@ public class UserInfoFragment extends Fragment {
         }
 
         setUserInfo(userInfo);
-        userViewModel.userInfoLiveData().observe(this, userInfos -> {
+        userViewModel.userInfoLiveData().observe(getViewLifecycleOwner(), userInfos -> {
             for (UserInfo info : userInfos) {
                 if (userInfo.uid.equals(info.uid)) {
                     userInfo = info;
@@ -203,7 +204,17 @@ public class UserInfoFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-            String imagePath = ImageUtils.genThumbImgFile(images.get(0).path).getAbsolutePath();
+            if(images == null || images.isEmpty()){
+                Toast.makeText(getActivity(), "更新头像失败: 选取文件失败 " , Toast.LENGTH_SHORT).show();
+                return;
+            }
+            File thumbImgFile = ImageUtils.genThumbImgFile(images.get(0).path);
+            if(thumbImgFile == null){
+                Toast.makeText(getActivity(), "更新头像失败: 生成缩略图失败" , Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String imagePath = thumbImgFile.getAbsolutePath();
+
             MutableLiveData<OperateResult<Boolean>> result = userViewModel.updateUserPortrait(imagePath);
             result.observe(this, booleanOperateResult -> {
                 if (booleanOperateResult.isSuccess()) {
