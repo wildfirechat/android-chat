@@ -24,6 +24,13 @@ public class Config<ICE_SERVERS> {
     // 注意APP_SERVER_ADDRESS已从kit中移除，移动到了AppService中
     //public static String APP_SERVER_ADDRESS = "http://wildfirechat.cn:8888";
 
+    /**
+     * 音视频通话所用的turn server配置
+     * <br>
+     * <br>
+     * <strong>上线商用时，请自行部署turn 服务</strong>
+     * <br>
+     */
     public static String[][] ICE_SERVERS = new String[][]{
         // 数组元素定义
         /*{"turn server uri", "userName", "password"}*/
@@ -31,10 +38,24 @@ public class Config<ICE_SERVERS> {
         {"turn:117.51.153.82:3478", "wfchat", "wfchat"}
     };
 
-    public static int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 120;
+    /**
+     * 允许撤回多长时间内的消息，不能长于服务端相关配置，单位是秒
+     *
+     */
+    public static int RECALL_TIME_LIMIT = 60;
 
-    // 支持多人音视频时有效
+    /**
+     * 语音消息最长时长，单位是秒
+     */
+    public static int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 60;
+
+    /**
+     * 多人视频通话，最多允许4人参与
+     */
     public static int MAX_VIDEO_PARTICIPANT_COUNT = 4;
+    /**
+     * 多人音频通话，最多允许9人参与
+     */
     public static int MAX_AUDIO_PARTICIPANT_COUNT = 9;
 
     public static String VIDEO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/video";

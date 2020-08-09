@@ -30,6 +30,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.Optional;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
@@ -251,7 +252,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             long now = System.currentTimeMillis();
             if (message.direction == MessageDirection.Send
                 && TextUtils.equals(message.sender, ChatManager.Instance().getUserId())
-                && now - (message.serverTime - delta) < 60 * 1000) {
+                && now - (message.serverTime - delta) < Config.RECALL_TIME_LIMIT * 1000) {
                 return false;
             } else {
                 return true;
