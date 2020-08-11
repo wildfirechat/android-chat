@@ -3,12 +3,13 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.util.Log;
 import android.util.SparseArray;
 
-import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 
 public class MessageViewHolderManager {
+    private static final String TAG = "MsgViewHolderManager";
     private static MessageViewHolderManager instance = new MessageViewHolderManager();
 
     private MessageViewHolderManager() {
@@ -60,17 +61,20 @@ public class MessageViewHolderManager {
 
     public @androidx.annotation.LayoutRes
     int sendLayoutResId(int messageType) {
-        return messageSendLayoutRes.get(messageType);
+        Integer sendLayoutResId = messageSendLayoutRes.get(messageType);
+        return sendLayoutResId == null ? R.layout.conversation_item_unknown_send : sendLayoutResId;
     }
 
     public @androidx.annotation.LayoutRes
     int receiveLayoutResId(int messageType) {
-        return messageReceiveLayoutRes.get(messageType);
+        Integer receiveLayoutResId = messageReceiveLayoutRes.get(messageType);
+        return receiveLayoutResId == null ? R.layout.conversation_item_unknown_receive : receiveLayoutResId;
     }
 
     public Class<? extends MessageContentViewHolder> getMessageContentViewHolder(int messageType) {
         Class clazz = messageViewHolders.get(messageType);
         if (clazz == null) {
+            Log.d(TAG, "not register messageContentViewHolder for messageType " + messageType + ", fall-back to UnknownMessageContentViewHolder");
             return UnkownMessageContentViewHolder.class;
         }
         return clazz;

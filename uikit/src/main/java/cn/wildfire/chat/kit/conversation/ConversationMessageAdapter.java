@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.message.MessageItemView;
@@ -33,7 +34,6 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageContentViewHo
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -248,11 +248,11 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             if (direction == 0) {
                 itemView = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversation_item_message_container_send, parent, false);
                 viewStub = itemView.findViewById(R.id.contentViewStub);
-                viewStub.setLayoutResource(sendResId > 0 ? sendResId : R.layout.conversation_item_unknown_send);
+                viewStub.setLayoutResource(sendResId);
             } else {
                 itemView = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversation_item_message_container_receive, parent, false);
                 viewStub = itemView.findViewById(R.id.contentViewStub);
-                viewStub.setLayoutResource(receiveResId > 0 ? receiveResId : R.layout.conversation_item_unknown_receive);
+                viewStub.setLayoutResource(receiveResId);
             }
         }
         try {
