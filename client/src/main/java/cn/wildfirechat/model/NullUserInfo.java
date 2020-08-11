@@ -8,7 +8,8 @@ package cn.wildfirechat.model;
 public class NullUserInfo extends UserInfo {
     public NullUserInfo(String uid) {
         this.uid = uid;
-        this.name = "<" + uid + ">";
+        //this.name = "<" + uid + ">";
+        this.name = "用户";
         this.displayName = name;
     }
 }
