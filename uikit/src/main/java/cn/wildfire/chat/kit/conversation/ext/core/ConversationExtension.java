@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntRange;
 import androidx.fragment.app.Fragment;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -139,15 +140,23 @@ public class ConversationExtension {
      * @param requestCode
      * @param index
      */
-    public void startActivityForResult(Intent intent, int requestCode, int index) {
-        int extRequestCode = (requestCode << 7) | 0x8000;
+    public void startActivityForResult(Intent intent, @IntRange(from = 0, to = 256) int requestCode, int index) {
+        int extRequestCode = (requestCode << 7) | ConversationExtension.REQUEST_CODE_MIN;
         extRequestCode += index;
         fragment.startActivityForResult(intent, extRequestCode);
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(exts == null || exts.isEmpty()){
+            return false;
+        }
         int index = requestCode & 0x7F;
-        exts.get(index).onActivityResult((requestCode >> 7) & 0xFF, resultCode, data);
+        ConversationExt conversationExt = exts.get(index);
+        if(conversationExt == null){
+            return false;
+        }
+        conversationExt.onActivityResult((requestCode >> 7) & 0xFF, resultCode, data);
+        return true;
     }
 
     private static class ExtMenuItemWrapper {

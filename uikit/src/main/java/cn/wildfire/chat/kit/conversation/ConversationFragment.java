@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,8 +38,10 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnTouch;
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
 import cn.wildfire.chat.kit.chatroom.ChatRoomViewModel;
@@ -58,8 +61,6 @@ import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
@@ -82,6 +83,8 @@ public class ConversationFragment extends Fragment implements
     ConversationMessageAdapter.OnPortraitLongClickListener,
     ConversationInputPanel.OnConversationInputPanelStateChangeListener,
     ConversationMessageAdapter.OnMessageCheckListener, ConversationMessageAdapter.OnMessageReceiptClickListener {
+
+    private static final String TAG = "convFragment";
 
     public static final int REQUEST_PICK_MENTION_CONTACT = 100;
     public static final int REQUEST_CODE_GROUP_VIDEO_CHAT = 101;
@@ -379,7 +382,7 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
 
         messageViewModel.messageDeliverLiveData().observe(getActivity(), stringLongMap -> {
-            if(conversation == null){
+            if (conversation == null) {
                 return;
             }
             Map<String, Long> deliveries = ChatManager.Instance().getMessageDelivery(conversation);
@@ -387,7 +390,7 @@ public class ConversationFragment extends Fragment implements
         });
 
         messageViewModel.messageReadLiveData().observe(getActivity(), readEntries -> {
-            if(conversation == null){
+            if (conversation == null) {
                 return;
             }
             Map<String, Long> convReadEntities = ChatManager.Instance().getConversationRead(conversation);
@@ -398,8 +401,8 @@ public class ConversationFragment extends Fragment implements
         userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
 
         settingUpdateLiveDataObserver = o -> {
-            if(groupInfo == null){
-               return;
+            if (groupInfo == null) {
+                return;
             }
             boolean show = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
             if (showGroupMemberName != show) {
@@ -602,7 +605,7 @@ public class ConversationFragment extends Fragment implements
                 return;
             }
         }
-        if (userInfo.deleted ==0) {
+        if (userInfo.deleted == 0) {
             Intent intent = new Intent(getActivity(), UserInfoActivity.class);
             intent.putExtra("userInfo", userInfo);
             startActivity(intent);
@@ -624,9 +627,13 @@ public class ConversationFragment extends Fragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode >= ConversationExtension.REQUEST_CODE_MIN) {
-            inputPanel.extension.onActivityResult(requestCode, resultCode, data);
-            return;
-        } else if (resultCode == Activity.RESULT_OK) {
+            boolean result = inputPanel.extension.onActivityResult(requestCode, resultCode, data);
+            if (result) {
+                return;
+            }
+            Log.d(TAG, "extension can not handle " + requestCode);
+        }
+        if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_PICK_MENTION_CONTACT) {
                 boolean isMentionAll = data.getBooleanExtra("mentionAll", false);
                 SpannableString spannableString;
