@@ -14,7 +14,6 @@ import android.widget.TextView;
 import java.io.File;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class AudioRecorderPanel implements View.OnTouchListener {
     private int maxDuration = 60 * 1000;
@@ -85,6 +84,9 @@ public class AudioRecorderPanel implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        if(button == null){
+            return false;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_pressed);
