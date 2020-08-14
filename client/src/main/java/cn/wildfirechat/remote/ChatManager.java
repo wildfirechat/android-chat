@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Parcel;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -27,6 +28,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -1259,6 +1261,24 @@ public class ChatManager {
             e.printStackTrace();
             throw new IllegalArgumentException("custom messageContent class must have a default constructor");
         }
+
+        try {
+            Field creator = msgContentClazz.getDeclaredField("CREATOR");
+            if ((creator.getModifiers() & (Modifier.PUBLIC | Modifier.STATIC)) == 0) {
+                throw new IllegalArgumentException("custom messageContent class implements Parcelable but does not provide a CREATOR field");
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("custom messageContent class implements Parcelable but does not provide a CREATOR field");
+        }
+
+        try {
+            msgContentClazz.getDeclaredMethod("writeToParcel", Parcel.class, int.class);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("custom messageContent class must override writeToParcel");
+        }
+
         ContentTag tag = msgContentClazz.getAnnotation(ContentTag.class);
         if (tag == null) {
             throw new IllegalArgumentException("custom messageContent class must have a ContentTag annotation");
@@ -2134,6 +2154,7 @@ public class ChatManager {
             e.printStackTrace();
         }
     }
+
     public void deleteFileRecord(long messageUid, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -4170,15 +4191,15 @@ public class ChatManager {
             mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
                 @Override
                 public void onSuccess(List<GroupMember> groupMembers) throws RemoteException {
-                    if(callback != null){
-                        mainHandler.post(()->callback.onSuccess(groupMembers));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(groupMembers));
                     }
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    if(callback != null){
-                        mainHandler.post(()-> callback.onFail(errorCode));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
                     }
                 }
             });
