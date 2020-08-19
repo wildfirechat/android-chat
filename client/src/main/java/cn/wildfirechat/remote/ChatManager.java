@@ -2056,7 +2056,96 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取会话消息
+     *
+     * @param userId       userId
+     * @param conversation 会话
+     * @param fromIndex    消息起始id(messageId)
+     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count        获取消息条数
+     * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getUserMessages(String userId, Conversation conversation, long fromIndex, boolean before, int count, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
 
+        try {
+            mClient.getUserMessages(userId, conversation, fromIndex, before, count, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
+     * 获取消息
+     *
+     * @param userId            userId
+     * @param conversationTypes 会话类型
+     * @param lines             会话线路
+     * @param contentTypes      消息类型
+     * @param fromIndex         消息起始id(messageId)
+     * @param before            true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count             获取消息条数
+     * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getUserMessagesEx(String userId, List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, long fromIndex, boolean before, int count, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            Log.e(TAG, "Remote service not available");
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        if (conversationTypes == null || conversationTypes.size() == 0 ||
+                lines == null || lines.size() == 0 ||
+                contentTypes == null || contentTypes.size() == 0) {
+            Log.e(TAG, "Invalid conversation type or lines or contentType");
+            callback.onFail(ErrorCode.INVALID_PARAMETER);
+            return;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+
+        try {
+            mClient.getUserMessagesEx(userId, intypes, convertIntegers(lines), convertIntegers(contentTypes), fromIndex, before, count, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
     /**
      * 获取远程历史消息
      *
