@@ -1377,6 +1377,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             return out;
         }
 
+        @Override
+        public void searchMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, String keyword, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, before, count);
+            safeMessagesCallback(protoMessages, before, callback);
+        }
+
 
         @Override
         public List<GroupSearchResult> searchGroups(String keyword) throws RemoteException {
