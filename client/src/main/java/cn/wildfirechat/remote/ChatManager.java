@@ -3710,6 +3710,50 @@ public class ChatManager {
     }
 
     /**
+     * 搜索消息
+     *
+     * @param conversationTypes 会话类型
+     * @param lines             会话线路
+     * @param contentTypes      消息类型
+     * @param keyword           搜索关键字
+     * @param fromIndex         消息起始id(messageId)
+     * @param before            true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count             获取消息条数
+     * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void searchMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes,  String keyword, long fromIndex, boolean before, int count, GetMessageCallback callback){
+        if (!checkRemoteService()) {
+            return;
+        }
+        if (conversationTypes == null || conversationTypes.size() == 0 ||
+                lines == null || lines.size() == 0) {
+            Log.e(TAG, "Invalid conversation type or lines");
+            return ;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+
+        try {
+            mClient.searchMessagesEx(intypes, convertIntegers(lines), convertIntegers(contentTypes), keyword, fromIndex, before, count, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 搜索群组
      *
      * @param keyword
