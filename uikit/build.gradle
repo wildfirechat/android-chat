@@ -102,5 +102,4 @@ dependencies {
 
 }
 
-apply plugin: 'com.huawei.agconnect'
 apply plugin: 'com.jakewharton.butterknife'
