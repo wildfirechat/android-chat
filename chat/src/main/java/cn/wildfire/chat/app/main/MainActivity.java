@@ -49,6 +49,7 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupInfoActivity;
+import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
@@ -139,6 +140,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void reLogin() {
         SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
         sp.edit().clear().apply();
+        OKHttpHelper.clearCookies();
 
         Intent intent = new Intent(this, SplashActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
