@@ -76,6 +76,7 @@ import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
+import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
@@ -2262,6 +2263,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             mBinder.registerMessageContent(SoundMessageContent.class.getName());
             mBinder.registerMessageContent(StickerMessageContent.class.getName());
             mBinder.registerMessageContent(TextMessageContent.class.getName());
+            mBinder.registerMessageContent(PCLoginRequestMessageContent.class.getName());
             mBinder.registerMessageContent(PTextMessageContent.class.getName());
             mBinder.registerMessageContent(TipNotificationContent.class.getName());
             mBinder.registerMessageContent(FriendAddedMessageContent.class.getName());
