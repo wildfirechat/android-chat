@@ -198,7 +198,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {
             return;
         }
-        List<Message> messages = ChatManager.Instance().getMessagesEx2(Collections.singletonList(Conversation.ConversationType.Single), Collections.singletonList(1), MessageStatus.Unread, 0, true, 100, null);
+        List<Message> messages = ChatManager.Instance().getMessagesEx2(Collections.singletonList(Conversation.ConversationType.Single), Collections.singletonList(1), Arrays.asList(MessageStatus.Unread), 0, true, 100, null);
         int count = messages == null ? 0 : messages.size();
         if (count > 0) {
             if (discoveryBadgeView == null) {

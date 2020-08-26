@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class DiscoveryFragment extends Fragment {
     }
 
     private void updateMomentBadgeView() {
-        List<Message> messages = ChatManager.Instance().getMessagesEx2(Collections.singletonList(Conversation.ConversationType.Single), Collections.singletonList(1), MessageStatus.Unread, 0, true, 100, null);
+        List<Message> messages = ChatManager.Instance().getMessagesEx2(Collections.singletonList(Conversation.ConversationType.Single), Collections.singletonList(1), Arrays.asList(MessageStatus.Unread), 0, true, 100, null);
         int count = messages == null ? 0 : messages.size();
         momentOptionItemView.setBadgeCount(count);
     }

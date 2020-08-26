@@ -80,12 +80,13 @@ interface IRemoteClient {
     ConversationInfo getConversation(in int conversationType, in String target, in int line);
     List<Message> getMessages(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser);
     List<Message> getMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser);
-    List<Message> getMessagesEx2(in int[] conversationTypes, in int[] lines, in int messageStatus, in long fromIndex, in boolean before, in int count, in String withUser);
+    List<Message> getMessagesEx2(in int[] conversationTypes, in int[] lines, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser);
 
     oneway void getMessagesAsync(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesInTypesAsync(in Conversation conversation, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void getMessagesInStatusAsync(in Conversation conversation, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesExAsync(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
-    oneway void getMessagesEx2Async(in int[] conversationTypes, in int[] lines, in int messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void getMessagesEx2Async(in int[] conversationTypes, in int[] lines, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
 
     oneway void getUserMessages(in String userId, in Conversation conversation, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
     oneway void getUserMessagesEx(in String userId, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);

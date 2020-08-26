@@ -1849,7 +1849,7 @@ public class ChatManager {
     }
 
     @Deprecated
-    public List<Message> getMessagesEx2(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, MessageStatus messageStatus, long fromIndex, boolean before, int count, String withUser) {
+    public List<Message> getMessagesEx2(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<MessageStatus> messageStatus, long fromIndex, boolean before, int count, String withUser) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
             return null;
@@ -1866,8 +1866,13 @@ public class ChatManager {
             intypes[i] = conversationTypes.get(i).ordinal();
         }
 
+        int[] status = new int[messageStatus.size()];
+        for (int i = 0; i < messageStatus.size(); i++) {
+            status[i] = messageStatus.get(i).ordinal();
+        }
+
         try {
-            return mClient.getMessagesEx2(intypes, convertIntegers(lines), messageStatus == null ? -1 : messageStatus.value(), fromIndex, before, count, withUser);
+            return mClient.getMessagesEx2(intypes, convertIntegers(lines), status, fromIndex, before, count, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -1950,6 +1955,44 @@ public class ChatManager {
     }
 
     /**
+     * 根据消息状态获取会话消息
+     *
+     * @param conversation 会话
+     * @param messageStatus 消息状态列表
+     * @param fromIndex    消息起始id(messageId)
+     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count        获取消息条数
+     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getMessagesByMessageStatus(Conversation conversation, List<Integer> messageStatus, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getMessagesInStatusAsync(conversation, convertIntegers(messageStatus), fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
      * 获取消息
      *
      * @param conversationTypes 会话类型
@@ -2015,7 +2058,7 @@ public class ChatManager {
      * @param withUser          只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
-    public void getMessagesEx2(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, MessageStatus messageStatus, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
+    public void getMessagesEx2(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<MessageStatus> messageStatus, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
         if (callback == null) {
             return;
         }
@@ -2038,8 +2081,13 @@ public class ChatManager {
             intypes[i] = conversationTypes.get(i).ordinal();
         }
 
+        int[] status = new int[messageStatus.size()];
+        for (int i = 0; i < messageStatus.size(); i++) {
+            status[i] = messageStatus.get(i).ordinal();
+        }
+
         try {
-            mClient.getMessagesEx2Async(intypes, convertIntegers(lines), messageStatus == null ? -1 : messageStatus.value(), fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
+            mClient.getMessagesEx2Async(intypes, convertIntegers(lines), status, fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
                     mainHandler.post(() -> callback.onSuccess(messages, hasMore));
