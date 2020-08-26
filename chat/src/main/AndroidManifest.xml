@@ -108,7 +108,13 @@
 
         <activity
             android:name="cn.wildfire.chat.app.main.PCLoginActivity"
-            android:label="PC登录" />
+            android:label="PC登录">
+            <intent-filter>
+                <action android:name="${packageName}.pc.login" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
 
         <activity android:name="cn.wildfire.chat.app.login.SMSLoginActivity" />
 

@@ -1,6 +1,7 @@
 package cn.wildfire.chat.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
@@ -15,10 +16,12 @@ import cn.wildfire.chat.app.login.model.PCSession;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
+import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.remote.ChatManager;
 import okhttp3.MediaType;
 
@@ -241,6 +244,14 @@ public class AppService implements AppServiceProvider {
                 callback.onUiFailure(-1, msg);
             }
         });
+    }
+
+    @Override
+    public void showPCLoginActivity(String userId, String token, int platform) {
+        Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".pc.login");
+        intent.putExtra("token", token);
+        intent.putExtra("isConfirmPcLogin", true);
+        WfcUIKit.startActivity(ChatManager.Instance().getApplicationContext(), intent);
     }
 
     @Override

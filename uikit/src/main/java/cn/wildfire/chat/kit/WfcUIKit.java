@@ -45,6 +45,7 @@ import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnRecallMessageListener;
@@ -253,7 +254,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         startActivity(context, intent);
     }
 
-    private static void startActivity(Context context, Intent intent) {
+    public static void startActivity(Context context, Intent intent) {
         if (context instanceof Activity) {
             context.startActivity(intent);
             ((Activity) context).overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -272,6 +273,16 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void onReceiveMessage(List<Message> messages, boolean hasMore) {
+        if (messages != null && !hasMore) {
+            for (Message msg : messages) {
+                if (msg.content instanceof PCLoginRequestMessageContent) {
+                    PCLoginRequestMessageContent content = ((PCLoginRequestMessageContent) msg.content);
+                    appServiceProvider.showPCLoginActivity(ChatManager.Instance().getUserId(), content.getToken(), content.getPlatform());
+                    break;
+                }
+            }
+        }
+
         if (isBackground) {
             // FIXME: 2018/5/28 只是临时方案，No_Persist消息，我觉得不应当到这儿，注册监听时，
             // 就表明自己关系哪些类型的消息, 设置哪些种类的消息

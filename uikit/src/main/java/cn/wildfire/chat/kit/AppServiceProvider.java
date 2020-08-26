@@ -23,6 +23,8 @@ public interface AppServiceProvider {
 
     public void updateGroupAnnouncement(String groupId, String announcement, UpdateGroupAnnouncementCallback callback);
 
+    void showPCLoginActivity(String userId, String token, int platform);
+
     /**
      * 前置条件是已经调过{@link cn.wildfirechat.remote.ChatManager#init(Application, String)}
      *

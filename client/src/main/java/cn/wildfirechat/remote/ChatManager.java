@@ -377,6 +377,7 @@ public class ChatManager {
      * @param hasMore  是否还有更多消息待收取
      */
     private void onReceiveMessage(final List<Message> messages, final boolean hasMore) {
+        Log.e("jyj", "onR");
         mainHandler.post(() -> {
             Iterator<OnReceiveMessageListener> iterator = onReceiveMessageListeners.iterator();
             OnReceiveMessageListener listener;

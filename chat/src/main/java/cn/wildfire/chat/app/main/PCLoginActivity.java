@@ -18,14 +18,15 @@ import cn.wildfirechat.chat.R;
 
 public class PCLoginActivity extends WfcBaseActivity {
     private String token;
-    private PCSession pcSession;
+    private boolean isConfirmPcLogin = false;
     @BindView(R.id.confirmButton)
     Button confirmButton;
 
     @Override
     protected void beforeViews() {
         token = getIntent().getStringExtra("token");
-        if (TextUtils.isEmpty(token)) {
+        isConfirmPcLogin = getIntent().getBooleanExtra("isConfirmPcLogin", false);
+        if (!isConfirmPcLogin && TextUtils.isEmpty(token)) {
             finish();
         }
     }
@@ -37,7 +38,11 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        scanPCLogin(token);
+        if (isConfirmPcLogin) {
+            confirmButton.setEnabled(true);
+        } else {
+            scanPCLogin(token);
+        }
     }
 
     @OnClick(R.id.confirmButton)
@@ -60,7 +65,6 @@ public class PCLoginActivity extends WfcBaseActivity {
                     return;
                 }
                 dialog.dismiss();
-                PCLoginActivity.this.pcSession = pcSession;
                 if (pcSession.getStatus() == 1) {
                     confirmButton.setEnabled(true);
                 } else {

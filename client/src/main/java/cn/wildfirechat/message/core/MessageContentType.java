@@ -33,6 +33,8 @@ public interface MessageContentType {
     //您已经添加XXX为好友了，可以愉快地聊天了
     int ContentType_Friend_Added = 93;
 
+    int ContentType_PC_LOGIN_REQUSET = 94;
+
     //通知消息类型
     int ContentType_General_Notification = 100;
     int ContentType_CREATE_GROUP = 104;
