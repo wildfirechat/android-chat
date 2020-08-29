@@ -27,9 +27,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
@@ -77,7 +76,8 @@ public class ImageUtils {
         return imageFileThumb;
     }
 
-    public static @Nullable File compressImage(String srcImgPath) {
+    public static @Nullable
+    File compressImage(String srcImgPath) {
         //先取得原始照片的旋轉角度
         int rotate = 0;
         try {
@@ -115,7 +115,7 @@ public class ImageUtils {
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
             while ((halfHeight / inSampleSize) >= IMG_HIGHT
-                    && (halfWidth / inSampleSize) >= IMG_WIDTH) {
+                && (halfWidth / inSampleSize) >= IMG_WIDTH) {
                 inSampleSize *= 2;
             }
         }
@@ -125,7 +125,7 @@ public class ImageUtils {
 
         //取出原檔的 Bitmap(若寬高超過會 resize)並設定原始的旋轉角度
         Bitmap srcBitmap = BitmapFactory.decodeFile(srcImgPath, options);
-        if(srcBitmap == null){
+        if (srcBitmap == null) {
             Log.e("ImageUtils", "decode file error " + srcImgPath);
             return null;
         }
@@ -162,7 +162,7 @@ public class ImageUtils {
     private static String getDigest(String str) {
         if (TextUtils.isEmpty(str))
             return "";
-        return str.hashCode()+"";
+        return str.hashCode() + "";
     }
 
     private static long lastGenerateTime = 0;
@@ -179,7 +179,7 @@ public class ImageUtils {
                     return;
                 }
 
-                new Thread(()->{
+                new Thread(() -> {
                     List<Bitmap> bitmaps = new ArrayList<>();
                     final String[] fullPath = {""};
                     for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
@@ -189,7 +189,7 @@ public class ImageUtils {
                         ChatManager.Instance().getUserInfo(memberId, false, new GetUserInfoCallback() {
                             @Override
                             public void onSuccess(UserInfo userInfo) {
-                                new Thread(()->{
+                                new Thread(() -> {
                                     fullPath[0] += userInfo.portrait;
                                     Drawable drawable = null;
                                     try {
@@ -213,7 +213,7 @@ public class ImageUtils {
 
                             @Override
                             public void onFail(int errorCode) {
-                                new Thread(()->{
+                                new Thread(() -> {
                                     Drawable drawable = null;
                                     try {
                                         drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
@@ -246,7 +246,7 @@ public class ImageUtils {
 
                     String hash = getDigest(fullPath[0]);
                     //Path 格式为 groupId-updatetime-width-hash
-                    String fileName = groupId+"-"+System.currentTimeMillis()+"-"+width+"-"+hash;
+                    String fileName = groupId + "-" + System.currentTimeMillis() + "-" + width + "-" + hash;
                     try {
                         //create a file to write bitmap data
                         File f = new File(context.getCacheDir(), fileName);
@@ -263,7 +263,7 @@ public class ImageUtils {
                         fos.close();
 
                         SharedPreferences sp = context.getSharedPreferences("wfc", Context.MODE_PRIVATE);
-                        String key = "wfc_group_generated_portrait_"+groupId+"_"+width;
+                        String key = "wfc_group_generated_portrait_" + groupId + "_" + width;
                         sp.edit().putString(key, f.getAbsolutePath()).apply();
 
                         //Todo notify
@@ -281,6 +281,7 @@ public class ImageUtils {
             }
         });
     }
+
     public static String getGroupGridPortrait(Context context, String groupId, int width) {
         SharedPreferences sp = context.getSharedPreferences("wfc", Context.MODE_PRIVATE);
         String path = sp.getString("wfc_group_generated_portrait_"+groupId+"_"+width, null);
@@ -292,7 +293,7 @@ public class ImageUtils {
                 ChatManager.Instance().getGroupInfo(groupId, false, new GetGroupInfoCallback() {
                     @Override
                     public void onSuccess(GroupInfo groupInfo) {
-                        new Thread(()->{
+                        new Thread(() -> {
                             //分析文件名，获取更新时间，hash值
                             //Path 格式为 groupId-updatetime-width-hash
                             String name = file.getName();
@@ -301,7 +302,7 @@ public class ImageUtils {
                             long timestamp = Long.parseLong(arr[1]);
 
                             long now = System.currentTimeMillis();
-                            if (now - timestamp > 7*24*3600*1000 || timestamp < groupInfo.updateDt) {
+                            if (now - timestamp > 7 * 24 * 3600 * 1000 || timestamp < groupInfo.updateDt) {
                                 ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
                                     @Override
                                     public void onSuccess(List<GroupMember> groupMembers) {
@@ -309,7 +310,7 @@ public class ImageUtils {
                                             return;
                                         }
 
-                                        new Thread(()->{
+                                        new Thread(() -> {
                                             final String[] fullPath = {""};
                                             for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
                                                 String memberId = groupMembers.get(i).memberId;
@@ -318,17 +319,13 @@ public class ImageUtils {
                                                 ChatManager.Instance().getUserInfo(memberId, false, new GetUserInfoCallback() {
                                                     @Override
                                                     public void onSuccess(UserInfo userInfo) {
-                                                        new Thread(()->{
-                                                            fullPath[0] += userInfo.portrait;
-                                                            latch.countDown();
-                                                        }).start();
+                                                        fullPath[0] += userInfo.portrait;
+                                                        latch.countDown();
                                                     }
 
                                                     @Override
                                                     public void onFail(int errorCode) {
-                                                        new Thread(()->{
-                                                            latch.countDown();
-                                                        }).start();
+                                                        latch.countDown();
                                                     }
                                                 });
                                                 try {
