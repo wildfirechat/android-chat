@@ -182,10 +182,10 @@ public class AppService implements AppServiceProvider {
     public void confirmPCLogin(String token, String userId, PCLoginCallback callback) {
         String url = APP_SERVER_ADDRESS + "/confirm_pc";
 
-        Map<String, Object> params = new HashMap<>(2);
+        Map<String, Object> params = new HashMap<>(3);
         params.put("user_id", userId);
         params.put("token", token);
-        params.put("quick_login", true);
+        params.put("quick_login", 1);
         OKHttpHelper.post(url, params, new SimpleCallback<PCSession>() {
             @Override
             public void onUiSuccess(PCSession pcSession) {
