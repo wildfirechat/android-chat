@@ -185,6 +185,7 @@ public class AppService implements AppServiceProvider {
         Map<String, Object> params = new HashMap<>(2);
         params.put("user_id", userId);
         params.put("token", token);
+        params.put("quick_login", true);
         OKHttpHelper.post(url, params, new SimpleCallback<PCSession>() {
             @Override
             public void onUiSuccess(PCSession pcSession) {
