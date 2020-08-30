@@ -6,16 +6,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-@ContentTag(type = MessageContentType.ContentType_PC_LOGIN_REQUSET, flag = PersistFlag.Transparent)
-public class PCLoginRequestMessageContent extends NotificationMessageContent {
+@ContentTag(type = MessageContentType.ContentType_PC_LOGIN_REQUSET, flag = PersistFlag.No_Persist)
+public class PCLoginRequestMessageContent extends MessageContent {
     // 3 windows, 4 osx, 5 web
     private int platform;
-    private String token;
+    private String sessionId;
 
     public int getPlatform() {
         return platform;
@@ -25,17 +26,12 @@ public class PCLoginRequestMessageContent extends NotificationMessageContent {
         this.platform = platform;
     }
 
-    public String getToken() {
-        return token;
+    public String getSessionId() {
+        return sessionId;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    @Override
-    public String formatNotification(Message message) {
-        return null;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     @Override
@@ -49,10 +45,15 @@ public class PCLoginRequestMessageContent extends NotificationMessageContent {
         try {
             JSONObject obj = new JSONObject(new String(payload.binaryContent));
             platform = obj.optInt("p");
-            token = obj.optString("t");
+            sessionId = obj.optString("t");
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String digest(Message message) {
+        return null;
     }
 
 
@@ -65,7 +66,7 @@ public class PCLoginRequestMessageContent extends NotificationMessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeInt(this.platform);
-        dest.writeString(this.token);
+        dest.writeString(this.sessionId);
     }
 
     public PCLoginRequestMessageContent() {
@@ -74,7 +75,7 @@ public class PCLoginRequestMessageContent extends NotificationMessageContent {
     protected PCLoginRequestMessageContent(Parcel in) {
         super(in);
         this.platform = in.readInt();
-        this.token = in.readString();
+        this.sessionId = in.readString();
     }
 
     public static final Creator<PCLoginRequestMessageContent> CREATOR = new Creator<PCLoginRequestMessageContent>() {

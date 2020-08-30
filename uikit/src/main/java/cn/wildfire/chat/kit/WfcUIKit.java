@@ -277,7 +277,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             for (Message msg : messages) {
                 if (msg.content instanceof PCLoginRequestMessageContent) {
                     PCLoginRequestMessageContent content = ((PCLoginRequestMessageContent) msg.content);
-                    appServiceProvider.showPCLoginActivity(ChatManager.Instance().getUserId(), content.getToken(), content.getPlatform());
+                    appServiceProvider.showPCLoginActivity(ChatManager.Instance().getUserId(), content.getSessionId(), content.getPlatform());
                     break;
                 }
             }
