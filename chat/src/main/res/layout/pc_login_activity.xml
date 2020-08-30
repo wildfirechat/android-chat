@@ -41,9 +41,17 @@
             android:id="@+id/confirmButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="10dp"
             android:enabled="false"
             android:text="确定"
+            android:textSize="20sp" />
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:enabled="true"
+            android:text="取消"
             android:textSize="20sp" />
 
     </LinearLayout>

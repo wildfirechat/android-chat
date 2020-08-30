@@ -203,6 +203,28 @@ public class AppService implements AppServiceProvider {
         });
     }
 
+    public void cancelPCLogin(String token, PCLoginCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/cancel_pc";
+
+        Map<String, Object> params = new HashMap<>(3);
+        params.put("token", token);
+        OKHttpHelper.post(url, params, new SimpleCallback<PCSession>() {
+            @Override
+            public void onUiSuccess(PCSession pcSession) {
+                if (pcSession.getStatus() == 2) {
+                    callback.onUiSuccess();
+                } else {
+                    callback.onUiFailure(pcSession.getStatus(), "");
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(-1, msg);
+            }
+        });
+    }
+
 
     @Override
     public void getGroupAnnouncement(String groupId, AppServiceProvider.GetGroupAnnouncementCallback callback) {

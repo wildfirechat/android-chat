@@ -51,6 +51,27 @@ public class PCLoginActivity extends WfcBaseActivity {
         confirmPCLogin(token, userViewModel.getUserId());
     }
 
+    @OnClick(R.id.cancelButton)
+    void cancelPCLogin() {
+        AppService.Instance().cancelPCLogin(token, new AppService.PCLoginCallback() {
+            @Override
+            public void onUiSuccess() {
+                if (isFinishing()) {
+                    return;
+                }
+                finish();
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (isFinishing()) {
+                    return;
+                }
+                finish();
+            }
+        });
+    }
+
     private void scanPCLogin(String token) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .content("处理中")
