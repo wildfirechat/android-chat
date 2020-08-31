@@ -72,6 +72,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
 
     private String callId;
     private String initiator;
+    private String pin;
     private List<String> participants;
     private List<ParticipantStatus> existParticipants;
     private boolean audioOnly;
@@ -79,9 +80,10 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
     public AddParticipantsMessageContent() {
     }
 
-    public AddParticipantsMessageContent(String callId, String initiator, List<String> participants, List<ParticipantStatus> existParticipants, boolean audioOnly) {
+    public AddParticipantsMessageContent(String callId, String initiator, List<String> participants, List<ParticipantStatus> existParticipants, boolean audioOnly, String pin) {
         this.callId = callId;
         this.initiator = initiator;
+        this.pin = pin;
         this.audioOnly = audioOnly;
         this.participants = participants;
         this.existParticipants = existParticipants;
@@ -127,6 +129,14 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
         this.audioOnly = audioOnly;
     }
 
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = new MessagePayload();
@@ -141,6 +151,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
             }
             objWrite.put("participants", jsonArray);
             objWrite.put("audioOnly", audioOnly ? 1 : 0);
+            objWrite.put("pin", pin);
 
             JSONArray array = new JSONArray();
             for (ParticipantStatus status : existParticipants) {
@@ -176,6 +187,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
                 }
 
                 audioOnly = (jsonObject.optInt("audioOnly", 0) == 1);
+                pin = jsonObject.optString("pin");
 
                 array = jsonObject.getJSONArray("existParticipants");
                 existParticipants = new ArrayList<>();
@@ -229,6 +241,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
         dest.writeStringList(this.participants);
         dest.writeList(this.existParticipants);
         dest.writeByte(this.audioOnly ? (byte) 1 : (byte) 0);
+        dest.writeString(pin);
     }
 
     protected AddParticipantsMessageContent(Parcel in) {
@@ -239,6 +252,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
         this.existParticipants = new ArrayList<ParticipantStatus>();
         in.readList(this.existParticipants, ParticipantStatus.class.getClassLoader());
         this.audioOnly = in.readByte() != 0;
+        this.pin = in.readString();
     }
 
     public static final Creator<AddParticipantsMessageContent> CREATOR = new Creator<AddParticipantsMessageContent>() {

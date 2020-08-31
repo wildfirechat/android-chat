@@ -52,6 +52,7 @@ import cn.wildfirechat.client.IGetMessageCallback;
 import cn.wildfirechat.client.IGetRemoteMessageCallback;
 import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
+import cn.wildfirechat.client.IOnConferenceEventListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
@@ -149,7 +150,7 @@ public class ChatManager {
     private List<IMServiceStatusListener> imServiceStatusListeners = new ArrayList<>();
     private List<OnMessageDeliverListener> messageDeliverListeners = new ArrayList<>();
     private List<OnMessageReadListener> messageReadListeners = new ArrayList<>();
-
+    private List<OnConferenceEventListener> conferenceEventListeners = new ArrayList<>();
 
     // key = userId
     private LruCache<String, UserInfo> userInfoCache;
@@ -507,6 +508,14 @@ public class ChatManager {
         mainHandler.post(() -> {
             for (OnChannelInfoUpdateListener listener : channelInfoUpdateListeners) {
                 listener.onChannelInfoUpdate(channelInfos);
+            }
+        });
+    }
+
+    private void onConferenceEvent(String event) {
+        mainHandler.post(() -> {
+            for (OnConferenceEventListener listener : conferenceEventListeners) {
+                listener.onConferenceEvent(event);
             }
         });
     }
@@ -1250,6 +1259,17 @@ public class ChatManager {
      */
     public void removeMessageReadListener(OnMessageReadListener listener) {
         messageReadListeners.remove(listener);
+    }
+
+    public void addConferenceEventListener(OnConferenceEventListener listener) {
+        if (listener == null) {
+            return;
+        }
+        conferenceEventListeners.add(listener);
+    }
+
+    public void removeConferenceEventListener(OnConferenceEventListener listener) {
+        conferenceEventListeners.remove(listener);
     }
 
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
@@ -5297,6 +5317,47 @@ public class ChatManager {
         }
     }
 
+
+    public void sendConferenceRequest(long sessionId, String roomId, String request, String data, final GeneralCallback2 callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.sendConferenceRequest(sessionId, roomId, request, data, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
+                @Override
+                public void onSuccess(String result) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(result);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
     private boolean checkRemoteService() {
         if (INST != null) {
             if (mClient != null) {
@@ -5425,6 +5486,12 @@ public class ChatManager {
                     @Override
                     public void onChannelInfoUpdated(List<ChannelInfo> channelInfos) throws RemoteException {
                         ChatManager.this.onChannelInfoUpdate(channelInfos);
+                    }
+                });
+                mClient.setOnConferenceEventListener(new IOnConferenceEventListener.Stub() {
+                    @Override
+                    public void onConferenceEvent(String event) throws RemoteException {
+                        ChatManager.this.onConferenceEvent(event);
                     }
                 });
 

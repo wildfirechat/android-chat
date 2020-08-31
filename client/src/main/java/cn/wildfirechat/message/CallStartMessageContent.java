@@ -27,6 +27,7 @@ public class CallStartMessageContent extends MessageContent {
     private long connectTime;
     private long endTime;
     private boolean audioOnly;
+    private String pin;
 
 
     /**
@@ -99,6 +100,14 @@ public class CallStartMessageContent extends MessageContent {
         this.targetIds = targetIds;
     }
 
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = new MessagePayload();
@@ -122,6 +131,7 @@ public class CallStartMessageContent extends MessageContent {
             JSONArray ts = new JSONArray(targetIds);
             objWrite.put("ts", ts);
             objWrite.put("a", audioOnly ? 1 : 0);
+            objWrite.put("p", pin);
 
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
@@ -141,6 +151,7 @@ public class CallStartMessageContent extends MessageContent {
                 connectTime = jsonObject.optLong("c", 0);
                 endTime = jsonObject.optLong("e", 0);
                 status = jsonObject.optInt("s", 0);
+                pin = jsonObject.optString("p");
                 JSONArray array = jsonObject.optJSONArray("ts");
                 targetIds = new ArrayList<>();
                 if (array == null) {
@@ -179,6 +190,7 @@ public class CallStartMessageContent extends MessageContent {
         dest.writeLong(this.endTime);
         dest.writeByte(this.audioOnly ? (byte) 1 : (byte) 0);
         dest.writeInt(this.status);
+        dest.writeString(this.pin);
     }
 
     protected CallStartMessageContent(Parcel in) {
@@ -190,6 +202,7 @@ public class CallStartMessageContent extends MessageContent {
         this.endTime = in.readLong();
         this.audioOnly = in.readByte() != 0;
         this.status = in.readInt();
+        this.pin = in.readString();
     }
 
     public static final Creator<CallStartMessageContent> CREATOR = new Creator<CallStartMessageContent>() {
