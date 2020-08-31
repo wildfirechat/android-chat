@@ -205,26 +205,18 @@ public class ConferenceActivity extends VoipBaseActivity {
 
     void addParticipant(int maxNewInviteParticipantCount) {
         isInvitingNewParticipant = true;
-//        Intent intent = new Intent(this, PickGroupMemberActivity.class);
-//        GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
-//        GroupInfo groupInfo = groupViewModel.getGroupInfo(groupId, false);
-//        intent.putExtra(PickGroupMemberActivity.GROUP_INFO, groupInfo);
-//        List<String> participants = getEngineKit().getCurrentSession().getParticipantIds();
-//        participants.add(ChatManager.Instance().getUserId());
-//        intent.putStringArrayListExtra(PickGroupMemberActivity.CHECKED_MEMBER_IDS, (ArrayList<String>) participants);
-//        intent.putStringArrayListExtra(PickGroupMemberActivity.UNCHECKABLE_MEMBER_IDS, (ArrayList<String>) participants);
-//        intent.putExtra(PickGroupMemberActivity.MAX_COUNT, maxNewInviteParticipantCount);
-//        startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
-        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null) {
-            ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent();
-            invite.setCallId(session.getCallId());
-            invite.setTitle(session.getTitle());
-            invite.setPin(session.getPin());
-            invite.setHost(session.getHost());
-            String target = "7f7272XX";
-            ChatManager.Instance().sendMessage(new Conversation(Conversation.ConversationType.Group, "7f7272XX"), invite, null, 0, null);
-        }
+
+//        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+//        if (session != null) {
+//            ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent();
+//            invite.setCallId(session.getCallId());
+//            invite.setTitle(session.getTitle());
+//            invite.setPin(session.getPin());
+//            invite.setHost(session.getHost());
+//            String target = "7f7272XX";
+//            ChatManager.Instance().sendMessage(new Conversation(Conversation.ConversationType.Group, "7f7272XX"), invite, null, 0, null);
+//        }
+        //Todo 发送邀请消息给参会者，可以使用转发类似UI
     }
 
     @Override
