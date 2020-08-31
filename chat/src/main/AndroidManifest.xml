@@ -69,8 +69,8 @@
             android:name="android.webkit.WebView.EnableSafeBrowsing"
             android:value="true" />
 
-        <!--地图-->
-        <!--        腾讯地图的密钥是和包名绑定的，修改包名、或修改包名等时，需要自行去申请密钥，https://lbs.qq.com/-->
+        <!-- 地图 -->
+        <!-- 腾讯地图的密钥是和包名绑定的，修改包名、或修改包名等时，需要自行去申请密钥，https://lbs.qq.com/ -->
         <meta-data
             android:name="TencentMapSDK"
             android:value="TOEBZ-67IR4-ZDHUV-DSDXX-TJZU7-UYFE7" />
@@ -117,6 +117,9 @@
         </activity>
 
         <activity android:name="cn.wildfire.chat.app.login.SMSLoginActivity" />
+
+        <activity android:name="cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity" />
+        <activity android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity" />
 
     </application>
 </manifest>
