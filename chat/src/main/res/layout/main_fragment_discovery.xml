@@ -50,4 +50,14 @@
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_dev_docs"
         app:title="开发手册" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/conferenceOptionItemView"
+        style="@style/OptionItem"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/selector_common_item"
+        app:divider_align_to_title="false"
+        app:show_arrow_indicator="true"
+        app:start_src="@mipmap/ic_dev_docs"
+        app:title="会议" />
 </LinearLayout>

@@ -24,6 +24,7 @@ import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
+import cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
@@ -94,6 +95,12 @@ public class DiscoveryFragment extends Fragment {
     @OnClick(R.id.momentOptionItemView)
     void moment() {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.conferenceOptionItemView)
+    void conference() {
+        Intent intent = new Intent(getActivity(), CreateConferenceActivity.class);
         startActivity(intent);
     }
 }
