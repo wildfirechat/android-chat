@@ -66,6 +66,7 @@ public interface MessageContentType {
     int ContentType_Call_Accept_T = 405;
     int ContentType_Call_Add_Participant = 406;
     int ContentType_CALL_MUTE_VIDEO = 407;
+    int ContentType_Conference_Invite = 408;
 
     int MESSAGE_CONTENT_TYPE_FEED = 501;
     int MESSAGE_CONTENT_TYPE_FEED_COMMENT = 502;

@@ -22,6 +22,7 @@ import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IGetGroupCallback;
 import cn.wildfirechat.client.IGetGroupMemberCallback;
 
+
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
 import cn.wildfirechat.client.IOnGroupMembersUpdateListener;
@@ -29,6 +30,7 @@ import cn.wildfirechat.client.IOnSettingUpdateListener;
 import cn.wildfirechat.client.IGetGroupsCallback;
 import cn.wildfirechat.client.IOnUserInfoUpdateListener;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
+import cn.wildfirechat.client.IOnConferenceEventListener;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -69,6 +71,8 @@ interface IRemoteClient {
     oneway void setOnFriendUpdateListener(in IOnFriendUpdateListener listener);
     oneway void setOnSettingUpdateListener(in IOnSettingUpdateListener listener);
     oneway void setOnChannelInfoUpdateListener(in IOnChannelInfoUpdateListener listener);
+    oneway void setOnConferenceEventListener(in IOnConferenceEventListener listener);
+
 
     oneway void registerMessageContent(in String msgContentCls);
 
@@ -212,4 +216,5 @@ interface IRemoteClient {
 
     boolean isCommercialServer();
     boolean isReceiptEnabled();
+    void sendConferenceRequest(in long sessionId, in String roomId, in String request, in String data, in IGeneralCallback2 callback);
 }

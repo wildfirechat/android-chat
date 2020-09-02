@@ -190,6 +190,10 @@
         <activity android:name="cn.wildfire.chat.kit.group.manage.AddGroupManagerActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.manage.GroupMuteOrAllowActivity" />
         <activity android:name="cn.wildfire.chat.kit.group.manage.GroupMemberPermissionActivity" />
+
+        <activity android:name="cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity" />
+        <activity android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity" />
+
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupMemberListActivity"
             android:label="群成员列表"
