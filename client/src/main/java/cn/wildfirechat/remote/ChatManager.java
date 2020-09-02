@@ -1958,13 +1958,13 @@ public class ChatManager {
     /**
      * 根据消息状态获取会话消息
      *
-     * @param conversation 会话
+     * @param conversation  会话
      * @param messageStatus 消息状态列表
-     * @param fromIndex    消息起始id(messageId)
-     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
-     * @param count        获取消息条数
-     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
-     * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     * @param fromIndex     消息起始id(messageId)
+     * @param before        true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count         获取消息条数
+     * @param withUser      只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param callback      消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
     public void getMessagesByMessageStatus(Conversation conversation, List<Integer> messageStatus, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
         if (callback == null) {
@@ -2165,8 +2165,8 @@ public class ChatManager {
         }
 
         if (conversationTypes == null || conversationTypes.size() == 0 ||
-                lines == null || lines.size() == 0 ||
-                contentTypes == null || contentTypes.size() == 0) {
+            lines == null || lines.size() == 0 ||
+            contentTypes == null || contentTypes.size() == 0) {
             Log.e(TAG, "Invalid conversation type or lines or contentType");
             callback.onFail(ErrorCode.INVALID_PARAMETER);
             return;
@@ -2195,6 +2195,7 @@ public class ChatManager {
             mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
+
     /**
      * 获取远程历史消息
      *
@@ -3570,6 +3571,12 @@ public class ChatManager {
                 }
             }
 
+            Collections.sort(userInfos, (o1, o2) -> {
+                int index_1 = userIds.indexOf(o1.uid);
+                int index_2 = userIds.indexOf(o2.uid);
+                return index_1 - index_2;
+            });
+
             return userInfos;
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -3859,14 +3866,14 @@ public class ChatManager {
      * @param count             获取消息条数
      * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
-    public void searchMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes,  String keyword, long fromIndex, boolean before, int count, GetMessageCallback callback){
+    public void searchMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, String keyword, long fromIndex, boolean before, int count, GetMessageCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
         if (conversationTypes == null || conversationTypes.size() == 0 ||
-                lines == null || lines.size() == 0) {
+            lines == null || lines.size() == 0) {
             Log.e(TAG, "Invalid conversation type or lines");
-            return ;
+            return;
         }
 
         int[] intypes = new int[conversationTypes.size()];
