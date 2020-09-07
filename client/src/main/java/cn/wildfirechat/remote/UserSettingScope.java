@@ -20,6 +20,7 @@ public interface UserSettingScope {
     int ConversationReaded = 11;
     int WebOnline = 12;
     int DisableReceipt = 13;
+    int FavoriteUser = 14;
 
 
     int kUserSettingCustomBegin = 1000;
