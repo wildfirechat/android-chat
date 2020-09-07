@@ -4753,6 +4753,28 @@ public class ChatManager {
         });
     }
 
+    public boolean isFavGroup(String groupId) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        String value = getUserSetting(UserSettingScope.FavoriteGroup, groupId);
+        if (value == null || !value.equals("1")) {
+            return false;
+        }
+        return true;
+    }
+
+    public void setFavGroup(String groupId, boolean isSet, GeneralCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        setUserSetting(UserSettingScope.FavoriteGroup, groupId, isSet?"1":"0", callback);
+    }
     /*
     获取收藏群组，此方法已废弃，请使用 getFavGroups
      */
