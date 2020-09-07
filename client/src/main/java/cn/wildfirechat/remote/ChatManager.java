@@ -4736,12 +4736,10 @@ public class ChatManager {
         }
         workHandler.post(() -> {
             Map<String, String> groupIdMap = getUserSettings(UserSettingScope.FavoriteGroup);
-            String fav = "1";
-            new HashMap<String, String>(1);
             List<GroupInfo> groups = new ArrayList<>();
             if (groupIdMap != null && !groupIdMap.isEmpty()) {
                 for (Map.Entry<String, String> entry : groupIdMap.entrySet()) {
-                    if (entry.getValue().equals(fav)) {
+                    if (entry.getValue().equals("1")) {
                         GroupInfo info = getGroupInfo(entry.getKey(), false);
                         if (!(info instanceof NullGroupInfo)) {
                             groups.add(getGroupInfo(entry.getKey(), false));
@@ -4774,6 +4772,51 @@ public class ChatManager {
             return;
         }
         setUserSetting(UserSettingScope.FavoriteGroup, groupId, isSet?"1":"0", callback);
+    }
+
+    public void getFavUsers(final StringListCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        workHandler.post(() -> {
+            Map<String, String> groupIdMap = getUserSettings(UserSettingScope.FavoriteUser);
+            List<String> strings = new ArrayList<>();
+            if (groupIdMap != null && !groupIdMap.isEmpty()) {
+                for (Map.Entry<String, String> entry : groupIdMap.entrySet()) {
+                    if (entry.getValue().equals("1")) {
+                        strings.add(entry.getKey());
+                    }
+                }
+            }
+            mainHandler.post(() -> callback.onSuccess(strings));
+        });
+    }
+
+    public boolean isFavUser(String userId) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        String value = getUserSetting(UserSettingScope.FavoriteUser, userId);
+        if (value == null || !value.equals("1")) {
+            return false;
+        }
+        return true;
+    }
+
+    public void setFavUser(String userId, boolean isSet, GeneralCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        setUserSetting(UserSettingScope.FavoriteUser, userId, isSet?"1":"0", callback);
     }
     /*
     获取收藏群组，此方法已废弃，请使用 getFavGroups
