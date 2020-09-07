@@ -35,8 +35,6 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.voip.conference.ConferenceActivity;
-import cn.wildfire.chat.kit.voip.conference.ConferenceItem;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
@@ -176,7 +174,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     @OnClick(R2.id.minimizeImageView)
     void minimize() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        session.stopVideoSource();
+//        session.stopVideoSource();
         List<String> participants = session.getParticipantIds();
         for (String participant : participants) {
             session.setupRemoteVideo(participant, null, scalingType);

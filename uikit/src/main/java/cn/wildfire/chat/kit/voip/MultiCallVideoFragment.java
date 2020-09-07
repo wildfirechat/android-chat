@@ -172,7 +172,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @OnClick(R2.id.minimizeImageView)
     void minimize() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        session.stopVideoSource();
+//        session.stopVideoSource();
         List<String> participants = session.getParticipantIds();
         for (String participant : participants) {
             session.setupRemoteVideo(participant, null, scalingType);
