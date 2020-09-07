@@ -568,7 +568,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
 
     public MutableLiveData<OperateResult<Boolean>> setFavGroup(String groupId, boolean fav) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
-        ChatManager.Instance().setUserSetting(UserSettingScope.FavoriteGroup, groupId, fav ? "1" : "0", new GeneralCallback() {
+        ChatManager.Instance().setFavGroup(groupId, fav, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 result.setValue(new OperateResult<>(0));
