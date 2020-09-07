@@ -75,8 +75,6 @@ public class VoipCallService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        rendererInitialized = false;
-        lastState = null;
         focusTargetId = intent.getStringExtra("focusTargetId");
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             stopSelf();
@@ -88,6 +86,8 @@ public class VoipCallService extends Service {
             }
             showFloatingWindow = intent.getBooleanExtra("showFloatingView", false);
             if (showFloatingWindow) {
+                rendererInitialized = false;
+                lastState = null;
                 try {
                     showFloatingWindow(session);
                 } catch (Exception e) {
@@ -314,6 +314,7 @@ public class VoipCallService extends Service {
                 session.resetRenderer();
             }
         }
+        showFloatingWindow = false;
         startActivity(resumeActivityIntent);
     }
 
