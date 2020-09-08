@@ -5,8 +5,11 @@ package cn.wildfire.chat.kit.voip;
  */
 
 import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
@@ -41,6 +44,15 @@ public class AsyncPlayer {
             player.setAudioStreamType(cmd.stream);
             player.setDataSource(cmd.context, cmd.uri);
             player.setLooping(cmd.looping);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                player.setAudioAttributes(new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build()
+                );
+            } else {
+                player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+            }
             player.prepare();
             player.start();
             if (mPlayer != null) {
