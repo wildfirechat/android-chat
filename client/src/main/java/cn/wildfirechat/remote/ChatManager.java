@@ -4783,16 +4783,16 @@ public class ChatManager {
             return;
         }
         workHandler.post(() -> {
-            Map<String, String> groupIdMap = getUserSettings(UserSettingScope.FavoriteUser);
-            List<String> strings = new ArrayList<>();
-            if (groupIdMap != null && !groupIdMap.isEmpty()) {
-                for (Map.Entry<String, String> entry : groupIdMap.entrySet()) {
+            Map<String, String> userIdMap = getUserSettings(UserSettingScope.FavoriteUser);
+            List<String> userIds = new ArrayList<>();
+            if (userIdMap != null && !userIdMap.isEmpty()) {
+                for (Map.Entry<String, String> entry : userIdMap.entrySet()) {
                     if (entry.getValue().equals("1")) {
-                        strings.add(entry.getKey());
+                        userIds.add(entry.getKey());
                     }
                 }
             }
-            mainHandler.post(() -> callback.onSuccess(strings));
+            mainHandler.post(() -> callback.onSuccess(userIds));
         });
     }
 

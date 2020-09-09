@@ -16,10 +16,12 @@ import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.SearchUserCallback;
+import cn.wildfirechat.remote.StringListCallback;
 
 public class ContactViewModel extends ViewModel implements OnFriendUpdateListener {
     private MutableLiveData<List<UIUserInfo>> contactListLiveData;
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
+    private MutableLiveData<List<UIUserInfo>> favContactListLiveData;
 
     public ContactViewModel() {
         super();
@@ -49,6 +51,14 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return friendRequestUpdatedLiveData;
     }
 
+    public MutableLiveData<List<UIUserInfo>> favContactListLiveData() {
+        if (favContactListLiveData == null) {
+            favContactListLiveData = new MutableLiveData<>();
+        }
+        reloadFavContact();
+        return favContactListLiveData;
+    }
+
     public void reloadFriendRequestStatus() {
         if (friendRequestUpdatedLiveData != null) {
             ChatManager.Instance().getWorkHandler().post(() -> {
@@ -56,6 +66,24 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
                 friendRequestUpdatedLiveData.postValue(count);
             });
         }
+    }
+
+    public void reloadFavContact() {
+        ChatManager.Instance().getFavUsers(new StringListCallback() {
+            @Override
+            public void onSuccess(List<String> userIds) {
+                if(userIds == null || userIds.isEmpty()){
+                    return;
+                }
+                List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(userIds, null);
+                favContactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos, true));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
     }
 
     public List<String> getFriends(boolean refresh) {
@@ -157,6 +185,10 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return ChatManager.Instance().isBlackListed(targetUid);
     }
 
+    public boolean isFav(String targetUid){
+        return ChatManager.Instance().isFavUser(targetUid);
+    }
+
     public LiveData<OperateResult<Boolean>> deleteFriend(String userId) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
         ChatManager.Instance().deleteFriend(userId, new GeneralCallback() {
@@ -178,6 +210,23 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
     public LiveData<OperateResult<Boolean>> setBlacklist(String userId, boolean value) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
         ChatManager.Instance().setBlackList(userId, value, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.postValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.postValue(new OperateResult<>(errorCode));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<OperateResult<Boolean>> setFav(String userId, boolean fav){
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().setFavUser(userId, fav, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 result.postValue(new OperateResult<>(0));

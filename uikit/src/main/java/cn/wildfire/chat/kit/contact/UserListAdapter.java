@@ -12,18 +12,19 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
-import cn.wildfire.chat.kit.R;
 
 public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_CONTACT = 1024;
     private static final int TYPE_FOOTER_START_INDEX = 2048;
     protected List<UIUserInfo> users;
+    protected List<UIUserInfo> favUsers;
     protected Fragment fragment;
     private List<HeaderValueWrapper> headerValues;
     private List<FooterValueWrapper> footerValues;
@@ -40,6 +41,10 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return users;
     }
 
+    public List<UIUserInfo> getFavUsers() {
+        return favUsers;
+    }
+
     public int getContactCount() {
         return userCount();
     }
@@ -49,6 +54,10 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
+    public void setFavUsers(List<UIUserInfo> favUsers) {
+        this.favUsers = favUsers;
+        notifyDataSetChanged();
+    }
 
     public void setOnUserClickListener(OnUserClickListener onUserClickListener) {
         this.onUserClickListener = onUserClickListener;
@@ -99,7 +108,7 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
             itemView.setOnClickListener(v -> {
                 if (onFooterClickListener != null) {
-                    onFooterClickListener.onFooterClick(viewHolder.getAdapterPosition() - headerCount() - userCount());
+                    onFooterClickListener.onFooterClick(viewHolder.getAdapterPosition() - headerCount() - userCount() - favUserCount());
                 }
             });
 
@@ -114,7 +123,11 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         itemView.setOnClickListener(v -> {
             if (onUserClickListener != null) {
                 int position = viewHolder.getAdapterPosition();
-                onUserClickListener.onUserClick(users.get(position - headerCount()));
+                if(favUserCount() > 0 && position - headerCount() < favUserCount()){
+                    onUserClickListener.onUserClick(favUsers.get(position - headerCount()));
+                }else {
+                    onUserClickListener.onUserClick(users.get(position - headerCount() - favUserCount()));
+                }
             }
         });
         return viewHolder;
@@ -127,13 +140,16 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof UserViewHolder) {
-            ((UserViewHolder) holder).onBind(users.get(position - headerCount()));
+            if(favUserCount() > 0 && position - headerCount() < favUserCount()){
+                ((UserViewHolder) holder).onBind(favUsers.get(position - headerCount()));
+            }else {
+                ((UserViewHolder) holder).onBind(users.get(position - headerCount() - favUserCount()));
+            }
         } else if (holder instanceof HeaderViewHolder) {
             HeaderValueWrapper wrapper = headerValues.get(position);
             ((HeaderViewHolder) holder).onBind(wrapper.headerValue);
         } else if (holder instanceof FooterViewHolder) {
-            int userCount = users == null ? 0 : users.size();
-            FooterValueWrapper wrapper = footerValues.get(position - headerCount() - userCount);
+            FooterValueWrapper wrapper = footerValues.get(position - headerCount() - userCount() - favUserCount());
             ((FooterViewHolder<FooterValue>) holder).onBind(wrapper.footerValue);
         }
     }
@@ -142,17 +158,16 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int getItemViewType(int position) {
         if (position < headerCount()) {
             return position;
-        } else if (position < headerCount() + userCount()) {
+        } else if (position < headerCount() + userCount() + favUserCount()) {
             return TYPE_CONTACT;
         } else {
-            return TYPE_FOOTER_START_INDEX + (position - headerCount() - userCount());
+            return TYPE_FOOTER_START_INDEX + (position - headerCount() - userCount() - favUserCount());
         }
     }
 
     @Override
     public int getItemCount() {
-        int userCount = users == null ? 0 : users.size();
-        return headerCount() + footerCount() + userCount;
+        return headerCount() + footerCount() + userCount() + favUserCount();
     }
 
     public void addHeaderViewHolder(Class<? extends HeaderViewHolder> clazz, int layoutResId, HeaderValue value) {
@@ -178,13 +193,13 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
         int footerCount = footerCount();
         footerValues.add(new FooterValueWrapper(clazz, layoutResId, value));
-        notifyItemInserted(headerCount() + userCount() + footerCount);
+        notifyItemInserted(headerCount() + userCount() + favUserCount() + footerCount);
     }
 
     public void updateFooter(int index, FooterValue value) {
         FooterValueWrapper wrapper = footerValues.get(index);
         footerValues.set(index, new FooterValueWrapper(wrapper.footerViewHolderClazz, wrapper.layoutResId, value));
-        notifyItemChanged(headerCount() + userCount() + index);
+        notifyItemChanged(headerCount() + userCount() + favUserCount() + index);
     }
 
     public int headerCount() {
@@ -193,6 +208,10 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private int userCount() {
         return users == null ? 0 : users.size();
+    }
+
+    private int favUserCount() {
+        return favUsers == null ? 0 : favUsers.size();
     }
 
     public int footerCount() {
