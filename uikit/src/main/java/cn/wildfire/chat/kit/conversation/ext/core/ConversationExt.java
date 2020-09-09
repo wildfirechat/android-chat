@@ -63,7 +63,7 @@ public abstract class ConversationExt {
      * @param fragment
      */
 
-    protected final void onBind(Fragment fragment, MessageViewModel messageViewModel, Conversation conversation, ConversationExtension conversationExtension, int index) {
+    protected void onBind(Fragment fragment, MessageViewModel messageViewModel, Conversation conversation, ConversationExtension conversationExtension, int index) {
         this.activity = fragment.getActivity();
         this.fragment = fragment;
         this.messageViewModel = messageViewModel;
@@ -72,7 +72,7 @@ public abstract class ConversationExt {
         this.index = index;
     }
 
-    protected final void onDestroy() {
+    protected void onDestroy() {
         this.activity = null;
         this.fragment = null;
         this.messageViewModel = null;

@@ -2,6 +2,7 @@ package cn.wildfire.chat.kit.conversation.forward;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +18,10 @@ import com.bumptech.glide.request.RequestOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfire.chat.kit.utils.WfcTextUtils;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.VideoMessageContent;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfire.chat.kit.utils.WfcTextUtils;
 
 public class ForwardPromptView extends LinearLayout {
     @BindView(R2.id.portraitImageView)
@@ -59,35 +57,31 @@ public class ForwardPromptView extends LinearLayout {
 
     private void init() {
         View view = LayoutInflater.from(getContext())
-                .inflate(R.layout.forward_prompt_dialog, this, true);
+            .inflate(R.layout.forward_prompt_dialog, this, true);
         ButterKnife.bind(this, view);
     }
 
-    public void bind(String targetName, String targetPortrait, Message message) {
+    public void bind(String targetName, String targetPortrait, String contentText) {
+        bind(targetName, targetPortrait, contentText, null);
+    }
+
+    public void bind(String targetName, String targetPortrait, Bitmap contentImage) {
+        bind(targetName, targetPortrait, null, contentImage);
+    }
+
+    private void bind(String targetName, String targetPortrait, String contentText, Bitmap contentImage) {
         nameTextView.setText(targetName);
         Glide.with(getContext()).load(targetPortrait).apply(new RequestOptions().placeholder(R.mipmap.ic_group_cheat).centerCrop()).into(portraitImageView);
-        if (message.content instanceof ImageMessageContent) {
-            contentTextView.setVisibility(GONE);
-            contentImageView.setVisibility(VISIBLE);
-            Bitmap bitmap = ((ImageMessageContent) message.content).getThumbnail();
-            if (bitmap != null) {
-                contentImageView.getLayoutParams().width = UIUtils.dip2Px(bitmap.getWidth());
-                contentImageView.getLayoutParams().height = UIUtils.dip2Px(bitmap.getHeight());
-                contentImageView.setImageBitmap(bitmap);
-            }
-        } else if (message.content instanceof VideoMessageContent) {
-            contentTextView.setVisibility(GONE);
-            contentImageView.setVisibility(VISIBLE);
-            Bitmap bitmap = ((VideoMessageContent) message.content).getThumbnail();
-            if (bitmap != null) {
-                contentImageView.getLayoutParams().width = UIUtils.dip2Px(bitmap.getWidth());
-                contentImageView.getLayoutParams().height = UIUtils.dip2Px(bitmap.getHeight());
-                contentImageView.setImageBitmap(bitmap);
-            }
-        } else {
+        if (!TextUtils.isEmpty(contentText)) {
             contentImageView.setVisibility(GONE);
             contentTextView.setVisibility(VISIBLE);
-            contentTextView.setText(WfcTextUtils.htmlToText(message.digest()));
+            contentTextView.setText(WfcTextUtils.htmlToText(contentText));
+        } else if (contentImage != null) {
+            contentTextView.setVisibility(GONE);
+            contentImageView.setVisibility(VISIBLE);
+            contentImageView.getLayoutParams().width = UIUtils.dip2Px(contentImage.getWidth());
+            contentImageView.getLayoutParams().height = UIUtils.dip2Px(contentImage.getHeight());
+            contentImageView.setImageBitmap(contentImage);
         }
         invalidate();
     }
