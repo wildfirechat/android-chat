@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;

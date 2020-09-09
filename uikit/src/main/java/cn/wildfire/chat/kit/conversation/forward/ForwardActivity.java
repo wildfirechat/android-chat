@@ -22,6 +22,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnTextChanged;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -31,10 +33,11 @@ import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.module.ContactSearchModule;
 import cn.wildfire.chat.kit.search.module.GroupSearchViewModule;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.utils.WfcTextUtils;
+import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.TextMessageContent;
+import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupSearchResult;
@@ -58,11 +61,11 @@ public class ForwardActivity extends WfcBaseActivity {
     protected void afterViews() {
         message = getIntent().getParcelableExtra("message");
         getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.containerFrameLayout, new ForwardFragment())
-                .commit();
+            .beginTransaction()
+            .add(R.id.containerFrameLayout, new ForwardFragment())
+            .commit();
         forwardViewModel = ViewModelProviders.of(this).get(ForwardViewModel.class);
-        userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         initSearch();
     }
@@ -103,9 +106,9 @@ public class ForwardActivity extends WfcBaseActivity {
             if (fragmentManager.findFragmentByTag("search") == null) {
                 searchFragment = new SearchFragment();
                 fragmentManager.beginTransaction()
-                        .add(R.id.containerFrameLayout, searchFragment, "search")
-                        .addToBackStack("search-back")
-                        .commit();
+                    .add(R.id.containerFrameLayout, searchFragment, "search")
+                    .addToBackStack("search-back")
+                    .commit();
             }
             new Handler().post(() -> {
                 searchFragment.search(keyword, searchableModules);
@@ -145,36 +148,42 @@ public class ForwardActivity extends WfcBaseActivity {
 
     private void forward(String targetName, String targetPortrait, Conversation targetConversation) {
         ForwardPromptView view = new ForwardPromptView(this);
-        view.bind(targetName, targetPortrait, message);
+        if (message.content instanceof ImageMessageContent) {
+            view.bind(targetName, targetPortrait, ((ImageMessageContent) message.content).getThumbnail());
+        } else if (message.content instanceof VideoMessageContent) {
+            view.bind(targetName, targetPortrait, ((VideoMessageContent) message.content).getThumbnail());
+        } else {
+            view.bind(targetName, targetPortrait, WfcTextUtils.htmlToText(message.digest()));
+        }
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .customView(view, false)
-                .negativeText("取消")
-                .positiveText("发送")
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Message extraMsg = null;
-                        if (!TextUtils.isEmpty(view.getEditText())) {
-                            TextMessageContent content = new TextMessageContent(view.getEditText());
-                            extraMsg = new Message();
-                            extraMsg.content = content;
-                        }
-                        forwardViewModel.forward(targetConversation, message, extraMsg)
-                                .observe(ForwardActivity.this, new Observer<OperateResult<Integer>>() {
-                                    @Override
-                                    public void onChanged(@Nullable OperateResult<Integer> integerOperateResult) {
-                                        if (integerOperateResult.isSuccess()) {
-                                            Toast.makeText(ForwardActivity.this, "转发成功", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        } else {
-                                            Toast.makeText(ForwardActivity.this, "转发失败" + integerOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
-
+            .customView(view, false)
+            .negativeText("取消")
+            .positiveText("发送")
+            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                @Override
+                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    Message extraMsg = null;
+                    if (!TextUtils.isEmpty(view.getEditText())) {
+                        TextMessageContent content = new TextMessageContent(view.getEditText());
+                        extraMsg = new Message();
+                        extraMsg.content = content;
                     }
-                })
-                .build();
+                    forwardViewModel.forward(targetConversation, message, extraMsg)
+                        .observe(ForwardActivity.this, new Observer<OperateResult<Integer>>() {
+                            @Override
+                            public void onChanged(@Nullable OperateResult<Integer> integerOperateResult) {
+                                if (integerOperateResult.isSuccess()) {
+                                    Toast.makeText(ForwardActivity.this, "转发成功", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                } else {
+                                    Toast.makeText(ForwardActivity.this, "转发失败" + integerOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                }
+            })
+            .build();
         dialog.show();
     }
 

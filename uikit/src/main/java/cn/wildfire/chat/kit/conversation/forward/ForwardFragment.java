@@ -69,7 +69,7 @@ public class ForwardFragment extends Fragment implements ForwardAdapter.OnConver
     @Override
     public void onNewConversationItemClick() {
         Intent intent = new Intent(getActivity(), PickConversationTargetToForwardActivity.class);
-        startActivityForResult(intent, 100);
+        startActivityForResult(intent, REQUEST_CODE_PICK_CONVERSATION_TARGET);
     }
 
     @Override

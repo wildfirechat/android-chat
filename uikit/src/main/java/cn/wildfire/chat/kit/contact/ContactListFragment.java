@@ -1,7 +1,11 @@
 package cn.wildfire.chat.kit.contact;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
@@ -20,6 +24,7 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
+    private boolean pickContact = false;
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -27,6 +32,15 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         if (userListAdapter != null && isVisibleToUser) {
             contactViewModel.reloadContact();
             contactViewModel.reloadFriendRequestStatus();
+        }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            pickContact = bundle.getBoolean("pickContact", false);
         }
     }
 
@@ -70,9 +84,16 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
-        Intent intent = new Intent(getActivity(), UserInfoActivity.class);
-        intent.putExtra("userInfo", userInfo.getUserInfo());
-        startActivity(intent);
+        if (pickContact) {
+            Intent intent = new Intent();
+            intent.putExtra("userInfo", userInfo.getUserInfo());
+            getActivity().setResult(Activity.RESULT_OK, intent);
+            getActivity().finish();
+        } else {
+            Intent intent = new Intent(getActivity(), UserInfoActivity.class);
+            intent.putExtra("userInfo", userInfo.getUserInfo());
+            startActivity(intent);
+        }
     }
 
     @Override
