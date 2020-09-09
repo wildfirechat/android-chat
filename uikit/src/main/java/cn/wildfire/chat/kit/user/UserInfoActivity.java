@@ -7,10 +7,10 @@ import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProviders;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -52,6 +52,8 @@ public class UserInfoActivity extends WfcBaseActivity {
         MenuItem itemAddBlacklist = menu.findItem(R.id.addBlacklist);
         MenuItem itemRemoveBlacklist = menu.findItem(R.id.removeBlacklist);
         MenuItem itemSetAlias = menu.findItem(R.id.setAlias);
+        MenuItem itemSetFav = menu.findItem(R.id.setFav);
+        MenuItem itemRemoveFav = menu.findItem(R.id.removeFav);
 
         if (ChatManager.Instance().getUserId().equals(userInfo.uid)) {
             itemAddBlacklist.setEnabled(false);
@@ -89,6 +91,18 @@ public class UserInfoActivity extends WfcBaseActivity {
                 itemAddBlacklist.setVisible(true);
                 itemRemoveBlacklist.setEnabled(false);
                 itemRemoveBlacklist.setVisible(false);
+            }
+
+            if (contactViewModel.isFav(userInfo.uid)) {
+                itemSetFav.setEnabled(false);
+                itemSetFav.setVisible(false);
+                itemRemoveFav.setEnabled(true);
+                itemRemoveFav.setVisible(true);
+            } else {
+                itemSetFav.setEnabled(true);
+                itemSetFav.setVisible(true);
+                itemRemoveFav.setEnabled(false);
+                itemRemoveFav.setVisible(false);
             }
         }
     }
@@ -149,6 +163,32 @@ public class UserInfoActivity extends WfcBaseActivity {
             intent.putExtra("userId", userInfo.uid);
             startActivity(intent);
             return true;
+        } else if (item.getItemId() == R.id.setFav) {
+            contactViewModel.setFav(userInfo.uid, true).observe(
+                this, booleanOperateResult -> {
+                    if (booleanOperateResult.isSuccess()) {
+                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        invalidateOptionsMenu();
+                    } else {
+                        Toast.makeText(this, "set fav error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            );
+            return true;
+
+        } else if (item.getItemId() == R.id.removeFav) {
+            contactViewModel.setFav(userInfo.uid, false).observe(
+                this, booleanOperateResult -> {
+                    if (booleanOperateResult.isSuccess()) {
+                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        invalidateOptionsMenu();
+                    } else {
+                        Toast.makeText(this, "remove fav error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            );
+            return true;
+
         }
 
         return super.onOptionsItemSelected(item);

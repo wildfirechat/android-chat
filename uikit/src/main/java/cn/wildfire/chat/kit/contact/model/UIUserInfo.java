@@ -88,9 +88,12 @@ public class UIUserInfo {
         }
         return info;
     }
-
     public static List<UIUserInfo> fromUserInfos(List<UserInfo> userInfos) {
-        if (userInfos != null) {
+        return fromUserInfos(userInfos, false);
+    }
+
+    public static List<UIUserInfo> fromUserInfos(List<UserInfo> userInfos, boolean isFavUser) {
+        if (userInfos != null && !userInfos.isEmpty()) {
             List<UIUserInfo> uiUserInfos = new ArrayList<>(userInfos.size());
             String indexLetter;
             for (UserInfo userInfo : userInfos) {
@@ -98,13 +101,19 @@ public class UIUserInfo {
             }
             Collections.sort(uiUserInfos, (o1, o2) -> o1.getSortName().compareToIgnoreCase(o2.getSortName()));
 
-            String preIndexLetter = null;
-            for (UIUserInfo info : uiUserInfos) {
-                indexLetter = info.getCategory();
-                if (preIndexLetter == null || !preIndexLetter.equals(indexLetter)) {
-                    info.setShowCategory(true);
+            if(isFavUser){
+                UIUserInfo uiUserInfo = uiUserInfos.get(0);
+                uiUserInfo.setShowCategory(true);
+                uiUserInfo.setCategory("星标朋友");
+            }else {
+                String preIndexLetter = null;
+                for (UIUserInfo info : uiUserInfos) {
+                    indexLetter = info.getCategory();
+                    if (preIndexLetter == null || !preIndexLetter.equals(indexLetter)) {
+                        info.setShowCategory(true);
+                    }
+                    preIndexLetter = indexLetter;
                 }
-                preIndexLetter = indexLetter;
             }
             return uiUserInfos;
         } else {

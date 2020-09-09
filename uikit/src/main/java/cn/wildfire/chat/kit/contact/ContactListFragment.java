@@ -3,6 +3,7 @@ package cn.wildfire.chat.kit.contact;
 import android.content.Intent;
 import android.view.View;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
@@ -17,7 +18,6 @@ import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
-import cn.wildfire.chat.kit.R;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
 
@@ -35,6 +35,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         super.onResume();
         contactViewModel.reloadContact();
         contactViewModel.reloadFriendRequestStatus();
+        contactViewModel.reloadFavContact();
     }
 
     @Override
@@ -45,6 +46,9 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             userListAdapter.setUsers(userInfos);
         });
         contactViewModel.friendRequestUpdatedLiveData().observe(getActivity(), integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
+        contactViewModel.favContactListLiveData().observe(getActivity(), uiUserInfos -> {
+            userListAdapter.setFavUsers(uiUserInfos);
+        });
     }
 
     @Override
