@@ -14,7 +14,7 @@ public class VoipDummyActivity extends FragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle || session.getConversation() == null) {
             finish();
         } else {
             Intent intent;
