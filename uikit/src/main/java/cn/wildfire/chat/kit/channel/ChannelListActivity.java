@@ -1,13 +1,22 @@
 package cn.wildfire.chat.kit.channel;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.MenuItem;
 
-import cn.wildfire.chat.kit.WfcBaseActivity;
+import androidx.annotation.Nullable;
+
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 
 public class ChannelListActivity extends WfcBaseActivity {
+    private boolean pick;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        pick = getIntent().getBooleanExtra("pick", false);
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     protected int menu() {
@@ -33,9 +42,13 @@ public class ChannelListActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("pick", pick);
+        ChannelListFragment fragment = new ChannelListFragment();
+        fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, new ChannelListFragment())
-                .commit();
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 
     void createChannel() {

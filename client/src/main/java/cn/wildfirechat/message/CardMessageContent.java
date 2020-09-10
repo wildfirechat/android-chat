@@ -17,27 +17,34 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Card;
 
 @ContentTag(type = ContentType_Card, flag = PersistFlag.Persist_And_Count)
 public class CardMessageContent extends MessageContent {
-    private String userId;
+    /**
+     * 0，用户；1，群组；2，聊天室；3，频道
+     */
+    private int type;
+    private String target;
     private String name;
     private String displayName;
     private String portrait;
+    private String extra;
 
     public CardMessageContent() {
     }
 
-    public CardMessageContent(String userId, String name, String displayName, String portrait) {
-        this.userId = userId;
+    public CardMessageContent(int type, String target, String name, String displayName, String portrait, String extra) {
+        this.type = type;
+        this.target = target;
         this.name = name;
         this.displayName = displayName;
         this.portrait = portrait;
+        this.extra = extra;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getTarget() {
+        return target;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     public String getName() {
@@ -64,12 +71,29 @@ public class CardMessageContent extends MessageContent {
         this.portrait = portrait;
     }
 
+    public String getExtra() {
+        return extra;
+    }
+
+    public void setExtra(String extra) {
+        this.extra = extra;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = new MessagePayload();
-        payload.content = userId;
+        payload.content = target;
         try {
             JSONObject objWrite = new JSONObject();
+            objWrite.put("t", type);
             objWrite.put("n", name);
             objWrite.put("d", displayName);
             objWrite.put("p", portrait);
@@ -84,10 +108,11 @@ public class CardMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
-        userId = payload.content;
+        target = payload.content;
         try {
             if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
+                type = jsonObject.optInt("t");
                 name = jsonObject.optString("n");
                 displayName = jsonObject.optString("d");
                 portrait = jsonObject.optString("p");
@@ -111,7 +136,8 @@ public class CardMessageContent extends MessageContent {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(this.userId);
+        dest.writeInt(this.type);
+        dest.writeString(this.target);
         dest.writeString(this.name != null ? this.name : "");
         dest.writeString(this.displayName != null ? this.displayName : "");
         dest.writeString(this.portrait != null ? this.portrait : "");
@@ -119,7 +145,8 @@ public class CardMessageContent extends MessageContent {
 
     protected CardMessageContent(Parcel in) {
         super(in);
-        this.userId = in.readString();
+        this.type = in.readInt();
+        this.target = in.readString();
         this.name = in.readString();
         this.displayName = in.readString();
         this.portrait = in.readString();

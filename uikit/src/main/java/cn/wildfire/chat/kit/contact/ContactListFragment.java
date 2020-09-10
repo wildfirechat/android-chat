@@ -22,9 +22,11 @@ import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
+import cn.wildfirechat.model.ChannelInfo;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
-    private boolean pickContact = false;
+    private boolean pick = false;
+    private static final int REQUEST_CODE_PICK_CHANNEL = 100;
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -40,7 +42,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         if (bundle != null) {
-            pickContact = bundle.getBoolean("pickContact", false);
+            pick = bundle.getBoolean("pick", false);
         }
     }
 
@@ -51,6 +53,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         contactViewModel.reloadFriendRequestStatus();
         contactViewModel.reloadFavContact();
     }
+
 
     @Override
     protected void afterViews(View view) {
@@ -72,8 +75,10 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     @Override
     public void initHeaderViewHolders() {
-        addHeaderViewHolder(FriendRequestViewHolder.class, R.layout.contact_header_friend, new FriendRequestValue(contactViewModel.getUnreadFriendRequestCount()));
-        addHeaderViewHolder(GroupViewHolder.class, R.layout.contact_header_group, new GroupValue());
+        if (!pick) {
+            addHeaderViewHolder(FriendRequestViewHolder.class, R.layout.contact_header_friend, new FriendRequestValue(contactViewModel.getUnreadFriendRequestCount()));
+            addHeaderViewHolder(GroupViewHolder.class, R.layout.contact_header_group, new GroupValue());
+        }
         addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
     }
 
@@ -84,7 +89,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
-        if (pickContact) {
+        if (pick) {
             Intent intent = new Intent();
             intent.putExtra("userInfo", userInfo.getUserInfo());
             getActivity().setResult(Activity.RESULT_OK, intent);
@@ -98,6 +103,10 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     @Override
     public void onHeaderClick(int index) {
+        if(pick){
+            showChannelList();
+            return;
+        }
         switch (index) {
             case 0:
                 showFriendRequest();
@@ -129,6 +138,24 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     private void showChannelList() {
         Intent intent = new Intent(getActivity(), ChannelListActivity.class);
-        startActivity(intent);
+        if (pick) {
+            intent.putExtra("pick", true);
+            startActivityForResult(intent, REQUEST_CODE_PICK_CHANNEL);
+        } else {
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_CODE_PICK_CHANNEL && resultCode == Activity.RESULT_OK) {
+            Intent intent = new Intent();
+            ChannelInfo channelInfo = data.getParcelableExtra("channelInfo");
+            intent.putExtra("channelInfo", channelInfo);
+            getActivity().setResult(Activity.RESULT_OK, intent);
+            getActivity().finish();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

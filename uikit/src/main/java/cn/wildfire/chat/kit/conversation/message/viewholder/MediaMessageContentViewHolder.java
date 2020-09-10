@@ -41,12 +41,12 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
         int index = 0;
         for (int i = 0; i < messages.size(); i++) {
             msg = messages.get(i);
-            if (msg.message.content.getType() != MessageContentType.ContentType_Image
-                && msg.message.content.getType() != MessageContentType.ContentType_Video) {
+            if (msg.message.content.getMessageContentType() != MessageContentType.ContentType_Image
+                && msg.message.content.getMessageContentType() != MessageContentType.ContentType_Video) {
                 continue;
             }
             MediaEntry entry = new MediaEntry();
-            if (msg.message.content.getType() == cn.wildfirechat.message.core.MessageContentType.ContentType_Image) {
+            if (msg.message.content.getMessageContentType() == cn.wildfirechat.message.core.MessageContentType.ContentType_Image) {
                 entry.setType(MediaEntry.TYPE_IMAGE);
                 entry.setThumbnail(((ImageMessageContent) msg.message.content).getThumbnail());
 

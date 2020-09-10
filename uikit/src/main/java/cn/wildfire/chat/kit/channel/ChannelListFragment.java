@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.channel;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,9 +20,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 
@@ -31,6 +32,16 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
     RecyclerView recyclerView;
     private ChannelViewModel channelViewModel;
     private ChannelListAdapter channelListAdapter;
+    private boolean pick;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            pick = args.getBoolean("pick", false);
+        }
+    }
 
     @Nullable
     @Override
@@ -73,8 +84,15 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
 
     @Override
     public void onChannelClick(ChannelInfo channelInfo) {
-        Intent intent = ConversationActivity.buildConversationIntent(getActivity(), Conversation.ConversationType.Channel, channelInfo.channelId, 0);
-        startActivity(intent);
+        if (pick) {
+            Intent intent = new Intent();
+            intent.putExtra("channelInfo", channelInfo);
+            getActivity().setResult(Activity.RESULT_OK, intent);
+            getActivity().finish();
+        } else {
+            Intent intent = ConversationActivity.buildConversationIntent(getActivity(), Conversation.ConversationType.Channel, channelInfo.channelId, 0);
+            startActivity(intent);
+        }
     }
 
     @Override

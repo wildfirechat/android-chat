@@ -30,7 +30,7 @@ public abstract class MessageContent implements Parcelable {
     public String extra;
     public String pushContent;
 
-    final public int getType() {
+    final public int getMessageContentType() {
         ContentTag tag = getClass().getAnnotation(ContentTag.class);
         if (tag != null) {
             return tag.type();
