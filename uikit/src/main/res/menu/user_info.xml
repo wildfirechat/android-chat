@@ -32,6 +32,13 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/setName"
+        android:visible="false"
+        android:orderInCategory="100"
+        android:title="修改野火ID"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/setFav"
         android:orderInCategory="100"
         android:title="设为星标好友"

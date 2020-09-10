@@ -232,6 +232,9 @@
         <activity
             android:name=".contact.ContactListActivity"
             android:label="联系人" />
+        <activity
+            android:name=".user.SetNameActivity"
+            android:label="修改野火ID" />
         <!--moment end-->
 
         <provider
