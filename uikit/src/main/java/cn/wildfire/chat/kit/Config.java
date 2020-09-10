@@ -40,9 +40,13 @@ public class Config {
 
     /**
      * 允许撤回多长时间内的消息，不能长于服务端相关配置，单位是秒
-     *
      */
     public static int RECALL_TIME_LIMIT = 60;
+
+    /**
+     * 允许重新编辑多长时间内的撤回消息，单位是秒
+     */
+    public static int RECALL_REEDIT_TIME_LIMIT = 60;
 
     /**
      * 语音消息最长时长，单位是秒

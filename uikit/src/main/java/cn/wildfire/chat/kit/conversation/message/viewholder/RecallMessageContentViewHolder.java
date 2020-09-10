@@ -7,13 +7,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.remote.ChatManager;
 
 @MessageContentType(RecallMessageContent.class)
 @EnableContextMenu
@@ -31,9 +33,14 @@ public class RecallMessageContentViewHolder extends NotificationMessageContentVi
 
     @Override
     public void onBind(UiMessage message, int position) {
+        super.onBind(message, position);
         content = (RecallMessageContent) message.message.content;
         notificationTextView.setText(message.message.digest());
-        if (content.getOriginalContentType() == cn.wildfirechat.message.core.MessageContentType.ContentType_Text && ((NotificationMessageContent) message.message.content).fromSelf) {
+        long delta = ChatManager.Instance().getServerDeltaTime();
+        long now = System.currentTimeMillis();
+        if (content.getOriginalContentType() == cn.wildfirechat.message.core.MessageContentType.ContentType_Text
+            && ((NotificationMessageContent) message.message.content).fromSelf
+            && now - (message.message.serverTime - delta) < Config.RECALL_REEDIT_TIME_LIMIT * 1000) {
             reeditTextView.setVisibility(View.VISIBLE);
         } else {
             reeditTextView.setVisibility(View.GONE);
