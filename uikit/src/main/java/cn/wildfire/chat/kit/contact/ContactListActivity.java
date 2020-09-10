@@ -15,7 +15,7 @@ public class ContactListActivity extends WfcBaseActivity {
     protected void afterViews() {
         ContactListFragment fragment = new ContactListFragment();
         Bundle bundle = new Bundle();
-        bundle.putBoolean("pickContact", true);
+        bundle.putBoolean("pick", true);
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, fragment)

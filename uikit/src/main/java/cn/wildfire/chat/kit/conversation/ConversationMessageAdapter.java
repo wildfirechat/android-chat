@@ -501,7 +501,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             return R.layout.conversation_item_loading;
         }
         Message msg = getItem(position).message;
-        return msg.direction.value() << 24 | msg.content.getType();
+        return msg.direction.value() << 24 | msg.content.getMessageContentType();
     }
 
     @Override

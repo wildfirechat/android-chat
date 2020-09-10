@@ -59,7 +59,7 @@ public class UserCardMessageContentViewHolder extends NormalMessageContentViewHo
     @OnClick(R2.id.contentLayout)
     void onUserCardClick() {
         Intent intent = new Intent(fragment.getContext(), UserInfoActivity.class);
-        UserInfo userInfo = ChatManager.Instance().getUserInfo(userCardMessageContent.getUserId(), false);
+        UserInfo userInfo = ChatManager.Instance().getUserInfo(userCardMessageContent.getTarget(), false);
         intent.putExtra("userInfo", userInfo);
         fragment.startActivity(intent);
     }
