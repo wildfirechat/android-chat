@@ -34,7 +34,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +73,6 @@ import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
-import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -1707,14 +1705,13 @@ public class ChatManager {
             mClient.recall(msg.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
+                    Message recallMsg = mClient.getMessage(msg.messageId);
                     mainHandler.post(() -> {
-                        msg.content = new RecallMessageContent(userId, msg.messageUid);
-                        ((RecallMessageContent) msg.content).fromSelf = true;
                         if (callback != null) {
                             callback.onSuccess();
                         }
                         for (OnRecallMessageListener listener : recallMessageListeners) {
-                            listener.onRecallMessage(msg);
+                            listener.onRecallMessage(recallMsg);
                         }
                     });
                 }
@@ -4771,7 +4768,7 @@ public class ChatManager {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
-        setUserSetting(UserSettingScope.FavoriteGroup, groupId, isSet?"1":"0", callback);
+        setUserSetting(UserSettingScope.FavoriteGroup, groupId, isSet ? "1" : "0", callback);
     }
 
     public void getFavUsers(final StringListCallback callback) {
@@ -4816,8 +4813,9 @@ public class ChatManager {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
-        setUserSetting(UserSettingScope.FavoriteUser, userId, isSet?"1":"0", callback);
+        setUserSetting(UserSettingScope.FavoriteUser, userId, isSet ? "1" : "0", callback);
     }
+
     /*
     获取收藏群组，此方法已废弃，请使用 getFavGroups
      */

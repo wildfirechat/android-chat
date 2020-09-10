@@ -6,10 +6,10 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import butterknife.BindView;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.AddParticipantsMessageContent;
 import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
@@ -28,7 +28,6 @@ import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationConten
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
-import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
 
@@ -46,7 +45,6 @@ import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationConten
     TipNotificationContent.class,
     FriendAddedMessageContent.class,
     FriendGreetingMessageContent.class,
-    RecallMessageContent.class,
     GroupMuteNotificationContent.class,
     GroupPrivateChatNotificationContent.class,
     GroupJoinTypeNotificationContent.class,
