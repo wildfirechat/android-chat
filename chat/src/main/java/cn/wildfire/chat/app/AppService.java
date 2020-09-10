@@ -334,6 +334,25 @@ public class AppService implements AppServiceProvider {
         }
     }
 
+    @Override
+    public void changeName(String newName, SimpleCallback<Void> callback) {
+        String url = APP_SERVER_ADDRESS + "/change_name";
+
+        Map<String, Object> params = new HashMap<>(2);
+        params.put("newName", newName);
+        OKHttpHelper.post(url, params, new SimpleCallback<Void>() {
+            @Override
+            public void onUiSuccess(Void aVoid) {
+                callback.onUiSuccess(null);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(-1, msg);
+            }
+        });
+    }
+
     public static void validateConfig() {
         if (TextUtils.isEmpty(Config.IM_SERVER_HOST)
             || Config.IM_SERVER_HOST.startsWith("http")

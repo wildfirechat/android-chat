@@ -31,4 +31,6 @@ public interface AppServiceProvider {
      * @param callback
      */
     void uploadLog(SimpleCallback<String> callback);
+
+    void changeName(String newName, SimpleCallback<Void> callback);
 }

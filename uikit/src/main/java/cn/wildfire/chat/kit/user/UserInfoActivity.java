@@ -54,6 +54,7 @@ public class UserInfoActivity extends WfcBaseActivity {
         MenuItem itemSetAlias = menu.findItem(R.id.setAlias);
         MenuItem itemSetFav = menu.findItem(R.id.setFav);
         MenuItem itemRemoveFav = menu.findItem(R.id.removeFav);
+        MenuItem itemSetName = menu.findItem(R.id.setName);
 
         if (ChatManager.Instance().getUserId().equals(userInfo.uid)) {
             itemAddBlacklist.setEnabled(false);
@@ -66,6 +67,8 @@ public class UserInfoActivity extends WfcBaseActivity {
             itemRemoveBlacklist.setVisible(false);
             itemSetAlias.setEnabled(false);
             itemSetAlias.setVisible(false);
+            itemSetName.setEnabled(true);
+            itemSetName.setVisible(true);
         } else {
             if (contactViewModel.isFriend(userInfo.uid)) {
                 itemAddFriend.setEnabled(false);
@@ -188,9 +191,12 @@ public class UserInfoActivity extends WfcBaseActivity {
                 }
             );
             return true;
-
+        } else if (item.getItemId() == R.id.setName) {
+            Intent intent = new Intent(this, SetNameActivity.class);
+            intent.putExtra("userInfo", userInfo);
+            startActivity(intent);
+            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
