@@ -29,13 +29,12 @@ public class CardMessageContent extends MessageContent {
     public CardMessageContent() {
     }
 
-    public CardMessageContent(int type, String target, String name, String displayName, String portrait, String extra) {
+    public CardMessageContent(int type, String target, String name, String displayName, String portrait) {
         this.type = type;
         this.target = target;
         this.name = name;
         this.displayName = displayName;
         this.portrait = portrait;
-        this.extra = extra;
     }
 
     public String getTarget() {
@@ -68,14 +67,6 @@ public class CardMessageContent extends MessageContent {
 
     public void setPortrait(String portrait) {
         this.portrait = portrait;
-    }
-
-    public String getExtra() {
-        return extra;
-    }
-
-    public void setExtra(String extra) {
-        this.extra = extra;
     }
 
     public int getType() {
@@ -124,12 +115,12 @@ public class CardMessageContent extends MessageContent {
     @Override
     public String digest(Message message) {
         if (type == 0)
-        return "[个人名片]:" + displayName;
-        else if(type == 1)
+            return "[个人名片]:" + displayName;
+        else if (type == 1)
             return "[群组名片]:" + displayName;
-        else if(type == 2)
+        else if (type == 2)
             return "[聊天室名片]:" + displayName;
-        else if(type == 3)
+        else if (type == 3)
             return "[频道名片]:" + displayName;
 
         return "[名片]:" + displayName;

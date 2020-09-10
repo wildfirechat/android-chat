@@ -68,6 +68,9 @@ public class UserInfoFragment extends Fragment {
     @BindView(R2.id.momentButton)
     View momentButton;
 
+    @BindView(R2.id.favContactTextView)
+    TextView favContactTextView;
+
     private UserInfo userInfo;
     private UserViewModel userViewModel;
     private ContactViewModel contactViewModel;
@@ -133,6 +136,7 @@ public class UserInfoFragment extends Fragment {
             }
         });
         userViewModel.getUserInfo(userInfo.uid, true);
+        favContactTextView.setVisibility(contactViewModel.isFav(userInfo.uid) ? View.VISIBLE : View.GONE);
 
         if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {
             momentButton.setVisibility(View.GONE);
@@ -204,13 +208,13 @@ public class UserInfoFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-            if(images == null || images.isEmpty()){
-                Toast.makeText(getActivity(), "更新头像失败: 选取文件失败 " , Toast.LENGTH_SHORT).show();
+            if (images == null || images.isEmpty()) {
+                Toast.makeText(getActivity(), "更新头像失败: 选取文件失败 ", Toast.LENGTH_SHORT).show();
                 return;
             }
             File thumbImgFile = ImageUtils.genThumbImgFile(images.get(0).path);
-            if(thumbImgFile == null){
-                Toast.makeText(getActivity(), "更新头像失败: 生成缩略图失败" , Toast.LENGTH_SHORT).show();
+            if (thumbImgFile == null) {
+                Toast.makeText(getActivity(), "更新头像失败: 生成缩略图失败", Toast.LENGTH_SHORT).show();
                 return;
             }
             String imagePath = thumbImgFile.getAbsolutePath();

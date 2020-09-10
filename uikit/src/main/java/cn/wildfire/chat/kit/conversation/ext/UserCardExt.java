@@ -85,7 +85,7 @@ public class UserCardExt extends ConversationExt {
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    CardMessageContent cardMessageContent = new CardMessageContent(type, target, name, displayName, portrait, null);
+                    CardMessageContent cardMessageContent = new CardMessageContent(type, target, name, displayName, portrait);
                     messageViewModel.sendMessage(conversation, cardMessageContent);
                     if (!TextUtils.isEmpty(view.getEditText())) {
                         TextMessageContent content = new TextMessageContent(view.getEditText());
