@@ -25,7 +25,6 @@ public class CardMessageContent extends MessageContent {
     private String name;
     private String displayName;
     private String portrait;
-    private String extra;
 
     public CardMessageContent() {
     }
@@ -124,6 +123,15 @@ public class CardMessageContent extends MessageContent {
 
     @Override
     public String digest(Message message) {
+        if (type == 0)
+        return "[个人名片]:" + displayName;
+        else if(type == 1)
+            return "[群组名片]:" + displayName;
+        else if(type == 2)
+            return "[聊天室名片]:" + displayName;
+        else if(type == 3)
+            return "[频道名片]:" + displayName;
+
         return "[名片]:" + displayName;
     }
 
