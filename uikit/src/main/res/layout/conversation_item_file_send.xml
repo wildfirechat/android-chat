@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="100dp"
     android:adjustViewBounds="true"
-    android:background="@drawable/img_bubble_send"
+    android:background="@drawable/img_bubble_send_white"
     android:padding="10dp"
     android:scaleType="fitCenter">
 
