@@ -10,6 +10,9 @@ import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
@@ -34,6 +37,27 @@ public class ImageExt extends ConversationExt {
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
         messageViewModel.sendMessage(conversation, content);
     }
+    private boolean isGifFile(String file) {
+        try {
+            FileInputStream inputStream = new FileInputStream(file);
+            int[] flags = new int[5];
+            flags[0] = inputStream.read();
+            flags[1] = inputStream.read();
+            flags[2] = inputStream.read();
+            flags[3] = inputStream.read();
+            inputStream.skip(inputStream.available() - 1);
+            flags[4] = inputStream.read();
+            inputStream.close();
+            return flags[0] == 71 && flags[1] == 73 && flags[2] == 70 && flags[3] == 56 && flags[4] == 0x3B;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -45,6 +69,11 @@ public class ImageExt extends ConversationExt {
                     boolean compress = data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
                     ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
                     for (ImageItem imageItem : images) {
+                        boolean isGif = isGifFile(imageItem.path);
+                        if (isGif) {
+                            UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, imageItem.path, null));
+                            continue;
+                        }
                         File imageFileThumb;
                         File imageFileSource = null;
                         // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
