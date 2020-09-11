@@ -13,10 +13,11 @@ import android.widget.TextView;
 
 import java.io.File;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 
 public class AudioRecorderPanel implements View.OnTouchListener {
-    private int maxDuration = 60 * 1000;
+    private int maxDuration = Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * 1000;
     private int minDuration = 1 * 1000;
     private int countDown = 10 * 1000;
     private boolean isRecording;
