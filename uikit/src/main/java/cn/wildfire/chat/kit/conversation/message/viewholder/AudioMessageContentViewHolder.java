@@ -51,7 +51,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
         durationTextView.setText(voiceMessage.getDuration() + "''");
         ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
-        params.width = UIUtils.dip2Px(65) + UIUtils.dip2Px(increment);
+        params.width = UIUtils.dip2Px(65) + increment;
         contentLayout.setLayoutParams(params);
         if (message.message.direction == MessageDirection.Receive) {
             if (message.message.status != MessageStatus.Played) {
