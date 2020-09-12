@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 package cn.wildfire.chat.kit.conversation.ext;
 
 import android.app.Activity;
@@ -49,6 +53,14 @@ public class UserCardExt extends ConversationExt {
         }
     }
 
+    /**
+     *
+     * @param type
+     * @param target
+     * @param name 用户名，只有显示联系人名片时有效
+     * @param displayName
+     * @param portrait
+     */
     private void sendUserCard(int type, String target, String name, String displayName, String portrait) {
         ForwardPromptView view = new ForwardPromptView(fragment.getActivity());
         String desc = "";
@@ -85,7 +97,8 @@ public class UserCardExt extends ConversationExt {
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    CardMessageContent cardMessageContent = new CardMessageContent(type, target, name, displayName, portrait);
+                    CardMessageContent cardMessageContent = new CardMessageContent(type, target, displayName, portrait);
+                    cardMessageContent.setName(name);
                     messageViewModel.sendMessage(conversation, cardMessageContent);
                     if (!TextUtils.isEmpty(view.getEditText())) {
                         TextMessageContent content = new TextMessageContent(view.getEditText());

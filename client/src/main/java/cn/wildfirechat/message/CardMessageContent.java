@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 package cn.wildfirechat.message;
 
 import android.os.Parcel;
@@ -11,9 +15,6 @@ import cn.wildfirechat.message.core.PersistFlag;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Card;
 
-/**
- * Created by heavyrain lee on 2017/12/6.
- */
 
 @ContentTag(type = ContentType_Card, flag = PersistFlag.Persist_And_Count)
 public class CardMessageContent extends MessageContent {
@@ -22,6 +23,7 @@ public class CardMessageContent extends MessageContent {
      */
     private int type;
     private String target;
+    // 用户名，一般是type为用户时使用
     private String name;
     private String displayName;
     private String portrait;
@@ -29,10 +31,9 @@ public class CardMessageContent extends MessageContent {
     public CardMessageContent() {
     }
 
-    public CardMessageContent(int type, String target, String name, String displayName, String portrait) {
+    public CardMessageContent(int type, String target, String displayName, String portrait) {
         this.type = type;
         this.target = target;
-        this.name = name;
         this.displayName = displayName;
         this.portrait = portrait;
     }
