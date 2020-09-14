@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,6 +23,8 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.voip.conference.ConferenceActivity;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -59,6 +62,12 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
 
     @OnClick(R2.id.contentLayout)
     void joinConference() {
-        Toast.makeText(fragment.getActivity(), "TODO join conference", Toast.LENGTH_SHORT).show();
+        if (AVEngineKit.isSupportConference()) {
+            Toast.makeText(fragment.getActivity(), "本版本不支持会议功能", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AVEngineKit.Instance().joinConference(inviteMessageContent.getCallId(), inviteMessageContent.isAudioOnly(), inviteMessageContent.getPin(), inviteMessageContent.getHost(), inviteMessageContent.getTitle(), inviteMessageContent.getDesc(), inviteMessageContent.isAudience(), null);
+        Intent intent = new Intent(fragment.getActivity(), ConferenceActivity.class);
+        fragment.startActivity(intent);
     }
 }

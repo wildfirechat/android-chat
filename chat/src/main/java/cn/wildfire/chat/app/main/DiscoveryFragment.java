@@ -30,6 +30,7 @@ import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageStatus;
@@ -39,6 +40,8 @@ import cn.wildfirechat.remote.ChatManager;
 public class DiscoveryFragment extends Fragment {
     @BindView(R.id.momentOptionItemView)
     OptionItemView momentOptionItemView;
+    @BindView(R.id.conferenceOptionItemView)
+    OptionItemView conferenceOptionItemView;
 
     @Nullable
     @Override
@@ -46,6 +49,9 @@ public class DiscoveryFragment extends Fragment {
         View view = inflater.inflate(R.layout.main_fragment_discovery, container, false);
         ButterKnife.bind(this, view);
         initMoment();
+        if (!AVEngineKit.isSupportConference()) {
+            conferenceOptionItemView.setVisibility(View.GONE);
+        }
         return view;
     }
 
