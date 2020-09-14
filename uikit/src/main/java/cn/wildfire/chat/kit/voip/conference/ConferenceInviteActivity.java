@@ -2,61 +2,58 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.kit.conversation.forward;
+package cn.wildfire.chat.kit.voip.conference;
 
 import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import cn.wildfire.chat.kit.common.OperateResult;
+import cn.wildfire.chat.kit.conversation.forward.ForwardPromptView;
 import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.utils.WfcTextUtils;
-import cn.wildfirechat.message.ImageMessageContent;
+import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
+import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 
-public class ForwardActivity extends PickOrCreateConversationActivity {
-    private Message message;
-    private ForwardViewModel forwardViewModel;
+public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
+    private ConferenceInviteMessageContent inviteMessage;
+    private MessageViewModel messageViewModel;
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
 
     @Override
     protected void afterViews() {
         super.afterViews();
-        message = getIntent().getParcelableExtra("message");
-        forwardViewModel = ViewModelProviders.of(this).get(ForwardViewModel.class);
+        inviteMessage = getIntent().getParcelableExtra("inviteMessage");
+        messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
     }
 
     @Override
     protected void onPickOrCreateConversation(Conversation conversation) {
-        forward(conversation);
+        invite(conversation);
     }
 
-    public void forward(Conversation conversation) {
+    public void invite(Conversation conversation) {
         switch (conversation.type) {
             case Single:
                 UserInfo userInfo = userViewModel.getUserInfo(conversation.target, false);
-                forward(userInfo.displayName, userInfo.portrait, conversation);
+                invite(userInfo.displayName, userInfo.portrait, conversation);
                 break;
             case Group:
                 GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-                forward(groupInfo.name, groupInfo.portrait, conversation);
+                invite(groupInfo.name, groupInfo.portrait, conversation);
                 break;
             default:
                 break;
@@ -64,15 +61,9 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
 
     }
 
-    private void forward(String targetName, String targetPortrait, Conversation targetConversation) {
+    private void invite(String targetName, String targetPortrait, Conversation targetConversation) {
         ForwardPromptView view = new ForwardPromptView(this);
-        if (message.content instanceof ImageMessageContent) {
-            view.bind(targetName, targetPortrait, ((ImageMessageContent) message.content).getThumbnail());
-        } else if (message.content instanceof VideoMessageContent) {
-            view.bind(targetName, targetPortrait, ((VideoMessageContent) message.content).getThumbnail());
-        } else {
-            view.bind(targetName, targetPortrait, WfcTextUtils.htmlToText(message.digest()));
-        }
+        view.bind(targetName, targetPortrait, "会议邀请");
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .customView(view, false)
             .negativeText("取消")
@@ -86,19 +77,20 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
                         extraMsg = new Message();
                         extraMsg.content = content;
                     }
-                    forwardViewModel.forward(targetConversation, message, extraMsg)
-                        .observe(ForwardActivity.this, new Observer<OperateResult<Integer>>() {
-                            @Override
-                            public void onChanged(@Nullable OperateResult<Integer> integerOperateResult) {
-                                if (integerOperateResult.isSuccess()) {
-                                    Toast.makeText(ForwardActivity.this, "转发成功", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                } else {
-                                    Toast.makeText(ForwardActivity.this, "转发失败" + integerOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
+                    messageViewModel.sendMessage(targetConversation, inviteMessage);
+                    Toast.makeText(ConferenceInviteActivity.this, "邀请成功", Toast.LENGTH_SHORT).show();
+                    finish();
+//                        .observe(ConferenceInviteActivity.this, new Observer<OperateResult<Integer>>() {
+//                            @Override
+//                            public void onChanged(@Nullable OperateResult<Integer> integerOperateResult) {
+//                                if (integerOperateResult.isSuccess()) {
+//                                    Toast.makeText(ConferenceInviteActivity.this, "邀请成功", Toast.LENGTH_SHORT).show();
+//                                    finish();
+//                                } else {
+//                                    Toast.makeText(ConferenceInviteActivity.this, "邀请失败" + integerOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//                        });
                 }
             })
             .build();

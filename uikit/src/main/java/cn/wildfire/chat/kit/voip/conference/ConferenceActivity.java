@@ -10,11 +10,9 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProviders;
 
 import org.webrtc.StatsReport;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
@@ -22,9 +20,6 @@ import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceActivity extends VoipBaseActivity {
 
@@ -221,6 +216,16 @@ public class ConferenceActivity extends VoipBaseActivity {
 //            ChatManager.Instance().sendMessage(new Conversation(Conversation.ConversationType.Group, "7f7272XX"), invite, null, 0, null);
 //        }
         //Todo 发送邀请消息给参会者，可以使用转发类似UI
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent();
+        invite.setCallId(session.getCallId());
+        invite.setTitle(session.getTitle());
+        invite.setPin(session.getPin());
+        invite.setHost(session.getHost());
+
+        Intent intent = new Intent(this, ConferenceInviteActivity.class);
+        intent.putExtra("inviteMessage", invite);
+        startActivity(intent);
     }
 
     @Override

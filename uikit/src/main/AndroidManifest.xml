@@ -156,7 +156,7 @@
             android:name="cn.wildfire.chat.kit.conversation.forward.ForwardActivity"
             android:label="转发" />
         <activity
-            android:name="cn.wildfire.chat.kit.conversation.forward.PickOrCreateConversationTargetActivity"
+            android:name="cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationTargetActivity"
             android:label="选取会话" />
         <activity
             android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"
@@ -235,6 +235,7 @@
         <activity
             android:name=".user.SetNameActivity"
             android:label="修改野火ID" />
+        <activity android:name=".voip.conference.ConferenceInviteActivity" />
         <!--moment end-->
 
         <provider

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/img_bubble_send_white">
+
+    <RelativeLayout
+        android:id="@+id/contentLayout"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter">
+
+        <ImageView
+            android:id="@+id/hostPortraitImageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="6dp"
+            android:src="@mipmap/avatar_def" />
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/hostPortraitImageView"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@id/hostPortraitImageView"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="会议主题"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/descTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/hostPortraitImageView"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="2dp"
+            android:layout_toRightOf="@id/hostPortraitImageView"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="会议描述"
+            android:textSize="12sp" />
+
+        <View
+            android:id="@+id/dividerLine"
+            style="@style/Line"
+            android:layout_width="210dp"
+            android:layout_height="0.5px"
+            android:layout_below="@id/hostPortraitImageView"
+            android:layout_marginTop="6dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="6dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dividerLine"
+            android:maxLines="1"
+            android:text="会议邀请"
+            android:textSize="12sp" />
+
+    </RelativeLayout>
+</LinearLayout>
