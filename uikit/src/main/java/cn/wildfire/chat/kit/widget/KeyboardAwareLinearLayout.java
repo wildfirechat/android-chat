@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 /**
  * Copyright (C) 2014 Open Whisper Systems
  * <p>

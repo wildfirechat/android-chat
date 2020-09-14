@@ -156,7 +156,7 @@
             android:name="cn.wildfire.chat.kit.conversation.forward.ForwardActivity"
             android:label="转发" />
         <activity
-            android:name="cn.wildfire.chat.kit.conversation.forward.PickConversationTargetToForwardActivity"
+            android:name="cn.wildfire.chat.kit.conversation.forward.PickOrCreateConversationTargetActivity"
             android:label="选取会话" />
         <activity
             android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"

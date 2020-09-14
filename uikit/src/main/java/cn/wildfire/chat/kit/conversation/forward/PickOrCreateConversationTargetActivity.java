@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 package cn.wildfire.chat.kit.conversation.forward;
 
 import android.content.Intent;
@@ -20,7 +24,8 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 
-public class PickConversationTargetToForwardActivity extends PickConversationTargetActivity {
+// conversation target could be user, group and etc.
+public class PickOrCreateConversationTargetActivity extends PickConversationTargetActivity {
     // TODO 多选，单选
     // 先支持单选
     private boolean singleMode = true;
@@ -51,7 +56,7 @@ public class PickConversationTargetToForwardActivity extends PickConversationTar
                                 setResult(RESULT_OK, intent);
                                 finish();
                             } else {
-                                Toast.makeText(PickConversationTargetToForwardActivity.this, "create group error", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(PickOrCreateConversationTargetActivity.this, "create group error", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

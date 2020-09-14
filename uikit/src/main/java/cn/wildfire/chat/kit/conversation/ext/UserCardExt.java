@@ -2,6 +2,10 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 package cn.wildfire.chat.kit.conversation.ext;
 
 import android.app.Activity;
