@@ -2,7 +2,7 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.kit.conversation.forward;
+package cn.wildfire.chat.kit.conversation.pick;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -46,7 +46,7 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.forward_fragment, container, false);
+        View view = inflater.inflate(R.layout.pick_or_create_conversation_fragmentn, container, false);
         ButterKnife.bind(this, view);
         init();
         return view;
@@ -73,7 +73,9 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
 
     @Override
     public void onConversationItemClick(ConversationInfo conversationInfo) {
-        ((ForwardActivity) getActivity()).forward(conversationInfo.conversation);
+        if (listener != null && conversationInfo != null) {
+            listener.onPickOrCreateConversation(conversationInfo.conversation);
+        }
     }
 
     @Override
@@ -104,7 +106,7 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
         }
     }
 
-    interface OnPickOrCreateConversationListener {
+    public interface OnPickOrCreateConversationListener {
         void onPickOrCreateConversation(Conversation conversation);
     }
 }

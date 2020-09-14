@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2020 WildFireChat. All rights reserved.
- */
-
 package cn.wildfire.chat.kit.third.location.ui.activity;
 
 import android.graphics.Bitmap;

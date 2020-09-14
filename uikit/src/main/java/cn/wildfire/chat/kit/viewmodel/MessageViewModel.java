@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.audio.AudioPlayManager;
 import cn.wildfire.chat.kit.audio.IAudioPlayListener;
+import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.message.viewholder.AudioMessageContentViewHolder;
 import cn.wildfire.chat.kit.third.location.data.LocationData;
@@ -239,6 +240,12 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         msg.conversation = conversation;
         msg.content = content;
         sendMessage(msg);
+    }
+
+    public MutableLiveData<OperateResult<Boolean>> sendMessageEx(Message message){
+
+        // TODO
+        return null;
     }
 
     public void sendMessage(Message message) {

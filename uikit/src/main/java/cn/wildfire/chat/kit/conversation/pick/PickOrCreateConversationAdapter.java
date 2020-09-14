@@ -2,7 +2,7 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
-package cn.wildfire.chat.kit.conversation.forward;
+package cn.wildfire.chat.kit.conversation.pick;
 
 import android.view.LayoutInflater;
 import android.view.View;
