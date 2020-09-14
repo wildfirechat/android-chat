@@ -204,24 +204,8 @@ public class ConferenceActivity extends VoipBaseActivity {
 
     void addParticipant(int maxNewInviteParticipantCount) {
         isInvitingNewParticipant = true;
-
-//        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-//        if (session != null) {
-//            ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent();
-//            invite.setCallId(session.getCallId());
-//            invite.setTitle(session.getTitle());
-//            invite.setPin(session.getPin());
-//            invite.setHost(session.getHost());
-//            String target = "7f7272XX";
-//            ChatManager.Instance().sendMessage(new Conversation(Conversation.ConversationType.Group, "7f7272XX"), invite, null, 0, null);
-//        }
-        //Todo 发送邀请消息给参会者，可以使用转发类似UI
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent();
-        invite.setCallId(session.getCallId());
-        invite.setTitle(session.getTitle());
-        invite.setPin(session.getPin());
-        invite.setHost(session.getHost());
+        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.getPin());
 
         Intent intent = new Intent(this, ConferenceInviteActivity.class);
         intent.putExtra("inviteMessage", invite);

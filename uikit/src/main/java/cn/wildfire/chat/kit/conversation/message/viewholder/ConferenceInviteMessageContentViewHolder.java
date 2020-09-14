@@ -54,7 +54,7 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
             .load(userInfo.portrait)
             .transforms(new CenterCrop(), new RoundedCorners(10))
             .placeholder(R.mipmap.avatar_def)
-            .into(portraitImageView);
+            .into(hostPortraitImageView);
     }
 
     @OnClick(R2.id.contentLayout)
