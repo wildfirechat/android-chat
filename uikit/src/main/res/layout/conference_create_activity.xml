@@ -6,104 +6,55 @@
 
     <include layout="@layout/toolbar" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        android:text="会议标题"
-        android:textColor="@color/gray2"
-        android:textSize="14sp" />
-
-    <RelativeLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
+        android:padding="20dp">
 
-        <EditText
-            android:id="@+id/conferenceTitleEditText"
+        <cn.wildfire.chat.kit.widget.FixedTextInputEditText
+            android:id="@+id/conferenceTitleTextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:background="@null"
-            android:drawableBottom="@drawable/selector_edit_focus"
-            android:drawablePadding="10dp"
-            android:gravity="bottom"
-            android:hint=""
-            android:textColorHint="@color/gray3"
-            android:textSize="14sp"
-            android:visibility="visible" />
+            android:hint="会议标题"
+            android:maxLength="20"
+            android:singleLine="true" />
 
-        <ImageButton
-            android:id="@+id/clearImageButton1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
-            android:background="@null"
-            android:src="@mipmap/ic_delete"
-            android:visibility="gone" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    </RelativeLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        android:text="会议描述"
-        android:textColor="@color/gray2"
-        android:textSize="14sp" />
-
-    <RelativeLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
+        android:padding="20dp">
 
-        <EditText
-            android:id="@+id/conferenceDescEditText"
+        <cn.wildfire.chat.kit.widget.FixedTextInputEditText
+            android:id="@+id/conferenceDescTextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:background="@null"
-            android:drawableBottom="@drawable/selector_edit_focus"
-            android:drawablePadding="10dp"
-            android:gravity="bottom"
-            android:hint=""
-            android:textColorHint="@color/gray3"
-            android:textSize="14sp"
-            android:visibility="visible" />
-
-        <ImageButton
-            android:id="@+id/clearImageButton2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
-            android:background="@null"
-            android:src="@mipmap/ic_delete"
-            android:visibility="gone" />
-
-    </RelativeLayout>
+            android:hint="会议描述"
+            android:maxLength="50"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Switch
-        android:id="@+id/audioOnly"
-        android:layout_width="wrap_content"
+        android:id="@+id/audioOnlySwitch"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="20dp"
         android:text="AudioOnly" />
 
     <Switch
-        android:id="@+id/audience"
-        android:layout_width="wrap_content"
+        android:id="@+id/audienceSwitch"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="20dp"
         android:text="Audience" />
 
     <Button
         android:id="@+id/createConferenceBtn"
         android:layout_width="match_parent"
+        android:enabled="false"
         android:layout_height="wrap_content"
-        android:text="Create Conference" />
+        android:layout_margin="20dp"
+        android:text="创建会议" />
 
 </LinearLayout>
