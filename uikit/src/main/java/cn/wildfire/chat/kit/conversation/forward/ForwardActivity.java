@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 package cn.wildfire.chat.kit.conversation.forward;
 
 import android.os.Handler;
@@ -60,9 +64,11 @@ public class ForwardActivity extends WfcBaseActivity {
     @Override
     protected void afterViews() {
         message = getIntent().getParcelableExtra("message");
+        PickOrCreateConversationFragment pickOrCreateConversationFragment = new PickOrCreateConversationFragment();
+        pickOrCreateConversationFragment.setListener(this::forward);
         getSupportFragmentManager()
             .beginTransaction()
-            .add(R.id.containerFrameLayout, new ForwardFragment())
+            .add(R.id.containerFrameLayout, pickOrCreateConversationFragment)
             .commit();
         forwardViewModel = ViewModelProviders.of(this).get(ForwardViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
@@ -118,13 +124,13 @@ public class ForwardActivity extends WfcBaseActivity {
         }
     }
 
-    public void forward(UserInfo targetUser) {
+    private void forward(UserInfo targetUser) {
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetUser.uid);
         conversation.line = 0;
         forward(targetUser.displayName, targetUser.portrait, conversation);
     }
 
-    public void forward(GroupInfo targetGroup) {
+    private void forward(GroupInfo targetGroup) {
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, targetGroup.target);
         conversation.line = 0;
         forward(targetGroup.name, targetGroup.portrait, conversation);

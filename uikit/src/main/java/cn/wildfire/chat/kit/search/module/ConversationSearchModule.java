@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 package cn.wildfire.chat.kit.search.module;
 
 import android.content.Intent;

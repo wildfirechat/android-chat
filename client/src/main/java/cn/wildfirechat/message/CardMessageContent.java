@@ -2,6 +2,10 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 package cn.wildfirechat.message;
 
 import android.os.Parcel;

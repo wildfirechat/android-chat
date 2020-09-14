@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 package cn.wildfire.chat.kit.chatroom;
 
 import cn.wildfire.chat.kit.WfcBaseActivity;

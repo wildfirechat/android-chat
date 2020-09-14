@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 package cn.wildfire.chat.kit.conversation.forward;
 
 import android.view.LayoutInflater;
@@ -16,13 +20,13 @@ import cn.wildfire.chat.kit.conversation.forward.viewholder.CreateConversationVi
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.ConversationInfo;
 
-public class ForwardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class PickOrCreateConversationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Fragment fragment;
     private List<ConversationInfo> conversations;
     private OnConversationItemClickListener conversationItemClickListener;
     private OnNewConversationItemClickListener newConversationItemClickListener;
 
-    public ForwardAdapter(Fragment fragment) {
+    public PickOrCreateConversationAdapter(Fragment fragment) {
         this.fragment = fragment;
     }
 
