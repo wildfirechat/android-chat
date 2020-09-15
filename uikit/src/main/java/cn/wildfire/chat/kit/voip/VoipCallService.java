@@ -29,11 +29,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfire.chat.kit.BuildConfig;
 import cn.wildfire.chat.kit.R;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -76,9 +77,19 @@ public class VoipCallService extends Service {
         context.stopService(intent);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        boolean screenShare = intent.getBooleanExtra("screenShare", false);
+        if (screenShare) {
+            if (session != null) {
+                Intent data = intent.getParcelableExtra("data");
+                session.startScreenShare(data);
+            }
+            return START_NOT_STICKY;
+        }
+
         focusTargetId = intent.getStringExtra("focusTargetId");
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             stopSelf();

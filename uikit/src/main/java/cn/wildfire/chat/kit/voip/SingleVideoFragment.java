@@ -31,10 +31,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 
 public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
@@ -67,6 +67,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     private boolean isSwappedFeeds;
     private String targetId;
     private AVEngineKit gEngineKit;
+    private boolean isScreenSharing = false;
 
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
 
@@ -161,7 +162,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         if (localSurfaceView != null) {
             ((ViewGroup) localSurfaceView.getParent()).removeView(localSurfaceView);
             pipRenderer.addView(localSurfaceView);
-            gEngineKit.getCurrentSession().setupLocalVideo(localSurfaceView, scalingType);
         }
 
         SurfaceView surfaceView = gEngineKit.getCurrentSession().createRendererView();
@@ -238,6 +238,10 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @OnClick(R2.id.switchCameraImageView)
     public void switchCamera() {
+        if (isScreenSharing) {
+            return;
+        }
+
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null) {
             session.switchCamera();
@@ -257,6 +261,16 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
                 }
             }
         }
+    }
+
+    @OnClick(R2.id.shareScreenImageView)
+    void shareScreen() {
+        if (!isScreenSharing) {
+            ((VoipBaseActivity) getActivity()).startScreenShare();
+        } else {
+            ((VoipBaseActivity) getActivity()).stopScreenShare();
+        }
+        isScreenSharing = !isScreenSharing;
     }
 
     @OnClick(R2.id.fullscreen_video_view)

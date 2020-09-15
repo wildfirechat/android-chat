@@ -36,11 +36,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.UserInfo;
 
 public class MultiCallVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
@@ -66,6 +66,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
     private boolean micEnabled = true;
     private boolean videoEnabled = true;
+    private boolean isScreenSharing = false;
 
     public static final String TAG = "MultiCallVideoFragment";
 
@@ -201,6 +202,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R2.id.switchCameraImageView)
     void switchCamera() {
+        if (isScreenSharing) {
+            return;
+        }
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             session.switchCamera();
@@ -209,6 +213,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R2.id.videoImageView)
     void video() {
+        if(isScreenSharing){
+            return;
+        }
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             session.muteVideo(!videoEnabled);
@@ -223,6 +230,17 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         if (session != null) {
             session.endCall();
         }
+    }
+
+
+    @OnClick(R2.id.shareScreenImageView)
+    void shareScreen() {
+        if (!isScreenSharing) {
+            ((VoipBaseActivity) getActivity()).startScreenShare();
+        } else {
+            ((VoipBaseActivity) getActivity()).stopScreenShare();
+        }
+        isScreenSharing = !isScreenSharing;
     }
 
     // hangup 触发
