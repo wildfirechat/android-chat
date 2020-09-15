@@ -248,6 +248,8 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <service android:name="cn.wildfire.chat.kit.voip.VoipCallService" />
+        <service
+            android:name="cn.wildfire.chat.kit.voip.VoipCallService"
+            android:foregroundServiceType="mediaProjection" />
     </application>
 </manifest>

@@ -16,11 +16,13 @@ package cn.wildfire.chat.kit.voip;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.media.AudioManager;
+import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
 import org.webrtc.StatsReport;
@@ -56,6 +59,8 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         Manifest.permission.CAMERA,
         Manifest.permission.INTERNET
     };
+
+    private static final int CAPTURE_PERMISSION_REQUEST_CODE = 100;
 
     protected AVEngineKit gEngineKit;
     protected PowerManager.WakeLock wakeLock;
@@ -182,6 +187,43 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         return gEngineKit;
     }
 
+    protected void startScreenShare() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Toast.makeText(this, "系统不支持屏幕共享", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), CAPTURE_PERMISSION_REQUEST_CODE);
+    }
+
+    protected void stopScreenShare() {
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        if (session != null) {
+            session.stopScreenShare();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAPTURE_PERMISSION_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Intent intent = new Intent(this, VoipCallService.class);
+                intent.putExtra("screenShare", true);
+                intent.putExtra("data", data);
+                startService(intent);
+
+            } else {
+                Toast.makeText(this, "屏幕共享授权失败", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        if (resultCode != Activity.RESULT_OK) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason reason) {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -295,7 +337,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
-    public void setFocusVideoUserId(String focusVideoUserId){
+    public void setFocusVideoUserId(String focusVideoUserId) {
         this.focusVideoUserId = focusVideoUserId;
     }
 
