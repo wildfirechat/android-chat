@@ -39,6 +39,7 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
@@ -67,6 +68,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
     private boolean micEnabled = true;
     private boolean videoEnabled = true;
+    private boolean isScreenSharing = false;
 
     public static final String TAG = "ConferenceVideoFragment";
 
@@ -225,6 +227,16 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         if (session != null) {
             session.endCall();
         }
+    }
+
+    @OnClick(R2.id.shareScreenImageView)
+    void shareScreen() {
+        if (!isScreenSharing) {
+            ((VoipBaseActivity) getActivity()).startScreenShare();
+        } else {
+            ((VoipBaseActivity) getActivity()).stopScreenShare();
+        }
+        isScreenSharing = !isScreenSharing;
     }
 
     // hangup 触发
