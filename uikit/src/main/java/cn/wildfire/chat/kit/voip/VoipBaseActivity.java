@@ -187,7 +187,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         return gEngineKit;
     }
 
-    protected void startScreenShare() {
+    public void startScreenShare() {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
             Toast.makeText(this, "系统不支持屏幕共享", Toast.LENGTH_SHORT).show();
             return;
@@ -196,7 +196,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), CAPTURE_PERMISSION_REQUEST_CODE);
     }
 
-    protected void stopScreenShare() {
+    public void stopScreenShare() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null) {
             session.stopScreenShare();
