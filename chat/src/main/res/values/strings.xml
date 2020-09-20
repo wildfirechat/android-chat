@@ -7,7 +7,7 @@
 
     <!--设置-->
     <string name="new_message_remind">新消息提醒</string>
-    <string name="exit">退出登陆</string>
+    <string name="exit">退出登录</string>
 
     <!--关于-->
     <string name="app_name_in_about">野火即时通讯</string>
