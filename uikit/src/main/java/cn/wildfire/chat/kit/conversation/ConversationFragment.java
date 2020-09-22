@@ -298,6 +298,10 @@ public class ConversationFragment extends Fragment implements
         return conversation.equals(message.message.conversation);
     }
 
+    public ConversationInputPanel getConversationInputPanel() {
+        return inputPanel;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

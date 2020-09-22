@@ -11,6 +11,7 @@ import android.text.Html;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -40,6 +41,8 @@ import cn.wildfirechat.message.TextMessageContent;
 public class TextMessageContentViewHolder extends NormalMessageContentViewHolder {
     @BindView(R2.id.contentTextView)
     TextView contentTextView;
+    @BindView(R2.id.refTextView)
+    TextView refTextView;
 
     public TextMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -60,6 +63,7 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
                 return true;
             }
         }));
+        // TODO bind ref info
     }
 
     @OnClick(R2.id.contentTextView)
@@ -69,6 +73,11 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", content);
     }
 
+    @OnClick(R2.id.refTextView)
+    public void onRefClick(View view){
+        // TODO show ref message content
+        Toast.makeText(fragment.getContext(), "TODO", Toast.LENGTH_SHORT).show();
+    }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, confirm = false, priority = 12)
     public void clip(View itemView, UiMessage message) {
