@@ -36,6 +36,8 @@ import butterknife.Optional;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -44,8 +46,6 @@ import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -196,6 +196,11 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         fragment.startActivity(intent);
     }
 
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_QUOTE, priority = 14)
+    public void quoteMessage(View itemView, UiMessage message) {
+        fragment.getConversationInputPanel().quoteMessage(message.message);
+    }
+
     @Override
     public String contextMenuTitle(Context context, String tag) {
         String title = "未设置";
@@ -208,6 +213,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 break;
             case MessageContextMenuItemTags.TAG_FORWARD:
                 title = "转发";
+                break;
+            case MessageContextMenuItemTags.TAG_QUOTE:
+                title = "引用";
                 break;
             case MessageContextMenuItemTags.TAG_MULTI_CHECK:
                 title = "多选";

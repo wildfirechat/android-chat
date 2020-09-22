@@ -9,9 +9,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         android:background="#F8F8F8"
         android:gravity="center_vertical"
-        android:animateLayoutChanges="true"
         android:orientation="vertical">
 
         <LinearLayout
@@ -40,17 +40,54 @@
                 android:layout_weight="1"
                 android:gravity="center">
 
-                <EditText
-                    android:id="@+id/editText"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:background="@drawable/shape_session_text_input"
-                    android:maxLines="5"
-                    android:minHeight="42dp"
-                    android:paddingLeft="5dp"
-                    android:textSize="16sp"
-                    android:visibility="visible" />
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/editText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/shape_session_text_input"
+                        android:maxLines="5"
+                        android:minHeight="42dp"
+                        android:paddingLeft="5dp"
+                        android:textSize="16sp"
+                        android:visibility="visible" />
+
+                    <RelativeLayout
+                        android:id="@+id/refRelativeLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:visibility="gone">
+
+                        <EditText
+                            android:id="@+id/refEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/shape_session_ref_input"
+                            android:enabled="false"
+                            android:maxLines="2"
+                            android:minHeight="30dp"
+                            android:paddingLeft="5dp"
+                            android:textSize="12sp"
+                            android:visibility="visible" />
+
+                        <ImageButton
+                            android:id="@+id/clearRefImageButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:src="@mipmap/ic_cancel" />
+
+                    </RelativeLayout>
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/audioButton"

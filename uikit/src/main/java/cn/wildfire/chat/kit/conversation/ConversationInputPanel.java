@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.audio.AudioRecorderPanel;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExtension;
 import cn.wildfire.chat.kit.conversation.mention.Mention;
@@ -58,13 +61,14 @@ import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfire.chat.kit.conversation.ConversationFragment.REQUEST_PICK_MENTION_CONTACT;
 
@@ -97,6 +101,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @BindView(R2.id.conversationExtViewPager)
     ViewPagerFixed extViewPager;
+
+    @BindView(R2.id.refRelativeLayout)
+    RelativeLayout refRelativeLayout;
+    @BindView(R2.id.refEditText)
+    EditText refEditText;
 
     ConversationExtension extension;
     private Conversation conversation;
@@ -149,6 +158,21 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         this.extension.bind(this.messageViewModel, conversation);
 
         setDraft();
+    }
+
+    public void quoteMessage(Message message) {
+        refRelativeLayout.setVisibility(VISIBLE);
+        String groupId = message.conversation.type == Conversation.ConversationType.Group ? message.conversation.target : "";
+        UserInfo sender = ChatManager.Instance().getUserInfo(message.sender, groupId, false);
+        refEditText.setText(sender.displayName + ": " + message.content.digest(message));
+    }
+
+    private void clearQuoteMessage() {
+        if (refRelativeLayout.getVisibility() == VISIBLE) {
+            // TODO clear conversation quote
+            refEditText.setText("");
+            refRelativeLayout.setVisibility(GONE);
+        }
     }
 
     public void disableInput(String tip) {
@@ -258,6 +282,12 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
+    @OnClick(R2.id.clearRefImageButton)
+    void onClearRefImageButtonClick() {
+        refRelativeLayout.setVisibility(GONE);
+        // TODO clear conversation ref
+    }
+
     @OnTextChanged(value = R2.id.editText, callback = OnTextChanged.Callback.TEXT_CHANGED)
     void onInputTextChanged(CharSequence s, int start, int before, int count) {
         if (activity.getCurrentFocus() == editText) {
@@ -353,6 +383,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (TextUtils.isEmpty(content)) {
             return;
         }
+        clearQuoteMessage();
 
         TextMessageContent txtContent = new TextMessageContent(content.toString().trim());
         if (conversation.type == Conversation.ConversationType.Group) {
