@@ -5,5 +5,5 @@ package cn.wildfirechat.client;
 
 interface IOnFriendUpdateListener {
     void onFriendListUpdated(in List<String> friendList);
-    void onFriendRequestUpdated();
+    void onFriendRequestUpdated(in List<String> newFriendRequestList);
 }

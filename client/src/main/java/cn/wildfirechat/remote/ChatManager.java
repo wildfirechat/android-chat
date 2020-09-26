@@ -489,10 +489,10 @@ public class ChatManager {
         onUserInfoUpdate(getUserInfos(friendList, null));
     }
 
-    private void onFriendReqeustUpdated() {
+    private void onFriendReqeustUpdated(List<String> newRequests) {
         mainHandler.post(() -> {
             for (OnFriendUpdateListener listener : friendUpdateListeners) {
-                listener.onFriendRequestUpdate();
+                listener.onFriendRequestUpdate(newRequests);
             }
         });
     }
@@ -2987,6 +2987,25 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取好友请求
+     *
+     * @param userId 对方用户Id
+     * @param incoming true，只包含收到的好友请求；false，所有好友请求
+     * @return
+     */
+    public FriendRequest getFriendRequest(String userId, boolean incoming) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getOneFriendRequest(userId, incoming);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     /**
      * 清除好友请求未读状态
      */
@@ -5545,8 +5564,8 @@ public class ChatManager {
                     }
 
                     @Override
-                    public void onFriendRequestUpdated() throws RemoteException {
-                        ChatManager.this.onFriendReqeustUpdated();
+                    public void onFriendRequestUpdated(List<String> newRequests) throws RemoteException {
+                        ChatManager.this.onFriendReqeustUpdated(newRequests);
                     }
                 });
                 mClient.setOnSettingUpdateListener(new IOnSettingUpdateListener.Stub() {
