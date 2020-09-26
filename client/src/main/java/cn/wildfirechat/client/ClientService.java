@@ -959,6 +959,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public FriendRequest getOneFriendRequest(String userId, boolean incomming) throws RemoteException {
+            ProtoFriendRequest request = ProtoLogic.getOneFriendRequest(userId, incomming);
+            return convertProtoFriendRequest(request);
+        }
+
+        @Override
         public String getFriendAlias(String userId) throws RemoteException {
             return ProtoLogic.getFriendAlias(userId);
         }
@@ -2650,7 +2656,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     @Override
-    public void onFriendRequestUpdated() {
+    public void onFriendRequestUpdated(String[] newRequestList) {
         handler.post(() -> {
             int i = onFriendUpdateListenerRemoteCallbackList.beginBroadcast();
             IOnFriendUpdateListener listener;
@@ -2658,7 +2664,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 i--;
                 listener = onFriendUpdateListenerRemoteCallbackList.getBroadcastItem(i);
                 try {
-                    listener.onFriendRequestUpdated();
+                    listener.onFriendRequestUpdated(Arrays.asList(newRequestList));
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }

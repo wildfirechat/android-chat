@@ -13,5 +13,9 @@ public interface OnFriendUpdateListener {
      */
     void onFriendListUpdate(List<String> updateFriendList);
 
-    void onFriendRequestUpdate();
+    /**
+     * 好友请求列表更新回调
+     * @param newRequests 只包含新来的好友请求，所以这个回调的时候，需要调用一下{@link ChatManager#getFriendRequest(boolean)}获取当前完整的好友请求列表
+     */
+    void onFriendRequestUpdate(List<String> newRequests);
 }
