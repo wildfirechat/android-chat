@@ -130,7 +130,6 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         FriendRequestValue value = new FriendRequestValue(0);
         userListAdapter.updateHeader(0, value);
 
-        contactViewModel.clearUnreadFriendRequestStatus();
         Intent intent = new Intent(getActivity(), FriendRequestListActivity.class);
         startActivity(intent);
     }

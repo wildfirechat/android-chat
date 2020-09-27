@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -26,7 +27,9 @@ import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GetUserInfoCallback;
 
 import static androidx.core.app.NotificationCompat.CATEGORY_MESSAGE;
 import static androidx.core.app.NotificationCompat.DEFAULT_ALL;
@@ -132,6 +135,40 @@ public class WfcNotificationManager {
             String tag = "wfc notification tag";
             showNotification(context, tag, notificationId(message.conversation), title, pushContent, pendingIntent);
         }
+    }
+
+    public void handleFriendRequest(Context context, List<String> friendRequests) {
+
+        if (ChatManager.Instance().isGlobalSilent()) {
+            return;
+        }
+        ChatManager.Instance().getUserInfo(friendRequests.get(0), true, new GetUserInfoCallback() {
+            @Override
+            public void onSuccess(UserInfo userInfo) {
+                String text = userInfo.displayName;
+                if (friendRequests.size() > 1) {
+                    text += " 等";
+                }
+                text += "请求添加你为好友";
+                String title = "好友申请";
+                showFriendRequestNotification(context, title, text);
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
+    }
+
+    private void showFriendRequestNotification(Context context, String title, String text) {
+        Intent mainIntent = new Intent(context.getPackageName() + ".main");
+        Intent friendRequestListIntent = new Intent(context, FriendRequestListActivity.class);
+        int notificationId = 10000;
+        PendingIntent pendingIntent = PendingIntent.getActivities(context, notificationId, new Intent[]{mainIntent, friendRequestListIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
+        String tag = "wfc friendRequest notification tag";
+        showNotification(context, tag, notificationId, title, text, pendingIntent);
+
     }
 
     private List<Conversation> notificationConversations = new ArrayList<>();
