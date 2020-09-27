@@ -70,5 +70,6 @@ public class FriendRequestListFragment extends Fragment {
             noNewFriendLinearLayout.setVisibility(View.VISIBLE);
             newFriendLinearLayout.setVisibility(View.GONE);
         }
+        contactViewModel.clearUnreadFriendRequestStatus();
     }
 }

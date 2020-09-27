@@ -52,11 +52,12 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 
 
-public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener {
+public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnFriendUpdateListener {
 
     private boolean isBackground = true;
     private Application application;
@@ -126,6 +127,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             ChatManagerHolder.gChatManager.startLog();
             ChatManagerHolder.gChatManager.addOnReceiveMessageListener(this);
             ChatManagerHolder.gChatManager.addRecallMessageListener(this);
+            ChatManagerHolder.gChatManager.addFriendUpdateListener(this);
 
             ringPlayer = new AsyncPlayer(null);
             AVEngineKit.init(application, this);
@@ -318,6 +320,22 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void onRecallMessage(Message message) {
         if (isBackground) {
             WfcNotificationManager.getInstance().handleRecallMessage(application, message);
+        }
+    }
+
+    @Override
+    public void onFriendListUpdate(List<String> updateFriendList) {
+        // do nothing
+
+    }
+
+    @Override
+    public void onFriendRequestUpdate(List<String> newRequests) {
+        if (isBackground) {
+            if (newRequests == null || newRequests.isEmpty()) {
+                return;
+            }
+            WfcNotificationManager.getInstance().handleFriendRequest(application, newRequests);
         }
     }
 
