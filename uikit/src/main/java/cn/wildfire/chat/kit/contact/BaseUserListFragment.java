@@ -122,12 +122,16 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
         indexLetterTextView.setVisibility(View.VISIBLE);
         indexLetterTextView.setText(letter);
 
+        List<UIUserInfo> data = userListAdapter.getUsers();
+        if(data == null || data.isEmpty()){
+            return;
+        }
+
         if ("↑".equalsIgnoreCase(letter)) {
             linearLayoutManager.scrollToPositionWithOffset(0, 0);
         } else if ("☆".equalsIgnoreCase(letter)) {
             linearLayoutManager.scrollToPositionWithOffset(userListAdapter.headerCount(), 0);
         } else if ("#".equalsIgnoreCase(letter)) {
-            List<UIUserInfo> data = userListAdapter.getUsers();
             for (int i = 0; i < data.size(); i++) {
                 UIUserInfo friend = data.get(i);
                 if (friend.getCategory().equals("#")) {
@@ -136,7 +140,6 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
                 }
             }
         } else {
-            List<UIUserInfo> data = userListAdapter.getUsers();
             for (int i = 0; i < data.size(); i++) {
                 UIUserInfo friend = data.get(i);
                 if (friend.getCategory().compareTo(letter) >= 0) {
