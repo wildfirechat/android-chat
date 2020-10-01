@@ -98,7 +98,8 @@ v0.8.0 版本，对代码结构及部分实现机制进行了大量调整，变�
 
 ## 集成
 1. client部分，自行下载代码，并将client module引入你们自己的项目。
-2. uikit部分，自行下载代码，并将uikit module引入你们自己的项目，
+2. uikit部分，自行下载代码，并将uikit module引入你们自己的项目。
+3. push部分，自行下载代码，将push module引入你们自己的项目。
 
 ## 贡献
 欢迎提交pull request，一起打造一个更好的开源IM。
