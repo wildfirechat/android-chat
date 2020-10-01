@@ -27,6 +27,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     private boolean isRecording;
     private long startTime;
     private boolean isToCancel;
+    private boolean isCountDown;
     private String currentAudioFile;
 
     private Context context;
@@ -89,7 +90,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(button == null){
+        if (button == null) {
             return false;
         }
         switch (event.getAction()) {
@@ -98,14 +99,15 @@ public class AudioRecorderPanel implements View.OnTouchListener {
                 startRecord();
                 break;
             case MotionEvent.ACTION_MOVE:
-                isToCancel = isCancelled(v, event);
-                if (isToCancel) {
+                if (isCancelled(v, event)) {
                     if (recordListener != null) {
                         recordListener.onRecordStateChanged(RecordState.TO_CANCEL);
                     }
                     showCancelTip();
+                    isToCancel = true;
                 } else {
                     hideCancelTip();
+                    isToCancel = false;
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -202,12 +204,17 @@ public class AudioRecorderPanel implements View.OnTouchListener {
 
         recordingWindow.showAtLocation(rootView, Gravity.CENTER, 0, 0);
 
-        stateImageView.setVisibility(View.VISIBLE);
-        stateImageView.setImageResource(R.mipmap.ic_volume_1);
+        if (isCountDown) {
+            countDownTextView.setVisibility(View.VISIBLE);
+            stateImageView.setVisibility(View.GONE);
+        } else {
+            stateImageView.setVisibility(View.VISIBLE);
+            stateImageView.setImageResource(R.mipmap.ic_volume_1);
+            countDownTextView.setVisibility(View.GONE);
+        }
         stateTextView.setVisibility(View.VISIBLE);
         stateTextView.setText(R.string.voice_rec);
         stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
-        countDownTextView.setVisibility(View.GONE);
     }
 
     private void hideRecording() {
@@ -219,6 +226,8 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         stateImageView = null;
         stateTextView = null;
         countDownTextView = null;
+        isCountDown = false;
+        isToCancel = false;
     }
 
     private void showTooShortTip() {
@@ -227,6 +236,9 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     }
 
     private void showCancelTip() {
+        if (recordingWindow == null) {
+            return;
+        }
         countDownTextView.setVisibility(View.GONE);
         stateImageView.setVisibility(View.VISIBLE);
         stateImageView.setImageResource(R.mipmap.ic_volume_cancel);
@@ -236,6 +248,9 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     }
 
     private void hideCancelTip() {
+        if (!isToCancel) {
+            return;
+        }
         showRecording();
     }
 
@@ -243,6 +258,9 @@ public class AudioRecorderPanel implements View.OnTouchListener {
      * @param seconds
      */
     private void showCountDown(int seconds) {
+        if (isToCancel) {
+            return;
+        }
         stateImageView.setVisibility(View.GONE);
         stateTextView.setVisibility(View.VISIBLE);
         stateTextView.setText(R.string.voice_rec);
@@ -262,14 +280,16 @@ public class AudioRecorderPanel implements View.OnTouchListener {
                 timeout();
                 return;
             } else if (now - startTime > (maxDuration - countDown)) {
+                isCountDown = true;
                 int tmp = (int) ((maxDuration - (now - startTime)) / 1000);
                 tmp = tmp > 1 ? tmp : 1;
                 showCountDown(tmp);
                 if (recordListener != null) {
                     recordListener.onRecordStateChanged(RecordState.TO_TIMEOUT);
                 }
+            } else {
+                updateVolume();
             }
-            updateVolume();
             handler.postDelayed(this::tick, 100);
         }
     }
@@ -322,7 +342,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         view.getLocationOnScreen(location);
 
         if (event.getRawX() < location[0] || event.getRawX() > location[0] + view.getWidth()
-                || event.getRawY() < location[1] - 40) {
+            || event.getRawY() < location[1] - 40) {
             return true;
         }
 
@@ -344,7 +364,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         RECORDING,
         // 用户准备取消
         TO_CANCEL,
-        // 最长录音时间开到
+        // 最长录音时间快到
         TO_TIMEOUT,
     }
 }
