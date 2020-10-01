@@ -98,4 +98,8 @@ public class ErrorCode {
     //proto error code
     public static final int Proto_CorruptData = -100001;
     public static final int Proto_InvalideParameter = -100002;
+    //消息内容超过最大值，最大值为200KB，建议不超过15KB。
+    public static final int Proto_Content_Exceed_Max_Size = -100003;
+    //媒体内容超过最大值，最大值为100MB
+    public static final int Proto_Media_Exceed_Max_Size = -100004;
 }
