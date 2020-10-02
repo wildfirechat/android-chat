@@ -1818,6 +1818,21 @@ public class ChatManager {
         return conversationInfo;
     }
 
+    public long getFirstUnreadMessageId(Conversation conversation) {
+        if (!checkRemoteService()) {
+            Log.e(TAG, "Remote service not available");
+            return 0L;
+        }
+
+        try {
+            return mClient.getFirstUnreadMessageId(conversation.type.getValue(), conversation.target, conversation.line);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        return 0L;
+    }
+
     /**
      * 获取会话消息
      *

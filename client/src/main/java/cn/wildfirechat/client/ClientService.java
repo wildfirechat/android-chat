@@ -480,6 +480,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public long getFirstUnreadMessageId(int conversationType, String target, int line) throws RemoteException {
+            return ProtoLogic.getConversationFirstUnreadMessageId(conversationType, target, line);
+        }
+
+        @Override
         public List<cn.wildfirechat.message.Message> getMessages(Conversation conversation, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessages(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser);
             SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
