@@ -35,8 +35,6 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.voip.conference.ConferenceActivity;
-import cn.wildfire.chat.kit.voip.conference.ConferenceItem;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
@@ -101,6 +99,9 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
 
         // session里面的participants包含除自己外的所有人
         participants = session.getParticipantIds();
+        if (participants == null || participants.isEmpty()) {
+            return;
+        }
         List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
         participantUserInfos.add(me);
         int size = with / Math.max((int) Math.ceil(Math.sqrt(participantUserInfos.size())), 3);
