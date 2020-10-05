@@ -25,6 +25,8 @@ public interface UserSettingScope {
     int WebOnline = 12;
     int DisableReceipt = 13;
     int FavoriteUser = 14;
+    //不能直接使用，协议栈内会使用此值
+    int MuteWhenPcOnline = 15;
 
 
     int kUserSettingCustomBegin = 1000;
