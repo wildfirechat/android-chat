@@ -5316,6 +5316,14 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取授权访问的链接地址
+     *
+     * @param messageUid 消息的Uid
+     * @param mediaType 媒体类型
+     * @param mediaPath 媒体的路径
+     * @param callback 返回经过授权的媒体地址
+     */
     public void getAuthorizedMediaUrl(long messageUid, MessageContentMediaType mediaType, String mediaPath, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
@@ -5356,6 +5364,9 @@ public class ChatManager {
         }
     }
 
+    /*
+    获取PC端在线情况，包括PC端，Web端和小程序端。
+     */
     public List<PCOnlineInfo> getPCOnlineInfos() {
         String pcOnline = getUserSetting(UserSettingScope.PCOnline, "PC");
         String webOnline = getUserSetting(UserSettingScope.PCOnline, "Web");
@@ -5378,6 +5389,12 @@ public class ChatManager {
         return infos;
     }
 
+    /**
+     * 踢掉PC端在线设备（包括PC端，Web端和小程序端)
+     *
+     * @param pcClientId 端的设备ID
+     * @param callback  处理结果
+     **/
     public void kickoffPCClient(String pcClientId, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
@@ -5399,6 +5416,40 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 是否开启了PC在线时，移动端静音操作
+     *
+     * @return 当为true时，如果PC端（包括pc端，web端和小程序端）在线，移动端将不再收到提醒
+     **/
+    public boolean isMuteNotificationWhenPcOnline() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        String value = getUserSetting(UserSettingScope.MuteWhenPcOnline, "");
+        if (value == null || !value.equals("1")) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 设置开启了PC在线时，移动端是否静音操作
+     *
+     * @param isMute
+     * @param callback
+     **/
+    public void muteNotificationWhenPcOnline(boolean isMute, GeneralCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        setUserSetting(UserSettingScope.MuteWhenPcOnline, "", isMute ? "1" : "0", callback);
     }
 
     public void getApplicationId(String applicationId, final GeneralCallback2 callback) {
