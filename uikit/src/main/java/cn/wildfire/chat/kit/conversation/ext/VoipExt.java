@@ -9,14 +9,16 @@ import android.content.Context;
 import android.os.Build;
 import android.view.View;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class VoipExt extends ConversationExt {
 
@@ -82,8 +84,16 @@ public class VoipExt extends ConversationExt {
 
     @Override
     public boolean filter(Conversation conversation) {
-        if (conversation.type == Conversation.ConversationType.Single
-            || (conversation.type == Conversation.ConversationType.Group && AVEngineKit.Instance().isSupportMultiCall())) {
+        if ((conversation.type == Conversation.ConversationType.Group && AVEngineKit.isSupportMultiCall())) {
+            return false;
+        }
+
+        if (conversation.type == Conversation.ConversationType.Single) {
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(conversation.target, false);
+            // robot
+            if (userInfo.type == 1) {
+                return true;
+            }
             return false;
         }
         return true;
@@ -94,6 +104,7 @@ public class VoipExt extends ConversationExt {
     public String title(Context context) {
         return "视频通话";
     }
+
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
