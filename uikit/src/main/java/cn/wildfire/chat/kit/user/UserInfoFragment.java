@@ -128,6 +128,9 @@ public class UserInfoFragment extends Fragment {
             inviteButton.setVisibility(View.VISIBLE);
             aliasOptionItemView.setVisibility(View.GONE);
         }
+        if(userInfo.type == 1){
+            voipChatButton.setVisibility(View.GONE);
+        }
 
         setUserInfo(userInfo);
         userViewModel.userInfoLiveData().observe(getViewLifecycleOwner(), userInfos -> {
