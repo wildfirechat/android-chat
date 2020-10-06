@@ -122,7 +122,7 @@ public class UserCardExt extends ConversationExt {
 
     @Override
     public int iconResId() {
-        return R.mipmap.avatar_def;
+        return R.mipmap.ic_user_card;
     }
 
     @Override
