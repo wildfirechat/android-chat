@@ -278,6 +278,7 @@ public class AppService implements AppServiceProvider {
         Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".pc.login");
         intent.putExtra("token", token);
         intent.putExtra("isConfirmPcLogin", true);
+        intent.putExtra("platform", platform);
         WfcUIKit.startActivity(ChatManager.Instance().getApplicationContext(), intent);
     }
 
