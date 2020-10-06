@@ -18,6 +18,7 @@ import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.pc.PCSessionActivity;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.PCOnlineInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 @StatusNotificationType(PCOnlineStatusNotification.class)
 public class PCOnlineNotificationViewHolder extends StatusNotificationViewHolder {
@@ -46,6 +47,9 @@ public class PCOnlineNotificationViewHolder extends StatusNotificationViewHolder
                 break;
             default:
                 break;
+        }
+        if(ChatManager.Instance().isMuteNotificationWhenPcOnline()){
+            desc += "，手机通知已关闭";
         }
 
         statusTextView.setText(desc);

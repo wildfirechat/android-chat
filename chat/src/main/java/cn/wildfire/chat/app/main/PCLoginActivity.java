@@ -6,6 +6,7 @@ package cn.wildfire.chat.app.main;
 
 import android.text.TextUtils;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProviders;
@@ -19,17 +20,24 @@ import cn.wildfire.chat.app.login.model.PCSession;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.client.Platform;
 
 public class PCLoginActivity extends WfcBaseActivity {
     private String token;
     private boolean isConfirmPcLogin = false;
     @BindView(R.id.confirmButton)
     Button confirmButton;
+    @BindView(R.id.descTextView)
+    TextView descTextView;
+
+    private Platform platform;
 
     @Override
     protected void beforeViews() {
         token = getIntent().getStringExtra("token");
         isConfirmPcLogin = getIntent().getBooleanExtra("isConfirmPcLogin", false);
+        int tmp = getIntent().getIntExtra("platform", 0);
+        platform = Platform.platform(tmp);
         if (!isConfirmPcLogin && TextUtils.isEmpty(token)) {
             finish();
         }
@@ -42,6 +50,7 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
+        descTextView.setText("允许 " + platform.getPlatFormName() + " 登录");
         if (isConfirmPcLogin) {
             confirmButton.setEnabled(true);
         } else {

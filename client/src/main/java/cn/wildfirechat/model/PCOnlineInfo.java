@@ -8,6 +8,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import cn.wildfirechat.client.Platform;
+
 public class PCOnlineInfo implements Parcelable {
 
     /**
@@ -24,6 +26,7 @@ public class PCOnlineInfo implements Parcelable {
     }
 
     private PCOnlineType type;
+    private Platform platform;
     private boolean isOnline;
     private String clientId;
     private String clientName;
@@ -49,6 +52,10 @@ public class PCOnlineInfo implements Parcelable {
         return timestamp;
     }
 
+    public Platform getPlatform() {
+        return platform;
+    }
+
     public static PCOnlineInfo infoFromStr(String value, PCOnlineType type) {
         if (TextUtils.isEmpty(value)) {
             return null;
@@ -58,6 +65,7 @@ public class PCOnlineInfo implements Parcelable {
             PCOnlineInfo info = new PCOnlineInfo();
             info.type = type;
             info.timestamp = Long.parseLong(parts[0]);
+            info.platform = Platform.values()[Integer.parseInt(parts[1])];
             info.clientId = parts[2];
             info.clientName = parts[3];
             info.isOnline = true;
@@ -68,6 +76,9 @@ public class PCOnlineInfo implements Parcelable {
     }
 
 
+    public PCOnlineInfo() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -76,18 +87,18 @@ public class PCOnlineInfo implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.type == null ? -1 : this.type.ordinal());
+        dest.writeInt(this.platform == null ? -1 : this.platform.ordinal());
         dest.writeByte(this.isOnline ? (byte) 1 : (byte) 0);
         dest.writeString(this.clientId);
         dest.writeString(this.clientName);
         dest.writeLong(this.timestamp);
     }
 
-    public PCOnlineInfo() {
-    }
-
     protected PCOnlineInfo(Parcel in) {
         int tmpType = in.readInt();
         this.type = tmpType == -1 ? null : PCOnlineType.values()[tmpType];
+        int tmpPlatform = in.readInt();
+        this.platform = tmpPlatform == -1 ? null : Platform.values()[tmpPlatform];
         this.isOnline = in.readByte() != 0;
         this.clientId = in.readString();
         this.clientName = in.readString();
@@ -116,16 +127,19 @@ public class PCOnlineInfo implements Parcelable {
         if (isOnline != that.isOnline) return false;
         if (timestamp != that.timestamp) return false;
         if (type != that.type) return false;
-        if (!clientId.equals(that.clientId)) return false;
-        return clientName.equals(that.clientName);
+        if (platform != that.platform) return false;
+        if (clientId != null ? !clientId.equals(that.clientId) : that.clientId != null)
+            return false;
+        return clientName != null ? clientName.equals(that.clientName) : that.clientName == null;
     }
 
     @Override
     public int hashCode() {
-        int result = type.hashCode();
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (platform != null ? platform.hashCode() : 0);
         result = 31 * result + (isOnline ? 1 : 0);
-        result = 31 * result + clientId.hashCode();
-        result = 31 * result + clientName.hashCode();
+        result = 31 * result + (clientId != null ? clientId.hashCode() : 0);
+        result = 31 * result + (clientName != null ? clientName.hashCode() : 0);
         result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
         return result;
     }
