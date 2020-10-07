@@ -6,9 +6,13 @@ package cn.wildfirechat.message;
 
 import android.os.Parcel;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.model.QuoteInfo;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Text;
 
@@ -19,6 +23,8 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Text;
 @ContentTag(type = ContentType_Text, flag = PersistFlag.Persist_And_Count)
 public class TextMessageContent extends MessageContent {
     private String content;
+    // 引用信息
+    private QuoteInfo quoteInfo;
 
     public TextMessageContent() {
     }
@@ -41,6 +47,15 @@ public class TextMessageContent extends MessageContent {
         payload.searchableContent = content;
         payload.mentionedType = mentionedType;
         payload.mentionedTargets = mentionedTargets;
+        if (quoteInfo != null) {
+            JSONObject object = new JSONObject();
+            try {
+                object.put("quote", quoteInfo.encode());
+                payload.binaryContent = object.toString().getBytes();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         return payload;
     }
 
@@ -50,6 +65,15 @@ public class TextMessageContent extends MessageContent {
         content = payload.searchableContent;
         mentionedType = payload.mentionedType;
         mentionedTargets = payload.mentionedTargets;
+        if (payload.binaryContent != null && payload.binaryContent.length > 0) {
+            try {
+                JSONObject object = new JSONObject(new String(payload.binaryContent));
+                quoteInfo = new QuoteInfo();
+                quoteInfo.decode(object);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
