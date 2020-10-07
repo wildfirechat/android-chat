@@ -11,7 +11,6 @@ import android.text.Html;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +18,7 @@ import com.lqr.emoji.MoonUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -27,9 +27,12 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.widget.LinkClickListener;
 import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
+import cn.wildfirechat.model.QuoteInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 
 @MessageContentType(value = {
@@ -44,13 +47,16 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
     @BindView(R2.id.refTextView)
     TextView refTextView;
 
+    private QuoteInfo quoteInfo;
+
     public TextMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
     }
 
     @Override
     public void onBind(UiMessage message) {
-        String content = ((TextMessageContent) message.message.content).getContent();
+        TextMessageContent textMessageContent = (TextMessageContent) message.message.content;
+        String content = textMessageContent.getContent();
         if (content.startsWith("<") && content.endsWith(">")) {
             contentTextView.setText(Html.fromHtml(content));
         } else {
@@ -63,20 +69,34 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
                 return true;
             }
         }));
-        // TODO bind ref info
+
+        quoteInfo = textMessageContent.getQuoteInfo();
+        if (quoteInfo != null && quoteInfo.getMessageUid() > 0) {
+            refTextView.setVisibility(View.VISIBLE);
+            refTextView.setText(quoteInfo.getUserDisplayName() + ": " + quoteInfo.getMessageDigest());
+        } else {
+            refTextView.setVisibility(View.GONE);
+        }
     }
 
     @OnClick(R2.id.contentTextView)
-    public void onClickTest(View view) {
-//        Toast.makeText(fragment.getContext(), "onTextMessage click: " + ((TextMessageContent) message.message.content).getContent(), Toast.LENGTH_SHORT).show();
+    public void onClick(View view) {
         String content = ((TextMessageContent) message.message.content).getContent();
         WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", content);
     }
 
     @OnClick(R2.id.refTextView)
-    public void onRefClick(View view){
-        // TODO show ref message content
-        Toast.makeText(fragment.getContext(), "TODO", Toast.LENGTH_SHORT).show();
+    public void onRefClick(View view) {
+        Message message = ChatManager.Instance().getMessageByUid(quoteInfo.getMessageUid());
+        if (message != null) {
+            // TODO previewMessageActivity
+            MessageContent messageContent = message.content;
+            if (messageContent instanceof TextMessageContent) {
+                WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", ((TextMessageContent) messageContent).getContent());
+            } else {
+                // TODO
+            }
+        }
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, confirm = false, priority = 12)

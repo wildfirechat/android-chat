@@ -4,13 +4,16 @@
 
 package cn.wildfirechat.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.remote.ChatManager;
 
-public class QuoteInfo {
+public class QuoteInfo implements Parcelable {
     private long messageUid;
     private String userId;
     private String userDisplayName;
@@ -47,12 +50,10 @@ public class QuoteInfo {
     public void setMessageDigest(String messageDigest) {
         this.messageDigest = messageDigest;
     }
-
-    public static QuoteInfo init(long messageUid) {
+    public static QuoteInfo init(Message message) {
         QuoteInfo info = new QuoteInfo();
-        Message message = ChatManager.Instance().getMessageByUid(messageUid);
         if (message != null) {
-            info.messageUid = messageUid;
+            info.messageUid = message.messageUid;
             info.userId = message.sender;
             UserInfo userInfo = ChatManager.Instance().getUserInfo(message.sender, false);
             info.userDisplayName = userInfo.displayName;
@@ -62,6 +63,12 @@ public class QuoteInfo {
             }
         }
         return info;
+
+    }
+
+    public static QuoteInfo init(long messageUid) {
+        Message message = ChatManager.Instance().getMessageByUid(messageUid);
+        return init(message);
     }
 
     public JSONObject encode() {
@@ -83,4 +90,39 @@ public class QuoteInfo {
         userDisplayName = object.optString("n");
         messageDigest = object.optString("d");
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.messageUid);
+        dest.writeString(this.userId);
+        dest.writeString(this.userDisplayName);
+        dest.writeString(this.messageDigest);
+    }
+
+    public QuoteInfo() {
+    }
+
+    protected QuoteInfo(Parcel in) {
+        this.messageUid = in.readLong();
+        this.userId = in.readString();
+        this.userDisplayName = in.readString();
+        this.messageDigest = in.readString();
+    }
+
+    public static final Parcelable.Creator<QuoteInfo> CREATOR = new Parcelable.Creator<QuoteInfo>() {
+        @Override
+        public QuoteInfo createFromParcel(Parcel source) {
+            return new QuoteInfo(source);
+        }
+
+        @Override
+        public QuoteInfo[] newArray(int size) {
+            return new QuoteInfo[size];
+        }
+    };
 }

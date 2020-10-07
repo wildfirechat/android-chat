@@ -41,6 +41,14 @@ public class TextMessageContent extends MessageContent {
         this.content = content;
     }
 
+    public QuoteInfo getQuoteInfo() {
+        return quoteInfo;
+    }
+
+    public void setQuoteInfo(QuoteInfo quoteInfo) {
+        this.quoteInfo = quoteInfo;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = new MessagePayload();
@@ -69,7 +77,7 @@ public class TextMessageContent extends MessageContent {
             try {
                 JSONObject object = new JSONObject(new String(payload.binaryContent));
                 quoteInfo = new QuoteInfo();
-                quoteInfo.decode(object);
+                quoteInfo.decode(object.optJSONObject("quote"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -91,11 +99,13 @@ public class TextMessageContent extends MessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.content);
+        dest.writeParcelable(this.quoteInfo, flags);
     }
 
     protected TextMessageContent(Parcel in) {
         super(in);
         this.content = in.readString();
+        this.quoteInfo = in.readParcelable(QuoteInfo.class.getClassLoader());
     }
 
     public static final Creator<TextMessageContent> CREATOR = new Creator<TextMessageContent>() {
