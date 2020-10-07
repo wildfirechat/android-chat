@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.conversationlist;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.View;
 
 import androidx.lifecycle.Observer;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.PCOnlineStatusNotification;
@@ -24,8 +27,6 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
@@ -147,6 +148,9 @@ public class ConversationListFragment extends ProgressFragment {
                 for (PCOnlineInfo info : infos) {
                     PCOnlineStatusNotification notification = new PCOnlineStatusNotification(info);
                     statusNotificationViewModel.showStatusNotification(notification);
+
+                    SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+                    sp.edit().putBoolean("wfc_uikit_had_pc_session", true).commit();
                 }
             }
         });
@@ -155,6 +159,9 @@ public class ConversationListFragment extends ProgressFragment {
             for (PCOnlineInfo info : pcOnlineInfos) {
                 PCOnlineStatusNotification notification = new PCOnlineStatusNotification(info);
                 statusNotificationViewModel.showStatusNotification(notification);
+
+                SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+                sp.edit().putBoolean("wfc_uikit_had_pc_session", true).commit();
             }
         }
     }
