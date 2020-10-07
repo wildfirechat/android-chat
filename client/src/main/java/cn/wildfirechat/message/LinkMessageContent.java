@@ -17,32 +17,32 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_ImageText;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Link;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
  */
 
-@ContentTag(type = ContentType_ImageText, flag = PersistFlag.Persist_And_Count)
-public class ImageTextMessageContent extends MessageContent {
+@ContentTag(type = ContentType_Link, flag = PersistFlag.Persist_And_Count)
+public class LinkMessageContent extends MessageContent {
     private String title;
-    private String content;
+    private String contentDigest;
     private String url;
-    private Bitmap thumbnail;
+    private String thumbnailUrl;
 
-    public ImageTextMessageContent() {
+    public LinkMessageContent() {
     }
 
-    public ImageTextMessageContent(String content) {
-        this.content = content;
+    public LinkMessageContent(String contentDigest) {
+        this.contentDigest = contentDigest;
     }
 
-    public String getContent() {
-        return content;
+    public String getContentDigest() {
+        return contentDigest;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setContentDigest(String contentDigest) {
+        this.contentDigest = contentDigest;
     }
 
     public String getTitle() {
@@ -61,29 +61,28 @@ public class ImageTextMessageContent extends MessageContent {
         this.url = url;
     }
 
-    public Bitmap getThumbnail() {
-        return thumbnail;
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
     }
 
-    public void setThumbnail(Bitmap thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     @Override
     public MessagePayload encode() {
         MessagePayload payload = new MessagePayload();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-        payload.binaryContent = baos.toByteArray();
+
 
         payload.searchableContent = title;
 
 
         try {
             JSONObject objWrite = new JSONObject();
-            objWrite.put("c", content);
+            objWrite.put("d", contentDigest);
             objWrite.put("u", url);
-            payload.content = objWrite.toString();
+            objWrite.put("t", thumbnailUrl);
+            payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -94,15 +93,14 @@ public class ImageTextMessageContent extends MessageContent {
     @Override
     public void decode(MessagePayload payload) {
         title = payload.searchableContent;
-        if (payload.binaryContent != null) {
-            thumbnail = BitmapFactory.decodeByteArray(payload.binaryContent, 0, payload.binaryContent.length);
-        }
+
 
         try {
             if (payload.content != null) {
-                JSONObject jsonObject = new JSONObject(payload.content);
-                content = jsonObject.optString("c");
+                JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
+                contentDigest = jsonObject.optString("c");
                 url = jsonObject.optString("u");
+                thumbnailUrl = jsonObject.optString("t");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -111,7 +109,7 @@ public class ImageTextMessageContent extends MessageContent {
 
     @Override
     public String digest(Message message) {
-        return content;
+        return contentDigest;
     }
 
     @Override
@@ -123,28 +121,28 @@ public class ImageTextMessageContent extends MessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.title);
-        dest.writeString(this.content);
+        dest.writeString(this.contentDigest);
         dest.writeString(this.url);
-        dest.writeParcelable(this.thumbnail, flags);
+        dest.writeString(this.thumbnailUrl);
     }
 
-    protected ImageTextMessageContent(Parcel in) {
+    protected LinkMessageContent(Parcel in) {
         super(in);
         this.title = in.readString();
-        this.content = in.readString();
+        this.contentDigest = in.readString();
         this.url = in.readString();
-        this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
+        this.thumbnailUrl = in.readString();
     }
 
-    public static final Creator<ImageTextMessageContent> CREATOR = new Creator<ImageTextMessageContent>() {
+    public static final Creator<LinkMessageContent> CREATOR = new Creator<LinkMessageContent>() {
         @Override
-        public ImageTextMessageContent createFromParcel(Parcel source) {
-            return new ImageTextMessageContent(source);
+        public LinkMessageContent createFromParcel(Parcel source) {
+            return new LinkMessageContent(source);
         }
 
         @Override
-        public ImageTextMessageContent[] newArray(int size) {
-            return new ImageTextMessageContent[size];
+        public LinkMessageContent[] newArray(int size) {
+            return new LinkMessageContent[size];
         }
     };
 }
