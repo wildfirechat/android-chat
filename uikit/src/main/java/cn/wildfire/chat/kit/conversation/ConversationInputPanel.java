@@ -67,6 +67,7 @@ import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.QuoteInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -160,7 +161,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         setDraft();
     }
 
+    private QuoteInfo quoteInfo;
+
     public void quoteMessage(Message message) {
+        this.quoteInfo = QuoteInfo.init(message.messageUid);
         refRelativeLayout.setVisibility(VISIBLE);
         String groupId = message.conversation.type == Conversation.ConversationType.Group ? message.conversation.target : "";
         UserInfo sender = ChatManager.Instance().getUserInfo(message.sender, groupId, false);
@@ -173,6 +177,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             refEditText.setText("");
             refRelativeLayout.setVisibility(GONE);
         }
+        quoteInfo = null;
     }
 
     public void disableInput(String tip) {
@@ -383,9 +388,13 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (TextUtils.isEmpty(content)) {
             return;
         }
-        clearQuoteMessage();
 
         TextMessageContent txtContent = new TextMessageContent(content.toString().trim());
+        if(this.quoteInfo != null){
+            txtContent.setQuoteInfo(quoteInfo);
+        }
+        clearQuoteMessage();
+
         if (conversation.type == Conversation.ConversationType.Group) {
             MentionSpan[] mentions = content.getSpans(0, content.length(), MentionSpan.class);
             if (mentions != null && mentions.length > 0) {
