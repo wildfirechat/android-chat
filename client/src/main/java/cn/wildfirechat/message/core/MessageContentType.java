@@ -20,7 +20,7 @@ public interface MessageContentType {
     int ContentType_File = 5;
     int ContentType_Video = 6;
     int ContentType_Sticker = 7;
-    int ContentType_ImageText = 8;
+    int ContentType_Link = 8;
     int ContentType_P_Text = 9;
     int ContentType_Card = 10;
 

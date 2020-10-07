@@ -49,7 +49,7 @@ import cn.wildfirechat.message.CardMessageContent;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.ImageTextMessageContent;
+import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
@@ -2304,7 +2304,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             mBinder.registerMessageContent(DismissGroupNotificationContent.class.getName());
             mBinder.registerMessageContent(FileMessageContent.class.getName());
             mBinder.registerMessageContent(ImageMessageContent.class.getName());
-            mBinder.registerMessageContent(ImageTextMessageContent.class.getName());
+            mBinder.registerMessageContent(LinkMessageContent.class.getName());
             mBinder.registerMessageContent(KickoffGroupMemberNotificationContent.class.getName());
             mBinder.registerMessageContent(LocationMessageContent.class.getName());
             mBinder.registerMessageContent(ModifyGroupAliasNotificationContent.class.getName());
