@@ -4,6 +4,9 @@
 
 package cn.wildfire.chat.kit.contact;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -11,6 +14,8 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.Conversation;
@@ -76,7 +81,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         ChatManager.Instance().getFavUsers(new StringListCallback() {
             @Override
             public void onSuccess(List<String> userIds) {
-                if(userIds == null || userIds.isEmpty()){
+                if (userIds == null || userIds.isEmpty()) {
                     return;
                 }
                 List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(userIds, null);
@@ -104,7 +109,17 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         loadingCount.incrementAndGet();
         ChatManager.Instance().getWorkHandler().post(() -> {
             loadingCount.decrementAndGet();
+            SharedPreferences sp = WfcUIKit.getWfcUIKit().getApplication().getSharedPreferences("config", Context.MODE_PRIVATE);
+            boolean pcLogined = sp.getBoolean("wfc_uikit_had_pc_session", false);
+            UserInfo fileHelpUserInfo = null;
+            if (pcLogined) {
+                fileHelpUserInfo = ChatManager.Instance().getUserInfo(Config.FILE_TRANSFER_ID, true);
+            }
+
             List<UserInfo> userInfos = ChatManager.Instance().getMyFriendListInfo(false);
+            if (fileHelpUserInfo != null) {
+                userInfos.add(fileHelpUserInfo);
+            }
             if (contactListLiveData != null) {
                 contactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos));
             }
@@ -189,7 +204,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return ChatManager.Instance().isBlackListed(targetUid);
     }
 
-    public boolean isFav(String targetUid){
+    public boolean isFav(String targetUid) {
         return ChatManager.Instance().isFavUser(targetUid);
     }
 
@@ -228,7 +243,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return result;
     }
 
-    public LiveData<OperateResult<Boolean>> setFav(String userId, boolean fav){
+    public LiveData<OperateResult<Boolean>> setFav(String userId, boolean fav) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
         ChatManager.Instance().setFavUser(userId, fav, new GeneralCallback() {
             @Override
