@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcIntent;
@@ -128,8 +129,12 @@ public class UserInfoFragment extends Fragment {
             inviteButton.setVisibility(View.VISIBLE);
             aliasOptionItemView.setVisibility(View.GONE);
         }
-        if(userInfo.type == 1){
+        if (userInfo.type == 1) {
             voipChatButton.setVisibility(View.GONE);
+        }
+        if (userInfo.uid.equals(Config.FILE_TRANSFER_ID)) {
+            chatButton.setVisibility(View.VISIBLE);
+            inviteButton.setVisibility(View.GONE);
         }
 
         setUserInfo(userInfo);
