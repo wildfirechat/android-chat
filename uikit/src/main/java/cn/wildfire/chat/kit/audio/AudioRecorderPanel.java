@@ -162,7 +162,6 @@ public class AudioRecorderPanel implements View.OnTouchListener {
                 recordListener.onRecordSuccess(currentAudioFile, (int) duration / 1000);
                 hideRecording();
             } else {
-                recordListener.onRecordFail("too short");
                 showTooShortTip();
                 handler.postDelayed(this::hideRecording, 1000);
             }
