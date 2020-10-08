@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProviders;
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -42,6 +43,7 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class MultiCallVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     @BindView(R2.id.rootView)
@@ -66,7 +68,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
     private boolean micEnabled = true;
     private boolean videoEnabled = true;
-    private boolean isScreenSharing = false;
 
     public static final String TAG = "MultiCallVideoFragment";
 
@@ -129,8 +130,21 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         participantGridView.removeAllViews();
 
         participants = session.getParticipantIds();
+
         List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
-        for (UserInfo userInfo : participantUserInfos) {
+        List<UserInfo> unfocusedParticipantUserInfos;
+        UserInfo focusedUserInfo;
+        if (session.isScreenSharing()) {
+            unfocusedParticipantUserInfos = participantUserInfos.size() > 1 ? participantUserInfos.subList(1, participantUserInfos.size()) : new ArrayList<>();
+            focusedUserInfo = participantUserInfos.get(0);
+            unfocusedParticipantUserInfos.add(me);
+
+        } else {
+            unfocusedParticipantUserInfos = participantUserInfos;
+            focusedUserInfo = me;
+        }
+
+        for (UserInfo userInfo : unfocusedParticipantUserInfos) {
             MultiCallItem multiCallItem = new MultiCallItem(getActivity());
             multiCallItem.setTag(userInfo.uid);
 
@@ -142,15 +156,15 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         }
 
         MultiCallItem multiCallItem = new MultiCallItem(getActivity());
-        multiCallItem.setTag(me.uid);
+        multiCallItem.setTag(focusedUserInfo.uid);
         multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with, with));
-        multiCallItem.getStatusTextView().setText(me.displayName);
-        GlideApp.with(multiCallItem).load(me.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
+        multiCallItem.getStatusTextView().setText(focusedUserInfo.displayName);
+        GlideApp.with(multiCallItem).load(focusedUserInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
 
         focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(with, with));
         focusVideoContainerFrameLayout.addView(multiCallItem);
         focusMultiCallItem = multiCallItem;
-        ((VoipBaseActivity) getActivity()).setFocusVideoUserId(me.uid);
+        ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusedUserInfo.uid);
     }
 
     private void updateParticipantStatus(AVEngineKit.CallSession session) {
@@ -202,22 +216,16 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R2.id.switchCameraImageView)
     void switchCamera() {
-        if (isScreenSharing) {
-            return;
-        }
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
+        if (session != null && !session.isScreenSharing() && session.getState() == AVEngineKit.CallState.Connected) {
             session.switchCamera();
         }
     }
 
     @OnClick(R2.id.videoImageView)
     void video() {
-        if(isScreenSharing){
-            return;
-        }
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected && !session.isScreenSharing()) {
             session.muteVideo(!videoEnabled);
             videoEnabled = !videoEnabled;
             videoImageView.setSelected(videoEnabled);
@@ -235,12 +243,15 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R2.id.shareScreenImageView)
     void shareScreen() {
-        if (!isScreenSharing) {
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
+            return;
+        }
+        if (!session.isScreenSharing()) {
             ((VoipBaseActivity) getActivity()).startScreenShare();
         } else {
             ((VoipBaseActivity) getActivity()).stopScreenShare();
         }
-        isScreenSharing = !isScreenSharing;
     }
 
     // hangup 触发
@@ -315,17 +326,15 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @Override
     public void didCreateLocalVideoTrack() {
         MultiCallItem item = rootLinearLayout.findViewWithTag(me.uid);
-        if (item.findViewWithTag("v_" + me.uid) != null) {
-            return;
-        }
+        SurfaceView surfaceView = item.findViewWithTag("v_" + me.uid);
 
-        SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
-        if (surfaceView != null) {
+        if (surfaceView == null) {
+            surfaceView = getEngineKit().getCurrentSession().createRendererView();
             surfaceView.setZOrderMediaOverlay(false);
             surfaceView.setTag("v_" + me.uid);
             item.addView(surfaceView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            getEngineKit().getCurrentSession().setupLocalVideo(surfaceView, scalingType);
         }
+        getEngineKit().getCurrentSession().setupLocalVideo(surfaceView, scalingType);
     }
 
     @Override
@@ -405,6 +414,12 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         @Override
         public void onClick(View v) {
             String userId = (String) v.getTag();
+            AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+            if (session == null
+                || session.getState() != AVEngineKit.CallState.Connected
+                || (userId.equals(ChatManager.Instance().getUserId()) && session.isScreenSharing())) {
+                return;
+            }
 
             if (!userId.equals(((VoipBaseActivity) getActivity()).getFocusVideoUserId())) {
                 MultiCallItem clickedMultiCallItem = (MultiCallItem) v;

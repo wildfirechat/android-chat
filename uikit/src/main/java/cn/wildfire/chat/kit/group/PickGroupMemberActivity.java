@@ -13,9 +13,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 
 public class PickGroupMemberActivity extends BasePickGroupMemberActivity {
     private MenuItem menuItem;
@@ -41,9 +40,11 @@ public class PickGroupMemberActivity extends BasePickGroupMemberActivity {
         this.checkedGroupMembers = checkedUserInfos;
         if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
             confirmTv.setText("完成");
+            confirmTv.setEnabled(false);
             menuItem.setEnabled(false);
         } else {
             confirmTv.setText("完成(" + checkedUserInfos.size() + ")");
+            confirmTv.setEnabled(true);
             menuItem.setEnabled(true);
         }
     }
@@ -56,15 +57,10 @@ public class PickGroupMemberActivity extends BasePickGroupMemberActivity {
     @Override
     protected void afterMenus(Menu menu) {
         menuItem = menu.findItem(R.id.confirm);
-        menuItem.setEnabled(false);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.confirm);
-        confirmTv = item.getActionView().findViewById(R.id.confirm_tv);
+        confirmTv = menuItem.getActionView().findViewById(R.id.confirm_tv);
+        confirmTv.setEnabled(false);
         confirmTv.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-        return super.onPrepareOptionsMenu(menu);
+        menuItem.setEnabled(false);
     }
 
     @Override

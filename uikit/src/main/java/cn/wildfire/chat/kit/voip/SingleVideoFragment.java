@@ -23,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import org.webrtc.Logging;
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
@@ -59,17 +58,17 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     TextView descTextView;
     @BindView(R2.id.durationTextView)
     TextView durationTextView;
+    @BindView(R2.id.shareScreenTextView)
+    TextView shareScreenTextView;
 
     SurfaceView localSurfaceView;
     SurfaceView remoteSurfaceView;
 
     // True if local view is in the fullscreen renderer.
-    private boolean isSwappedFeeds;
     private String targetId;
     private AVEngineKit gEngineKit;
-    private boolean isScreenSharing = false;
 
-    private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+    private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
 
     private boolean callControlVisible = true;
 
@@ -138,17 +137,18 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didCreateLocalVideoTrack() {
-        SurfaceView surfaceView = gEngineKit.getCurrentSession().createRendererView();
-        if (surfaceView != null) {
-            surfaceView.setZOrderMediaOverlay(true);
-            localSurfaceView = surfaceView;
-            if (gEngineKit.getCurrentSession().getState() == AVEngineKit.CallState.Outgoing && remoteSurfaceView == null) {
-                fullscreenRenderer.addView(surfaceView);
+        if (localSurfaceView == null) {
+            localSurfaceView = gEngineKit.getCurrentSession().createRendererView();
+
+            localSurfaceView.setZOrderMediaOverlay(true);
+            if (gEngineKit.getCurrentSession().getState() == AVEngineKit.CallState.Outgoing) {
+                fullscreenRenderer.addView(localSurfaceView);
             } else {
-                pipRenderer.addView(surfaceView);
+                pipRenderer.addView(localSurfaceView);
             }
-            gEngineKit.getCurrentSession().setupLocalVideo(surfaceView, scalingType);
         }
+
+        gEngineKit.getCurrentSession().setupLocalVideo(localSurfaceView, scalingType);
     }
 
     @Override
@@ -164,13 +164,12 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             pipRenderer.addView(localSurfaceView);
         }
 
-        SurfaceView surfaceView = gEngineKit.getCurrentSession().createRendererView();
-        if (surfaceView != null) {
-            remoteSurfaceView = surfaceView;
+        if (remoteSurfaceView == null) {
+            remoteSurfaceView = gEngineKit.getCurrentSession().createRendererView();
             fullscreenRenderer.removeAllViews();
-            fullscreenRenderer.addView(surfaceView);
-            gEngineKit.getCurrentSession().setupRemoteVideo(userId, surfaceView, scalingType);
+            fullscreenRenderer.addView(remoteSurfaceView);
         }
+        gEngineKit.getCurrentSession().setupRemoteVideo(userId, remoteSurfaceView, scalingType);
     }
 
     @Override
@@ -238,12 +237,9 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @OnClick(R2.id.switchCameraImageView)
     public void switchCamera() {
-        if (isScreenSharing) {
-            return;
-        }
-
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session != null) {
+
+        if (session != null && !session.isScreenSharing() && session.getState() == AVEngineKit.CallState.Connected) {
             session.switchCamera();
         }
     }
@@ -265,12 +261,17 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @OnClick(R2.id.shareScreenImageView)
     void shareScreen() {
-        if (!isScreenSharing) {
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
+            return;
+        }
+        if (!session.isScreenSharing()) {
+            shareScreenTextView.setText("结束屏幕共享");
             ((VoipBaseActivity) getActivity()).startScreenShare();
         } else {
             ((VoipBaseActivity) getActivity()).stopScreenShare();
+            shareScreenTextView.setText("开始屏幕共享");
         }
-        isScreenSharing = !isScreenSharing;
     }
 
     @OnClick(R2.id.fullscreen_video_view)
@@ -307,11 +308,12 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @OnClick(R2.id.pip_video_view)
     void setSwappedFeeds() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            Logging.d(TAG, "setSwappedFeeds: " + isSwappedFeeds);
-            this.isSwappedFeeds = !isSwappedFeeds;
-            session.setupRemoteVideo(targetId, isSwappedFeeds ? localSurfaceView : remoteSurfaceView, scalingType);
-            session.setupLocalVideo(isSwappedFeeds ? remoteSurfaceView : localSurfaceView, scalingType);
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected && !session.isScreenSharing()) {
+            SurfaceView tmp = localSurfaceView;
+            localSurfaceView = remoteSurfaceView;
+            remoteSurfaceView = tmp;
+            session.setupRemoteVideo(targetId, remoteSurfaceView, scalingType);
+            session.setupLocalVideo(localSurfaceView, scalingType);
         }
     }
 
@@ -328,6 +330,12 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             inviteeInfoContainer.setVisibility(View.GONE);
 
             targetId = session.getParticipantIds().get(0);
+
+            if (session.isScreenSharing()) {
+                shareScreenTextView.setText("结束屏幕共享");
+            } else {
+                shareScreenTextView.setText("开始屏幕共享");
+            }
 
             session.startVideoSource();
             didCreateLocalVideoTrack();
