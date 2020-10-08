@@ -26,7 +26,7 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class MultiCallActivity extends VoipBaseActivity {
 
-    private static final int REQUEST_CODE_ADD_PARTICIPANT = 100;
+    private static final int REQUEST_CODE_ADD_PARTICIPANT = 101;
     private String groupId;
     private AVEngineKit.CallSessionCallback currentCallSessionCallback;
 
@@ -223,7 +223,6 @@ public class MultiCallActivity extends VoipBaseActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_ADD_PARTICIPANT) {
             isInvitingNewParticipant = false;
             if (resultCode == RESULT_OK) {
@@ -233,6 +232,8 @@ public class MultiCallActivity extends VoipBaseActivity {
                     session.inviteNewParticipants(newParticipants);
                 }
             }
+        }else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 }
