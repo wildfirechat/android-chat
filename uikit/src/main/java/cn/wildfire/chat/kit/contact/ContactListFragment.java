@@ -68,14 +68,16 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         super.afterViews(view);
         contactViewModel.contactListLiveData().observe(this, userInfos -> {
             showContent();
-            if(filterUserList != null){
+            if (filterUserList != null) {
                 userInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
             }
             userListAdapter.setUsers(userInfos);
         });
         contactViewModel.friendRequestUpdatedLiveData().observe(getActivity(), integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
         contactViewModel.favContactListLiveData().observe(getActivity(), uiUserInfos -> {
-            uiUserInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
+            if (filterUserList != null) {
+                uiUserInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
+            }
             userListAdapter.setFavUsers(uiUserInfos);
         });
     }
