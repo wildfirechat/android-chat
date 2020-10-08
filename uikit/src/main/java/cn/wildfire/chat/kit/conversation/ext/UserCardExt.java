@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.contact.ContactListActivity;
@@ -41,6 +43,11 @@ public class UserCardExt extends ConversationExt {
     @ExtContextMenuItem
     public void pickContact(View containerView, Conversation conversation) {
         Intent intent = new Intent(fragment.getActivity(), ContactListActivity.class);
+        if (conversation.type == Conversation.ConversationType.Single) {
+            ArrayList<String> filterUserList = new ArrayList<>();
+            filterUserList.add(conversation.target);
+            intent.putExtra(ContactListActivity.FILTER_USER_LIST, filterUserList);
+        }
         startActivityForResult(intent, 100);
     }
 
@@ -58,10 +65,9 @@ public class UserCardExt extends ConversationExt {
     }
 
     /**
-     *
      * @param type
      * @param target
-     * @param name 用户名，只有显示联系人名片时有效
+     * @param name        用户名，只有显示联系人名片时有效
      * @param displayName
      * @param portrait
      */

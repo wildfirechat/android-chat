@@ -11,6 +11,8 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import java.util.List;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
@@ -30,6 +32,7 @@ import cn.wildfirechat.model.ChannelInfo;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private boolean pick = false;
+    private List<String> filterUserList;
     private static final int REQUEST_CODE_PICK_CHANNEL = 100;
 
     @Override
@@ -47,6 +50,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         Bundle bundle = getArguments();
         if (bundle != null) {
             pick = bundle.getBoolean("pick", false);
+            filterUserList = bundle.getStringArrayList("filterUserList");
         }
     }
 
@@ -64,10 +68,14 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         super.afterViews(view);
         contactViewModel.contactListLiveData().observe(this, userInfos -> {
             showContent();
+            if(filterUserList != null){
+                userInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
+            }
             userListAdapter.setUsers(userInfos);
         });
         contactViewModel.friendRequestUpdatedLiveData().observe(getActivity(), integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
         contactViewModel.favContactListLiveData().observe(getActivity(), uiUserInfos -> {
+            uiUserInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
             userListAdapter.setFavUsers(uiUserInfos);
         });
     }
@@ -107,7 +115,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     @Override
     public void onHeaderClick(int index) {
-        if(pick){
+        if (pick) {
             showChannelList();
             return;
         }
