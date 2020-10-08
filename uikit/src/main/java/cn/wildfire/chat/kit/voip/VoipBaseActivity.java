@@ -212,7 +212,8 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
                 intent.putExtra("screenShare", true);
                 intent.putExtra("data", data);
                 startService(intent);
-
+                // 开始屏幕共享是，voip最小化
+                finish();
             } else {
                 Toast.makeText(this, "屏幕共享授权失败", Toast.LENGTH_SHORT).show();
             }

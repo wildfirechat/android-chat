@@ -29,10 +29,11 @@
             android:src="@drawable/av_share" />
 
         <TextView
+            android:id="@+id/shareScreenTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="屏幕共享" />
+            android:text="开始屏幕共享" />
 
     </LinearLayout>
 
