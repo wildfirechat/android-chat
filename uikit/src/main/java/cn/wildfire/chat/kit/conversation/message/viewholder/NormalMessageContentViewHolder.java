@@ -46,7 +46,13 @@ import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.message.FileMessageContent;
+import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.StickerMessageContent;
+import cn.wildfirechat.message.TextMessageContent;
+import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
@@ -279,6 +285,20 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             }
             return true;
         }
+
+        // 只有部分消息支持引用
+        if (MessageContextMenuItemTags.TAG_QUOTE.equals(tag)) {
+            MessageContent messageContent = message.content;
+            if (messageContent instanceof TextMessageContent
+                || messageContent instanceof FileMessageContent
+                || messageContent instanceof VideoMessageContent
+                || messageContent instanceof StickerMessageContent
+                || messageContent instanceof ImageMessageContent) {
+                return false;
+            }
+            return true;
+        }
+
         return false;
     }
 
