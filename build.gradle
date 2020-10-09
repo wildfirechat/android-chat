@@ -9,7 +9,7 @@ buildscript {
         maven {url 'https://developer.huawei.com/repo/'}
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.android.tools.build:gradle:4.0.2'
         classpath 'com.huawei.agconnect:agcp:1.2.1.301'
         classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
 
