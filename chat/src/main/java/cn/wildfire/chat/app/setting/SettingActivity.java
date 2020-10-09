@@ -37,6 +37,10 @@ public class SettingActivity extends WfcBaseActivity {
         ChatManagerHolder.gChatManager.disconnect(true, false);
         SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
         sp.edit().clear().apply();
+
+        sp = getSharedPreferences("moment", Context.MODE_PRIVATE);
+        sp.edit().clear().apply();
+
         OKHttpHelper.clearCookies();
 
         Intent intent = new Intent(this, SplashActivity.class);
