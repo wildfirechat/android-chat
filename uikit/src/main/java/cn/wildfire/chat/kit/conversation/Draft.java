@@ -15,11 +15,13 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.conversation.mention.Mention;
 import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
+import cn.wildfirechat.model.QuoteInfo;
 
 public class Draft {
     private String content;
     private int emojiCount;
     private List<Mention> mentions;
+    private QuoteInfo quoteInfo;
 
     public String getContent() {
         return content;
@@ -33,10 +35,23 @@ public class Draft {
         return emojiCount;
     }
 
+    public QuoteInfo getQuoteInfo() {
+        return quoteInfo;
+    }
+
+    public void setQuoteInfo(QuoteInfo quoteInfo) {
+        this.quoteInfo = quoteInfo;
+    }
+
     public static Draft toDraft(Editable content, int emojiCount) {
+        return toDraft(content, emojiCount, null);
+    }
+
+    public static Draft toDraft(Editable content, int emojiCount, QuoteInfo quoteInfo) {
         Draft draft = new Draft();
         draft.content = content.toString();
         draft.emojiCount = emojiCount;
+        draft.quoteInfo = quoteInfo;
 
         List<Mention> mentions;
         MentionSpan[] mentionSpans = content.getSpans(0, content.length(), MentionSpan.class);
@@ -67,7 +82,14 @@ public class Draft {
     }
 
     public static String toDraftJson(Editable content, int emojiCount) {
-        Draft draft = toDraft(content, emojiCount);
+        return toDraftJson(content, emojiCount, null);
+    }
+
+    public static String toDraftJson(Editable content, int emojiCount, QuoteInfo quoteInfo) {
+        if (TextUtils.isEmpty(content) && quoteInfo == null) {
+            return null;
+        }
+        Draft draft = toDraft(content, emojiCount, quoteInfo);
         return new Gson().toJson(draft);
     }
 

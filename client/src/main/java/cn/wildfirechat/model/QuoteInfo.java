@@ -50,7 +50,7 @@ public class QuoteInfo implements Parcelable {
     public void setMessageDigest(String messageDigest) {
         this.messageDigest = messageDigest;
     }
-    public static QuoteInfo init(Message message) {
+    public static QuoteInfo initWithMessage(Message message) {
         QuoteInfo info = new QuoteInfo();
         if (message != null) {
             info.messageUid = message.messageUid;
@@ -66,9 +66,9 @@ public class QuoteInfo implements Parcelable {
 
     }
 
-    public static QuoteInfo init(long messageUid) {
+    public static QuoteInfo initWithMessage(long messageUid) {
         Message message = ChatManager.Instance().getMessageByUid(messageUid);
-        return init(message);
+        return initWithMessage(message);
     }
 
     public JSONObject encode() {
