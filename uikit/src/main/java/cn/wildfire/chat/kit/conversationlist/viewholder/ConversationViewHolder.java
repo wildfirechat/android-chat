@@ -6,7 +6,6 @@ package cn.wildfire.chat.kit.conversationlist.viewholder;
 
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.ImageView;
@@ -117,7 +116,8 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 
 
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
-        if (draft != null && !TextUtils.isEmpty(draft.getContent())) {
+        if (draft != null) {
+            String draftString = draft.getContent() != null ? draft.getContent() : "[草稿]";
             MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, draft.getContent(), ImageSpan.ALIGN_BOTTOM);
             setViewVisibility(R.id.promptTextView, View.VISIBLE);
             setViewVisibility(R.id.contentTextView, View.VISIBLE);

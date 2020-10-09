@@ -68,8 +68,6 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.QuoteInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfire.chat.kit.conversation.ConversationFragment.REQUEST_PICK_MENTION_CONTACT;
 
@@ -164,16 +162,13 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private QuoteInfo quoteInfo;
 
     public void quoteMessage(Message message) {
-        this.quoteInfo = QuoteInfo.init(message.messageUid);
+        this.quoteInfo = QuoteInfo.initWithMessage(message.messageUid);
         refRelativeLayout.setVisibility(VISIBLE);
-        String groupId = message.conversation.type == Conversation.ConversationType.Group ? message.conversation.target : "";
-        UserInfo sender = ChatManager.Instance().getUserInfo(message.sender, groupId, false);
-        refEditText.setText(sender.displayName + ": " + message.content.digest(message));
+        refEditText.setText(quoteInfo.getUserDisplayName() + ": " + quoteInfo.getMessageDigest());
     }
 
     private void clearQuoteMessage() {
         if (refRelativeLayout.getVisibility() == VISIBLE) {
-            // TODO clear conversation quote
             refEditText.setText("");
             refRelativeLayout.setVisibility(GONE);
         }
@@ -289,8 +284,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @OnClick(R2.id.clearRefImageButton)
     void onClearRefImageButtonClick() {
-        refRelativeLayout.setVisibility(GONE);
-        // TODO clear conversation ref
+        clearQuoteMessage();
+        updateConversationDraft();
     }
 
     @OnTextChanged(value = R2.id.editText, callback = OnTextChanged.Callback.TEXT_CHANGED)
@@ -390,7 +385,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
 
         TextMessageContent txtContent = new TextMessageContent(content.toString().trim());
-        if(this.quoteInfo != null){
+        if (this.quoteInfo != null) {
             txtContent.setQuoteInfo(quoteInfo);
         }
         clearQuoteMessage();
@@ -439,11 +434,17 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             return;
         }
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
-        if (draft == null || TextUtils.isEmpty(draft.getContent())) {
+        if (draft == null || (TextUtils.isEmpty(draft.getContent()) && draft.getQuoteInfo() == null)) {
             return;
         }
         draftString = draft.getContent();
         messageEmojiCount = draft.getEmojiCount();
+
+        quoteInfo = draft.getQuoteInfo();
+        if (quoteInfo != null) {
+            refRelativeLayout.setVisibility(VISIBLE);
+            refEditText.setText(quoteInfo.getUserDisplayName() + ": " + quoteInfo.getMessageDigest());
+        }
 
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(draftString);
         List<Mention> mentions = draft.getMentions();
@@ -472,17 +473,12 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     public void onActivityPause() {
+        updateConversationDraft();
+    }
+
+    private void updateConversationDraft(){
         Editable editable = editText.getText();
-        if (TextUtils.isEmpty(editable.toString().trim())) {
-            if (!TextUtils.isEmpty(draftString)) {
-                messageViewModel.saveDraft(conversation, null);
-            }
-            return;
-        }
-        if (TextUtils.equals(this.draftString, editable)) {
-            return;
-        }
-        String draft = Draft.toDraftJson(editable, messageEmojiCount);
+        String draft = Draft.toDraftJson(editable, messageEmojiCount, quoteInfo);
         messageViewModel.saveDraft(conversation, draft);
     }
 
