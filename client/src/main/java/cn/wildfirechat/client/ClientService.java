@@ -46,6 +46,7 @@ import java.util.Map;
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CardMessageContent;
+import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -177,7 +178,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private BaseEvent.ConnectionReceiver mConnectionReceiver;
 
     private String mHost;
-
 
 
     private class ClientServiceStub extends IRemoteClient.Stub {
@@ -584,9 +584,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             });
         }
+
         private List<FileRecord> convertProtoFileRecord(ProtoFileRecord[] protoFileRecords) {
             List<FileRecord> records = new ArrayList<>();
-            for (ProtoFileRecord pfr:protoFileRecords) {
+            for (ProtoFileRecord pfr : protoFileRecords) {
                 FileRecord fr = new FileRecord();
                 fr.userId = pfr.userId;
                 fr.conversation = new Conversation(Conversation.ConversationType.type(pfr.conversationType), pfr.target, pfr.line);
@@ -2193,7 +2194,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
 
-
     private MessageContent contentOfType(int type) {
         Class<? extends MessageContent> cls = contentMapper.get(type);
         if (cls != null) {
@@ -2220,6 +2220,35 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         return out;
     }
 
+    public MessageContent fromPayload(MessagePayload payload, String from) {
+
+        MessageContent content = contentOfType(payload.contentType);
+        try {
+            content.decode(payload);
+            if (content instanceof NotificationMessageContent) {
+                if (content instanceof RecallMessageContent) {
+                    RecallMessageContent recallMessageContent = (RecallMessageContent) content;
+                    if (recallMessageContent.getOperatorId().equals(userId)) {
+                        ((NotificationMessageContent) content).fromSelf = true;
+                    }
+                } else if (from.equals(userId)) {
+                    ((NotificationMessageContent) content).fromSelf = true;
+                }
+            }
+            content.extra = payload.extra;
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.contentType);
+            e.printStackTrace();
+            if (content.getPersistFlag() == PersistFlag.Persist || content.getPersistFlag() == PersistFlag.Persist_And_Count) {
+                content = new UnknownMessageContent();
+                ((UnknownMessageContent) content).setOrignalPayload(payload);
+            } else {
+                return null;
+            }
+        }
+        return content;
+    }
+
     private cn.wildfirechat.message.Message convertProtoMessage(ProtoMessage protoMessage) {
         if (protoMessage == null || TextUtils.isEmpty(protoMessage.getTarget())) {
             return null;
@@ -2233,15 +2262,19 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         msg.content = contentOfType(protoMessage.getContent().getType());
         MessagePayload payload = new MessagePayload(protoMessage.getContent());
         try {
-            msg.content.decode(payload);
-            if (msg.content instanceof NotificationMessageContent) {
-                if (msg.content instanceof RecallMessageContent) {
-                    RecallMessageContent recallMessageContent = (RecallMessageContent) msg.content;
-                    if (recallMessageContent.getOperatorId().equals(userId)) {
+            if (msg.content instanceof CompositeMessageContent) {
+                ((CompositeMessageContent) msg.content).decode(payload, this);
+            } else {
+                msg.content.decode(payload);
+                if (msg.content instanceof NotificationMessageContent) {
+                    if (msg.content instanceof RecallMessageContent) {
+                        RecallMessageContent recallMessageContent = (RecallMessageContent) msg.content;
+                        if (recallMessageContent.getOperatorId().equals(userId)) {
+                            ((NotificationMessageContent) msg.content).fromSelf = true;
+                        }
+                    } else if (msg.sender.equals(userId)) {
                         ((NotificationMessageContent) msg.content).fromSelf = true;
                     }
-                } else if (msg.sender.equals(userId)) {
-                    ((NotificationMessageContent) msg.content).fromSelf = true;
                 }
             }
             msg.content.extra = payload.extra;
@@ -2329,6 +2362,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             mBinder.registerMessageContent(GroupMuteMemberNotificationContent.class.getName());
             mBinder.registerMessageContent(GroupAllowMemberNotificationContent.class.getName());
             mBinder.registerMessageContent(CardMessageContent.class.getName());
+            mBinder.registerMessageContent(CompositeMessageContent.class.getName());
         } catch (RemoteException e) {
             e.printStackTrace();
         }

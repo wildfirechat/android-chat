@@ -23,6 +23,7 @@ public interface MessageContentType {
     int ContentType_Link = 8;
     int ContentType_P_Text = 9;
     int ContentType_Card = 10;
+    int ContentType_Composite_Message = 11;
 
     int ContentType_Recall = 80;
     //删除消息，请勿直接发送此消息，此消息是服务器端删除时的同步消息

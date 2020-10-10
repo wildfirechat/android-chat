@@ -18,8 +18,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -842,17 +842,21 @@ public class ConversationFragment extends Fragment implements
     private void setupMultiMessageAction() {
         multiMessageActionContainerLinearLayout.removeAllViews();
         List<MultiMessageAction> actions = MultiMessageActionManager.getInstance().getConversationActions(conversation);
+        int width = getResources().getDisplayMetrics().widthPixels;
+
         for (MultiMessageAction action : actions) {
-
             action.onBind(this, conversation);
-            TextView textView = new TextView(getActivity());
-            textView.setCompoundDrawablePadding(10);
-            textView.setCompoundDrawablesWithIntrinsicBounds(action.iconResId(), 0, 0, 0);
-            textView.setText(action.title(getActivity()));
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            multiMessageActionContainerLinearLayout.addView(textView, layoutParams);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setImageResource(action.iconResId());
 
-            textView.setOnClickListener(v -> {
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width / actions.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+            multiMessageActionContainerLinearLayout.addView(imageView, layoutParams);
+            ViewGroup.LayoutParams p = imageView.getLayoutParams();
+            p.height = 70;
+            imageView.requestLayout();
+
+            imageView.setOnClickListener(v -> {
                 List<UiMessage> checkedMessages = adapter.getCheckedMessages();
                 if (action.confirm()) {
                     new MaterialDialog.Builder(getActivity()).content(action.confirmPrompt())

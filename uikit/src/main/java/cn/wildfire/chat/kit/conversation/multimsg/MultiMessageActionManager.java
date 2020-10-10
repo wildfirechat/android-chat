@@ -28,6 +28,7 @@ public class MultiMessageActionManager {
 
     private void init() {
         registerAction(DeleteMultiMessageAction.class);
+        registerAction(ForwardMessageAction.class);
     }
 
     public void registerAction(Class<? extends MultiMessageAction> clazz) {
