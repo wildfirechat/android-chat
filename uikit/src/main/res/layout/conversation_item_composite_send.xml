@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="right"
+    android:background="@drawable/img_bubble_send"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingTop="12dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="12dp">
+
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoLink="phone|email|map|web"
+        android:linksClickable="true"
+        android:maxWidth="202dp"
+        android:minHeight="40dp"
+        android:text="title"
+        android:textColorLink="#3655bf"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/contentTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoLink="phone|email|map|web"
+        android:linksClickable="true"
+        android:maxWidth="202dp"
+        android:minHeight="40dp"
+        android:text="content"
+        android:textColorLink="#3655bf"
+        android:textSize="14sp" />
+
+    <View style="@style/Line" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:maxWidth="202dp"
+        android:paddingTop="2dp"
+        android:text="聊天记录"
+        android:textSize="12sp"
+        android:visibility="visible" />
+</LinearLayout>
