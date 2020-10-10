@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <include layout="@layout/include_avatar" />
+
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/portraitImageView"
+        android:maxLines="1"
+        tools:text="your name" />
+
+    <TextView
+        android:id="@+id/timeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        tools:text="10月8日 18:49:04" />
+
+    <LinearLayout
+        android:id="@+id/imageContentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameTextView"
+        android:layout_alignLeft="@+id/nameTextView"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/portraitImageView"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/contentImageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/red0"
+            tools:src="@drawable/back_drawable" />
+
+        <View
+            style="@style/Line"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/textContentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameTextView"
+        android:layout_alignLeft="@+id/nameTextView"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/portraitImageView"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/contentTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            tools:src="@drawable/back_drawable"
+            tools:text="message content" />
+
+        <View
+            style="@style/Line"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fileContentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameTextView"
+        android:layout_alignLeft="@+id/nameTextView"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/portraitImageView"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/selector_gray_bg"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/fileIconImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/ic_file" />
+
+            <TextView
+                android:id="@+id/fileNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/fileIconImageView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/fileIconImageView"
+                android:maxWidth="200dp"
+                android:maxLines="1"
+                android:text="文件名。。。。。"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/fileSizeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/fileIconImageView"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_toRightOf="@id/fileIconImageView"
+                android:maxLines="1"
+                android:text="3K" />
+
+        </RelativeLayout>
+
+        <View
+            style="@style/Line"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/videoContentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameTextView"
+        android:layout_alignLeft="@+id/nameTextView"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/portraitImageView"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/selector_gray_bg"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/videoThumbnailImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/ic_file" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/videoThumbnailImageView"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/videoThumbnailImageView"
+                android:maxWidth="200dp"
+                android:maxLines="1"
+                android:text="视频"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/videoDurationTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/videoThumbnailImageView"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/videoThumbnailImageView"
+                android:maxLines="1"
+                android:text="2秒" />
+
+        </RelativeLayout>
+
+        <View
+            style="@style/Line"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+    </LinearLayout>
+
+    <!--    聊天记录-->
+    <LinearLayout
+        android:id="@+id/compositeContentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameTextView"
+        android:layout_alignLeft="@+id/nameTextView"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/portraitImageView"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="@drawable/selector_gray_bg"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/compositeTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                tools:text="聊天记录" />
+
+            <TextView
+                android:id="@+id/compositeContentTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="5"
+                tools:text="jowjeo jowjo \jowjo \n jowjo \n jowjoej \nojo \njojo\njojo" />
+
+        </LinearLayout>
+
+        <View
+            style="@style/Line"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+    </LinearLayout>
+
+
+</RelativeLayout>

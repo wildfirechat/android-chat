@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
+import cn.wildfire.chat.kit.conversation.message.CompositeMessageContentActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.Message;
@@ -55,9 +57,11 @@ public class CompositeMessageContentViewHolder extends NormalMessageContentViewH
         contentTextView.setText(sb.toString());
     }
 
-    @OnClick(R2.id.contentTextView)
+    @OnClick(R2.id.compositeContentLayout)
     public void onClick(View view) {
-        // TODO
+        Intent intent = new Intent(fragment.getContext(), CompositeMessageContentActivity.class);
+        intent.putExtra("message", message.message);
+        fragment.startActivity(intent);
     }
 
 }

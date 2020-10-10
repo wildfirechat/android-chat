@@ -68,5 +68,4 @@ public class TimeUtils {
     private static String getTime(DateTime msgTime) {
         return msgTime.toString("HH:mm");
     }
-
 }
