@@ -28,13 +28,16 @@ import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
-import cn.wildfire.chat.kit.R;
+import cn.wildfirechat.message.ImageMessageContent;
+import cn.wildfirechat.message.VideoMessageContent;
 
 /**
  * @author imndx
@@ -275,12 +278,12 @@ public class MMPreviewActivity extends Activity {
 
         if (entry.getThumbnail() != null) {
             GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl())
-                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
-                    .into(photoView);
+                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
+                .into(photoView);
         } else {
             GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl())
-                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
-                    .into(photoView);
+                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
+                .into(photoView);
         }
     }
 
@@ -319,5 +322,29 @@ public class MMPreviewActivity extends Activity {
         MMPreviewActivity.currentPosition = current;
         Intent intent = new Intent(context, MMPreviewActivity.class);
         context.startActivity(intent);
+    }
+
+    public static void startActivity(Context context, ImageMessageContent imageMessageContent) {
+        List<MediaEntry> entries = new ArrayList<>();
+
+        MediaEntry entry = new MediaEntry();
+        entry.setType(MediaEntry.TYPE_IMAGE);
+        entry.setThumbnail(imageMessageContent.getThumbnail());
+        entry.setMediaUrl(imageMessageContent.remoteUrl);
+        entry.setMediaLocalPath(imageMessageContent.localPath);
+        entries.add(entry);
+        startActivity(context, entries, 0);
+    }
+
+    public static void startActivity(Context context, VideoMessageContent videoMessageContent) {
+        List<MediaEntry> entries = new ArrayList<>();
+
+        MediaEntry entry = new MediaEntry();
+        entry.setType(MediaEntry.TYPE_VIDEO);
+        entry.setThumbnail(videoMessageContent.getThumbnail());
+        entry.setMediaUrl(videoMessageContent.remoteUrl);
+        entry.setMediaLocalPath(videoMessageContent.localPath);
+        entries.add(entry);
+        startActivity(context, entries, 0);
     }
 }

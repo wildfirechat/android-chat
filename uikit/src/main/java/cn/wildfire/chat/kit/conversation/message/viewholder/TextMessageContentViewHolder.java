@@ -25,12 +25,15 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.widget.LinkClickListener;
 import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
+import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
+import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.model.QuoteInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -94,7 +97,11 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
             if (messageContent instanceof TextMessageContent) {
                 WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", ((TextMessageContent) messageContent).getContent());
             } else {
-                // TODO
+                if (messageContent instanceof VideoMessageContent) {
+                    MMPreviewActivity.startActivity(fragment.getActivity(), (VideoMessageContent) messageContent);
+                } else if (messageContent instanceof ImageMessageContent) {
+                    MMPreviewActivity.startActivity(fragment.getActivity(), (ImageMessageContent) messageContent);
+                }
             }
         }
     }

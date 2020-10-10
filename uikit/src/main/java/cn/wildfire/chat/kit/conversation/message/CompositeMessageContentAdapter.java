@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +28,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.CompositeMessageContent;
@@ -138,8 +138,8 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
 
         @OnClick(R2.id.videoContentLayout)
         void playVideo() {
-            Message content = ((CompositeMessageContent) message.content).getMessages().get(position);
-            Toast.makeText(itemView.getContext(), "TODO PLAY VIDEO", Toast.LENGTH_SHORT).show();
+            VideoMessageContent videoMessageContent = (VideoMessageContent) ((CompositeMessageContent) message.content).getMessages().get(position).content;
+            MMPreviewActivity.startActivity(itemView.getContext(), videoMessageContent);
         }
 
         private Message message;
