@@ -5,14 +5,17 @@
 package cn.wildfire.chat.kit.conversation.multimsg;
 
 import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.Message;
@@ -42,7 +45,10 @@ public class ForwardMessageAction extends MultiMessageAction {
     }
 
     private void forwardOneByOne(List<UiMessage> messages) {
-        Toast.makeText(fragment.getActivity(), "逐条转发", Toast.LENGTH_SHORT).show();
+        ArrayList<Message> msgs = messages.stream().map(uiMessage -> uiMessage.message).collect(Collectors.toCollection(ArrayList::new));
+        Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
+        intent.putExtra("messages", msgs);
+        fragment.startActivity(intent);
     }
 
     private void forward(List<UiMessage> messages) {
@@ -59,7 +65,12 @@ public class ForwardMessageAction extends MultiMessageAction {
         content.setTitle(title);
         List<Message> msgs = messages.stream().map(uiMessage -> uiMessage.message).collect(Collectors.toList());
         content.setMessages(msgs);
-        ChatManager.Instance().sendMessage(conversation, content, null, 0, null);
+        Message message = new Message();
+        message.content = content;
+
+        Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
+        intent.putExtra("message", message);
+        fragment.startActivity(intent);
     }
 
     @Override

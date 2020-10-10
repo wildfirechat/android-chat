@@ -15,11 +15,15 @@ import androidx.lifecycle.ViewModelProviders;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
+import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.TextMessageContent;
@@ -29,7 +33,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 
 public class ForwardActivity extends PickOrCreateConversationActivity {
-    private Message message;
+    private List<Message> messages;
     private ForwardViewModel forwardViewModel;
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
@@ -37,7 +41,17 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
     @Override
     protected void afterViews() {
         super.afterViews();
-        message = getIntent().getParcelableExtra("message");
+        messages = getIntent().getParcelableArrayListExtra("messages");
+        if (messages == null || messages.isEmpty()) {
+            Message message = getIntent().getParcelableExtra("message");
+            if (message != null) {
+                messages = new ArrayList<>();
+                messages.add(message);
+            }
+        }
+        if (messages == null || messages.isEmpty()) {
+            finish();
+        }
         forwardViewModel = ViewModelProviders.of(this).get(ForwardViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
@@ -66,12 +80,19 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
 
     private void forward(String targetName, String targetPortrait, Conversation targetConversation) {
         ForwardPromptView view = new ForwardPromptView(this);
-        if (message.content instanceof ImageMessageContent) {
-            view.bind(targetName, targetPortrait, ((ImageMessageContent) message.content).getThumbnail());
-        } else if (message.content instanceof VideoMessageContent) {
-            view.bind(targetName, targetPortrait, ((VideoMessageContent) message.content).getThumbnail());
+        if (messages.size() == 1) {
+            Message message = messages.get(0);
+            if (message.content instanceof ImageMessageContent) {
+                view.bind(targetName, targetPortrait, ((ImageMessageContent) message.content).getThumbnail());
+            } else if (message.content instanceof VideoMessageContent) {
+                view.bind(targetName, targetPortrait, ((VideoMessageContent) message.content).getThumbnail());
+            } else if (message.content instanceof CompositeMessageContent) {
+                view.bind(targetName, targetPortrait, "[聊天记录]: " + ((CompositeMessageContent) message.content).getTitle());
+            } else {
+                view.bind(targetName, targetPortrait, WfcTextUtils.htmlToText(message.digest()));
+            }
         } else {
-            view.bind(targetName, targetPortrait, WfcTextUtils.htmlToText(message.digest()));
+            view.bind(targetName, targetPortrait, "[逐条转发]共" + messages.size() + "条消息");
         }
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .customView(view, false)
@@ -86,7 +107,10 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
                         extraMsg = new Message();
                         extraMsg.content = content;
                     }
-                    forwardViewModel.forward(targetConversation, message, extraMsg)
+                    if (extraMsg != null) {
+                        messages.add(extraMsg);
+                    }
+                    forwardViewModel.forward(targetConversation, messages.toArray(new Message[0]))
                         .observe(ForwardActivity.this, new Observer<OperateResult<Integer>>() {
                             @Override
                             public void onChanged(@Nullable OperateResult<Integer> integerOperateResult) {

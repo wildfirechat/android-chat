@@ -2220,11 +2220,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         return out;
     }
 
-    public MessageContent fromPayload(MessagePayload payload, String from) {
+    public MessageContent messsageContentFromPayload(MessagePayload payload, String from) {
 
         MessageContent content = contentOfType(payload.contentType);
         try {
-            content.decode(payload);
+            if (content instanceof CompositeMessageContent) {
+                ((CompositeMessageContent) content).decode(payload, this);
+            } else {
+                content.decode(payload);
+            }
             if (content instanceof NotificationMessageContent) {
                 if (content instanceof RecallMessageContent) {
                     RecallMessageContent recallMessageContent = (RecallMessageContent) content;
@@ -2261,33 +2265,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         msg.content = contentOfType(protoMessage.getContent().getType());
         MessagePayload payload = new MessagePayload(protoMessage.getContent());
-        try {
-            if (msg.content instanceof CompositeMessageContent) {
-                ((CompositeMessageContent) msg.content).decode(payload, this);
-            } else {
-                msg.content.decode(payload);
-                if (msg.content instanceof NotificationMessageContent) {
-                    if (msg.content instanceof RecallMessageContent) {
-                        RecallMessageContent recallMessageContent = (RecallMessageContent) msg.content;
-                        if (recallMessageContent.getOperatorId().equals(userId)) {
-                            ((NotificationMessageContent) msg.content).fromSelf = true;
-                        }
-                    } else if (msg.sender.equals(userId)) {
-                        ((NotificationMessageContent) msg.content).fromSelf = true;
-                    }
-                }
-            }
-            msg.content.extra = payload.extra;
-        } catch (Exception e) {
-            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + protoMessage.getContent().getType());
-            e.printStackTrace();
-            if (msg.content.getPersistFlag() == PersistFlag.Persist || msg.content.getPersistFlag() == PersistFlag.Persist_And_Count) {
-                msg.content = new UnknownMessageContent();
-                ((UnknownMessageContent) msg.content).setOrignalPayload(payload);
-            } else {
-                return null;
-            }
-        }
+        msg.content = messsageContentFromPayload(payload, msg.sender);
 
         msg.direction = MessageDirection.values()[protoMessage.getDirection()];
         msg.status = MessageStatus.status(protoMessage.getStatus());
