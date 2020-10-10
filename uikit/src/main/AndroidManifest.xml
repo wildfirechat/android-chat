@@ -236,6 +236,7 @@
             android:name=".user.SetNameActivity"
             android:label="修改野火ID" />
         <activity android:name=".voip.conference.ConferenceInviteActivity" />
+        <activity android:name=".conversation.message.CompositeMessageContentActivity" />
         <!--moment end-->
 
         <provider
