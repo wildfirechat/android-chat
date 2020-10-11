@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,6 +42,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnTouch;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
@@ -74,6 +76,7 @@ import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
@@ -114,6 +117,13 @@ public class ConversationFragment extends Fragment implements
     @BindView(R2.id.multiMessageActionContainerLinearLayout)
     LinearLayout multiMessageActionContainerLinearLayout;
 
+    @BindView(R2.id.unreadCountLinearLayout)
+    LinearLayout unreadCountLinearLayout;
+    @BindView(R2.id.unreadCountTextView)
+    TextView unreadCountTextView;
+    @BindView(R2.id.unreadMentionCountTextView)
+    TextView unreadMentionCountTextView;
+
     private ConversationMessageAdapter adapter;
     private boolean moveToBottom = true;
     private ConversationViewModel conversationViewModel;
@@ -125,6 +135,7 @@ public class ConversationFragment extends Fragment implements
 
     private Handler handler;
     private long initialFocusedMessageId;
+    private long firstUnreadMessageId;
     // 用户channel主发起，针对某个用户的会话
     private String channelPrivateChatUser;
     private String conversationTitle = "";
@@ -364,7 +375,7 @@ public class ConversationFragment extends Fragment implements
                 }
                 if (!recyclerView.canScrollVertically(1)) {
                     moveToBottom = true;
-                    if (initialFocusedMessageId != -1 && !loadingNewMessage && shouldContinueLoadNewMessage) {
+                    if ((initialFocusedMessageId != -1 || firstUnreadMessageId != 0) && !loadingNewMessage && shouldContinueLoadNewMessage) {
                         int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
                         if (lastVisibleItem > adapter.getItemCount() - 3) {
                             loadMoreNewMessages();
@@ -439,45 +450,55 @@ public class ConversationFragment extends Fragment implements
         inputPanel.setupConversation(conversation);
 
         if (conversation.type != Conversation.ConversationType.ChatRoom) {
-
-            MutableLiveData<List<UiMessage>> messages;
-            if (initialFocusedMessageId != -1) {
-                shouldContinueLoadNewMessage = true;
-                messages = conversationViewModel.loadAroundMessages(conversation, channelPrivateChatUser, initialFocusedMessageId, MESSAGE_LOAD_AROUND);
-            } else {
-                messages = conversationViewModel.getMessages(conversation, channelPrivateChatUser);
-            }
-
-            // load message
-            swipeRefreshLayout.setRefreshing(true);
-            adapter.setDeliveries(ChatManager.Instance().getMessageDelivery(conversation));
-            adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
-            messages.observe(this, uiMessages -> {
-                swipeRefreshLayout.setRefreshing(false);
-                adapter.setMessages(uiMessages);
-                adapter.notifyDataSetChanged();
-
-                if (adapter.getItemCount() > 1) {
-                    int initialMessagePosition;
-                    if (initialFocusedMessageId != -1) {
-                        initialMessagePosition = adapter.getMessagePosition(initialFocusedMessageId);
-                        if (initialMessagePosition != -1) {
-                            recyclerView.scrollToPosition(initialMessagePosition);
-                            adapter.highlightFocusMessage(initialMessagePosition);
-                        }
-                    } else {
-                        moveToBottom = true;
-                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-                    }
-                }
-            });
+            loadMessage(initialFocusedMessageId);
         } else {
             joinChatRoom();
         }
 
+        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
+        int unreadCount = conversationInfo.unreadCount.unread + conversationInfo.unreadCount.unreadMention + conversationInfo.unreadCount.unreadMentionAll;
+        if (unreadCount > 10 && unreadCount < 300) {
+            firstUnreadMessageId = ChatManager.Instance().getFirstUnreadMessageId(conversation);
+            showUnreadMessageCountLabel(unreadCount);
+        }
         conversationViewModel.clearUnreadStatus(conversation);
 
         setTitle();
+    }
+
+    private void loadMessage(long focusMessageId) {
+
+        MutableLiveData<List<UiMessage>> messages;
+        if (focusMessageId != -1) {
+            shouldContinueLoadNewMessage = true;
+            messages = conversationViewModel.loadAroundMessages(conversation, channelPrivateChatUser, focusMessageId, MESSAGE_LOAD_AROUND);
+        } else {
+            messages = conversationViewModel.getMessages(conversation, channelPrivateChatUser);
+        }
+
+        // load message
+        swipeRefreshLayout.setRefreshing(true);
+        adapter.setDeliveries(ChatManager.Instance().getMessageDelivery(conversation));
+        adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
+        messages.observe(this, uiMessages -> {
+            swipeRefreshLayout.setRefreshing(false);
+            adapter.setMessages(uiMessages);
+            adapter.notifyDataSetChanged();
+
+            if (adapter.getItemCount() > 1) {
+                int initialMessagePosition;
+                if (focusMessageId != -1) {
+                    initialMessagePosition = adapter.getMessagePosition(focusMessageId);
+                    if (initialMessagePosition != -1) {
+                        recyclerView.scrollToPosition(initialMessagePosition);
+                        adapter.highlightFocusMessage(initialMessagePosition);
+                    }
+                } else {
+                    moveToBottom = true;
+                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                }
+            }
+        });
     }
 
     private void updateGroupMuteStatus() {
@@ -491,6 +512,33 @@ public class ConversationFragment extends Fragment implements
         } else {
             inputPanel.enableInput();
         }
+    }
+
+    @OnClick(R2.id.unreadCountTextView)
+    void onUnreadCountTextViewClick() {
+        hideUnreadMessageCountLabel();
+        shouldContinueLoadNewMessage = true;
+        loadMessage(firstUnreadMessageId);
+    }
+
+    private void showUnreadMessageCountLabel(int count) {
+        unreadCountLinearLayout.setVisibility(View.VISIBLE);
+        unreadCountTextView.setVisibility(View.VISIBLE);
+        unreadCountTextView.setText(count + "条消息");
+    }
+
+    private void hideUnreadMessageCountLabel() {
+        unreadCountTextView.setVisibility(View.GONE);
+    }
+
+    private void showUnreadMentionCountLabel(int count) {
+        unreadCountLinearLayout.setVisibility(View.VISIBLE);
+        unreadMentionCountTextView.setVisibility(View.VISIBLE);
+        unreadMentionCountTextView.setText(count + "条@消息");
+    }
+
+    private void hideUnreadMentionCountLabel() {
+        unreadMentionCountTextView.setVisibility(View.GONE);
     }
 
     private void joinChatRoom() {

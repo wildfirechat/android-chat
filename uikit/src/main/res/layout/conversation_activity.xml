@@ -6,39 +6,75 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
     <!--内容-->
-    <LinearLayout
-        android:id="@+id/contentLayout"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
-        android:orientation="vertical">
-
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefreshLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/msgRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-        <View style="@style/Line" />
-
-        <cn.wildfire.chat.kit.conversation.ConversationInputPanel
-            android:id="@+id/inputPanelFrameLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/multiMessageActionContainerLinearLayout"
+            android:id="@+id/contentLayout"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="gone" />
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/msgRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <View style="@style/Line" />
+
+            <cn.wildfire.chat.kit.conversation.ConversationInputPanel
+                android:id="@+id/inputPanelFrameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:id="@+id/multiMessageActionContainerLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/unreadCountLinearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/unreadCountTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/shape_unread_message_count_label_bg"
+                android:maxLines="1"
+                android:padding="10dp"
+                android:text="12条消息"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/unreadMentionCountTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@color/red0"
+                android:padding="10dp"
+                android:text="12条@消息"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </FrameLayout>
 </cn.wildfire.chat.kit.widget.InputAwareLayout>
