@@ -4393,6 +4393,61 @@ public class ChatManager {
     }
 
     /**
+     * 修改群成员在群中的别名，群主可以修改所有人的群别名，管理员可以修改普通成员的群别名
+     *
+     * @param groupId
+     * @param memberId
+     * @param alias
+     * @param lines
+     * @param notifyMsg
+     * @param callback  回调成功只表示服务器修改成功了，本地可能还没更新。本地将服务器端的改动拉下来之后，会有{@link OnGroupMembersUpdateListener}通知回调
+     */
+    public void modifyGroupMemberAlias(String groupId, String memberId, String alias, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        int[] inlines = new int[lines.size()];
+        for (int j = 0; j < lines.size(); j++) {
+            inlines[j] = lines.get(j);
+        }
+        try {
+            mClient.modifyGroupMemberAlias(groupId, memberId, alias, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                groupMemberCache.remove(groupMemberCacheKey(groupId, userId));
+                                callback.onSuccess();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
      * 获取群成员列表
      *
      * @param groupId
