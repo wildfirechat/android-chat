@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/unreadCountTextView"
@@ -63,7 +63,7 @@
                 android:maxLines="1"
                 android:padding="10dp"
                 android:text="12条消息"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/unreadMentionCountTextView"
