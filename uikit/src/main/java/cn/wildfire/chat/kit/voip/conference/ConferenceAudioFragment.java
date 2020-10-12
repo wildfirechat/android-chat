@@ -183,7 +183,6 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         if (getActivity() == null || getActivity().isFinishing()) {
             return;
         }
-        Toast.makeText(getActivity(), "" + callState.name(), Toast.LENGTH_SHORT).show();
         AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
         if (callState == AVEngineKit.CallState.Connected) {
             updateParticipantStatus(callSession);

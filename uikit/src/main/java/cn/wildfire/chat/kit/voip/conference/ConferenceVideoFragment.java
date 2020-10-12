@@ -43,6 +43,7 @@ import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     @BindView(R2.id.rootView)
@@ -253,7 +254,6 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         } else if (callState == AVEngineKit.CallState.Idle) {
             getActivity().finish();
         }
-        Toast.makeText(getActivity(), "" + callState.name(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -297,7 +297,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             focusConferenceItem = null;
         }
 
-        Toast.makeText(getActivity(), "用户" + userId + "离开了通话", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了通话", Toast.LENGTH_SHORT).show();
     }
 
     @Override
