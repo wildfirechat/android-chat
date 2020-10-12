@@ -162,7 +162,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private QuoteInfo quoteInfo;
 
     public void quoteMessage(Message message) {
-        this.quoteInfo = QuoteInfo.initWithMessage(message.messageUid);
+        this.quoteInfo = QuoteInfo.initWithMessage(message);
         refRelativeLayout.setVisibility(VISIBLE);
         refEditText.setText(quoteInfo.getUserDisplayName() + ": " + quoteInfo.getMessageDigest());
     }
