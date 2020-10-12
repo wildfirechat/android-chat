@@ -315,7 +315,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             focusMultiCallItem = null;
         }
 
-        Toast.makeText(getActivity(), "用户" + userId + "离开了通话", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了通话", Toast.LENGTH_SHORT).show();
     }
 
     @Override
