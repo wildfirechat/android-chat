@@ -117,7 +117,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             }
 
             List<UserInfo> userInfos = ChatManager.Instance().getMyFriendListInfo(false);
-            if (fileHelpUserInfo != null) {
+            if (fileHelpUserInfo != null && userInfos != null) {
                 userInfos.add(fileHelpUserInfo);
             }
             if (contactListLiveData != null) {
