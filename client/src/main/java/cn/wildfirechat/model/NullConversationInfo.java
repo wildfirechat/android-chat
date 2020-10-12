@@ -8,5 +8,6 @@ public class NullConversationInfo extends ConversationInfo {
     public NullConversationInfo(Conversation conversation) {
         super();
         this.conversation = conversation;
+        this.unreadCount = new UnreadCount();
     }
 }
