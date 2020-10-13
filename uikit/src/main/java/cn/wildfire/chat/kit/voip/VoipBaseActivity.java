@@ -121,6 +121,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             return;
         }
         session.setCallback(this);
+        setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
     }
 
     @Override
