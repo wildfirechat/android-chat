@@ -271,7 +271,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             getActivity().finish();
             getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
-        Toast.makeText(getActivity(), "" + callState.name(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
