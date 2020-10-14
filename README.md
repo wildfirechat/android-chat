@@ -46,6 +46,11 @@ v0.8.0 版本，对代码结构及部分实现机制进行了大量调整，变�
 1. 确保所依赖的```lifecycle```版本在2.2.0或以上。
 2. 参考```chat/proguard-rules.pro```进行配置。
 
+## Android Support 说明
+
+野火IM Android 客户端，基于```AndroidX```包开发，如果老项目采用的是```Android Support```包，可尝试采用[jetifier](https://developer.android.google.cn/studio/command-line/jetifier?hl=zh_cn)
+转成```Android Support```软件包。
+
 ### 联系我们
 
 > 商务合作请优先采用邮箱和我们联系。技术问题请到[野火IM论坛](http://bbs.wildfirechat.cn/)发帖交流。
