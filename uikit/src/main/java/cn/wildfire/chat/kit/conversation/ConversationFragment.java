@@ -946,7 +946,7 @@ public class ConversationFragment extends Fragment implements
         Intent intent = new Intent(getActivity(), PickGroupMemberActivity.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
         intent.putExtra("groupInfo", groupInfo);
-        int maxCount = AVEngineKit.isSupportMultiCall() ? (isAudioOnly ? Config.MAX_AUDIO_PARTICIPANT_COUNT - 1 : Config.MAX_VIDEO_PARTICIPANT_COUNT - 1) : 1;
+        int maxCount = AVEngineKit.isSupportMultiCall() ? (isAudioOnly ? AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT - 1 : AVEngineKit.MAX_VIDEO_PARTICIPANT_COUNT - 1) : 1;
         intent.putExtra("maxCount", maxCount);
         startActivityForResult(intent, isAudioOnly ? REQUEST_CODE_GROUP_AUDIO_CHAT : REQUEST_CODE_GROUP_VIDEO_CHAT);
     }

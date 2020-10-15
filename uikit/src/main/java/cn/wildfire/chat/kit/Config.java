@@ -59,15 +59,6 @@ public class Config {
      */
     public static int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 60;
 
-    /**
-     * 多人视频通话，最多允许4人参与
-     */
-    public static int MAX_VIDEO_PARTICIPANT_COUNT = 4;
-    /**
-     * 多人音频通话，最多允许9人参与
-     */
-    public static int MAX_AUDIO_PARTICIPANT_COUNT = 9;
-
     public static String VIDEO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/video";
     public static String AUDIO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/audio";
     public static String PHOTO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/photo";
