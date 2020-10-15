@@ -134,6 +134,10 @@ public class MultiCallActivity extends VoipBaseActivity {
     @Override
     public void didCreateLocalVideoTrack() {
         postAction(() -> {
+            if (AVEngineKit.Instance().getCurrentSession() == null) {
+                finish();
+                return;
+            }
             currentCallSessionCallback.didCreateLocalVideoTrack();
         });
     }
@@ -232,7 +236,7 @@ public class MultiCallActivity extends VoipBaseActivity {
                     session.inviteNewParticipants(newParticipants);
                 }
             }
-        }else {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
