@@ -604,8 +604,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getConversationFileRecords(Conversation conversation, long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
-            ProtoLogic.getConversationFileRecords(conversation.type.getValue(), conversation.target, conversation.line, beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+        public void getConversationFileRecords(Conversation conversation, String fromUser, long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.getConversationFileRecords(conversation == null ? 0 : conversation.type.getValue(), conversation == null ? "" : conversation.target, conversation == null ? 0 : conversation.line, fromUser, beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
                 @Override
                 public void onSuccess(ProtoFileRecord[] protoFileRecords) {
                     try {
