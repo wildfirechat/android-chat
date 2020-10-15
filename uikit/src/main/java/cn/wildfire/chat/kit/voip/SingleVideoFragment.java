@@ -137,6 +137,10 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didCreateLocalVideoTrack() {
+        if (AVEngineKit.Instance().getCurrentSession() == null) {
+            getActivity().finish();
+            return;
+        }
         if (localSurfaceView == null) {
             localSurfaceView = gEngineKit.getCurrentSession().createRendererView();
 
