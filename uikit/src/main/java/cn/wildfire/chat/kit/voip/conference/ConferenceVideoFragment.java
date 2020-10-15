@@ -34,7 +34,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
@@ -191,7 +190,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     @OnClick(R2.id.addParticipantImageView)
     void addParticipant() {
-        ((ConferenceActivity) getActivity()).addParticipant(Config.MAX_VIDEO_PARTICIPANT_COUNT - participants.size() - 1);
+        ((ConferenceActivity) getActivity()).addParticipant(AVEngineKit.MAX_VIDEO_PARTICIPANT_COUNT - participants.size() - 1);
     }
 
     @OnClick(R2.id.muteImageView)

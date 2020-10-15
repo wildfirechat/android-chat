@@ -35,7 +35,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
@@ -201,7 +200,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R2.id.addParticipantImageView)
     void addParticipant() {
-        ((MultiCallActivity) getActivity()).addParticipant(Config.MAX_VIDEO_PARTICIPANT_COUNT - participants.size() - 1);
+        ((MultiCallActivity) getActivity()).addParticipant(AVEngineKit.MAX_VIDEO_PARTICIPANT_COUNT - participants.size() - 1);
     }
 
     @OnClick(R2.id.muteImageView)
