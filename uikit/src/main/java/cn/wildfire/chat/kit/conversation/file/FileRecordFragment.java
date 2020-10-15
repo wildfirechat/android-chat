@@ -117,7 +117,7 @@ public class FileRecordFragment extends Fragment {
             beforeMessageUid = fileRecords.get(fileRecords.size() - 1).messageUid;
         }
         if (conversation != null) {
-            data = fileRecordViewModel.getConversationFileRecords(conversation, beforeMessageUid, 20);
+            data = fileRecordViewModel.getConversationFileRecords(conversation, null, beforeMessageUid, 20);
         } else {
             data = fileRecordViewModel.getMyFileRecords(beforeMessageUid, 20);
         }
