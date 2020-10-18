@@ -3014,7 +3014,7 @@ public class ChatManager {
     /**
      * 获取好友请求
      *
-     * @param userId 对方用户Id
+     * @param userId   对方用户Id
      * @param incoming true，只包含收到的好友请求；false，所有好友请求
      * @return
      */
@@ -3030,6 +3030,7 @@ public class ChatManager {
             return null;
         }
     }
+
     /**
      * 清除好友请求未读状态
      */
@@ -5384,9 +5385,9 @@ public class ChatManager {
      * 获取授权访问的链接地址
      *
      * @param messageUid 消息的Uid
-     * @param mediaType 媒体类型
-     * @param mediaPath 媒体的路径
-     * @param callback 返回经过授权的媒体地址
+     * @param mediaType  媒体类型
+     * @param mediaPath  媒体的路径
+     * @param callback   返回经过授权的媒体地址
      */
     public void getAuthorizedMediaUrl(long messageUid, MessageContentMediaType mediaType, String mediaPath, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
@@ -5457,7 +5458,7 @@ public class ChatManager {
      * 踢掉PC端在线设备（包括PC端，Web端和小程序端)
      *
      * @param pcClientId 端的设备ID
-     * @param callback  处理结果
+     * @param callback   处理结果
      **/
     public void kickoffPCClient(String pcClientId, final GeneralCallback callback) {
         if (!checkRemoteService()) {
@@ -5548,9 +5549,11 @@ public class ChatManager {
         }
 
         try {
+            Log.d("PCRTCClient", "send conference data:" + request + ": " + data);
             mClient.sendConferenceRequest(sessionId, roomId, request, data, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
                 @Override
                 public void onSuccess(String result) throws RemoteException {
+                    Log.d("PCRTCClient", "send conference result:" + result);
                     if (callback != null) {
                         mainHandler.post(new Runnable() {
                             @Override
