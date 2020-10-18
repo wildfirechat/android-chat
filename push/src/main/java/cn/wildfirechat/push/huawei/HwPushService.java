@@ -16,13 +16,14 @@ public class HwPushService extends HmsMessageService {
     @Override
     public void onNewToken(String s) {
         super.onNewToken(s);
-        Log.e("HMS", "onNewToken: " + s);
+        Log.d("HMS", "onNewToken: " + s);
         ChatManager.Instance().setDeviceToken(s, PushType.HMS);
     }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+        Log.d("HMS", "receiveMessage");
         // do nothing
         // 野火IM采用的是透传，只需将主进程拉起即可，主进程会去拉取消息，并显示通知
         // 手机设置：
