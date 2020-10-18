@@ -36,7 +36,6 @@ import cn.wildfirechat.remote.ChatManager;
 public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     private AVEngineKit gEngineKit;
     private boolean audioEnable = true;
-    private boolean isSpeakerOn = false;
 
     @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
@@ -194,20 +193,19 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     @OnClick(R2.id.speakerImageView)
     public void speakerClick() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
+        if (session == null || (session.getState() != AVEngineKit.CallState.Connected && session.getState() != AVEngineKit.CallState.Outgoing)) {
             return;
         }
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        boolean isSpeakerOn = audioManager.isSpeakerphoneOn();
         if (isSpeakerOn) {
-            isSpeakerOn = false;
             audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
         } else {
-            isSpeakerOn = true;
             audioManager.setMode(AudioManager.MODE_NORMAL);
 
         }
-        spearImageView.setSelected(isSpeakerOn);
-        audioManager.setSpeakerphoneOn(isSpeakerOn);
+        spearImageView.setSelected(!isSpeakerOn);
+        audioManager.setSpeakerphoneOn(!isSpeakerOn);
     }
 
     private void init() {
@@ -243,8 +241,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         updateCallDuration();
 
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-        isSpeakerOn = audioManager.getMode() == AudioManager.MODE_NORMAL;
-        spearImageView.setSelected(isSpeakerOn);
+        spearImageView.setSelected(audioManager.isSpeakerphoneOn());
     }
 
     private void runOnUiThread(Runnable runnable) {
