@@ -42,7 +42,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
             android:background="@null"
-            android:src="@mipmap/ic_delete" />
+            android:src="@mipmap/ic_delete_l" />
 
     </RelativeLayout>
 
