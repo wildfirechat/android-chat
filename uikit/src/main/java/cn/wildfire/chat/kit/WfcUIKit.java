@@ -281,9 +281,11 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void onReceiveMessage(List<Message> messages, boolean hasMore) {
-        if (messages != null && !hasMore) {
+        long now = System.currentTimeMillis();
+        long delta = ChatManager.Instance().getServerDeltaTime();
+        if (messages != null) {
             for (Message msg : messages) {
-                if (msg.content instanceof PCLoginRequestMessageContent) {
+                if (msg.content instanceof PCLoginRequestMessageContent && (now - (msg.serverTime - delta)) < 60 * 1000) {
                     PCLoginRequestMessageContent content = ((PCLoginRequestMessageContent) msg.content);
                     appServiceProvider.showPCLoginActivity(ChatManager.Instance().getUserId(), content.getSessionId(), content.getPlatform());
                     break;
@@ -297,8 +299,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             }
 
             List<Message> msgs = new ArrayList<>(messages);
-            long now = System.currentTimeMillis();
-            long delta = ChatManager.Instance().getServerDeltaTime();
             Iterator<Message> iterator = msgs.iterator();
             while (iterator.hasNext()) {
                 Message message = iterator.next();

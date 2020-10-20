@@ -2654,7 +2654,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 int startIndex = 0;
                 do {
                     entry = buildSafeIPCMessages(protoMessages, startIndex, false);
-                    listener.onReceive(entry.messages, entry.messages.size() > 0 && startIndex != protoMessages.length - 1);
+                    listener.onReceive(entry.messages, entry.messages.size() > 0 && entry.index < protoMessages.length - 1);
                     startIndex = entry.index + 1;
                 } while (entry.index > 0 && entry.index < protoMessages.length - 1);
             } catch (RemoteException e) {
