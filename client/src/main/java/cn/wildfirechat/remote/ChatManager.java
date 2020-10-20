@@ -224,6 +224,9 @@ public class ChatManager {
             // TODO: Already initialized
             return;
         }
+        if(TextUtils.isEmpty(imServerHost)){
+            throw new IllegalArgumentException("imServerHost must be empty");
+        }
         gContext = context.getApplicationContext();
         INST = new ChatManager(imServerHost);
         INST.mainHandler = new Handler();
@@ -1440,8 +1443,8 @@ public class ChatManager {
      * @return 是否是新用户。新用户需要同步信息，耗时较长，可以增加等待提示。
      */
     public boolean connect(String userId, String token) {
-        if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("userId and token must be empty!");
+        if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(token) || TextUtils.isEmpty(SERVER_HOST)) {
+            throw new IllegalArgumentException("userId, token and im_server_host must not be empty!");
         }
         this.userId = userId;
         this.token = token;

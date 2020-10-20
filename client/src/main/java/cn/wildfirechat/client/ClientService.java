@@ -186,14 +186,17 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public boolean connect(String userName, String userPwd) throws RemoteException {
             if (logined) {
                 if (!accountInfo.userName.equals(userName)) {
-                    Log.e("ClientService", "Error, 错误，且户用户时一定要先disconnect，再connect");
+                    Log.e(TAG, "Error, 错误，切换户用户时一定要先disconnect，再connect");
                 }
+                return false;
+            }
+            if (TextUtils.isEmpty(mHost)) {
+                Log.e(TAG, "未设置IM_SERVER_HOST!");
                 return false;
             }
 
             logined = true;
             accountInfo.userName = userName;
-
 
             userId = userName;
             boolean initialSuccess = initProto(userName, userPwd);
