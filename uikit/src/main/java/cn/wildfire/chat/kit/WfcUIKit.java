@@ -292,9 +292,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         }
 
         if (isBackground && !ChatManager.Instance().isMuteNotificationWhenPcOnline()) {
-            // FIXME: 2018/5/28 只是临时方案，No_Persist消息，我觉得不应当到这儿，注册监听时，
-            // 就表明自己关系哪些类型的消息, 设置哪些种类的消息
-
             if (messages == null) {
                 return;
             }
