@@ -28,7 +28,9 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Locati
 @ContentTag(type = ContentType_Location, flag = PersistFlag.Persist_And_Count)
 public class LocationMessageContent extends MessageContent {
     private String title;
+    //不跨进程传输
     private Bitmap thumbnail;
+    public byte[] thumbnailByte;
     private Location location;
 
     public LocationMessageContent() {
@@ -50,11 +52,16 @@ public class LocationMessageContent extends MessageContent {
     }
 
     public Bitmap getThumbnail() {
+        if (thumbnail==null&&thumbnailByte!=null){
+            thumbnail = BitmapFactory.decodeByteArray( this.thumbnailByte, 0,  this.thumbnailByte.length);
+        }
         return thumbnail;
     }
 
     public void setThumbnail(Bitmap thumbnail) {
-        this.thumbnail = thumbnail;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+        this.thumbnailByte=baos.toByteArray();
     }
 
     public Location getLocation() {
@@ -69,9 +76,7 @@ public class LocationMessageContent extends MessageContent {
     public MessagePayload encode() {
         MessagePayload payload = new MessagePayload();
         payload.searchableContent = title;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-        payload.binaryContent = baos.toByteArray();
+        payload.binaryContent = this.thumbnailByte;
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -91,6 +96,7 @@ public class LocationMessageContent extends MessageContent {
     public void decode(MessagePayload payload) {
         if (payload.binaryContent != null) {
             thumbnail = BitmapFactory.decodeByteArray(payload.binaryContent, 0, payload.binaryContent.length);
+            this.thumbnailByte=payload.binaryContent;
         }
         title = payload.searchableContent;
         try {
@@ -119,14 +125,14 @@ public class LocationMessageContent extends MessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.title);
-        dest.writeParcelable(this.thumbnail, flags);
+        dest.writeByteArray(this.thumbnailByte);
         dest.writeParcelable(this.location, flags);
     }
 
     protected LocationMessageContent(Parcel in) {
         super(in);
         this.title = in.readString();
-        this.thumbnail = in.readParcelable(Bitmap.class.getClassLoader());
+        this.thumbnailByte=in.createByteArray();
         this.location = in.readParcelable(Location.class.getClassLoader());
     }
 
