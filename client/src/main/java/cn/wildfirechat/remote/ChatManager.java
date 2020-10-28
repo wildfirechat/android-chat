@@ -5271,6 +5271,117 @@ public class ChatManager {
     }
 
     /**
+     * 获取免打扰时间回调
+     */
+    public interface GetNoDisturbingTimesCallback {
+        /**
+         * 返回免打扰时间
+         *
+         * @param isNoDisturbing 是否开启了免打扰。
+         * @param startMins      起始时间，UTC时间0点起的的分钟数，需要注意与本地时间转换。
+         * @param endMins        结束时间，UTC时间0点起的的分钟数，需要注意与本地时间转换。如果小于起始时间表示是隔夜。
+         */
+        void onResult(boolean isNoDisturbing, int startMins, int endMins);
+    }
+
+    /**
+     * 判断是否是是全局免打扰
+     *
+     * @param callback 结果回调。
+     */
+    public void getNoDisturbingTimes(GetNoDisturbingTimesCallback callback) {
+        if (!checkRemoteService()) {
+            callback.onResult(false, 0, 0);
+        }
+
+        try {
+            String value = mClient.getUserSetting(UserSettingScope.NoDisturbing, "");
+            if (!TextUtils.isEmpty(value)) {
+                String[] arrs = value.split("\\|");
+                if (arrs.length == 2) {
+                    int start = Integer.parseInt(arrs[0]);
+                    int end = Integer.parseInt(arrs[1]);
+                    callback.onResult(true, start, end);
+                    return;
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        callback.onResult(false, 0, 0);
+    }
+
+    /**
+     * 设置免打扰时间段
+     *
+     * @param startMins  起始时间，UTC时间0点起的的分钟数，需要注意与本地时间转换。
+     * @param endMins    结束时间，UTC时间0点起的的分钟数，需要注意与本地时间转换。如果小于起始时间表示是隔夜。
+     * @param callback   处理结果回调
+     */
+    public void setNoDisturbingTimes(int startMins, int endMins, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+
+        try {
+            mClient.setUserSetting(UserSettingScope.NoDisturbing, "", startMins + "|" + endMins, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess());
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 取消免打扰时间
+     *
+     * @param callback   处理结果回调
+     */
+    public void clearNoDisturbingTimes(final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+
+        try {
+            mClient.setUserSetting(UserSettingScope.NoDisturbing, "", "", new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess());
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 判断是否隐藏通知详情
      *
      * @return
