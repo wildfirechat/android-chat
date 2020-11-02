@@ -559,6 +559,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 if (msg.message.messageId == message.message.messageId) {
                     return true;
                 }
+                if (msg.message.messageUid == message.message.messageUid) {
+                    return true;
+                }
                 // 聊天室里面，由于消息不存储，messageId都是0
             } else if (message.message.messageUid > 0) {
                 if (msg.message.messageUid == message.message.messageUid) {
