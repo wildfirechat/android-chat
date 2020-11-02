@@ -7,7 +7,9 @@ package cn.wildfire.chat.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.Collections;
@@ -40,7 +42,7 @@ public class AppService implements AppServiceProvider {
      * <br>
      * <br>
      */
-    public static String APP_SERVER_ADDRESS = "http://wildfirechat.cn:8888";
+    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://wildfirechat.cn:8888";
 
     private AppService() {
 
@@ -358,7 +360,7 @@ public class AppService implements AppServiceProvider {
         });
     }
 
-    public static void validateConfig() {
+    public static void validateConfig(Context context) {
         if (TextUtils.isEmpty(Config.IM_SERVER_HOST)
             || Config.IM_SERVER_HOST.startsWith("http")
             || Config.IM_SERVER_HOST.contains(":")
@@ -369,12 +371,18 @@ public class AppService implements AppServiceProvider {
             || (!Config.IM_SERVER_HOST.contains("wildfirechat.cn") && APP_SERVER_ADDRESS.contains("wildfirechat.cn"))
             || (Config.IM_SERVER_HOST.contains("wildfirechat.cn") && !APP_SERVER_ADDRESS.contains("wildfirechat.cn"))
         ) {
-            throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查配置!\n");
+            Toast.makeText(context, "配置错误，请检查配置，应用即将关闭...", Toast.LENGTH_LONG).show();
+            new Handler().postDelayed(() -> {
+                throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查配置!\n");
+            }, 5 * 1000);
         }
 
         for (String[] ice : Config.ICE_SERVERS) {
             if (!ice[0].startsWith("turn")) {
-                throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查配置!\n");
+                Toast.makeText(context, "Turn配置错误，请检查配置，应用即将关闭...", Toast.LENGTH_LONG).show();
+                new Handler().postDelayed(() -> {
+                    throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查配置!\n");
+                }, 5 * 1000);
             }
         }
     }
