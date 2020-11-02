@@ -2370,6 +2370,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        android.util.Log.d(TAG, "onnCreate");
     }
 
     @Override

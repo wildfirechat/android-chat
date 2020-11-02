@@ -29,7 +29,7 @@ public class MyApp extends BaseApp {
     @Override
     public void onCreate() {
         super.onCreate();
-        AppService.validateConfig();
+        AppService.validateConfig(this);
 
         // bugly，务必替换为你自己的!!!
         if ("wildfirechat.cn".equals(Config.IM_SERVER_HOST)) {

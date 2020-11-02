@@ -23,7 +23,7 @@ public class Config {
      * <br>
      * <br>
      */
-    public static String IM_SERVER_HOST = "wildfirechat.cn";
+    public static String IM_SERVER_HOST /*请仔细阅读上面的注释*/ = "wildfirechat.cn";
 
     // 注意APP_SERVER_ADDRESS已从kit中移除，移动到了AppService.java中
     //public static String APP_SERVER_ADDRESS = "http://wildfirechat.cn:8888";
@@ -35,7 +35,7 @@ public class Config {
      * <strong>上线商用时，请自行部署turn 服务</strong>
      * <br>
      */
-    public static String[][] ICE_SERVERS = new String[][]{
+    public static String[][] ICE_SERVERS/*请仔细阅读上面的注释*/ = new String[][]{
         // 数组元素定义
         /*{"turn server uri", "userName", "password"}*/
         {"turn:turn.wildfirechat.cn:3478", "wfchat", "wfchat"}
