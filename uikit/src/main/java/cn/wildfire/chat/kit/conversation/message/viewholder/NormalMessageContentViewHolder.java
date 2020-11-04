@@ -229,6 +229,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             case MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT:
                 title = "私聊";
                 break;
+            case MessageContextMenuItemTags.TAG_FAV:
+                title = "收藏";
+                break;
             default:
                 break;
         }

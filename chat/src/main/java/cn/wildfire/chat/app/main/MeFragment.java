@@ -33,6 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.setting.SettingActivity;
+import cn.wildfire.chat.kit.favorite.FavoriteActivity;
 import cn.wildfire.chat.kit.settings.MessageNotifySettingActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
@@ -122,6 +123,13 @@ public class MeFragment extends Fragment {
         intent.putExtra("userInfo", userInfo);
         startActivity(intent);
     }
+
+    @OnClick(R.id.favOptionItemView)
+    void fav() {
+        Intent intent = new Intent(getActivity(), FavoriteActivity.class);
+        startActivity(intent);
+    }
+
 
     @OnClick(R.id.themeOptionItemView)
     void theme() {

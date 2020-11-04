@@ -235,8 +235,15 @@
         <activity
             android:name=".user.SetNameActivity"
             android:label="修改野火ID" />
-        <activity android:name=".voip.conference.ConferenceInviteActivity" />
-        <activity android:name=".conversation.message.CompositeMessageContentActivity" />
+        <activity
+            android:name=".voip.conference.ConferenceInviteActivity"
+            android:label="会议邀请" />
+        <activity
+            android:name=".conversation.message.CompositeMessageContentActivity"
+            android:label="组合消息" />
+        <activity
+            android:name=".favorite.FavoriteActivity"
+            android:label="收藏" />
         <!--moment end-->
 
         <provider

@@ -29,6 +29,7 @@
             android:background="@null"
             android:drawableBottom="@drawable/selector_edit_focus"
             android:drawablePadding="10dp"
+            android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             android:gravity="bottom"
             android:hint=""
             android:textColorHint="@color/gray3"

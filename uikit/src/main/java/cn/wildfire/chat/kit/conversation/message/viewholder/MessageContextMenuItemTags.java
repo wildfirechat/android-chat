@@ -12,4 +12,5 @@ public interface MessageContextMenuItemTags {
     String TAG_QUOTE = "quote";
     String TAG_MULTI_CHECK = "multiCheck";
     String TAG_CHANEL_PRIVATE_CHAT = "chanelPrivateChat";
+    String TAG_FAV = "fav";
 }
