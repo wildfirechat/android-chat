@@ -11,7 +11,12 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,11 +28,13 @@ import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfirechat.chat.BuildConfig;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 import okhttp3.MediaType;
 
@@ -358,6 +365,83 @@ public class AppService implements AppServiceProvider {
                 callback.onUiFailure(-1, msg);
             }
         });
+    }
+
+    @Override
+    public void getFavoriteItems(int startId, int count, GetFavoriteItemCallback callback) {
+        if (callback == null) {
+            return;
+        }
+
+        String url = APP_SERVER_ADDRESS + "/fav/list";
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", startId);
+        params.put("count", count);
+        OKHttpHelper.post(url, params, new SimpleCallback<String>() {
+            @Override
+            public void onUiSuccess(String s) {
+                try {
+                    JSONObject obj = new JSONObject(s);
+                    JSONObject result = obj.getJSONObject("result");
+                    boolean hasMore = result.getBoolean("hasMore");
+                    JSONArray items = result.getJSONArray("items");
+
+                    List<FavoriteItem> favoriteItems = new ArrayList<>();
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject itemObj = items.getJSONObject(i);
+                        Conversation conversation = new Conversation(Conversation.ConversationType.type(itemObj.getInt("convType")), itemObj.getString("convTarget"), itemObj.getInt("convLine"));
+                        FavoriteItem item = new FavoriteItem(itemObj.getInt("id"),
+                            itemObj.getInt("type"),
+                            itemObj.getLong("timestamp"),
+                            conversation,
+                            itemObj.getString("origin"),
+                            itemObj.getString("sender"),
+                            itemObj.getString("title"),
+                            itemObj.getString("url"),
+                            itemObj.getString("thumbUrl"),
+                            itemObj.getString("data")
+                        );
+
+                        favoriteItems.add(item);
+                    }
+
+                    callback.onUiSuccess(favoriteItems, hasMore);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callback.onUiFailure(-1, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
+    }
+
+    @Override
+    public void addFavoriteItem(FavoriteItem item, SimpleCallback<Void> callback) {
+        String url = APP_SERVER_ADDRESS + "/fav/add";
+        Map<String, Object> params = new HashMap<>();
+        params.put("type", item.getFavType());
+        params.put("convType", item.getConversation().type.getValue());
+        params.put("convTarget", item.getConversation().target);
+        params.put("convLine", item.getConversation().line);
+        params.put("origin", item.getOrigin());
+        params.put("sender", item.getSender());
+        params.put("title", item.getTitle());
+        params.put("url", item.getUrl());
+        params.put("thumbUrl", item.getThumbUrl());
+        params.put("data", item.getData());
+
+        OKHttpHelper.post(url, params, callback);
+    }
+
+    @Override
+    public void removeFavoriteItem(int favId, SimpleCallback<Void> callback) {
+        String url = APP_SERVER_ADDRESS + "/fav/del/" + favId;
+        OKHttpHelper.post(url, null, callback);
     }
 
     public static void validateConfig(Context context) {
