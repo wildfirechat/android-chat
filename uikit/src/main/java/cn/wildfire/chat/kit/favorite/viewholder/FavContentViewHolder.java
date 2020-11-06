@@ -22,7 +22,9 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
     TextView senderTextView;
     @BindView(R2.id.timeTextView)
     TextView timeTextView;
+
     protected Fragment fragment;
+    protected FavoriteItem favoriteItem;
 
     public FavContentViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -31,6 +33,7 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(Fragment fragment, FavoriteItem item) {
         this.fragment = fragment;
+        this.favoriteItem = item;
         senderTextView.setText(item.getSender());
         timeTextView.setText((TimeUtils.getMsgFormatTime(item.getTimestamp())));
     }

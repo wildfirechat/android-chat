@@ -19,6 +19,5 @@ public class FavFileContentViewHolder extends FavContentViewHolder {
     @Override
     public void bind(Fragment fragment, FavoriteItem item) {
         super.bind(fragment, item);
-
     }
 }

@@ -6,7 +6,6 @@ package cn.wildfire.chat.kit.favorite.viewholder;
 
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,6 +15,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
+import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 
 public class FavImageContentViewHolder extends FavContentViewHolder {
     @BindView(R2.id.favImageContentImageView)
@@ -34,6 +34,6 @@ public class FavImageContentViewHolder extends FavContentViewHolder {
 
     @OnClick(R2.id.favImageContentImageView)
     void showFavImage() {
-        Toast.makeText(fragment.getActivity(), "shoFavImage", Toast.LENGTH_SHORT).show();
+        MMPreviewActivity.startActivity(fragment.getActivity(), favoriteItem.getUrl());
     }
 }
