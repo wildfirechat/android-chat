@@ -17,10 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.favorite.viewholder.FavCompositeContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavContentViewHolder;
+import cn.wildfire.chat.kit.favorite.viewholder.FavFileContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavImageContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavTextContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavUnknownContentViewHolder;
+import cn.wildfire.chat.kit.favorite.viewholder.FavVideoContentViewHolder;
 import cn.wildfirechat.message.core.MessageContentType;
 
 public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -76,6 +79,15 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case MessageContentType.ContentType_Image:
                 layoutResourceId = R.layout.fav_content_image;
                 break;
+            case MessageContentType.ContentType_Video:
+                layoutResourceId = R.layout.fav_content_video;
+                break;
+            case MessageContentType.ContentType_Composite_Message:
+                layoutResourceId = R.layout.fav_content_composite;
+                break;
+            case MessageContentType.ContentType_File:
+                layoutResourceId = R.layout.fav_content_file;
+                break;
             default:
                 layoutResourceId = R.layout.fav_content_unkown;
                 break;
@@ -91,6 +103,15 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 break;
             case MessageContentType.ContentType_Image:
                 viewHolder = new FavImageContentViewHolder(itemView);
+                break;
+            case MessageContentType.ContentType_Video:
+                viewHolder = new FavVideoContentViewHolder(itemView);
+                break;
+            case MessageContentType.ContentType_Composite_Message:
+                viewHolder = new FavCompositeContentViewHolder(itemView);
+                break;
+            case MessageContentType.ContentType_File:
+                viewHolder = new FavFileContentViewHolder(itemView);
                 break;
             default:
                 viewHolder = new FavUnknownContentViewHolder(itemView);

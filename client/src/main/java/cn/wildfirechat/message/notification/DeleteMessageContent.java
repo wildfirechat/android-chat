@@ -40,7 +40,7 @@ public class DeleteMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = operatorId;
         payload.binaryContent = new StringBuffer().append(messageUid).toString().getBytes();
         return payload;

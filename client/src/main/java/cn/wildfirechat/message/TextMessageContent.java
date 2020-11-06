@@ -51,7 +51,7 @@ public class TextMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.searchableContent = content;
         payload.mentionedType = mentionedType;
         payload.mentionedTargets = mentionedTargets;

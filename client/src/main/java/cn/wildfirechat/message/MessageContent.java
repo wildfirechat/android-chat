@@ -18,8 +18,6 @@ import cn.wildfirechat.message.core.PersistFlag;
  */
 
 public abstract class MessageContent implements Parcelable {
-    public abstract MessagePayload encode();
-
     public abstract void decode(MessagePayload payload);
 
     public abstract String digest(Message message);
@@ -48,6 +46,16 @@ public abstract class MessageContent implements Parcelable {
             return tag.flag();
         }
         return PersistFlag.No_Persist;
+    }
+
+    public MessagePayload encode() {
+        MessagePayload payload = new MessagePayload();
+        payload.contentType = getMessageContentType();
+        payload.mentionedType = mentionedType;
+        payload.mentionedTargets = mentionedTargets;
+        payload.extra = extra;
+        payload.pushContent = pushContent;
+        return payload;
     }
 
     @Override

@@ -74,7 +74,7 @@ public class LocationMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.searchableContent = title;
         payload.binaryContent = this.thumbnailByte;
 

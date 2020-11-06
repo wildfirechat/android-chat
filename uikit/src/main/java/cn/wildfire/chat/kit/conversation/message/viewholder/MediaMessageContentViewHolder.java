@@ -70,6 +70,6 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
         if (entries.isEmpty()) {
             return;
         }
-        MMPreviewActivity.startActivity(fragment.getContext(), entries, current);
+        MMPreviewActivity.previewMedia(fragment.getContext(), entries, current);
     }
 }
