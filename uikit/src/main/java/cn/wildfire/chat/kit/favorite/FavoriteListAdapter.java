@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -23,7 +24,12 @@ import cn.wildfire.chat.kit.favorite.viewholder.FavUnknownContentViewHolder;
 import cn.wildfirechat.message.core.MessageContentType;
 
 public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private Fragment favListFragment;
     private List<FavoriteItem> favoriteItems = new ArrayList<>();
+
+    public FavoriteListAdapter(Fragment favListFragment) {
+        this.favListFragment = favListFragment;
+    }
 
     public void addFavoriteItems(List<FavoriteItem> newItems) {
         this.favoriteItems.addAll(newItems);
@@ -53,7 +59,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((FavContentViewHolder) holder).bind(this.favoriteItems.get(position));
+        ((FavContentViewHolder) holder).bind(favListFragment, this.favoriteItems.get(position));
     }
 
     @Override
