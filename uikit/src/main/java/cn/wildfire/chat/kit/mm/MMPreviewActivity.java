@@ -336,6 +336,16 @@ public class MMPreviewActivity extends Activity {
         startActivity(context, entries, 0);
     }
 
+    public static void startActivity(Context context, String imageUrl) {
+        List<MediaEntry> entries = new ArrayList<>();
+
+        MediaEntry entry = new MediaEntry();
+        entry.setType(MediaEntry.TYPE_IMAGE);
+        entry.setMediaUrl(imageUrl);
+        entries.add(entry);
+        startActivity(context, entries, 0);
+    }
+
     public static void startActivity(Context context, VideoMessageContent videoMessageContent) {
         List<MediaEntry> entries = new ArrayList<>();
 
