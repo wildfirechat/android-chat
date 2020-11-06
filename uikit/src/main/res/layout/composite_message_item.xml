@@ -90,7 +90,7 @@
             android:adjustViewBounds="true"
             android:background="@drawable/selector_gray_bg"
             android:padding="10dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <ImageView
                 android:id="@+id/fileIconImageView"

@@ -34,7 +34,7 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
     public void bind(Fragment fragment, FavoriteItem item) {
         this.fragment = fragment;
         this.favoriteItem = item;
-        senderTextView.setText(item.getSender());
+        senderTextView.setText(item.getOrigin());
         timeTextView.setText((TimeUtils.getMsgFormatTime(item.getTimestamp())));
     }
 }

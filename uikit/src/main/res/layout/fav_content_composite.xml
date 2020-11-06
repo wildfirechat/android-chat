@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/compositeContentLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoLink="phone|email|map|web"
+        android:linksClickable="true"
+        android:minHeight="40dp"
+        android:text="title"
+        android:textColorLink="#3655bf"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/contentTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoLink="phone|email|map|web"
+        android:linksClickable="true"
+        android:minHeight="40dp"
+        android:text="content"
+        android:textColorLink="#3655bf"
+        android:textSize="14sp" />
+
+    <View style="@style/Line" />
+</LinearLayout>
