@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.favorite.viewholder;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 
@@ -16,8 +17,8 @@ public class FavFileContentViewHolder extends FavContentViewHolder {
     }
 
     @Override
-    public void bind(FavoriteItem item) {
-        super.bind(item);
+    public void bind(Fragment fragment, FavoriteItem item) {
+        super.bind(fragment, item);
 
     }
 }

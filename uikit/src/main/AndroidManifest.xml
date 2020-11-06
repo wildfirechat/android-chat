@@ -242,7 +242,7 @@
             android:name=".conversation.message.CompositeMessageContentActivity"
             android:label="组合消息" />
         <activity
-            android:name=".favorite.FavoriteActivity"
+            android:name=".favorite.FavoriteListActivity"
             android:label="收藏" />
         <!--moment end-->
 

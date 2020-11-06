@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import butterknife.BindView;
 import cn.wildfire.chat.kit.R2;
@@ -22,8 +23,8 @@ public class FavTextContentViewHolder extends FavContentViewHolder {
     }
 
     @Override
-    public void bind(FavoriteItem item) {
-        super.bind(item);
+    public void bind(Fragment fragment, FavoriteItem item) {
+        super.bind(fragment, item);
         favTextContentTextView.setText(item.getTitle());
     }
 }
