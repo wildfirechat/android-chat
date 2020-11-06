@@ -52,6 +52,10 @@ public class VideoMessageContent extends MediaMessageContent {
         return thumbnail;
     }
 
+    public void setThumbnailBytes(byte[] thumbnailBytes) {
+        this.thumbnailBytes = thumbnailBytes;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();

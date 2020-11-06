@@ -136,7 +136,7 @@ public class CompositeMessageContent extends MessageContent {
                 messagePayload.mediaType = MessageContentMediaType.values()[object.optInt("mt")];
                 messagePayload.remoteMediaUrl = object.optString("mru");
 
-                message.content = service.messsageContentFromPayload(messagePayload, message.sender);
+                message.content = service.messageContentFromPayload(messagePayload, message.sender);
                 messages.add(message);
             }
             this.messages = messages;

@@ -53,6 +53,14 @@ public class FileMessageContent extends MediaMessageContent {
         return size;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
     @Override
     public void decode(MessagePayload payload) {
         super.decode(payload);

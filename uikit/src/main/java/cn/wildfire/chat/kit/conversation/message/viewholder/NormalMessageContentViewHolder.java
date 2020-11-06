@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -33,18 +34,22 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.Optional;
+import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -207,6 +212,24 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         fragment.getConversationInputPanel().quoteMessage(message.message);
     }
 
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FAV, confirm = false, priority = 12)
+    public void fav(View itemView, UiMessage message) {
+        AppServiceProvider appServiceProvider = WfcUIKit.getWfcUIKit().getAppServiceProvider();
+        FavoriteItem favoriteItem = FavoriteItem.fromMessage(message.message);
+
+        appServiceProvider.addFavoriteItem(favoriteItem, new SimpleCallback<Void>() {
+            @Override
+            public void onUiSuccess(Void aVoid) {
+                Toast.makeText(fragment.getContext(), "fav ok", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                Toast.makeText(fragment.getContext(), "fav error: " + code, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
     public String contextMenuTitle(Context context, String tag) {
         String title = "未设置";
@@ -296,6 +319,18 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 || messageContent instanceof FileMessageContent
                 || messageContent instanceof VideoMessageContent
                 || messageContent instanceof StickerMessageContent
+                || messageContent instanceof ImageMessageContent) {
+                return false;
+            }
+            return true;
+        }
+
+        // 只有部分消息支持引用
+        if (MessageContextMenuItemTags.TAG_FAV.equals(tag)) {
+            MessageContent messageContent = message.content;
+            if (messageContent instanceof TextMessageContent
+                || messageContent instanceof FileMessageContent
+                || messageContent instanceof VideoMessageContent
                 || messageContent instanceof ImageMessageContent) {
                 return false;
             }

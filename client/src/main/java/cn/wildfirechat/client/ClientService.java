@@ -2246,7 +2246,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         return out;
     }
 
-    public MessageContent messsageContentFromPayload(MessagePayload payload, String from) {
+    public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
 
         MessageContent content = contentOfType(payload.contentType);
         try {
@@ -2291,7 +2291,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         msg.content = contentOfType(protoMessage.getContent().getType());
         MessagePayload payload = new MessagePayload(protoMessage.getContent());
-        msg.content = messsageContentFromPayload(payload, msg.sender);
+        msg.content = messageContentFromPayload(payload, msg.sender);
 
         msg.direction = MessageDirection.values()[protoMessage.getDirection()];
         msg.status = MessageStatus.status(protoMessage.getStatus());

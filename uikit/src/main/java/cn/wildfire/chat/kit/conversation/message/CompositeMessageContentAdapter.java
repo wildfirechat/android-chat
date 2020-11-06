@@ -139,7 +139,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
         @OnClick(R2.id.videoContentLayout)
         void playVideo() {
             VideoMessageContent videoMessageContent = (VideoMessageContent) ((CompositeMessageContent) message.content).getMessages().get(position).content;
-            MMPreviewActivity.startActivity(itemView.getContext(), videoMessageContent);
+            MMPreviewActivity.previewVideo(itemView.getContext(), videoMessageContent);
         }
 
         private Message message;

@@ -21,6 +21,7 @@ import cn.wildfire.chat.kit.favorite.viewholder.FavContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavImageContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavTextContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavUnknownContentViewHolder;
+import cn.wildfire.chat.kit.favorite.viewholder.FavVideoContentViewHolder;
 import cn.wildfirechat.message.core.MessageContentType;
 
 public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -76,6 +77,9 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case MessageContentType.ContentType_Image:
                 layoutResourceId = R.layout.fav_content_image;
                 break;
+            case MessageContentType.ContentType_Video:
+                layoutResourceId = R.layout.fav_content_video;
+                break;
             default:
                 layoutResourceId = R.layout.fav_content_unkown;
                 break;
@@ -91,6 +95,9 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 break;
             case MessageContentType.ContentType_Image:
                 viewHolder = new FavImageContentViewHolder(itemView);
+                break;
+            case MessageContentType.ContentType_Video:
+                viewHolder = new FavVideoContentViewHolder(itemView);
                 break;
             default:
                 viewHolder = new FavUnknownContentViewHolder(itemView);
