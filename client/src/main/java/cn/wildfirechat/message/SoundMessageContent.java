@@ -89,15 +89,4 @@ public class SoundMessageContent extends MediaMessageContent {
         this.duration = in.readInt();
     }
 
-    public static final Creator<SoundMessageContent> CREATOR = new Creator<SoundMessageContent>() {
-        @Override
-        public SoundMessageContent createFromParcel(Parcel source) {
-            return new SoundMessageContent(source);
-        }
-
-        @Override
-        public SoundMessageContent[] newArray(int size) {
-            return new SoundMessageContent[size];
-        }
-    };
 }

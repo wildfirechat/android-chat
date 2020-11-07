@@ -105,15 +105,4 @@ public class VideoMessageContent extends MediaMessageContent {
         this.thumbnailBytes = in.createByteArray();
     }
 
-    public static final Creator<VideoMessageContent> CREATOR = new Creator<VideoMessageContent>() {
-        @Override
-        public VideoMessageContent createFromParcel(Parcel source) {
-            return new VideoMessageContent(source);
-        }
-
-        @Override
-        public VideoMessageContent[] newArray(int size) {
-            return new VideoMessageContent[size];
-        }
-    };
 }

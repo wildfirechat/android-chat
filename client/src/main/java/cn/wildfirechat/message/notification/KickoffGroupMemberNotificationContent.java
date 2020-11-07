@@ -56,7 +56,7 @@ public class KickoffGroupMemberNotificationContent extends GroupNotificationMess
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -113,15 +113,4 @@ public class KickoffGroupMemberNotificationContent extends GroupNotificationMess
         this.kickedMembers = in.createStringArrayList();
     }
 
-    public static final Creator<KickoffGroupMemberNotificationContent> CREATOR = new Creator<KickoffGroupMemberNotificationContent>() {
-        @Override
-        public KickoffGroupMemberNotificationContent createFromParcel(Parcel source) {
-            return new KickoffGroupMemberNotificationContent(source);
-        }
-
-        @Override
-        public KickoffGroupMemberNotificationContent[] newArray(int size) {
-            return new KickoffGroupMemberNotificationContent[size];
-        }
-    };
 }

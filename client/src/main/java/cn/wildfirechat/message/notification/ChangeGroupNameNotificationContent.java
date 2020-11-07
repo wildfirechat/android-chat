@@ -45,7 +45,7 @@ public class ChangeGroupNameNotificationContent extends GroupNotificationMessage
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -92,16 +92,4 @@ public class ChangeGroupNameNotificationContent extends GroupNotificationMessage
         this.operateUser = in.readString();
         this.name = in.readString();
     }
-
-    public static final Creator<ChangeGroupNameNotificationContent> CREATOR = new Creator<ChangeGroupNameNotificationContent>() {
-        @Override
-        public ChangeGroupNameNotificationContent createFromParcel(Parcel source) {
-            return new ChangeGroupNameNotificationContent(source);
-        }
-
-        @Override
-        public ChangeGroupNameNotificationContent[] newArray(int size) {
-            return new ChangeGroupNameNotificationContent[size];
-        }
-    };
 }

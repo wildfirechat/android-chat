@@ -4,14 +4,10 @@
 
 package cn.wildfirechat.message;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Parcel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -71,7 +67,7 @@ public class LinkMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
 
         payload.searchableContent = title;
@@ -134,15 +130,4 @@ public class LinkMessageContent extends MessageContent {
         this.thumbnailUrl = in.readString();
     }
 
-    public static final Creator<LinkMessageContent> CREATOR = new Creator<LinkMessageContent>() {
-        @Override
-        public LinkMessageContent createFromParcel(Parcel source) {
-            return new LinkMessageContent(source);
-        }
-
-        @Override
-        public LinkMessageContent[] newArray(int size) {
-            return new LinkMessageContent[size];
-        }
-    };
 }

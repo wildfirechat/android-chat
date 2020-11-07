@@ -65,7 +65,7 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
@@ -123,16 +123,4 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
         this.invitor = in.readString();
         this.invitees = in.createStringArrayList();
     }
-
-    public static final Creator<AddGroupMemberNotificationContent> CREATOR = new Creator<AddGroupMemberNotificationContent>() {
-        @Override
-        public AddGroupMemberNotificationContent createFromParcel(Parcel source) {
-            return new AddGroupMemberNotificationContent(source);
-        }
-
-        @Override
-        public AddGroupMemberNotificationContent[] newArray(int size) {
-            return new AddGroupMemberNotificationContent[size];
-        }
-    };
 }

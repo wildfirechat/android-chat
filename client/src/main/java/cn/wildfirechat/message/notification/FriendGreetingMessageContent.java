@@ -12,7 +12,6 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Friend_Greeting;
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Tip_Notification;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
@@ -31,7 +30,7 @@ public class FriendGreetingMessageContent extends NotificationMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         return payload;
     }
@@ -53,16 +52,4 @@ public class FriendGreetingMessageContent extends NotificationMessageContent {
     protected FriendGreetingMessageContent(Parcel in) {
         super(in);
     }
-
-    public static final Creator<FriendGreetingMessageContent> CREATOR = new Creator<FriendGreetingMessageContent>() {
-        @Override
-        public FriendGreetingMessageContent createFromParcel(Parcel source) {
-            return new FriendGreetingMessageContent(source);
-        }
-
-        @Override
-        public FriendGreetingMessageContent[] newArray(int size) {
-            return new FriendGreetingMessageContent[size];
-        }
-    };
 }

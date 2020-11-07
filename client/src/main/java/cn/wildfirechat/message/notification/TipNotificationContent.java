@@ -32,7 +32,7 @@ public class TipNotificationContent extends NotificationMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = tip;
 
         return payload;
@@ -59,15 +59,4 @@ public class TipNotificationContent extends NotificationMessageContent {
         this.tip = in.readString();
     }
 
-    public static final Creator<TipNotificationContent> CREATOR = new Creator<TipNotificationContent>() {
-        @Override
-        public TipNotificationContent createFromParcel(Parcel source) {
-            return new TipNotificationContent(source);
-        }
-
-        @Override
-        public TipNotificationContent[] newArray(int size) {
-            return new TipNotificationContent[size];
-        }
-    };
 }

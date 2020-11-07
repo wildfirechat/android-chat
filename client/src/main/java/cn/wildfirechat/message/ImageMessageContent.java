@@ -170,15 +170,4 @@ public class ImageMessageContent extends MediaMessageContent {
         this.thumbPara = in.readString();
     }
 
-    public static final Creator<ImageMessageContent> CREATOR = new Creator<ImageMessageContent>() {
-        @Override
-        public ImageMessageContent createFromParcel(Parcel source) {
-            return new ImageMessageContent(source);
-        }
-
-        @Override
-        public ImageMessageContent[] newArray(int size) {
-            return new ImageMessageContent[size];
-        }
-    };
 }

@@ -45,7 +45,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -92,15 +92,4 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
         this.alias = in.readString();
     }
 
-    public static final Creator<ModifyGroupAliasNotificationContent> CREATOR = new Creator<ModifyGroupAliasNotificationContent>() {
-        @Override
-        public ModifyGroupAliasNotificationContent createFromParcel(Parcel source) {
-            return new ModifyGroupAliasNotificationContent(source);
-        }
-
-        @Override
-        public ModifyGroupAliasNotificationContent[] newArray(int size) {
-            return new ModifyGroupAliasNotificationContent[size];
-        }
-    };
 }

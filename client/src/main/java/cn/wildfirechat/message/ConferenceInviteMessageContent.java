@@ -6,18 +6,13 @@ package cn.wildfirechat.message;
 
 import android.os.Parcel;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_Start;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Invite;
 
 /**
@@ -118,7 +113,7 @@ public class ConferenceInviteMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = callId;
 
         try {
@@ -210,15 +205,4 @@ public class ConferenceInviteMessageContent extends MessageContent {
         pin = in.readString();
     }
 
-    public static final Creator<ConferenceInviteMessageContent> CREATOR = new Creator<ConferenceInviteMessageContent>() {
-        @Override
-        public ConferenceInviteMessageContent createFromParcel(Parcel source) {
-            return new ConferenceInviteMessageContent(source);
-        }
-
-        @Override
-        public ConferenceInviteMessageContent[] newArray(int size) {
-            return new ConferenceInviteMessageContent[size];
-        }
-    };
 }

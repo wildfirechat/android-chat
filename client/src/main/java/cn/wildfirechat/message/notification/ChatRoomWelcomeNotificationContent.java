@@ -47,16 +47,4 @@ public class ChatRoomWelcomeNotificationContent extends NotificationMessageConte
         super(in);
         this.welcome = in.readString();
     }
-
-    public static final Creator<ChatRoomWelcomeNotificationContent> CREATOR = new Creator<ChatRoomWelcomeNotificationContent>() {
-        @Override
-        public ChatRoomWelcomeNotificationContent createFromParcel(Parcel source) {
-            return new ChatRoomWelcomeNotificationContent(source);
-        }
-
-        @Override
-        public ChatRoomWelcomeNotificationContent[] newArray(int size) {
-            return new ChatRoomWelcomeNotificationContent[size];
-        }
-    };
 }

@@ -43,7 +43,7 @@ public class GroupMuteNotificationContent extends GroupNotificationMessageConten
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
@@ -92,15 +92,4 @@ public class GroupMuteNotificationContent extends GroupNotificationMessageConten
         this.type = in.readInt();
     }
 
-    public static final Creator<GroupMuteNotificationContent> CREATOR = new Creator<GroupMuteNotificationContent>() {
-        @Override
-        public GroupMuteNotificationContent createFromParcel(Parcel source) {
-            return new GroupMuteNotificationContent(source);
-        }
-
-        @Override
-        public GroupMuteNotificationContent[] newArray(int size) {
-            return new GroupMuteNotificationContent[size];
-        }
-    };
 }

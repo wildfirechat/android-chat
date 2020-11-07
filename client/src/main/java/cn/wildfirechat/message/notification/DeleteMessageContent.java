@@ -5,21 +5,14 @@
 package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
-import android.text.TextUtils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Delete;
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Recall;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -40,7 +33,7 @@ public class DeleteMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = operatorId;
         payload.binaryContent = new StringBuffer().append(messageUid).toString().getBytes();
         return payload;
@@ -91,16 +84,4 @@ public class DeleteMessageContent extends MessageContent {
         this.operatorId = in.readString();
         this.messageUid = in.readLong();
     }
-
-    public static final Creator<DeleteMessageContent> CREATOR = new Creator<DeleteMessageContent>() {
-        @Override
-        public DeleteMessageContent createFromParcel(Parcel source) {
-            return new DeleteMessageContent(source);
-        }
-
-        @Override
-        public DeleteMessageContent[] newArray(int size) {
-            return new DeleteMessageContent[size];
-        }
-    };
 }

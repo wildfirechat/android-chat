@@ -56,7 +56,7 @@ public class GroupSetManagerNotificationContent extends GroupNotificationMessage
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
@@ -119,15 +119,4 @@ public class GroupSetManagerNotificationContent extends GroupNotificationMessage
         this.memberIds = in.createStringArrayList();
     }
 
-    public static final Creator<GroupSetManagerNotificationContent> CREATOR = new Creator<GroupSetManagerNotificationContent>() {
-        @Override
-        public GroupSetManagerNotificationContent createFromParcel(Parcel source) {
-            return new GroupSetManagerNotificationContent(source);
-        }
-
-        @Override
-        public GroupSetManagerNotificationContent[] newArray(int size) {
-            return new GroupSetManagerNotificationContent[size];
-        }
-    };
 }

@@ -114,7 +114,7 @@ public class CallStartMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = callId;
 
         try {
@@ -209,15 +209,4 @@ public class CallStartMessageContent extends MessageContent {
         this.pin = in.readString();
     }
 
-    public static final Creator<CallStartMessageContent> CREATOR = new Creator<CallStartMessageContent>() {
-        @Override
-        public CallStartMessageContent createFromParcel(Parcel source) {
-            return new CallStartMessageContent(source);
-        }
-
-        @Override
-        public CallStartMessageContent[] newArray(int size) {
-            return new CallStartMessageContent[size];
-        }
-    };
 }

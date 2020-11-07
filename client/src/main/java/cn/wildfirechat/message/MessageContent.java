@@ -7,6 +7,8 @@ package cn.wildfirechat.message;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import cn.wildfirechat.message.core.ContentTag;
@@ -18,7 +20,6 @@ import cn.wildfirechat.message.core.PersistFlag;
  */
 
 public abstract class MessageContent implements Parcelable {
-    public abstract MessagePayload encode();
 
     public abstract void decode(MessagePayload payload);
 
@@ -42,6 +43,16 @@ public abstract class MessageContent implements Parcelable {
         return -1;
     }
 
+    public MessagePayload encode() {
+        MessagePayload payload = new MessagePayload();
+        payload.contentType = getMessageContentType();
+        payload.extra = extra;
+        payload.pushContent = pushContent;
+        payload.mentionedType = mentionedType;
+        payload.mentionedTargets = mentionedTargets;
+        return payload;
+    }
+
     final public PersistFlag getPersistFlag() {
         ContentTag tag = getClass().getAnnotation(ContentTag.class);
         if (tag != null) {
@@ -57,6 +68,7 @@ public abstract class MessageContent implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getClass().getName());
         dest.writeInt(this.mentionedType);
         dest.writeStringList(this.mentionedTargets);
         dest.writeString(this.extra);
@@ -72,4 +84,32 @@ public abstract class MessageContent implements Parcelable {
         this.extra = in.readString();
         this.pushContent = in.readString();
     }
+
+    public static final Creator<MessageContent> CREATOR = new Creator<MessageContent>() {
+        @Override
+        public MessageContent createFromParcel(Parcel source) {
+            String className = source.readString();
+            try {
+                Class cls = Class.forName(className);
+                Constructor constructor = cls.getDeclaredConstructor(Parcel.class);
+                return (MessageContent) constructor.newInstance(source);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        public MessageContent[] newArray(int size) {
+            return new MessageContent[size];
+        }
+    };
 }

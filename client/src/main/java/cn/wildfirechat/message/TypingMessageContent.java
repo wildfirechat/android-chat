@@ -43,7 +43,7 @@ public class TypingMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = typingType + "";
         return payload;
     }
@@ -75,16 +75,4 @@ public class TypingMessageContent extends MessageContent {
         super(in);
         this.typingType = in.readInt();
     }
-
-    public static final Creator<TypingMessageContent> CREATOR = new Creator<TypingMessageContent>() {
-        @Override
-        public TypingMessageContent createFromParcel(Parcel source) {
-            return new TypingMessageContent(source);
-        }
-
-        @Override
-        public TypingMessageContent[] newArray(int size) {
-            return new TypingMessageContent[size];
-        }
-    };
 }

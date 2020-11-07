@@ -43,7 +43,7 @@ public class QuitGroupNotificationContent extends GroupNotificationMessageConten
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -86,15 +86,4 @@ public class QuitGroupNotificationContent extends GroupNotificationMessageConten
         this.operator = in.readString();
     }
 
-    public static final Creator<QuitGroupNotificationContent> CREATOR = new Creator<QuitGroupNotificationContent>() {
-        @Override
-        public QuitGroupNotificationContent createFromParcel(Parcel source) {
-            return new QuitGroupNotificationContent(source);
-        }
-
-        @Override
-        public QuitGroupNotificationContent[] newArray(int size) {
-            return new QuitGroupNotificationContent[size];
-        }
-    };
 }

@@ -74,7 +74,7 @@ public class LocationMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.searchableContent = title;
         payload.binaryContent = this.thumbnailByte;
 
@@ -136,15 +136,4 @@ public class LocationMessageContent extends MessageContent {
         this.location = in.readParcelable(Location.class.getClassLoader());
     }
 
-    public static final Creator<LocationMessageContent> CREATOR = new Creator<LocationMessageContent>() {
-        @Override
-        public LocationMessageContent createFromParcel(Parcel source) {
-            return new LocationMessageContent(source);
-        }
-
-        @Override
-        public LocationMessageContent[] newArray(int size) {
-            return new LocationMessageContent[size];
-        }
-    };
 }

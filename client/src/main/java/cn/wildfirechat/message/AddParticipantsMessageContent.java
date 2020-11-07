@@ -61,17 +61,6 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
             this.videoMuted = in.readInt() > 0;
         }
 
-        public static final Creator<ParticipantStatus> CREATOR = new Creator<ParticipantStatus>() {
-            @Override
-            public ParticipantStatus createFromParcel(Parcel source) {
-                return new ParticipantStatus(source);
-            }
-
-            @Override
-            public ParticipantStatus[] newArray(int size) {
-                return new ParticipantStatus[size];
-            }
-        };
     }
 
     private String callId;
@@ -143,7 +132,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = callId;
 
         try {

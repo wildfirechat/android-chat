@@ -33,6 +33,7 @@ import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
 
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.model.UnreadCount;
 
@@ -220,4 +221,5 @@ interface IRemoteClient {
     boolean isCommercialServer();
     boolean isReceiptEnabled();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in String data, in IGeneralCallback2 callback);
+    MessageContent messageContentFromPayload(in MessagePayload payload, in String sender);
 }

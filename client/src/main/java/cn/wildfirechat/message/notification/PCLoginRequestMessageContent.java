@@ -82,15 +82,4 @@ public class PCLoginRequestMessageContent extends MessageContent {
         this.sessionId = in.readString();
     }
 
-    public static final Creator<PCLoginRequestMessageContent> CREATOR = new Creator<PCLoginRequestMessageContent>() {
-        @Override
-        public PCLoginRequestMessageContent createFromParcel(Parcel source) {
-            return new PCLoginRequestMessageContent(source);
-        }
-
-        @Override
-        public PCLoginRequestMessageContent[] newArray(int size) {
-            return new PCLoginRequestMessageContent[size];
-        }
-    };
 }

@@ -20,7 +20,6 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_ALLOW_MEMBER;
-import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_MUTE_MEMBER;
 
 @ContentTag(type = CONTENT_TYPE_ALLOW_MEMBER, flag = PersistFlag.Persist)
 public class GroupAllowMemberNotificationContent extends NotificationMessageContent {
@@ -57,7 +56,7 @@ public class GroupAllowMemberNotificationContent extends NotificationMessageCont
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
@@ -119,15 +118,4 @@ public class GroupAllowMemberNotificationContent extends NotificationMessageCont
         this.memberIds = in.createStringArrayList();
     }
 
-    public static final Creator<GroupAllowMemberNotificationContent> CREATOR = new Creator<GroupAllowMemberNotificationContent>() {
-        @Override
-        public GroupAllowMemberNotificationContent createFromParcel(Parcel source) {
-            return new GroupAllowMemberNotificationContent(source);
-        }
-
-        @Override
-        public GroupAllowMemberNotificationContent[] newArray(int size) {
-            return new GroupAllowMemberNotificationContent[size];
-        }
-    };
 }

@@ -1277,36 +1277,47 @@ public class ChatManager {
     }
 
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
+        String className = msgContentClazz.getName();
         try {
             Constructor c = msgContentClazz.getConstructor();
             if (c.getModifiers() != Modifier.PUBLIC) {
-                throw new IllegalArgumentException("the default constructor of your custom messageContent class should be public");
+                throw new IllegalArgumentException(className + ", the default constructor of your custom messageContent class should be public");
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("custom messageContent class must have a default constructor");
+            throw new IllegalArgumentException(className + ", custom messageContent class must have a default constructor");
+        }
+
+        try {
+            Constructor c = msgContentClazz.getDeclaredConstructor(Parcel.class);
+            if (c.getModifiers() != Modifier.PROTECTED) {
+                throw new IllegalArgumentException(className + ", custom messageContent class must have a constructor with parameters (Parcel in)");
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException(className + ", custom messageContent class must have a constructor with parameters (Parcel in)");
         }
 
         try {
             Field creator = msgContentClazz.getDeclaredField("CREATOR");
-            if ((creator.getModifiers() & (Modifier.PUBLIC | Modifier.STATIC)) == 0) {
-                throw new IllegalArgumentException("custom messageContent class implements Parcelable but does not provide a CREATOR field");
-            }
+            throw new IllegalArgumentException(className + ", custom messageContent class doest not need a CREATOR field anymore");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("custom messageContent class implements Parcelable but does not provide a CREATOR field");
         }
 
         try {
             msgContentClazz.getDeclaredMethod("writeToParcel", Parcel.class, int.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("custom messageContent class must override writeToParcel");
+            throw new IllegalArgumentException(className + ", custom messageContent class must override writeToParcel");
         }
 
         ContentTag tag = msgContentClazz.getAnnotation(ContentTag.class);
         if (tag == null) {
-            throw new IllegalArgumentException("custom messageContent class must have a ContentTag annotation");
+            throw new IllegalArgumentException(className + ", custom messageContent class must have a ContentTag annotation");
+        }
+        if (tag.type() == 0 && !msgContentClazz.equals(UnknownMessageContent.class)) {
+            throw new IllegalArgumentException(className + ", ContentTag annotation must set the type value");
         }
     }
 
@@ -5695,6 +5706,19 @@ public class ChatManager {
             if (callback != null)
                 mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
+    }
+
+    public MessageContent messageContentFromPayload(MessagePayload payload, String sender) {
+
+        if (!checkRemoteService()) {
+            return null;
+        }
+        try {
+            return mClient.messageContentFromPayload(payload, sender);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private boolean checkRemoteService() {

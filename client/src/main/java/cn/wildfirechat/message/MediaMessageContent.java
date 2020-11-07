@@ -19,7 +19,7 @@ public abstract class MediaMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.localMediaPath = this.localPath;
         payload.remoteMediaUrl = this.remoteUrl;
         payload.mediaType = mediaType;

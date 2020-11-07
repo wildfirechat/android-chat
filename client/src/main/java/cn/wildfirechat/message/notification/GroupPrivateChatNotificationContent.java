@@ -43,7 +43,7 @@ public class GroupPrivateChatNotificationContent extends GroupNotificationMessag
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
@@ -92,15 +92,4 @@ public class GroupPrivateChatNotificationContent extends GroupNotificationMessag
         this.type = in.readInt();
     }
 
-    public static final Creator<GroupPrivateChatNotificationContent> CREATOR = new Creator<GroupPrivateChatNotificationContent>() {
-        @Override
-        public GroupPrivateChatNotificationContent createFromParcel(Parcel source) {
-            return new GroupPrivateChatNotificationContent(source);
-        }
-
-        @Override
-        public GroupPrivateChatNotificationContent[] newArray(int size) {
-            return new GroupPrivateChatNotificationContent[size];
-        }
-    };
 }

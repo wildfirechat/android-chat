@@ -84,7 +84,7 @@ public class CardMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = target;
         try {
             JSONObject objWrite = new JSONObject();
@@ -156,15 +156,4 @@ public class CardMessageContent extends MessageContent {
         this.portrait = in.readString();
     }
 
-    public static final Creator<CardMessageContent> CREATOR = new Creator<CardMessageContent>() {
-        @Override
-        public CardMessageContent createFromParcel(Parcel source) {
-            return new CardMessageContent(source);
-        }
-
-        @Override
-        public CardMessageContent[] newArray(int size) {
-            return new CardMessageContent[size];
-        }
-    };
 }

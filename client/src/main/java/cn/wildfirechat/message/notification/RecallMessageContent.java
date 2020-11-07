@@ -45,7 +45,7 @@ public class RecallMessageContent extends NotificationMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = operatorId;
         payload.binaryContent = new StringBuffer().append(messageUid).toString().getBytes();
         return payload;
@@ -160,15 +160,4 @@ public class RecallMessageContent extends NotificationMessageContent {
         this.originalMessageTimestamp = in.readLong();
     }
 
-    public static final Creator<RecallMessageContent> CREATOR = new Creator<RecallMessageContent>() {
-        @Override
-        public RecallMessageContent createFromParcel(Parcel source) {
-            return new RecallMessageContent(source);
-        }
-
-        @Override
-        public RecallMessageContent[] newArray(int size) {
-            return new RecallMessageContent[size];
-        }
-    };
 }

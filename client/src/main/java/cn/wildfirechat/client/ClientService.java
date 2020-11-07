@@ -2101,6 +2101,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             });
         }
+
+        @Override
+        public MessageContent messageContentFromPayload(MessagePayload payload, String sender) throws RemoteException {
+            return ClientService.this.messageContentFromPayload(payload, sender);
+        }
     }
 
     private ChannelInfo converProtoChannelInfo(ProtoChannelInfo protoChannelInfo) {

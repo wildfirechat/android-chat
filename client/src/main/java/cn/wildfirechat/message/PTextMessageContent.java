@@ -11,7 +11,6 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_P_Text;
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Text;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -38,7 +37,7 @@ public class PTextMessageContent extends TextMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.searchableContent = content;
         return payload;
     }
@@ -70,16 +69,4 @@ public class PTextMessageContent extends TextMessageContent {
         super(in);
         this.content = in.readString();
     }
-
-    public static final Creator<PTextMessageContent> CREATOR = new Creator<PTextMessageContent>() {
-        @Override
-        public PTextMessageContent createFromParcel(Parcel source) {
-            return new PTextMessageContent(source);
-        }
-
-        @Override
-        public PTextMessageContent[] newArray(int size) {
-            return new PTextMessageContent[size];
-        }
-    };
 }

@@ -43,7 +43,7 @@ public class ChangeGroupPortraitNotificationContent extends GroupNotificationMes
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -85,16 +85,4 @@ public class ChangeGroupPortraitNotificationContent extends GroupNotificationMes
         super(in);
         this.operateUser = in.readString();
     }
-
-    public static final Creator<ChangeGroupPortraitNotificationContent> CREATOR = new Creator<ChangeGroupPortraitNotificationContent>() {
-        @Override
-        public ChangeGroupPortraitNotificationContent createFromParcel(Parcel source) {
-            return new ChangeGroupPortraitNotificationContent(source);
-        }
-
-        @Override
-        public ChangeGroupPortraitNotificationContent[] newArray(int size) {
-            return new ChangeGroupPortraitNotificationContent[size];
-        }
-    };
 }

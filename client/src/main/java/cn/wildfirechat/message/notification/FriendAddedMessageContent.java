@@ -12,7 +12,6 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Friend_Added;
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Friend_Greeting;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
@@ -31,7 +30,7 @@ public class FriendAddedMessageContent extends NotificationMessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         return payload;
     }
@@ -54,15 +53,4 @@ public class FriendAddedMessageContent extends NotificationMessageContent {
         super(in);
     }
 
-    public static final Creator<FriendAddedMessageContent> CREATOR = new Creator<FriendAddedMessageContent>() {
-        @Override
-        public FriendAddedMessageContent createFromParcel(Parcel source) {
-            return new FriendAddedMessageContent(source);
-        }
-
-        @Override
-        public FriendAddedMessageContent[] newArray(int size) {
-            return new FriendAddedMessageContent[size];
-        }
-    };
 }

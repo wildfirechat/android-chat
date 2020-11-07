@@ -21,6 +21,7 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Composite_Message;
 
@@ -50,7 +51,7 @@ public class CompositeMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = this.title;
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -99,6 +100,19 @@ public class CompositeMessageContent extends MessageContent {
     }
 
     public void decode(MessagePayload payload, ClientService service) {
+        this.decode(payload, service::messageContentFromPayload);
+    }
+
+    @Override
+    public void decode(MessagePayload payload) {
+        // CALL the other one
+    }
+
+    public void decode(MessagePayload payload, ChatManager chatManager) {
+        this.decode(payload, chatManager::messageContentFromPayload);
+    }
+
+    private void decode(MessagePayload payload, Converter contentConverter) {
         title = payload.content;
         try {
             List<Message> messages = new ArrayList<>();
@@ -126,7 +140,7 @@ public class CompositeMessageContent extends MessageContent {
                 }
                 messagePayload.mentionedType = object.optInt("cmt");
                 JSONArray cmts = object.optJSONArray("cmts");
-                if(cmts != null && cmts.length() > 0){
+                if (cmts != null && cmts.length() > 0) {
                     messagePayload.mentionedTargets = new ArrayList<>();
                     for (int j = 0; j < cmts.length(); j++) {
                         messagePayload.mentionedTargets.add(cmts.optString(j));
@@ -136,7 +150,7 @@ public class CompositeMessageContent extends MessageContent {
                 messagePayload.mediaType = MessageContentMediaType.values()[object.optInt("mt")];
                 messagePayload.remoteMediaUrl = object.optString("mru");
 
-                message.content = service.messageContentFromPayload(messagePayload, message.sender);
+                message.content = contentConverter.convert(messagePayload, message.sender);
                 messages.add(message);
             }
             this.messages = messages;
@@ -145,9 +159,8 @@ public class CompositeMessageContent extends MessageContent {
         }
     }
 
-    @Override
-    public void decode(MessagePayload payload) {
-        // CALL the other one
+    private interface Converter {
+        MessageContent convert(MessagePayload payload, String sender);
     }
 
     @Override
@@ -174,15 +187,4 @@ public class CompositeMessageContent extends MessageContent {
         this.messages = in.createTypedArrayList(Message.CREATOR);
     }
 
-    public static final Creator<CompositeMessageContent> CREATOR = new Creator<CompositeMessageContent>() {
-        @Override
-        public CompositeMessageContent createFromParcel(Parcel source) {
-            return new CompositeMessageContent(source);
-        }
-
-        @Override
-        public CompositeMessageContent[] newArray(int size) {
-            return new CompositeMessageContent[size];
-        }
-    };
 }

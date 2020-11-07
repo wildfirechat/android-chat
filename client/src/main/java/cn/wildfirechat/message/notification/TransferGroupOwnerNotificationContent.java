@@ -50,7 +50,7 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -97,15 +97,4 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
         this.newOwner = in.readString();
     }
 
-    public static final Creator<TransferGroupOwnerNotificationContent> CREATOR = new Creator<TransferGroupOwnerNotificationContent>() {
-        @Override
-        public TransferGroupOwnerNotificationContent createFromParcel(Parcel source) {
-            return new TransferGroupOwnerNotificationContent(source);
-        }
-
-        @Override
-        public TransferGroupOwnerNotificationContent[] newArray(int size) {
-            return new TransferGroupOwnerNotificationContent[size];
-        }
-    };
 }

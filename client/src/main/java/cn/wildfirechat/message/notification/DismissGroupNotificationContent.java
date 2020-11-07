@@ -43,7 +43,7 @@ public class DismissGroupNotificationContent extends GroupNotificationMessageCon
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -86,16 +86,4 @@ public class DismissGroupNotificationContent extends GroupNotificationMessageCon
         super(in);
         this.operator = in.readString();
     }
-
-    public static final Creator<DismissGroupNotificationContent> CREATOR = new Creator<DismissGroupNotificationContent>() {
-        @Override
-        public DismissGroupNotificationContent createFromParcel(Parcel source) {
-            return new DismissGroupNotificationContent(source);
-        }
-
-        @Override
-        public DismissGroupNotificationContent[] newArray(int size) {
-            return new DismissGroupNotificationContent[size];
-        }
-    };
 }

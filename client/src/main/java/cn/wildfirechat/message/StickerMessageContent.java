@@ -95,15 +95,4 @@ public class StickerMessageContent extends MediaMessageContent {
         this.height = in.readInt();
     }
 
-    public static final Creator<StickerMessageContent> CREATOR = new Creator<StickerMessageContent>() {
-        @Override
-        public StickerMessageContent createFromParcel(Parcel source) {
-            return new StickerMessageContent(source);
-        }
-
-        @Override
-        public StickerMessageContent[] newArray(int size) {
-            return new StickerMessageContent[size];
-        }
-    };
 }

@@ -64,15 +64,4 @@ public class UnknownMessageContent extends MessageContent {
         this.orignalPayload = in.readParcelable(MessagePayload.class.getClassLoader());
     }
 
-    public static final Creator<UnknownMessageContent> CREATOR = new Creator<UnknownMessageContent>() {
-        @Override
-        public UnknownMessageContent createFromParcel(Parcel source) {
-            return new UnknownMessageContent(source);
-        }
-
-        @Override
-        public UnknownMessageContent[] newArray(int size) {
-            return new UnknownMessageContent[size];
-        }
-    };
 }

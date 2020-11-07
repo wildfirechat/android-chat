@@ -98,15 +98,4 @@ public class FileMessageContent extends MediaMessageContent {
         this.size = in.readInt();
     }
 
-    public static final Creator<FileMessageContent> CREATOR = new Creator<FileMessageContent>() {
-        @Override
-        public FileMessageContent createFromParcel(Parcel source) {
-            return new FileMessageContent(source);
-        }
-
-        @Override
-        public FileMessageContent[] newArray(int size) {
-            return new FileMessageContent[size];
-        }
-    };
 }

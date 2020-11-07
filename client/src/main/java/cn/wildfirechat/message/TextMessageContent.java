@@ -51,7 +51,8 @@ public class TextMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
+        payload.contentType = ContentType_Text;
         payload.searchableContent = content;
         payload.mentionedType = mentionedType;
         payload.mentionedTargets = mentionedTargets;
@@ -107,16 +108,4 @@ public class TextMessageContent extends MessageContent {
         this.content = in.readString();
         this.quoteInfo = in.readParcelable(QuoteInfo.class.getClassLoader());
     }
-
-    public static final Creator<TextMessageContent> CREATOR = new Creator<TextMessageContent>() {
-        @Override
-        public TextMessageContent createFromParcel(Parcel source) {
-            return new TextMessageContent(source);
-        }
-
-        @Override
-        public TextMessageContent[] newArray(int size) {
-            return new TextMessageContent[size];
-        }
-    };
 }
