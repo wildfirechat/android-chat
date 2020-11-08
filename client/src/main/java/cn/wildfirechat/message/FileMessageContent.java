@@ -26,6 +26,7 @@ public class FileMessageContent extends MediaMessageContent {
     private static final String FILE_NAME_PREFIX = "[文件] ";
 
     public FileMessageContent() {
+        this.mediaType = MessageContentMediaType.FILE;
     }
 
     public FileMessageContent(String filePath) {

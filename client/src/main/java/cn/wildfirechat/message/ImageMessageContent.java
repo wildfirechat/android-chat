@@ -34,11 +34,12 @@ public class ImageMessageContent extends MediaMessageContent {
     private String thumbPara;
 
     public ImageMessageContent() {
+        this.mediaType = MessageContentMediaType.IMAGE;
     }
 
     public ImageMessageContent(String path) {
         this.localPath = path;
-        mediaType = MessageContentMediaType.IMAGE;
+        this.mediaType = MessageContentMediaType.IMAGE;
 
     }
 

@@ -56,6 +56,7 @@ import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
@@ -333,6 +334,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 || messageContent instanceof FileMessageContent
                 || messageContent instanceof CompositeMessageContent
                 || messageContent instanceof VideoMessageContent
+                || messageContent instanceof SoundMessageContent
                 || messageContent instanceof ImageMessageContent) {
                 return false;
             }
