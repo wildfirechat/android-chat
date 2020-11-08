@@ -131,7 +131,7 @@ public class FavoriteItem {
                 break;
             case MessageContentType.ContentType_Voice:
                 SoundMessageContent soundMessageContent = (SoundMessageContent) message.content;
-                item.title = soundMessageContent.remoteUrl;
+                item.url = soundMessageContent.remoteUrl;
                 data.put("duration", soundMessageContent.getDuration());
                 item.data = new Gson().toJson(data);
                 break;

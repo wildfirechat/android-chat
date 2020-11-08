@@ -52,7 +52,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         if (message.isDownloading) {
             return;
         }
-        File file = messageViewModel.mediaMessageContentFile(message);
+        File file = messageViewModel.mediaMessageContentFile(message.message);
         if (file == null) {
             return;
         }

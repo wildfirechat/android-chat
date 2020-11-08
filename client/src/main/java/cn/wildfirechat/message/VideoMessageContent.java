@@ -29,6 +29,7 @@ public class VideoMessageContent extends MediaMessageContent {
 
     // 所有消息都需要一个默认构造函数
     public VideoMessageContent() {
+        this.mediaType = MessageContentMediaType.VIDEO;
     }
 
     public VideoMessageContent(String videoPath) {
