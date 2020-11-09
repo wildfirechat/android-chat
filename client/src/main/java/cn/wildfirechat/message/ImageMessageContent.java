@@ -34,11 +34,12 @@ public class ImageMessageContent extends MediaMessageContent {
     private String thumbPara;
 
     public ImageMessageContent() {
+        this.mediaType = MessageContentMediaType.IMAGE;
     }
 
     public ImageMessageContent(String path) {
         this.localPath = path;
-        mediaType = MessageContentMediaType.IMAGE;
+        this.mediaType = MessageContentMediaType.IMAGE;
 
     }
 
@@ -52,6 +53,10 @@ public class ImageMessageContent extends MediaMessageContent {
             thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), 200, 200);
         }
         return thumbnail;
+    }
+
+    public void setThumbnailBytes(byte[] thumbnailBytes) {
+        this.thumbnailBytes = thumbnailBytes;
     }
 
     @Override

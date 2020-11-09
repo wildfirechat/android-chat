@@ -98,9 +98,9 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
                 WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", ((TextMessageContent) messageContent).getContent());
             } else {
                 if (messageContent instanceof VideoMessageContent) {
-                    MMPreviewActivity.startActivity(fragment.getActivity(), (VideoMessageContent) messageContent);
+                    MMPreviewActivity.previewVideo(fragment.getActivity(), (VideoMessageContent) messageContent);
                 } else if (messageContent instanceof ImageMessageContent) {
-                    MMPreviewActivity.startActivity(fragment.getActivity(), (ImageMessageContent) messageContent);
+                    MMPreviewActivity.previewImage(fragment.getActivity(), (ImageMessageContent) messageContent);
                 }
             }
         }
@@ -116,6 +116,7 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         ClipData clipData = ClipData.newPlainText("messageContent", content.getContent());
         clipboardManager.setPrimaryClip(clipData);
     }
+
 
     @Override
     public String contextMenuTitle(Context context, String tag) {

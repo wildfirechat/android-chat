@@ -71,7 +71,7 @@ public class LinkMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
 
         payload.searchableContent = title;

@@ -84,7 +84,7 @@ public class CardMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = target;
         try {
             JSONObject objWrite = new JSONObject();

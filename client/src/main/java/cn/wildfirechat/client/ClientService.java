@@ -44,50 +44,17 @@ import java.util.Locale;
 import java.util.Map;
 
 import cn.wildfirechat.ErrorCode;
-import cn.wildfirechat.message.CallStartMessageContent;
-import cn.wildfirechat.message.CardMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
-import cn.wildfirechat.message.ConferenceInviteMessageContent;
-import cn.wildfirechat.message.FileMessageContent;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.LinkMessageContent;
-import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.PTextMessageContent;
-import cn.wildfirechat.message.SoundMessageContent;
-import cn.wildfirechat.message.StickerMessageContent;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
-import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
-import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
-import cn.wildfirechat.message.notification.CreateGroupNotificationContent;
-import cn.wildfirechat.message.notification.DeleteMessageContent;
-import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
-import cn.wildfirechat.message.notification.FriendAddedMessageContent;
-import cn.wildfirechat.message.notification.FriendGreetingMessageContent;
-import cn.wildfirechat.message.notification.GroupAllowMemberNotificationContent;
-import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
-import cn.wildfirechat.message.notification.GroupMuteMemberNotificationContent;
-import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
-import cn.wildfirechat.message.notification.GroupPrivateChatNotificationContent;
-import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
-import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
-import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
-import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
-import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
-import cn.wildfirechat.message.notification.TipNotificationContent;
-import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -332,8 +299,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             protoMessage.setFrom(msg.sender);
             protoMessage.setTos(msg.toUsers);
             MessagePayload payload = msg.content.encode();
-            payload.extra = msg.content.extra;
-            payload.contentType = msg.content.getClass().getAnnotation(ContentTag.class).type();
             protoMessage.setContent(payload.toProtoContent());
             protoMessage.setMessageId(msg.messageId);
             protoMessage.setDirection(msg.direction.ordinal());
@@ -2246,7 +2211,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         return out;
     }
 
-    public MessageContent messsageContentFromPayload(MessagePayload payload, String from) {
+    public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
 
         MessageContent content = contentOfType(payload.contentType);
         try {
@@ -2291,7 +2256,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         msg.content = contentOfType(protoMessage.getContent().getType());
         MessagePayload payload = new MessagePayload(protoMessage.getContent());
-        msg.content = messsageContentFromPayload(payload, msg.sender);
+        msg.content = messageContentFromPayload(payload, msg.sender);
 
         msg.direction = MessageDirection.values()[protoMessage.getDirection()];
         msg.status = MessageStatus.status(protoMessage.getStatus());
@@ -2331,45 +2296,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             registerReceiver(mConnectionReceiver, filter);
         }
 
-        try {
-            mBinder.registerMessageContent(AddGroupMemberNotificationContent.class.getName());
-            mBinder.registerMessageContent(CallStartMessageContent.class.getName());
-            mBinder.registerMessageContent(ConferenceInviteMessageContent.class.getName());
-            mBinder.registerMessageContent(ChangeGroupNameNotificationContent.class.getName());
-            mBinder.registerMessageContent(ChangeGroupPortraitNotificationContent.class.getName());
-            mBinder.registerMessageContent(CreateGroupNotificationContent.class.getName());
-            mBinder.registerMessageContent(DismissGroupNotificationContent.class.getName());
-            mBinder.registerMessageContent(FileMessageContent.class.getName());
-            mBinder.registerMessageContent(ImageMessageContent.class.getName());
-            mBinder.registerMessageContent(LinkMessageContent.class.getName());
-            mBinder.registerMessageContent(KickoffGroupMemberNotificationContent.class.getName());
-            mBinder.registerMessageContent(LocationMessageContent.class.getName());
-            mBinder.registerMessageContent(ModifyGroupAliasNotificationContent.class.getName());
-            mBinder.registerMessageContent(QuitGroupNotificationContent.class.getName());
-            mBinder.registerMessageContent(RecallMessageContent.class.getName());
-            mBinder.registerMessageContent(DeleteMessageContent.class.getName());
-            mBinder.registerMessageContent(SoundMessageContent.class.getName());
-            mBinder.registerMessageContent(StickerMessageContent.class.getName());
-            mBinder.registerMessageContent(TextMessageContent.class.getName());
-            mBinder.registerMessageContent(PCLoginRequestMessageContent.class.getName());
-            mBinder.registerMessageContent(PTextMessageContent.class.getName());
-            mBinder.registerMessageContent(TipNotificationContent.class.getName());
-            mBinder.registerMessageContent(FriendAddedMessageContent.class.getName());
-            mBinder.registerMessageContent(FriendGreetingMessageContent.class.getName());
-            mBinder.registerMessageContent(TransferGroupOwnerNotificationContent.class.getName());
-            mBinder.registerMessageContent(VideoMessageContent.class.getName());
-            mBinder.registerMessageContent(TypingMessageContent.class.getName());
-            mBinder.registerMessageContent(GroupMuteNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupJoinTypeNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupPrivateChatNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupSetManagerNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupMuteMemberNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupAllowMemberNotificationContent.class.getName());
-            mBinder.registerMessageContent(CardMessageContent.class.getName());
-            mBinder.registerMessageContent(CompositeMessageContent.class.getName());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
         android.util.Log.d(TAG, "onnCreate");
     }
 

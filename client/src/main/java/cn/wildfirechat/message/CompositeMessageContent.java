@@ -21,6 +21,8 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Composite_Message;
 
@@ -50,7 +52,7 @@ public class CompositeMessageContent extends MessageContent {
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         payload.content = this.title;
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -98,7 +100,23 @@ public class CompositeMessageContent extends MessageContent {
         return payload;
     }
 
+    // 只能从marsservice 进程调用
     public void decode(MessagePayload payload, ClientService service) {
+        this.decode(payload, service::messageContentFromPayload);
+    }
+
+    // 只能从主进程调用
+    public void decode(MessagePayload payload, ChatManager chatManager) {
+        this.decode(payload, chatManager::messageContentFromPayload);
+    }
+
+    @Override
+    public void decode(MessagePayload payload) {
+        // CALL the other one
+        throw new IllegalStateException("please call the alter one");
+    }
+
+    private void decode(MessagePayload payload, Converter contentConverter) {
         title = payload.content;
         try {
             List<Message> messages = new ArrayList<>();
@@ -115,7 +133,7 @@ public class CompositeMessageContent extends MessageContent {
                 message.status = MessageStatus.status(object.optInt("status"));
                 message.serverTime = object.optLong("serverTime");
 
-                MessagePayload messagePayload = new MessagePayload();
+                MessagePayload messagePayload = super.encode();
                 messagePayload.contentType = object.optInt("ctype");
                 messagePayload.searchableContent = object.optString("csc");
                 messagePayload.pushContent = object.optString("cpc");
@@ -126,7 +144,7 @@ public class CompositeMessageContent extends MessageContent {
                 }
                 messagePayload.mentionedType = object.optInt("cmt");
                 JSONArray cmts = object.optJSONArray("cmts");
-                if(cmts != null && cmts.length() > 0){
+                if (cmts != null && cmts.length() > 0) {
                     messagePayload.mentionedTargets = new ArrayList<>();
                     for (int j = 0; j < cmts.length(); j++) {
                         messagePayload.mentionedTargets.add(cmts.optString(j));
@@ -136,7 +154,7 @@ public class CompositeMessageContent extends MessageContent {
                 messagePayload.mediaType = MessageContentMediaType.values()[object.optInt("mt")];
                 messagePayload.remoteMediaUrl = object.optString("mru");
 
-                message.content = service.messsageContentFromPayload(messagePayload, message.sender);
+                message.content = contentConverter.convert(messagePayload, message.sender);
                 messages.add(message);
             }
             this.messages = messages;
@@ -145,9 +163,8 @@ public class CompositeMessageContent extends MessageContent {
         }
     }
 
-    @Override
-    public void decode(MessagePayload payload) {
-        // CALL the other one
+    private interface Converter {
+        MessageContent convert(MessagePayload payload, String sender);
     }
 
     @Override
@@ -155,6 +172,18 @@ public class CompositeMessageContent extends MessageContent {
         return "[聊天记录]: " + title;
     }
 
+    public String compositeDigest() {
+        List<Message> messages = getMessages();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < messages.size() && i < 4; i++) {
+            Message msg = messages.get(i);
+            String sender = msg.sender;
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(sender, false);
+            sb.append(userInfo.displayName + ": " + msg.content.digest(msg));
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 
     @Override
     public int describeContents() {
