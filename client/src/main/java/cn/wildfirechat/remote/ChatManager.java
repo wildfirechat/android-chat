@@ -1318,44 +1318,44 @@ public class ChatManager {
         try {
             Constructor c = msgContentClazz.getConstructor();
             if (c.getModifiers() != Modifier.PUBLIC) {
-                throw new IllegalArgumentException(className + ", the default constructor of your custom messageContent class should be public");
+                throw new IllegalArgumentException(className + ", the default constructor of your custom messageContent class should be public，自定义消息的构造函数必须是public的，请参考TextMessageContent.java");
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException(className + ", custom messageContent class must have a default constructor");
+            throw new IllegalArgumentException(className + ", custom messageContent class must have a default constructor，自定义消息必须要有一个默认的无参构造函数，请参考TextMessageContent.java");
         }
 
         try {
             msgContentClazz.getDeclaredMethod("encode");
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException(className + ", custom messageContent class must override encode");
+            throw new IllegalArgumentException(className + ", custom messageContent class must override encode，自定义消息必须覆盖encode方法，并调用super.encode()，请参考TextMessageContent.java");
         }
 
         try {
             Field creator = msgContentClazz.getDeclaredField("CREATOR");
             if ((creator.getModifiers() & (Modifier.PUBLIC | Modifier.STATIC)) == 0) {
-                throw new IllegalArgumentException(className + ", custom messageContent class implements Parcelable but does not provide a CREATOR field");
+                throw new IllegalArgumentException(className + ", custom messageContent class implements Parcelable but does not provide a CREATOR field，自定义消息必须实现Parcelable接口，并提供一个CREATOR，请参考TextMessageContent.java");
             }
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException(className + ", custom messageContent class implements Parcelable but does not provide a CREATOR field");
+            throw new IllegalArgumentException(className + ", custom messageContent class implements Parcelable but does not provide a CREATOR field，自定义消息必须实现Parcelable接口，并且提供一个CREATOR，请参考TextMessageContent.java");
         }
 
         try {
             msgContentClazz.getDeclaredMethod("writeToParcel", Parcel.class, int.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException(className + ", custom messageContent class must override writeToParcel");
+            throw new IllegalArgumentException(className + ", custom messageContent class must override writeToParcel，自定义消息必须覆盖writeToParcel方法，请参考TextMessageContent.java");
         }
 
         ContentTag tag = msgContentClazz.getAnnotation(ContentTag.class);
         if (tag == null) {
-            throw new IllegalArgumentException(className + ", custom messageContent class must have a ContentTag annotation");
+            throw new IllegalArgumentException(className + ", custom messageContent class must have a ContentTag annotation，自定义消息类必须包含ContentTag注解，请参考TextMessageContent.java");
         }
 
         if (tag.type() == 0 && !msgContentClazz.equals(UnknownMessageContent.class)) {
-            throw new IllegalArgumentException(className + ", custom messageContent class's ContentTag annotation must set the type value");
+            throw new IllegalArgumentException(className + ", custom messageContent class's ContentTag annotation must set the type value，自定消息类的ContentTag注解，type值不能为默认，请参考TextMessageContent.java");
         }
     }
 
