@@ -2432,6 +2432,36 @@ public class ChatManager {
         }
     }
 
+    public void searchMyFileRecords(String keyword, long beforeMessageId, int count, GetFileRecordCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.searchMyFileRecords(keyword, beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+                @Override
+                public void onSuccess(List<FileRecord> messages) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess(messages);
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 搜索远程文件记录
      *
