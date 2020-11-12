@@ -640,6 +640,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             });
         }
 
+        @Override
+        public void searchFileRecords(String keyword, Conversation conversation, String fromUser, long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.searchConversationFileRecords(keyword, conversation == null ? 0 : conversation.type.getValue(), conversation == null ? "" : conversation.target, conversation == null ? 0 : conversation.line, fromUser, beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+                @Override
+                public void onSuccess(ProtoFileRecord[] protoFileRecords) {
+                    try {
+                        callback.onSuccess(convertProtoFileRecord(protoFileRecords));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
 
         @Override
         public cn.wildfirechat.message.Message getMessage(long messageId) throws RemoteException {
