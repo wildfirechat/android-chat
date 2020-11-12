@@ -100,6 +100,7 @@ interface IRemoteClient {
     oneway void getConversationFileRecords(in Conversation conversation, in String fromUser, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void getMyFileRecords(in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void deleteFileRecord(in long messageUid, in IGeneralCallback callback);
+    oneway void searchFileRecords(in String keyword, in Conversation conversation, in String fromUser, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
 
     Message getMessage(in long messageId);
     Message getMessageByUid(in long messageUid);
