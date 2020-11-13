@@ -2637,7 +2637,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         onReceiveMessageListeners.finishBroadcast();
     }
 
-    public final static int MAX_IPC_SIZE = 900 * 1024;
+    public final static int MAX_IPC_SIZE = 800 * 1024;
 
     @Override
     public void onReceiveMessage(List<ProtoMessage> messages, boolean hasMore) {
@@ -2831,7 +2831,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     // 只是大概大小
-    private int getProtoMessageLength(ProtoMessage message) {
+    private int getMessageLength(ProtoMessage message) {
         int length = 0;
         ProtoMessageContent content = message.getContent();
         length += content.getBinaryContent() != null ? content.getBinaryContent().length : 0;
@@ -2841,6 +2841,26 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         length += content.getLocalMediaPath() != null ? content.getLocalMediaPath().length() : 0;
         length += content.getRemoteMediaUrl() != null ? content.getRemoteMediaUrl().length() : 0;
         length += content.getLocalContent() != null ? content.getLocalContent().length() : 0;
+        // messageId
+        length += 8;
+        //conversation
+        length += 4 + message.getTarget().length() + 4;
+        // tos
+        if(message.getTos() != null){
+            for (int i = 0; i < message.getTos().length; i++) {
+                length += message.getTos()[i].length();
+            }
+        }
+        // sender
+        length += message.getFrom().length();
+        // direction
+        length += 4;
+        // status
+        length += 4;
+        // messageUid
+        length += 8;
+        // timestamp
+        length += 8;
         return length;
     }
 
@@ -2861,7 +2881,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private SafeIPCMessageEntry buildSafeIPCMessages(ProtoMessage[] messages, int startIndex, boolean before) {
         SafeIPCMessageEntry entry = new SafeIPCMessageEntry();
         int totalLength = 0;
-        int messageContentLength;
+        int messageLength;
         if (messages == null || messages.length == 0) {
             return entry;
         }
@@ -2873,12 +2893,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             } else {
                 pmsg = messages[i];
             }
-            messageContentLength = getProtoMessageLength(pmsg);
-            if (messageContentLength > MAX_IPC_SIZE) {
-                android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageContentLength);
+            messageLength = getMessageLength(pmsg);
+            if (messageLength > MAX_IPC_SIZE) {
+                android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageLength);
                 continue;
             }
-            totalLength += messageContentLength;
+            totalLength += messageLength;
             if (totalLength <= MAX_IPC_SIZE) {
                 if (before) {
                     entry.messages.add(0, convertProtoMessage(pmsg));
