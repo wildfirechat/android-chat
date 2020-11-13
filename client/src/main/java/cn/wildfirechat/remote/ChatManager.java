@@ -2432,22 +2432,75 @@ public class ChatManager {
         }
     }
 
+    public void searchMyFileRecords(String keyword, long beforeMessageId, int count, GetFileRecordCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
 
-//    - (void)getConversationFiles:(WFCCConversation *)conversation
-//    beforeMessageUid:(long long)messageUid
-//    count:(int)count
-//    success:(void(^)(NSArray<WFCCFileRecord *> *files))successBlock
-//    error:(void(^)(int error_code))errorBlock;
-//
-//- (void)getMyFiles:(long long)beforeMessageUid
-//    count:(int)count
-//    success:(void(^)(NSArray<WFCCFileRecord *> *files))successBlock
-//    error:(void(^)(int error_code))errorBlock;
-//
-//- (void)deleteFileRecord:(long long)messageUid
-//    success:(void(^)(void))successBlock
-//    error:(void(^)(int error_code))errorBlock;
+        try {
+            mClient.searchMyFileRecords(keyword, beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+                @Override
+                public void onSuccess(List<FileRecord> messages) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess(messages);
+                        });
+                    }
+                }
 
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 搜索远程文件记录
+     *
+     * @param keyword         关键字
+     * @param conversation    会话，如果为空则获取当前用户所有收到和发出的文件记录
+     * @param fromUser        文件发送用户，如果为空则获取该用户发出的文件记录
+     * @param beforeMessageId 起始消息的消息id
+     * @param count           获取消息的条数
+     * @param callback
+     */
+    public void searchFileRecords(String keyword, Conversation conversation, String fromUser, long beforeMessageId, int count, GetFileRecordCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.searchFileRecords(keyword, conversation, fromUser, beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+                @Override
+                public void onSuccess(List<FileRecord> messages) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess(messages);
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 根据消息id，获取消息
