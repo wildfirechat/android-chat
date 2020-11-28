@@ -1626,7 +1626,6 @@ public class ChatManager {
         msg.status = MessageStatus.Sending;
         msg.serverTime = System.currentTimeMillis();
         msg.sender = userId;
-        MessageContent content = messageContentFromPayload(msg.content.encode(), msg.sender);
         if (!checkRemoteService()) {
             if (callback != null) {
                 msg.status = MessageStatus.Send_Failure;
