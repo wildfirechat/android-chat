@@ -5058,6 +5058,7 @@ public class ChatManager {
                             }
                         });
                     }
+                    onSettingUpdated();
                 }
 
                 @Override
