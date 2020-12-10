@@ -15,7 +15,6 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_QUIT_GROUP;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_QUIT_GROUP_VISIABLE;
 
 /**
@@ -23,10 +22,10 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_QUIT_G
  */
 
 @ContentTag(type = ContentType_QUIT_GROUP_VISIABLE, flag = PersistFlag.Persist)
-public class QuitGroupVisiableNotificationContent extends GroupNotificationMessageContent {
+public class QuitGroupVisibleNotificationContent extends GroupNotificationMessageContent {
     public String operator;
 
-    public QuitGroupVisiableNotificationContent() {
+    public QuitGroupVisibleNotificationContent() {
     }
 
     @Override
@@ -82,20 +81,20 @@ public class QuitGroupVisiableNotificationContent extends GroupNotificationMessa
         dest.writeString(this.operator);
     }
 
-    protected QuitGroupVisiableNotificationContent(Parcel in) {
+    protected QuitGroupVisibleNotificationContent(Parcel in) {
         super(in);
         this.operator = in.readString();
     }
 
-    public static final Creator<QuitGroupVisiableNotificationContent> CREATOR = new Creator<QuitGroupVisiableNotificationContent>() {
+    public static final Creator<QuitGroupVisibleNotificationContent> CREATOR = new Creator<QuitGroupVisibleNotificationContent>() {
         @Override
-        public QuitGroupVisiableNotificationContent createFromParcel(Parcel source) {
-            return new QuitGroupVisiableNotificationContent(source);
+        public QuitGroupVisibleNotificationContent createFromParcel(Parcel source) {
+            return new QuitGroupVisibleNotificationContent(source);
         }
 
         @Override
-        public QuitGroupVisiableNotificationContent[] newArray(int size) {
-            return new QuitGroupVisiableNotificationContent[size];
+        public QuitGroupVisibleNotificationContent[] newArray(int size) {
+            return new QuitGroupVisibleNotificationContent[size];
         }
     };
 }
