@@ -5,6 +5,7 @@
 package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +26,7 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY
 public class ModifyGroupAliasNotificationContent extends GroupNotificationMessageContent {
     public String operateUser;
     public String alias;
+    public String memberId;
 
     public ModifyGroupAliasNotificationContent() {
     }
@@ -37,7 +39,12 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
         } else {
             sb.append(ChatManager.Instance().getUserDisplayName(operateUser));
         }
-        sb.append("修改群名片为");
+        sb.append("修改");
+        if(!TextUtils.isEmpty(memberId) && !memberId.equals(operateUser)) {
+            sb.append(ChatManager.Instance().getUserDisplayName(memberId));
+            sb.append("的");
+        }
+        sb.append("群名片为");
         sb.append(alias);
 
         return sb.toString();
@@ -52,6 +59,9 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
             objWrite.put("g", groupId);
             objWrite.put("o", operateUser);
             objWrite.put("n", alias);
+            if(!TextUtils.isEmpty(memberId)) {
+                objWrite.put("m", memberId);
+            }
 
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
@@ -68,6 +78,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
                 groupId = jsonObject.optString("g");
                 operateUser = jsonObject.optString("o");
                 alias = jsonObject.optString("n");
+                memberId = jsonObject.optString("m");
             }
         } catch (JSONException e) {
             e.printStackTrace();
