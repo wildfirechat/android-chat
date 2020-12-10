@@ -19,19 +19,18 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_KICKOF_GROUP_MEMBER;
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_KICKOF_GROUP_MEMBER_VISIABLE;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_KICKOF_GROUP_MEMBER_VISIBLE;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
  */
 
-@ContentTag(type = ContentType_KICKOF_GROUP_MEMBER_VISIABLE, flag = PersistFlag.Persist)
-public class KickoffGroupMemberVisiableNotificationContent extends GroupNotificationMessageContent {
+@ContentTag(type = ContentType_KICKOF_GROUP_MEMBER_VISIBLE, flag = PersistFlag.Persist)
+public class KickoffGroupMemberVisibleNotificationContent extends GroupNotificationMessageContent {
     public String operator;
     public List<String> kickedMembers;
 
-    public KickoffGroupMemberVisiableNotificationContent() {
+    public KickoffGroupMemberVisibleNotificationContent() {
     }
 
     @Override
@@ -108,21 +107,21 @@ public class KickoffGroupMemberVisiableNotificationContent extends GroupNotifica
         dest.writeStringList(this.kickedMembers);
     }
 
-    protected KickoffGroupMemberVisiableNotificationContent(Parcel in) {
+    protected KickoffGroupMemberVisibleNotificationContent(Parcel in) {
         super(in);
         this.operator = in.readString();
         this.kickedMembers = in.createStringArrayList();
     }
 
-    public static final Creator<KickoffGroupMemberVisiableNotificationContent> CREATOR = new Creator<KickoffGroupMemberVisiableNotificationContent>() {
+    public static final Creator<KickoffGroupMemberVisibleNotificationContent> CREATOR = new Creator<KickoffGroupMemberVisibleNotificationContent>() {
         @Override
-        public KickoffGroupMemberVisiableNotificationContent createFromParcel(Parcel source) {
-            return new KickoffGroupMemberVisiableNotificationContent(source);
+        public KickoffGroupMemberVisibleNotificationContent createFromParcel(Parcel source) {
+            return new KickoffGroupMemberVisibleNotificationContent(source);
         }
 
         @Override
-        public KickoffGroupMemberVisiableNotificationContent[] newArray(int size) {
-            return new KickoffGroupMemberVisiableNotificationContent[size];
+        public KickoffGroupMemberVisibleNotificationContent[] newArray(int size) {
+            return new KickoffGroupMemberVisibleNotificationContent[size];
         }
     };
 }

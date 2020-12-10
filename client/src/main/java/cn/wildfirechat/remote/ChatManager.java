@@ -106,12 +106,12 @@ import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
 import cn.wildfirechat.message.notification.GroupPrivateChatNotificationContent;
 import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
-import cn.wildfirechat.message.notification.KickoffGroupMemberVisiableNotificationContent;
+import cn.wildfirechat.message.notification.KickoffGroupMemberVisibleNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
-import cn.wildfirechat.message.notification.QuitGroupVisiableNotificationContent;
+import cn.wildfirechat.message.notification.QuitGroupVisibleNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
@@ -6038,8 +6038,8 @@ public class ChatManager {
         registerMessageContent(GroupSetManagerNotificationContent.class);
         registerMessageContent(GroupMuteMemberNotificationContent.class);
         registerMessageContent(GroupAllowMemberNotificationContent.class);
-        registerMessageContent(KickoffGroupMemberVisiableNotificationContent.class);
-        registerMessageContent(QuitGroupVisiableNotificationContent.class);
+        registerMessageContent(KickoffGroupMemberVisibleNotificationContent.class);
+        registerMessageContent(QuitGroupVisibleNotificationContent.class);
         registerMessageContent(CardMessageContent.class);
         registerMessageContent(CompositeMessageContent.class);
     }
