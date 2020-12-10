@@ -63,6 +63,9 @@ public interface MessageContentType {
     //禁言/取消禁言群成员的通知消息
     int CONTENT_TYPE_MUTE_MEMBER = 118;
     int CONTENT_TYPE_ALLOW_MEMBER = 119;
+    int ContentType_KICKOF_GROUP_MEMBER_VISIABLE = 120;
+    int ContentType_QUIT_GROUP_VISIABLE = 121;
+
 
     int ContentType_Call_Start = 400;
     int ContentType_Call_End = 402;
