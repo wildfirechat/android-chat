@@ -1412,6 +1412,9 @@ public class ChatManager {
 
         try {
             message = mClient.insertMessage(message, notify);
+            if (notify) {
+                onReceiveMessage(Collections.singletonList(message), false);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -2232,6 +2235,7 @@ public class ChatManager {
             mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
+
     /**
      * 获取会话消息
      *
