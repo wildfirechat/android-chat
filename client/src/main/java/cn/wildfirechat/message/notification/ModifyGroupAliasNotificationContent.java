@@ -14,6 +14,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_ALIAS;
@@ -35,16 +36,32 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
     public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
-            sb.append("您");
+            sb.append("你");
         } else {
-            sb.append(ChatManager.Instance().getUserDisplayName(operateUser));
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(operateUser, groupId, false);
+            if (!TextUtils.isEmpty(memberId) && !TextUtils.isEmpty(userInfo.groupAlias)) {
+                sb.append(userInfo.groupAlias);
+            } else if (!TextUtils.isEmpty(userInfo.friendAlias)) {
+                sb.append(userInfo.friendAlias);
+            } else if (!TextUtils.isEmpty(userInfo.displayName)) {
+                sb.append(userInfo.displayName);
+            } else {
+                sb.append(operateUser);
+            }
         }
         sb.append("修改");
-        if(!TextUtils.isEmpty(memberId) && !memberId.equals(operateUser)) {
-            sb.append(ChatManager.Instance().getUserDisplayName(memberId));
+        if (!TextUtils.isEmpty(memberId)) {
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(memberId, false);
+            if (!TextUtils.isEmpty(userInfo.friendAlias)) {
+                sb.append(userInfo.friendAlias);
+            } else if (!TextUtils.isEmpty(userInfo.displayName)) {
+                sb.append(userInfo.displayName);
+            } else {
+                sb.append(memberId);
+            }
             sb.append("的");
         }
-        sb.append("群名片为");
+        sb.append("群昵称为");
         sb.append(alias);
 
         return sb.toString();
@@ -59,7 +76,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
             objWrite.put("g", groupId);
             objWrite.put("o", operateUser);
             objWrite.put("n", alias);
-            if(!TextUtils.isEmpty(memberId)) {
+            if (!TextUtils.isEmpty(memberId)) {
                 objWrite.put("m", memberId);
             }
 
