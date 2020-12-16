@@ -27,6 +27,10 @@ import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 
+/**
+ * @author dhl
+ * 应该使用懒加载
+ */
 public abstract class BaseUserListFragment extends ProgressFragment implements QuickIndexBar.OnLetterUpdateListener, UserListAdapter.OnUserClickListener, UserListAdapter.OnHeaderClickListener, UserListAdapter.OnFooterClickListener {
 
     @BindView(R2.id.usersRecyclerView)
