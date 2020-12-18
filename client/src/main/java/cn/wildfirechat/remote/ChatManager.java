@@ -1327,12 +1327,13 @@ public class ChatManager {
             throw new IllegalArgumentException(className + ", custom messageContent class must have a default constructor，自定义消息必须要有一个默认的无参构造函数，请参考TextMessageContent.java");
         }
 
-        try {
-            msgContentClazz.getDeclaredMethod("encode");
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException(className + ", custom messageContent class must override encode，自定义消息必须覆盖encode方法，并调用super.encode()，请参考TextMessageContent.java");
-        }
+        // 建议打开，以便对自定义消息的合法性进行检查
+//        try {
+//            msgContentClazz.getDeclaredMethod("encode");
+//        } catch (NoSuchMethodException e) {
+//            e.printStackTrace();
+//            throw new IllegalArgumentException(className + ", custom messageContent class must override encode，自定义消息必须覆盖encode方法，并调用super.encode()，请参考TextMessageContent.java");
+//        }
 
         try {
             Field creator = msgContentClazz.getDeclaredField("CREATOR");

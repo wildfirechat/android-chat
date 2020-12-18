@@ -74,6 +74,10 @@
     <init>(...);
 }
 
+-keepclassmembers class cn.wildfirechat.message.MessageContent {
+    encode();
+}
+
 -keep class net.sourceforge.pinyin4j.** { *;}
 
 
