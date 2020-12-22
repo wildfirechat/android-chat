@@ -26,10 +26,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -83,7 +83,10 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
                 outgoingActionContainer.setVisibility(View.VISIBLE);
                 descTextView.setVisibility(View.GONE);
                 durationTextView.setVisibility(View.VISIBLE);
-            } else if(state == AVEngineKit.CallState.Idle) {
+            } else if (state == AVEngineKit.CallState.Idle) {
+                if (getActivity() == null) {
+                    return;
+                }
                 getActivity().finish();
                 getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
