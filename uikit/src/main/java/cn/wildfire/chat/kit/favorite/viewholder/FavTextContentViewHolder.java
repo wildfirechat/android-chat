@@ -8,9 +8,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 
 public class FavTextContentViewHolder extends FavContentViewHolder {
@@ -22,8 +25,13 @@ public class FavTextContentViewHolder extends FavContentViewHolder {
     }
 
     @Override
-    public void bind(FavoriteItem item) {
-        super.bind(item);
+    public void bind(Fragment fragment, FavoriteItem item) {
+        super.bind(fragment, item);
         favTextContentTextView.setText(item.getTitle());
+    }
+
+    @OnClick(R2.id.favTextContentTextView)
+    void showFavText() {
+        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "收藏内容", favoriteItem.getTitle());
     }
 }

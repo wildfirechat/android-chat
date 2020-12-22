@@ -21,11 +21,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -44,7 +44,6 @@ public class GroupInfoActivity extends WfcBaseActivity {
     Button actionButton;
 
     private MaterialDialog dialog;
-    private int actionCount = 0;
 
     @Override
     protected void afterViews() {
@@ -64,7 +63,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
 
         groupInfo = groupViewModel.getGroupInfo(groupId, true);
 
-        UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userId = userViewModel.getUserId();
 
         groupViewModel.groupMembersUpdateLiveData().observe(this, members -> {
@@ -81,9 +80,8 @@ public class GroupInfoActivity extends WfcBaseActivity {
         });
 
         List<GroupMember> groupMembers = groupViewModel.getGroupMembers(groupId, true);
-        if (groupMembers == null || groupMembers.isEmpty()) {
+        if (groupMembers == null || (groupMembers.isEmpty() && groupInfo.memberCount > 0)) {
             showLoading();
-
         } else {
             for (GroupMember member : groupMembers) {
                 if (member.type != GroupMember.GroupMemberType.Removed && member.memberId.equals(userId)) {
@@ -104,11 +102,10 @@ public class GroupInfoActivity extends WfcBaseActivity {
     }
 
     private void showLoading() {
-        actionCount++;
         if (dialog == null) {
             dialog = new MaterialDialog.Builder(this)
-                    .progress(true, 100)
-                    .build();
+                .progress(true, 100)
+                .build();
             dialog.show();
         }
     }
@@ -117,11 +114,8 @@ public class GroupInfoActivity extends WfcBaseActivity {
         if (dialog == null || !dialog.isShowing()) {
             return;
         }
-        actionCount--;
-        if (actionCount <= 0) {
-            dialog.dismiss();
-            dialog = null;
-        }
+        dialog.dismiss();
+        dialog = null;
     }
 
     private void showGroupInfo(GroupInfo groupInfo) {
@@ -129,9 +123,9 @@ public class GroupInfoActivity extends WfcBaseActivity {
             return;
         }
         GlideApp.with(this)
-                .load(groupInfo.portrait)
-                .placeholder(R.mipmap.ic_group_cheat)
-                .into(groupPortraitImageView);
+            .load(groupInfo.portrait)
+            .placeholder(R.mipmap.ic_group_cheat)
+            .into(groupPortraitImageView);
         groupNameTextView.setText(groupInfo.name);
     }
 

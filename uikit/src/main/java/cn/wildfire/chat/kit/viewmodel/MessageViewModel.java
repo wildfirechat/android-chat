@@ -215,7 +215,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
             ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
         }
 
-        File file = mediaMessageContentFile(message);
+        File file = mediaMessageContentFile(message.message);
 
         if (file == null) {
             return;
@@ -357,11 +357,11 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         });
     }
 
-    public File mediaMessageContentFile(UiMessage message) {
+    public File mediaMessageContentFile(Message message) {
 
         String dir = null;
         String name = null;
-        MessageContent content = message.message.content;
+        MessageContent content = message.content;
         if (!(content instanceof MediaMessageContent)) {
             return null;
         }
@@ -371,15 +371,15 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
 
         switch (((MediaMessageContent) content).mediaType) {
             case VOICE:
-                name = message.message.messageUid + ".mp3";
+                name = message.messageUid + ".mp3";
                 dir = Config.AUDIO_SAVE_DIR;
                 break;
             case FILE:
-                name = message.message.messageUid + "-" + ((FileMessageContent) message.message.content).getName();
+                name = message.messageUid + "-" + ((FileMessageContent) message.content).getName();
                 dir = Config.FILE_SAVE_DIR;
                 break;
             case VIDEO:
-                name = message.message.messageUid + ".mp4";
+                name = message.messageUid + ".mp4";
                 dir = Config.VIDEO_SAVE_DIR;
                 break;
             default:

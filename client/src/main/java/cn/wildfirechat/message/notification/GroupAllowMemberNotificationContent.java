@@ -57,7 +57,7 @@ public class GroupAllowMemberNotificationContent extends NotificationMessageCont
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);

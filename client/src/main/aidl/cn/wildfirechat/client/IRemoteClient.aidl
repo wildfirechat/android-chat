@@ -61,6 +61,8 @@ interface IRemoteClient {
     void setForeground(in int isForeground);
     void onNetworkChange();
     void setServerAddress(in String host);
+    void setBackupAddressStrategy(in int strategy);
+    void setBackupAddress(in String host, in int port);
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
     oneway void setOnConnectionStatusChangeListener(in IOnConnectionStatusChangeListener listener);
@@ -92,6 +94,7 @@ interface IRemoteClient {
     oneway void getMessagesInStatusAsync(in Conversation conversation, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesExAsync(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesEx2Async(in int[] conversationTypes, in int[] lines, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void getMessagesInTypesAndTimestampAsync(in Conversation conversation, in int[] contentTypes, in long timestamp, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
 
     oneway void getUserMessages(in String userId, in Conversation conversation, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
     oneway void getUserMessagesEx(in String userId, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
@@ -100,6 +103,8 @@ interface IRemoteClient {
     oneway void getConversationFileRecords(in Conversation conversation, in String fromUser, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void getMyFileRecords(in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void deleteFileRecord(in long messageUid, in IGeneralCallback callback);
+    oneway void searchFileRecords(in String keyword, in Conversation conversation, in String fromUser, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
+    oneway void searchMyFileRecords(in String keyword, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
 
     Message getMessage(in long messageId);
     Message getMessageByUid(in long messageUid);

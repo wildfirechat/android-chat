@@ -5,6 +5,7 @@
 package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +14,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_ALIAS;
@@ -25,6 +27,7 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY
 public class ModifyGroupAliasNotificationContent extends GroupNotificationMessageContent {
     public String operateUser;
     public String alias;
+    public String memberId;
 
     public ModifyGroupAliasNotificationContent() {
     }
@@ -33,11 +36,32 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
     public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
-            sb.append("您");
+            sb.append("你");
         } else {
-            sb.append(ChatManager.Instance().getUserDisplayName(operateUser));
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(operateUser, groupId, false);
+            if (!TextUtils.isEmpty(memberId) && !TextUtils.isEmpty(userInfo.groupAlias)) {
+                sb.append(userInfo.groupAlias);
+            } else if (!TextUtils.isEmpty(userInfo.friendAlias)) {
+                sb.append(userInfo.friendAlias);
+            } else if (!TextUtils.isEmpty(userInfo.displayName)) {
+                sb.append(userInfo.displayName);
+            } else {
+                sb.append(operateUser);
+            }
         }
-        sb.append("修改群名片为");
+        sb.append("修改");
+        if (!TextUtils.isEmpty(memberId)) {
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(memberId, false);
+            if (!TextUtils.isEmpty(userInfo.friendAlias)) {
+                sb.append(userInfo.friendAlias);
+            } else if (!TextUtils.isEmpty(userInfo.displayName)) {
+                sb.append(userInfo.displayName);
+            } else {
+                sb.append(memberId);
+            }
+            sb.append("的");
+        }
+        sb.append("群昵称为");
         sb.append(alias);
 
         return sb.toString();
@@ -45,13 +69,16 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
             objWrite.put("o", operateUser);
             objWrite.put("n", alias);
+            if (!TextUtils.isEmpty(memberId)) {
+                objWrite.put("m", memberId);
+            }
 
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
@@ -68,6 +95,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
                 groupId = jsonObject.optString("g");
                 operateUser = jsonObject.optString("o");
                 alias = jsonObject.optString("n");
+                memberId = jsonObject.optString("m");
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -38,6 +38,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -66,17 +67,54 @@ import cn.wildfirechat.client.IOnUserInfoUpdateListener;
 import cn.wildfirechat.client.IRemoteClient;
 import cn.wildfirechat.client.IUploadMediaCallback;
 import cn.wildfirechat.client.NotInitializedExecption;
+import cn.wildfirechat.message.CallStartMessageContent;
+import cn.wildfirechat.message.CardMessageContent;
+import cn.wildfirechat.message.CompositeMessageContent;
+import cn.wildfirechat.message.ConferenceInviteMessageContent;
+import cn.wildfirechat.message.FileMessageContent;
+import cn.wildfirechat.message.ImageMessageContent;
+import cn.wildfirechat.message.LinkMessageContent;
+import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
+import cn.wildfirechat.message.PTextMessageContent;
+import cn.wildfirechat.message.SoundMessageContent;
+import cn.wildfirechat.message.StickerMessageContent;
+import cn.wildfirechat.message.TextMessageContent;
+import cn.wildfirechat.message.TypingMessageContent;
+import cn.wildfirechat.message.UnknownMessageContent;
+import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
+import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
+import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
+import cn.wildfirechat.message.notification.CreateGroupNotificationContent;
+import cn.wildfirechat.message.notification.DeleteMessageContent;
 import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
+import cn.wildfirechat.message.notification.FriendAddedMessageContent;
+import cn.wildfirechat.message.notification.FriendGreetingMessageContent;
+import cn.wildfirechat.message.notification.GroupAllowMemberNotificationContent;
+import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
+import cn.wildfirechat.message.notification.GroupMuteMemberNotificationContent;
+import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
+import cn.wildfirechat.message.notification.GroupPrivateChatNotificationContent;
+import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
+import cn.wildfirechat.message.notification.KickoffGroupMemberVisibleNotificationContent;
+import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
+import cn.wildfirechat.message.notification.NotificationMessageContent;
+import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
+import cn.wildfirechat.message.notification.QuitGroupVisibleNotificationContent;
+import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.message.notification.TipNotificationContent;
+import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -123,7 +161,7 @@ public class ChatManager {
     private String deviceToken;
     private String clientId;
     private int pushType;
-    private List<String> msgList = new ArrayList<>();
+    private Map<Integer, Class<? extends MessageContent>> messageContentMap = new HashMap<>();
 
     private UserSource userSource;
 
@@ -131,6 +169,10 @@ public class ChatManager {
     private int connectionStatus;
     private int receiptStatus = -1; // 1, enable
     private int userReceiptStatus = -1; //1, enable
+
+    private int backupAddressStrategy = 1;
+    private String backupAddressHost = null;
+    private int backupAddressPort = 80;
 
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
@@ -224,7 +266,7 @@ public class ChatManager {
             // TODO: Already initialized
             return;
         }
-        if(TextUtils.isEmpty(imServerHost)){
+        if (TextUtils.isEmpty(imServerHost)) {
             throw new IllegalArgumentException("imServerHost must be empty");
         }
         gContext = context.getApplicationContext();
@@ -271,6 +313,7 @@ public class ChatManager {
         INST.token = sp.getString("token", null);
 
         INST.cleanLogFiles();
+        INST.registerCoreMessageContents();
     }
 
     public Context getApplicationContext() {
@@ -1277,36 +1320,49 @@ public class ChatManager {
     }
 
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
+        String className = msgContentClazz.getName();
         try {
             Constructor c = msgContentClazz.getConstructor();
             if (c.getModifiers() != Modifier.PUBLIC) {
-                throw new IllegalArgumentException("the default constructor of your custom messageContent class should be public");
+                throw new IllegalArgumentException(className + ", the default constructor of your custom messageContent class should be public，自定义消息的构造函数必须是public的，请参考TextMessageContent.java");
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("custom messageContent class must have a default constructor");
+            throw new IllegalArgumentException(className + ", custom messageContent class must have a default constructor，自定义消息必须要有一个默认的无参构造函数，请参考TextMessageContent.java");
         }
+
+        // 建议打开，以便对自定义消息的合法性进行检查
+//        try {
+//            msgContentClazz.getDeclaredMethod("encode");
+//        } catch (NoSuchMethodException e) {
+//            e.printStackTrace();
+//            throw new IllegalArgumentException(className + ", custom messageContent class must override encode，自定义消息必须覆盖encode方法，并调用super.encode()，请参考TextMessageContent.java");
+//        }
 
         try {
             Field creator = msgContentClazz.getDeclaredField("CREATOR");
             if ((creator.getModifiers() & (Modifier.PUBLIC | Modifier.STATIC)) == 0) {
-                throw new IllegalArgumentException("custom messageContent class implements Parcelable but does not provide a CREATOR field");
+                throw new IllegalArgumentException(className + ", custom messageContent class implements Parcelable but does not provide a CREATOR field，自定义消息必须实现Parcelable接口，并提供一个CREATOR，请参考TextMessageContent.java");
             }
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("custom messageContent class implements Parcelable but does not provide a CREATOR field");
+            throw new IllegalArgumentException(className + ", custom messageContent class implements Parcelable but does not provide a CREATOR field，自定义消息必须实现Parcelable接口，并且提供一个CREATOR，请参考TextMessageContent.java");
         }
 
         try {
             msgContentClazz.getDeclaredMethod("writeToParcel", Parcel.class, int.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("custom messageContent class must override writeToParcel");
+            throw new IllegalArgumentException(className + ", custom messageContent class must override writeToParcel，自定义消息必须覆盖writeToParcel方法，请参考TextMessageContent.java");
         }
 
         ContentTag tag = msgContentClazz.getAnnotation(ContentTag.class);
         if (tag == null) {
-            throw new IllegalArgumentException("custom messageContent class must have a ContentTag annotation");
+            throw new IllegalArgumentException(className + ", custom messageContent class must have a ContentTag annotation，自定义消息类必须包含ContentTag注解，请参考TextMessageContent.java");
+        }
+
+        if (tag.type() == 0 && !msgContentClazz.equals(UnknownMessageContent.class)) {
+            throw new IllegalArgumentException(className + ", custom messageContent class's ContentTag annotation must set the type value，自定消息类的ContentTag注解，type值不能为默认，请参考TextMessageContent.java");
         }
     }
 
@@ -1318,7 +1374,8 @@ public class ChatManager {
     public void registerMessageContent(Class<? extends MessageContent> msgContentCls) {
 
         validateMessageContent(msgContentCls);
-        msgList.add(msgContentCls.getName());
+        ContentTag tag = (ContentTag) msgContentCls.getAnnotation(ContentTag.class);
+        messageContentMap.put(tag.type(), msgContentCls);
         if (!checkRemoteService()) {
             return;
         }
@@ -1360,6 +1417,9 @@ public class ChatManager {
 
         try {
             message = mClient.insertMessage(message, notify);
+            if (notify) {
+                onReceiveMessage(Collections.singletonList(message), false);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -1481,6 +1541,45 @@ public class ChatManager {
             }
             this.userId = null;
             this.token = null;
+        }
+    }
+    /**
+     * 设置备选服务地址，仅专业版支持，一般用于政企单位内外网两种网络环境。
+     *
+     * @param strategy 网络策略，0是复合连接；1是使用主要网络；2使用备选网络
+     */
+    public void setBackupAddressStrategy(int strategy) {
+        backupAddressStrategy = strategy;
+
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setBackupAddressStrategy(strategy);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 设置备选服务地址，仅专业版支持，一般用于政企单位内外网两种网络环境。
+     *
+     * @param host 用备选网络ip
+     * @param port 用备选网络端口
+     */
+    public void setBackupAddress(String host, int port) {
+        backupAddressHost = host;
+        backupAddressPort = port;
+
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setBackupAddress(host, port);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -2144,6 +2243,44 @@ public class ChatManager {
     }
 
     /**
+     * 按照时间戳获取会话消息
+     *
+     * @param conversation 会话
+     * @param contentTypes 消息类型列表
+     * @param timestamp    时间戳
+     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count        获取消息条数
+     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getMessagesByTimestamp(Conversation conversation, List<Integer> contentTypes, long timestamp, boolean before, int count, String withUser, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getMessagesInTypesAndTimestampAsync(conversation, convertIntegers(contentTypes), timestamp, before, count, withUser, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
      * 获取会话消息
      *
      * @param userId       userId
@@ -2381,22 +2518,75 @@ public class ChatManager {
         }
     }
 
+    public void searchMyFileRecords(String keyword, long beforeMessageId, int count, GetFileRecordCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
 
-//    - (void)getConversationFiles:(WFCCConversation *)conversation
-//    beforeMessageUid:(long long)messageUid
-//    count:(int)count
-//    success:(void(^)(NSArray<WFCCFileRecord *> *files))successBlock
-//    error:(void(^)(int error_code))errorBlock;
-//
-//- (void)getMyFiles:(long long)beforeMessageUid
-//    count:(int)count
-//    success:(void(^)(NSArray<WFCCFileRecord *> *files))successBlock
-//    error:(void(^)(int error_code))errorBlock;
-//
-//- (void)deleteFileRecord:(long long)messageUid
-//    success:(void(^)(void))successBlock
-//    error:(void(^)(int error_code))errorBlock;
+        try {
+            mClient.searchMyFileRecords(keyword, beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+                @Override
+                public void onSuccess(List<FileRecord> messages) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess(messages);
+                        });
+                    }
+                }
 
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 搜索远程文件记录
+     *
+     * @param keyword         关键字
+     * @param conversation    会话，如果为空则获取当前用户所有收到和发出的文件记录
+     * @param fromUser        文件发送用户，如果为空则获取该用户发出的文件记录
+     * @param beforeMessageId 起始消息的消息id
+     * @param count           获取消息的条数
+     * @param callback
+     */
+    public void searchFileRecords(String keyword, Conversation conversation, String fromUser, long beforeMessageId, int count, GetFileRecordCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.searchFileRecords(keyword, conversation, fromUser, beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+                @Override
+                public void onSuccess(List<FileRecord> messages) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess(messages);
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 根据消息id，获取消息
@@ -4955,6 +5145,7 @@ public class ChatManager {
                             }
                         });
                     }
+                    onSettingUpdated();
                 }
 
                 @Override
@@ -5314,9 +5505,9 @@ public class ChatManager {
     /**
      * 设置免打扰时间段
      *
-     * @param startMins  起始时间，UTC时间0点起的的分钟数，需要注意与本地时间转换。
-     * @param endMins    结束时间，UTC时间0点起的的分钟数，需要注意与本地时间转换。如果小于起始时间表示是隔夜。
-     * @param callback   处理结果回调
+     * @param startMins 起始时间，UTC时间0点起的的分钟数，需要注意与本地时间转换。
+     * @param endMins   结束时间，UTC时间0点起的的分钟数，需要注意与本地时间转换。如果小于起始时间表示是隔夜。
+     * @param callback  处理结果回调
      */
     public void setNoDisturbingTimes(int startMins, int endMins, final GeneralCallback callback) {
         if (!checkRemoteService()) {
@@ -5350,7 +5541,7 @@ public class ChatManager {
     /**
      * 取消免打扰时间
      *
-     * @param callback   处理结果回调
+     * @param callback 处理结果回调
      */
     public void clearNoDisturbingTimes(final GeneralCallback callback) {
         if (!checkRemoteService()) {
@@ -5697,6 +5888,43 @@ public class ChatManager {
         }
     }
 
+    public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
+
+        MessageContent content = null;
+        try {
+            content = messageContentMap.get(payload.contentType).newInstance();
+            if (content instanceof CompositeMessageContent) {
+                ((CompositeMessageContent) content).decode(payload, this);
+            } else {
+                content.decode(payload);
+            }
+            if (content instanceof NotificationMessageContent) {
+                if (content instanceof RecallMessageContent) {
+                    RecallMessageContent recallMessageContent = (RecallMessageContent) content;
+                    if (recallMessageContent.getOperatorId().equals(userId)) {
+                        ((NotificationMessageContent) content).fromSelf = true;
+                    }
+                } else if (from.equals(userId)) {
+                    ((NotificationMessageContent) content).fromSelf = true;
+                }
+            }
+            content.extra = payload.extra;
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.contentType);
+            e.printStackTrace();
+            if (content == null) {
+                return null;
+            }
+            if (content.getPersistFlag() == PersistFlag.Persist || content.getPersistFlag() == PersistFlag.Persist_And_Count) {
+                content = new UnknownMessageContent();
+                ((UnknownMessageContent) content).setOrignalPayload(payload);
+            } else {
+                return null;
+            }
+        }
+        return content;
+    }
+
     private boolean checkRemoteService() {
         if (INST != null) {
             if (mClient != null) {
@@ -5737,9 +5965,13 @@ public class ChatManager {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             try {
+                mClient.setBackupAddressStrategy(backupAddressStrategy);
+                if(!TextUtils.isEmpty(backupAddressHost))
+                    mClient.setBackupAddress(backupAddressHost, backupAddressPort);
+
                 mClient.setServerAddress(SERVER_HOST);
-                for (String msgName : msgList) {
-                    mClient.registerMessageContent(msgName);
+                for (Class clazz : messageContentMap.values()) {
+                    mClient.registerMessageContent(clazz.getName());
                 }
 
                 if (startLog) {
@@ -5860,6 +6092,59 @@ public class ChatManager {
             });
         }
     };
+
+    private void registerCoreMessageContents() {
+        registerMessageContent(AddGroupMemberNotificationContent.class);
+        registerMessageContent(CallStartMessageContent.class);
+        registerMessageContent(ConferenceInviteMessageContent.class);
+        registerMessageContent(ChangeGroupNameNotificationContent.class);
+        registerMessageContent(ChangeGroupPortraitNotificationContent.class);
+        registerMessageContent(CreateGroupNotificationContent.class);
+        registerMessageContent(DismissGroupNotificationContent.class);
+        registerMessageContent(FileMessageContent.class);
+        registerMessageContent(ImageMessageContent.class);
+        registerMessageContent(LinkMessageContent.class);
+        registerMessageContent(KickoffGroupMemberNotificationContent.class);
+        registerMessageContent(LocationMessageContent.class);
+        registerMessageContent(ModifyGroupAliasNotificationContent.class);
+        registerMessageContent(QuitGroupNotificationContent.class);
+        registerMessageContent(RecallMessageContent.class);
+        registerMessageContent(DeleteMessageContent.class);
+        registerMessageContent(SoundMessageContent.class);
+        registerMessageContent(StickerMessageContent.class);
+        registerMessageContent(TextMessageContent.class);
+        registerMessageContent(PCLoginRequestMessageContent.class);
+        registerMessageContent(PTextMessageContent.class);
+        registerMessageContent(TipNotificationContent.class);
+        registerMessageContent(FriendAddedMessageContent.class);
+        registerMessageContent(FriendGreetingMessageContent.class);
+        registerMessageContent(TransferGroupOwnerNotificationContent.class);
+        registerMessageContent(VideoMessageContent.class);
+        registerMessageContent(TypingMessageContent.class);
+        registerMessageContent(GroupMuteNotificationContent.class);
+        registerMessageContent(GroupJoinTypeNotificationContent.class);
+        registerMessageContent(GroupPrivateChatNotificationContent.class);
+        registerMessageContent(GroupSetManagerNotificationContent.class);
+        registerMessageContent(GroupMuteMemberNotificationContent.class);
+        registerMessageContent(GroupAllowMemberNotificationContent.class);
+        registerMessageContent(KickoffGroupMemberVisibleNotificationContent.class);
+        registerMessageContent(QuitGroupVisibleNotificationContent.class);
+        registerMessageContent(CardMessageContent.class);
+        registerMessageContent(CompositeMessageContent.class);
+    }
+
+    private MessageContent contentOfType(int type) {
+        Class<? extends MessageContent> cls = messageContentMap.get(type);
+        if (cls != null) {
+            try {
+                return cls.newInstance();
+            } catch (Exception e) {
+                android.util.Log.e(TAG, "create message content instance failed, fall back to UnknownMessageContent, the message content class must have a default constructor. " + type);
+                e.printStackTrace();
+            }
+        }
+        return new UnknownMessageContent();
+    }
 
     private static int[] convertIntegers(List<Integer> integers) {
         int[] ret = new int[integers.size()];

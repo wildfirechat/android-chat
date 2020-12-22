@@ -56,7 +56,7 @@ public class GroupMuteMemberNotificationContent extends NotificationMessageConte
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
