@@ -107,6 +107,9 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             connectedActionContainer.setVisibility(View.VISIBLE);
             inviteeInfoContainer.setVisibility(View.GONE);
         } else if (state == AVEngineKit.CallState.Idle) {
+            if (getActivity() == null) {
+                return;
+            }
             getActivity().finish();
             getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
