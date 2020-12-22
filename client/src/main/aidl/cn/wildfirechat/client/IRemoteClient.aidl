@@ -61,6 +61,8 @@ interface IRemoteClient {
     void setForeground(in int isForeground);
     void onNetworkChange();
     void setServerAddress(in String host);
+    void setBackupAddressStrategy(in int strategy);
+    void setBackupAddress(in String host, in int port);
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
     oneway void setOnConnectionStatusChangeListener(in IOnConnectionStatusChangeListener listener);
