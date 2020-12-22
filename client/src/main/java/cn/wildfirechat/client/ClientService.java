@@ -258,6 +258,18 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setBackupAddressStrategy(int strategy) throws RemoteException {
+            ProtoLogic.setBackupAddressStrategy(strategy);
+        }
+
+        @Override
+        public void setBackupAddress(String host, int port) throws RemoteException {
+            if(!TextUtils.isEmpty(host)) {
+                ProtoLogic.setBackupAddress(host, port);
+            }
+        }
+
+        @Override
         public void registerMessageContent(String msgContentCls) throws RemoteException {
             try {
                 Class cls = Class.forName(msgContentCls);

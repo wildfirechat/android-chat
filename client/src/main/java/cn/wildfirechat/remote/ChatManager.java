@@ -170,6 +170,10 @@ public class ChatManager {
     private int receiptStatus = -1; // 1, enable
     private int userReceiptStatus = -1; //1, enable
 
+    private int backupAddressStrategy = 1;
+    private String backupAddressHost = null;
+    private int backupAddressPort = 80;
+
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
     private List<OnConnectionStatusChangeListener> onConnectionStatusChangeListeners = new ArrayList<>();
@@ -1537,6 +1541,45 @@ public class ChatManager {
             }
             this.userId = null;
             this.token = null;
+        }
+    }
+    /**
+     * 设置备选服务地址，仅专业版支持，一般用于政企单位内外网两种网络环境。
+     *
+     * @param strategy 网络策略，0是复合连接；1是使用主要网络；2使用备选网络
+     */
+    public void setBackupAddressStrategy(int strategy) {
+        backupAddressStrategy = strategy;
+
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setBackupAddressStrategy(strategy);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 设置备选服务地址，仅专业版支持，一般用于政企单位内外网两种网络环境。
+     *
+     * @param host 用备选网络ip
+     * @param port 用备选网络端口
+     */
+    public void setBackupAddress(String host, int port) {
+        backupAddressHost = host;
+        backupAddressPort = port;
+
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setBackupAddress(host, port);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -5922,6 +5965,10 @@ public class ChatManager {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             try {
+                mClient.setBackupAddressStrategy(backupAddressStrategy);
+                if(!TextUtils.isEmpty(backupAddressHost))
+                    mClient.setBackupAddress(backupAddressHost, backupAddressPort);
+
                 mClient.setServerAddress(SERVER_HOST);
                 for (Class clazz : messageContentMap.values()) {
                     mClient.registerMessageContent(clazz.getName());
