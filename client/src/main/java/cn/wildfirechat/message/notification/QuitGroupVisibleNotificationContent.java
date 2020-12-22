@@ -15,28 +15,28 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_CHANGE_GROUP_PORTRAIT;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_QUIT_GROUP_VISIABLE;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
  */
 
-@ContentTag(type = ContentType_CHANGE_GROUP_PORTRAIT, flag = PersistFlag.Persist)
-public class ChangeGroupPortraitNotificationContent extends GroupNotificationMessageContent {
-    public String operateUser;
+@ContentTag(type = ContentType_QUIT_GROUP_VISIABLE, flag = PersistFlag.Persist)
+public class QuitGroupVisibleNotificationContent extends GroupNotificationMessageContent {
+    public String operator;
 
-    public ChangeGroupPortraitNotificationContent() {
+    public QuitGroupVisibleNotificationContent() {
     }
 
     @Override
     public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
-            sb.append("您");
+            sb.append("您退出了群组 ");
         } else {
-            sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, operateUser));
+            sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, operator));
+            sb.append("退出了群组 ");
         }
-        sb.append("更新了群头像");
 
         return sb.toString();
     }
@@ -48,27 +48,27 @@ public class ChangeGroupPortraitNotificationContent extends GroupNotificationMes
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
-            objWrite.put("o", operateUser);
+            objWrite.put("o", operator);
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return payload;
     }
 
     @Override
     public void decode(MessagePayload payload) {
         try {
-            if (payload.binaryContent != null) {
+            if (payload.content != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 groupId = jsonObject.optString("g");
-                operateUser = jsonObject.optString("o");
+                operator = jsonObject.optString("o");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public int describeContents() {
@@ -78,23 +78,23 @@ public class ChangeGroupPortraitNotificationContent extends GroupNotificationMes
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(this.operateUser);
+        dest.writeString(this.operator);
     }
 
-    protected ChangeGroupPortraitNotificationContent(Parcel in) {
+    protected QuitGroupVisibleNotificationContent(Parcel in) {
         super(in);
-        this.operateUser = in.readString();
+        this.operator = in.readString();
     }
 
-    public static final Creator<ChangeGroupPortraitNotificationContent> CREATOR = new Creator<ChangeGroupPortraitNotificationContent>() {
+    public static final Creator<QuitGroupVisibleNotificationContent> CREATOR = new Creator<QuitGroupVisibleNotificationContent>() {
         @Override
-        public ChangeGroupPortraitNotificationContent createFromParcel(Parcel source) {
-            return new ChangeGroupPortraitNotificationContent(source);
+        public QuitGroupVisibleNotificationContent createFromParcel(Parcel source) {
+            return new QuitGroupVisibleNotificationContent(source);
         }
 
         @Override
-        public ChangeGroupPortraitNotificationContent[] newArray(int size) {
-            return new ChangeGroupPortraitNotificationContent[size];
+        public QuitGroupVisibleNotificationContent[] newArray(int size) {
+            return new QuitGroupVisibleNotificationContent[size];
         }
     };
 }

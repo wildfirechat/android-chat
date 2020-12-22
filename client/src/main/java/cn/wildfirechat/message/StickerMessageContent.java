@@ -25,6 +25,7 @@ public class StickerMessageContent extends MediaMessageContent {
     public int height;
 
     public StickerMessageContent() {
+        this.mediaType = MessageContentMediaType.STICKER;
     }
 
     public StickerMessageContent(String localPath) {

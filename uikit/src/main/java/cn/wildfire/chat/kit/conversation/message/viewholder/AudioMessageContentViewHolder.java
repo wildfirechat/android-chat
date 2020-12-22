@@ -97,7 +97,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
     @OnClick(R2.id.audioContentLayout)
     public void onClick(View view) {
-        File file = messageViewModel.mediaMessageContentFile(message);
+        File file = messageViewModel.mediaMessageContentFile(message.message);
         if (file == null) {
             return;
         }

@@ -11,7 +11,6 @@ import android.text.Html;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,18 +18,14 @@ import com.lqr.emoji.MoonUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R2;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
-import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.widget.LinkClickListener;
 import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -103,9 +98,9 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
                 WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", ((TextMessageContent) messageContent).getContent());
             } else {
                 if (messageContent instanceof VideoMessageContent) {
-                    MMPreviewActivity.startActivity(fragment.getActivity(), (VideoMessageContent) messageContent);
+                    MMPreviewActivity.previewVideo(fragment.getActivity(), (VideoMessageContent) messageContent);
                 } else if (messageContent instanceof ImageMessageContent) {
-                    MMPreviewActivity.startActivity(fragment.getActivity(), (ImageMessageContent) messageContent);
+                    MMPreviewActivity.previewImage(fragment.getActivity(), (ImageMessageContent) messageContent);
                 }
             }
         }
@@ -120,24 +115,6 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         TextMessageContent content = (TextMessageContent) message.message.content;
         ClipData clipData = ClipData.newPlainText("messageContent", content.getContent());
         clipboardManager.setPrimaryClip(clipData);
-    }
-
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FAV, confirm = false, priority = 12)
-    public void fav(View itemView, UiMessage message) {
-        AppServiceProvider appServiceProvider = WfcUIKit.getWfcUIKit().getAppServiceProvider();
-        FavoriteItem favoriteItem = FavoriteItem.fromMessage(message.message);
-
-        appServiceProvider.addFavoriteItem(favoriteItem, new SimpleCallback<Void>() {
-            @Override
-            public void onUiSuccess(Void aVoid) {
-                Toast.makeText(fragment.getContext(), "fav ok", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onUiFailure(int code, String msg) {
-                Toast.makeText(fragment.getContext(), "fav error: " + code, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
 

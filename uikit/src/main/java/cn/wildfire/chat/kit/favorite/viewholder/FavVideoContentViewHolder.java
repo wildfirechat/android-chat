@@ -17,11 +17,11 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 
-public class FavImageContentViewHolder extends FavContentViewHolder {
+public class FavVideoContentViewHolder extends FavContentViewHolder {
     @BindView(R2.id.favImageContentImageView)
     ImageView imageView;
 
-    public FavImageContentViewHolder(@NonNull View itemView) {
+    public FavVideoContentViewHolder(@NonNull View itemView) {
         super(itemView);
     }
 
@@ -34,6 +34,6 @@ public class FavImageContentViewHolder extends FavContentViewHolder {
 
     @OnClick(R2.id.favImageContentImageView)
     void showFavImage() {
-        MMPreviewActivity.previewImage(fragment.getActivity(), favoriteItem.getUrl());
+        MMPreviewActivity.previewVideo(fragment.getActivity(), favoriteItem.getUrl());
     }
 }

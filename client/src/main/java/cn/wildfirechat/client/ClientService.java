@@ -44,50 +44,17 @@ import java.util.Locale;
 import java.util.Map;
 
 import cn.wildfirechat.ErrorCode;
-import cn.wildfirechat.message.CallStartMessageContent;
-import cn.wildfirechat.message.CardMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
-import cn.wildfirechat.message.ConferenceInviteMessageContent;
-import cn.wildfirechat.message.FileMessageContent;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.LinkMessageContent;
-import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.PTextMessageContent;
-import cn.wildfirechat.message.SoundMessageContent;
-import cn.wildfirechat.message.StickerMessageContent;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
-import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
-import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
-import cn.wildfirechat.message.notification.CreateGroupNotificationContent;
-import cn.wildfirechat.message.notification.DeleteMessageContent;
-import cn.wildfirechat.message.notification.DismissGroupNotificationContent;
-import cn.wildfirechat.message.notification.FriendAddedMessageContent;
-import cn.wildfirechat.message.notification.FriendGreetingMessageContent;
-import cn.wildfirechat.message.notification.GroupAllowMemberNotificationContent;
-import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
-import cn.wildfirechat.message.notification.GroupMuteMemberNotificationContent;
-import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
-import cn.wildfirechat.message.notification.GroupPrivateChatNotificationContent;
-import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
-import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
-import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
-import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
-import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
-import cn.wildfirechat.message.notification.TipNotificationContent;
-import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -291,6 +258,18 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setBackupAddressStrategy(int strategy) throws RemoteException {
+            ProtoLogic.setBackupAddressStrategy(strategy);
+        }
+
+        @Override
+        public void setBackupAddress(String host, int port) throws RemoteException {
+            if(!TextUtils.isEmpty(host)) {
+                ProtoLogic.setBackupAddress(host, port);
+            }
+        }
+
+        @Override
         public void registerMessageContent(String msgContentCls) throws RemoteException {
             try {
                 Class cls = Class.forName(msgContentCls);
@@ -332,8 +311,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             protoMessage.setFrom(msg.sender);
             protoMessage.setTos(msg.toUsers);
             MessagePayload payload = msg.content.encode();
-            payload.extra = msg.content.extra;
-            payload.contentType = msg.content.getClass().getAnnotation(ContentTag.class).type();
             protoMessage.setContent(payload.toProtoContent());
             protoMessage.setMessageId(msg.messageId);
             protoMessage.setDirection(msg.direction.ordinal());
@@ -548,6 +525,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void getMessagesInTypesAndTimestampAsync(Conversation conversation, int[] contentTypes, long timestamp, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesInTypesAndTimestamp(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, timestamp, before, count, withUser);
+            safeMessagesCallback(protoMessages, before, callback);
+        }
+
+        @Override
         public void getUserMessages(String userId, Conversation conversation, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getUserMessages(userId, conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count);
             safeMessagesCallback(protoMessages, before, callback);
@@ -659,6 +642,52 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 public void onSuccess() {
                     try {
                         callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void searchFileRecords(String keyword, Conversation conversation, String fromUser, long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.searchConversationFileRecords(keyword, conversation == null ? 0 : conversation.type.getValue(), conversation == null ? "" : conversation.target, conversation == null ? 0 : conversation.line, fromUser, beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+                @Override
+                public void onSuccess(ProtoFileRecord[] protoFileRecords) {
+                    try {
+                        callback.onSuccess(convertProtoFileRecord(protoFileRecords));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void searchMyFileRecords(String keyword, long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.searchMyFileRecords(keyword, beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+                @Override
+                public void onSuccess(ProtoFileRecord[] protoFileRecords) {
+                    try {
+                        callback.onSuccess(convertProtoFileRecord(protoFileRecords));
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -2246,7 +2275,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         return out;
     }
 
-    public MessageContent messsageContentFromPayload(MessagePayload payload, String from) {
+    public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
 
         MessageContent content = contentOfType(payload.contentType);
         try {
@@ -2291,7 +2320,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         msg.content = contentOfType(protoMessage.getContent().getType());
         MessagePayload payload = new MessagePayload(protoMessage.getContent());
-        msg.content = messsageContentFromPayload(payload, msg.sender);
+        msg.content = messageContentFromPayload(payload, msg.sender);
 
         msg.direction = MessageDirection.values()[protoMessage.getDirection()];
         msg.status = MessageStatus.status(protoMessage.getStatus());
@@ -2331,45 +2360,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             registerReceiver(mConnectionReceiver, filter);
         }
 
-        try {
-            mBinder.registerMessageContent(AddGroupMemberNotificationContent.class.getName());
-            mBinder.registerMessageContent(CallStartMessageContent.class.getName());
-            mBinder.registerMessageContent(ConferenceInviteMessageContent.class.getName());
-            mBinder.registerMessageContent(ChangeGroupNameNotificationContent.class.getName());
-            mBinder.registerMessageContent(ChangeGroupPortraitNotificationContent.class.getName());
-            mBinder.registerMessageContent(CreateGroupNotificationContent.class.getName());
-            mBinder.registerMessageContent(DismissGroupNotificationContent.class.getName());
-            mBinder.registerMessageContent(FileMessageContent.class.getName());
-            mBinder.registerMessageContent(ImageMessageContent.class.getName());
-            mBinder.registerMessageContent(LinkMessageContent.class.getName());
-            mBinder.registerMessageContent(KickoffGroupMemberNotificationContent.class.getName());
-            mBinder.registerMessageContent(LocationMessageContent.class.getName());
-            mBinder.registerMessageContent(ModifyGroupAliasNotificationContent.class.getName());
-            mBinder.registerMessageContent(QuitGroupNotificationContent.class.getName());
-            mBinder.registerMessageContent(RecallMessageContent.class.getName());
-            mBinder.registerMessageContent(DeleteMessageContent.class.getName());
-            mBinder.registerMessageContent(SoundMessageContent.class.getName());
-            mBinder.registerMessageContent(StickerMessageContent.class.getName());
-            mBinder.registerMessageContent(TextMessageContent.class.getName());
-            mBinder.registerMessageContent(PCLoginRequestMessageContent.class.getName());
-            mBinder.registerMessageContent(PTextMessageContent.class.getName());
-            mBinder.registerMessageContent(TipNotificationContent.class.getName());
-            mBinder.registerMessageContent(FriendAddedMessageContent.class.getName());
-            mBinder.registerMessageContent(FriendGreetingMessageContent.class.getName());
-            mBinder.registerMessageContent(TransferGroupOwnerNotificationContent.class.getName());
-            mBinder.registerMessageContent(VideoMessageContent.class.getName());
-            mBinder.registerMessageContent(TypingMessageContent.class.getName());
-            mBinder.registerMessageContent(GroupMuteNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupJoinTypeNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupPrivateChatNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupSetManagerNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupMuteMemberNotificationContent.class.getName());
-            mBinder.registerMessageContent(GroupAllowMemberNotificationContent.class.getName());
-            mBinder.registerMessageContent(CardMessageContent.class.getName());
-            mBinder.registerMessageContent(CompositeMessageContent.class.getName());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
         android.util.Log.d(TAG, "onnCreate");
     }
 
@@ -2665,7 +2655,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         onReceiveMessageListeners.finishBroadcast();
     }
 
-    public final static int MAX_IPC_SIZE = 900 * 1024;
+    public final static int MAX_IPC_SIZE = 800 * 1024;
 
     @Override
     public void onReceiveMessage(List<ProtoMessage> messages, boolean hasMore) {
@@ -2859,7 +2849,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     // 只是大概大小
-    private int getProtoMessageLength(ProtoMessage message) {
+    private int getMessageLength(ProtoMessage message) {
         int length = 0;
         ProtoMessageContent content = message.getContent();
         length += content.getBinaryContent() != null ? content.getBinaryContent().length : 0;
@@ -2869,6 +2859,26 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         length += content.getLocalMediaPath() != null ? content.getLocalMediaPath().length() : 0;
         length += content.getRemoteMediaUrl() != null ? content.getRemoteMediaUrl().length() : 0;
         length += content.getLocalContent() != null ? content.getLocalContent().length() : 0;
+        // messageId
+        length += 8;
+        //conversation
+        length += 4 + message.getTarget().length() + 4;
+        // tos
+        if(message.getTos() != null){
+            for (int i = 0; i < message.getTos().length; i++) {
+                length += message.getTos()[i].length();
+            }
+        }
+        // sender
+        length += message.getFrom().length();
+        // direction
+        length += 4;
+        // status
+        length += 4;
+        // messageUid
+        length += 8;
+        // timestamp
+        length += 8;
         return length;
     }
 
@@ -2889,7 +2899,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private SafeIPCMessageEntry buildSafeIPCMessages(ProtoMessage[] messages, int startIndex, boolean before) {
         SafeIPCMessageEntry entry = new SafeIPCMessageEntry();
         int totalLength = 0;
-        int messageContentLength;
+        int messageLength;
         if (messages == null || messages.length == 0) {
             return entry;
         }
@@ -2901,12 +2911,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             } else {
                 pmsg = messages[i];
             }
-            messageContentLength = getProtoMessageLength(pmsg);
-            if (messageContentLength > MAX_IPC_SIZE) {
-                android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageContentLength);
+            messageLength = getMessageLength(pmsg);
+            if (messageLength > MAX_IPC_SIZE) {
+                android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageLength);
                 continue;
             }
-            totalLength += messageContentLength;
+            totalLength += messageLength;
             if (totalLength <= MAX_IPC_SIZE) {
                 if (before) {
                     entry.messages.add(0, convertProtoMessage(pmsg));

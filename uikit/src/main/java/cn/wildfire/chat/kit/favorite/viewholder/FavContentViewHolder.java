@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import butterknife.BindView;
@@ -22,13 +23,18 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
     @BindView(R2.id.timeTextView)
     TextView timeTextView;
 
+    protected Fragment fragment;
+    protected FavoriteItem favoriteItem;
+
     public FavContentViewHolder(@NonNull View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }
 
-    public void bind(FavoriteItem item) {
-        senderTextView.setText(item.getSender());
+    public void bind(Fragment fragment, FavoriteItem item) {
+        this.fragment = fragment;
+        this.favoriteItem = item;
+        senderTextView.setText(item.getOrigin());
         timeTextView.setText((TimeUtils.getMsgFormatTime(item.getTimestamp())));
     }
 }

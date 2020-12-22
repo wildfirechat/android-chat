@@ -33,7 +33,7 @@
                 android:scaleType="centerInside"
                 android:src="@mipmap/ic_cheat_voice" />
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -50,7 +50,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:layout_marginTop="5dp"
                         android:background="@drawable/shape_session_text_input"
                         android:maxLines="5"
                         android:minHeight="42dp"
@@ -101,7 +100,7 @@
                     android:visibility="gone"
                     tools:visibility="gone" />
 
-            </RelativeLayout>
+            </FrameLayout>
 
             <ImageView
                 android:id="@+id/emotionImageView"

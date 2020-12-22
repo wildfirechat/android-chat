@@ -313,7 +313,7 @@ public class MMPreviewActivity extends Activity {
         entries = null;
     }
 
-    public static void startActivity(Context context, List<MediaEntry> entries, int current) {
+    public static void previewMedia(Context context, List<MediaEntry> entries, int current) {
         if (entries == null || entries.isEmpty()) {
             Log.w(MMPreviewActivity.class.getSimpleName(), "message is null or empty");
             return;
@@ -324,7 +324,7 @@ public class MMPreviewActivity extends Activity {
         context.startActivity(intent);
     }
 
-    public static void startActivity(Context context, ImageMessageContent imageMessageContent) {
+    public static void previewImage(Context context, ImageMessageContent imageMessageContent) {
         List<MediaEntry> entries = new ArrayList<>();
 
         MediaEntry entry = new MediaEntry();
@@ -333,10 +333,20 @@ public class MMPreviewActivity extends Activity {
         entry.setMediaUrl(imageMessageContent.remoteUrl);
         entry.setMediaLocalPath(imageMessageContent.localPath);
         entries.add(entry);
-        startActivity(context, entries, 0);
+        previewMedia(context, entries, 0);
     }
 
-    public static void startActivity(Context context, VideoMessageContent videoMessageContent) {
+    public static void previewImage(Context context, String imageUrl) {
+        List<MediaEntry> entries = new ArrayList<>();
+
+        MediaEntry entry = new MediaEntry();
+        entry.setType(MediaEntry.TYPE_IMAGE);
+        entry.setMediaUrl(imageUrl);
+        entries.add(entry);
+        previewMedia(context, entries, 0);
+    }
+
+    public static void previewVideo(Context context, VideoMessageContent videoMessageContent) {
         List<MediaEntry> entries = new ArrayList<>();
 
         MediaEntry entry = new MediaEntry();
@@ -345,6 +355,19 @@ public class MMPreviewActivity extends Activity {
         entry.setMediaUrl(videoMessageContent.remoteUrl);
         entry.setMediaLocalPath(videoMessageContent.localPath);
         entries.add(entry);
-        startActivity(context, entries, 0);
+        previewMedia(context, entries, 0);
+    }
+
+
+    public static void previewVideo(Context context, String videoUrl) {
+        List<MediaEntry> entries = new ArrayList<>();
+
+        MediaEntry entry = new MediaEntry();
+        entry.setType(MediaEntry.TYPE_VIDEO);
+//        entry.setThumbnail(videoMessageContent.getThumbnail());
+        entry.setMediaUrl(videoUrl);
+//        entry.setMediaLocalPath(videoMessageContent.localPath);
+        entries.add(entry);
+        previewMedia(context, entries, 0);
     }
 }

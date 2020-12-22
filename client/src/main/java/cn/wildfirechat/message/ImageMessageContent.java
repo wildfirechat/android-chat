@@ -31,14 +31,16 @@ public class ImageMessageContent extends MediaMessageContent {
 
     private double imageWidth;
     private double imageHeight;
+    @Deprecated
     private String thumbPara;
 
     public ImageMessageContent() {
+        this.mediaType = MessageContentMediaType.IMAGE;
     }
 
     public ImageMessageContent(String path) {
         this.localPath = path;
-        mediaType = MessageContentMediaType.IMAGE;
+        this.mediaType = MessageContentMediaType.IMAGE;
 
     }
 
@@ -54,6 +56,10 @@ public class ImageMessageContent extends MediaMessageContent {
         return thumbnail;
     }
 
+    public void setThumbnailBytes(byte[] thumbnailBytes) {
+        this.thumbnailBytes = thumbnailBytes;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
@@ -67,38 +73,31 @@ public class ImageMessageContent extends MediaMessageContent {
                 options.inJustDecodeBounds = true;
                 imageWidth = bitmap.getWidth();
                 imageHeight = bitmap.getHeight();
-                try {
-                    JSONObject objWrite = new JSONObject();
-                    objWrite.put("w", imageWidth);
-                    objWrite.put("h", imageHeight);
-                    objWrite.put("tp", thumbPara);
-                    payload.content = objWrite.toString();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             } else {
                 try {
                     Bitmap thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), 200, 200);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                     payload.binaryContent = baos.toByteArray();
+                    imageWidth = thumbnail.getWidth();
+                    imageHeight = thumbnail.getHeight();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         } else {
-            if (!TextUtils.isEmpty(thumbPara) && imageHeight > 0 && imageWidth > 0) {
-                try {
-                    JSONObject objWrite = new JSONObject();
-                    objWrite.put("w", imageWidth);
-                    objWrite.put("h", imageHeight);
-                    objWrite.put("tp", thumbPara);
-                    payload.content = objWrite.toString();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                payload.binaryContent = thumbnailBytes;
+            payload.binaryContent = thumbnailBytes;
+        }
+
+        if (imageHeight > 0 && imageWidth > 0) {
+            try {
+                JSONObject objWrite = new JSONObject();
+                objWrite.put("w", imageWidth);
+                objWrite.put("h", imageHeight);
+                objWrite.put("tp", thumbPara);
+                payload.content = objWrite.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
 

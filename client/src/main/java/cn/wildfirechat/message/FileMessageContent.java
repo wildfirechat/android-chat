@@ -26,6 +26,7 @@ public class FileMessageContent extends MediaMessageContent {
     private static final String FILE_NAME_PREFIX = "[文件] ";
 
     public FileMessageContent() {
+        this.mediaType = MessageContentMediaType.FILE;
     }
 
     public FileMessageContent(String filePath) {
@@ -51,6 +52,14 @@ public class FileMessageContent extends MediaMessageContent {
 
     public int getSize() {
         return size;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 
     @Override

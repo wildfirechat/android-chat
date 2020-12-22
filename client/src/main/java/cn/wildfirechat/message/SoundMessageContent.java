@@ -23,6 +23,7 @@ public class SoundMessageContent extends MediaMessageContent {
     private int duration;
 
     public SoundMessageContent() {
+        this.mediaType = MessageContentMediaType.VOICE;
     }
 
     public SoundMessageContent(String audioPath) {

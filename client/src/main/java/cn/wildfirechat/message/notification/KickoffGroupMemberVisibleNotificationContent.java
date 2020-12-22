@@ -19,55 +19,59 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
 
-import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_MUTE_MEMBER;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_KICKOF_GROUP_MEMBER_VISIBLE;
 
-@ContentTag(type = CONTENT_TYPE_MUTE_MEMBER, flag = PersistFlag.Persist)
-public class GroupMuteMemberNotificationContent extends NotificationMessageContent {
-    public String groupId;
+/**
+ * Created by heavyrainlee on 20/12/2017.
+ */
+
+@ContentTag(type = ContentType_KICKOF_GROUP_MEMBER_VISIBLE, flag = PersistFlag.Persist)
+public class KickoffGroupMemberVisibleNotificationContent extends GroupNotificationMessageContent {
     public String operator;
-    // 操作类型，1禁言，0取消禁言
-    public int type;
-    public List<String> memberIds;
+    public List<String> kickedMembers;
+
+    public KickoffGroupMemberVisibleNotificationContent() {
+    }
 
     @Override
     public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
         if (fromSelf) {
-            sb.append("您");
+            sb.append("您把");
         } else {
             sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, operator));
+            sb.append("把");
         }
-        sb.append("把");
-        if (memberIds != null) {
-            for (String member : memberIds) {
+
+        if (kickedMembers != null) {
+            for (String member : kickedMembers) {
                 sb.append(" ");
                 sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, member));
             }
-            sb.append(" ");
-        }
-        if (type == 0) {
-            sb.append("取消禁言");
-        } else {
-            sb.append("设置禁言");
         }
 
+        sb.append(" 移出了群组");
         return sb.toString();
     }
 
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
+
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
             objWrite.put("o", operator);
-            objWrite.put("n", type + "");
-            objWrite.put("ms", new JSONArray(memberIds));
+            JSONArray objArray = new JSONArray();
+            for (int i = 0; i < kickedMembers.size(); i++) {
+                objArray.put(i, kickedMembers.get(i));
+            }
+            objWrite.put("ms", objArray);
+
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return payload;
     }
 
@@ -78,12 +82,11 @@ public class GroupMuteMemberNotificationContent extends NotificationMessageConte
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 groupId = jsonObject.optString("g");
                 operator = jsonObject.optString("o");
-                type = Integer.parseInt(jsonObject.optString("n", "0"));
-                memberIds = new ArrayList<>();
-                JSONArray jsonArray = jsonObject.getJSONArray("ms");
+                JSONArray jsonArray = jsonObject.optJSONArray("ms");
+                kickedMembers = new ArrayList<>();
                 if (jsonArray != null) {
                     for (int i = 0; i < jsonArray.length(); i++) {
-                        memberIds.add(jsonArray.getString(i));
+                        kickedMembers.add(jsonArray.getString(i));
                     }
                 }
             }
@@ -91,7 +94,6 @@ public class GroupMuteMemberNotificationContent extends NotificationMessageConte
             e.printStackTrace();
         }
     }
-
 
     @Override
     public int describeContents() {
@@ -101,32 +103,25 @@ public class GroupMuteMemberNotificationContent extends NotificationMessageConte
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(this.groupId);
         dest.writeString(this.operator);
-        dest.writeInt(this.type);
-        dest.writeStringList(this.memberIds);
+        dest.writeStringList(this.kickedMembers);
     }
 
-    public GroupMuteMemberNotificationContent() {
-    }
-
-    protected GroupMuteMemberNotificationContent(Parcel in) {
+    protected KickoffGroupMemberVisibleNotificationContent(Parcel in) {
         super(in);
-        this.groupId = in.readString();
         this.operator = in.readString();
-        this.type = in.readInt();
-        this.memberIds = in.createStringArrayList();
+        this.kickedMembers = in.createStringArrayList();
     }
 
-    public static final Creator<GroupMuteMemberNotificationContent> CREATOR = new Creator<GroupMuteMemberNotificationContent>() {
+    public static final Creator<KickoffGroupMemberVisibleNotificationContent> CREATOR = new Creator<KickoffGroupMemberVisibleNotificationContent>() {
         @Override
-        public GroupMuteMemberNotificationContent createFromParcel(Parcel source) {
-            return new GroupMuteMemberNotificationContent(source);
+        public KickoffGroupMemberVisibleNotificationContent createFromParcel(Parcel source) {
+            return new KickoffGroupMemberVisibleNotificationContent(source);
         }
 
         @Override
-        public GroupMuteMemberNotificationContent[] newArray(int size) {
-            return new GroupMuteMemberNotificationContent[size];
+        public KickoffGroupMemberVisibleNotificationContent[] newArray(int size) {
+            return new KickoffGroupMemberVisibleNotificationContent[size];
         }
     };
 }

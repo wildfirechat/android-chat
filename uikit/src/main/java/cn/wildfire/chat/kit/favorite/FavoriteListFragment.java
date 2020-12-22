@@ -26,7 +26,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
 
-public class FavoriteFragment extends Fragment {
+public class FavoriteListFragment extends Fragment {
     private FavoriteListAdapter favoriteListAdapter;
     @BindView(R2.id.recyclerView)
     RecyclerView recyclerView;
@@ -45,7 +45,7 @@ public class FavoriteFragment extends Fragment {
     }
 
     private void init() {
-        favoriteListAdapter = new FavoriteListAdapter();
+        favoriteListAdapter = new FavoriteListAdapter(this);
         recyclerView.setAdapter(favoriteListAdapter);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -92,7 +92,7 @@ public class FavoriteFragment extends Fragment {
                 favoriteListAdapter.addFavoriteItems(items);
                 favoriteListAdapter.notifyItemRangeChanged(oldItems.size(), items.size());
 
-                FavoriteFragment.this.hasMore = hasMore;
+                FavoriteListFragment.this.hasMore = hasMore;
                 isLoading = false;
             }
 

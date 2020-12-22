@@ -45,7 +45,7 @@ public class CreateGroupNotificationContent extends GroupNotificationMessageCont
 
     @Override
     public MessagePayload encode() {
-        MessagePayload payload = new MessagePayload();
+        MessagePayload payload = super.encode();
 
         try {
             JSONObject objWrite = new JSONObject();
