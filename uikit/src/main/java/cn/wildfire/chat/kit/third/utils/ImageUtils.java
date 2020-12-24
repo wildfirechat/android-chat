@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.third.image.ImageSize;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -362,5 +363,62 @@ public class ImageUtils {
         }
 
         return null;
+    }
+
+    /**
+     * 模拟微信等比例 图片算法
+     *
+     * @param outWidth
+     * @param outHeight
+     * @return
+     */
+    public static ImageSize getImageSizeByOrgSizeToWeChat(int outWidth, int outHeight) {
+        ImageSize imageSize = new ImageSize();
+        int maxWidth = 400;
+        int maxHeight = 400;
+        int minWidth = 300;
+        int minHeight = 250;
+        if (outWidth / maxWidth > outHeight / maxHeight) {//
+            if (outWidth >= maxWidth) {//
+                imageSize.setWidth(maxWidth);
+                imageSize.setHeight(outHeight * maxWidth / outWidth);
+            } else {
+                imageSize.setWidth(outWidth);
+                imageSize.setHeight(outHeight);
+            }
+            if (outHeight < minHeight) {
+                imageSize.setHeight(minHeight);
+                int width = outWidth * minHeight / outHeight;
+                if (width > maxWidth) {
+                    imageSize.setWidth(maxWidth);
+                } else {
+                    imageSize.setWidth(width);
+                }
+            }
+        } else {
+            if (outHeight >= maxHeight) {
+                imageSize.setHeight(maxHeight);
+                if (outHeight / maxHeight > 10) {
+                    imageSize.setWidth(outWidth * 5 * maxHeight / outHeight);
+                } else {
+                    imageSize.setWidth(outWidth * maxHeight / outHeight);
+                }
+
+            } else {
+                imageSize.setHeight(outHeight);
+                imageSize.setWidth(outWidth);
+            }
+            if (outWidth < minWidth) {
+                imageSize.setWidth(minWidth);
+                int height = outHeight * minWidth / outWidth;
+                if (height > maxHeight) {
+                    imageSize.setHeight(maxHeight);
+                } else {
+                    imageSize.setHeight(height);
+                }
+            }
+        }
+
+        return imageSize;
     }
 }

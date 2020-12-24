@@ -118,7 +118,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void showMain() {
         Intent intent = new Intent(this, MainActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
             android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
         startActivity(intent, bundle);

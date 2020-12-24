@@ -9,6 +9,9 @@ import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.os.Parcel;
 import android.text.TextUtils;
+import android.util.Log;
+
+import com.blankj.utilcode.util.ImageUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +29,9 @@ import cn.wildfirechat.message.core.PersistFlag;
 
 @ContentTag(type = MessageContentType.ContentType_Image, flag = PersistFlag.Persist_And_Count)
 public class ImageMessageContent extends MediaMessageContent {
+
+    private static final String TAG = "ImageMessageContent";
+
     private Bitmap thumbnail; // 不跨进程传输
     private byte[] thumbnailBytes;
 
@@ -41,7 +47,8 @@ public class ImageMessageContent extends MediaMessageContent {
     public ImageMessageContent(String path) {
         this.localPath = path;
         this.mediaType = MessageContentMediaType.IMAGE;
-
+        Log.e(TAG,"ImageMessageContent");
+        setImageSize(path);
     }
 
     public Bitmap getThumbnail() {
@@ -62,11 +69,13 @@ public class ImageMessageContent extends MediaMessageContent {
 
     @Override
     public MessagePayload encode() {
+        Log.e(TAG,"encode");
         MessagePayload payload = super.encode();
         payload.searchableContent = "[图片]";
 
         if (!TextUtils.isEmpty(localPath)) {
-            if (!TextUtils.isEmpty(thumbPara)) {
+            setImageSize(localPath);
+            /*if (!TextUtils.isEmpty(thumbPara)) {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 Bitmap bitmap = BitmapFactory.decodeFile(localPath, options);
 
@@ -84,7 +93,7 @@ public class ImageMessageContent extends MediaMessageContent {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
         } else {
             payload.binaryContent = thumbnailBytes;
         }
@@ -108,6 +117,7 @@ public class ImageMessageContent extends MediaMessageContent {
     @Override
     public void decode(MessagePayload payload) {
         super.decode(payload);
+        Log.e(TAG,"decode");
         thumbnailBytes = payload.binaryContent;
         if (payload.content != null && !payload.content.isEmpty()) {
             try {
@@ -120,6 +130,16 @@ public class ImageMessageContent extends MediaMessageContent {
             }
 
         }
+    }
+
+    /**
+     * 获取本地图片的宽高
+     * @param path
+     */
+    private void setImageSize(String path){
+        int imageSize[] = ImageUtils.getSize(localPath);
+        imageWidth = imageSize[0];
+        imageHeight = imageSize[1];
     }
 
     @Override
