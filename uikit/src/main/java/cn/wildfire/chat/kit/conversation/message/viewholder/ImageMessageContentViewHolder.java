@@ -20,6 +20,8 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.third.image.ImageSize;
+import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
 import cn.wildfire.chat.kit.R;
@@ -44,11 +46,11 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
     @Override
     public void onBind(UiMessage message) {
         ImageMessageContent imageMessage = (ImageMessageContent) message.message.content;
-        Bitmap thumbnail = imageMessage.getThumbnail();
-        int width = thumbnail != null ? thumbnail.getWidth() : 200;
-        int height = thumbnail != null ? thumbnail.getHeight() : 200;
-        imageView.getLayoutParams().width = UIUtils.dip2Px(width > 200 ? 200 : width);
-        imageView.getLayoutParams().height = UIUtils.dip2Px(height > 200 ? 200 : height);
+        ImageSize imageSize = ImageUtils.getImageSizeByOrgSizeToWeChat((int) imageMessage.getImageWidth(), (int) imageMessage.getImageHeight());
+        int width = imageSize.getWidth() >0? imageSize.getWidth(): 200;
+        int height = imageSize.getHeight() >0 ? imageSize.getHeight() : 200;
+        imageView.getLayoutParams().width = width;
+        imageView.getLayoutParams().height = height;
 
         if (!TextUtils.isEmpty(imageMessage.localPath)) {
             GlideApp.with(fragment)
@@ -58,11 +60,11 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
         } else {
             GlideRequest<Drawable> request = GlideApp.with(fragment)
                 .load(imageMessage.remoteUrl);
-            if (thumbnail != null) {
+           /* if (thumbnail != null) {
                 request = request.placeholder(new BitmapDrawable(fragment.getResources(), imageMessage.getThumbnail()));
             } else {
                 request = request.placeholder(R.mipmap.img_error);
-            }
+            }*/
             request.centerCrop()
                 .into(imageView);
         }
