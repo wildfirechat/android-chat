@@ -29,7 +29,7 @@ public class UnkownMessageContentViewHolder extends NormalMessageContentViewHold
 
     @Override
     public void onBind(UiMessage message) {
-        contentTextView.setText("unknown message");
+        contentTextView.setText("暂不支持此消息，请升级最新版本!");
     }
 
 }
