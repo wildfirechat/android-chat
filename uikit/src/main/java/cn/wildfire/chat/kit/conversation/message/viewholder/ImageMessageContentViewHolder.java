@@ -55,6 +55,7 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
         if (!TextUtils.isEmpty(imageMessage.localPath)) {
             GlideApp.with(fragment)
                 .load(imageMessage.localPath)
+                    .apply(placeholderOptions)
                 .centerCrop()
                 .into(imageView);
         } else {
@@ -65,8 +66,7 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
             } else {
                 request = request.placeholder(R.mipmap.img_error);
             }*/
-            request.centerCrop()
-                .into(imageView);
+            request.centerCrop().apply(placeholderOptions).into(imageView);
         }
     }
 

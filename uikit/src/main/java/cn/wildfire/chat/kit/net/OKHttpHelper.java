@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.net;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -42,6 +43,7 @@ import okhttp3.Response;
  */
 
 public class OKHttpHelper {
+    private static final String TAG = "OKHttpHelper";
     private static final String WFC_OKHTTP_COOKIE_CONFIG = "WFC_OK_HTTP_COOKIES";
     private static final Map<String, List<Cookie>> cookieStore = new ConcurrentHashMap<>();
 
@@ -115,6 +117,7 @@ public class OKHttpHelper {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Log.e(TAG,"response="+response.toString());
                 handleResponse(url, call, response, callback);
             }
         });

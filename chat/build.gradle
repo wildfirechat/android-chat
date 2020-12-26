@@ -64,6 +64,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
 
     implementation 'q.rorbin:badgeview:1.1.3'
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
     implementation project(':uikit')
     implementation project(':push')
 }
