@@ -8,9 +8,13 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -23,8 +27,16 @@ import cn.wildfirechat.message.core.MessageContentType;
 
 public abstract class MediaMessageContentViewHolder extends NormalMessageContentViewHolder {
 
+    /**
+     * 占位图的配置
+     */
+    protected RequestOptions placeholderOptions = new RequestOptions();
+
     public MediaMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        placeholderOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+        placeholderOptions.centerCrop();
+        placeholderOptions.placeholder(R.drawable.image_chat_placeholder);
     }
 
     @Override
