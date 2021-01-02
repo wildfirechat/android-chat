@@ -1399,6 +1399,22 @@ public class ChatManager {
      * @return
      */
     public Message insertMessage(Conversation conversation, String sender, MessageContent content, MessageStatus status, boolean notify, long serverTime) {
+        return insertMessage(conversation, sender, 0, content, status, notify, serverTime);
+    }
+
+    /**
+     * 插入消息
+     *
+     * @param conversation 目标会话
+     * @param sender       消息发送者id
+     * @param messageUid   消息uid，可以传0
+     * @param content      消息体
+     * @param status       消息状态
+     * @param notify       是否通知界面，通知时，会通过{@link #onReceiveMessage(List, boolean)}通知界面
+     * @param serverTime   服务器时间
+     * @return
+     */
+    public Message insertMessage(Conversation conversation, String sender, long messageUid, MessageContent content, MessageStatus status, boolean notify, long serverTime) {
         if (!checkRemoteService()) {
             return null;
         }
@@ -1408,6 +1424,7 @@ public class ChatManager {
         message.content = content;
         message.sender = sender;
         message.status = status;
+        message.messageUid = messageUid;
         message.serverTime = serverTime;
         if (this.userId.equals(sender)) {
             message.direction = MessageDirection.Send;
@@ -1543,6 +1560,7 @@ public class ChatManager {
             this.token = null;
         }
     }
+
     /**
      * 设置备选服务地址，仅专业版支持，一般用于政企单位内外网两种网络环境。
      *
@@ -5966,7 +5984,7 @@ public class ChatManager {
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             try {
                 mClient.setBackupAddressStrategy(backupAddressStrategy);
-                if(!TextUtils.isEmpty(backupAddressHost))
+                if (!TextUtils.isEmpty(backupAddressHost))
                     mClient.setBackupAddress(backupAddressHost, backupAddressPort);
 
                 mClient.setServerAddress(SERVER_HOST);
