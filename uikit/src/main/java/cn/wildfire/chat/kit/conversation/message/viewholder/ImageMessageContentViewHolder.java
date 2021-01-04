@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,13 +32,21 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.utils.WeChatImageUtils;
 
+/**
+ * 图片尺寸展示高仿微信
+ * 占位图-缩略图-原图
+ */
 @MessageContentType(ImageMessageContent.class)
 @EnableContextMenu
 public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder {
 
+    private static final String TAG = "ImageMessageContentView";
     @BindView(R2.id.imageView)
     BubbleImageView imageView;
+
+    private  String imagePath ;
 
     public ImageMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -46,28 +55,19 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
     @Override
     public void onBind(UiMessage message) {
         ImageMessageContent imageMessage = (ImageMessageContent) message.message.content;
-        ImageSize imageSize = ImageUtils.getImageSizeByOrgSizeToWeChat((int) imageMessage.getImageWidth(), (int) imageMessage.getImageHeight());
-        int width = imageSize.getWidth() >0? imageSize.getWidth(): 200;
-        int height = imageSize.getHeight() >0 ? imageSize.getHeight() : 200;
+        Bitmap thumbnail = imageMessage.getThumbnail();
+        int imageSize[] = WeChatImageUtils.getImageSizeByOrgSizeToWeChat((int) imageMessage.getImageWidth(), (int) imageMessage.getImageHeight());
+        int width = imageSize[0] >0? imageSize[0]: 200;
+        int height = imageSize[1] >0 ? imageSize[1] : 200;
         imageView.getLayoutParams().width = width;
         imageView.getLayoutParams().height = height;
-
-        if (!TextUtils.isEmpty(imageMessage.localPath)) {
-            GlideApp.with(fragment)
-                .load(imageMessage.localPath)
-                    .apply(placeholderOptions)
-                .centerCrop()
-                .into(imageView);
-        } else {
-            GlideRequest<Drawable> request = GlideApp.with(fragment)
-                .load(imageMessage.remoteUrl);
-           /* if (thumbnail != null) {
-                request = request.placeholder(new BitmapDrawable(fragment.getResources(), imageMessage.getThumbnail()));
-            } else {
-                request = request.placeholder(R.mipmap.img_error);
-            }*/
-            request.centerCrop().apply(placeholderOptions).into(imageView);
+        if(!TextUtils.isEmpty(imageMessage.localPath)){
+            imagePath = imageMessage.localPath;
+        }else {
+            imagePath = imageMessage.remoteUrl;
         }
+        loadMedia(thumbnail,imagePath,imageView);
+
     }
 
     @OnClick(R2.id.imageView)

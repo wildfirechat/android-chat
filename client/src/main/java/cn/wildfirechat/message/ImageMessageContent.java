@@ -10,18 +10,15 @@ import android.media.ThumbnailUtils;
 import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.blankj.utilcode.util.ImageUtils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
-
+import java.io.File;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.utils.WeChatImageUtils;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -47,8 +44,7 @@ public class ImageMessageContent extends MediaMessageContent {
     public ImageMessageContent(String path) {
         this.localPath = path;
         this.mediaType = MessageContentMediaType.IMAGE;
-        Log.e(TAG,"ImageMessageContent");
-        setImageSize(path);
+        setImageSize();
     }
 
     public Bitmap getThumbnail() {
@@ -69,33 +65,20 @@ public class ImageMessageContent extends MediaMessageContent {
 
     @Override
     public MessagePayload encode() {
-        Log.e(TAG,"encode");
         MessagePayload payload = super.encode();
         payload.searchableContent = "[图片]";
-
+        setImageSize();
         if (!TextUtils.isEmpty(localPath)) {
-            setImageSize(localPath);
-            /*if (!TextUtils.isEmpty(thumbPara)) {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                Bitmap bitmap = BitmapFactory.decodeFile(localPath, options);
-
-                options.inJustDecodeBounds = true;
-                imageWidth = bitmap.getWidth();
-                imageHeight = bitmap.getHeight();
-            } else {
-                try {
-                    Bitmap thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), 200, 200);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-                    payload.binaryContent = baos.toByteArray();
-                    imageWidth = thumbnail.getWidth();
-                    imageHeight = thumbnail.getHeight();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }*/
-        } else {
-            payload.binaryContent = thumbnailBytes;
+            try {
+                int[] imageSize = WeChatImageUtils.getImageSizeByOrgSizeToWeChat((int)imageWidth,(int)imageHeight);
+                Bitmap thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(localPath), imageSize[0]/2, imageSize[1]/2);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+                payload.binaryContent = baos.toByteArray();
+                Log.e(TAG,"thumbnail size="+  payload.binaryContent.length/1024+"kb");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         if (imageHeight > 0 && imageWidth > 0) {
@@ -117,7 +100,6 @@ public class ImageMessageContent extends MediaMessageContent {
     @Override
     public void decode(MessagePayload payload) {
         super.decode(payload);
-        Log.e(TAG,"decode");
         thumbnailBytes = payload.binaryContent;
         if (payload.content != null && !payload.content.isEmpty()) {
             try {
@@ -134,10 +116,14 @@ public class ImageMessageContent extends MediaMessageContent {
 
     /**
      * 获取本地图片的宽高
+     * 通过thumbnail 获取的宽高永远都是 200，不合适
+     *
      * @param path
      */
-    private void setImageSize(String path){
-        int imageSize[] = ImageUtils.getSize(localPath);
+    private void setImageSize(){
+        if(TextUtils.isEmpty(localPath))
+            return;
+        int imageSize[] = WeChatImageUtils.getSize(new File(localPath));
         imageWidth = imageSize[0];
         imageHeight = imageSize[1];
     }
