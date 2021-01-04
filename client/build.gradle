@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 group = 'com.github.wildfirechat'
 
@@ -53,5 +54,12 @@ dependencies {
     api project(':mars-core-release')
     def lifecycle_version = '2.0.0-beta01'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    api 'com.blankj:utilcode:1.30.5'
+    //api 'com.blankj:utilcode:1.30.5'
+    implementation "androidx.core:core-ktx:+"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0-beta01"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
 }
