@@ -42,8 +42,6 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
 
     private String phoneNumber;
 
-    private String uid = "320202";
-    private String token = "34i7TRVKrQmGFWgxJoo+aYrdctVlU/akZBJ4fekIK8Mik5TnFJMl8zQAbK8e8GN3WELWyesFIdhXmJxyC3A81vPbDq2EIKVRhySwvU+0V52hWlyJq3XsCwyDonLf3Ml18pF3AaL/1fZT0D4UWlvz8/mF6sQaguXmubSKp4I25fUQ2gQvkBEJ1+IxWIodapNS";
 
 
     @Override
