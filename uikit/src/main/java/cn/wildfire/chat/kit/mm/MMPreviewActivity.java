@@ -285,6 +285,7 @@ public class MMPreviewActivity extends Activity {
                 .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
                 .into(photoView);
         }
+        Log.e("image","entry.getMediaUrl()="+entry.getMediaUrl());
     }
 
     @Override

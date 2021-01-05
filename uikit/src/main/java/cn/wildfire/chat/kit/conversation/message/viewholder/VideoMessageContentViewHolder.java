@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
@@ -63,11 +65,12 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
         imageView.getLayoutParams().width = width;
         imageView.getLayoutParams().height = height;
         playImageView.setVisibility(View.VISIBLE);
-        if(!TextUtils.isEmpty(videoMessageContent.localPath)){
+        if(!TextUtils.isEmpty(videoMessageContent.localPath)&& (new File(videoMessageContent.localPath).exists())){
             imagePath = videoMessageContent.localPath;
         }else {
             imagePath = videoMessageContent.remoteUrl;
         }
+        //imagePath = videoMessageContent.remoteUrl;
         loadMedia(thumbnail,imagePath,imageView);
 
     }
