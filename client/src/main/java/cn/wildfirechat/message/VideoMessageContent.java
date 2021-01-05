@@ -90,6 +90,7 @@ public class VideoMessageContent extends MediaMessageContent {
 //              thumbnail = ThumbnailUtils.extractThumbnail(thumbnail, 320, 240, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
                 thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                 payload.binaryContent = baos.toByteArray();
+                Log.e(TAG,"binaryContent="+ payload.binaryContent.length/1024+"kb");
             } catch (Exception e) {
                 e.printStackTrace();
             }
