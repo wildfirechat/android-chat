@@ -13,6 +13,10 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cjt2325.cameralibrary.util.FileUtil;
+
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
@@ -22,6 +26,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.image.ImageSize;
+import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
@@ -61,17 +66,19 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
         int height = imageSize[1] >0 ? imageSize[1] : 200;
         imageView.getLayoutParams().width = width;
         imageView.getLayoutParams().height = height;
-        if(!TextUtils.isEmpty(imageMessage.localPath)){
+        if(!TextUtils.isEmpty(imageMessage.localPath)&& (new File(imageMessage.localPath).exists())){
             imagePath = imageMessage.localPath;
         }else {
             imagePath = imageMessage.remoteUrl;
         }
+       // imagePath = imageMessage.remoteUrl;
         loadMedia(thumbnail,imagePath,imageView);
 
     }
 
     @OnClick(R2.id.imageView)
     void preview() {
+        Log.e(TAG,"imagePath="+imagePath);
         previewMM();
     }
 

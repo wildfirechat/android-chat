@@ -20,12 +20,16 @@ object WeChatImageUtils {
 
     @JvmStatic
     fun getImageSizeByOrgSizeToWeChat( outWidth:Int,  outHeight:Int): IntArray? {
-        var imageWidth = 0
-        var imageHeight = 0
+        var imageWidth = 300
+        var imageHeight = 300
         val maxWidth = 400
         val maxHeight = 400
         val minWidth = 300
         val minHeight = 250
+
+        if(outWidth == 0 && outHeight == 0){
+            return intArrayOf(imageWidth,imageHeight)
+        }
         if (outWidth / maxWidth > outHeight / maxHeight) { //
             if (outWidth >= maxWidth) { //
                 imageWidth = maxWidth
