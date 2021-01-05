@@ -22,6 +22,8 @@ import cn.wildfirechat.utils.WeChatImageUtils;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
+ *   图片展示高仿微信,并且
+ *   占位图-缩略图-原图
  */
 
 @ContentTag(type = MessageContentType.ContentType_Image, flag = PersistFlag.Persist_And_Count)
@@ -67,7 +69,7 @@ public class ImageMessageContent extends MediaMessageContent {
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.searchableContent = "[图片]";
-        setImageSize();
+        //setImageSize();
         if (!TextUtils.isEmpty(localPath)) {
             try {
                 int[] imageSize = WeChatImageUtils.getImageSizeByOrgSizeToWeChat((int)imageWidth,(int)imageHeight);
@@ -75,7 +77,6 @@ public class ImageMessageContent extends MediaMessageContent {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
                 payload.binaryContent = baos.toByteArray();
-                Log.e(TAG,"thumbnail size="+  payload.binaryContent.length/1024+"kb");
             } catch (Exception e) {
                 e.printStackTrace();
             }
