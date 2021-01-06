@@ -13,31 +13,19 @@ import android.os.Parcelable;
 
 
 public class ChannelInfo implements Parcelable {
-    public enum ChannelStatus {
-        //member can add quit change group name and portrait, owner can do all the operations
-        Public(0),
-        //every member can add quit change group name and portrait, no one can kickoff others
-        Private(1),
-        //member can only quit, owner can do all the operations
-        Destoryed(2);
-
-        private int value;
-
-        ChannelStatus(int value) {
-            this.value = value;
-        }
-
-        public int value() {
-            return this.value;
-        }
-
-        public static ChannelStatus status(int type) {
-            if (type >= 0 && type < ChannelStatus.values().length) {
-                return ChannelStatus.values()[type];
-            }
-
-            throw new IllegalArgumentException("GroupType " + type + " is invalid");
-        }
+    public interface ChannelStatusMask {
+        //第0位表示是否允许查看用户所有信息，还是只允许看用户id，用户名称，用户昵称和用户头像
+        int Channel_State_Mask_FullInfo = 0x01;
+        //第1位表示是否允许查看非订阅用户信息
+        int Channel_State_Mask_Unsubscribed_User_Access = 0x02;
+        //第2位表示是否允许主动添加用户订阅关系
+        int Channel_State_Mask_Active_Subscribe = 0x04;
+        //第3位表示是否允许给非订阅用户发送消息
+        int Channel_State_Mask_Message_Unsubscribed = 0x08;
+        //第4位表示是否私有
+        int Channel_State_Mask_Private = 0x10;
+        //第6位表示是否删除
+        int Channel_State_Mask_Deleted = 0x40;
     }
 
     public String channelId;
@@ -45,7 +33,7 @@ public class ChannelInfo implements Parcelable {
     public String portrait;
     public String desc;
     public String owner;
-    public ChannelStatus status;
+    public int status;
     public String extra;
     public long updateDt;
 
@@ -65,7 +53,7 @@ public class ChannelInfo implements Parcelable {
         dest.writeString(this.portrait);
         dest.writeString(this.owner);
         dest.writeString(this.desc);
-        dest.writeInt(this.status == null ? -1 : this.status.ordinal());
+        dest.writeInt(this.status);
         dest.writeString(this.extra);
         dest.writeLong(this.updateDt);
     }
@@ -76,8 +64,7 @@ public class ChannelInfo implements Parcelable {
         this.portrait = in.readString();
         this.owner = in.readString();
         this.desc = in.readString();
-        int tmpType = in.readInt();
-        this.status = tmpType == -1 ? null : ChannelStatus.values()[tmpType];
+        this.status = in.readInt();
         this.extra = in.readString();
         this.updateDt = in.readLong();
     }
