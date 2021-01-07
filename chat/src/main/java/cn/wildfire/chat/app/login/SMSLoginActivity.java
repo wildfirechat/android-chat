@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.text.Editable;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -27,6 +28,9 @@ import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
 import cn.wildfirechat.chat.R;
 
 public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
+
+    private static final String TAG = "SMSLoginActivity";
+
     @BindView(R.id.loginButton)
     Button loginButton;
     @BindView(R.id.phoneNumberEditText)
@@ -37,6 +41,8 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     TextView requestAuthCodeButton;
 
     private String phoneNumber;
+
+
 
     @Override
     protected int contentLayout() {
@@ -66,6 +72,8 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
             loginButton.setEnabled(true);
         }
     }
+
+
 
     @OnClick(R.id.loginButton)
     void login() {

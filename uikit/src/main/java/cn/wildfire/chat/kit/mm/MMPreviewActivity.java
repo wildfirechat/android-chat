@@ -34,6 +34,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -190,6 +191,7 @@ public class MMPreviewActivity extends Activity {
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
                                         playVideo(targetView, file.getAbsolutePath());
                                     }
+                                    ImageUtils.saveMedia2Album(MMPreviewActivity.this,file);
                                 });
                             }
 
@@ -267,6 +269,7 @@ public class MMPreviewActivity extends Activity {
                             if (isFinishing()) {
                                 return;
                             }
+                            ImageUtils.saveMedia2Album(MMPreviewActivity.this,file);
                             Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
                         }
                     });

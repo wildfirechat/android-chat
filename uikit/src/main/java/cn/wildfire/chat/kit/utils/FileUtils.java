@@ -104,6 +104,7 @@ public class FileUtils {
         return url != null && !url.startsWith("http://") && !url.startsWith("https://");
     }
 
+
     /**
      * @return True if Uri is a MediaStore Uri.
      * @author paulburke
