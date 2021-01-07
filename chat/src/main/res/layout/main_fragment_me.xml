@@ -93,7 +93,7 @@
         android:background="@drawable/selector_common_item"
         app:divider_align_to_title="true"
         app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_account"
+        app:start_src="@mipmap/ic_star"
         app:title="收藏" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
