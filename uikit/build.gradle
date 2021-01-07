@@ -88,6 +88,7 @@ dependencies {
     implementation project(':imagepicker')
 
     api 'com.king.zxing:zxing-lite:1.1.1'
+    api 'com.blankj:utilcodex:1.30.5'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'com.google.android:flexbox:2.0.1'
