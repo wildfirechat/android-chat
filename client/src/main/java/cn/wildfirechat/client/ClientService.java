@@ -2143,7 +2143,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         channelInfo.portrait = protoChannelInfo.getPortrait();
         channelInfo.extra = protoChannelInfo.getExtra();
         channelInfo.owner = protoChannelInfo.getOwner();
-        channelInfo.status = ChannelInfo.ChannelStatus.status(protoChannelInfo.getStatus());
+        channelInfo.status = protoChannelInfo.getStatus();
         channelInfo.updateDt = protoChannelInfo.getUpdateDt();
 
         return channelInfo;

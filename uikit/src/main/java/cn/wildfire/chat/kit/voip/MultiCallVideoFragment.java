@@ -267,6 +267,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         if (callState == AVEngineKit.CallState.Connected) {
             updateParticipantStatus(callSession);
         } else if (callState == AVEngineKit.CallState.Idle) {
+            if (getActivity() == null) {
+                return;
+            }
             getActivity().finish();
             getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
