@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.FileUtils;
+
 import java.io.File;
 
 import butterknife.BindView;
@@ -65,12 +67,11 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
         imageView.getLayoutParams().width = width;
         imageView.getLayoutParams().height = height;
         playImageView.setVisibility(View.VISIBLE);
-        if(!TextUtils.isEmpty(videoMessageContent.localPath)&& (new File(videoMessageContent.localPath).exists())){
+        if(FileUtils.isFileExists(videoMessageContent.localPath)){
             imagePath = videoMessageContent.localPath;
         }else {
             imagePath = videoMessageContent.remoteUrl;
         }
-        //imagePath = videoMessageContent.remoteUrl;
         loadMedia(thumbnail,imagePath,imageView);
 
     }

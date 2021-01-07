@@ -1,6 +1,7 @@
 package cn.wildfire.chat.kit.third.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.third.image.ImageSize;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.model.GroupInfo;
@@ -365,5 +368,12 @@ public class ImageUtils {
         return null;
     }
 
+    /**
+     * 图片入系统相册
+     */
+    public static void saveMedia2Album(Context context,File mediaFile){
+        Uri uri = Uri.fromFile(mediaFile);
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+    }
 
 }
