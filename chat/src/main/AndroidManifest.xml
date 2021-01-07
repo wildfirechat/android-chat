@@ -48,22 +48,9 @@
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:resizeableActivity="true"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-
-        <meta-data
-            android:name="android.max_aspect"
-            android:value="2.1" />
-
-        <meta-data
-            android:name="design_width"
-            android:value="720" />
-        <meta-data
-            android:name="design_height"
-            android:value="1280" />
-        <meta-data
-            android:name="android.max_aspect"
-            android:value="2.1" />
 
         <meta-data
             android:name="android.webkit.WebView.EnableSafeBrowsing"

@@ -52,7 +52,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     @Override
     protected void afterViews() {
         setStatusBarTheme(this, false);
-        setStatusBarColor(R.color.white);
+        setStatusBarColor(R.color.gray14);
     }
 
     @OnTextChanged(value = R.id.phoneNumberEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
