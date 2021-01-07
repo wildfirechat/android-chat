@@ -56,6 +56,7 @@ public class VideoMessageContent extends MediaMessageContent {
             imageWidth = videoParam.getWidth();
             imageHeight = videoParam.getHeight();
             duration = videoParam.getDuration();
+            thumbnailBytes = videoParam.getThumbnailBytes();
         }
     }
 
@@ -83,7 +84,7 @@ public class VideoMessageContent extends MediaMessageContent {
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.searchableContent = "[视频]";
-        if (thumbnailBytes == null && !TextUtils.isEmpty(localPath)) {
+     /* //  if (thumbnailBytes == null && !TextUtils.isEmpty(localPath)) {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(localPath, MediaStore.Video.Thumbnails.MICRO_KIND);
@@ -94,9 +95,10 @@ public class VideoMessageContent extends MediaMessageContent {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
+       *//* } else {
             payload.binaryContent = thumbnailBytes;
-        }
+        }*/
+        payload.binaryContent = thumbnailBytes;
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("w", imageWidth);
