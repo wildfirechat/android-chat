@@ -275,28 +275,28 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.conversation_list:
-                    contentViewPager.setCurrentItem(0);
+                    contentViewPager.setCurrentItem(0,false);
                     setTitle("野火");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.contact:
-                    contentViewPager.setCurrentItem(1);
+                    contentViewPager.setCurrentItem(1,false);
                     setTitle("通讯录");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.discovery:
-                    contentViewPager.setCurrentItem(2);
+                    contentViewPager.setCurrentItem(2,false);
                     setTitle("发现");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.me:
-                    contentViewPager.setCurrentItem(3);
+                    contentViewPager.setCurrentItem(3,false);
                     setTitle("我的");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.white, false);

@@ -5914,6 +5914,7 @@ public class ChatManager {
             if (content instanceof CompositeMessageContent) {
                 ((CompositeMessageContent) content).decode(payload, this);
             } else {
+                Log.e(TAG,"decode");
                 content.decode(payload);
             }
             if (content instanceof NotificationMessageContent) {
