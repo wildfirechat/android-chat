@@ -264,7 +264,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setBackupAddress(String host, int port) throws RemoteException {
-            if(!TextUtils.isEmpty(host)) {
+            if (!TextUtils.isEmpty(host)) {
                 ProtoLogic.setBackupAddress(host, port);
             }
         }
@@ -795,6 +795,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setConversationDraft(int conversationType, String target, int line, String draft) throws RemoteException {
+            ConversationInfo conversationInfo = getConversation(conversationType, target, line);
+            if((TextUtils.isEmpty(conversationInfo.draft)  && TextUtils.isEmpty(draft)) || TextUtils.equals(conversationInfo.draft, draft)){
+                return;
+            }
             ProtoLogic.setConversationDraft(conversationType, target, line, draft);
         }
 
@@ -2864,7 +2868,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         //conversation
         length += 4 + message.getTarget().length() + 4;
         // tos
-        if(message.getTos() != null){
+        if (message.getTos() != null) {
             for (int i = 0; i < message.getTos().length; i++) {
                 length += message.getTos()[i].length();
             }
