@@ -19,6 +19,7 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.JsonReader;
 
 import androidx.annotation.Nullable;
 
@@ -30,6 +31,9 @@ import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.xlog.Log;
 import com.tencent.mars.xlog.Xlog;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -81,6 +85,9 @@ import cn.wildfirechat.model.ProtoGroupMember;
 import cn.wildfirechat.model.ProtoGroupSearchResult;
 import cn.wildfirechat.model.ProtoMessage;
 import cn.wildfirechat.model.ProtoMessageContent;
+import cn.wildfirechat.model.ProtoMomentsComment;
+import cn.wildfirechat.model.ProtoMomentsFeed;
+import cn.wildfirechat.model.ProtoMomentsMedia;
 import cn.wildfirechat.model.ProtoReadEntry;
 import cn.wildfirechat.model.ProtoUserInfo;
 import cn.wildfirechat.model.ReadEntry;
@@ -1851,6 +1858,73 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public byte[] decodeData(byte[] data) throws RemoteException {
             return StnLogic.decodeData(data);
+        }
+
+        private JSONObject convertProtoMomentsFeed(ProtoMomentsFeed feed) throws Exception {
+            JSONObject object = new JSONObject();
+            object.put("type", feed.type);
+            object.put("feedId", feed.feedId);
+            object.putOpt("sender", feed.sender);
+            object.putOpt("text", feed.text);
+            object.putOpt("timestamp", feed.timestamp);
+            if(feed.medias != null && feed.medias.length > 0) {
+                JSONArray mediaArray = new JSONArray();
+                for (ProtoMomentsMedia media:feed.medias) {
+                    JSONObject mediaObject = new JSONObject();
+                    mediaObject.putOpt("m", media.mediaUrl);
+                    mediaObject.put("w", media.width);
+                    mediaObject.put("h", media.height);
+                    mediaObject.putOpt("t", media.thumbUrl);
+                    mediaArray.put(mediaObject);
+                }
+                object.put("medias", mediaArray);
+            }
+            object.putOpt("to", feed.toUsers);
+            object.putOpt("ex", feed.excludeUsers);
+            object.putOpt("extra", feed.extra);
+            if(feed.getComments() != null && feed.getComments().length > 0) {
+                JSONArray commentArray = new JSONArray();
+                for (ProtoMomentsComment comment:feed.getComments()) {
+                    JSONObject commentObject = new JSONObject();
+                    commentObject.put("type", comment.type);
+                    commentObject.put("commentId", comment.commentId);
+                    commentObject.put("feedId", comment.feedId);
+                    commentObject.put("replyId", comment.replyId);
+                    commentObject.putOpt("sender", comment.sender);
+                    commentObject.putOpt("text", comment.text);
+                    commentObject.put("serverTime", comment.serverTime);
+                    commentObject.putOpt("replyTo", comment.replyTo);
+                    commentObject.putOpt("extra", comment.extra);
+                    commentArray.put(commentObject);
+                }
+                object.put("comments", commentArray);
+            }
+            object.put("hasMore", feed.hasMore>0);
+
+            return object;
+        }
+
+        @Override
+        public byte[] decodeDataEx(int type, byte[] data, boolean gzip) throws RemoteException {
+            try {
+                if(type == 0) {
+                    ProtoMomentsFeed[] feeds = ProtoLogic.getMomentsFeeds(data, gzip);
+                    System.out.println(feeds.length);
+                    JSONArray array = new JSONArray();
+                    for (ProtoMomentsFeed feed:feeds) {
+                        JSONObject object = convertProtoMomentsFeed(feed);
+                        array.put(object);
+                    }
+                    return array.toString().getBytes();
+                } else if(type == 1) {
+                    ProtoMomentsFeed feed = ProtoLogic.getMomentsFeed(data, gzip);
+                    JSONObject object = convertProtoMomentsFeed(feed);
+                    return object.toString().getBytes();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return new byte[0];
         }
 
         @Override

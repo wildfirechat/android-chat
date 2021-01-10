@@ -200,6 +200,7 @@ interface IRemoteClient {
     oneway void muteOrAllowGroupMember(in String groupId, in boolean isSet, in List<String> memberIds, in boolean isAllow, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     byte[] encodeData(in byte[] data);
     byte[] decodeData(in byte[] data);
+    byte[] decodeDataEx(in int type, in byte[] data, in boolean gzip);
 
     String getHost();
     oneway void createChannel(in String channelId, in String channelName, in String channelPortrait, in String desc, in String extra, in ICreateChannelCallback callback);

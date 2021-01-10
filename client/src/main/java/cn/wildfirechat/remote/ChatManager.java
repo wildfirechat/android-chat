@@ -4980,6 +4980,19 @@ public class ChatManager {
         }
     }
 
+    public byte[] decodeData(int type, byte[] data, boolean gzip) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.decodeDataEx(type, data, gzip);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public String getHost() {
         if (!checkRemoteService()) {
             return null;
