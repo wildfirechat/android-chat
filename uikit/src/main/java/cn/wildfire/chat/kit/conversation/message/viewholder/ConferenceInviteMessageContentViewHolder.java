@@ -62,7 +62,7 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
 
     @OnClick(R2.id.contentLayout)
     void joinConference() {
-        if (AVEngineKit.isSupportConference()) {
+        if (!AVEngineKit.isSupportConference()) {
             Toast.makeText(fragment.getActivity(), "本版本不支持会议功能", Toast.LENGTH_SHORT).show();
             return;
         }

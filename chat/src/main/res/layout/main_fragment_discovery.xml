@@ -58,6 +58,6 @@
         android:background="@drawable/selector_common_item"
         app:divider_align_to_title="false"
         app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_dev_docs"
+        app:start_src="@mipmap/ic_conference"
         app:title="会议" />
 </LinearLayout>
