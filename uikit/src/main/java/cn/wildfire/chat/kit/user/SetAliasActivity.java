@@ -79,10 +79,6 @@ public class SetAliasActivity extends WfcBaseActivity {
 
     private void changeAlias() {
         String displayName = aliasEditText.getText().toString().trim();
-        if (TextUtils.isEmpty(displayName)) {
-            Toast.makeText(this, getString(R.string.alias_no_empty), Toast.LENGTH_SHORT).show();
-            return;
-        }
         contactViewModel.setFriendAlias(userId, displayName).observe(this, new Observer<OperateResult<Integer>>() {
             @Override
             public void onChanged(OperateResult<Integer> integerOperateResult) {
