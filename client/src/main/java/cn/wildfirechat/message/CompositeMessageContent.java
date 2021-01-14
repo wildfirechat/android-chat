@@ -85,7 +85,7 @@ public class CompositeMessageContent extends MessageContent {
                 msgObj.put("ce", messagePayload.extra);
 
                 if (message.content instanceof MediaMessageContent) {
-                    msgObj.put("mt", ((MediaMessageContent) message.content).mentionedType);
+                    msgObj.put("mt", ((MediaMessageContent) message.content).mediaType);
                     msgObj.put("mru", ((MediaMessageContent) message.content).remoteUrl);
                 }
 
