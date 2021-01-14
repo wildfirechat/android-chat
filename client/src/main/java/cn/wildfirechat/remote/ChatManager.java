@@ -5006,6 +5006,19 @@ public class ChatManager {
         }
     }
 
+    public String getHostEx() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getHostEx();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * 获取用户设置
      *
