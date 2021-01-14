@@ -153,6 +153,9 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     public void onRecallMessage(Message message) {
         if (message != null) {
             UiMessage uiMessage = new UiMessage(message);
+            if (toPlayAudioMessage != null && toPlayAudioMessage.messageUid == message.messageUid) {
+                stopPlayAudio();
+            }
             postMessageUpdate(uiMessage);
         }
     }
@@ -242,7 +245,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         sendMessage(msg);
     }
 
-    public MutableLiveData<OperateResult<Boolean>> sendMessageEx(Message message){
+    public MutableLiveData<OperateResult<Boolean>> sendMessageEx(Message message) {
 
         // TODO
         return null;
