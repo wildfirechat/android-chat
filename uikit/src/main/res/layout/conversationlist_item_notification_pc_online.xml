@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/statusTextView"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:background="@drawable/selector_common_item"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:text="pc online">
-
-</TextView>
+    android:layout_height="40dp"
+    android:background="@drawable/selector_common_item">
+    <ImageView
+        android:id="@+id/pc_image_view"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@mipmap/pc"
+        android:layout_marginStart="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"/>
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:text="pc online"/>
+</LinearLayout>
