@@ -87,6 +87,16 @@
         app:title="账号与安全" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/fileRecordOptionItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_option_item"
+        app:divider_align_to_title="true"
+        app:show_arrow_indicator="true"
+        app:start_src="@mipmap/ic_settings_file"
+        app:title="文件" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/favOptionItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"

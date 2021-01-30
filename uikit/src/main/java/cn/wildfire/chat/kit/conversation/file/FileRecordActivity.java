@@ -21,8 +21,10 @@ public class FileRecordActivity extends WfcBaseActivity {
             setTitleBackgroundResource(R.color.white, false);
         }
         Conversation conversation = getIntent().getParcelableExtra("conversation");
+        boolean isMyFiles = getIntent().getBooleanExtra("isMyFiles", false);
+        String fromUser = getIntent().getStringExtra("fromUser");
         getSupportFragmentManager().beginTransaction()
-            .replace(R.id.containerFrameLayout, FileRecordFragment.newInstance(conversation))
+            .replace(R.id.containerFrameLayout, FileRecordFragment.newInstance(conversation, fromUser, isMyFiles))
             .commit();
     }
 
