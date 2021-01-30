@@ -37,6 +37,8 @@ import cn.wildfirechat.model.FileRecord;
 public class FileRecordFragment extends Fragment {
 
     private static final String CONVERSATION = "conversation";
+    private static final String MYFILES = "isMyFiles";
+    private static final String FROMUSER = "fromUser";
 
     @BindView(R2.id.fileRecordLinearLayout)
     LinearLayout fileRecordLinearLayout;
@@ -51,15 +53,19 @@ public class FileRecordFragment extends Fragment {
     private FileRecordAdapter fileRecordAdapter;
 
     private Conversation conversation;
+    private boolean myFiles;
+    private String fromUser;
 
     public FileRecordFragment() {
         // Required empty public constructor
     }
 
-    public static FileRecordFragment newInstance(Conversation conversation) {
+    public static FileRecordFragment newInstance(Conversation conversation, String fromUser, boolean isMyFiles) {
         FileRecordFragment fragment = new FileRecordFragment();
         Bundle args = new Bundle();
         args.putParcelable(CONVERSATION, conversation);
+        args.putBoolean(MYFILES, isMyFiles);
+        args.putString(FROMUSER, fromUser);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,6 +75,8 @@ public class FileRecordFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             conversation = getArguments().getParcelable(CONVERSATION);
+            myFiles = getArguments().getBoolean(MYFILES);
+            fromUser = getArguments().getString(FROMUSER, null);
         }
     }
 
@@ -116,11 +124,12 @@ public class FileRecordFragment extends Fragment {
         if (fileRecords != null && !fileRecords.isEmpty()) {
             beforeMessageUid = fileRecords.get(fileRecords.size() - 1).messageUid;
         }
-        if (conversation != null) {
-            data = fileRecordViewModel.getConversationFileRecords(conversation, null, beforeMessageUid, 20);
+        if(myFiles) {
+            data = fileRecordViewModel.getMyFileRecords(beforeMessageUid, 100);
         } else {
-            data = fileRecordViewModel.getMyFileRecords(beforeMessageUid, 20);
+            data = fileRecordViewModel.getConversationFileRecords(conversation, fromUser, beforeMessageUid, 100);
         }
+
 
         data.observe(getViewLifecycleOwner(), listOperateResult -> {
             if (listOperateResult.isSuccess()) {

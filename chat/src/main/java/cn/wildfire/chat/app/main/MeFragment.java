@@ -33,6 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.app.setting.SettingActivity;
+import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteListActivity;
 import cn.wildfire.chat.kit.settings.MessageNotifySettingActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -129,6 +130,13 @@ public class MeFragment extends Fragment {
         Intent intent = new Intent(getActivity(), FavoriteListActivity.class);
         startActivity(intent);
     }
+
+    @OnClick(R.id.fileRecordOptionItemView)
+    void files() {
+        Intent intent = new Intent(getActivity(), FileRecordListActivity.class);
+        startActivity(intent);
+    }
+
 
 
     @OnClick(R.id.themeOptionItemView)

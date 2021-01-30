@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray5"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/allFilesItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_common_item"
+        app:show_arrow_indicator="true"
+        app:title="所有文件" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/myFilesItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_common_item"
+        app:divider_align_to_title="true"
+        app:show_arrow_indicator="true"
+        app:title="我的文件" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/conversationFilesItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_option_item"
+        app:divider_align_to_title="true"
+        app:show_arrow_indicator="true"
+        app:title="会话文件" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/userFilesItemView"
+        style="@style/OptionItem"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@drawable/selector_common_item"
+        app:divider_align_to_title="true"
+        app:show_arrow_indicator="true"
+        app:title="用户文件" />
+</LinearLayout>

@@ -202,6 +202,9 @@
         <activity
             android:name=".conversation.file.FileRecordActivity"
             android:label="文件记录" />
+        <activity
+            android:name=".conversation.file.FileRecordListActivity"
+            android:label="文件记录" />
 
         <!--moment start-->
         <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
