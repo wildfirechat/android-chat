@@ -36,6 +36,7 @@ import java.text.DecimalFormat;
 import java.util.Comparator;
 
 import cn.wildfire.chat.kit.BuildConfig;
+import cn.wildfire.chat.kit.R;
 import okhttp3.ResponseBody;
 
 public class FileUtils {
@@ -777,6 +778,50 @@ public class FileUtils {
         }
         int index = filename.lastIndexOf('/');
         return filename.substring(index + 1);
+    }
+
+    public static int getFileTypeImageResId(String filename) {
+        String suffix;
+        try {
+            suffix = filename.substring(filename.lastIndexOf(".")+1);
+        } catch (Exception e) {
+            return R.mipmap.ic_file_type_unknown;
+        }
+
+
+        if ("doc".equalsIgnoreCase(suffix) || "docx".equalsIgnoreCase(suffix) || "pages".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_word;
+        } else if ("xls".equalsIgnoreCase(suffix) || "xlsx".equalsIgnoreCase(suffix) || "numbers".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_xls;
+        } else if ("ppt".equalsIgnoreCase(suffix) || "pptx".equalsIgnoreCase(suffix) || "keynote".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_ppt;
+        } else if ("pdf".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_pdf;
+        } else if("html".equalsIgnoreCase(suffix) || "htm".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_html;
+        } else if("txt".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_text;
+        } else if("jpg".equalsIgnoreCase(suffix) || "png".equalsIgnoreCase(suffix) || "jpeg".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_image;
+        } else if("mp3".equalsIgnoreCase(suffix) || "amr".equalsIgnoreCase(suffix)
+                || "acm".equalsIgnoreCase(suffix) || "aif".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_audio;
+        } else if("mp4".equalsIgnoreCase(suffix) || "avi".equalsIgnoreCase(suffix)
+                || "mov".equalsIgnoreCase(suffix) || "asf".equalsIgnoreCase(suffix)
+                || "wmv".equalsIgnoreCase(suffix) || "mpeg".equalsIgnoreCase(suffix)
+                || "ogg".equalsIgnoreCase(suffix) || "mkv".equalsIgnoreCase(suffix)
+                || "rmvb".equalsIgnoreCase(suffix) || "f4v".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_video;
+        } else if("exe".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_exe;
+        } else if("xml".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_xml;
+        } else if("zip".equalsIgnoreCase(suffix) || "rar".equalsIgnoreCase(suffix)
+              || "gzip".equalsIgnoreCase(suffix) || "gz".equalsIgnoreCase(suffix)) {
+            return R.mipmap.ic_file_type_zip;
+        } else {
+            return R.mipmap.ic_file_type_unknown;
+        }
     }
 }
 

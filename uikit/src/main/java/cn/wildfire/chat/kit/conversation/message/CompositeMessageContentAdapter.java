@@ -218,7 +218,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                 FileMessageContent fileMessageContent = (FileMessageContent) content;
                 fileNameTextView.setText(fileMessageContent.getName());
                 fileSizeTextView.setText(FileUtils.getReadableFileSize(fileMessageContent.getSize()));
-
+                fileIconImageView.setImageResource(FileUtils.getFileTypeImageResId(fileMessageContent.getName()));
             } else if (content instanceof CompositeMessageContent) {
                 textContentLayout.setVisibility(View.GONE);
                 fileContentLayout.setVisibility(View.GONE);

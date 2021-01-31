@@ -36,5 +36,6 @@ public class FavFileContentViewHolder extends FavContentViewHolder {
 
         fileNameTextView.setText(fileMessageContent.getName());
         fileSizeTextView.setText(FileUtils.getReadableFileSize(fileMessageContent.getSize()));
+        fileIconImageView.setImageResource(FileUtils.getFileTypeImageResId(fileMessageContent.getName()));
     }
 }

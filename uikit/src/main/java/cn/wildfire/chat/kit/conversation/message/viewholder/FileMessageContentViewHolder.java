@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +28,8 @@ import cn.wildfirechat.message.FileMessageContent;
 @MessageContentType(FileMessageContent.class)
 @EnableContextMenu
 public class FileMessageContentViewHolder extends MediaMessageContentViewHolder {
-
+    @BindView(R2.id.fileIconImageView)
+    ImageView fileIconImageView;
     @BindView(R2.id.fileNameTextView)
     TextView nameTextView;
     @BindView(R2.id.fileSizeTextView)
@@ -45,6 +47,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         fileMessageContent = (FileMessageContent) message.message.content;
         nameTextView.setText(fileMessageContent.getName());
         sizeTextView.setText(FileUtils.getReadableFileSize(fileMessageContent.getSize()));
+        fileIconImageView.setImageResource(FileUtils.getFileTypeImageResId(fileMessageContent.getName()));
     }
 
     @OnClick(R2.id.imageView)
