@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
+import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -34,10 +35,11 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment {
     private GroupMember groupMember;
     private boolean groupMuted = false;
 
-    public static GroupMemberMuteOrAllowListFragment newInstance(GroupInfo groupInfo) {
+    public static GroupMemberMuteOrAllowListFragment newInstance(GroupInfo groupInfo, boolean mute) {
         Bundle args = new Bundle();
         args.putParcelable("groupInfo", groupInfo);
         GroupMemberMuteOrAllowListFragment fragment = new GroupMemberMuteOrAllowListFragment();
+        fragment.groupMuted = mute;
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,7 +48,6 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
-        groupMuted = groupInfo.mute == 1;
         showQuickIndexBar(false);
 
         groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
@@ -68,7 +69,7 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment {
     @Override
     public void initFooterViewHolders() {
         if (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager) {
-            addFooterViewHolder(MuteGroupMemberViewHolder.class, R.layout.group_manage_item_mute_member, new FooterValue(groupInfo));
+            addHeaderViewHolder(MuteGroupMemberViewHolder.class, R.layout.group_manage_item_mute_member, new HeaderValue(groupInfo, groupMuted));
         }
     }
 
@@ -95,7 +96,7 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment {
     }
 
     @Override
-    public void onFooterClick(int index) {
+    public void onHeaderClick(int index) {
         Intent intent = new Intent(getActivity(), MuteGroupMemberActivity.class);
         intent.putExtra(BasePickGroupMemberActivity.GROUP_INFO, groupInfo);
         intent.putExtra("groupMuted", groupMuted);
