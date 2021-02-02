@@ -22,7 +22,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/avatar_def" />
+            android:src="@mipmap/ic_add_team_member" />
 
         <TextView
             android:id="@+id/nameTextView"

@@ -51,10 +51,6 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
                             boolean oMuted = groupInfo.mute == 1;
                             boolean nMuted = info.mute == 1;
                             groupInfo = info;
-
-                            if (oMuted != nMuted) {
-                                initGroupMemberMuteListFragment(true);
-                            }
                             break;
                         }
                     }
@@ -76,13 +72,21 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
     }
 
     private GroupMemberMuteOrAllowListFragment fragment;
+    private GroupMemberMuteOrAllowListFragment fragment2;
 
     private void initGroupMemberMuteListFragment(boolean forceUpdate) {
         if (fragment == null || forceUpdate) {
-            fragment = GroupMemberMuteOrAllowListFragment.newInstance(groupInfo);
+            fragment = GroupMemberMuteOrAllowListFragment.newInstance(groupInfo, true);
         }
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, fragment)
             .commit();
+
+        if (fragment2 == null || forceUpdate) {
+            fragment2 = GroupMemberMuteOrAllowListFragment.newInstance(groupInfo, false);
+        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.containerFrameLayout2, fragment2)
+                .commit();
     }
 }

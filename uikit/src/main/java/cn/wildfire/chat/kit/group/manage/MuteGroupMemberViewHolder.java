@@ -12,10 +12,12 @@ import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
+import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfirechat.model.GroupInfo;
 
-public class MuteGroupMemberViewHolder extends FooterViewHolder<FooterValue> {
+public class MuteGroupMemberViewHolder extends HeaderViewHolder<HeaderValue> {
     TextView titleTextView;
 
     public MuteGroupMemberViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
@@ -24,8 +26,8 @@ public class MuteGroupMemberViewHolder extends FooterViewHolder<FooterValue> {
     }
 
     @Override
-    public void onBind(FooterValue footerValue) {
-        GroupInfo groupInfo = (GroupInfo) footerValue.getValue();
-        titleTextView.setText(groupInfo.mute == 0 ? "群成员禁言" : "发言白名单");
+    public void onBind(HeaderValue headerValue) {
+        GroupInfo groupInfo = (GroupInfo) headerValue.getValue();
+        titleTextView.setText(headerValue.isBoolValue() ? "发言白名单" : "群成员禁言");
     }
 }
