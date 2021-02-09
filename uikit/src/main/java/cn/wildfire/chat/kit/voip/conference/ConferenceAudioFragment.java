@@ -291,7 +291,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
 
     @Override
     public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
-        if(device == AVAudioManager.AudioDevice.SPEAKER_PHONE) {
+        if(device == AVAudioManager.AudioDevice.SPEAKER_PHONE && isSpeakerOn) {
             speakerImageView.setSelected(true);
         } else {
             speakerImageView.setSelected(false);
