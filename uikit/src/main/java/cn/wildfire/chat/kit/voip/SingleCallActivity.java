@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.webrtc.StatsReport;
 
+import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 
 /**
@@ -146,6 +147,11 @@ public class SingleCallActivity extends VoipBaseActivity {
     @Override
     public void didReportAudioVolume(String userId, int volume) {
         postAction(() -> currentCallback.didReportAudioVolume(userId, volume));
+    }
+
+    @Override
+    public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
+        postAction(() -> currentCallback.didAudioDeviceChanged(device));
     }
 
     public void audioAccept() {

@@ -29,6 +29,7 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -150,6 +151,20 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     public void didReportAudioVolume(String userId, int volume) {
         Log.d(TAG, "voip audio " + userId + " " + volume);
 
+    }
+
+    @Override
+    public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
+        if(device == AVAudioManager.AudioDevice.SPEAKER_PHONE) {
+            spearImageView.setSelected(true);
+        } else {
+            spearImageView.setSelected(false);
+        }
+        if(device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.BLUETOOTH) {
+            spearImageView.setEnabled(false);
+        } else {
+            spearImageView.setEnabled(true);
+        }
     }
 
     @OnClick(R2.id.muteImageView)

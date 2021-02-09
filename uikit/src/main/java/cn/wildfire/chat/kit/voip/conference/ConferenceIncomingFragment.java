@@ -34,6 +34,7 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferenceActivity;
 import cn.wildfire.chat.kit.voip.conference.ConferenceParticipantAdapter;
+import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 
@@ -153,6 +154,11 @@ public class ConferenceIncomingFragment extends Fragment implements AVEngineKit.
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
+
+    }
+
+    @Override
+    public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
 
     }
 }

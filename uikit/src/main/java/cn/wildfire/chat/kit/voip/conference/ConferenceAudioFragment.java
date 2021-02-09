@@ -34,6 +34,7 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
@@ -285,6 +286,20 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
                 multiCallItem.getStatusTextView().setVisibility(View.GONE);
                 multiCallItem.getStatusTextView().setText("");
             }
+        }
+    }
+
+    @Override
+    public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
+        if(device == AVAudioManager.AudioDevice.SPEAKER_PHONE) {
+            speakerImageView.setSelected(true);
+        } else {
+            speakerImageView.setSelected(false);
+        }
+        if(device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.BLUETOOTH) {
+            speakerImageView.setEnabled(false);
+        } else {
+            speakerImageView.setEnabled(true);
         }
     }
 

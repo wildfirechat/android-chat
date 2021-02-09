@@ -17,6 +17,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
+import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
@@ -103,6 +104,11 @@ public class ConferenceActivity extends VoipBaseActivity {
         postAction(() -> {
             currentCallSessionCallback.didReportAudioVolume(userId, volume);
         });
+    }
+
+    @Override
+    public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
+        postAction(() -> currentCallSessionCallback.didAudioDeviceChanged(device));
     }
 
     @Override
