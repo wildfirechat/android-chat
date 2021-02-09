@@ -39,6 +39,7 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
@@ -409,6 +410,11 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                 multiCallItem.getStatusTextView().setText("");
             }
         }
+    }
+
+    @Override
+    public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
+
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {

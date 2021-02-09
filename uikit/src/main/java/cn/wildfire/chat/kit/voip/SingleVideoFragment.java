@@ -33,6 +33,7 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 
@@ -198,6 +199,11 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @Override
     public void didReportAudioVolume(String userId, int volume) {
         Log.d(TAG, "voip audio " + userId + " " + volume);
+    }
+
+    @Override
+    public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
+
     }
 
     @OnClick(R2.id.acceptImageView)
