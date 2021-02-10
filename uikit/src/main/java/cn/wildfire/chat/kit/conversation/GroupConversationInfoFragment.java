@@ -115,6 +115,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @BindView(R2.id.silentSwitchButton)
     SwitchButton silentSwitchButton;
 
+    @BindView(R2.id.fileRecordOptionItemView)
+    OptionItemView fileRecordOptionItem;
+
     private ConversationInfo conversationInfo;
     private ConversationMemberAdapter conversationMemberAdapter;
     private ConversationViewModel conversationViewModel;
@@ -185,6 +188,12 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         observerFavGroupsUpdate();
         observerGroupInfoUpdate();
         observerGroupMembersUpdate();
+
+        if(ChatManager.Instance().isCommercialServer()) {
+            fileRecordOptionItem.setVisibility(View.VISIBLE);
+        } else {
+            fileRecordOptionItem.setVisibility(View.GONE);
+        }
     }
 
     private void observerFavGroupsUpdate() {

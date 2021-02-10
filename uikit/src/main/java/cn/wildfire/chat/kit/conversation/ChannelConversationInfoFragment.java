@@ -39,6 +39,7 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class ChannelConversationInfoFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
@@ -54,6 +55,9 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     OptionItemView channelNameOptionItemView;
     @BindView(R2.id.channelDescOptionItemView)
     OptionItemView channelDescOptionItemView;
+
+    @BindView(R2.id.fileRecordOptionItemView)
+    OptionItemView fileRecordOptionItem;
 
     private ConversationInfo conversationInfo;
     private ConversationViewModel conversationViewModel;
@@ -110,6 +114,12 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
+
+        if(ChatManager.Instance().isCommercialServer()) {
+            fileRecordOptionItem.setVisibility(View.VISIBLE);
+        } else {
+            fileRecordOptionItem.setVisibility(View.GONE);
+        }
     }
 
     private void initChannel(ChannelInfo channelInfo) {

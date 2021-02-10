@@ -38,9 +38,11 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class SingleConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -51,6 +53,9 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     SwitchButton stickTopSwitchButton;
     @BindView(R2.id.silentSwitchButton)
     SwitchButton silentSwitchButton;
+
+    @BindView(R2.id.fileRecordOptionItemView)
+    OptionItemView fileRecordOptionItem;
 
     private ConversationInfo conversationInfo;
     private ConversationMemberAdapter conversationMemberAdapter;
@@ -101,6 +106,11 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         silentSwitchButton.setOnCheckedChangeListener(this);
 
         observerUserInfoUpdate();
+        if(ChatManager.Instance().isCommercialServer()) {
+            fileRecordOptionItem.setVisibility(View.VISIBLE);
+        } else {
+            fileRecordOptionItem.setVisibility(View.GONE);
+        }
     }
 
     private void observerUserInfoUpdate() {
