@@ -42,6 +42,7 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class MeFragment extends Fragment {
 
@@ -59,6 +60,9 @@ public class MeFragment extends Fragment {
 
     @BindView(R.id.settintOptionItemView)
     OptionItemView settingOptionItem;
+
+    @BindView(R.id.fileRecordOptionItemView)
+    OptionItemView fileRecordOptionItem;
 
     private UserViewModel userViewModel;
     private UserInfo userInfo;
@@ -110,6 +114,11 @@ public class MeFragment extends Fragment {
                 }
             });
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
+        if(ChatManager.Instance().isCommercialServer()) {
+            fileRecordOptionItem.setVisibility(View.VISIBLE);
+        } else {
+            fileRecordOptionItem.setVisibility(View.GONE);
+        }
     }
 
     @Override
