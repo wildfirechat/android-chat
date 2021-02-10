@@ -155,11 +155,13 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
-        if(device == AVAudioManager.AudioDevice.SPEAKER_PHONE) {
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        if(audioManager.isSpeakerphoneOn()) {
             spearImageView.setSelected(true);
         } else {
             spearImageView.setSelected(false);
         }
+
         if(device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.BLUETOOTH) {
             spearImageView.setEnabled(false);
         } else {

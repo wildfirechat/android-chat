@@ -291,11 +291,15 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
 
     @Override
     public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
-        if(device == AVAudioManager.AudioDevice.SPEAKER_PHONE && isSpeakerOn) {
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        if(audioManager.isSpeakerphoneOn()) {
+            isSpeakerOn = true;
             speakerImageView.setSelected(true);
         } else {
+            isSpeakerOn = false;
             speakerImageView.setSelected(false);
         }
+
         if(device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.BLUETOOTH) {
             speakerImageView.setEnabled(false);
         } else {
