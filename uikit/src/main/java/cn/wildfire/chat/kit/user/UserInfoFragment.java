@@ -75,6 +75,9 @@ public class UserInfoFragment extends Fragment {
     @BindView(R2.id.aliasOptionItemView)
     OptionItemView aliasOptionItemView;
 
+    @BindView(R2.id.messagesOptionItemView)
+    OptionItemView messagesOptionItemView;
+
     @BindView(R2.id.qrCodeOptionItemView)
     OptionItemView qrCodeOptionItemView;
 
@@ -166,6 +169,12 @@ public class UserInfoFragment extends Fragment {
         if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {
             momentButton.setVisibility(View.GONE);
         }
+
+        if(!TextUtils.isEmpty(groupId)) {
+            messagesOptionItemView.setVisibility(View.VISIBLE);
+        } else {
+            messagesOptionItemView.setVisibility(View.GONE);
+        }
     }
 
     private void setUserInfo(UserInfo userInfo) {
@@ -225,6 +234,10 @@ public class UserInfoFragment extends Fragment {
             intent.putExtra("userId", userInfo.uid);
             startActivity(intent);
         }
+    }
+    @OnClick(R2.id.messagesOptionItemView)
+    void showUserMessages() {
+        //Todo show user sent message in group
     }
 
     private static final int REQUEST_CODE_PICK_IMAGE = 100;

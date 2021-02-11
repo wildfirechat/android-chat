@@ -9,10 +9,11 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/selector_common_item"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp">
 
         <ImageView
             android:id="@+id/portraitImageView"
@@ -96,13 +97,22 @@
     </LinearLayout>
 
     <View style="@style/Line" />
-
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/aliasOptionItemView"
         style="@style/OptionItem"
         android:background="@drawable/selector_common_item"
         app:show_arrow_indicator="true"
         app:title="设置昵称或别名" />
+
+    <View style="@style/Line" />
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/messagesOptionItemView"
+        style="@style/OptionItem"
+        android:background="@drawable/selector_common_item"
+        app:show_arrow_indicator="true"
+        android:layout_marginTop="8dp"
+        app:title="查看他（她）的消息" />
+
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/qrCodeOptionItemView"
