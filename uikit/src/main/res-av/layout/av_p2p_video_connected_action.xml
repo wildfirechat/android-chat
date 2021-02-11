@@ -13,6 +13,7 @@
         android:id="@+id/durationTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/white"
         android:text="00:00" />
 
     <LinearLayout
@@ -33,6 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:textColor="@color/white"
             android:text="开始屏幕共享" />
 
     </LinearLayout>
@@ -61,6 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:textColor="@color/white"
                 android:text="切到语音通话" />
 
         </LinearLayout>
@@ -82,6 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:textColor="@color/white"
                 android:text="挂断" />
 
         </LinearLayout>
@@ -103,6 +107,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:textColor="@color/white"
                 android:text="旋转摄像头" />
 
         </LinearLayout>

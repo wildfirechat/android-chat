@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:ignore="MergeRootFrame">
 
     <FrameLayout
@@ -53,12 +54,14 @@
                     android:id="@+id/nameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
                     android:text="voip" />
 
                 <TextView
                     android:id="@+id/descTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
                     android:text="等待对方接受邀请..." />
             </LinearLayout>
         </LinearLayout>

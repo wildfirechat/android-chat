@@ -22,6 +22,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:text="切换到语音通话"
             android:textSize="10sp" />
 
@@ -44,6 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:textColor="@color/white"
             android:text="取消"
             android:textSize="10sp" />
 
