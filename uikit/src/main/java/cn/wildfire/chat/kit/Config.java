@@ -32,10 +32,13 @@ public class Config {
      * 音视频通话所用的turn server配置
      * <br>
      * <br>
-     * <strong>上线商用时，请自行部署turn 服务</strong>
+     * 单人版和多人版音视频必须部署turn服务。高级版不需要部署stun/turn服务。
+     * <br>
+     * <strong>上线商用时，请更换为自己部署的turn 服务</strong>
      * <br>
      */
     public static String[][] ICE_SERVERS/*请仔细阅读上面的注释*/ = new String[][]{
+        // 如果是高级版，请删除掉下面的配置项目，保持ICE_SERVERS为空数组就行。
         // 数组元素定义
         /*{"turn server uri", "userName", "password"}*/
         {"turn:turn.wildfirechat.cn:3478", "wfchat", "wfchat"}
