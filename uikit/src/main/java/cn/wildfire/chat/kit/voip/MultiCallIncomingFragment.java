@@ -46,6 +46,9 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
     @BindView(R2.id.participantGridView)
     RecyclerView participantRecyclerView;
 
+    @BindView(R2.id.acceptImageView)
+    ImageView acceptImageView;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,6 +64,9 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             getActivity().finish();
             return;
+        }
+        if(session.isAudioOnly()) {
+            acceptImageView.setImageResource(R.drawable.av_voice_answer_selector);
         }
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo invitor = userViewModel.getUserInfo(session.initiator, false);
