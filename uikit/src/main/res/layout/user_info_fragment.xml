@@ -36,7 +36,7 @@
                 android:gravity="center_vertical">
 
                 <TextView
-                    android:id="@+id/nameTextView"
+                    android:id="@+id/titleTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -56,6 +56,22 @@
                     android:visibility="gone" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/displayNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/nickname_colon"
+                android:textColor="@color/black1"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/groupAliasTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/nickname_colon"
+                android:textColor="@color/black1"
+                android:textSize="14sp" />
             <TextView
                 android:id="@+id/accountTextView"
                 android:layout_width="wrap_content"

@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.user;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,14 +51,21 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class UserInfoFragment extends Fragment {
     @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.nameTextView)
-    TextView nameTextView;
+
+    @BindView(R2.id.titleTextView)
+    TextView titleTextView;
+    @BindView(R2.id.displayNameTextView)
+    TextView displayNameTextView;
+    @BindView(R2.id.groupAliasTextView)
+    TextView groupAliasTextView;
     @BindView(R2.id.accountTextView)
     TextView accountTextView;
+
     @BindView(R2.id.chatButton)
     View chatButton;
     @BindView(R2.id.voipChatButton)
@@ -77,13 +85,17 @@ public class UserInfoFragment extends Fragment {
     TextView favContactTextView;
 
     private UserInfo userInfo;
+    private String groupId;
     private UserViewModel userViewModel;
     private ContactViewModel contactViewModel;
 
-    public static UserInfoFragment newInstance(UserInfo userInfo) {
+    public static UserInfoFragment newInstance(UserInfo userInfo, String groupId) {
         UserInfoFragment fragment = new UserInfoFragment();
         Bundle args = new Bundle();
         args.putParcelable("userInfo", userInfo);
+        if(!TextUtils.isEmpty(groupId)) {
+            args.putString("groupId", groupId);
+        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -94,6 +106,7 @@ public class UserInfoFragment extends Fragment {
         Bundle args = getArguments();
         assert args != null;
         userInfo = args.getParcelable("userInfo");
+        groupId = args.getString("groupId");
     }
 
     @Nullable
@@ -156,6 +169,7 @@ public class UserInfoFragment extends Fragment {
     }
 
     private void setUserInfo(UserInfo userInfo) {
+        userInfo = ChatManager.Instance().getUserInfo(userInfo.uid, groupId, false);
         RequestOptions requestOptions = new RequestOptions()
             .placeholder(R.mipmap.avatar_def)
             .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(getContext(), 10)));
@@ -163,7 +177,19 @@ public class UserInfoFragment extends Fragment {
             .load(userInfo.portrait)
             .apply(requestOptions)
             .into(portraitImageView);
-        nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
+        if(!TextUtils.isEmpty(userInfo.friendAlias)) {
+            titleTextView.setText(userInfo.friendAlias);
+            displayNameTextView.setText("昵称:" + userInfo.displayName);
+        } else {
+            titleTextView.setText(userInfo.displayName);
+            displayNameTextView.setVisibility(View.GONE);
+        }
+        if(!TextUtils.isEmpty(userInfo.groupAlias)) {
+            groupAliasTextView.setText("群昵称:" + userInfo.groupAlias);
+            groupAliasTextView.setVisibility(View.VISIBLE);
+        } else {
+            groupAliasTextView.setVisibility(View.GONE);
+        }
         accountTextView.setText("野火ID:" + userInfo.name);
     }
 

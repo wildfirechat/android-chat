@@ -659,6 +659,9 @@ public class ConversationFragment extends Fragment implements
         if (userInfo.deleted == 0) {
             Intent intent = new Intent(getActivity(), UserInfoActivity.class);
             intent.putExtra("userInfo", userInfo);
+            if(conversation.type == Conversation.ConversationType.Group) {
+                intent.putExtra("groupId", conversation.target);
+            }
             startActivity(intent);
         }
     }
