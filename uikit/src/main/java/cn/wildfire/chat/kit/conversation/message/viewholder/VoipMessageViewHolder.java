@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -26,6 +28,9 @@ import cn.wildfirechat.model.Conversation;
 public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
     @BindView(R2.id.contentTextView)
     TextView textView;
+
+    @BindView(R2.id.callTypeImageView)
+    ImageView callTypeImageView;
 
     public VoipMessageViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -46,6 +51,12 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
             textView.setText(text);
         } else {
             textView.setText("对方未接听");
+        }
+
+        if(content.isAudioOnly()) {
+            callTypeImageView.setImageResource(R.mipmap.ic_msg_cell_voice_call);
+        } else {
+            callTypeImageView.setImageResource(R.mipmap.ic_msg_cell_video_call);
         }
     }
 
