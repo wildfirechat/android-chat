@@ -456,6 +456,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         }
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);
         intent.putExtra("userInfo", userInfo);
+        intent.putExtra("groupId", groupInfo.target);
         startActivity(intent);
     }
 

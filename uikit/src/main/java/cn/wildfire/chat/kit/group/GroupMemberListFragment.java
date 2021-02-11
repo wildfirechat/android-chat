@@ -81,6 +81,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
         }
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);
         intent.putExtra("userInfo", userInfo);
+        intent.putExtra("groupId", groupInfo.target);
         startActivity(intent);
     }
 }

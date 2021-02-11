@@ -32,11 +32,12 @@ public class UserInfoActivity extends WfcBaseActivity {
             setTitleBackgroundResource(R.color.white, false);
         }
         userInfo = getIntent().getParcelableExtra("userInfo");
+        String groupId = getIntent().getStringExtra("groupId");
         if (userInfo == null) {
             finish();
         } else {
             getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, UserInfoFragment.newInstance(userInfo))
+                .replace(R.id.containerFrameLayout, UserInfoFragment.newInstance(userInfo, groupId))
                 .commit();
         }
     }
