@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +48,7 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     @BindView(R2.id.rootView)
-    LinearLayout rootLinearLayout;
+    RelativeLayout rootLinearLayout;
     @BindView(R2.id.durationTextView)
     TextView durationTextView;
     @BindView(R2.id.videoContainerGridLayout)
@@ -76,7 +77,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.av_multi_video_outgoing_connected, container, false);
+        View view = inflater.inflate(R.layout.av_conference_connected, container, false);
         ButterKnife.bind(this, view);
         init();
         return view;
