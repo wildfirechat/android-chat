@@ -46,7 +46,7 @@ import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class ConferenceVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
+public class ConferenceVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback, ConferenceManager.ConferenceManagerEventCallback {
     @BindView(R2.id.rootView)
     RelativeLayout rootLinearLayout;
     @BindView(R2.id.durationTextView)
@@ -121,6 +121,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_NORMAL);
         audioManager.setSpeakerphoneOn(true);
+
+        ConferenceManager.Instance().setCallback(this);
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
@@ -464,5 +466,27 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             durationTextView.setText(text);
         }
         handler.postDelayed(this::updateCallDuration, 1000);
+    }
+
+    @Override
+    public void onChangeModeRequest(String conferenceId, boolean audience) {
+        if(AVEngineKit.Instance().getCurrentSession() != null
+            && AVEngineKit.Instance().getCurrentSession().isConference()
+            && AVEngineKit.Instance().getCurrentSession().getCallId().equals(conferenceId)) {
+            if(audience) {
+                AVEngineKit.Instance().getCurrentSession().switchAudience(true);
+            } else {
+                //Todo 弹出提醒是否切换到发言模式
+            }
+        }
+    }
+
+    @Override
+    public void onKickoffRequest(String conferenceId) {
+        if(AVEngineKit.Instance().getCurrentSession() != null
+                && AVEngineKit.Instance().getCurrentSession().isConference()
+                && AVEngineKit.Instance().getCurrentSession().getCallId().equals(conferenceId)) {
+            AVEngineKit.Instance().getCurrentSession().leaveConference(false);
+        }
     }
 }
