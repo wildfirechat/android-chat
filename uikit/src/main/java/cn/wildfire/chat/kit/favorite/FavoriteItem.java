@@ -34,6 +34,7 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class FavoriteItem {
     private int favId;
+    // 和消息类型对应
     private int favType;
     private long timestamp;
     private Conversation conversation;
