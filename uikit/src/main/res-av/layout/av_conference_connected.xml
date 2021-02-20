@@ -59,7 +59,7 @@
             android:id="@+id/videoContainerGridLayout"
             android:layout_width="match_parent"
             android:layout_height="400dp"
-            android:layout_gravity="center"
+            android:layout_gravity="start"
             android:animateLayoutChanges="true"
             app:alignmentMode="alignBounds"
             app:columnCount="3"
