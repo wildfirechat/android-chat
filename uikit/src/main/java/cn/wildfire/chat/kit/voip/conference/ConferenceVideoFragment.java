@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +25,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
@@ -470,22 +471,32 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     @Override
     public void onChangeModeRequest(String conferenceId, boolean audience) {
-        if(AVEngineKit.Instance().getCurrentSession() != null
+        if (AVEngineKit.Instance().getCurrentSession() != null
             && AVEngineKit.Instance().getCurrentSession().isConference()
             && AVEngineKit.Instance().getCurrentSession().getCallId().equals(conferenceId)) {
-            if(audience) {
+            if (audience) {
                 AVEngineKit.Instance().getCurrentSession().switchAudience(true);
+                didRemoveRemoteVideoTrack(me.uid);
             } else {
-                //Todo 弹出提醒是否切换到发言模式
+                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                    .content("主持人邀请你参与互动")
+                    .positiveText("接受")
+                    .negativeText("忽略")
+                    .cancelable(false)
+                    .onPositive((dialog1, which) -> AVEngineKit.Instance().getCurrentSession().switchAudience(false))
+                    .onNegative((dialog12, which) -> {
+                        // do nothing
+                    })
+                    .show();
             }
         }
     }
 
     @Override
     public void onKickoffRequest(String conferenceId) {
-        if(AVEngineKit.Instance().getCurrentSession() != null
-                && AVEngineKit.Instance().getCurrentSession().isConference()
-                && AVEngineKit.Instance().getCurrentSession().getCallId().equals(conferenceId)) {
+        if (AVEngineKit.Instance().getCurrentSession() != null
+            && AVEngineKit.Instance().getCurrentSession().isConference()
+            && AVEngineKit.Instance().getCurrentSession().getCallId().equals(conferenceId)) {
             AVEngineKit.Instance().getCurrentSession().leaveConference(false);
         }
     }
