@@ -44,6 +44,8 @@ import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.MultiCallActivity;
 import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfire.chat.kit.voip.VoipCallService;
+import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModelContent;
+import cn.wildfire.chat.kit.voip.conference.message.ConferenceKickoffMemberContent;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.client.NotInitializedExecption;
@@ -131,6 +133,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
             ringPlayer = new AsyncPlayer(null);
             AVEngineKit.init(application, this);
+            ChatManager.Instance().registerMessageContent(ConferenceChangeModelContent.class);
+            ChatManager.Instance().registerMessageContent(ConferenceKickoffMemberContent.class);
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
             for (String[] server : Config.ICE_SERVERS) {
                 ChatManagerHolder.gAVEngine.addIceServer(server[0], server[1], server[2]);
