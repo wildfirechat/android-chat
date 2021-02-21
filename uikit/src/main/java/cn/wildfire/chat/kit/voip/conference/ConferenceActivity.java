@@ -218,6 +218,12 @@ public class ConferenceActivity extends VoipBaseActivity {
         startActivity(intent);
     }
 
+    void showParticipantList() {
+        isInvitingNewParticipant = true;
+        Intent intent = new Intent(this, ConferenceParticipantListActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

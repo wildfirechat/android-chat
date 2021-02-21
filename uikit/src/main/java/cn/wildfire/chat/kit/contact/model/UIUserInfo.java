@@ -16,6 +16,7 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class UIUserInfo {
     private String category = "";
+    private String desc = "";
     // 用来排序的字段
     private String sortName;
     private boolean showCategory;
@@ -37,6 +38,14 @@ public class UIUserInfo {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public boolean isShowCategory() {
@@ -92,6 +101,7 @@ public class UIUserInfo {
         }
         return info;
     }
+
     public static List<UIUserInfo> fromUserInfos(List<UserInfo> userInfos) {
         return fromUserInfos(userInfos, false);
     }
@@ -105,11 +115,11 @@ public class UIUserInfo {
             }
             Collections.sort(uiUserInfos, (o1, o2) -> o1.getSortName().compareToIgnoreCase(o2.getSortName()));
 
-            if(isFavUser){
+            if (isFavUser) {
                 UIUserInfo uiUserInfo = uiUserInfos.get(0);
                 uiUserInfo.setShowCategory(true);
                 uiUserInfo.setCategory("星标朋友");
-            }else {
+            } else {
                 String preIndexLetter = null;
                 for (UIUserInfo info : uiUserInfos) {
                     indexLetter = info.getCategory();

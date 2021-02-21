@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.contact.viewholder;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,11 +19,11 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class UserViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;
@@ -31,6 +32,8 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
     ImageView portraitImageView;
     @BindView(R2.id.nameTextView)
     TextView nameTextView;
+    @BindView(R2.id.descTextView)
+    TextView descTextView;
     @BindView(R2.id.categoryTextView)
     protected TextView categoryTextView;
 
@@ -53,6 +56,12 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         }
         UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo.getUserInfo()));
+        if (!TextUtils.isEmpty(userInfo.getDesc())) {
+            descTextView.setVisibility(View.VISIBLE);
+            descTextView.setText(userInfo.getDesc());
+        } else {
+            descTextView.setVisibility(View.GONE);
+        }
         GlideApp.with(fragment).load(userInfo.getUserInfo().portrait).placeholder(R.mipmap.avatar_def)
             .transforms(new CenterCrop(), new RoundedCorners(10))
             .into(portraitImageView);
