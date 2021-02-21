@@ -233,6 +233,7 @@
         <activity
             android:name=".favorite.FavoriteListActivity"
             android:label="收藏" />
+        <activity android:name=".voip.conference.ConferenceParticipantListActivity" />
         <!--moment end-->
 
         <provider

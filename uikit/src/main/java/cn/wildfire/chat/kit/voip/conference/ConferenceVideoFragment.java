@@ -193,9 +193,9 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         ((ConferenceActivity) getActivity()).showFloatingView(null);
     }
 
-    @OnClick(R2.id.addParticipantImageView)
+    @OnClick(R2.id.manageParticipantImageView)
     void addParticipant() {
-        ((ConferenceActivity) getActivity()).addParticipant(AVEngineKit.MAX_VIDEO_PARTICIPANT_COUNT - participants.size() - 1);
+        ((ConferenceActivity) getActivity()).showParticipantList();
     }
 
     @OnClick(R2.id.muteImageView)
@@ -478,7 +478,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
                 AVEngineKit.Instance().getCurrentSession().switchAudience(true);
                 didRemoveRemoteVideoTrack(me.uid);
             } else {
-                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                new MaterialDialog.Builder(getActivity())
                     .content("主持人邀请你参与互动")
                     .positiveText("接受")
                     .negativeText("忽略")

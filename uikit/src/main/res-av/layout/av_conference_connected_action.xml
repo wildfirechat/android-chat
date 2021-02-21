@@ -96,7 +96,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/addParticipantImageView"
+                android:id="@+id/manageParticipantImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/av_conference_members" />
