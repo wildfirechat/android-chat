@@ -111,6 +111,7 @@ interface IRemoteClient {
 
     Message insertMessage(in Message message, in boolean notify);
     boolean updateMessageContent(in Message message);
+    boolean updateMessageContentAndTime(in Message message);
     boolean updateMessageStatus(in long messageId, in int messageStatus);
 
     UnreadCount getUnreadCount(in int conversationType, in String target, in int line);

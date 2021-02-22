@@ -737,6 +737,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean updateMessageContentAndTime(Message message) throws RemoteException {
+            ProtoMessage protoMessage = convertMessage(message);
+            ProtoLogic.updateMessageContentAndTime(protoMessage);
+            return false;
+        }
+
+        @Override
         public boolean updateMessageStatus(long messageId, int messageStatus) throws RemoteException {
             ProtoLogic.updateMessageStatus(messageId, messageStatus);
             return true;
