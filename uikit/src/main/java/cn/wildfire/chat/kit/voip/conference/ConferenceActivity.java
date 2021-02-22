@@ -208,16 +208,6 @@ public class ConferenceActivity extends VoipBaseActivity {
         postAction(() -> currentCallSessionCallback.didVideoMuted(s, b));
     }
 
-    void addParticipant(int maxNewInviteParticipantCount) {
-        isInvitingNewParticipant = true;
-        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.getPin());
-
-        Intent intent = new Intent(this, ConferenceInviteActivity.class);
-        intent.putExtra("inviteMessage", invite);
-        startActivity(intent);
-    }
-
     void showParticipantList() {
         isInvitingNewParticipant = true;
         Intent intent = new Intent(this, ConferenceParticipantListActivity.class);

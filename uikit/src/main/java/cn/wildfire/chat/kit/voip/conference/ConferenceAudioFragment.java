@@ -137,9 +137,9 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         ((ConferenceActivity) getActivity()).showFloatingView(null);
     }
 
-    @OnClick(R2.id.addParticipantImageView)
+    @OnClick(R2.id.manageParticipantImageView)
     void addParticipant() {
-        ((ConferenceActivity) getActivity()).addParticipant(AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT - participants.size() - 1);
+        ((ConferenceActivity) getActivity()).showParticipantList();
     }
 
     @OnClick(R2.id.muteImageView)
