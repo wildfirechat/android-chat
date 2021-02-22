@@ -5,10 +5,13 @@
 package cn.wildfire.chat.kit.voip.conference;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +19,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
@@ -32,6 +36,36 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
     protected void afterViews(View view) {
         super.afterViews(view);
         loadAndShowConferenceParticipants();
+    }
+
+    @Override
+    public void onUserClick(UIUserInfo userInfo) {
+        List<String> items = new ArrayList<>();
+        items.add("查看用户信息");
+        if ("audience".equals(userInfo.getExtra())) {
+            items.add("邀请参与互动");
+        } else {
+            items.add("取消互动");
+        }
+
+        new MaterialDialog.Builder(getActivity())
+            .cancelable(true)
+            .items(items)
+            .itemsCallback((dialog, itemView, position, text) -> {
+                switch (position) {
+                    case 0:
+                        Intent intent = new Intent(getActivity(), UserInfoActivity.class);
+                        intent.putExtra("userInfo", userInfo.getUserInfo());
+                        startActivity(intent);
+                        break;
+                    case 1:
+                        AVEngineKit.Instance().getCurrentSession().switchAudience(!"audience".equals(userInfo.getExtra()));
+                        break;
+                    default:
+                        break;
+                }
+            })
+            .show();
     }
 
     private void loadAndShowConferenceParticipants() {
@@ -52,6 +86,7 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
             PeerConnectionClient client = session.getClient(userInfo.uid);
             UIUserInfo uiUserInfo = new UIUserInfo(userInfo);
             uiUserInfo.setCategory(client.audience ? "听众" : "互动成员");
+            uiUserInfo.setExtra(client.audience ? "audience" : "");
 
             if (session.initiator.equals(userInfo.uid)) {
                 uiUserInfo.setDesc("主持人");
