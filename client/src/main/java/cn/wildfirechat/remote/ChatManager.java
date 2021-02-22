@@ -1491,7 +1491,7 @@ public class ChatManager {
             message.content = newMsgContent;
             message.serverTime = timestamp;
 
-            boolean result = mClient.updateMessageContent(message);
+            boolean result = mClient.updateMessageContentAndTime(message);
             mainHandler.post(() -> {
                 for (OnMessageUpdateListener listener : messageUpdateListeners) {
                     listener.onMessageUpdate(message);
