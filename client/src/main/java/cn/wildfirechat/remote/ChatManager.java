@@ -1446,7 +1446,7 @@ public class ChatManager {
     }
 
     /**
-     * 更新消息
+     * 更新消息内容
      *
      * @param messageId     消息id
      * @param newMsgContent 新的消息体，未更新部分，不可置空！
@@ -1473,6 +1473,36 @@ public class ChatManager {
         return false;
     }
 
+    /**
+     * 更新消息内容和时间
+     *
+     * @param messageId     消息id
+     * @param newMsgContent 新的消息体，未更新部分，不可置空！
+     * @param timestamp     时间戳
+     * @return
+     */
+    public boolean updateMessage(long messageId, MessageContent newMsgContent, long timestamp) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            Message message = mClient.getMessage(messageId);
+            message.content = newMsgContent;
+            message.serverTime = timestamp;
+
+            boolean result = mClient.updateMessageContent(message);
+            mainHandler.post(() -> {
+                for (OnMessageUpdateListener listener : messageUpdateListeners) {
+                    listener.onMessageUpdate(message);
+                }
+            });
+            return result;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     /**
      * 更新消息状态。一般情况下协议栈会自动处理好状态，不建议手动处理状态。
      *
