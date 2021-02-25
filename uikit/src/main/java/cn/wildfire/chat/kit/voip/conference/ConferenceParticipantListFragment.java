@@ -79,24 +79,30 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
         }
 
         List<String> participantIds = session.getParticipantIds();
-        String selfUid = ChatManager.Instance().getUserId();
-        List<UserInfo> participantUserInfos = ChatManager.Instance().getUserInfos(participantIds, null);
         List<UIUserInfo> uiUserInfos = new ArrayList<>();
-        for (UserInfo userInfo : participantUserInfos) {
-            PeerConnectionClient client = session.getClient(userInfo.uid);
-            UIUserInfo uiUserInfo = new UIUserInfo(userInfo);
-            uiUserInfo.setCategory(client.audience ? "听众" : "互动成员");
-            uiUserInfo.setExtra(client.audience ? "audience" : "");
+        if (participantIds != null && participantIds.size() > 0) {
+            List<UserInfo> participantUserInfos = ChatManager.Instance().getUserInfos(participantIds, null);
+            for (UserInfo userInfo : participantUserInfos) {
+                PeerConnectionClient client = session.getClient(userInfo.uid);
+                UIUserInfo uiUserInfo = new UIUserInfo(userInfo);
+                uiUserInfo.setCategory(client.audience ? "听众" : "互动成员");
+                uiUserInfo.setExtra(client.audience ? "audience" : "");
 
-            if (session.initiator.equals(userInfo.uid)) {
-                uiUserInfo.setDesc("主持人");
-                uiUserInfos.add(0, uiUserInfo);
-            } else {
-                uiUserInfos.add(uiUserInfo);
+                if (session.initiator.equals(userInfo.uid)) {
+                    uiUserInfo.setDesc("主持人");
+                    uiUserInfos.add(0, uiUserInfo);
+                } else {
+                    uiUserInfos.add(uiUserInfo);
+                }
             }
         }
+        String selfUid = ChatManager.Instance().getUserId();
         UIUserInfo selfUiUserInfo = new UIUserInfo(ChatManager.Instance().getUserInfo(selfUid, false));
-        selfUiUserInfo.setDesc("我");
+        if (session.isInitiator()) {
+            selfUiUserInfo.setDesc("我、主持人");
+        } else {
+            selfUiUserInfo.setDesc("我");
+        }
         selfUiUserInfo.setCategory(session.isAudience() ? "听众" : "互动成员");
         uiUserInfos.add(selfUiUserInfo);
 
