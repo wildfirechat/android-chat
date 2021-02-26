@@ -310,6 +310,13 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     }
 
     @Override
+    public void didChangeType(String userId, boolean audience) {
+        if (audience) {
+            didRemoveRemoteVideoTrack(userId);
+        }
+    }
+
+    @Override
     public void didCreateLocalVideoTrack() {
         ConferenceItem item = rootLinearLayout.findViewWithTag(me.uid);
         if (item.findViewWithTag("v_" + me.uid) != null) {
@@ -483,7 +490,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
                     .positiveText("接受")
                     .negativeText("忽略")
                     .cancelable(false)
-                    .onPositive((dialog1, which) -> AVEngineKit.Instance().getCurrentSession().switchAudience(false))
+                    .onPositive((dialog1, which) -> ConferenceManager.Instance().changeModel(AVEngineKit.Instance().getCurrentSession().getCallId(), audience))
                     .onNegative((dialog12, which) -> {
                         // do nothing
                     })

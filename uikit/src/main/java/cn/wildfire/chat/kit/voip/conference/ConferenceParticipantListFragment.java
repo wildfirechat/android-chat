@@ -59,7 +59,9 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                         startActivity(intent);
                         break;
                     case 1:
-                        AVEngineKit.Instance().getCurrentSession().switchAudience(!"audience".equals(userInfo.getExtra()));
+                        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+                        boolean isAudience = "audience".equals(userInfo.getExtra());
+                        ConferenceManager.Instance().requestChangeModel(session.getCallId(), userInfo.getUserInfo().uid, !isAudience);
                         break;
                     default:
                         break;
@@ -88,7 +90,7 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                 uiUserInfo.setCategory(client.audience ? "听众" : "互动成员");
                 uiUserInfo.setExtra(client.audience ? "audience" : "");
 
-                if (session.initiator.equals(userInfo.uid)) {
+                if (session.getHost().equals(userInfo.uid)) {
                     uiUserInfo.setDesc("主持人");
                     uiUserInfos.add(0, uiUserInfo);
                 } else {
@@ -98,7 +100,7 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
         }
         String selfUid = ChatManager.Instance().getUserId();
         UIUserInfo selfUiUserInfo = new UIUserInfo(ChatManager.Instance().getUserInfo(selfUid, false));
-        if (session.isInitiator()) {
+        if (session.getHost().equals(selfUid)) {
             selfUiUserInfo.setDesc("我、主持人");
         } else {
             selfUiUserInfo.setDesc("我");
