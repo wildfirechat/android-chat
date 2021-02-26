@@ -20,7 +20,6 @@ import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
-import cn.wildfirechat.message.ConferenceInviteMessageContent;
 
 public class ConferenceActivity extends VoipBaseActivity {
 
@@ -164,6 +163,13 @@ public class ConferenceActivity extends VoipBaseActivity {
     public void didGetStats(StatsReport[] statsReports) {
         postAction(() -> {
             currentCallSessionCallback.didGetStats(statsReports);
+        });
+    }
+
+    @Override
+    public void didChangeType(String userId, boolean audience) {
+        postAction(() -> {
+            currentCallSessionCallback.didChangeType(userId, audience);
         });
     }
 
