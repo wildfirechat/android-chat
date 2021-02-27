@@ -26,6 +26,9 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceParticipantListFragment extends BaseUserListFragment {
+    private AVEngineKit.CallSession session;
+    private String selfUid;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,16 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
+        session = AVEngineKit.Instance().getCurrentSession();
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            Activity activity = getActivity();
+            if (activity != null && !activity.isFinishing()) {
+                activity.finish();
+            }
+            return;
+        }
+
+        selfUid = ChatManager.Instance().getUserId();
         loadAndShowConferenceParticipants();
     }
 
@@ -42,10 +55,12 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
     public void onUserClick(UIUserInfo userInfo) {
         List<String> items = new ArrayList<>();
         items.add("查看用户信息");
-        if ("audience".equals(userInfo.getExtra())) {
-            items.add("邀请参与互动");
-        } else {
-            items.add("取消互动");
+        if (selfUid.equals(session.getHost())) {
+            if ("audience".equals(userInfo.getExtra())) {
+                items.add("邀请参与互动");
+            } else {
+                items.add("取消互动");
+            }
         }
 
         new MaterialDialog.Builder(getActivity())
@@ -71,15 +86,6 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
     }
 
     private void loadAndShowConferenceParticipants() {
-        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
-            Activity activity = getActivity();
-            if (activity != null && !activity.isFinishing()) {
-                activity.finish();
-            }
-            return;
-        }
-
         List<String> participantIds = session.getParticipantIds();
         List<UIUserInfo> uiUserInfos = new ArrayList<>();
         if (participantIds != null && participantIds.size() > 0) {
@@ -98,7 +104,6 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                 }
             }
         }
-        String selfUid = ChatManager.Instance().getUserId();
         UIUserInfo selfUiUserInfo = new UIUserInfo(ChatManager.Instance().getUserInfo(selfUid, false));
         if (session.getHost().equals(selfUid)) {
             selfUiUserInfo.setDesc("我、主持人");
@@ -110,9 +115,9 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
 
         Collections.sort(uiUserInfos, (o1, o2) -> {
             if (o1.getCategory().equals("听众")) {
-                return 0;
-            } else {
                 return 1;
+            } else {
+                return -1;
             }
         });
 
