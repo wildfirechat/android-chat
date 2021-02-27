@@ -72,7 +72,7 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
 
     private void loadAndShowConferenceParticipants() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session == null || session.state == AVEngineKit.CallState.Idle) {
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             Activity activity = getActivity();
             if (activity != null && !activity.isFinishing()) {
                 activity.finish();
