@@ -152,11 +152,11 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
         ConferenceItem multiCallItem = new ConferenceItem(getActivity());
         multiCallItem.setTag(me.uid);
-        multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with, with));
+        multiCallItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         multiCallItem.getStatusTextView().setText(me.displayName);
         GlideApp.with(multiCallItem).load(me.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
 
-        focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(with, with));
+        focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         focusVideoContainerFrameLayout.addView(multiCallItem);
         focusConferenceItem = multiCallItem;
         focusVideoUserId = me.uid;
@@ -425,6 +425,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
                 participantGridView.removeView(clickedConferenceItem);
                 participantGridView.endViewTransition(clickedConferenceItem);
 
+                clickedConferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 if (focusConferenceItem != null) {
                     focusVideoContainerFrameLayout.removeView(focusConferenceItem);
                     focusVideoContainerFrameLayout.endViewTransition(focusConferenceItem);
