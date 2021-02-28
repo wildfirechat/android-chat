@@ -5,21 +5,14 @@
     android:layout_alignParentLeft="true"
     android:layout_alignParentRight="true"
     android:layout_alignParentBottom="true"
-    android:background="@color/gray"
+    android:background="#60D9D9D9"
     android:gravity="center"
     android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/durationTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="00:00"
-        android:textColor="@color/white" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -38,7 +31,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="3dp"
                 android:text="静音"
                 android:textColor="@color/white" />
 
@@ -60,7 +53,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="3dp"
                 android:text="视频"
                 android:textColor="@color/white" />
 
@@ -82,7 +75,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="3dp"
                 android:text="共享屏幕"
                 android:textColor="@color/white" />
 
@@ -104,7 +97,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="3dp"
                 android:text="管理(2)"
                 android:textColor="@color/white" />
 
@@ -126,7 +119,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="3dp"
                 android:text="结束"
                 android:textColor="@color/white" />
 
