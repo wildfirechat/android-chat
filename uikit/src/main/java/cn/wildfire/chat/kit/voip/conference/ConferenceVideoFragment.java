@@ -266,7 +266,6 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         if (participants.contains(userId)) {
             return;
         }
-        int count = participantGridView.getChildCount();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int with = dm.widthPixels;
 
@@ -290,6 +289,11 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason) {
+        removeParticipantView(userId);
+        Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了会议", Toast.LENGTH_SHORT).show();
+    }
+
+    private void removeParticipantView(String userId) {
         View view = participantGridView.findViewWithTag(userId);
         if (view != null) {
             participantGridView.removeView(view);
@@ -300,9 +304,12 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             focusVideoUserId = null;
             focusVideoContainerFrameLayout.removeView(focusConferenceItem);
             focusConferenceItem = null;
-        }
 
-        Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了通话", Toast.LENGTH_SHORT).show();
+            View item = participantGridView.getChildAt(0);
+            if (item != null) {
+                item.callOnClick();
+            }
+        }
     }
 
     @Override
@@ -313,7 +320,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     @Override
     public void didChangeType(String userId, boolean audience) {
         if (audience) {
-            didRemoveRemoteVideoTrack(userId);
+            removeParticipantView(userId);
+            Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "结束了互动", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -337,8 +345,9 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     public void didReceiveRemoteVideoTrack(String userId) {
         ConferenceItem item = rootLinearLayout.findViewWithTag(userId);
         if (item == null) {
-            return;
+            didParticipantJoined(userId);
         }
+        item = rootLinearLayout.findViewWithTag(userId);
 
         SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
         if (surfaceView != null) {
@@ -352,16 +361,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     @Override
     public void didRemoveRemoteVideoTrack(String userId) {
-        ConferenceItem item = rootLinearLayout.findViewWithTag(userId);
-        if (item != null) {
-            View view = item.findViewWithTag("v_" + userId);
-            if (view != null) {
-                item.removeView(view);
-            }
-
-            item.getStatusTextView().setText("关闭摄像头");
-            item.getStatusTextView().setVisibility(View.VISIBLE);
-        }
+        removeParticipantView(userId);
     }
 
     @Override
