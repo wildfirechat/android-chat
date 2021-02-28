@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.voip.conference;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -366,6 +367,10 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     @Override
     public void didError(String reason) {
         Toast.makeText(getActivity(), "发生错误" + reason, Toast.LENGTH_SHORT).show();
+        Activity activity = getActivity();
+        if (activity != null && !activity.isFinishing()) {
+            activity.finish();
+        }
     }
 
     @Override
