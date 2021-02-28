@@ -150,16 +150,21 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             }
         }
 
-        ConferenceItem multiCallItem = new ConferenceItem(getActivity());
-        multiCallItem.setTag(me.uid);
-        multiCallItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        multiCallItem.getStatusTextView().setText(me.displayName);
-        GlideApp.with(multiCallItem).load(me.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
+        ConferenceItem multiCallItem = createSelfView(-1, -1);
 
         focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         focusVideoContainerFrameLayout.addView(multiCallItem);
         focusConferenceItem = multiCallItem;
         focusVideoUserId = me.uid;
+    }
+
+    private ConferenceItem createSelfView(int with, int height) {
+        ConferenceItem multiCallItem = new ConferenceItem(getActivity());
+        multiCallItem.setTag(me.uid);
+        multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with, height));
+        multiCallItem.getStatusTextView().setText(me.displayName);
+        GlideApp.with(multiCallItem).load(me.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
+        return multiCallItem;
     }
 
     private void updateParticipantStatus(AVEngineKit.CallSession session) {
@@ -328,6 +333,13 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     @Override
     public void didCreateLocalVideoTrack() {
         ConferenceItem item = rootLinearLayout.findViewWithTag(me.uid);
+        if (item == null) {
+            DisplayMetrics dm = getResources().getDisplayMetrics();
+            int with = dm.widthPixels;
+            item = createSelfView(with / 3, with / 3);
+            participantGridView.addView(item);
+        }
+
         if (item.findViewWithTag("v_" + me.uid) != null) {
             return;
         }
