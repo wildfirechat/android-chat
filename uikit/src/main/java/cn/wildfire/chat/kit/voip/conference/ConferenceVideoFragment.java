@@ -57,10 +57,14 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     GridLayout participantGridView;
     @BindView(R2.id.focusVideoContainerFrameLayout)
     FrameLayout focusVideoContainerFrameLayout;
+
     @BindView(R2.id.muteImageView)
     ImageView muteImageView;
     @BindView(R2.id.videoImageView)
     ImageView videoImageView;
+    @BindView(R2.id.shareScreenImageView)
+    ImageView shareScreenImageView;
+
 
     private List<String> participants;
     private UserInfo me;
@@ -70,9 +74,6 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     private ConferenceItem focusConferenceItem;
 
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
-    private boolean micEnabled = true;
-    private boolean videoEnabled = true;
-    private boolean isScreenSharing = false;
 
     public static final String TAG = "ConferenceVideoFragment";
 
@@ -125,6 +126,29 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         audioManager.setSpeakerphoneOn(true);
 
         ConferenceManager.Instance().setCallback(this);
+
+        updateControlStatus();
+    }
+
+    private void updateControlStatus() {
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if(session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            return;
+        }
+
+        muteImageView.setEnabled(!session.isAudience());
+        videoImageView.setEnabled(!session.isAudience());
+        shareScreenImageView.setEnabled(!session.isAudience());
+
+        if (session.isAudience()) {
+            muteImageView.setSelected(false);
+            videoImageView.setSelected(false);
+            shareScreenImageView.setSelected(false);
+        } else {
+            muteImageView.setSelected(session.isEnableAudio());
+            videoImageView.setSelected(!session.videoMuted);
+            shareScreenImageView.setSelected(!session.isScreenSharing());
+        }
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
@@ -208,9 +232,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            session.muteAudio(!micEnabled);
-            micEnabled = !micEnabled;
-            muteImageView.setSelected(micEnabled);
+            muteImageView.setSelected(!session.isEnableAudio());
+            session.muteAudio(session.isEnableAudio());
         }
     }
 
@@ -226,9 +249,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     void video() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            session.muteVideo(!videoEnabled);
-            videoEnabled = !videoEnabled;
-            videoImageView.setSelected(videoEnabled);
+            videoImageView.setSelected(session.videoMuted);
+            session.muteVideo(!session.videoMuted);
         }
     }
 
@@ -242,12 +264,15 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     @OnClick(R2.id.shareScreenImageView)
     void shareScreen() {
-        if (!isScreenSharing) {
-            ((VoipBaseActivity) getActivity()).startScreenShare();
-        } else {
-            ((VoipBaseActivity) getActivity()).stopScreenShare();
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session != null) {
+            shareScreenImageView.setSelected(session.isScreenSharing());
+            if (!session.isScreenSharing()) {
+                ((VoipBaseActivity) getActivity()).startScreenShare();
+            } else {
+                ((VoipBaseActivity) getActivity()).stopScreenShare();
+            }
         }
-        isScreenSharing = !isScreenSharing;
     }
 
     // hangup 触发
@@ -261,6 +286,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
         if (callState == AVEngineKit.CallState.Connected) {
             updateParticipantStatus(callSession);
+            updateControlStatus();
         } else if (callState == AVEngineKit.CallState.Idle) {
             getActivity().finish();
         }
@@ -328,6 +354,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             removeParticipantView(userId);
             Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "结束了互动", Toast.LENGTH_SHORT).show();
         }
+        updateControlStatus();
     }
 
     @Override
@@ -401,6 +428,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
                 didReceiveRemoteVideoTrack(userId);
             }
         }
+        updateControlStatus();
     }
 
     private ConferenceItem getUserConferenceItem(String userId) {
