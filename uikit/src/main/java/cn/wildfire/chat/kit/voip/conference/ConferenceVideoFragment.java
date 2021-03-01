@@ -147,7 +147,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         } else {
             muteImageView.setSelected(session.isEnableAudio());
             videoImageView.setSelected(!session.videoMuted);
-            shareScreenImageView.setSelected(!session.isScreenSharing());
+            shareScreenImageView.setSelected(session.isScreenSharing());
         }
     }
 
@@ -266,7 +266,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     void shareScreen() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            shareScreenImageView.setSelected(session.isScreenSharing());
+            shareScreenImageView.setSelected(!session.isScreenSharing());
             if (!session.isScreenSharing()) {
                 ((VoipBaseActivity) getActivity()).startScreenShare();
             } else {
