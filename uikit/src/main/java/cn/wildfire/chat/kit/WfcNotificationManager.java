@@ -22,6 +22,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.Conversation;
@@ -101,6 +102,10 @@ public class WfcNotificationManager {
 
         for (Message message : messages) {
             if (message.direction == MessageDirection.Send || (message.content.getPersistFlag() != Persist_And_Count && !(message.content instanceof RecallMessageContent))) {
+                continue;
+            }
+            // 朋友圈取消点赞
+            if (message.conversation.line == 1 && message.content.getMessageContentType() == MessageContentType.ContentType_Recall) {
                 continue;
             }
             ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
