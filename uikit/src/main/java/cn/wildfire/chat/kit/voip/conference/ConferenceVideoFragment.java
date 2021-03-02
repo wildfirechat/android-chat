@@ -132,7 +132,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     private void updateControlStatus() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if(session == null || session.getState() == AVEngineKit.CallState.Idle) {
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             return;
         }
 
@@ -278,11 +278,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     // hangup 触发
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason callEndReason) {
-        if(callEndReason == AVEngineKit.CallEndReason.RoomNotExist) {
-            //Todo 检查用户是不是host，如果是host提示用户是不是重新开启会议；如果不是host，提醒用户联系host开启会议。
-        } else if(callEndReason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
-            //Todo 提示用户互动参与人员已满，是否以旁观者身份入会。
-        }
+        // do nothing
     }
 
     @Override
@@ -292,7 +288,11 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             updateParticipantStatus(callSession);
             updateControlStatus();
         } else if (callState == AVEngineKit.CallState.Idle) {
-            getActivity().finish();
+            if (callSession != null && (callSession.getEndReason() == AVEngineKit.CallEndReason.RoomNotExist || callSession.getEndReason() == AVEngineKit.CallEndReason.RoomParticipantsFull)) {
+                // do nothing
+            } else {
+                getActivity().finish();
+            }
         }
     }
 
