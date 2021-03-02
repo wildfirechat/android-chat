@@ -116,7 +116,8 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         }
 
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+        if (session == null ||
+            (session.getState() == AVEngineKit.CallState.Idle && (session.getEndReason() != AVEngineKit.CallEndReason.RoomNotExist || session.getEndReason() != AVEngineKit.CallEndReason.RoomParticipantsFull))) {
             finishFadeout();
             return;
         }

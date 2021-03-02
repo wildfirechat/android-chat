@@ -6,10 +6,13 @@ package cn.wildfire.chat.kit.voip.conference;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.webrtc.StatsReport;
 
@@ -19,7 +22,7 @@ import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.avenginekit.VideoProfile;
+import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceActivity extends VoipBaseActivity {
 
@@ -50,9 +53,7 @@ public class ConferenceActivity extends VoipBaseActivity {
         }
 
         Fragment fragment;
-        if (session.getState() == AVEngineKit.CallState.Incoming) {
-            fragment = new ConferenceIncomingFragment();
-        } else if (session.isAudioOnly()) {
+        if (session.isAudioOnly()) {
             fragment = new ConferenceAudioFragment();
         } else {
             fragment = new ConferenceVideoFragment();
@@ -69,8 +70,48 @@ public class ConferenceActivity extends VoipBaseActivity {
     // hangup 也会触发
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason callEndReason) {
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        String callId = session.getCallId();
+        boolean audioOnly = session.isAudioOnly();
+        String pin = session.getPin();
+        String title = session.getTitle();
+        String desc = session.getDesc();
+        boolean audience = session.isAudience();
+        String host = session.getHost();
+
         postAction(() -> {
-            if (!isFinishing()) {
+            if (callEndReason == AVEngineKit.CallEndReason.RoomNotExist) {
+                //Todo 检查用户是不是host，如果是host提示用户是不是重新开启会议；如果不是host，提醒用户联系host开启会议。
+                String selfUid = ChatManager.Instance().getUserId();
+                if (selfUid.equals(host)) {
+                    new MaterialDialog.Builder(this)
+                        .content("会议已结束，是否重新开启会议")
+                        .negativeText("否")
+                        .positiveText("是")
+                        .onPositive((dialog, which) -> {
+                            AVEngineKit.CallSession newSession = AVEngineKit.Instance().startConference(callId, audioOnly, pin, host, title, desc, audience, this);
+                            if (newSession == null) {
+                                Toast.makeText(this, "创建会议失败", Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                newSession.setCallback(ConferenceActivity.this);
+                            }
+                        })
+                        .onNegative((dialog, which) -> finish())
+                        .show();
+                } else {
+                    Toast.makeText(this, "请联系主持人开启会议", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            } else if (callEndReason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
+                AVEngineKit.CallSession newSession = AVEngineKit.Instance().joinConference(callId, audioOnly, pin, host, title, desc, audience, this);
+                if (newSession == null) {
+                    Toast.makeText(this, "加入会议失败", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    newSession.setCallback(ConferenceActivity.this);
+                }
+            } else if (!isFinishing()) {
                 finish();
             }
         });
@@ -171,42 +212,6 @@ public class ConferenceActivity extends VoipBaseActivity {
         postAction(() -> {
             currentCallSessionCallback.didChangeType(userId, audience);
         });
-    }
-
-    void hangup() {
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
-            session.endCall();
-        }
-        finish();
-    }
-
-    void accept() {
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
-            finish();
-            return;
-        }
-
-        Fragment fragment;
-        if (session.isAudioOnly()) {
-            fragment = new ConferenceAudioFragment();
-        } else {
-            fragment = new ConferenceVideoFragment();
-            List<String> participants = session.getParticipantIds();
-            if (participants.size() >= 4) {
-                AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P, false);
-            } else if (participants.size() >= 6) {
-                AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P_3, false);
-            }
-        }
-        currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-            .replace(android.R.id.content, fragment)
-            .commit();
-
-        session.answerCall(session.isAudioOnly());
     }
 
     @Override
