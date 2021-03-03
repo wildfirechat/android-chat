@@ -14,23 +14,23 @@
         android:visibility="visible">
 
         <FrameLayout
-            android:id="@+id/focusVideoContainerFrameLayout"
+            android:id="@+id/focusAudioContainerFrameLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/green1" />
-
+            android:background="@color/black" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <LinearLayout
                 android:id="@+id/topBarView"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -42,22 +42,10 @@
                     android:src="@drawable/av_minimize"
                     android:tint="@color/white" />
 
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <ImageView
-                    android:id="@+id/switchCameraImageView"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:src="@drawable/av_switch_camera_selector"
-                    android:tint="@color/white" />
             </LinearLayout>
+
             <androidx.gridlayout.widget.GridLayout
-                android:id="@+id/videoContainerGridLayout"
+                android:id="@+id/audioContainerGridLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
@@ -69,6 +57,7 @@
                 app:useDefaultMargins="false" />
         </LinearLayout>
     </FrameLayout>
+
     <TextView
         android:id="@+id/durationTextView"
         android:layout_width="wrap_content"
@@ -78,12 +67,14 @@
         android:layout_marginBottom="20dp"
         android:text="00:00"
         android:textColor="@color/white" />
+
     <FrameLayout
         android:id="@+id/bottomPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
-        <include layout="@layout/av_conference_connected_action" />
+
+        <include layout="@layout/av_conference_audio_connected_action" />
     </FrameLayout>
 
 
