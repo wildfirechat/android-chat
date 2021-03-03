@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import org.webrtc.StatsReport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,7 +46,11 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
     @BindView(R2.id.durationTextView)
     TextView durationTextView;
     @BindView(R2.id.audioContainerGridLayout)
-    GridLayout audioContainerGridLayout;
+    GridLayout participantGridView;
+
+    @BindView(R2.id.focusAudioContainerFrameLayout)
+    FrameLayout focusAudioContainerFrameLayout;
+
     @BindView(R2.id.speakerImageView)
     ImageView speakerImageView;
     @BindView(R2.id.muteImageView)
@@ -61,7 +67,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.av_multi_audio_outgoing_connected, container, false);
+        View view = inflater.inflate(R.layout.av_conference_audio_connected, container, false);
         ButterKnife.bind(this, view);
         init();
         return view;
@@ -94,15 +100,17 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int with = dm.widthPixels;
 
-        audioContainerGridLayout.getLayoutParams().height = with;
-        audioContainerGridLayout.removeAllViews();
+        participantGridView.getLayoutParams().height = with;
+        participantGridView.removeAllViews();
 
         // session里面的participants包含除自己外的所有人
         participants = session.getParticipantIds();
-        if (participants == null || participants.isEmpty()) {
-            return;
+        List<UserInfo> participantUserInfos;
+        if (participants != null && !participants.isEmpty()) {
+            participantUserInfos = userViewModel.getUserInfos(participants);
+        } else {
+            participantUserInfos = new ArrayList<>();
         }
-        List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
         participantUserInfos.add(me);
         int size = with / Math.max((int) Math.ceil(Math.sqrt(participantUserInfos.size())), 3);
         for (UserInfo userInfo : participantUserInfos) {
@@ -112,14 +120,14 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
             multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(size, size));
             multiCallItem.getStatusTextView().setText(R.string.connecting);
             GlideApp.with(multiCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
-            audioContainerGridLayout.addView(multiCallItem);
+            participantGridView.addView(multiCallItem);
         }
     }
 
     private void updateParticipantStatus(AVEngineKit.CallSession session) {
-        int count = audioContainerGridLayout.getChildCount();
+        int count = participantGridView.getChildCount();
         for (int i = 0; i < count; i++) {
-            View view = audioContainerGridLayout.getChildAt(i);
+            View view = participantGridView.getChildAt(i);
             String userId = (String) view.getTag();
             if (me.uid.equals(userId)) {
                 ((ConferenceItem) view).getStatusTextView().setVisibility(View.GONE);
@@ -196,11 +204,11 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         if (participants.contains(userId)) {
             return;
         }
-        int count = audioContainerGridLayout.getChildCount();
+        int count = participantGridView.getChildCount();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int with = dm.widthPixels;
         for (int i = 0; i < count; i++) {
-            View view = audioContainerGridLayout.getChildAt(i);
+            View view = participantGridView.getChildAt(i);
             // 将自己放到最后
             if (me.uid.equals(view.getTag())) {
 
@@ -212,7 +220,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
 
                 multiCallItem.getStatusTextView().setText(R.string.connecting);
                 GlideApp.with(multiCallItem).load(info.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
-                audioContainerGridLayout.addView(multiCallItem, i);
+                participantGridView.addView(multiCallItem, i);
                 break;
             }
         }
@@ -220,7 +228,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
     }
 
     private ConferenceItem getUserConferenceItem(String userId) {
-        return audioContainerGridLayout.findViewWithTag(userId);
+        return participantGridView.findViewWithTag(userId);
     }
 
     @Override
@@ -230,9 +238,9 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
 
     @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason) {
-        View view = audioContainerGridLayout.findViewWithTag(userId);
+        View view = participantGridView.findViewWithTag(userId);
         if (view != null) {
-            audioContainerGridLayout.removeView(view);
+            participantGridView.removeView(view);
         }
         participants.remove(userId);
 
@@ -292,7 +300,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
     @Override
     public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-        if(audioManager.isSpeakerphoneOn()) {
+        if (audioManager.isSpeakerphoneOn()) {
             isSpeakerOn = true;
             speakerImageView.setSelected(true);
         } else {
@@ -300,7 +308,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
             speakerImageView.setSelected(false);
         }
 
-        if(device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.BLUETOOTH) {
+        if (device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.BLUETOOTH) {
             speakerImageView.setEnabled(false);
         } else {
             speakerImageView.setEnabled(true);

@@ -80,7 +80,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.av_conference_connected, container, false);
+        View view = inflater.inflate(R.layout.av_conference_video_connected, container, false);
         ButterKnife.bind(this, view);
         init();
         return view;
