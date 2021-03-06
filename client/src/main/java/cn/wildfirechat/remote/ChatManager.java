@@ -49,11 +49,13 @@ import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetFileRecordCallback;
 import cn.wildfirechat.client.IGetGroupCallback;
 import cn.wildfirechat.client.IGetGroupMemberCallback;
 import cn.wildfirechat.client.IGetMessageCallback;
 import cn.wildfirechat.client.IGetRemoteMessageCallback;
+import cn.wildfirechat.client.IGetUploadUrlCallback;
 import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
@@ -5768,7 +5770,7 @@ public class ChatManager {
      * @param mediaPath  媒体的路径
      * @param callback   返回经过授权的媒体地址
      */
-    public void getAuthorizedMediaUrl(long messageUid, MessageContentMediaType mediaType, String mediaPath, final GeneralCallback2 callback) {
+    public void getAuthorizedMediaUrl(long messageUid, MessageContentMediaType mediaType, String mediaPath, final GetAuthorizedMediaUrlCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -5776,14 +5778,14 @@ public class ChatManager {
         }
 
         try {
-            mClient.getAuthorizedMediaUrl(messageUid, mediaType.getValue(), mediaPath, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
+            mClient.getAuthorizedMediaUrl(messageUid, mediaType.getValue(), mediaPath, new IGetAuthorizedMediaUrlCallback.Stub() {
                 @Override
-                public void onSuccess(String authorizedUrl) throws RemoteException {
+                public void onSuccess(String authorizedUrl, String backupUrl) throws RemoteException {
                     if (callback != null) {
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                callback.onSuccess(authorizedUrl);
+                                callback.onSuccess(authorizedUrl, backupUrl);
                             }
                         });
                     }
@@ -5806,6 +5808,54 @@ public class ChatManager {
             if (callback != null)
                 mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
+    }
+    /*
+    是否支持大文件上传。只有专业版支持，当支持大文件上传时，使用getUploadUrl获取到上传链接，然后在应用层上传。
+     */
+    public boolean isSupportBigFilesUpload() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return mClient.isSupportBigFilesUpload();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /*
+    获取上传文件链接，一般用在大文件上传，通过isSupportBigFilesUpload方法检查之后才可以使用。
+     */
+    public void getUploadUrl(String fileName, MessageContentMediaType mediaType, GetUploadUrlCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getUploadUrl(fileName, mediaType.ordinal(), new IGetUploadUrlCallback.Stub() {
+                @Override
+                public void onSuccess(String uploadUrl, String remoteUrl, String backupUploadUrl, int type) throws RemoteException {
+                    if(callback != null) {
+                        mainHandler.post(()->callback.onSuccess(uploadUrl, remoteUrl, backupUploadUrl, type));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(()->callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+
     }
 
     /*

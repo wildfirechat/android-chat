@@ -16,6 +16,8 @@ import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ISearchChannelCallback;
 import cn.wildfirechat.client.IGetRemoteMessageCallback;
 import cn.wildfirechat.client.IGetFileRecordCallback;
+import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
+import cn.wildfirechat.client.IGetUploadUrlCallback;
 
 import cn.wildfirechat.client.IGetMessageCallback;
 import cn.wildfirechat.client.IGetUserCallback;
@@ -219,7 +221,10 @@ interface IRemoteClient {
 
     void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
     void getApplicationId(in String applicationId, in IGeneralCallback2 callback);
-    oneway void getAuthorizedMediaUrl(in long messageUid, in int mediaType, in String mediaPath, in IGeneralCallback2 callback);
+    oneway void getAuthorizedMediaUrl(in long messageUid, in int mediaType, in String mediaPath, in IGetAuthorizedMediaUrlCallback callback);
+    oneway void getUploadUrl(in String fileName, in int mediaType, in IGetUploadUrlCallback callback);
+
+    boolean isSupportBigFilesUpload();
 
     int getMessageCount(in Conversation conversation);
     boolean begainTransaction();
