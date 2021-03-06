@@ -2151,12 +2151,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getAuthorizedMediaUrl(long messageUid, int mediaType, String mediaPath, IGeneralCallback2 callback) throws RemoteException {
-            ProtoLogic.getAuthorizedMediaUrl(messageUid, mediaType, mediaPath, new ProtoLogic.IGeneralCallback2() {
+        public void getAuthorizedMediaUrl(long messageUid, int mediaType, String mediaPath, IGetAuthorizedMediaUrlCallback callback) throws RemoteException {
+            ProtoLogic.getAuthorizedMediaUrl(messageUid, mediaType, mediaPath, new ProtoLogic.IGetAuthorizedMediaUrlCallback() {
                 @Override
-                public void onSuccess(String s) {
+                public void onSuccess(String s, String s2) {
                     try {
-                        callback.onSuccess(s);
+                        callback.onSuccess(s, s2);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -2171,6 +2171,34 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             });
+        }
+
+        @Override
+        public void getUploadUrl(String fileName, int mediaType, IGetUploadUrlCallback callback) throws RemoteException {
+            ProtoLogic.getUploadMediaUrl(fileName, mediaType, new ProtoLogic.IGetUploadMediaUrlCallback() {
+                @Override
+                public void onSuccess(String s, String s1, int i) {
+                    try {
+                        callback.onSuccess(s, s1, s2, i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public boolean isSupportBigFilesUpload() throws RemoteException {
+            return ProtoLogic.isSupportBigFilesUpload();
         }
 
         @Override
