@@ -35,26 +35,28 @@
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Switch
-        android:id="@+id/audioOnlySwitch"
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/videoSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:checked="true"
         android:padding="20dp"
-        android:text="AudioOnly" />
+        android:text="开启视频" />
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/audienceSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:checked="true"
         android:padding="20dp"
-        android:text="Audience" />
+        android:text="互动会议" />
 
     <Button
         android:id="@+id/createConferenceBtn"
         android:layout_width="match_parent"
-        android:enabled="false"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:text="创建会议" />
+        android:enabled="false"
+        android:text="开始会议" />
 
 </LinearLayout>

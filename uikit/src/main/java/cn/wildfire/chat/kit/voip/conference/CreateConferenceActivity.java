@@ -8,8 +8,9 @@ import android.content.Intent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.Toast;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -26,10 +27,10 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     FixedTextInputEditText titleEditText;
     @BindView(R2.id.conferenceDescTextInputEditText)
     FixedTextInputEditText descEditText;
-    @BindView((R2.id.audioOnlySwitch))
-    Switch audioOnlySwitch;
+    @BindView((R2.id.videoSwitch))
+    SwitchMaterial videoSwitch;
     @BindView((R2.id.audienceSwitch))
-    Switch audienceSwitch;
+    SwitchMaterial audienceSwitch;
     @BindView(R2.id.createConferenceBtn)
     Button createButton;
 
@@ -63,7 +64,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
 
     @OnClick(R2.id.createConferenceBtn)
     public void onClickCreateBtn() {
-        boolean audioOnly = audioOnlySwitch.isChecked();
+        boolean audioOnly = !videoSwitch.isChecked();
         boolean audience = audienceSwitch.isChecked();
         String title = titleEditText.getText().toString();
         String desc = descEditText.getText().toString();
