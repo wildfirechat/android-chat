@@ -15,12 +15,14 @@ import android.widget.Toast;
 import java.io.File;
 
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
+import cn.wildfire.chat.kit.conversation.bigfile.UploadBigFileActivity;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.remote.ChatManager;
 
 public class FileExt extends ConversationExt {
 
@@ -67,7 +69,17 @@ public class FileExt extends ConversationExt {
                     messageViewModel.sendVideoMsg(conversation, file);
                     break;
                 default:
-                    messageViewModel.sendFileMsg(conversation, file);
+                    if (ChatManager.Instance().isSupportBigFilesUpload() && file.length() > 80 * 1024 * 1024) {
+                        //Todo 弹出对话框文件内容太大是否先上传再发送，取消不发送，确定转到大文件上传界面
+                        Intent intent = new Intent(activity, UploadBigFileActivity.class);
+                        intent.putExtra("filePath", file.getAbsolutePath());
+                        intent.putExtra("conversation", conversation);
+                        activity.startActivity(intent);
+                    } else if(file.length() < 100 * 1024 * 1024) {
+                        messageViewModel.sendFileMsg(conversation, file);
+                    } else {
+                        Toast.makeText(activity, "文件太大无法发送！", Toast.LENGTH_LONG).show();
+                    }
                     break;
             }
         }

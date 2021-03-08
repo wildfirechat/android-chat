@@ -1737,21 +1737,23 @@ public class ChatManager {
         }
 
         if (msg.content instanceof MediaMessageContent) {
-            String localPath = ((MediaMessageContent) msg.content).localPath;
-            if (!TextUtils.isEmpty(localPath)) {
-                File file = new File(localPath);
-                if (!file.exists()) {
-                    if (callback != null) {
-                        callback.onFail(ErrorCode.FILE_NOT_EXIST);
+            if(TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
+                String localPath = ((MediaMessageContent) msg.content).localPath;
+                if (!TextUtils.isEmpty(localPath)) {
+                    File file = new File(localPath);
+                    if (!file.exists()) {
+                        if (callback != null) {
+                            callback.onFail(ErrorCode.FILE_NOT_EXIST);
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                if (file.length() > 100 * 1024 * 1024) {
-                    if (callback != null) {
-                        callback.onFail(ErrorCode.FILE_TOO_LARGE);
+                    if (file.length() > 100 * 1024 * 1024) {
+                        if (callback != null) {
+                            callback.onFail(ErrorCode.FILE_TOO_LARGE);
+                        }
+                        return;
                     }
-                    return;
                 }
             }
         }
