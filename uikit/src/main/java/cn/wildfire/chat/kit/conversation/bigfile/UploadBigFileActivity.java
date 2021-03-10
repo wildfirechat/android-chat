@@ -26,6 +26,7 @@ import cn.wildfirechat.remote.GetUploadUrlCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -117,6 +118,11 @@ public class UploadBigFileActivity extends WfcBaseActivity implements View.OnCli
         ChatManager.Instance().getUploadUrl(new File(filePath).getName(), MessageContentMediaType.FILE, new GetUploadUrlCallback() {
             @Override
             public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
+                if(serverType == 1) {
+                    String[] ss = uploadUrl.split("\\?");
+                    uploadQiniu(ss[0], ss[1], ss[2], filePath);
+                    return;
+                }
                 MediaType type=MediaType.parse("application/octet-stream");
                 File file = new File(filePath);
                 RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(type,file), (progress)->{
@@ -150,7 +156,41 @@ public class UploadBigFileActivity extends WfcBaseActivity implements View.OnCli
             }
         });
     }
+    private void uploadQiniu(String url, String token, String key, String filePath) {
+        File file = new File(filePath);
+        MediaType type=MediaType.parse("application/octet-stream");
+        RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(type,file), (progress)->{
+            runOnUiThread(()->updateProgress(progress));
+        });
 
+        final MultipartBody.Builder mb = new MultipartBody.Builder();
+        mb.addFormDataPart("key", key);
+        mb.addFormDataPart("token", token);
+        mb.addFormDataPart("file", "fileName", fileBody);
+        mb.setType(MediaType.parse("multipart/form-data"));
+        RequestBody body = mb.build();
+        Request.Builder requestBuilder = new Request.Builder().url(url).post(body);
+
+        mCall = okHttpClient.newCall(requestBuilder.build());
+
+        mCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(()-> updateState(4));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.code() != 200) {
+                    runOnUiThread(()-> updateState(4));
+                } else {
+                    UploadBigFileActivity.this.remoteUrl = remoteUrl;
+
+                    runOnUiThread(()-> updateState(2));
+                }
+            }
+        });
+    }
     @Override
     public void onClick(View view) {
         if(state == 0 || state == 3 || state == 4) {
