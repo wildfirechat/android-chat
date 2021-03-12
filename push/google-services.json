@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "387942673236",
+    "project_id": "wildfirechat-4753c",
+    "storage_bucket": "wildfirechat-4753c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387942673236:android:74dd044e8c21c0e4d776c1",
+        "android_client_info": {
+          "package_name": "cn.wildfirechat.push"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387942673236-0i2tbnt6dedng72ic7f4shbb7424lse1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBe61zvx-avA6pADahZg5A2c1EWidhoNdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387942673236-0i2tbnt6dedng72ic7f4shbb7424lse1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
