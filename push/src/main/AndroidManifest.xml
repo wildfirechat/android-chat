@@ -182,6 +182,22 @@
             android:name="OPPO_APP_PUSH_SECRET"
             android:value="${OPPO_APP_SECRET}" />
 
+
+        <!--        Google  -->
+        <service
+            android:name="cn.wildfirechat.push.firebase.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+
     </application>
 
 </manifest>

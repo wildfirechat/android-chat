@@ -12,14 +12,22 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.heytap.mcssdk.PushManager;
 import com.heytap.mcssdk.callback.PushCallback;
 import com.heytap.mcssdk.mode.SubscribeResult;
@@ -39,10 +47,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.TimeZone;
 
-import cn.wildfirechat.PushType;
 import cn.wildfirechat.remote.ChatManager;
+
+import static com.google.firebase.messaging.Constants.MessageNotificationKeys.TAG;
 
 /**
  * Created by heavyrain.lee on 2018/2/26.
@@ -56,7 +67,7 @@ public class PushService {
     private static String applicationId;
 
     public enum PushServiceType {
-        Unknown, Xiaomi, HMS, MeiZu, VIVO, OPPO
+        Unknown, Xiaomi, HMS, MeiZu, VIVO, OPPO, Google
     }
 
     public static void init(Application gContext, String applicationId) {
@@ -74,8 +85,14 @@ public class PushService {
         } else if (PushManager.isSupportPush(gContext)) {
             INST.pushServiceType = PushServiceType.OPPO;
             INST.initOPPO(gContext);
-        } else /*if (SYS_MIUI.equals(sys) && INST.isXiaomiConfigured(gContext))*/ {
-            //MIUI或其它使用小米推送
+        } else if (SYS_MIUI.equals(sys) && INST.isXiaomiConfigured(gContext)) {
+            INST.pushServiceType = PushServiceType.Xiaomi;
+            INST.initXiaomi(gContext);
+        } else if(useGoogleFCM(gContext)) {
+            INST.pushServiceType = PushServiceType.Google;
+            INST.initFCM(gContext);
+        } else {
+            //其它使用小米推送
             INST.pushServiceType = PushServiceType.Xiaomi;
             INST.initXiaomi(gContext);
         }
@@ -91,6 +108,33 @@ public class PushService {
             }
         });
 
+    }
+
+    private static boolean useGoogleFCM(Context context) {
+        if(hasGooglePlayServices(context)) { //判断是否支持google服务框架
+            TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+            String no = tm.getNetworkOperator();
+            String simNo = tm.getSimOperator();
+
+            if(!TextUtils.isEmpty(no) && TextUtils.isEmpty(simNo)) {
+                if(no.startsWith("460") && simNo.startsWith("460")) {
+                    //当sim卡和网络都是大陆运营商时，不能使用fcm
+                    return false;
+                } else {
+                    //当sim卡和网络有一个不是大陆运营商时，可以使用fcm
+                    return true;
+                }
+            }
+
+            //区域是中国大陆简体中文且是中国标准时区，不用fcm
+            Locale locale = context.getResources().getConfiguration().locale;
+            if("zh".equals(locale.getLanguage()) && "CN".equals(locale.getCountry()) && "Asia/Shanghai".equals(TimeZone.getDefault().getID())) {
+                return false;
+            }
+
+            return true;
+        }
+        return false;
     }
 
     private static void clearNotification(Context context) {
@@ -180,7 +224,7 @@ public class PushService {
                 try {
                     String token = HmsInstanceId.getInstance(context).getToken(appId, "HCM");
                     if(!TextUtils.isEmpty(token)){
-                        ChatManager.Instance().setDeviceToken(token, PushType.HMS);
+                        ChatManager.Instance().setDeviceToken(token, PushServiceType.HMS.ordinal());
                     }
                 } catch (ApiException e) {
                     e.printStackTrace();
@@ -215,7 +259,7 @@ public class PushService {
                     String pushId = com.meizu.cloud.pushsdk.PushManager.getPushId(context);
                     com.meizu.cloud.pushsdk.PushManager.register(context, String.valueOf(appId), appKey);
                     com.meizu.cloud.pushsdk.PushManager.switchPush(context, String.valueOf(appId), appKey, pushId, 1, true);
-                    ChatManager.Instance().setDeviceToken(pushId, PushType.MEIZU);
+                    ChatManager.Instance().setDeviceToken(pushId, PushServiceType.MeiZu.ordinal());
                 }
             }
         } catch (Exception e) {
@@ -235,7 +279,7 @@ public class PushService {
                 Log.d("PushService", "vivo turnOnPush " + state);
                 String regId = PushClient.getInstance(context).getRegId();
                 if (!TextUtils.isEmpty(regId)) {
-                    ChatManager.Instance().setDeviceToken(regId, PushType.VIVO);
+                    ChatManager.Instance().setDeviceToken(regId, PushServiceType.VIVO.ordinal());
                 }
             }
         });
@@ -251,7 +295,7 @@ public class PushService {
                 PushManager.getInstance().register(context, appkey, appsecret, new PushCallback() {
                     @Override
                     public void onRegister(int i, String s) {
-                        ChatManager.Instance().setDeviceToken(s, PushType.OPPO);
+                        ChatManager.Instance().setDeviceToken(s, PushServiceType.OPPO.ordinal());
                     }
 
                     @Override
@@ -324,6 +368,38 @@ public class PushService {
             e.printStackTrace();
         }
     }
+
+    private void initFCM(Context context) {
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        // Log and toast
+                        String msg = token;
+                        Log.d(TAG, msg);
+//                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                        ChatManager.Instance().setDeviceToken(token, PushServiceType.Google.ordinal());
+                    }
+                });
+    }
+
+    /**
+     * 检查 Google Play 服务
+     */
+    private static boolean hasGooglePlayServices(Context context) {
+        // 验证是否已在此设备上安装并启用Google Play服务，以及此设备上安装的旧版本是否为此客户端所需的版本
+        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
+    }
+
 
 
     public static final String SYS_EMUI = "sys_emui";

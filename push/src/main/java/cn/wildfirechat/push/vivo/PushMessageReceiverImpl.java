@@ -12,7 +12,6 @@ import com.vivo.push.sdk.OpenClientPushMessageReceiver;
 
 import cn.wildfirechat.push.PushService;
 import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.PushType;
 
 public class PushMessageReceiverImpl extends OpenClientPushMessageReceiver {
     /**
@@ -29,6 +28,6 @@ public class PushMessageReceiverImpl extends OpenClientPushMessageReceiver {
     public void onReceiveRegId(Context context, String regId) {
         String responseString = "onReceiveRegId regId = " + regId;
         Log.d(TAG, responseString);
-        ChatManager.Instance().setDeviceToken(regId, PushType.VIVO);
+        ChatManager.Instance().setDeviceToken(regId, PushService.PushServiceType.VIVO.ordinal());
     }
 }

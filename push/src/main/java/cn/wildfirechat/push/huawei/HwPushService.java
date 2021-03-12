@@ -9,7 +9,7 @@ import android.util.Log;
 import com.huawei.hms.push.HmsMessageService;
 import com.huawei.hms.push.RemoteMessage;
 
-import cn.wildfirechat.PushType;
+import cn.wildfirechat.push.PushService;
 import cn.wildfirechat.remote.ChatManager;
 
 public class HwPushService extends HmsMessageService {
@@ -17,7 +17,7 @@ public class HwPushService extends HmsMessageService {
     public void onNewToken(String s) {
         super.onNewToken(s);
         Log.d("HMS", "onNewToken: " + s);
-        ChatManager.Instance().setDeviceToken(s, PushType.HMS);
+        ChatManager.Instance().setDeviceToken(s, PushService.PushServiceType.HMS.ordinal());
     }
 
     @Override
