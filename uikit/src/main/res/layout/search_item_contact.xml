@@ -36,16 +36,33 @@
             android:scaleType="centerCrop"
             android:src="@mipmap/avatar_def" />
 
-        <TextView
-            android:id="@+id/nameTextView"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="11dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:singleLine="true"
-            android:text="wfc"
-            android:textColor="@color/black1"
-            android:textSize="16sp" />
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/nameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="11dp"
+                android:singleLine="true"
+                android:text="wfc"
+                android:textColor="@color/black1"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/descTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="11dp"
+                android:singleLine="true"
+                android:text="desc"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <CheckBox
             android:id="@+id/checkbox"
