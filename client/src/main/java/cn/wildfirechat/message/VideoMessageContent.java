@@ -37,9 +37,6 @@ public class VideoMessageContent extends MediaMessageContent {
     private static final String TAG = "VideoMessageContent";
     private Bitmap thumbnail;
     private byte[] thumbnailBytes;
-    private double imageWidth;
-
-    private double imageHeight;
 
     private long duration ;
 
@@ -53,8 +50,6 @@ public class VideoMessageContent extends MediaMessageContent {
         this.mediaType = MessageContentMediaType.VIDEO;
         if (!TextUtils.isEmpty(localPath)) {
             VideoParam videoParam = WeChatImageUtils.getVideoParam(localPath);
-            imageWidth = videoParam.getWidth();
-            imageHeight = videoParam.getHeight();
             duration = videoParam.getDuration();
             thumbnailBytes = videoParam.getThumbnailBytes();
         }
@@ -101,9 +96,8 @@ public class VideoMessageContent extends MediaMessageContent {
         payload.binaryContent = thumbnailBytes;
         try {
             JSONObject objWrite = new JSONObject();
-            objWrite.put("w", imageWidth);
-            objWrite.put("h", imageHeight);
             objWrite.put("d", duration);
+            objWrite.put("duration", duration);
             payload.content = objWrite.toString();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -118,9 +112,11 @@ public class VideoMessageContent extends MediaMessageContent {
         thumbnailBytes = payload.binaryContent;
         try {
             JSONObject jsonObject = new JSONObject(payload.content);
-            imageWidth = jsonObject.optDouble("w");
-            imageHeight = jsonObject.optDouble("h");
-            duration = jsonObject.optLong("d");
+            if(jsonObject.has("d")) {
+                duration = jsonObject.optLong("d");
+            } else {
+                duration = jsonObject.optLong("duration");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             Log.e(TAG,e.getMessage());
@@ -142,8 +138,6 @@ public class VideoMessageContent extends MediaMessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeByteArray(this.thumbnailBytes);
-        dest.writeDouble(this.imageWidth);
-        dest.writeDouble(this.imageHeight);
         dest.writeLong(this.duration);
     }
 
@@ -151,19 +145,9 @@ public class VideoMessageContent extends MediaMessageContent {
         return duration;
     }
 
-    public double getImageWidth() {
-        return imageWidth;
-    }
-
-    public double getImageHeight() {
-        return imageHeight;
-    }
-
     protected VideoMessageContent(Parcel in) {
         super(in);
         this.thumbnailBytes = in.createByteArray();
-        this.imageWidth = in.readDouble();
-        this.imageHeight = in.readDouble();
         this.duration = in.readLong();
     }
 

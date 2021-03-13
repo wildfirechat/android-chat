@@ -61,9 +61,13 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
         VideoMessageContent videoMessageContent = (VideoMessageContent) message.message.content;
         Bitmap thumbnail = videoMessageContent.getThumbnail();
         time_tv.setText(TimeConvertUtils.formatLongTime(videoMessageContent.getDuration()/1000));
-        int imageSize[] = WeChatImageUtils.getImageSizeByOrgSizeToWeChat((int) videoMessageContent.getImageWidth(), (int) videoMessageContent.getImageHeight());
-        int width = imageSize[0] >0? imageSize[0]: 200;
-        int height = imageSize[1] >0 ? imageSize[1] : 200;
+        int width = 200;
+        int height = 200;
+        if(thumbnail != null) {
+            int imageSize[] = WeChatImageUtils.getImageSizeByOrgSizeToWeChat(thumbnail.getWidth(), thumbnail.getHeight());
+            width = imageSize[0] > 0 ? imageSize[0] : 200;
+            height = imageSize[1] > 0 ? imageSize[1] : 200;
+        }
         imageView.getLayoutParams().width = width;
         imageView.getLayoutParams().height = height;
         playImageView.setVisibility(View.VISIBLE);
