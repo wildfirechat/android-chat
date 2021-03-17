@@ -29,7 +29,7 @@ public class Config {
     //public static String APP_SERVER_ADDRESS = "http://wildfirechat.cn:8888";
 
     /**
-     * 音视频通话所用的turn server配置
+     * 音视频通话所用的turn server配置，详情参考 https://docs.wildfirechat.net/webrtc/
      * <br>
      * <br>
      * 单人版和多人版音视频必须部署turn服务。高级版不需要部署stun/turn服务。
