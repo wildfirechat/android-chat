@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.model.Conversation;
 
@@ -50,7 +51,45 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
             }
             textView.setText(text);
         } else {
-            textView.setText("对方未接听");
+            String text = "未接通";
+            if(message.message.content instanceof CallStartMessageContent) {
+                CallStartMessageContent startMessageContent = (CallStartMessageContent)message.message.content;
+                AVEngineKit.CallEndReason reason = AVEngineKit.CallEndReason.reason(startMessageContent.getStatus());
+                if(reason == AVEngineKit.CallEndReason.UnKnown) {
+                    text = "未接通";
+                } else if(reason == AVEngineKit.CallEndReason.Busy) {
+                    text = "线路忙";
+                } else if(reason == AVEngineKit.CallEndReason.SignalError) {
+                    text = "网络错误";
+                } else if(reason == AVEngineKit.CallEndReason.Hangup) {
+                    text = "已取消";
+                } else if(reason == AVEngineKit.CallEndReason.MediaError) {
+                    text = "网络错误";
+                } else if(reason == AVEngineKit.CallEndReason.RemoteHangup) {
+                    text = "对方已取消";
+                } else if(reason == AVEngineKit.CallEndReason.OpenCameraFailure) {
+                    text = "网络错误";
+                } else if(reason == AVEngineKit.CallEndReason.Timeout) {
+                    text = "未接听";
+                } else if(reason == AVEngineKit.CallEndReason.AcceptByOtherClient) {
+                    text = "已在其他端接听";
+                } else if(reason == AVEngineKit.CallEndReason.AllLeft) {
+                    text = "通话已结束";
+                } else if(reason == AVEngineKit.CallEndReason.RemoteBusy) {
+                    text = "对方已取消";
+                } else if(reason == AVEngineKit.CallEndReason.RemoteTimeout) {
+                    text = "对方未接听";
+                } else if(reason == AVEngineKit.CallEndReason.RemoteNetworkError) {
+                    text = "对方网络错误";
+                } else if(reason == AVEngineKit.CallEndReason.RoomDestroyed) {
+                    text = "通话已结束";
+                } else if(reason == AVEngineKit.CallEndReason.RoomNotExist) {
+                    text = "通话已结束";
+                } else if(reason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
+                    text = "已达到最大通话人数";
+                }
+            }
+            textView.setText(text);
         }
 
         if(content.isAudioOnly()) {
