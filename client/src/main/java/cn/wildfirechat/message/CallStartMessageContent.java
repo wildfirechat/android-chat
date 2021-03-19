@@ -23,7 +23,7 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_S
  * Created by heavyrain lee on 2017/12/6.
  */
 
-@ContentTag(type = ContentType_Call_Start, flag = PersistFlag.Persist)
+@ContentTag(type = ContentType_Call_Start, flag = PersistFlag.Persist_And_Count)
 public class CallStartMessageContent extends MessageContent {
     private String callId;
     // 多人视音频是有效
