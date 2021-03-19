@@ -770,6 +770,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean clearMessageUnreadStatus(long messageId) throws RemoteException {
+            return ProtoLogic.clearMessageUnreadStatus((int)messageId);
+        }
+
+        @Override
         public void clearAllUnreadStatus() throws RemoteException {
             ProtoLogic.clearAllUnreadStatus();
         }
