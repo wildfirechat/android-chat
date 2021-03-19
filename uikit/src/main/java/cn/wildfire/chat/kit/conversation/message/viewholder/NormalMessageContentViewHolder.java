@@ -51,6 +51,7 @@ import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -434,9 +435,13 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             }
         } else if (item.conversation.type == Conversation.ConversationType.Group) {
             singleReceiptImageView.setVisibility(View.GONE);
-            groupReceiptFrameLayout.setVisibility(View.VISIBLE);
 
             if (sentStatus == MessageStatus.Sent) {
+                if(item.content instanceof CallStartMessageContent || (item.content.getPersistFlag().ordinal() & 0x2) == 0) {
+                    groupReceiptFrameLayout.setVisibility(View.GONE);
+                } else {
+                    groupReceiptFrameLayout.setVisibility(View.VISIBLE);
+                }
                 int deliveryCount = 0;
                 if (deliveries != null) {
                     for (Map.Entry<String, Long> delivery : deliveries.entrySet()) {
