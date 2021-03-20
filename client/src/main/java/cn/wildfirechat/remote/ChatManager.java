@@ -2793,7 +2793,6 @@ public class ChatManager {
             if(msg != null) {
                 if (mClient.clearMessageUnreadStatus(messageId)) {
                     ConversationInfo conversationInfo = getConversation(msg.conversation);
-                    conversationInfo.unreadCount = new UnreadCount();
                     for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                         listener.onConversationUnreadStatusClear(conversationInfo);
                     }
