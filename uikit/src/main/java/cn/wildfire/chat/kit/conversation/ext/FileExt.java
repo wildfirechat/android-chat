@@ -52,6 +52,19 @@ public class FileExt extends ConversationExt {
 
             String type = path.substring(path.lastIndexOf("."));
             File file = new File(path);
+            if(file.length() > 80 * 1024 * 1024) {
+                if (ChatManager.Instance().isSupportBigFilesUpload()) {
+                    //Todo 弹出对话框文件内容太大是否先上传再发送，取消不发送，确定转到大文件上传界面
+                    Intent intent = new Intent(activity, UploadBigFileActivity.class);
+                    intent.putExtra("filePath", file.getAbsolutePath());
+                    intent.putExtra("conversation", conversation);
+                    activity.startActivity(intent);
+                } else {
+                    Toast.makeText(activity, "文件太大无法发送！", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+
             switch (type) {
                 case ".png":
                 case ".jpg":
@@ -69,17 +82,7 @@ public class FileExt extends ConversationExt {
                     messageViewModel.sendVideoMsg(conversation, file);
                     break;
                 default:
-                    if (ChatManager.Instance().isSupportBigFilesUpload() && file.length() > 80 * 1024 * 1024) {
-                        //Todo 弹出对话框文件内容太大是否先上传再发送，取消不发送，确定转到大文件上传界面
-                        Intent intent = new Intent(activity, UploadBigFileActivity.class);
-                        intent.putExtra("filePath", file.getAbsolutePath());
-                        intent.putExtra("conversation", conversation);
-                        activity.startActivity(intent);
-                    } else if(file.length() < 100 * 1024 * 1024) {
-                        messageViewModel.sendFileMsg(conversation, file);
-                    } else {
-                        Toast.makeText(activity, "文件太大无法发送！", Toast.LENGTH_LONG).show();
-                    }
+                    messageViewModel.sendFileMsg(conversation, file);
                     break;
             }
         }
