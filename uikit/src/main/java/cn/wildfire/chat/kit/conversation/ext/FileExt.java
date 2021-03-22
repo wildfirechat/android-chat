@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.io.File;
 
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
@@ -54,11 +56,19 @@ public class FileExt extends ConversationExt {
             File file = new File(path);
             if(file.length() > 80 * 1024 * 1024) {
                 if (ChatManager.Instance().isSupportBigFilesUpload()) {
-                    //Todo 弹出对话框文件内容太大是否先上传再发送，取消不发送，确定转到大文件上传界面
+                    new MaterialDialog.Builder(activity)
+                        .content("文件太大，是否先上传？")
+                        .cancelable(true)
+                        .negativeText("取消")
+                        .positiveText("确定")
+                        .onPositive((dialog, which) -> {
                     Intent intent = new Intent(activity, UploadBigFileActivity.class);
                     intent.putExtra("filePath", file.getAbsolutePath());
                     intent.putExtra("conversation", conversation);
                     activity.startActivity(intent);
+
+                        })
+                        .show();
                 } else {
                     Toast.makeText(activity, "文件太大无法发送！", Toast.LENGTH_LONG).show();
                 }
