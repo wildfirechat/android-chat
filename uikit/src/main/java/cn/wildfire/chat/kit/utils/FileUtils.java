@@ -279,7 +279,13 @@ public class FileUtils {
 
         if (absolutePath == null) {
             File tmpDri = context.getExternalCacheDir();
-            File tmpFile = new File(tmpDri, uri.getLastPathSegment());
+            Cursor cursor =
+                context.getContentResolver().query(uri, null, null, null, null);
+            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            cursor.moveToFirst();
+            String fileName = cursor.getString(nameIndex);
+            cursor.close();
+            File tmpFile = new File(tmpDri, fileName);
             if (copyFile(context, uri, tmpFile)) {
                 absolutePath = tmpFile.getAbsolutePath();
             }
@@ -373,19 +379,21 @@ public class FileUtils {
                     return id.substring(4);
                 }
 
-                String[] contentUriPrefixesToTry = new String[]{
-                    "content://downloads/public_downloads",
-                    "content://downloads/my_downloads"
-                };
+                if (id != null && !id.startsWith("msf:")) {
+                    String[] contentUriPrefixesToTry = new String[]{
+                        "content://downloads/public_downloads",
+                        "content://downloads/my_downloads"
+                    };
 
-                for (String contentUriPrefix : contentUriPrefixesToTry) {
-                    Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
-                    try {
-                        String path = getDataColumn(context, contentUri, null, null);
-                        if (path != null) {
-                            return path;
+                    for (String contentUriPrefix : contentUriPrefixesToTry) {
+                        Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
+                        try {
+                            String path = getDataColumn(context, contentUri, null, null);
+                            if (path != null) {
+                                return path;
+                            }
+                        } catch (Exception e) {
                         }
-                    } catch (Exception e) {
                     }
                 }
 
@@ -414,6 +422,8 @@ public class FileUtils {
                     contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
                 } else if ("audio".equals(type)) {
                     contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                } else {
+                    return null;
                 }
 
                 final String selection = "_id=?";
@@ -783,7 +793,7 @@ public class FileUtils {
     public static int getFileTypeImageResId(String filename) {
         String suffix;
         try {
-            suffix = filename.substring(filename.lastIndexOf(".")+1);
+            suffix = filename.substring(filename.lastIndexOf(".") + 1);
         } catch (Exception e) {
             return R.mipmap.ic_file_type_unknown;
         }
@@ -797,27 +807,27 @@ public class FileUtils {
             return R.mipmap.ic_file_type_ppt;
         } else if ("pdf".equalsIgnoreCase(suffix)) {
             return R.mipmap.ic_file_type_pdf;
-        } else if("html".equalsIgnoreCase(suffix) || "htm".equalsIgnoreCase(suffix)) {
+        } else if ("html".equalsIgnoreCase(suffix) || "htm".equalsIgnoreCase(suffix)) {
             return R.mipmap.ic_file_type_html;
-        } else if("txt".equalsIgnoreCase(suffix)) {
+        } else if ("txt".equalsIgnoreCase(suffix)) {
             return R.mipmap.ic_file_type_text;
-        } else if("jpg".equalsIgnoreCase(suffix) || "png".equalsIgnoreCase(suffix) || "jpeg".equalsIgnoreCase(suffix)) {
+        } else if ("jpg".equalsIgnoreCase(suffix) || "png".equalsIgnoreCase(suffix) || "jpeg".equalsIgnoreCase(suffix)) {
             return R.mipmap.ic_file_type_image;
-        } else if("mp3".equalsIgnoreCase(suffix) || "amr".equalsIgnoreCase(suffix)
-                || "acm".equalsIgnoreCase(suffix) || "aif".equalsIgnoreCase(suffix)) {
+        } else if ("mp3".equalsIgnoreCase(suffix) || "amr".equalsIgnoreCase(suffix)
+            || "acm".equalsIgnoreCase(suffix) || "aif".equalsIgnoreCase(suffix)) {
             return R.mipmap.ic_file_type_audio;
-        } else if("mp4".equalsIgnoreCase(suffix) || "avi".equalsIgnoreCase(suffix)
-                || "mov".equalsIgnoreCase(suffix) || "asf".equalsIgnoreCase(suffix)
-                || "wmv".equalsIgnoreCase(suffix) || "mpeg".equalsIgnoreCase(suffix)
-                || "ogg".equalsIgnoreCase(suffix) || "mkv".equalsIgnoreCase(suffix)
-                || "rmvb".equalsIgnoreCase(suffix) || "f4v".equalsIgnoreCase(suffix)) {
+        } else if ("mp4".equalsIgnoreCase(suffix) || "avi".equalsIgnoreCase(suffix)
+            || "mov".equalsIgnoreCase(suffix) || "asf".equalsIgnoreCase(suffix)
+            || "wmv".equalsIgnoreCase(suffix) || "mpeg".equalsIgnoreCase(suffix)
+            || "ogg".equalsIgnoreCase(suffix) || "mkv".equalsIgnoreCase(suffix)
+            || "rmvb".equalsIgnoreCase(suffix) || "f4v".equalsIgnoreCase(suffix)) {
             return R.mipmap.ic_file_type_video;
-        } else if("exe".equalsIgnoreCase(suffix)) {
+        } else if ("exe".equalsIgnoreCase(suffix)) {
             return R.mipmap.ic_file_type_exe;
-        } else if("xml".equalsIgnoreCase(suffix)) {
+        } else if ("xml".equalsIgnoreCase(suffix)) {
             return R.mipmap.ic_file_type_xml;
-        } else if("zip".equalsIgnoreCase(suffix) || "rar".equalsIgnoreCase(suffix)
-              || "gzip".equalsIgnoreCase(suffix) || "gz".equalsIgnoreCase(suffix)) {
+        } else if ("zip".equalsIgnoreCase(suffix) || "rar".equalsIgnoreCase(suffix)
+            || "gzip".equalsIgnoreCase(suffix) || "gz".equalsIgnoreCase(suffix)) {
             return R.mipmap.ic_file_type_zip;
         } else {
             return R.mipmap.ic_file_type_unknown;
