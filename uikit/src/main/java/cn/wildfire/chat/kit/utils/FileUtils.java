@@ -294,6 +294,16 @@ public class FileUtils {
         return absolutePath;
     }
 
+    public static long getSize(final Context context, final Uri uri) {
+        Cursor cursor =
+            context.getContentResolver().query(uri, null, null, null, null);
+        int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+        cursor.moveToFirst();
+        long size = cursor.getLong(sizeIndex);
+        cursor.close();
+        return size;
+    }
+
 
     private static boolean copyFile(Context context, Uri srcUri, File dstFile) {
         try {

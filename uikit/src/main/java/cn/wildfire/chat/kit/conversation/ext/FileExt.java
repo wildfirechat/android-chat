@@ -46,6 +46,8 @@ public class FileExt extends ConversationExt {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
+            // TODO Android10之后，可能不能直接通过uri拿到path，这时候，会进行文件拷贝
+            // 当大文件上时，不应当进行拷贝，可以直接通过InputStream进行上传
             String path = FileUtils.getPath(activity, uri);
             if (TextUtils.isEmpty(path)) {
                 Toast.makeText(activity, "选择文件错误", Toast.LENGTH_SHORT).show();
