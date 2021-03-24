@@ -191,7 +191,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void onReceiveCall(AVEngineKit.CallSession session) {
         ChatManager.Instance().getMainHandler().postDelayed(() -> {
             AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
-            if (callSession == null || callSession.state != AVEngineKit.CallState.Incoming) {
+            if (callSession == null || callSession.getState() != AVEngineKit.CallState.Incoming) {
                 return;
             }
 
@@ -223,7 +223,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void shouldStartRing(boolean isIncoming) {
         ChatManager.Instance().getMainHandler().postDelayed(() -> {
             AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
-            if (callSession == null || (callSession.state != AVEngineKit.CallState.Incoming && callSession.state != AVEngineKit.CallState.Outgoing)) {
+            if (callSession == null || (callSession.getState() != AVEngineKit.CallState.Incoming && callSession.getState() != AVEngineKit.CallState.Outgoing)) {
                 return;
             }
 
