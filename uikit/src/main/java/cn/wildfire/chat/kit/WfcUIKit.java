@@ -189,38 +189,52 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void onReceiveCall(AVEngineKit.CallSession session) {
-        List<String> participants = session.getParticipantIds();
-        if (participants == null || participants.isEmpty()) {
-            return;
-        }
+        ChatManager.Instance().getMainHandler().postDelayed(() -> {
+            AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
+            if (callSession == null || callSession.state != AVEngineKit.CallState.Incoming) {
+                return;
+            }
 
-        boolean speakerOff = session.getConversation().type == Conversation.ConversationType.Single && session.isAudioOnly();
-        AudioManager audioManager = (AudioManager) application.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(speakerOff ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
-        audioManager.setSpeakerphoneOn(!speakerOff);
+            List<String> participants = session.getParticipantIds();
+            if (participants == null || participants.isEmpty()) {
+                return;
+            }
 
-        Conversation conversation = session.getConversation();
-        if (conversation.type == Conversation.ConversationType.Single) {
-            Intent intent = new Intent(WfcIntent.ACTION_VOIP_SINGLE);
-            startActivity(application, intent);
-        } else {
-            Intent intent = new Intent(WfcIntent.ACTION_VOIP_MULTI);
-            startActivity(application, intent);
-        }
-        VoipCallService.start(application, false);
+            boolean speakerOff = session.getConversation().type == Conversation.ConversationType.Single && session.isAudioOnly();
+            AudioManager audioManager = (AudioManager) application.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setMode(speakerOff ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
+            audioManager.setSpeakerphoneOn(!speakerOff);
+
+            Conversation conversation = session.getConversation();
+            if (conversation.type == Conversation.ConversationType.Single) {
+                Intent intent = new Intent(WfcIntent.ACTION_VOIP_SINGLE);
+                startActivity(application, intent);
+            } else {
+                Intent intent = new Intent(WfcIntent.ACTION_VOIP_MULTI);
+                startActivity(application, intent);
+            }
+            VoipCallService.start(application, false);
+        }, 200);
     }
 
     private AsyncPlayer ringPlayer;
 
     @Override
     public void shouldStartRing(boolean isIncoming) {
-        if (isIncoming) {
-            Uri uri = Uri.parse("android.resource://" + application.getPackageName() + "/" + R.raw.incoming_call_ring);
-            ringPlayer.play(application, uri, true, AudioManager.STREAM_RING);
-        } else {
-            Uri uri = Uri.parse("android.resource://" + application.getPackageName() + "/" + R.raw.outgoing_call_ring);
-            ringPlayer.play(application, uri, true, AudioManager.STREAM_RING);
-        }
+        ChatManager.Instance().getMainHandler().postDelayed(() -> {
+            AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
+            if (callSession == null || (callSession.state != AVEngineKit.CallState.Incoming && callSession.state != AVEngineKit.CallState.Outgoing)) {
+                return;
+            }
+
+            if (isIncoming) {
+                Uri uri = Uri.parse("android.resource://" + application.getPackageName() + "/" + R.raw.incoming_call_ring);
+                ringPlayer.play(application, uri, true, AudioManager.STREAM_RING);
+            } else {
+                Uri uri = Uri.parse("android.resource://" + application.getPackageName() + "/" + R.raw.outgoing_call_ring);
+                ringPlayer.play(application, uri, true, AudioManager.STREAM_RING);
+            }
+        }, 200);
     }
 
     @Override
