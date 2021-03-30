@@ -970,7 +970,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             Xlog.setConsoleLogOpen(true);
             String path = getLogPath();
             //wflog为ChatSManager中使用判断日志文件，如果修改需要对应修改
-            Xlog.appenderOpen(Xlog.LEVEL_INFO, AppednerModeAsync, path, path, "wflog", null);
+            try {
+                Xlog.appenderOpen(Xlog.LEVEL_INFO, AppednerModeAsync, path, path, "wflog", null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -2534,7 +2538,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         ProtoLogic.setConnectionStatusCallback(null);
         ProtoLogic.setReceiveMessageCallback(null);
-        ProtoLogic.appWillTerminate();
+
+        try {
+            //发现在某些机型上，程序被杀掉时有崩溃现象，加个保护避免出现崩溃。
+            ProtoLogic.appWillTerminate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void openXlog() {
