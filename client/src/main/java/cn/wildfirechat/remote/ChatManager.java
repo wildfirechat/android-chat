@@ -1424,14 +1424,20 @@ public class ChatManager {
         Message message = new Message();
         message.conversation = conversation;
         message.content = content;
-        message.sender = sender;
         message.status = status;
         message.messageUid = messageUid;
         message.serverTime = serverTime;
-        if (this.userId.equals(sender)) {
-            message.direction = MessageDirection.Send;
-        } else {
+
+        message.direction = MessageDirection.Send;
+        if(status.value() >= MessageStatus.Mentioned.value()){
             message.direction = MessageDirection.Receive;
+            if(conversation.type == Conversation.ConversationType.Single){
+                message.sender = conversation.target;
+            }else {
+                message.sender = sender;
+            }
+        }else {
+            message.sender = getUserId();
         }
 
         try {
