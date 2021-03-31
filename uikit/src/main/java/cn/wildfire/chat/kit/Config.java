@@ -23,10 +23,10 @@ public class Config {
      * <br>
      * <br>
      */
-    public static String IM_SERVER_HOST /*请仔细阅读上面的注释*/ = "wildfirechat.cn";
+    public static String IM_SERVER_HOST /*请仔细阅读上面的注释*/ = "wildfirechat.net";
 
     // 注意APP_SERVER_ADDRESS已从kit中移除，移动到了AppService.java中
-    //public static String APP_SERVER_ADDRESS = "http://wildfirechat.cn:8888";
+    //public static String APP_SERVER_ADDRESS = "http://wildfirechat.net:8888";
 
     /**
      * 音视频通话所用的turn server配置，详情参考 https://docs.wildfirechat.net/webrtc/
