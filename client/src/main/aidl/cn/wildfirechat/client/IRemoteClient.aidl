@@ -107,6 +107,7 @@ interface IRemoteClient {
     oneway void deleteFileRecord(in long messageUid, in IGeneralCallback callback);
     oneway void searchFileRecords(in String keyword, in Conversation conversation, in String fromUser, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void searchMyFileRecords(in String keyword, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
+    oneway void clearRemoteConversationMessage(in Conversation conversation, in IGeneralCallback callback);
 
     Message getMessage(in long messageId);
     Message getMessageByUid(in long messageUid);
@@ -178,6 +179,7 @@ interface IRemoteClient {
     oneway void uploadMediaFile(in String mediaPath, int mediaType, in IUploadMediaCallback callback);
     oneway void modifyMyInfo(in List<ModifyMyInfoEntry> values, in IGeneralCallback callback);
     boolean deleteMessage(in long messageId);
+    void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
     List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
     oneway void searchMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in String keyword, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);

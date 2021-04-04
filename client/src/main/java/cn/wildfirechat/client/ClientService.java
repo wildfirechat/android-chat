@@ -711,6 +711,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             });
         }
 
+        @Override
+        public void clearRemoteConversationMessage(Conversation conversation, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.clearRemoteConversationMessages(conversation.type.ordinal(), conversation.target, conversation.line, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
 
         @Override
         public cn.wildfirechat.message.Message getMessage(long messageId) throws RemoteException {
@@ -1438,6 +1461,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean deleteMessage(long messageId) throws RemoteException {
             return ProtoLogic.deleteMessage(messageId);
+        }
+
+        @Override
+        public void deleteRemoteMessage(long messageUid, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.deleteRemoteMessage(messageUid, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
