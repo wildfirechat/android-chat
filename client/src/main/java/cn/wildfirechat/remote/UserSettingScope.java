@@ -27,7 +27,15 @@ public interface UserSettingScope {
     int FavoriteUser = 14;
     //不能直接使用，协议栈内会使用此值
     int MuteWhenPcOnline = 15;
+    //不能直接使用，协议栈内会使用此值
     int NoDisturbing = 17;
+    //不能直接使用，协议栈内会使用此值
+    int ConversationClearMessage = 18;
+    //不能直接使用，协议栈内会使用此值
+    int ConversationDraft = 19;
+    //不能直接使用，协议栈内会使用此值
+    int EnableSyncDraft = 20;
+
 
 
     int kUserSettingCustomBegin = 1000;
