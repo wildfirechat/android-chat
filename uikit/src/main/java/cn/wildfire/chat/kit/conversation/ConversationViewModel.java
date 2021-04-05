@@ -56,7 +56,9 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                                 if (messages != null && !messages.isEmpty()) {
                                     List<UiMessage> msgs = new ArrayList<>();
                                     for (Message msg : messages) {
-                                        msgs.add(new UiMessage(msg));
+                                        if(msg.messageId != 0) {
+                                            msgs.add(new UiMessage(msg));
+                                        }
                                     }
                                     result.postValue(msgs);
                                 } else {
