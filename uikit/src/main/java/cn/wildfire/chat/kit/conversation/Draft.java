@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.conversation;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -78,7 +79,15 @@ public class Draft {
         if (TextUtils.isEmpty(json)) {
             return null;
         }
-        return new Gson().fromJson(json, Draft.class);
+        Draft draft =  null;
+        try {
+            draft = new Gson().fromJson(json, Draft.class);
+        }catch (Exception e){
+            Log.e("Draft", e.getMessage());
+            // fallback
+            draft.content = json;
+        }
+        return draft;
     }
 
     public static String toDraftJson(Editable content, int emojiCount) {
