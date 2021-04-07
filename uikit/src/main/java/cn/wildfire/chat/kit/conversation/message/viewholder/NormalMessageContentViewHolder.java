@@ -187,9 +187,21 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         messageViewModel.recallMessage(message.message);
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, confirm = true, priority = 11)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, confirm = false, priority = 11)
     public void removeMessage(View itemView, UiMessage message) {
-        messageViewModel.deleteMessage(message.message);
+        new MaterialDialog.Builder(fragment.getContext())
+            .items("删除本地消息", "删除远程消息")
+            .itemsCallback(new MaterialDialog.ListCallback() {
+                @Override
+                public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                    if (position == 0) {
+                        messageViewModel.deleteMessage(message.message);
+                    } else {
+                        messageViewModel.deleteRemoteMessage(message.message);
+                    }
+                }
+            })
+            .show();
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_FORWARD, priority = 11)
@@ -437,7 +449,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             singleReceiptImageView.setVisibility(View.GONE);
 
             if (sentStatus == MessageStatus.Sent) {
-                if(item.content instanceof CallStartMessageContent || (item.content.getPersistFlag().ordinal() & 0x2) == 0) {
+                if (item.content instanceof CallStartMessageContent || (item.content.getPersistFlag().ordinal() & 0x2) == 0) {
                     groupReceiptFrameLayout.setVisibility(View.GONE);
                 } else {
                     groupReceiptFrameLayout.setVisibility(View.VISIBLE);
