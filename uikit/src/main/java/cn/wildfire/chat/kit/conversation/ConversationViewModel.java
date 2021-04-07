@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.conversation;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -17,6 +19,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GetMessageCallback;
 import cn.wildfirechat.remote.GetRemoteMessageCallback;
 
@@ -166,6 +169,22 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
         if (clearConversationMessageLiveData != null) {
             clearConversationMessageLiveData.setValue(conversation);
         }
+    }
+
+    public void clearRemoteConversationMessage(Conversation conversation){
+        ChatManager.Instance().clearRemoteConversationMessage(conversation, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                if (clearConversationMessageLiveData != null){
+                    clearConversationMessageLiveData.setValue(conversation);
+                }
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                Log.e("Conversation", "clearRemoteConversation error: " + errorCode);
+            }
+        });
     }
 
     public ConversationInfo getConversationInfo(Conversation conversation) {

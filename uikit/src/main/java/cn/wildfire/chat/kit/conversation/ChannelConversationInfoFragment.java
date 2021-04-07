@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.kyleduo.switchbutton.SwitchButton;
 
@@ -25,6 +26,8 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
@@ -34,8 +37,6 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -115,7 +116,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
 
-        if(ChatManager.Instance().isCommercialServer()) {
+        if (ChatManager.Instance().isCommercialServer()) {
             fileRecordOptionItem.setVisibility(View.VISIBLE);
         } else {
             fileRecordOptionItem.setVisibility(View.GONE);
@@ -137,7 +138,19 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
 
     @OnClick(R2.id.clearMessagesOptionItemView)
     void clearMessage() {
-        conversationViewModel.clearConversationMessage(conversationInfo.conversation);
+        new MaterialDialog.Builder(getActivity())
+            .items("清空本地会话", "清空远程会话")
+            .itemsCallback(new MaterialDialog.ListCallback() {
+                @Override
+                public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                    if (position == 0) {
+                        conversationViewModel.clearConversationMessage(conversationInfo.conversation);
+                    } else {
+                        conversationViewModel.clearRemoteConversationMessage(conversationInfo.conversation);
+                    }
+                }
+            })
+            .show();
     }
 
     @OnClick(R2.id.channelQRCodeOptionItemView)
@@ -148,7 +161,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     }
 
     @OnClick(R2.id.fileRecordOptionItemView)
-    void fileRecord(){
+    void fileRecord() {
         Intent intent = new Intent(getActivity(), FileRecordActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);

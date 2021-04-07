@@ -424,7 +424,19 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @OnClick(R2.id.clearMessagesOptionItemView)
     void clearMessage() {
-        conversationViewModel.clearConversationMessage(conversationInfo.conversation);
+        new MaterialDialog.Builder(getActivity())
+            .items("清空本地会话", "清空远程会话")
+            .itemsCallback(new MaterialDialog.ListCallback() {
+                @Override
+                public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                    if (position == 0) {
+                        conversationViewModel.clearConversationMessage(conversationInfo.conversation);
+                    } else {
+                        conversationViewModel.clearRemoteConversationMessage(conversationInfo.conversation);
+                    }
+                }
+            })
+            .show();
     }
 
     @OnClick(R2.id.groupQRCodeOptionItemView)

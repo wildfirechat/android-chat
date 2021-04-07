@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lqr.emoji.MoonUtils;
 
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfire.chat.kit.conversation.Draft;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -44,6 +46,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected ConversationInfo conversationInfo;
     protected RecyclerView.Adapter adapter;
     protected ConversationListViewModel conversationListViewModel;
+    private ConversationViewModel conversationViewModel;
 
     @BindView(R2.id.nameTextView)
     protected TextView nameTextView;
@@ -74,6 +77,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         conversationListViewModel = ViewModelProviders
             .of(fragment, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
+        conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
     }
 
     final public void onBind(ConversationInfo conversationInfo, int position) {
@@ -184,10 +188,22 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     }
 
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_CLEAR,
-        confirm = true,
+        confirm = false,
         priority = 0)
     public void clearMessages(View itemView, ConversationInfo conversationInfo) {
-        conversationListViewModel.clearMessages(conversationInfo.conversation);
+        new MaterialDialog.Builder(fragment.getActivity())
+            .items("清空本地会话", "清空远程会话")
+            .itemsCallback(new MaterialDialog.ListCallback() {
+                @Override
+                public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                    if (position == 0) {
+                        conversationViewModel.clearConversationMessage(conversationInfo.conversation);
+                    } else {
+                        conversationViewModel.clearRemoteConversationMessage(conversationInfo.conversation);
+                    }
+                }
+            })
+            .show();
     }
 
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_TOP, priority = 1)
