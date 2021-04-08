@@ -5623,17 +5623,17 @@ public class ChatManager {
     }
 
     /**
-     * 判断是否开启同步草稿功能，仅专业版支持
+     * 判断是否禁止同步草稿功能，仅专业版支持
      *
      * @return
      */
-    public boolean isEnableSyncDraft() {
+    public boolean isDisableSyncDraft() {
         if (!checkRemoteService()) {
             return false;
         }
 
         try {
-            return "1".equals(mClient.getUserSetting(UserSettingScope.EnableSyncDraft, ""));
+            return "1".equals(mClient.getUserSetting(UserSettingScope.DisableSyncDraft, ""));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -5641,12 +5641,12 @@ public class ChatManager {
     }
 
     /**
-     * 设置是否同步草稿，仅专业版支持
+     * 设置是否禁止同步草稿，仅专业版支持
      *
      * @param isEnable
      * @param callback
      */
-    public void setEnableSyncDraft(boolean isEnable, final GeneralCallback callback) {
+    public void setDisableSyncDraft(boolean isEnable, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null) {
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -5655,7 +5655,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.setUserSetting(UserSettingScope.EnableSyncDraft, "", isEnable ? "1" : "0", new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.setUserSetting(UserSettingScope.DisableSyncDraft, "", isEnable ? "1" : "0", new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
@@ -5675,7 +5675,23 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 应用全局是否禁止同步草稿功能，仅专业版支持
+     *
+     * @return
+     */
+    public boolean isGlobalDisableSyncDraft() {
+        if (!checkRemoteService()) {
+            return false;
+        }
 
+        try {
+            return mClient.isGlobalDisableSyncDraft();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     /**
      * 获取免打扰时间回调

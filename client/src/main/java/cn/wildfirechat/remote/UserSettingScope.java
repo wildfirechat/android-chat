@@ -34,7 +34,7 @@ public interface UserSettingScope {
     //不能直接使用，协议栈内会使用此值
     int ConversationDraft = 19;
     //不能直接使用，协议栈内会使用此值
-    int EnableSyncDraft = 20;
+    int DisableSyncDraft = 20;
 
 
 
