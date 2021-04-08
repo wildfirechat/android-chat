@@ -451,9 +451,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (mentions != null) {
             for (Mention mention : mentions) {
                 if (mention.isMentionAll()) {
-                    spannableStringBuilder.setSpan(new MentionSpan(true), mention.getStart(), mention.getEnd(), mention.getFlags());
+                    spannableStringBuilder.setSpan(new MentionSpan(true), mention.getStart(), mention.getEnd(), Spanned.SPAN_MARK_MARK);
                 } else {
-                    spannableStringBuilder.setSpan(new MentionSpan(mention.getUid()), mention.getStart(), mention.getEnd(), mention.getFlags());
+                    spannableStringBuilder.setSpan(new MentionSpan(mention.getUid()), mention.getStart(), mention.getEnd(), Spanned.SPAN_MARK_MARK);
                 }
             }
         }
