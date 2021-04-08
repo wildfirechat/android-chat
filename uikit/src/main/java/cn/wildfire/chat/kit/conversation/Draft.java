@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversation;
 
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -60,7 +61,7 @@ public class Draft {
             mentions = new ArrayList<>();
             Mention mention;
             for (MentionSpan span : mentionSpans) {
-                mention = new Mention(content.getSpanStart(span), content.getSpanEnd(span), content.getSpanFlags(span));
+                mention = new Mention(content.getSpanStart(span), content.getSpanEnd(span));
                 if (span.isMentionAll()) {
                     mention.setMentionAll(true);
                 } else {
@@ -116,7 +117,7 @@ public class Draft {
                 } else {
                     span = new MentionSpan(mention.getUid());
                 }
-                builder.setSpan(span, mention.getStart(), mention.getEnd(), mention.getFlags());
+                builder.setSpan(span, mention.getStart(), mention.getEnd(), Spanned.SPAN_MARK_MARK);
             }
         }
         return builder;
