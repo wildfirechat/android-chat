@@ -7,14 +7,12 @@ package cn.wildfire.chat.kit.conversation.mention;
 public class Mention {
     private int start;
     private int end;
-    private int flags;
     private boolean isMentionAll;
     private String uid;
 
-    public Mention(int start, int end, int flags) {
+    public Mention(int start, int end) {
         this.start = start;
         this.end = end;
-        this.flags = flags;
     }
 
     public int getStart() {
@@ -31,14 +29,6 @@ public class Mention {
 
     public void setEnd(int end) {
         this.end = end;
-    }
-
-    public int getFlags() {
-        return flags;
-    }
-
-    public void setFlags(int flags) {
-        this.flags = flags;
     }
 
     public boolean isMentionAll() {
