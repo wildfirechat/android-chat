@@ -5,33 +5,20 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.FileUtils;
-import com.cjt2325.cameralibrary.util.FileUtil;
-
-import java.io.File;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.GlideRequest;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfire.chat.kit.third.image.ImageSize;
-import cn.wildfire.chat.kit.third.utils.ImageUtils;
-import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
@@ -51,7 +38,7 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
     @BindView(R2.id.imageView)
     BubbleImageView imageView;
 
-    private  String imagePath ;
+    private String imagePath;
 
     public ImageMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -62,16 +49,16 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
         ImageMessageContent imageMessage = (ImageMessageContent) message.message.content;
         Bitmap thumbnail = imageMessage.getThumbnail();
         int imageSize[] = WeChatImageUtils.getImageSizeByOrgSizeToWeChat((int) imageMessage.getImageWidth(), (int) imageMessage.getImageHeight());
-        int width = imageSize[0] >0? imageSize[0]: 200;
-        int height = imageSize[1] >0 ? imageSize[1] : 200;
+        int width = imageSize[0] > 0 ? imageSize[0] : 200;
+        int height = imageSize[1] > 0 ? imageSize[1] : 200;
         imageView.getLayoutParams().width = width;
         imageView.getLayoutParams().height = height;
-        if(FileUtils.isFileExists(imageMessage.localPath)){
+        if (FileUtils.isFileExists(imageMessage.localPath)) {
             imagePath = imageMessage.localPath;
-        }else {
+        } else {
             imagePath = imageMessage.remoteUrl;
         }
-        loadMedia(thumbnail,imagePath,imageView);
+        loadMedia(thumbnail, imagePath, imageView);
 
     }
 

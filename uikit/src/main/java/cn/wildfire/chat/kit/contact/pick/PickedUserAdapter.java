@@ -20,8 +20,8 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 
 public class PickedUserAdapter extends RecyclerView.Adapter {
 

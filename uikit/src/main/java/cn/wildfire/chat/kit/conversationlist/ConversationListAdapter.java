@@ -23,13 +23,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolderManager;
 import cn.wildfire.chat.kit.conversationlist.viewholder.StatusNotificationContainerViewHolder;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 

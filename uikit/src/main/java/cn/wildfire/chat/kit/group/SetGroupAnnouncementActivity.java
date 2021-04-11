@@ -15,10 +15,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import butterknife.BindView;
 import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.AppServiceProvider;
-import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfirechat.model.GroupInfo;
 
 public class SetGroupAnnouncementActivity extends WfcBaseActivity {

@@ -15,8 +15,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class QuickIndexBar extends View {
 

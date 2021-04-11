@@ -36,12 +36,12 @@ import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
 import butterknife.BindView;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.third.location.ui.base.BaseActivity;
 import cn.wildfire.chat.kit.third.location.ui.presenter.MyLocationAtPresenter;
 import cn.wildfire.chat.kit.third.location.ui.view.IMyLocationAtView;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 /**
  * @创建者 CSDN_LQR

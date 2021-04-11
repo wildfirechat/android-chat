@@ -16,11 +16,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
     private MenuItem menuItem;

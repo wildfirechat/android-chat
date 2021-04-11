@@ -4,13 +4,13 @@
 
 package cn.wildfire.chat.kit.viewmodel;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ShareViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 

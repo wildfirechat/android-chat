@@ -4,10 +4,7 @@
 
 package cn.wildfire.chat.kit.contact.pick;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,13 +14,11 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import java.util.LinkedList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public abstract class PickConversationTargetActivity extends WfcBaseActivity implements PickConversationTargetFragment.OnGroupPickListener {
     public static final String CURRENT_PARTICIPANTS = "currentParticipants";

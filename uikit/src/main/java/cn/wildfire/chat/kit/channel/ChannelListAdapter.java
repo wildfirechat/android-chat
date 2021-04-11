@@ -8,14 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.channel.viewholder.CategoryViewHolder;
 import cn.wildfire.chat.kit.channel.viewholder.ChannelViewHolder;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.ChannelInfo;
 
 public class ChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

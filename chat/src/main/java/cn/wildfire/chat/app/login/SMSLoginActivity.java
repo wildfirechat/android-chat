@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.text.Editable;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -43,7 +42,6 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     private String phoneNumber;
 
 
-
     @Override
     protected int contentLayout() {
         return R.layout.login_activity_sms;
@@ -72,7 +70,6 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
             loginButton.setEnabled(true);
         }
     }
-
 
 
     @OnClick(R.id.loginButton)

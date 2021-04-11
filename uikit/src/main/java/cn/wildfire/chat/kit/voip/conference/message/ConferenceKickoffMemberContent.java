@@ -6,16 +6,12 @@ package cn.wildfire.chat.kit.voip.conference.message;
 
 import android.os.Parcel;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Change_Model;
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Kickoff_Member;
 
 /**

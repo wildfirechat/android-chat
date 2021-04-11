@@ -30,8 +30,6 @@ import java.util.concurrent.ExecutionException;
 
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.mm.MMPreviewActivity;
-import cn.wildfire.chat.kit.third.image.ImageSize;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;

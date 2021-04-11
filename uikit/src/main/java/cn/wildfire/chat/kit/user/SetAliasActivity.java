@@ -15,11 +15,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import butterknife.BindView;
 import butterknife.OnTextChanged;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 
 public class SetAliasActivity extends WfcBaseActivity {

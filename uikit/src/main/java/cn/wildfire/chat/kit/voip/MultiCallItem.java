@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class MultiCallItem extends FrameLayout {
     private ImageView portraitImageView;

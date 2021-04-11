@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,10 +21,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
-import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.FriendRequest;
 
 public class FriendRequestListFragment extends Fragment {

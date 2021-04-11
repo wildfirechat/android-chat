@@ -9,16 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.search.viewHolder.CategoryViewHolder;
 import cn.wildfire.chat.kit.search.viewHolder.ExpandViewHolder;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class SearchResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_CATEGORY = 0;

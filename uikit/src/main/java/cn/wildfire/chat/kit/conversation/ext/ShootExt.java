@@ -14,12 +14,12 @@ import android.widget.Toast;
 
 import java.io.File;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.mm.TakePhotoActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 

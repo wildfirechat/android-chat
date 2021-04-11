@@ -42,7 +42,6 @@ import cn.wildfirechat.remote.GetGroupsCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
 import cn.wildfirechat.remote.UploadMediaCallback;
-import cn.wildfirechat.remote.UserSettingScope;
 
 public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;

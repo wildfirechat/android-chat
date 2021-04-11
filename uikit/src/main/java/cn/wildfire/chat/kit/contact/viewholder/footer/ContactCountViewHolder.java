@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
-import cn.wildfire.chat.kit.R2;
 
 public class ContactCountViewHolder extends FooterViewHolder<ContactCountFooterValue> {
     @BindView(R2.id.countTextView)

@@ -16,12 +16,12 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.io.File;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.bigfile.UploadBigFileActivity;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;

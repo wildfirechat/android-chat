@@ -9,11 +9,11 @@ import androidx.annotation.LayoutRes;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.StatusNotificationType;
 import cn.wildfire.chat.kit.conversationlist.notification.viewholder.ConnectionNotificationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.notification.viewholder.PCOnlineNotificationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.notification.viewholder.StatusNotificationViewHolder;
-import cn.wildfire.chat.kit.R;
 
 public class StatusNotificationManager {
     private static StatusNotificationManager instance;

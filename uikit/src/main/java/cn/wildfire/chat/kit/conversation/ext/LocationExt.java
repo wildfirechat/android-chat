@@ -10,12 +10,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.view.View;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.location.data.LocationData;
 import cn.wildfire.chat.kit.third.location.ui.activity.MyLocationActivity;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 

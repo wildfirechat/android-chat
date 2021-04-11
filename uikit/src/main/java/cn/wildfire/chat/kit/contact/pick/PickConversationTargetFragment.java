@@ -14,11 +14,11 @@ import androidx.lifecycle.ViewModelProviders;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.model.GroupValue;
 import cn.wildfire.chat.kit.contact.pick.viewholder.PickGroupViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.GroupInfo;
 
 public class PickConversationTargetFragment extends PickUserFragment {

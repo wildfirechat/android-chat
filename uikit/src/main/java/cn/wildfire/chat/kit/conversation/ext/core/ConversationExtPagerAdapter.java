@@ -8,10 +8,10 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
+
+import java.util.List;
 
 public class ConversationExtPagerAdapter extends PagerAdapter {
     private SparseArray<ConversationExtPageView> pagers = new SparseArray<>();

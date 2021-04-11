@@ -1,6 +1,5 @@
 package cn.wildfire.chat.kit.conversation.bigfile;
 
-import java.io.File;
 import java.io.IOException;
 
 import okhttp3.MediaType;
