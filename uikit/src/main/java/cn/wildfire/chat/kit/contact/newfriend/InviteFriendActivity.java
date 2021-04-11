@@ -14,11 +14,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.UserInfo;
 
 public class InviteFriendActivity extends WfcBaseActivity {

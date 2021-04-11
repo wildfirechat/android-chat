@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.GroupInfo;
 
 public class AddGroupMemberActivity extends WfcBaseActivity {

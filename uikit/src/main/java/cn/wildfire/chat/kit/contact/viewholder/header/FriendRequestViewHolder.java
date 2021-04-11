@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.remote.ChatManager;
 
 @SuppressWarnings("unused")

@@ -17,6 +17,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
@@ -24,8 +26,6 @@ import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 /**
  * @author dhl

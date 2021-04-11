@@ -14,12 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.Message;
 
 public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {

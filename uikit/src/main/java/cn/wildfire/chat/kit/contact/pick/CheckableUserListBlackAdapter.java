@@ -12,15 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import cn.wildfire.chat.kit.contact.UserListAdapter;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.viewholder.CheckableUserBlackViewHolder;
 import cn.wildfire.chat.kit.contact.pick.viewholder.CheckableUserViewHolder;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class CheckableUserListBlackAdapter extends CheckableUserListAdapter {
 

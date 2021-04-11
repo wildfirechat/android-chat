@@ -16,12 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.SearchUserCallback;

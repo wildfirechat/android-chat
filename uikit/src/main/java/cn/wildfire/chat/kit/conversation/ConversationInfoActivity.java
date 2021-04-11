@@ -7,9 +7,9 @@ package cn.wildfire.chat.kit.conversation;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import cn.wildfire.chat.kit.WfcBaseActivity;
+
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.model.ConversationInfo;
 
 public class ConversationInfoActivity extends WfcBaseActivity {

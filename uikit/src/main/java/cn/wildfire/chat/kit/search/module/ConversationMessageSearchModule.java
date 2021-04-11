@@ -9,15 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import java.util.List;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.MessageViewHolder;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;

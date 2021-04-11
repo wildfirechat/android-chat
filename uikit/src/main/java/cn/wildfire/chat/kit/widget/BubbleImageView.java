@@ -24,7 +24,6 @@ import android.util.TypedValue;
 import android.widget.ImageView;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class BubbleImageView extends ImageView {
 

@@ -11,17 +11,18 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.king.zxing.util.CodeUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import butterknife.BindView;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 
 public class QRCodeActivity extends WfcBaseActivity {
     private String title;

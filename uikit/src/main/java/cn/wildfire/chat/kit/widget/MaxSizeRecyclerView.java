@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class MaxSizeRecyclerView extends RecyclerView {
     private int mMaxWidth;

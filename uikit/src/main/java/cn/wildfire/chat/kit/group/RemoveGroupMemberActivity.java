@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.remote.ChatManager;
 

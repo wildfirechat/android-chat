@@ -24,9 +24,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import butterknife.BindView;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 
 public class ScanQRCodeActivity extends WfcBaseActivity {
 

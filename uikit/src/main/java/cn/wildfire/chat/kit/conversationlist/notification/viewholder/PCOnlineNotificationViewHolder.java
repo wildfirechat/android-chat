@@ -12,11 +12,11 @@ import androidx.fragment.app.Fragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.StatusNotificationType;
 import cn.wildfire.chat.kit.conversationlist.notification.PCOnlineStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.pc.PCSessionActivity;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.remote.ChatManager;
 

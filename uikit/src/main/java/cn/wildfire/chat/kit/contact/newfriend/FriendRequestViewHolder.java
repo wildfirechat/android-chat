@@ -20,10 +20,10 @@ import com.bumptech.glide.request.RequestOptions;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
-import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.UserInfo;
 

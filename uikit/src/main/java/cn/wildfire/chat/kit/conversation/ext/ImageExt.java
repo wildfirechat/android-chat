@@ -19,11 +19,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;

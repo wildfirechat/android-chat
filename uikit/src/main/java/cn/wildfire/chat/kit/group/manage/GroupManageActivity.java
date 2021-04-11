@@ -4,9 +4,8 @@
 
 package cn.wildfire.chat.kit.group.manage;
 
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.model.GroupInfo;
 
 public class GroupManageActivity extends WfcBaseActivity {

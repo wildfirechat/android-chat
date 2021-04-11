@@ -6,7 +6,6 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.model.Conversation;
 
 public class FileRecordListActivity extends WfcBaseActivity {
 

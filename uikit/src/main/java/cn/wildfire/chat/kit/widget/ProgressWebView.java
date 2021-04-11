@@ -11,7 +11,6 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 
 public class ProgressWebView extends WebView {

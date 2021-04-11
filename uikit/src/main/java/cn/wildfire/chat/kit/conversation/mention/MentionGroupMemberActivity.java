@@ -6,10 +6,9 @@ package cn.wildfire.chat.kit.conversation.mention;
 
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.search.SearchActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.GroupInfo;
 
 public class MentionGroupMemberActivity extends SearchActivity {

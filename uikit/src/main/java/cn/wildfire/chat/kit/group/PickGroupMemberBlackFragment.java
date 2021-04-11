@@ -12,12 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.pick.CheckableUserListBlackAdapter;
 import cn.wildfire.chat.kit.contact.pick.PickedUserAdapter;
 import cn.wildfire.chat.kit.contact.pick.PickedUserBlackAdapter;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.GroupInfo;
 
 public class PickGroupMemberBlackFragment extends PickGroupMemberFragment {

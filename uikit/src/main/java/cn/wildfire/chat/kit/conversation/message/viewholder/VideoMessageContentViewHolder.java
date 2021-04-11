@@ -5,10 +5,6 @@
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,20 +13,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.FileUtils;
 
-import java.io.File;
-
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.GlideRequest;
+import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.TimeConvertUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
-import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.utils.WeChatImageUtils;
 

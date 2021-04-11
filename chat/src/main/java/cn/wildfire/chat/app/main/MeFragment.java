@@ -114,7 +114,7 @@ public class MeFragment extends Fragment {
                 }
             });
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
-        if(ChatManager.Instance().isCommercialServer()) {
+        if (ChatManager.Instance().isCommercialServer()) {
             fileRecordOptionItem.setVisibility(View.VISIBLE);
         } else {
             fileRecordOptionItem.setVisibility(View.GONE);
@@ -145,7 +145,6 @@ public class MeFragment extends Fragment {
         Intent intent = new Intent(getActivity(), FileRecordListActivity.class);
         startActivity(intent);
     }
-
 
 
     @OnClick(R.id.themeOptionItemView)

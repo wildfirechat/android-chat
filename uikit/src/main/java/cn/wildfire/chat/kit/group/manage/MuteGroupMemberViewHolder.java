@@ -11,9 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
-import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
-import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfirechat.model.GroupInfo;
 

@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 
 public class ExpandViewHolder extends RecyclerView.ViewHolder {
