@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 
+import java.util.Calendar;
+
 /**
  * @创建者 CSDN_LQR
  * @描述 时间工具（需要joda-time）
@@ -22,19 +24,20 @@ public class TimeUtils {
             return "";
         }
 
-        long now = System.currentTimeMillis();
-        DateTime nowTime = new DateTime(now);
         DateTime msgTime = new DateTime(msgTimeMillis);
-        long dayMillis = 24 * 60 * 60 * 1000;
+        Calendar nowCalendar = Calendar.getInstance();
+        nowCalendar.get(Calendar.DAY_OF_YEAR);
+        Calendar msgCalendar = Calendar.getInstance();
+        msgCalendar.setTimeInMillis(msgTimeMillis);
 
-        if ((int) (now / dayMillis) == (int) (msgTimeMillis / dayMillis)) {
-            //早上、下午、晚上 1:40
-            return getTime(msgTime);
-        } else if ((int) (msgTimeMillis / dayMillis) + 1 == (int) (now / dayMillis)) {
-            //昨天
-            return "昨天 " + getTime(msgTime);
-        } else if (nowTime.getYearOfCentury() == msgTime.getYearOfCentury()) {
-            if (nowTime.getWeekOfWeekyear() == msgTime.getWeekOfWeekyear()) {
+        if (nowCalendar.get(Calendar.YEAR) == msgCalendar.get(Calendar.YEAR)) {
+            if (nowCalendar.get(Calendar.DAY_OF_YEAR) == msgCalendar.get(Calendar.DAY_OF_YEAR)) {
+                //早上、下午、晚上 1:40
+                return getTime(msgTime);
+            } else if (msgCalendar.get(Calendar.DAY_OF_YEAR) + 1 == nowCalendar.get(Calendar.DAY_OF_YEAR)) {
+                //昨天
+                return "昨天 " + getTime(msgTime);
+            } else if (nowCalendar.get(Calendar.WEEK_OF_YEAR) == msgCalendar.get(Calendar.WEEK_OF_YEAR)) {
                 //星期
                 switch (msgTime.getDayOfWeek()) {
                     case DateTimeConstants.SUNDAY:
