@@ -459,7 +459,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
 
         editText.setText(spannableStringBuilder);
-        editText.requestFocus();
+//         FIXME: 4/16/21 恢复草稿时，消息列表界面会抖动，且没有滑动到最后
+//        editText.requestFocus();
     }
 
     public void setInputText(String text) {
@@ -476,7 +477,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         updateConversationDraft();
     }
 
-    private void updateConversationDraft(){
+    private void updateConversationDraft() {
         Editable editable = editText.getText();
         String draft = Draft.toDraftJson(editable, messageEmojiCount, quoteInfo);
         messageViewModel.saveDraft(conversation, draft);
