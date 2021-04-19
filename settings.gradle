@@ -8,5 +8,5 @@ include ':client',
 //    ':momentclient',
     ':avenginekit'
 
-//project(':avenginekit').projectDir = new File('../android-av/avenginekit')
+project(':avenginekit').projectDir = new File('../android-av/avenginekit')
 //project(':momentclient').projectDir = new File('../android-momentclient/momentclient')
