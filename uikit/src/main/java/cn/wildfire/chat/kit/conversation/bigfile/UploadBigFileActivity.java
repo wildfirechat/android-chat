@@ -118,7 +118,7 @@ public class UploadBigFileActivity extends WfcBaseActivity implements View.OnCli
             public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
                 if(serverType == 1) {
                     String[] ss = uploadUrl.split("\\?");
-                    uploadQiniu(ss[0], ss[1], ss[2], filePath);
+                    uploadQiniu(ss[0], ss[1], ss[2], filePath, remoteUrl);
                     return;
                 }
                 MediaType type=MediaType.parse("application/octet-stream");
@@ -154,7 +154,7 @@ public class UploadBigFileActivity extends WfcBaseActivity implements View.OnCli
             }
         });
     }
-    private void uploadQiniu(String url, String token, String key, String filePath) {
+    private void uploadQiniu(String url, String token, String key, String filePath, String remoteUrl) {
         File file = new File(filePath);
         MediaType type=MediaType.parse("application/octet-stream");
         RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(type,file), (progress)->{
