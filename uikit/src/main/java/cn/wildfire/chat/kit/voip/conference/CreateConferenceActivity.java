@@ -31,6 +31,9 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     SwitchMaterial videoSwitch;
     @BindView((R2.id.audienceSwitch))
     SwitchMaterial audienceSwitch;
+    @BindView((R2.id.advancedSwitch))
+    SwitchMaterial advancedSwitch;
+
     @BindView(R2.id.createConferenceBtn)
     Button createButton;
 
@@ -66,9 +69,10 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     public void onClickCreateBtn() {
         boolean audioOnly = !videoSwitch.isChecked();
         boolean audience = audienceSwitch.isChecked();
+        boolean advanced = advancedSwitch.isChecked();
         String title = titleEditText.getText().toString();
         String desc = descEditText.getText().toString();
-        AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(null, audioOnly, null, ChatManager.Instance().getUserId(), title, desc, audience, null);
+        AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(null, audioOnly, null, ChatManager.Instance().getUserId(), title, desc, audience, advanced, null);
         if (session != null) {
             Intent intent = new Intent(this, ConferenceActivity.class);
             startActivity(intent);
