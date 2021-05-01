@@ -6127,6 +6127,10 @@ public class ChatManager {
 
 
     public void sendConferenceRequest(long sessionId, String roomId, String request, String data, final GeneralCallback2 callback) {
+        sendConferenceRequest(sessionId, roomId, request, false, data, callback);
+    }
+
+    public void sendConferenceRequest(long sessionId, String roomId, String request, boolean advanced, String data, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -6135,7 +6139,7 @@ public class ChatManager {
 
         try {
             Log.d("PCRTCClient", "send conference data:" + request + ": " + data);
-            mClient.sendConferenceRequest(sessionId, roomId, request, data, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
+            mClient.sendConferenceRequest(sessionId, roomId, request, advanced, data, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
                 @Override
                 public void onSuccess(String result) throws RemoteException {
                     Log.d("PCRTCClient", "send conference result:" + result);
