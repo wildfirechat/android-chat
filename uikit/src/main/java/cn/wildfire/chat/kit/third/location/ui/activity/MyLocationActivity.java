@@ -35,6 +35,8 @@ import com.tencent.mapsdk.raster.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
+import java.util.List;
+
 import butterknife.BindView;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
@@ -76,7 +78,7 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
 
     @Override
     public void initView() {
-        mBtnToolbarSend.setVisibility(View.VISIBLE);
+        mBtnToolbarSend.setVisibility(View.GONE);
         setRlMapHeight(maxHeight);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mOritationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
@@ -246,7 +248,7 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
         //还可以传入其他坐标系的坐标，不过需要用coord_type()指明所用类型
         //这里设置返回周边poi列表，可以在一定程度上满足用户获取指定坐标周边poi的需求
         Geo2AddressParam geo2AddressParam = new Geo2AddressParam().
-                location(location).get_poi(true);
+            location(location).get_poi(true);
         mTencentSearch.geo2address(geo2AddressParam, new HttpResponseListener() {
 
             @Override
@@ -260,6 +262,10 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
                     return;
                 }
                 mPresenter.loadData((Geo2AddressResultObject) arg1);
+                List<Geo2AddressResultObject.ReverseAddressResult.Poi> pois = ((Geo2AddressResultObject) arg1).result.pois;
+                if (pois.size() > 0) {
+                    mBtnToolbarSend.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
