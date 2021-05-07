@@ -51,6 +51,14 @@
         android:padding="20dp"
         android:text="互动会议" />
 
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/advancedSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:padding="20dp"
+        android:text="超级会议" />
+
     <Button
         android:id="@+id/createConferenceBtn"
         android:layout_width="match_parent"

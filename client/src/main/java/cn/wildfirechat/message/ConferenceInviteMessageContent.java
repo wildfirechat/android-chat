@@ -35,12 +35,13 @@ public class ConferenceInviteMessageContent extends MessageContent {
     private boolean audioOnly;
     private boolean audience;
     private String pin;
+    private boolean advanced;
 
 
     public ConferenceInviteMessageContent() {
     }
 
-    public ConferenceInviteMessageContent(String callId, String host, String title, String desc, long startTime, boolean audioOnly, boolean audience, String pin) {
+    public ConferenceInviteMessageContent(String callId, String host, String title, String desc, long startTime, boolean audioOnly, boolean audience, boolean advanced, String pin) {
         this.callId = callId;
         this.host = host;
         this.title = title;
@@ -48,6 +49,7 @@ public class ConferenceInviteMessageContent extends MessageContent {
         this.startTime = startTime;
         this.audioOnly = audioOnly;
         this.audience = audience;
+        this.advanced = advanced;
         this.pin = pin;
     }
 
@@ -116,6 +118,14 @@ public class ConferenceInviteMessageContent extends MessageContent {
         this.audience = audience;
     }
 
+    public boolean isAdvanced() {
+        return advanced;
+    }
+
+    public void setAdvanced(boolean advanced) {
+        this.advanced = advanced;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
@@ -141,6 +151,7 @@ public class ConferenceInviteMessageContent extends MessageContent {
             }
 
             objWrite.put("audience", audience?1:0);
+            objWrite.put("advanced", advanced?1:0);
 
             objWrite.put("a", audioOnly ? 1 : 0);
             objWrite.put("p", pin);
@@ -165,7 +176,8 @@ public class ConferenceInviteMessageContent extends MessageContent {
                 desc = jsonObject.optString("d");
                 pin = jsonObject.optString("p");
                 startTime = jsonObject.optLong("s");
-                audience = jsonObject.optBoolean("audience");
+                audience = jsonObject.optInt("audience")>0;
+                advanced = jsonObject.optInt("advanced")>0;
                 audioOnly = jsonObject.optInt("a") > 0;
             }
         } catch (JSONException e) {
@@ -194,6 +206,7 @@ public class ConferenceInviteMessageContent extends MessageContent {
         dest.writeLong(startTime);
         dest.writeByte(audioOnly ? (byte) 1 : (byte) 0);
         dest.writeByte(audience ? (byte) 1 : (byte) 0);
+        dest.writeByte(advanced ? (byte) 1 : (byte) 0);
         dest.writeString(pin!=null?pin:"");
     }
 
@@ -207,6 +220,7 @@ public class ConferenceInviteMessageContent extends MessageContent {
         startTime = in.readLong();
         audioOnly = in.readByte() != 0;
         audience = in.readByte() != 0;
+        advanced = in.readByte() != 0;
         pin = in.readString();
     }
 
