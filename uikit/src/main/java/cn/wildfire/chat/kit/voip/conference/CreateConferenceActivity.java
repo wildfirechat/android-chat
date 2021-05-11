@@ -68,7 +68,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     @OnClick(R2.id.createConferenceBtn)
     public void onClickCreateBtn() {
         boolean audioOnly = !videoSwitch.isChecked();
-        boolean audience = audienceSwitch.isChecked();
+        boolean audience = !audienceSwitch.isChecked();
         boolean advanced = advancedSwitch.isChecked();
         String title = titleEditText.getText().toString();
         String desc = descEditText.getText().toString();

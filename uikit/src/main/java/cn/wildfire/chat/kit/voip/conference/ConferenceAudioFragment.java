@@ -54,7 +54,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
     @BindView(R2.id.speakerImageView)
     ImageView speakerImageView;
     @BindView(R2.id.muteImageView)
-    ImageView muteImageView;
+    ImageView audioImageView;
 
     private List<String> participants;
     private UserInfo me;
@@ -82,7 +82,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         }
 
         audioEnable = session.isEnableAudio();
-        muteImageView.setSelected(!audioEnable);
+        audioImageView.setSelected(audioEnable);
 
         initParticipantsView(session);
         updateParticipantStatus(session);
@@ -156,7 +156,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             session.muteAudio(audioEnable);
             audioEnable = !audioEnable;
-            muteImageView.setSelected(!audioEnable);
+            audioImageView.setSelected(audioEnable);
         }
     }
 
