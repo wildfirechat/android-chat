@@ -176,26 +176,38 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             }
         }
 
+        AVEngineKit.ParticipantProfile myProfile = session.getMyProfile();
+        if(!myProfile.isAudience()) {
+            participants.add(myProfile.getUserId());
+        }
+        focusConferenceItem = null;
+
         if (participants.size() > 0) {
+            focusVideoUserId = participants.get(0);
             List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
             for (UserInfo userInfo : participantUserInfos) {
                 ConferenceItem multiCallItem = new ConferenceItem(getActivity());
                 multiCallItem.setTag(userInfo.uid);
 
-                multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+
                 multiCallItem.getStatusTextView().setText(R.string.connecting);
                 multiCallItem.setOnClickListener(clickListener);
                 GlideApp.with(multiCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
-                participantGridView.addView(multiCallItem);
+
+                if(userInfo.uid.equals(focusVideoUserId)) {
+                    multiCallItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    focusConferenceItem = multiCallItem;
+                } else {
+                    multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+                    participantGridView.addView(multiCallItem);
+                }
             }
         }
 
-        ConferenceItem multiCallItem = createSelfView(-1, -1);
-
-        focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        focusVideoContainerFrameLayout.addView(multiCallItem);
-        focusConferenceItem = multiCallItem;
-        focusVideoUserId = me.uid;
+        if(focusConferenceItem != null) {
+            focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            focusVideoContainerFrameLayout.addView(focusConferenceItem);
+        }
     }
 
     private ConferenceItem createSelfView(int with, int height) {
@@ -314,7 +326,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     @Override
     public void didParticipantJoined(String userId) {
-        if (participants.contains(userId)) {
+        if (participants.contains(userId) || userId.equals(focusVideoUserId)) {
             return;
         }
 
@@ -337,11 +349,21 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         UserInfo userInfo = userViewModel.getUserInfo(userId, false);
         ConferenceItem multiCallItem = new ConferenceItem(getActivity());
         multiCallItem.setTag(userInfo.uid);
-        multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
         multiCallItem.getStatusTextView().setText(userInfo.displayName);
         multiCallItem.setOnClickListener(clickListener);
         GlideApp.with(multiCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
-        participantGridView.addView(multiCallItem);
+
+        if(focusVideoUserId == null) {
+            multiCallItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            focusConferenceItem = multiCallItem;
+            focusVideoUserId = userId;
+
+            focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            focusVideoContainerFrameLayout.addView(focusConferenceItem);
+        } else {
+            multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+            participantGridView.addView(multiCallItem);
+        }
         participants.add(userId);
     }
 
@@ -428,6 +450,14 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             didParticipantJoined(userId);
         }
         item = rootLinearLayout.findViewWithTag(userId);
+        if(item == null) {
+            if(userId.equals(focusVideoUserId)) {
+                item = focusConferenceItem;
+            } else {
+                // should not be here!
+                return;
+            }
+        }
 
         SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
         if (surfaceView != null) {
@@ -529,6 +559,10 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     };
 
     private void bringParticipantVideoFront() {
+        if(focusConferenceItem == null) {
+            return;
+        }
+
         SurfaceView focusSurfaceView = focusConferenceItem.findViewWithTag("v_" + focusVideoUserId);
         if (focusSurfaceView != null) {
             focusSurfaceView.setZOrderOnTop(false);
