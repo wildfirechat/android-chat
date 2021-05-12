@@ -54,6 +54,10 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     RelativeLayout rootLinearLayout;
     @BindView(R2.id.durationTextView)
     TextView durationTextView;
+
+    @BindView(R2.id.manageParticipantTextView)
+    TextView manageParticipantTextView;
+
     @BindView(R2.id.videoContainerGridLayout)
     GridLayout participantGridView;
     @BindView(R2.id.focusVideoContainerFrameLayout)
@@ -129,6 +133,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         ConferenceManager.Instance().setCallback(this);
 
         updateControlStatus();
+
+        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
     }
 
     private void updateControlStatus() {
@@ -311,7 +317,15 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         if (participants.contains(userId)) {
             return;
         }
-        AVEngineKit.ParticipantProfile profile = AVEngineKit.Instance().getCurrentSession().getParticipantProfile(userId);
+
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if(session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            return;
+        }
+
+        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+
+        AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userId);
         if(profile == null || profile.isAudience()) {
             return;
         }
@@ -340,7 +354,14 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason) {
         removeParticipantView(userId);
         Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了会议", Toast.LENGTH_SHORT).show();
+
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if(session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            return;
+        }
+        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
     }
+
 
     private void removeParticipantView(String userId) {
         View view = participantGridView.findViewWithTag(userId);
@@ -371,6 +392,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         if (audience) {
             removeParticipantView(userId);
             Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "结束了互动", Toast.LENGTH_SHORT).show();
+        } else {
+            didParticipantJoined(userId);
         }
         updateControlStatus();
     }
