@@ -32,6 +32,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -104,7 +105,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             session.startVideoSource();
             List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
             for (AVEngineKit.ParticipantProfile profile : profiles) {
-                if (profile.getState() == AVEngineKit.CallState.Connected) {
+                if (profile.getState() == AVEngineKit.CallState.Connected && !profile.isAudience()) {
                     didReceiveRemoteVideoTrack(profile.getUserId());
                 }
             }
@@ -159,8 +160,17 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
         participantGridView.removeAllViews();
 
-        participants = session.getParticipantIds();
-        if (participants != null && participants.size() > 0) {
+        participants = new ArrayList();
+        List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
+        if(profiles != null && !profiles.isEmpty()) {
+            for (AVEngineKit.ParticipantProfile profile : profiles) {
+                if (!profile.isAudience()) {
+                    participants.add(profile.getUserId());
+                }
+            }
+        }
+
+        if (participants.size() > 0) {
             List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
             for (UserInfo userInfo : participantUserInfos) {
                 ConferenceItem multiCallItem = new ConferenceItem(getActivity());
@@ -299,6 +309,10 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     @Override
     public void didParticipantJoined(String userId) {
         if (participants.contains(userId)) {
+            return;
+        }
+        AVEngineKit.ParticipantProfile profile = AVEngineKit.Instance().getCurrentSession().getParticipantProfile(userId);
+        if(profile == null || profile.isAudience()) {
             return;
         }
         DisplayMetrics dm = getResources().getDisplayMetrics();
