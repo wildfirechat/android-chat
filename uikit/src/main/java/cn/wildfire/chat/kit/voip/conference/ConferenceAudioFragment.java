@@ -104,7 +104,16 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         participantGridView.removeAllViews();
 
         // session里面的participants包含除自己外的所有人
-        participants = session.getParticipantIds();
+        participants = new ArrayList();
+        List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
+        if(profiles != null && !profiles.isEmpty()) {
+            for (AVEngineKit.ParticipantProfile profile : profiles) {
+                if (!profile.isAudience()) {
+                    participants.add(profile.getUserId());
+                }
+            }
+        }
+
         List<UserInfo> participantUserInfos;
         if (participants != null && !participants.isEmpty()) {
             participantUserInfos = userViewModel.getUserInfos(participants);
@@ -204,6 +213,12 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         if (participants.contains(userId)) {
             return;
         }
+
+        AVEngineKit.ParticipantProfile profile = AVEngineKit.Instance().getCurrentSession().getParticipantProfile(userId);
+        if(profile == null || profile.isAudience()) {
+            return;
+        }
+
         int count = participantGridView.getChildCount();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int with = dm.widthPixels;
