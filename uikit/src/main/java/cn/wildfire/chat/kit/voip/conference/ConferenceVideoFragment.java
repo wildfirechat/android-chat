@@ -230,6 +230,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         multiCallItem.setTag(me.uid);
         multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with, height));
         multiCallItem.getStatusTextView().setText(me.displayName);
+        multiCallItem.setOnClickListener(clickListener);
         GlideApp.with(multiCallItem).load(me.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
         return multiCallItem;
     }
