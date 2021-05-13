@@ -73,6 +73,7 @@
                 android:src="@drawable/av_conference_members" />
 
             <TextView
+                android:id="@+id/manageParticipantTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
