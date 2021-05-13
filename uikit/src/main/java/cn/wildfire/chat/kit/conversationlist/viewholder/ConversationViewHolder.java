@@ -187,25 +187,6 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         conversationListViewModel.removeConversation(conversationInfo, true);
     }
 
-    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_CLEAR,
-        confirm = false,
-        priority = 0)
-    public void clearMessages(View itemView, ConversationInfo conversationInfo) {
-        new MaterialDialog.Builder(fragment.getActivity())
-            .items("清空本地会话", "清空远程会话")
-            .itemsCallback(new MaterialDialog.ListCallback() {
-                @Override
-                public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-                    if (position == 0) {
-                        conversationViewModel.clearConversationMessage(conversationInfo.conversation);
-                    } else {
-                        conversationViewModel.clearRemoteConversationMessage(conversationInfo.conversation);
-                    }
-                }
-            })
-            .show();
-    }
-
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_TOP, priority = 1)
     public void stickConversationTop(View itemView, ConversationInfo conversationInfo) {
         conversationListViewModel.setConversationTop(conversationInfo, true);
@@ -225,9 +206,6 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     public String contextMenuTitle(Context context, String tag) {
         String title = "未设置";
         switch (tag) {
-            case ConversationContextMenuItemTags.TAG_CLEAR:
-                title = "清空会话";
-                break;
             case ConversationContextMenuItemTags.TAG_REMOVE:
                 title = "删除会话";
                 break;
@@ -252,9 +230,6 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     public String contextConfirmPrompt(Context context, String tag) {
         String title = "未设置";
         switch (tag) {
-            case ConversationContextMenuItemTags.TAG_CLEAR:
-                title = "确认清空会话？";
-                break;
             case ConversationContextMenuItemTags.TAG_REMOVE:
                 title = "确认删除会话?";
                 break;
