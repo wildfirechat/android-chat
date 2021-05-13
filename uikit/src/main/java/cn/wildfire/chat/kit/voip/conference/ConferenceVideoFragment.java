@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,8 @@ import org.webrtc.StatsReport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +55,13 @@ import cn.wildfirechat.remote.ChatManager;
 public class ConferenceVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback, ConferenceManager.ConferenceManagerEventCallback {
     @BindView(R2.id.rootView)
     RelativeLayout rootLinearLayout;
+
+    @BindView(R2.id.topBarView)
+    LinearLayout topBarView;
+
+    @BindView(R2.id.bottomPanel)
+    FrameLayout bottomPanel;
+
     @BindView(R2.id.durationTextView)
     TextView durationTextView;
 
@@ -77,6 +87,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     private String focusVideoUserId;
     private ConferenceItem focusConferenceItem;
+
+    private Timer hiddenBarTimer = new Timer();
 
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
 
@@ -113,7 +125,9 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
                     didReceiveRemoteVideoTrack(profile.getUserId());
                 }
             }
-            didCreateLocalVideoTrack();
+            if (session.isLocalVideoCreated()) {
+                didCreateLocalVideoTrack();
+            }
         } else {
             if (session.isLocalVideoCreated()) {
                 didCreateLocalVideoTrack();
@@ -135,6 +149,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         updateControlStatus();
 
         manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+        startHideBarTimer();
     }
 
     private void updateControlStatus() {
@@ -365,6 +380,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             participantGridView.addView(multiCallItem);
         }
         participants.add(userId);
+        startHideBarTimer();
     }
 
     @Override
@@ -382,6 +398,11 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             return;
         }
         manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+
+        if(focusVideoUserId == null) {
+            bottomPanel.setVisibility(View.VISIBLE);
+            topBarView.setVisibility(View.VISIBLE);
+        }
     }
 
 
@@ -552,11 +573,46 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
                 bringParticipantVideoFront();
             } else {
-                // do nothing
-
+                if(bottomPanel.getVisibility() == View.GONE) {
+                    bottomPanel.setVisibility(View.VISIBLE);
+                    topBarView.setVisibility(View.VISIBLE);
+                    startHideBarTimer();
+                } else {
+                    bottomPanel.setVisibility(View.GONE);
+                    topBarView.setVisibility(View.GONE);
+                }
             }
         }
     };
+
+    private void startHideBarTimer() {
+        cancelHideBarTimer();
+        if(bottomPanel.getVisibility() == View.GONE) {
+            return;
+        }
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                getActivity().runOnUiThread(() -> {
+                    AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+                    if(session != null && session.getState() != AVEngineKit.CallState.Idle) {
+                        bottomPanel.setVisibility(View.GONE);
+                        topBarView.setVisibility(View.GONE);
+                    }
+                });
+            }
+        };
+
+        hiddenBarTimer.schedule(task, 3000);
+    }
+
+    private void cancelHideBarTimer() {
+        if(hiddenBarTimer != null)
+            hiddenBarTimer.cancel();
+
+        hiddenBarTimer = new Timer();
+    }
 
     private void bringParticipantVideoFront() {
         if(focusConferenceItem == null) {
@@ -584,13 +640,17 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     private void updateCallDuration() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            long s = System.currentTimeMillis() - session.getConnectedTime();
-            s = s / 1000;
             String text;
-            if (s > 3600) {
-                text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+            if(session.getConnectedTime() == 0) {
+                text = "未开始";
             } else {
-                text = String.format("%02d:%02d", s / 60, (s % 60));
+                long s = System.currentTimeMillis() - session.getConnectedTime();
+                s = s / 1000;
+                if (s > 3600) {
+                    text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+                } else {
+                    text = String.format("%02d:%02d", s / 60, (s % 60));
+                }
             }
             durationTextView.setText(text);
         }
@@ -626,6 +686,15 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             && AVEngineKit.Instance().getCurrentSession().isConference()
             && AVEngineKit.Instance().getCurrentSession().getCallId().equals(conferenceId)) {
             AVEngineKit.Instance().getCurrentSession().leaveConference(false);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(hiddenBarTimer!=null) {
+            hiddenBarTimer.cancel();;
+            hiddenBarTimer = null;
         }
     }
 }

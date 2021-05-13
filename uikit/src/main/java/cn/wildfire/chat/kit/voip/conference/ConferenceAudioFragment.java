@@ -380,13 +380,17 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
     private void updateCallDuration() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            long s = System.currentTimeMillis() - session.getConnectedTime();
-            s = s / 1000;
             String text;
-            if (s > 3600) {
-                text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+            if(session.getConnectedTime() == 0) {
+                text = "未开始";
             } else {
-                text = String.format("%02d:%02d", s / 60, (s % 60));
+                long s = System.currentTimeMillis() - session.getConnectedTime();
+                s = s / 1000;
+                if (s > 3600) {
+                    text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+                } else {
+                    text = String.format("%02d:%02d", s / 60, (s % 60));
+                }
             }
             durationTextView.setText(text);
         }
