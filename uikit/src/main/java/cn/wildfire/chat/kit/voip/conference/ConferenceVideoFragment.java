@@ -278,6 +278,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             muteImageView.setSelected(!session.isEnableAudio());
             session.muteAudio(session.isEnableAudio());
+            startHideBarTimer();
         }
     }
 
@@ -286,6 +287,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             session.switchCamera();
+            startHideBarTimer();
         }
     }
 
@@ -295,6 +297,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             videoImageView.setSelected(session.videoMuted);
             session.muteVideo(!session.videoMuted);
+            startHideBarTimer();
         }
     }
 
