@@ -565,14 +565,17 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
                     DisplayMetrics dm = getResources().getDisplayMetrics();
                     int with = dm.widthPixels;
                     participantGridView.addView(focusConferenceItem, clickedIndex, new FrameLayout.LayoutParams(with / 3, with / 3));
-                    focusConferenceItem.setOnClickListener(clickListener);
                 }
                 focusVideoContainerFrameLayout.addView(clickedConferenceItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                clickedConferenceItem.setOnClickListener(null);
                 focusConferenceItem = clickedConferenceItem;
                 focusVideoUserId = userId;
 
                 bringParticipantVideoFront();
+                if(bottomPanel.getVisibility() == View.GONE) {
+                    bottomPanel.setVisibility(View.VISIBLE);
+                    topBarView.setVisibility(View.VISIBLE);
+                    startHideBarTimer();
+                }
             } else {
                 if(bottomPanel.getVisibility() == View.GONE) {
                     bottomPanel.setVisibility(View.VISIBLE);
