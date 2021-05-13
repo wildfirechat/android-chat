@@ -7,7 +7,9 @@ package cn.wildfire.chat.kit.voip.conference;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -61,6 +63,13 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
             } else {
                 items.add("取消互动");
             }
+        } else if(selfUid.equals(userInfo.getUserInfo().uid)) {
+            AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
+            if(profile.isAudience()) {
+                items.add("参与互动");
+            } else {
+                items.add("结束互动");
+            }
         }
 
         new MaterialDialog.Builder(getActivity())
@@ -75,8 +84,18 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                         break;
                     case 1:
                         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-                        boolean isAudience = "audience".equals(userInfo.getExtra());
-                        ConferenceManager.Instance().requestChangeModel(session.getCallId(), userInfo.getUserInfo().uid, !isAudience);
+                        AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
+                        if (selfUid.equals(session.getHost())) {
+                            ConferenceManager.Instance().requestChangeModel(session.getCallId(), userInfo.getUserInfo().uid, !profile.isAudience());
+                            if(profile.isAudience()) {
+                                Toast.makeText(getActivity(), "已经请求用户，等待用户同意...", Toast.LENGTH_SHORT).show();
+                            } else {
+                                new Handler().postDelayed(this::loadAndShowConferenceParticipants, 1500);
+                            }
+                        } else if(selfUid.equals(userInfo.getUserInfo().uid)) {
+                            session.switchAudience(!profile.isAudience());
+                            loadAndShowConferenceParticipants();
+                        }
                         break;
                     default:
                         break;
