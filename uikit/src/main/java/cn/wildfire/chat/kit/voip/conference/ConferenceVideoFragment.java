@@ -5,7 +5,9 @@
 package cn.wildfire.chat.kit.voip.conference;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -305,7 +307,21 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     void hangup() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            session.endCall();
+            if(ChatManager.Instance().getUserId().equals(session.getHost())) {
+                new AlertDialog.Builder(getActivity())
+                        .setMessage("请选择是否结束会议")
+                        .setIcon(R.mipmap.ic_launcher)
+                        .setNeutralButton("退出会议", (dialogInterface, i) -> {
+                            if(session.getState() != AVEngineKit.CallState.Idle) session.leaveConference(false);
+                        })
+                        .setPositiveButton("结束会议", (dialogInterface, i) -> {
+                            if(session.getState() != AVEngineKit.CallState.Idle) session.leaveConference(true);
+                        })
+                        .create()
+                        .show();
+            } else {
+                session.leaveConference(false);
+            }
         }
     }
 
@@ -460,7 +476,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         }
 
         SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
-        if (surfaceView != null) {
+        if (surfaceView != null && getEngineKit().getCurrentSession() != null) {
             surfaceView.setZOrderMediaOverlay(false);
             surfaceView.setTag("v_" + me.uid);
             item.addView(surfaceView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
