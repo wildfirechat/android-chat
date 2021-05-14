@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.voip.conference;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -90,13 +91,16 @@ public class ConferenceActivity extends VoipBaseActivity {
                         .negativeText("否")
                         .positiveText("是")
                         .onPositive((dialog, which) -> {
-                            AVEngineKit.CallSession newSession = AVEngineKit.Instance().startConference(callId, audioOnly, pin, host, title, desc, audience, advanced, this);
-                            if (newSession == null) {
-                                Toast.makeText(this, "创建会议失败", Toast.LENGTH_SHORT).show();
-                                finish();
-                            } else {
-                                newSession.setCallback(ConferenceActivity.this);
-                            }
+                            finish();
+                            new Handler().postDelayed(()->{
+                                AVEngineKit.CallSession newSession = AVEngineKit.Instance().startConference(callId, audioOnly, pin, host, title, desc, audience, advanced, this);
+                                if (newSession == null) {
+                                    Toast.makeText(this, "创建会议失败", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Intent intent = new Intent(getApplicationContext(), ConferenceActivity.class);
+                                    startActivity(intent);
+                                }
+                            }, 800);
                         })
                         .onNegative((dialog, which) -> finish())
                         .show();
