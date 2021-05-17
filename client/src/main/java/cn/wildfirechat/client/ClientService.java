@@ -66,6 +66,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.ConversationSearchResult;
 import cn.wildfirechat.model.FileRecord;
+import cn.wildfirechat.model.Friend;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -79,6 +80,7 @@ import cn.wildfirechat.model.ProtoChatRoomMembersInfo;
 import cn.wildfirechat.model.ProtoConversationInfo;
 import cn.wildfirechat.model.ProtoConversationSearchresult;
 import cn.wildfirechat.model.ProtoFileRecord;
+import cn.wildfirechat.model.ProtoFriend;
 import cn.wildfirechat.model.ProtoFriendRequest;
 import cn.wildfirechat.model.ProtoGroupInfo;
 import cn.wildfirechat.model.ProtoGroupMember;
@@ -911,6 +913,23 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<Friend> getFriendList(boolean refresh) throws RemoteException {
+            List<Friend> out = new ArrayList<>();
+            ProtoFriend[] requests = ProtoLogic.getFriendList(refresh);
+            if (requests != null) {
+                for (ProtoFriend protoFriend : requests) {
+                    Friend f = new Friend();
+                    f.userId = protoFriend.getUserId();
+                    f.alias = protoFriend.getAlias();
+                    f.extra = protoFriend.getExtra();
+                    f.timestamp = protoFriend.getTimestamp();
+                    out.add(f);
+                }
+            }
+            return out;
+        }
+
+        @Override
         public boolean isBlackListed(String userId) throws RemoteException {
             return ProtoLogic.isBlackListed(userId);
         }
@@ -1027,6 +1046,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             request.direction = protoRequest.getDirection();
             request.target = protoRequest.getTarget();
             request.reason = protoRequest.getReason();
+            request.extra = protoRequest.getExtra();
             request.status = protoRequest.getStatus();
             request.readStatus = protoRequest.getReadStatus();
             request.timestamp = protoRequest.getTimestamp();
@@ -1123,8 +1143,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void sendFriendRequest(String userId, String reason, final IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.sendFriendRequest(userId, reason, new ProtoLogic.IGeneralCallback() {
+        public void sendFriendRequest(String userId, String reason, String extra, final IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.sendFriendRequest(userId, reason, extra, new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -1572,12 +1592,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void createGroup(String groupId, String groupName, String groupPortrait, int groupType, List<String> memberIds, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback2 callback) throws RemoteException {
+        public void createGroup(String groupId, String groupName, String groupPortrait, int groupType, String groupExtra, List<String> memberIds, String memberExtra, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback2 callback) throws RemoteException {
             String[] memberArray = new String[memberIds.size()];
             for (int i = 0; i < memberIds.size(); i++) {
                 memberArray[i] = memberIds.get(i);
             }
-            ProtoLogic.createGroup(groupId, groupName, groupPortrait, groupType, memberArray, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback2() {
+            ProtoLogic.createGroup(groupId, groupName, groupPortrait, groupType, groupExtra, memberArray, memberExtra, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback2() {
                 @Override
                 public void onSuccess(String s) {
                     try {
@@ -1599,12 +1619,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void addGroupMembers(String groupId, List<String> memberIds, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
+        public void addGroupMembers(String groupId, List<String> memberIds, String extra, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
             String[] memberArray = new String[memberIds.size()];
             for (int i = 0; i < memberIds.size(); i++) {
                 memberArray[i] = memberIds.get(i);
             }
-            ProtoLogic.addMembers(groupId, memberArray, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+            ProtoLogic.addMembers(groupId, memberArray, extra, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -2357,6 +2377,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         member.groupId = protoGroupMember.getGroupId();
         member.memberId = protoGroupMember.getMemberId();
         member.alias = protoGroupMember.getAlias();
+        member.extra = protoGroupMember.getExtra();
         member.type = GroupMember.GroupMemberType.type(protoGroupMember.getType());
         member.updateDt = protoGroupMember.getUpdateDt();
         member.createDt = protoGroupMember.getCreateDt();

@@ -44,6 +44,7 @@ import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.FriendRequest;
+import cn.wildfirechat.model.Friend;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupInfo;
@@ -138,6 +139,7 @@ interface IRemoteClient {
 
     boolean isMyFriend(in String userId);
     List<String> getMyFriendList(in boolean refresh);
+    List<Friend> getFriendList(in boolean refresh);
     List<UserInfo> getMyFriendListInfo(in boolean refresh);
     oneway void loadFriendRequestFromRemote();
 
@@ -156,7 +158,7 @@ interface IRemoteClient {
     void clearUnreadFriendRequestStatus();
     int getUnreadFriendRequestStatus();
     oneway void removeFriend(in String userId, in IGeneralCallback callback);
-    oneway void sendFriendRequest(in String userId, in String reason, in IGeneralCallback callback);
+    oneway void sendFriendRequest(in String userId, in String reason, in String extra, in IGeneralCallback callback);
     oneway void handleFriendRequest(in String userId, in boolean accept, in String extra, in IGeneralCallback callback);
     oneway void deleteFriend(in String userId, in IGeneralCallback callback);
 
@@ -189,8 +191,8 @@ interface IRemoteClient {
 
     String getEncodedClientId();
 
-    oneway void createGroup(in String groupId, in String groupName, in String groupPortrait, in int groupType, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback2 callback);
-    oneway void addGroupMembers(in String groupId, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
+    oneway void createGroup(in String groupId, in String groupName, in String groupPortrait, in int groupType, in String groupExtra, in List<String> memberIds, in String memberExtra, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback2 callback);
+    oneway void addGroupMembers(in String groupId, in List<String> memberIds, in String extra, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void removeGroupMembers(in String groupId, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void quitGroup(in String groupId, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void dismissGroup(in String groupId, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);

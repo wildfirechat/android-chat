@@ -124,6 +124,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.ConversationSearchResult;
 import cn.wildfirechat.model.FileRecord;
+import cn.wildfirechat.model.Friend;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -3150,6 +3151,24 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取好友列表
+     *
+     * @param refresh 是否强制刷新好友列表，如果强制刷新好友列表，切好友列表有更新的话，会通过{@link OnFriendUpdateListener}回调通知
+     * @return
+     */
+    public List<Friend> getFriendList(boolean refresh) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getFriendList(refresh);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     // 优先级如下：
     // 1. 群备注 2. 好友备注 3. 用户displayName 4. <uid>
     public String getGroupMemberDisplayName(String groupId, String memberId) {
@@ -3412,7 +3431,7 @@ public class ChatManager {
      * @param reason
      * @param callback
      */
-    public void sendFriendRequest(String userId, String reason, final GeneralCallback callback) {
+    public void sendFriendRequest(String userId, String reason, String extra, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -3420,7 +3439,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.sendFriendRequest(userId, reason, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.sendFriendRequest(userId, reason, extra, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
@@ -4353,7 +4372,7 @@ public class ChatManager {
      * @param notifyMsg
      * @param callback
      */
-    public void createGroup(String groupId, String groupName, String groupPortrait, GroupInfo.GroupType groupType, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback2 callback) {
+    public void createGroup(String groupId, String groupName, String groupPortrait, GroupInfo.GroupType groupType, String groupExtra, List<String> memberIds, String memberExtra, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback2 callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -4366,7 +4385,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.createGroup(groupId, groupName, groupPortrait, groupType.value(), memberIds, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback2.Stub() {
+            mClient.createGroup(groupId, groupName, groupPortrait, groupType.value(), groupExtra, memberIds, memberExtra, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback2.Stub() {
                 @Override
                 public void onSuccess(final String result) throws RemoteException {
                     if (callback != null) {
@@ -4407,7 +4426,7 @@ public class ChatManager {
      * @param notifyMsg
      * @param callback
      */
-    public void addGroupMembers(String groupId, List<String> memberIds, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
+    public void addGroupMembers(String groupId, List<String> memberIds, String extra, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -4420,7 +4439,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.addGroupMembers(groupId, memberIds, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.addGroupMembers(groupId, memberIds, extra, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
