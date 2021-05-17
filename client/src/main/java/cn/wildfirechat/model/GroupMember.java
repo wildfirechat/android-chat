@@ -43,6 +43,7 @@ public class GroupMember implements Parcelable {
     public String groupId;
     public String memberId;
     public String alias;
+    public String extra;
     public GroupMemberType type;
     public long updateDt;
     public long createDt;
@@ -61,6 +62,7 @@ public class GroupMember implements Parcelable {
         dest.writeString(this.groupId);
         dest.writeString(this.memberId);
         dest.writeString(this.alias);
+        dest.writeString(this.extra);
         dest.writeInt(this.type == null ? -1 : this.type.ordinal());
         dest.writeLong(this.updateDt);
         dest.writeLong(this.createDt);
@@ -70,6 +72,7 @@ public class GroupMember implements Parcelable {
         this.groupId = in.readString();
         this.memberId = in.readString();
         this.alias = in.readString();
+        this.extra = in.readString();
         int tmpType = in.readInt();
         this.type = tmpType == -1 ? null : GroupMemberType.values()[tmpType];
         this.updateDt = in.readLong();
