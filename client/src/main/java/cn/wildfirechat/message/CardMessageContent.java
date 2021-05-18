@@ -31,15 +31,17 @@ public class CardMessageContent extends MessageContent {
     private String name;
     private String displayName;
     private String portrait;
+    private String from;
 
     public CardMessageContent() {
     }
 
-    public CardMessageContent(int type, String target, String displayName, String portrait) {
+    public CardMessageContent(int type, String target, String displayName, String portrait, String from) {
         this.type = type;
         this.target = target;
         this.displayName = displayName;
         this.portrait = portrait;
+        this.from = from;
     }
 
     public String getTarget() {
@@ -82,6 +84,14 @@ public class CardMessageContent extends MessageContent {
         this.type = type;
     }
 
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
@@ -92,6 +102,7 @@ public class CardMessageContent extends MessageContent {
             objWrite.put("n", name);
             objWrite.put("d", displayName);
             objWrite.put("p", portrait);
+            objWrite.put("f", from);
 
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
@@ -111,6 +122,7 @@ public class CardMessageContent extends MessageContent {
                 name = jsonObject.optString("n");
                 displayName = jsonObject.optString("d");
                 portrait = jsonObject.optString("p");
+                from = jsonObject.optString("f");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -145,6 +157,7 @@ public class CardMessageContent extends MessageContent {
         dest.writeString(this.name != null ? this.name : "");
         dest.writeString(this.displayName != null ? this.displayName : "");
         dest.writeString(this.portrait != null ? this.portrait : "");
+        dest.writeString(this.from != null ? this.from : "");
     }
 
     protected CardMessageContent(Parcel in) {
@@ -154,6 +167,7 @@ public class CardMessageContent extends MessageContent {
         this.name = in.readString();
         this.displayName = in.readString();
         this.portrait = in.readString();
+        this.from = in.readString();
     }
 
     public static final Creator<CardMessageContent> CREATOR = new Creator<CardMessageContent>() {
