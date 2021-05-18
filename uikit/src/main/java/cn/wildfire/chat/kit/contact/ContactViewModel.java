@@ -262,7 +262,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
 
     public MutableLiveData<Boolean> invite(String targetUid, String message) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
-        ChatManager.Instance().sendFriendRequest(targetUid, message, new GeneralCallback() {
+        ChatManager.Instance().sendFriendRequest(targetUid, message, null, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 result.setValue(true);

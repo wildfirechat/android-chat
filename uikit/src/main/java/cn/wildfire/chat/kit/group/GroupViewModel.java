@@ -145,7 +145,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
                 ChatManager.Instance().uploadMediaFile(groupPortrait, MessageContentMediaType.PORTRAIT.getValue(), new UploadMediaCallback() {
                     @Override
                     public void onSuccess(String result) {
-                        ChatManager.Instance().createGroup(null, finalGroupName, result, GroupInfo.GroupType.Restricted, selectedIds, lines, notifyMsg, new GeneralCallback2() {
+                        ChatManager.Instance().createGroup(null, finalGroupName, result, GroupInfo.GroupType.Restricted, null, selectedIds, null, lines, notifyMsg, new GeneralCallback2() {
                             @Override
                             public void onSuccess(String groupId) {
                                 groupLiveData.setValue(new OperateResult<>(groupId, 0));
@@ -169,7 +169,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
                     }
                 });
             } else {
-                ChatManager.Instance().createGroup(null, finalGroupName, null, GroupInfo.GroupType.Restricted, selectedIds, lines, notifyMsg, new GeneralCallback2() {
+                ChatManager.Instance().createGroup(null, finalGroupName, null, GroupInfo.GroupType.Restricted, null, selectedIds, null, lines, notifyMsg, new GeneralCallback2() {
                     @Override
                     public void onSuccess(String groupId) {
                         groupLiveData.setValue(new OperateResult<>(groupId, 0));
@@ -188,7 +188,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     public MutableLiveData<Boolean> addGroupMember(GroupInfo groupInfo, List<String> memberIds, MessageContent notifyMsg, List<Integer> notifyLines) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
         // TODO need update group portrait or not?
-        ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, notifyLines, notifyMsg, new GeneralCallback() {
+        ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, null, notifyLines, notifyMsg, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 result.setValue(true);
