@@ -75,14 +75,4 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
     void play() {
         previewMM();
     }
-
-    @Override
-    public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
-        if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
-            return true;
-        } else {
-            return super.contextMenuItemFilter(uiMessage, tag);
-        }
-    }
-
 }
