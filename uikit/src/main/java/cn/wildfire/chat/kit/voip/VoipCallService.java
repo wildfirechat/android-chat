@@ -125,7 +125,9 @@ public class VoipCallService extends Service {
         } else {
             updateNotification(session);
             if (showFloatingWindow && session.getState() == AVEngineKit.CallState.Connected) {
-                if (session.isAudioOnly()) {
+                if(session.isScreenSharing()) {
+                    showScreenSharingView(session);
+                } else if (session.isAudioOnly()) {
                     showAudioView(session);
                 } else {
                     showVideoView(session);
@@ -222,7 +224,9 @@ public class VoipCallService extends Service {
         if (session.getState() != AVEngineKit.CallState.Connected) {
             showUnConnectedCallInfo(session);
         } else {
-            if (session.isAudioOnly()) {
+            if(session.isScreenSharing()) {
+                showScreenSharingView(session);
+            } else if (session.isAudioOnly()) {
                 showAudioView(session);
             } else {
                 showVideoView(session);
@@ -265,6 +269,18 @@ public class VoipCallService extends Service {
                 break;
         }
         timeView.setText(title);
+    }
+
+    private void showScreenSharingView(AVEngineKit.CallSession session) {
+        FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
+        if (remoteVideoFrameLayout.getVisibility() == View.VISIBLE) {
+            remoteVideoFrameLayout.setVisibility(View.GONE);
+            wm.removeView(view);
+            wm.addView(view, params);
+        }
+        view.findViewById(R.id.screenSharingTextView).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.durationTextView).setVisibility(View.GONE);
+        view.findViewById(R.id.av_media_type).setVisibility(View.GONE);
     }
 
     private void showAudioView(AVEngineKit.CallSession session) {
@@ -346,9 +362,13 @@ public class VoipCallService extends Service {
     }
 
     private void clickToResume() {
-        if (rendererInitialized) {
-            AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-            if (session != null) {
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null) {
+            if(session.isScreenSharing()) {
+                session.stopScreenShare();
+            }
+
+            if (rendererInitialized) {
                 session.resetRenderer();
             }
         }
