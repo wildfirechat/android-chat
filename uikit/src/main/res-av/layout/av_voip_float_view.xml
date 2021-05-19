@@ -21,6 +21,16 @@
             android:src="@drawable/av_float_audio" />
 
         <TextView
+            android:id="@+id/screenSharingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="停止分享"
+            android:textColor="#0195ff"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/durationTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
