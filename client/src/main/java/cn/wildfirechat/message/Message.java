@@ -32,6 +32,7 @@ public class Message implements Parcelable {
     public MessageStatus status;
     public long messageUid;
     public long serverTime;
+    public String localExtra;
 
     public Message() {
     }
@@ -56,6 +57,7 @@ public class Message implements Parcelable {
         dest.writeInt(this.status == null ? -1 : this.status.ordinal());
         dest.writeLong(this.messageUid);
         dest.writeLong(this.serverTime);
+        dest.writeString(this.localExtra);
     }
 
     protected Message(Parcel in) {
@@ -70,6 +72,7 @@ public class Message implements Parcelable {
         this.status = tmpStatus == -1 ? null : MessageStatus.values()[tmpStatus];
         this.messageUid = in.readLong();
         this.serverTime = in.readLong();
+        this.localExtra = in.readString();
     }
 
     public static final Creator<Message> CREATOR = new Creator<Message>() {

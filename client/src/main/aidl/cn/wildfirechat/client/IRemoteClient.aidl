@@ -127,6 +127,7 @@ interface IRemoteClient {
     void clearMessages(in int conversationType, in String target, in int line);
     void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
     void setMediaMessagePlayed(in long messageId);
+    boolean setMessageLocalExtra(in long messageId, in String extra);
     void removeConversation(in int conversationType, in String target, in int line, in boolean clearMsg);
     oneway void setConversationTop(in int conversationType, in String target, in int line, in boolean top, in IGeneralCallback callback);
     void setConversationDraft(in int conversationType, in String target, in int line, in String draft);

@@ -326,6 +326,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             protoMessage.setStatus(msg.status.value());
             protoMessage.setMessageUid(msg.messageUid);
             protoMessage.setTimestamp(msg.serverTime);
+            protoMessage.setLocalExtra(msg.localExtra);
 
             return protoMessage;
         }
@@ -825,6 +826,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public boolean setMessageLocalExtra(long messageId, String extra) throws RemoteException {
+            return ProtoLogic.setMessageLocalExtra(messageId, extra);
         }
 
         @Override
@@ -2525,6 +2531,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         msg.status = MessageStatus.status(protoMessage.getStatus());
         msg.messageUid = protoMessage.getMessageUid();
         msg.serverTime = protoMessage.getTimestamp();
+        msg.localExtra = protoMessage.getLocalExtra();
 
         return msg;
     }

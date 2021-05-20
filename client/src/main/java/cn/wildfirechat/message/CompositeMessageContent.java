@@ -69,6 +69,9 @@ public class CompositeMessageContent extends MessageContent {
                 msgObj.put("direction", message.direction.value());
                 msgObj.put("status", message.status);
                 msgObj.put("serverTime", message.serverTime);
+                if(!TextUtils.isEmpty(message.localExtra)) {
+                    msgObj.put("le", message.localExtra);
+                }
 
                 MessagePayload messagePayload = message.content.encode();
                 messagePayload.contentType = message.content.getMessageContentType();
@@ -141,6 +144,7 @@ public class CompositeMessageContent extends MessageContent {
                 message.direction = MessageDirection.values()[object.optInt("direction")];
                 message.status = MessageStatus.status(object.optInt("status"));
                 message.serverTime = object.optLong("serverTime");
+                message.localExtra = object.optString("le");
 
                 MessagePayload messagePayload = super.encode();
                 messagePayload.contentType = object.optInt("ctype");
