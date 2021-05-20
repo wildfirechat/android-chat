@@ -2827,6 +2827,27 @@ public class ChatManager {
     }
 
     /**
+     * 设置消息本地扩展信息
+     *
+     * @param messageId 消息ID
+     * @param extra     附加信息
+     *
+     * @return true更新成功，false更新失败
+     */
+    public boolean setMessageLocalExtra(long messageId, String extra) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            mClient.setMessageLocalExtra(messageId, extra);
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    /**
      * 清除所有会话的未读状态
      */
     public void clearAllUnreadStatus() {
