@@ -16,6 +16,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/muteView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -24,8 +25,8 @@
 
             <ImageView
                 android:id="@+id/muteImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:src="@drawable/av_conference_audio_selector" />
 
             <TextView
@@ -38,6 +39,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/videoView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -46,8 +48,8 @@
 
             <ImageView
                 android:id="@+id/videoImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:src="@drawable/av_conference_video_selector" />
 
             <TextView
@@ -60,6 +62,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/shareScreenView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -68,8 +71,8 @@
 
             <ImageView
                 android:id="@+id/shareScreenImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:src="@drawable/av_conference_screensharing_selector" />
 
             <TextView
@@ -82,6 +85,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/manageParticipantView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -90,8 +94,8 @@
 
             <ImageView
                 android:id="@+id/manageParticipantImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:src="@drawable/av_conference_members" />
 
             <TextView
@@ -105,6 +109,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/hangupView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -113,8 +118,8 @@
 
             <ImageView
                 android:id="@+id/hangupImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:src="@drawable/av_conference_end_call" />
 
             <TextView
