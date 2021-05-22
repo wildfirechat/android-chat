@@ -165,12 +165,12 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         ((ConferenceActivity) getActivity()).showFloatingView(null);
     }
 
-    @OnClick(R2.id.manageParticipantImageView)
+    @OnClick(R2.id.manageParticipantView)
     void addParticipant() {
         ((ConferenceActivity) getActivity()).showParticipantList();
     }
 
-    @OnClick(R2.id.muteImageView)
+    @OnClick(R2.id.muteView)
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
@@ -180,7 +180,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         }
     }
 
-    @OnClick(R2.id.speakerImageView)
+    @OnClick(R2.id.speakerView)
     void speaker() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
@@ -192,7 +192,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         }
     }
 
-    @OnClick(R2.id.hangupImageView)
+    @OnClick(R2.id.hangupView)
     void hangup() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null) {

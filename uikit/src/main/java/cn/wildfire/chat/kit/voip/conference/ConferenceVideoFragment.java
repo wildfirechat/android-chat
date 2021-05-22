@@ -269,12 +269,12 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         ((ConferenceActivity) getActivity()).showFloatingView(null);
     }
 
-    @OnClick(R2.id.manageParticipantImageView)
+    @OnClick(R2.id.manageParticipantView)
     void addParticipant() {
         ((ConferenceActivity) getActivity()).showParticipantList();
     }
 
-    @OnClick(R2.id.muteImageView)
+    @OnClick(R2.id.muteView)
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
@@ -293,7 +293,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         }
     }
 
-    @OnClick(R2.id.videoImageView)
+    @OnClick(R2.id.videoView)
     void video() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
@@ -303,7 +303,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         }
     }
 
-    @OnClick(R2.id.hangupImageView)
+    @OnClick(R2.id.hangupView)
     void hangup() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
@@ -325,7 +325,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         }
     }
 
-    @OnClick(R2.id.shareScreenImageView)
+    @OnClick(R2.id.shareScreenView)
     void shareScreen() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
