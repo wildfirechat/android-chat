@@ -93,7 +93,7 @@ public class ConferenceActivity extends VoipBaseActivity {
                         .onPositive((dialog, which) -> {
                             finish();
                             new Handler().postDelayed(()->{
-                                AVEngineKit.CallSession newSession = AVEngineKit.Instance().startConference(callId, audioOnly, pin, host, title, desc, audience, advanced, this);
+                                AVEngineKit.CallSession newSession = AVEngineKit.Instance().startConference(callId, audioOnly, pin, host, title, desc, audience, advanced, false, this);
                                 if (newSession == null) {
                                     Toast.makeText(this, "创建会议失败", Toast.LENGTH_SHORT).show();
                                 } else {

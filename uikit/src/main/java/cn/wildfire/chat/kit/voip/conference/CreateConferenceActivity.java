@@ -101,7 +101,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         boolean advanced = advancedSwitch.isChecked();
         String title = titleEditText.getText().toString();
         String desc = descEditText.getText().toString();
-        AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(null, audioOnly, null, ChatManager.Instance().getUserId(), title, desc, audience, advanced, null);
+        AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(null, audioOnly, null, ChatManager.Instance().getUserId(), title, desc, audience, advanced, false, null);
         if (session != null) {
             Intent intent = new Intent(this, ConferenceActivity.class);
             startActivity(intent);
