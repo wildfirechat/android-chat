@@ -238,7 +238,6 @@ public class ImageUtils {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        Log.d("dd", "dd");
                     }
 
                     Bitmap bitmap = CombineBitmapTools.combimeBitmap(context, 60, 60, bitmaps);
@@ -246,6 +245,9 @@ public class ImageUtils {
                         return;
                     }
 
+                    if (fullPath[0].length() == 0) {
+                        fullPath[0] = "null";
+                    }
                     String hash = getDigest(fullPath[0]);
                     //Path 格式为 groupId-updatetime-width-hash
                     String fileName = groupId + "-" + System.currentTimeMillis() + "-" + width + "-" + hash;
@@ -286,7 +288,7 @@ public class ImageUtils {
 
     public static String getGroupGridPortrait(Context context, String groupId, int width) {
         SharedPreferences sp = context.getSharedPreferences("wfc", Context.MODE_PRIVATE);
-        String path = sp.getString("wfc_group_generated_portrait_"+groupId+"_"+width, null);
+        String path = sp.getString("wfc_group_generated_portrait_" + groupId + "_" + width, null);
         if (TextUtils.isEmpty(path)) {
             generateNewGroupPortrait(context, groupId, width);
         } else {
@@ -336,6 +338,9 @@ public class ImageUtils {
                                                     e.printStackTrace();
                                                 }
                                             }
+                                            if (fullPath[0].length() == 0) {
+                                                fullPath[0] = "null";
+                                            }
                                             if (!arr[3].equals(getDigest(fullPath[0]))) {
                                                 generateNewGroupPortrait(context, groupId, width);
                                             }
@@ -369,7 +374,7 @@ public class ImageUtils {
     /**
      * 图片入系统相册
      */
-    public static void saveMedia2Album(Context context,File mediaFile){
+    public static void saveMedia2Album(Context context, File mediaFile) {
         Uri uri = Uri.fromFile(mediaFile);
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
     }
