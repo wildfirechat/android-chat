@@ -200,6 +200,7 @@ interface IRemoteClient {
     oneway void modifyGroupInfo(in String groupId, in int modifyType, in String newValue, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void modifyGroupAlias(in String groupId, in String newAlias, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void modifyGroupMemberAlias(in String groupId, in String memberId, in String newAlias, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
+    oneway void modifyGroupMemberExtra(in String groupId, in String memberId, in String extra, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     List<GroupMember> getGroupMembers(in String groupId, in boolean forceUpdate);
     List<GroupMember> getGroupMembersByType(in String groupId, in int type);
     GroupMember getGroupMember(in String groupId, in String memberId);

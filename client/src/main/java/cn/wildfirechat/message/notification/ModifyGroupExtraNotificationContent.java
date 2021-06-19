@@ -17,19 +17,18 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_ALIAS;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_EXTRA;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
  */
 
-@ContentTag(type = ContentType_MODIFY_GROUP_ALIAS, flag = PersistFlag.Persist)
-public class ModifyGroupAliasNotificationContent extends GroupNotificationMessageContent {
+@ContentTag(type = ContentType_MODIFY_GROUP_EXTRA, flag = PersistFlag.No_Persist)
+public class ModifyGroupExtraNotificationContent extends GroupNotificationMessageContent {
     public String operateUser;
-    public String alias;
-    public String memberId;
+    public String groupExtra;
 
-    public ModifyGroupAliasNotificationContent() {
+    public ModifyGroupExtraNotificationContent() {
     }
 
     @Override
@@ -39,7 +38,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
             sb.append("你");
         } else {
             UserInfo userInfo = ChatManager.Instance().getUserInfo(operateUser, groupId, false);
-            if (!TextUtils.isEmpty(memberId) && !TextUtils.isEmpty(userInfo.groupAlias)) {
+            if (!TextUtils.isEmpty(userInfo.groupAlias)) {
                 sb.append(userInfo.groupAlias);
             } else if (!TextUtils.isEmpty(userInfo.friendAlias)) {
                 sb.append(userInfo.friendAlias);
@@ -50,19 +49,8 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
             }
         }
         sb.append("修改");
-        if (!TextUtils.isEmpty(memberId)) {
-            UserInfo userInfo = ChatManager.Instance().getUserInfo(memberId, false);
-            if (!TextUtils.isEmpty(userInfo.friendAlias)) {
-                sb.append(userInfo.friendAlias);
-            } else if (!TextUtils.isEmpty(userInfo.displayName)) {
-                sb.append(userInfo.displayName);
-            } else {
-                sb.append(memberId);
-            }
-            sb.append("的");
-        }
-        sb.append("群昵称为");
-        sb.append(alias);
+        sb.append("群附加信息为");
+        sb.append(groupExtra);
 
         return sb.toString();
     }
@@ -75,10 +63,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
             objWrite.put("o", operateUser);
-            objWrite.put("n", alias);
-            if (!TextUtils.isEmpty(memberId)) {
-                objWrite.put("m", memberId);
-            }
+            objWrite.put("n", groupExtra);
 
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
@@ -94,8 +79,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 groupId = jsonObject.optString("g");
                 operateUser = jsonObject.optString("o");
-                alias = jsonObject.optString("n");
-                memberId = jsonObject.optString("m");
+                groupExtra = jsonObject.optString("n");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -111,26 +95,24 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.operateUser);
-        dest.writeString(this.alias);
-        dest.writeString(this.memberId != null ? this.memberId : "");
+        dest.writeString(this.groupExtra);
     }
 
-    protected ModifyGroupAliasNotificationContent(Parcel in) {
+    protected ModifyGroupExtraNotificationContent(Parcel in) {
         super(in);
         this.operateUser = in.readString();
-        this.alias = in.readString();
-        this.memberId = in.readString();
+        this.groupExtra = in.readString();
     }
 
-    public static final Creator<ModifyGroupAliasNotificationContent> CREATOR = new Creator<ModifyGroupAliasNotificationContent>() {
+    public static final Creator<ModifyGroupExtraNotificationContent> CREATOR = new Creator<ModifyGroupExtraNotificationContent>() {
         @Override
-        public ModifyGroupAliasNotificationContent createFromParcel(Parcel source) {
-            return new ModifyGroupAliasNotificationContent(source);
+        public ModifyGroupExtraNotificationContent createFromParcel(Parcel source) {
+            return new ModifyGroupExtraNotificationContent(source);
         }
 
         @Override
-        public ModifyGroupAliasNotificationContent[] newArray(int size) {
-            return new ModifyGroupAliasNotificationContent[size];
+        public ModifyGroupExtraNotificationContent[] newArray(int size) {
+            return new ModifyGroupExtraNotificationContent[size];
         }
     };
 }

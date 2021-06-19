@@ -1795,6 +1795,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void modifyGroupMemberExtra(String groupId, String memberId, String extra, int[] notifyLines, MessagePayload notifyMsg, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.modifyGroupMemberExtra(groupId, memberId, extra, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public List<GroupMember> getGroupMembers(String groupId, boolean forceUpdate) throws RemoteException {
             ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembers(groupId, forceUpdate);
             List<GroupMember> out = new ArrayList<>();
