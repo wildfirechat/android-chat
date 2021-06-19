@@ -17,19 +17,19 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_ALIAS;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_MEMBER_EXTRA;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
  */
 
-@ContentTag(type = ContentType_MODIFY_GROUP_ALIAS, flag = PersistFlag.Persist)
-public class ModifyGroupAliasNotificationContent extends GroupNotificationMessageContent {
+@ContentTag(type = ContentType_MODIFY_GROUP_MEMBER_EXTRA, flag = PersistFlag.No_Persist)
+public class ModifyGroupMemberExtraNotificationContent extends GroupNotificationMessageContent {
     public String operateUser;
-    public String alias;
+    public String groupMemberExtra;
     public String memberId;
 
-    public ModifyGroupAliasNotificationContent() {
+    public ModifyGroupMemberExtraNotificationContent() {
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
             sb.append("的");
         }
         sb.append("群昵称为");
-        sb.append(alias);
+        sb.append(groupMemberExtra);
 
         return sb.toString();
     }
@@ -75,7 +75,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
             objWrite.put("o", operateUser);
-            objWrite.put("n", alias);
+            objWrite.put("n", groupMemberExtra);
             if (!TextUtils.isEmpty(memberId)) {
                 objWrite.put("m", memberId);
             }
@@ -94,7 +94,7 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 groupId = jsonObject.optString("g");
                 operateUser = jsonObject.optString("o");
-                alias = jsonObject.optString("n");
+                groupMemberExtra = jsonObject.optString("n");
                 memberId = jsonObject.optString("m");
             }
         } catch (JSONException e) {
@@ -111,26 +111,26 @@ public class ModifyGroupAliasNotificationContent extends GroupNotificationMessag
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.operateUser);
-        dest.writeString(this.alias);
+        dest.writeString(this.groupMemberExtra);
         dest.writeString(this.memberId != null ? this.memberId : "");
     }
 
-    protected ModifyGroupAliasNotificationContent(Parcel in) {
+    protected ModifyGroupMemberExtraNotificationContent(Parcel in) {
         super(in);
         this.operateUser = in.readString();
-        this.alias = in.readString();
+        this.groupMemberExtra = in.readString();
         this.memberId = in.readString();
     }
 
-    public static final Creator<ModifyGroupAliasNotificationContent> CREATOR = new Creator<ModifyGroupAliasNotificationContent>() {
+    public static final Creator<ModifyGroupMemberExtraNotificationContent> CREATOR = new Creator<ModifyGroupMemberExtraNotificationContent>() {
         @Override
-        public ModifyGroupAliasNotificationContent createFromParcel(Parcel source) {
-            return new ModifyGroupAliasNotificationContent(source);
+        public ModifyGroupMemberExtraNotificationContent createFromParcel(Parcel source) {
+            return new ModifyGroupMemberExtraNotificationContent(source);
         }
 
         @Override
-        public ModifyGroupAliasNotificationContent[] newArray(int size) {
-            return new ModifyGroupAliasNotificationContent[size];
+        public ModifyGroupMemberExtraNotificationContent[] newArray(int size) {
+            return new ModifyGroupMemberExtraNotificationContent[size];
         }
     };
 }

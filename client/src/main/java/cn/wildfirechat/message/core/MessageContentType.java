@@ -65,6 +65,8 @@ public interface MessageContentType {
     int CONTENT_TYPE_ALLOW_MEMBER = 119;
     int ContentType_KICKOF_GROUP_MEMBER_VISIBLE = 120;
     int ContentType_QUIT_GROUP_VISIABLE = 121;
+    int ContentType_MODIFY_GROUP_EXTRA = 122;
+    int ContentType_MODIFY_GROUP_MEMBER_EXTRA = 123;
 
 
     int ContentType_Call_Start = 400;
