@@ -777,6 +777,7 @@ public class ChatManager {
                 }
                 fw.writeBytes(imei);
             }
+            fw.close();
             lock.release();
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -19,7 +19,6 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.JsonReader;
 
 import androidx.annotation.Nullable;
 
@@ -797,7 +796,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public boolean clearMessageUnreadStatus(long messageId) throws RemoteException {
-            return ProtoLogic.clearMessageUnreadStatus((int)messageId);
+            return ProtoLogic.clearMessageUnreadStatus((int) messageId);
         }
 
         @Override
@@ -846,7 +845,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setConversationDraft(int conversationType, String target, int line, String draft) throws RemoteException {
             ConversationInfo conversationInfo = getConversation(conversationType, target, line);
-            if((TextUtils.isEmpty(conversationInfo.draft)  && TextUtils.isEmpty(draft)) || TextUtils.equals(conversationInfo.draft, draft)){
+            if ((TextUtils.isEmpty(conversationInfo.draft) && TextUtils.isEmpty(draft)) || TextUtils.equals(conversationInfo.draft, draft)) {
                 return;
             }
             ProtoLogic.setConversationDraft(conversationType, target, line, draft);
@@ -1978,9 +1977,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             object.putOpt("sender", feed.sender);
             object.putOpt("text", feed.text);
             object.putOpt("timestamp", feed.timestamp);
-            if(feed.medias != null && feed.medias.length > 0) {
+            if (feed.medias != null && feed.medias.length > 0) {
                 JSONArray mediaArray = new JSONArray();
-                for (ProtoMomentsMedia media:feed.medias) {
+                for (ProtoMomentsMedia media : feed.medias) {
                     JSONObject mediaObject = new JSONObject();
                     mediaObject.putOpt("m", media.mediaUrl);
                     mediaObject.put("w", media.width);
@@ -1993,9 +1992,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             object.putOpt("to", feed.toUsers);
             object.putOpt("ex", feed.excludeUsers);
             object.putOpt("extra", feed.extra);
-            if(feed.getComments() != null && feed.getComments().length > 0) {
+            if (feed.getComments() != null && feed.getComments().length > 0) {
                 JSONArray commentArray = new JSONArray();
-                for (ProtoMomentsComment comment:feed.getComments()) {
+                for (ProtoMomentsComment comment : feed.getComments()) {
                     JSONObject commentObject = new JSONObject();
                     commentObject.put("type", comment.type);
                     commentObject.put("commentId", comment.commentId);
@@ -2010,7 +2009,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
                 object.put("comments", commentArray);
             }
-            object.put("hasMore", feed.hasMore>0);
+            object.put("hasMore", feed.hasMore > 0);
 
             return object;
         }
@@ -2018,16 +2017,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public byte[] decodeDataEx(int type, byte[] data, boolean gzip) throws RemoteException {
             try {
-                if(type == 0) {
+                if (type == 0) {
                     ProtoMomentsFeed[] feeds = ProtoLogic.getMomentsFeeds(data, gzip);
                     System.out.println(feeds.length);
                     JSONArray array = new JSONArray();
-                    for (ProtoMomentsFeed feed:feeds) {
+                    for (ProtoMomentsFeed feed : feeds) {
                         JSONObject object = convertProtoMomentsFeed(feed);
                         array.put(object);
                     }
                     return array.toString().getBytes();
-                } else if(type == 1) {
+                } else if (type == 1) {
                     ProtoMomentsFeed feed = ProtoLogic.getMomentsFeed(data, gzip);
                     JSONObject object = convertProtoMomentsFeed(feed);
                     return object.toString().getBytes();
@@ -2538,6 +2537,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private cn.wildfirechat.message.Message convertProtoMessage(ProtoMessage protoMessage) {
         if (protoMessage == null || TextUtils.isEmpty(protoMessage.getTarget())) {
+            Log.e(TAG, "decode message error " + (protoMessage == null ? "null" : "target is empty"));
             return null;
         }
         cn.wildfirechat.message.Message msg = new cn.wildfirechat.message.Message();
@@ -2546,7 +2546,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         msg.sender = protoMessage.getFrom();
         msg.toUsers = protoMessage.getTos();
 
-        msg.content = contentOfType(protoMessage.getContent().getType());
         MessagePayload payload = new MessagePayload(protoMessage.getContent());
         msg.content = messageContentFromPayload(payload, msg.sender);
 
@@ -3146,6 +3145,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             } else {
                 pmsg = messages[i];
             }
+            Message msg = convertProtoMessage(pmsg);
+            if (msg == null || msg.content == null) {
+                continue;
+            }
             messageLength = getMessageLength(pmsg);
             if (messageLength > MAX_IPC_SIZE) {
                 android.util.Log.e("ClientService", "drop message, too large: " + pmsg.getMessageUid() + " " + messageLength);
@@ -3154,9 +3157,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             totalLength += messageLength;
             if (totalLength <= MAX_IPC_SIZE) {
                 if (before) {
-                    entry.messages.add(0, convertProtoMessage(pmsg));
+                    entry.messages.add(0, msg);
                 } else {
-                    entry.messages.add(convertProtoMessage(pmsg));
+                    entry.messages.add(msg);
                 }
                 entry.index = i;
             } else {
