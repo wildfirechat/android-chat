@@ -427,6 +427,7 @@ public class AppService implements AppServiceProvider {
     public void addFavoriteItem(FavoriteItem item, SimpleCallback<Void> callback) {
         String url = APP_SERVER_ADDRESS + "/fav/add";
         Map<String, Object> params = new HashMap<>();
+        params.put("messageUid", item.getMessageUid());
         params.put("type", item.getFavType());
         params.put("convType", item.getConversation().type.getValue());
         params.put("convTarget", item.getConversation().target);
