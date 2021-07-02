@@ -34,6 +34,7 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class FavoriteItem {
     private int favId;
+    private long messageUid;
     // 和消息类型对应
     private int favType;
     private long timestamp;
@@ -49,8 +50,9 @@ public class FavoriteItem {
 
     }
 
-    public FavoriteItem(int favId, int favType, long timestamp, Conversation conversation, String origin, String sender, String title, String url, String thumbUrl, String data) {
+    public FavoriteItem(int favId, long messageUid, int favType, long timestamp, Conversation conversation, String origin, String sender, String title, String url, String thumbUrl, String data) {
         this.favId = favId;
+        this.messageUid = messageUid;
         this.favType = favType;
         this.timestamp = timestamp;
         this.conversation = conversation;
@@ -64,6 +66,7 @@ public class FavoriteItem {
 
     public static FavoriteItem fromMessage(Message message) {
         FavoriteItem item = new FavoriteItem();
+        item.messageUid = message.messageUid;
         item.conversation = message.conversation;
         item.favType = message.content.getMessageContentType();
         item.sender = message.sender;
@@ -156,6 +159,7 @@ public class FavoriteItem {
      */
     public Message toMessage() {
         Message message = new Message();
+        message.messageUid = messageUid;
         message.conversation = conversation;
         message.sender = sender;
         switch (favType) {
@@ -246,6 +250,14 @@ public class FavoriteItem {
 
     public void setFavId(int favId) {
         this.favId = favId;
+    }
+
+    public long getMessageUid() {
+        return messageUid;
+    }
+
+    public void setMessageUid(long messageUid) {
+        this.messageUid = messageUid;
     }
 
     public int getFavType() {

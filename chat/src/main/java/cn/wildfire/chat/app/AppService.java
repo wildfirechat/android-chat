@@ -393,6 +393,7 @@ public class AppService implements AppServiceProvider {
                         JSONObject itemObj = items.getJSONObject(i);
                         Conversation conversation = new Conversation(Conversation.ConversationType.type(itemObj.getInt("convType")), itemObj.getString("convTarget"), itemObj.getInt("convLine"));
                         FavoriteItem item = new FavoriteItem(itemObj.getInt("id"),
+                            itemObj.optLong("messageUid"),
                             itemObj.getInt("type"),
                             itemObj.getLong("timestamp"),
                             conversation,
