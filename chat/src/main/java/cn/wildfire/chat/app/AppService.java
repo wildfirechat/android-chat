@@ -156,7 +156,7 @@ public class AppService implements AppServiceProvider {
 
             @Override
             public void onUiFailure(int code, String msg) {
-                callback.onUiFailure(-1, msg);
+                callback.onUiFailure(code, msg);
             }
         });
 
@@ -183,7 +183,7 @@ public class AppService implements AppServiceProvider {
 
             @Override
             public void onUiFailure(int code, String msg) {
-                callback.onUiFailure(-1, msg);
+                callback.onUiFailure(code, msg);
             }
         });
     }
@@ -213,7 +213,7 @@ public class AppService implements AppServiceProvider {
 
             @Override
             public void onUiFailure(int code, String msg) {
-                callback.onUiFailure(-1, msg);
+                callback.onUiFailure(code, msg);
             }
         });
     }
@@ -235,7 +235,7 @@ public class AppService implements AppServiceProvider {
 
             @Override
             public void onUiFailure(int code, String msg) {
-                callback.onUiFailure(-1, msg);
+                callback.onUiFailure(code, msg);
             }
         });
     }
@@ -256,7 +256,7 @@ public class AppService implements AppServiceProvider {
 
             @Override
             public void onUiFailure(int code, String msg) {
-                callback.onUiFailure(-1, msg);
+                callback.onUiFailure(code, msg);
             }
         });
     }
@@ -279,7 +279,7 @@ public class AppService implements AppServiceProvider {
 
             @Override
             public void onUiFailure(int code, String msg) {
-                callback.onUiFailure(-1, msg);
+                callback.onUiFailure(code, msg);
             }
         });
     }
@@ -364,7 +364,7 @@ public class AppService implements AppServiceProvider {
 
             @Override
             public void onUiFailure(int code, String msg) {
-                callback.onUiFailure(-1, msg);
+                callback.onUiFailure(code, msg);
             }
         });
     }
