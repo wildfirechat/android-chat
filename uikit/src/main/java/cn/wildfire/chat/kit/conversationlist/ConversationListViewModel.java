@@ -24,6 +24,7 @@ import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnRemoveConversationListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
+import cn.wildfirechat.remote.OnSettingUpdateListener;
 
 /**
  * how
@@ -32,13 +33,14 @@ import cn.wildfirechat.remote.OnSendMessageListener;
  * 2. call getConversationList
  */
 public class ConversationListViewModel extends ViewModel implements OnReceiveMessageListener,
-        OnSendMessageListener,
-        OnRecallMessageListener,
+    OnSendMessageListener,
+    OnRecallMessageListener,
     OnDeleteMessageListener,
-        OnConversationInfoUpdateListener,
-        OnRemoveConversationListener,
-        OnConnectionStatusChangeListener,
-        OnClearMessageListener {
+    OnConversationInfoUpdateListener,
+    OnRemoveConversationListener,
+    OnConnectionStatusChangeListener,
+    OnClearMessageListener,
+    OnSettingUpdateListener {
     private MutableLiveData<List<ConversationInfo>> conversationListLiveData;
     private MutableLiveData<UnreadCount> unreadCountLiveData;
     private MutableLiveData<Integer> connectionStatusLiveData = new MutableLiveData<>();
@@ -58,6 +60,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addDeleteMessageListener(this);
         ChatManager.Instance().addClearMessageListener(this);
         ChatManager.Instance().addRemoveConversationListener(this);
+        ChatManager.Instance().addSettingUpdateListener(this);
     }
 
     @Override
@@ -71,6 +74,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeDeleteMessageListener(this);
         ChatManager.Instance().removeClearMessageListener(this);
         ChatManager.Instance().removeRemoveConversationListener(this);
+        ChatManager.Instance().removeSettingUpdateListener(this);
     }
 
     private AtomicInteger loadingCount = new AtomicInteger(0);
@@ -252,6 +256,12 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     @Override
     public void onConversationRemove(Conversation conversation) {
+        reloadConversationList();
+        reloadConversationUnreadStatus();
+    }
+
+    @Override
+    public void onSettingUpdate() {
         reloadConversationList();
         reloadConversationUnreadStatus();
     }
