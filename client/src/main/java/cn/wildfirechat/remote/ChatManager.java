@@ -47,6 +47,7 @@ import java.util.UUID;
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
+import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.IGeneralCallback;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
@@ -265,6 +266,7 @@ public class ChatManager {
      */
 
     public static void init(Application context, String imServerHost) {
+        Log.d(TAG, "init " + imServerHost);
         if (INST != null) {
             // TODO: Already initialized
             return;
@@ -372,6 +374,11 @@ public class ChatManager {
      * @param status 连接状态
      */
     private void onConnectionStatusChange(final int status) {
+        Log.d(TAG, "connectionStatusChange " + status);
+        if (status == ConnectionStatus.ConnectionStatusTokenIncorrect || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch) {
+            // TODO
+            Log.d(TAG, "连接失败，请参考：" + "https://docs.wildfirechat.cn/faq/general.html");
+        }
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -784,6 +791,7 @@ public class ChatManager {
             Log.e("getClientError", "" + ex.getMessage());
         }
         this.clientId = imei;
+        Log.d(TAG, "clientId " + this.clientId);
         return imei;
     }
 
@@ -1431,14 +1439,14 @@ public class ChatManager {
         message.serverTime = serverTime;
 
         message.direction = MessageDirection.Send;
-        if(status.value() >= MessageStatus.Mentioned.value()){
+        if (status.value() >= MessageStatus.Mentioned.value()) {
             message.direction = MessageDirection.Receive;
-            if(conversation.type == Conversation.ConversationType.Single){
+            if (conversation.type == Conversation.ConversationType.Single) {
                 message.sender = conversation.target;
-            }else {
+            } else {
                 message.sender = sender;
             }
-        }else {
+        } else {
             message.sender = getUserId();
         }
 
@@ -1513,6 +1521,7 @@ public class ChatManager {
         }
         return false;
     }
+
     /**
      * 更新消息状态。一般情况下协议栈会自动处理好状态，不建议手动处理状态。
      *
@@ -1573,6 +1582,7 @@ public class ChatManager {
                     .putString("userId", userId)
                     .putString("token", token)
                     .commit();
+                Log.d(TAG, "connect " + userId + " " + token);
                 return mClient.connect(this.userId, this.token);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -1590,6 +1600,7 @@ public class ChatManager {
     public void disconnect(boolean disablePush, boolean cleanSession) {
         if (mClient != null) {
             try {
+                Log.d(TAG, "disconnect " + disablePush + " " + cleanSession);
                 mClient.disconnect(disablePush, cleanSession);
                 SharedPreferences sp = gContext.getSharedPreferences("wildfirechat.config", Context.MODE_PRIVATE);
                 sp.edit().clear().commit();
@@ -1745,7 +1756,7 @@ public class ChatManager {
         }
 
         if (msg.content instanceof MediaMessageContent) {
-            if(TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
+            if (TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
                 String localPath = ((MediaMessageContent) msg.content).localPath;
                 if (!TextUtils.isEmpty(localPath)) {
                     File file = new File(localPath);
@@ -2798,7 +2809,7 @@ public class ChatManager {
 
         try {
             Message msg = getMessage(messageId);
-            if(msg != null) {
+            if (msg != null) {
                 if (mClient.clearMessageUnreadStatus(messageId)) {
                     ConversationInfo conversationInfo = getConversation(msg.conversation);
                     for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
@@ -2810,6 +2821,7 @@ public class ChatManager {
             e.printStackTrace();
         }
     }
+
     /**
      * 设置audio获取media等媒体消息的播放状态(其实是可以设置所有类型的消息为已播放，可以根据业务需求来处理)
      *
@@ -2832,7 +2844,6 @@ public class ChatManager {
      *
      * @param messageId 消息ID
      * @param extra     附加信息
-     *
      * @return true更新成功，false更新失败
      */
     public boolean setMessageLocalExtra(long messageId, String extra) {
@@ -2848,6 +2859,7 @@ public class ChatManager {
         }
         return false;
     }
+
     /**
      * 清除所有会话的未读状态
      */
@@ -2945,17 +2957,17 @@ public class ChatManager {
             mClient.clearRemoteConversationMessage(conversation, new IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    if(callback != null) mainHandler.post(()->callback.onSuccess());
+                    if (callback != null) mainHandler.post(() -> callback.onSuccess());
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    if(callback != null) mainHandler.post(()->callback.onFail(errorCode));
+                    if (callback != null) mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            if(callback != null) mainHandler.post(()->callback.onFail(ErrorCode.SERVICE_DIED));
+            if (callback != null) mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_DIED));
         }
     }
 
@@ -3191,6 +3203,7 @@ public class ChatManager {
             return null;
         }
     }
+
     // 优先级如下：
     // 1. 群备注 2. 好友备注 3. 用户displayName 4. <uid>
     public String getGroupMemberDisplayName(String groupId, String memberId) {
@@ -4171,7 +4184,8 @@ public class ChatManager {
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            if (callback != null) mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
 
     }
@@ -4203,7 +4217,7 @@ public class ChatManager {
      * 删除远程消息消息，只有专业版支持
      *
      * @param messageUid 消息的UID
-     * @param callback 操作结果回调
+     * @param callback   操作结果回调
      */
     public void deleteRemoteMessage(long messageUid, GeneralCallback callback) {
         if (!checkRemoteService()) {
@@ -4215,7 +4229,7 @@ public class ChatManager {
             mClient.deleteRemoteMessage(messageUid, new IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    mainHandler.post(()->{
+                    mainHandler.post(() -> {
                         onDeleteMessage(messageUid);
                         if (callback != null) {
                             callback.onSuccess();
@@ -4225,12 +4239,13 @@ public class ChatManager {
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    if (callback != null) mainHandler.post(()->callback.onFail(errorCode));
+                    if (callback != null) mainHandler.post(() -> callback.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            if (callback != null) mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
 
@@ -5651,6 +5666,7 @@ public class ChatManager {
      * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.PushType}
      */
     public void setDeviceToken(String token, int pushType) {
+        Log.d(TAG, "setDeviceToken " + token + " " +pushType);
         deviceToken = token;
         this.pushType = pushType;
         if (!checkRemoteService()) {
@@ -6061,6 +6077,7 @@ public class ChatManager {
                 mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
+
     /*
     是否支持大文件上传。只有专业版支持，当支持大文件上传时，使用getUploadUrl获取到上传链接，然后在应用层上传。
      */
@@ -6090,15 +6107,15 @@ public class ChatManager {
             mClient.getUploadUrl(fileName, mediaType.ordinal(), new IGetUploadUrlCallback.Stub() {
                 @Override
                 public void onSuccess(String uploadUrl, String remoteUrl, String backupUploadUrl, int type) throws RemoteException {
-                    if(callback != null) {
-                        mainHandler.post(()->callback.onSuccess(uploadUrl, remoteUrl, backupUploadUrl, type));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(uploadUrl, remoteUrl, backupUploadUrl, type));
                     }
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(()->callback.onFail(errorCode));
+                        mainHandler.post(() -> callback.onFail(errorCode));
                     }
                 }
             });
@@ -6276,7 +6293,7 @@ public class ChatManager {
             if (content instanceof CompositeMessageContent) {
                 ((CompositeMessageContent) content).decode(payload, this);
             } else {
-                Log.e(TAG,"decode");
+                Log.e(TAG, "decode");
                 content.decode(payload);
             }
             if (content instanceof NotificationMessageContent) {
@@ -6344,6 +6361,7 @@ public class ChatManager {
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            Log.d(TAG, "marsClientService connected");
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             try {
                 mClient.setBackupAddressStrategy(backupAddressStrategy);
@@ -6463,7 +6481,7 @@ public class ChatManager {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            Log.e("chatManager", "onServiceDisconnected");
+            Log.e(TAG, "onServiceDisconnected");
             mClient = null;
             checkRemoteService();
             mainHandler.post(() -> {
