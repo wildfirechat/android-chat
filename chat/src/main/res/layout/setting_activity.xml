@@ -51,6 +51,14 @@
             android:clickable="true"
             app:show_arrow_indicator="true"
             app:title="上传日志" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/batteryOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            android:clickable="true"
+            app:show_arrow_indicator="true"
+            app:title="电池优化" />
     </LinearLayout>
 
     <LinearLayout

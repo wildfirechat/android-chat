@@ -4,10 +4,17 @@
 
 package cn.wildfire.chat.app.setting;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -23,12 +30,27 @@ import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
 
 public class SettingActivity extends WfcBaseActivity {
+    private final int REQUEST_IGNORE_BATTERY_CODE = 100;
     @BindView(R.id.diagnoseOptionItemView)
     OptionItemView diagnoseOptionItemView;
 
     @Override
     protected int contentLayout() {
         return R.layout.setting_activity;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode) {
+            case REQUEST_IGNORE_BATTERY_CODE:
+                if (resultCode == RESULT_CANCELED) {
+                    Toast.makeText(this, "允许野火IM后台运行，更能保证消息的实时性", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
     }
 
     @OnClick(R.id.exitOptionItemView)
@@ -92,6 +114,29 @@ public class SettingActivity extends WfcBaseActivity {
                 }
             }
         });
+    }
+
+    @SuppressLint("BatteryLife")
+    @OnClick(R.id.batteryOptionItemView)
+    void batteryOptimize() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                Intent intent = new Intent();
+                String packageName = getPackageName();
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                    intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + packageName));
+                    startActivityForResult(intent, REQUEST_IGNORE_BATTERY_CODE);
+                }else {
+                    Toast.makeText(this, "已忽略电池优化，允许野火IM后台运行，更能保证消息的实时性", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "系统不支持", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.aboutOptionItemView)

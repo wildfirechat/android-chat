@@ -9,10 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
-import android.os.PowerManager;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -89,7 +86,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private QBadgeView discoveryBadgeView;
 
     private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
-    private static final int REQUEST_IGNORE_BATTERY_CODE = 101;
 
     private boolean isInitialized = false;
 
@@ -176,9 +172,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             }
         });
 
-        if (checkDisplayName()) {
-            ignoreBatteryOption();
-        }
+        checkDisplayName();
     }
 
     private void showUnreadMessageBadgeView(int count) {
@@ -395,11 +389,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                     onScanPcQrCode(result);
                 }
                 break;
-            case REQUEST_IGNORE_BATTERY_CODE:
-                if (resultCode == RESULT_CANCELED) {
-                    Toast.makeText(this, "允许野火IM后台运行，更能保证消息的实时性", Toast.LENGTH_SHORT).show();
-                }
-                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -496,21 +485,4 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         dialog.show();
     }
 
-
-    private void ignoreBatteryOption() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                Intent intent = new Intent();
-                String packageName = getPackageName();
-                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                    intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                    intent.setData(Uri.parse("package:" + packageName));
-                    startActivityForResult(intent, REQUEST_IGNORE_BATTERY_CODE);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }
