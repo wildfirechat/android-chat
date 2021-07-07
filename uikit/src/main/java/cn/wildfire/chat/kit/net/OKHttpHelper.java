@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.net;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -46,22 +47,33 @@ public class OKHttpHelper {
     private static final String TAG = "OKHttpHelper";
     private static final String WFC_OKHTTP_COOKIE_CONFIG = "WFC_OK_HTTP_COOKIES";
     private static final Map<String, List<Cookie>> cookieStore = new ConcurrentHashMap<>();
+    private static final String AUTHORIZATION_HEADER = "authToken";
 
-    private static WeakReference<Context>  AppContext;
+    private static String authToken = "";
+
+    private static WeakReference<Context> AppContext;
+
+    private static OkHttpClient okHttpClient;
+
     public static void init(Context context) {
         AppContext = new WeakReference<>(context);
-    }
-    private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
+        SharedPreferences sp = context.getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, Context.MODE_PRIVATE);
+        authToken = sp.getString(AUTHORIZATION_HEADER, null);
+
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
             .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .cookieJar(new CookieJar() {
+            .writeTimeout(30, TimeUnit.SECONDS);
+
+        // 优先使用token认证
+        if (TextUtils.isEmpty(authToken)) {
+            builder.cookieJar(new CookieJar() {
                 @Override
                 public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
                     cookieStore.put(url.host(), cookies);
                     if (AppContext != null && AppContext.get() != null) {
                         SharedPreferences sp = AppContext.get().getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, 0);
-                        Set<String>  set = new HashSet<>();
-                        for (Cookie k:cookies) {
+                        Set<String> set = new HashSet<>();
+                        for (Cookie k : cookies) {
                             set.add(gson.toJson(k));
                         }
                         sp.edit().putStringSet(url.host(), set).apply();
@@ -74,9 +86,9 @@ public class OKHttpHelper {
                     if (cookies == null) {
                         if (AppContext != null && AppContext.get() != null) {
                             SharedPreferences sp = AppContext.get().getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, 0);
-                            Set<String>  set = sp.getStringSet(url.host(), new HashSet<>());
+                            Set<String> set = sp.getStringSet(url.host(), new HashSet<>());
                             cookies = new ArrayList<>();
-                            for (String s:set) {
+                            for (String s : set) {
                                 Cookie cookie = gson.fromJson(s, Cookie.class);
                                 cookies.add(cookie);
                             }
@@ -86,8 +98,26 @@ public class OKHttpHelper {
 
                     return cookies;
                 }
-            })
-            .build();
+            });
+        }
+        builder.addInterceptor(chain -> {
+            Request request = chain.request();
+            if (!TextUtils.isEmpty(authToken)) {
+                request = request.newBuilder()
+                    .addHeader(AUTHORIZATION_HEADER, authToken)
+                    .build();
+            }
+            Response response = chain.proceed(request);
+            String responseAuthToken = response.header(AUTHORIZATION_HEADER, null);
+            if (!TextUtils.isEmpty(responseAuthToken)) {
+                authToken = responseAuthToken;
+                // 重新登录之后，清除cookie，采用token进行认证
+                sp.edit().clear().putString(AUTHORIZATION_HEADER, authToken).apply();
+            }
+            return response;
+        });
+        okHttpClient = builder.build();
+    }
 
     private static Gson gson = new Gson();
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -103,9 +133,9 @@ public class OKHttpHelper {
         }
 
         final Request request = new Request.Builder()
-                .url(httpUrl)
-                .get()
-                .build();
+            .url(httpUrl)
+            .get()
+            .build();
 
         okHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
@@ -117,7 +147,7 @@ public class OKHttpHelper {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.e(TAG,"response="+response.toString());
+                Log.e(TAG, "response=" + response.toString());
                 handleResponse(url, call, response, callback);
             }
         });
@@ -127,9 +157,9 @@ public class OKHttpHelper {
     public static <T> void post(final String url, Map<String, Object> param, final Callback<T> callback) {
         RequestBody body = RequestBody.create(JSON, gson.toJson(param));
         final Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
+            .url(url)
+            .post(body)
+            .build();
 
         okHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
@@ -150,9 +180,9 @@ public class OKHttpHelper {
     public static <T> void put(final String url, Map<String, String> param, final Callback<T> callback) {
         RequestBody body = RequestBody.create(JSON, gson.toJson(param));
         final Request request = new Request.Builder()
-                .url(url)
-                .put(body)
-                .build();
+            .url(url)
+            .put(body)
+            .build();
 
         okHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
@@ -172,9 +202,9 @@ public class OKHttpHelper {
 
     public static <T> void upload(String url, Map<String, String> params, File file, MediaType mediaType, final Callback<T> callback) {
         MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", file.getName(),
-                        RequestBody.create(mediaType, file));
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("file", file.getName(),
+                RequestBody.create(mediaType, file));
 
         if (params != null) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -185,9 +215,9 @@ public class OKHttpHelper {
         RequestBody requestBody = builder.build();
 
         Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
+            .url(url)
+            .post(requestBody)
+            .build();
         okHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -203,7 +233,7 @@ public class OKHttpHelper {
         });
     }
 
-    public static void clearCookies(){
+    public static void clearCookies() {
         SharedPreferences sp = AppContext.get().getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, 0);
         sp.edit().clear().apply();
         cookieStore.clear();
