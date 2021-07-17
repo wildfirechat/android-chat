@@ -154,6 +154,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private String mHost;
 
+    private boolean useSM4 = false;
+
 
     private class ClientServiceStub extends IRemoteClient.Stub {
 
@@ -168,6 +170,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             if (TextUtils.isEmpty(mHost)) {
                 Log.e(TAG, "未设置IM_SERVER_HOST!");
                 return false;
+            }
+
+            if(useSM4) {
+                ProtoLogic.useEncryptSM4();
             }
 
             logined = true;
@@ -2355,6 +2361,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             });
+        }
+
+        @Override
+        public void useSM4() throws RemoteException {
+            useSM4 = true;
+            ProtoLogic.useEncryptSM4();
         }
     }
 

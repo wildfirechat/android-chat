@@ -178,6 +178,8 @@ public class ChatManager {
     private String backupAddressHost = null;
     private int backupAddressPort = 80;
 
+    private boolean useSM4 = false;
+
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
     private List<OnConnectionStatusChangeListener> onConnectionStatusChangeListeners = new ArrayList<>();
@@ -750,6 +752,22 @@ public class ChatManager {
      */
     public void removeSettingUpdateListener(OnSettingUpdateListener listener) {
         settingUpdateListeners.remove(listener);
+    }
+
+    /**
+     * 启用国密加密，需要在connect之前调用，需要IM服务开启国密才可以使用。
+     */
+    public void useSM4() {
+        useSM4 = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.useSM4();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -6364,6 +6382,10 @@ public class ChatManager {
             Log.d(TAG, "marsClientService connected");
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             try {
+                if(useSM4) {
+                    mClient.useSM4();
+                }
+
                 mClient.setBackupAddressStrategy(backupAddressStrategy);
                 if (!TextUtils.isEmpty(backupAddressHost))
                     mClient.setBackupAddress(backupAddressHost, backupAddressPort);
