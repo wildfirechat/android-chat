@@ -241,4 +241,5 @@ interface IRemoteClient {
     boolean isReceiptEnabled();
     boolean isGlobalDisableSyncDraft();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
+    void useSM4();
 }
