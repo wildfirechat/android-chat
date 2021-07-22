@@ -28,6 +28,7 @@ import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GetUserInfoCallback;
@@ -89,13 +90,20 @@ public class WfcNotificationManager {
     }
 
     public void handleReceiveMessage(Context context, List<Message> messages) {
-
         if (messages == null || messages.isEmpty()) {
             return;
         }
 
         if (ChatManager.Instance().isGlobalSilent()) {
             return;
+        }
+
+        if(ChatManager.Instance().isMuteNotificationWhenPcOnline()) {
+            for (PCOnlineInfo onlineInfo:ChatManager.Instance().getPCOnlineInfos()) {
+                if(onlineInfo.isOnline()) {
+                    return;
+                }
+            }
         }
 
         boolean hiddenNotificationDetail = ChatManager.Instance().isHiddenNotificationDetail();

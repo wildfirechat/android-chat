@@ -311,11 +311,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             }
         }
 
-        if (isBackground && !ChatManager.Instance().isMuteNotificationWhenPcOnline()) {
-            if (messages == null) {
-                return;
-            }
-
+        if (isBackground && messages != null) {
             List<Message> msgs = new ArrayList<>(messages);
             Iterator<Message> iterator = msgs.iterator();
             while (iterator.hasNext()) {
