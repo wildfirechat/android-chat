@@ -179,6 +179,7 @@ public class ChatManager {
     private int backupAddressPort = 80;
 
     private boolean useSM4 = false;
+    private boolean defaultSilentWhenPCOnline = false;
 
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
@@ -6211,11 +6212,19 @@ public class ChatManager {
 
         String value = getUserSetting(UserSettingScope.MuteWhenPcOnline, "");
         if (value == null || !value.equals("1")) {
-            return false;
+            return defaultSilentWhenPCOnline;
         }
-        return true;
+        return !defaultSilentWhenPCOnline;
     }
 
+    /**
+     设置PC/Web在线时，手机是否默认静音。缺省值为NO，如果IM服务配置server.mobile_default_silent_when_pc_online 为true时，需要调用此函数设置为YES。
+
+     @param defaultSilent 缺省值是否为静音。
+     */
+    public void setDefaultSilentWhenPcOnline(boolean defaultSilent) {
+        defaultSilentWhenPCOnline = defaultSilent;
+    }
     /**
      * 设置开启了PC在线时，移动端是否静音操作
      *
