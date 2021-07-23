@@ -374,10 +374,6 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         if(!audience) {
             didParticipantJoined(userId);
         } else {
-            if (!participants.contains(userId)) {
-                return;
-            }
-
             participants.remove(userId);
             int count = participantGridView.getChildCount();
             for (int i = 0; i < count; i++) {
