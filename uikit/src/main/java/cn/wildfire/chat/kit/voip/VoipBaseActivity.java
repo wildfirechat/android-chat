@@ -30,6 +30,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -68,6 +69,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
 
     protected boolean isInvitingNewParticipant;
     private String focusVideoUserId;
+    private static final String TAG = "voip";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -290,7 +292,14 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     }
 
     protected void postAction(Runnable action) {
-        handler.post(action);
+        Runnable runnable = () -> {
+            if (!isFinishing()) {
+                action.run();
+            } else {
+                Log.d(TAG, "activity is finishing");
+            }
+        };
+        handler.post(runnable);
     }
 
     protected boolean checkOverlayPermission() {
