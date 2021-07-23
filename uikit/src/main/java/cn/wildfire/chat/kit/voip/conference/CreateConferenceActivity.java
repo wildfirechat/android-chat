@@ -56,7 +56,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         super.afterViews();
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(ChatManager.Instance().getUserId(), false);
-        if(userInfo != null) {
+        if (userInfo != null) {
             titleEditText.setText(userInfo.displayName + "的会议");
         } else {
             titleEditText.setText("会议");
@@ -67,13 +67,13 @@ public class CreateConferenceActivity extends WfcBaseActivity {
 
     @OnCheckedChanged(R2.id.advancedSwitch)
     void advancedChecked(CompoundButton button, boolean checked) {
-        if(checked) {
-            audienceSwitch.setEnabled(false);
+        // 超级会议模式，一般参会人员会很多，但不需要所有人都能发言；互动模式，是允许每个人发言
+        // 开启超级会之后，需要再次确认开启互动模式
+        if (checked) {
             audienceSwitch.setChecked(false);
-        } else {
-            audienceSwitch.setEnabled(true);
         }
     }
+
     @OnTextChanged(value = R2.id.conferenceTitleTextInputEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void conferenceTitleChannelName(Editable editable) {
         this.title = editable.toString();
