@@ -16,21 +16,21 @@
         <FrameLayout
             android:id="@+id/focusVideoContainerFrameLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/green1" />
+            android:layout_height="match_parent" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <LinearLayout
                 android:id="@+id/topBarView"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -40,7 +40,7 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:src="@drawable/av_minimize"
-                    android:tint="@color/white" />
+                    app:tint="@color/white" />
 
                 <View
                     android:layout_width="wrap_content"
@@ -54,8 +54,9 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:src="@drawable/av_switch_camera_selector"
-                    android:tint="@color/white" />
+                    app:tint="@color/white" />
             </LinearLayout>
+
             <androidx.gridlayout.widget.GridLayout
                 android:id="@+id/videoContainerGridLayout"
                 android:layout_width="match_parent"
@@ -69,6 +70,7 @@
                 app:useDefaultMargins="false" />
         </LinearLayout>
     </FrameLayout>
+
     <TextView
         android:id="@+id/durationTextView"
         android:layout_width="wrap_content"
@@ -77,11 +79,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
         android:textColor="@color/white" />
+
     <FrameLayout
         android:id="@+id/bottomPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
+
         <include layout="@layout/av_conference_video_connected_action" />
     </FrameLayout>
 
