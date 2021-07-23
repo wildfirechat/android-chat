@@ -133,7 +133,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
             //当PC/Web在线时手机端是否静音，默认静音。如果修改为不默认静音，需要打开下面函数。
             //另外需要IM服务配置server.mobile_default_silent_when_pc_online为false。必须保持与服务器同步。
-            //ChatManagerHolder.gChatManager.setDefaultSilentWhenPcOnline(true);
+            //ChatManagerHolder.gChatManager.setDefaultSilentWhenPcOnline(false);
 
             ringPlayer = new AsyncPlayer(null);
             AVEngineKit.init(application, this);
