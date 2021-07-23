@@ -125,7 +125,7 @@ public class VoipCallService extends Service {
         } else {
             updateNotification(session);
             if (showFloatingWindow && session.getState() == AVEngineKit.CallState.Connected) {
-                if(session.isScreenSharing()) {
+                if (session.isScreenSharing()) {
                     showScreenSharingView(session);
                 } else if (session.isAudioOnly()) {
                     showAudioView(session);
@@ -224,7 +224,7 @@ public class VoipCallService extends Service {
         if (session.getState() != AVEngineKit.CallState.Connected) {
             showUnConnectedCallInfo(session);
         } else {
-            if(session.isScreenSharing()) {
+            if (session.isScreenSharing()) {
                 showScreenSharingView(session);
             } else if (session.isAudioOnly()) {
                 showAudioView(session);
@@ -307,64 +307,66 @@ public class VoipCallService extends Service {
 
     private boolean rendererInitialized = false;
     private AVEngineKit.CallState lastState = null;
+    private String lastFocusUserId = null;
+
+    private String nextFocusUserId(AVEngineKit.CallSession session) {
+        String targetId = ChatManager.Instance().getUserId();
+        if (session.isConference()) {
+            List<String> participants = session.getParticipantIds();
+            if (!participants.isEmpty()) {
+                for (String participant : participants) {
+                    PeerConnectionClient client = session.getClient(participant);
+                    if (!client.audience) {
+                        targetId = participant;
+                        break;
+                    }
+                }
+            }
+
+        } else {
+            if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId) || ChatManager.Instance().getUserId().equals(focusTargetId))) {
+                targetId = focusTargetId;
+            } else if (session.getConversation().type == Conversation.ConversationType.Group) {
+                for (AVEngineKit.ParticipantProfile profile : session.getParticipantProfiles()) {
+                    if (profile.getState() == AVEngineKit.CallState.Connected) {
+                        targetId = profile.getUserId();
+                        break;
+                    }
+                }
+            }
+        }
+        return targetId;
+    }
 
     private void showVideoView(AVEngineKit.CallSession session) {
         view.findViewById(R.id.audioLinearLayout).setVisibility(View.GONE);
         FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
         remoteVideoFrameLayout.setVisibility(View.VISIBLE);
 
-        if (!rendererInitialized || lastState != session.getState()) {
+        String nextFocusUserId = nextFocusUserId(session);
+        if (!rendererInitialized || lastState != session.getState() || !TextUtils.equals(lastFocusUserId, nextFocusUserId)) {
             rendererInitialized = true;
             if (lastState != session.getState()) {
                 session.resetRenderer();
             }
             lastState = session.getState();
             SurfaceView surfaceView = session.createRendererView();
+            remoteVideoFrameLayout.removeAllViews();
             remoteVideoFrameLayout.addView(surfaceView);
-            if (session.isConference()) {
-                List<String> participants = session.getParticipantIds();
-                String targetId = null;
-                if (!participants.isEmpty()) {
-                    for (String participant : participants) {
-                        PeerConnectionClient client = session.getClient(participant);
-                        if (!client.audience) {
-                            targetId = participant;
-                            break;
-                        }
-                    }
-                }
-                if (targetId != null) {
-                    session.setupRemoteVideo(targetId, surfaceView, SCALE_ASPECT_BALANCED);
-                } else {
-                    session.setupLocalVideo(surfaceView, SCALE_ASPECT_BALANCED);
-                }
 
+            if (TextUtils.equals(ChatManager.Instance().getUserId(), nextFocusUserId)) {
+                session.setupLocalVideo(surfaceView, SCALE_ASPECT_BALANCED);
             } else {
-                String targetId = session.getParticipantIds().get(0);
-                if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId) || ChatManager.Instance().getUserId().equals(focusTargetId))) {
-                    targetId = focusTargetId;
-                } else if (session.getConversation().type == Conversation.ConversationType.Group) {
-                    for (AVEngineKit.ParticipantProfile profile : session.getParticipantProfiles()) {
-                        if (profile.getState() == AVEngineKit.CallState.Connected) {
-                            targetId = profile.getUserId();
-                            break;
-                        }
-                    }
-                }
-
-                if (session.getState() == AVEngineKit.CallState.Connected && !targetId.equals(ChatManager.Instance().getUserId())) {
-                    session.setupRemoteVideo(targetId, surfaceView, SCALE_ASPECT_BALANCED);
-                } else {
-                    session.setupLocalVideo(surfaceView, SCALE_ASPECT_BALANCED);
-                }
+                session.setupRemoteVideo(nextFocusUserId, surfaceView, SCALE_ASPECT_BALANCED);
             }
+            lastFocusUserId = nextFocusUserId;
         }
     }
 
     private void clickToResume() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null) {
-            if(session.isScreenSharing()) {
+            if (session.isScreenSharing()) {
                 session.stopScreenShare();
             }
 
