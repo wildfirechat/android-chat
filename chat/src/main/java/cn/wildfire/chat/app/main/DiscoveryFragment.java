@@ -25,6 +25,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
+import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
@@ -83,7 +84,8 @@ public class DiscoveryFragment extends Fragment {
 
     @OnClick(R.id.channelOptionItemView)
     void channel() {
-
+        Intent intent = new Intent(getActivity(), ChannelListActivity.class);
+        startActivity(intent);
     }
 
     @OnClick(R.id.cookbookOptionItemView)
