@@ -33,6 +33,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
+import org.webrtc.SurfaceViewRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,6 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
@@ -329,14 +329,20 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     void shareScreen() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            shareScreenImageView.setSelected(!session.isScreenSharing());
-            if (!session.isScreenSharing()) {
-                ((VoipBaseActivity) getActivity()).startScreenShare();
-            } else {
-                ((VoipBaseActivity) getActivity()).stopScreenShare();
-            }
+//            shareScreenImageView.setSelected(!session.isScreenSharing());
+//            if (!session.isScreenSharing()) {
+//                ((VoipBaseActivity) getActivity()).startScreenShare();
+//            } else {
+//                ((VoipBaseActivity) getActivity()).stopScreenShare();
+//            }
+            List<String> participants = session.getParticipantIds();
+
+            tiny = !tiny;
+            session.switchStream(participants.get(0), tiny);
         }
     }
+
+    private boolean tiny = false;
 
     // hangup 触发
     @Override
@@ -499,14 +505,17 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
                 return;
             }
         }
-
-        SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
-        if (surfaceView != null) {
+        SurfaceView surfaceView = item.findViewWithTag("v_" + userId);
+        if(surfaceView != null){
+            ((SurfaceViewRenderer) surfaceView).release();
+            item.removeView(surfaceView);
+        }
+            surfaceView = getEngineKit().getCurrentSession().createRendererView();
             surfaceView.setZOrderMediaOverlay(false);
             item.addView(surfaceView);
             surfaceView.setTag("v_" + userId);
-            getEngineKit().getCurrentSession().setupRemoteVideo(userId, surfaceView, scalingType);
-        }
+
+        getEngineKit().getCurrentSession().setupRemoteVideo(userId, surfaceView, scalingType);
         bringParticipantVideoFront();
     }
 
