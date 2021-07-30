@@ -7,7 +7,6 @@ package cn.wildfire.chat.kit.voip.conference;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -151,6 +150,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         updateControlStatus();
 
         manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+        rootLinearLayout.setOnClickListener(clickListener);
         startHideBarTimer();
     }
 
@@ -571,7 +571,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         @Override
         public void onClick(View v) {
             String userId = (String) v.getTag();
-            if (!userId.equals(focusVideoUserId)) {
+            if (userId != null && !userId.equals(focusVideoUserId)) {
                 ConferenceItem clickedConferenceItem = (ConferenceItem) v;
                 int clickedIndex = participantGridView.indexOfChild(v);
                 participantGridView.removeView(clickedConferenceItem);
