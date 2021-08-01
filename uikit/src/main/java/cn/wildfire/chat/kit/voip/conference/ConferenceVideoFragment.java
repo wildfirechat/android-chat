@@ -86,6 +86,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     private UserInfo me;
     private UserViewModel userViewModel;
 
+    // TODO 移除，并将VoipBaseActivity.focusVideoUserId 修改为static
     private String focusVideoUserId;
     private ConferenceItem focusConferenceItem;
 
@@ -149,7 +150,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
         updateControlStatus();
 
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
         rootLinearLayout.setOnClickListener(clickListener);
         startHideBarTimer();
     }
@@ -185,7 +186,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
         participants = new ArrayList();
         List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
-        if(profiles != null && !profiles.isEmpty()) {
+        if (profiles != null && !profiles.isEmpty()) {
             for (AVEngineKit.ParticipantProfile profile : profiles) {
                 if (!profile.isAudience()) {
                     participants.add(profile.getUserId());
@@ -194,13 +195,14 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         }
 
         AVEngineKit.ParticipantProfile myProfile = session.getMyProfile();
-        if(!myProfile.isAudience()) {
+        if (!myProfile.isAudience()) {
             participants.add(myProfile.getUserId());
         }
         focusConferenceItem = null;
 
         if (participants.size() > 0) {
             focusVideoUserId = participants.get(0);
+            ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
             List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
             for (UserInfo userInfo : participantUserInfos) {
                 ConferenceItem multiCallItem = new ConferenceItem(getActivity());
@@ -211,7 +213,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
                 multiCallItem.setOnClickListener(clickListener);
                 GlideApp.with(multiCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
 
-                if(userInfo.uid.equals(focusVideoUserId)) {
+                if (userInfo.uid.equals(focusVideoUserId)) {
                     multiCallItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     focusConferenceItem = multiCallItem;
                 } else {
@@ -221,7 +223,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             }
         }
 
-        if(focusConferenceItem != null) {
+        if (focusConferenceItem != null) {
             focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             focusVideoContainerFrameLayout.addView(focusConferenceItem);
         }
@@ -266,7 +268,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         for (String participant : participants) {
             session.setupRemoteVideo(participant, null, scalingType);
         }
-        ((ConferenceActivity) getActivity()).showFloatingView(null);
+        ((ConferenceActivity) getActivity()).showFloatingView(focusVideoUserId);
     }
 
     @OnClick(R2.id.manageParticipantView)
@@ -307,18 +309,20 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     void hangup() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            if(ChatManager.Instance().getUserId().equals(session.getHost())) {
+            if (ChatManager.Instance().getUserId().equals(session.getHost())) {
                 new AlertDialog.Builder(getActivity())
-                        .setMessage("请选择是否结束会议")
-                        .setIcon(R.mipmap.ic_launcher)
-                        .setNeutralButton("退出会议", (dialogInterface, i) -> {
-                            if(session.getState() != AVEngineKit.CallState.Idle) session.leaveConference(false);
-                        })
-                        .setPositiveButton("结束会议", (dialogInterface, i) -> {
-                            if(session.getState() != AVEngineKit.CallState.Idle) session.leaveConference(true);
-                        })
-                        .create()
-                        .show();
+                    .setMessage("请选择是否结束会议")
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setNeutralButton("退出会议", (dialogInterface, i) -> {
+                        if (session.getState() != AVEngineKit.CallState.Idle)
+                            session.leaveConference(false);
+                    })
+                    .setPositiveButton("结束会议", (dialogInterface, i) -> {
+                        if (session.getState() != AVEngineKit.CallState.Idle)
+                            session.leaveConference(true);
+                    })
+                    .create()
+                    .show();
             } else {
                 session.leaveConference(false);
             }
@@ -372,14 +376,14 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         }
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if(session == null || session.getState() == AVEngineKit.CallState.Idle) {
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             return;
         }
 
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
 
         AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userId);
-        if(profile == null || profile.isAudience()) {
+        if (profile == null || profile.isAudience()) {
             return;
         }
         DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -394,10 +398,11 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         multiCallItem.setOnClickListener(clickListener);
         GlideApp.with(multiCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
 
-        if(focusVideoUserId == null) {
+        if (focusVideoUserId == null) {
             multiCallItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             focusConferenceItem = multiCallItem;
             focusVideoUserId = userId;
+            ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
 
             focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             focusVideoContainerFrameLayout.addView(focusConferenceItem);
@@ -420,12 +425,12 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了会议", Toast.LENGTH_SHORT).show();
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if(session == null || session.getState() == AVEngineKit.CallState.Idle) {
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             return;
         }
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
 
-        if(focusVideoUserId == null) {
+        if (focusVideoUserId == null) {
             bottomPanel.setVisibility(View.VISIBLE);
             topBarView.setVisibility(View.VISIBLE);
         }
@@ -497,8 +502,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             didParticipantJoined(userId);
         }
         item = rootLinearLayout.findViewWithTag(userId);
-        if(item == null) {
-            if(userId.equals(focusVideoUserId)) {
+        if (item == null) {
+            if (userId.equals(focusVideoUserId)) {
                 item = focusConferenceItem;
             } else {
                 // should not be here!
@@ -506,7 +511,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             }
         }
         SurfaceView surfaceView = item.findViewWithTag("v_" + userId);
-        if(surfaceView == null){
+        if (surfaceView == null) {
             surfaceView = getEngineKit().getCurrentSession().createRendererView();
             surfaceView.setZOrderMediaOverlay(false);
             surfaceView.setTag("v_" + userId);
@@ -595,15 +600,16 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
                 focusVideoContainerFrameLayout.addView(clickedConferenceItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 focusConferenceItem = clickedConferenceItem;
                 focusVideoUserId = userId;
+                ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
 
                 bringParticipantVideoFront();
-                if(bottomPanel.getVisibility() == View.GONE) {
+                if (bottomPanel.getVisibility() == View.GONE) {
                     bottomPanel.setVisibility(View.VISIBLE);
                     topBarView.setVisibility(View.VISIBLE);
                     startHideBarTimer();
                 }
             } else {
-                if(bottomPanel.getVisibility() == View.GONE) {
+                if (bottomPanel.getVisibility() == View.GONE) {
                     bottomPanel.setVisibility(View.VISIBLE);
                     topBarView.setVisibility(View.VISIBLE);
                     startHideBarTimer();
@@ -617,7 +623,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     private void startHideBarTimer() {
         cancelHideBarTimer();
-        if(bottomPanel.getVisibility() == View.GONE) {
+        if (bottomPanel.getVisibility() == View.GONE) {
             return;
         }
 
@@ -626,7 +632,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
             public void run() {
                 getActivity().runOnUiThread(() -> {
                     AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-                    if(session != null && session.getState() != AVEngineKit.CallState.Idle) {
+                    if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
                         bottomPanel.setVisibility(View.GONE);
                         topBarView.setVisibility(View.GONE);
                     }
@@ -638,14 +644,14 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     }
 
     private void cancelHideBarTimer() {
-        if(hiddenBarTimer != null)
+        if (hiddenBarTimer != null)
             hiddenBarTimer.cancel();
 
         hiddenBarTimer = new Timer();
     }
 
     private void bringParticipantVideoFront() {
-        if(focusConferenceItem == null) {
+        if (focusConferenceItem == null) {
             return;
         }
 
@@ -671,7 +677,7 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             String text;
-            if(session.getConnectedTime() == 0) {
+            if (session.getConnectedTime() == 0) {
                 text = "未开始";
             } else {
                 long s = System.currentTimeMillis() - session.getConnectedTime();
@@ -722,8 +728,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     @Override
     public void onStop() {
         super.onStop();
-        if(hiddenBarTimer!=null) {
-            hiddenBarTimer.cancel();;
+        if (hiddenBarTimer != null) {
+            hiddenBarTimer.cancel();
             hiddenBarTimer = null;
         }
     }

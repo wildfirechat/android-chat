@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.voip;
 
+import static org.webrtc.RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -17,6 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -40,8 +43,6 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
-
-import static org.webrtc.RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
 
 public class VoipCallService extends Service {
     private static final int NOTIFICATION_ID = 1;
@@ -94,6 +95,7 @@ public class VoipCallService extends Service {
         }
 
         focusTargetId = intent.getStringExtra("focusTargetId");
+        Log.e("wfc", "on startCommand " + focusTargetId);
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
             stopSelf();
         } else {
@@ -310,6 +312,9 @@ public class VoipCallService extends Service {
     private String lastFocusUserId = null;
 
     private String nextFocusUserId(AVEngineKit.CallSession session) {
+        if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId) || ChatManager.Instance().getUserId().equals(focusTargetId))) {
+            return focusTargetId;
+        }
         String targetId = ChatManager.Instance().getUserId();
         if (session.isConference()) {
             List<String> participants = session.getParticipantIds();
@@ -344,6 +349,7 @@ public class VoipCallService extends Service {
         remoteVideoFrameLayout.setVisibility(View.VISIBLE);
 
         String nextFocusUserId = nextFocusUserId(session);
+        Log.e("wfc", "nextFocusUserId " + nextFocusUserId);
         if (!rendererInitialized || lastState != session.getState() || !TextUtils.equals(lastFocusUserId, nextFocusUserId)) {
             rendererInitialized = true;
             if (lastState != session.getState()) {

@@ -329,6 +329,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             return;
         }
 
+        this.focusVideoUserId = focusTargetId;
         Intent intent = new Intent(this, VoipCallService.class);
         intent.putExtra("showFloatingView", true);
         if (!TextUtils.isEmpty(focusTargetId)) {
