@@ -120,15 +120,17 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
         initParticipantsView(session);
 
         if (session.getState() == AVEngineKit.CallState.Connected) {
-            session.startVideoSource();
             List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
             for (AVEngineKit.ParticipantProfile profile : profiles) {
                 if (profile.getState() == AVEngineKit.CallState.Connected && !profile.isAudience()) {
                     didReceiveRemoteVideoTrack(profile.getUserId());
                 }
             }
-            if (session.isLocalVideoCreated()) {
-                didCreateLocalVideoTrack();
+            if(!session.videoMuted){
+                session.startVideoSource();
+                if (session.isLocalVideoCreated()) {
+                    didCreateLocalVideoTrack();
+                }
             }
         } else {
             if (session.isLocalVideoCreated()) {
@@ -240,21 +242,26 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     }
 
     private void updateParticipantStatus(AVEngineKit.CallSession session) {
-        int count = participantGridView.getChildCount();
         String meUid = userViewModel.getUserId();
-        for (int i = 0; i < count; i++) {
-            View view = participantGridView.getChildAt(i);
-            String userId = (String) view.getTag();
-            if (meUid.equals(userId)) {
-                ((ConferenceItem) view).getStatusTextView().setVisibility(View.GONE);
-            } else {
-                PeerConnectionClient client = session.getClient(userId);
-                if (client.state == AVEngineKit.CallState.Connected) {
-                    ((ConferenceItem) view).getStatusTextView().setVisibility(View.GONE);
-                } else if (client.videoMuted) {
-                    ((ConferenceItem) view).getStatusTextView().setText("关闭摄像头");
-                    ((ConferenceItem) view).getStatusTextView().setVisibility(View.VISIBLE);
-                }
+        ConferenceItem item = rootLinearLayout.findViewWithTag(meUid);
+        if(item != null){
+            if (session.videoMuted){
+                item.getStatusTextView().setVisibility(View.VISIBLE);
+                item.getStatusTextView().setText("关闭摄像头");
+            }
+        }
+
+        for (String userId : session.getParticipantIds()) {
+            item = rootLinearLayout.findViewWithTag(userId);
+            if(item == null){
+                continue;
+            }
+            PeerConnectionClient client = session.getClient(userId);
+            if (client.state == AVEngineKit.CallState.Connected) {
+                item.getStatusTextView().setVisibility(View.GONE);
+            } else if (client.videoMuted) {
+                item.getStatusTextView().setText("关闭摄像头");
+                item.getStatusTextView().setVisibility(View.VISIBLE);
             }
         }
     }
@@ -524,7 +531,8 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
 
     @Override
     public void didRemoveRemoteVideoTrack(String userId) {
-        removeParticipantView(userId);
+        // do nothing
+        //removeParticipantView(userId);
     }
 
     @Override
@@ -544,7 +552,13 @@ public class ConferenceVideoFragment extends Fragment implements AVEngineKit.Cal
     @Override
     public void didVideoMuted(String userId, boolean videoMuted) {
         if (videoMuted) {
-            didRemoveRemoteVideoTrack(userId);
+            ConferenceItem item = rootLinearLayout.findViewWithTag(userId);
+            if(item != null){
+//                View surfaceView = item.findViewWithTag("v_" + userId);
+//                surfaceView.setVisibility(View.GONE);
+                item.getStatusTextView().setVisibility(View.VISIBLE);
+                item.getStatusTextView().setText("关闭摄像头");
+            }
         } else {
             if (userId.equals(me.uid)) {
                 didCreateLocalVideoTrack();

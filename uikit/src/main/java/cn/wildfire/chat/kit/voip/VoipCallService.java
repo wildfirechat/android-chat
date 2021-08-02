@@ -312,8 +312,16 @@ public class VoipCallService extends Service {
     private String lastFocusUserId = null;
 
     private String nextFocusUserId(AVEngineKit.CallSession session) {
-        if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId) || ChatManager.Instance().getUserId().equals(focusTargetId))) {
-            return focusTargetId;
+        if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId)) ) {
+            PeerConnectionClient client = session.getClient(focusTargetId);
+            if(client != null && !client.videoMuted){
+                return focusTargetId;
+            }
+        }
+        if (ChatManager.Instance().getUserId().equals(focusTargetId)) {
+            if(!session.videoMuted){
+                return focusTargetId;
+            }
         }
         String targetId = ChatManager.Instance().getUserId();
         if (session.isConference()) {
