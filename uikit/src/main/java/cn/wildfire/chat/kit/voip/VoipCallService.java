@@ -38,10 +38,12 @@ import androidx.core.app.NotificationCompat;
 import java.util.List;
 
 import cn.wildfire.chat.kit.BuildConfig;
+import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class VoipCallService extends Service {
@@ -312,14 +314,14 @@ public class VoipCallService extends Service {
     private String lastFocusUserId = null;
 
     private String nextFocusUserId(AVEngineKit.CallSession session) {
-        if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId)) ) {
+        if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId))) {
             PeerConnectionClient client = session.getClient(focusTargetId);
-            if(client != null && !client.videoMuted){
+            if (client != null && !client.videoMuted) {
                 return focusTargetId;
             }
         }
         if (ChatManager.Instance().getUserId().equals(focusTargetId)) {
-            if(!session.videoMuted){
+            if (!session.videoMuted) {
                 return focusTargetId;
             }
         }
@@ -337,15 +339,15 @@ public class VoipCallService extends Service {
             }
 
         } else {
-            if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId) || ChatManager.Instance().getUserId().equals(focusTargetId))) {
-                targetId = focusTargetId;
-            } else if (session.getConversation().type == Conversation.ConversationType.Group) {
+            if (session.getConversation().type == Conversation.ConversationType.Group) {
                 for (AVEngineKit.ParticipantProfile profile : session.getParticipantProfiles()) {
-                    if (profile.getState() == AVEngineKit.CallState.Connected) {
+                    if (profile.getState() == AVEngineKit.CallState.Connected && !profile.isVideoMuted()) {
                         targetId = profile.getUserId();
                         break;
                     }
                 }
+            } else {
+                targetId = session.getConversation().target;
             }
         }
         return targetId;
@@ -364,8 +366,17 @@ public class VoipCallService extends Service {
                 session.resetRenderer();
             }
             lastState = session.getState();
+
+            ImageView portraitImageView = remoteVideoFrameLayout.findViewById(R.id.portraitImageView);
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(nextFocusUserId, false);
+            GlideApp.with(remoteVideoFrameLayout).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+
+            View view = remoteVideoFrameLayout.findViewWithTag("renderer");
+            if (view != null) {
+                remoteVideoFrameLayout.removeView(view);
+            }
             SurfaceView surfaceView = session.createRendererView();
-            remoteVideoFrameLayout.removeAllViews();
+            surfaceView.setTag("renderer");
             remoteVideoFrameLayout.addView(surfaceView);
 
             if (TextUtils.equals(ChatManager.Instance().getUserId(), nextFocusUserId)) {

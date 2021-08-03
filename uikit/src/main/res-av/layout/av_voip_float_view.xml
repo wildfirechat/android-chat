@@ -44,6 +44,12 @@
         android:id="@+id/remoteVideoFrameLayout"
         android:layout_width="100dp"
         android:layout_height="140dp"
-        android:visibility="gone" />
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/portraitImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
 </LinearLayout>
