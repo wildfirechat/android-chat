@@ -136,7 +136,15 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             //ChatManagerHolder.gChatManager.setDefaultSilentWhenPcOnline(false);
 
             ringPlayer = new AsyncPlayer(null);
+
+            // 仅高级版支持，是否禁用双流模式
+            //AVEngineKit.DISABLE_DUAL_STREAM_MODE = true;
+            // 多人版，最多支持4人；高级版，最多支持9人
+            //AVEngineKit.MAX_VIDEO_PARTICIPANT_COUNT = 9;
+            // 多人版，最多支持9人；高级版，最多支持16人
+            //AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT= 16;
             AVEngineKit.init(application, this);
+
             ChatManager.Instance().registerMessageContent(ConferenceChangeModelContent.class);
             ChatManager.Instance().registerMessageContent(ConferenceKickoffMemberContent.class);
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
