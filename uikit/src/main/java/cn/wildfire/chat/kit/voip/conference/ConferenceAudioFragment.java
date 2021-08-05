@@ -25,6 +25,8 @@ import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import org.webrtc.StatsReport;
 
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class ConferenceAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback {
+public class ConferenceAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback, ConferenceManager.ConferenceManagerEventCallback {
     @BindView(R2.id.durationTextView)
     TextView durationTextView;
 
@@ -98,6 +100,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         speakerImageView.setSelected(isSpeakerOn);
 
         manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+        ConferenceManager.Instance().setCallback(this);
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
@@ -406,5 +409,38 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
             durationTextView.setText(text);
         }
         handler.postDelayed(this::updateCallDuration, 1000);
+    }
+
+
+    @Override
+    public void onChangeModeRequest(String conferenceId, boolean audience) {
+        if (AVEngineKit.Instance().getCurrentSession() != null
+            && AVEngineKit.Instance().getCurrentSession().isConference()
+            && AVEngineKit.Instance().getCurrentSession().getCallId().equals(conferenceId)) {
+            if (audience) {
+                AVEngineKit.Instance().getCurrentSession().switchAudience(true);
+                didRemoveRemoteVideoTrack(me.uid);
+            } else {
+                new MaterialDialog.Builder(getActivity())
+                    .content("主持人邀请你参与互动")
+                    .positiveText("接受")
+                    .negativeText("忽略")
+                    .cancelable(false)
+                    .onPositive((dialog1, which) -> ConferenceManager.Instance().changeModel(AVEngineKit.Instance().getCurrentSession().getCallId(), audience))
+                    .onNegative((dialog12, which) -> {
+                        // do nothing
+                    })
+                    .show();
+            }
+        }
+    }
+
+    @Override
+    public void onKickoffRequest(String conferenceId) {
+        if (AVEngineKit.Instance().getCurrentSession() != null
+            && AVEngineKit.Instance().getCurrentSession().isConference()
+            && AVEngineKit.Instance().getCurrentSession().getCallId().equals(conferenceId)) {
+            AVEngineKit.Instance().getCurrentSession().leaveConference(false);
+        }
     }
 }
