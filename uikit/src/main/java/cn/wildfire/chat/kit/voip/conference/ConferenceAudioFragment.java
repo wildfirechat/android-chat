@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -45,7 +44,7 @@ import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class ConferenceAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback, ConferenceManager.ConferenceManagerEventCallback {
+public class ConferenceAudioFragment extends BaseConferenceFragment implements AVEngineKit.CallSessionCallback {
     @BindView(R2.id.durationTextView)
     TextView durationTextView;
 
@@ -100,7 +99,6 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
         speakerImageView.setSelected(isSpeakerOn);
 
         manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
-        ConferenceManager.Instance().setCallback(this);
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
@@ -426,7 +424,7 @@ public class ConferenceAudioFragment extends Fragment implements AVEngineKit.Cal
                     .positiveText("接受")
                     .negativeText("忽略")
                     .cancelable(false)
-                    .onPositive((dialog1, which) -> ConferenceManager.Instance().changeModel(AVEngineKit.Instance().getCurrentSession().getCallId(), audience))
+                    .onPositive((dialog1, which) -> changeMode(AVEngineKit.Instance().getCurrentSession().getCallId(), audience))
                     .onNegative((dialog12, which) -> {
                         // do nothing
                     })
