@@ -22,8 +22,10 @@ import java.util.List;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
+import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -86,7 +88,7 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
                         AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
                         if (selfUid.equals(session.getHost())) {
-                            ConferenceManager.Instance().requestChangeModel(session.getCallId(), userInfo.getUserInfo().uid, !profile.isAudience());
+                            requestChangeMode(session.getCallId(), userInfo.getUserInfo().uid, !profile.isAudience());
                             if(profile.isAudience()) {
                                 Toast.makeText(getActivity(), "已经请求用户，等待用户同意...", Toast.LENGTH_SHORT).show();
                             } else {
@@ -156,4 +158,11 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
         showContent();
         userListAdapter.setUsers(uiUserInfos);
     }
+
+    private void requestChangeMode(String conferenceId, String userId, boolean audience) {
+        ConferenceChangeModeContent content = new ConferenceChangeModeContent(conferenceId, audience);
+        Conversation conversation = new Conversation(Conversation.ConversationType.Single, userId);
+        ChatManager.Instance().sendMessage(conversation, content, null, 0, null);
+    }
+
 }

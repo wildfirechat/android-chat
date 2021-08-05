@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.voip.conference.message;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Change_Model;
+
 import android.os.Parcel;
 
 import org.json.JSONException;
@@ -15,22 +17,20 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Change_Model;
-
 /**
  * Created by heavyrain lee on 2017/12/6.
  */
 
 @ContentTag(type = ContentType_Conference_Change_Model, flag = PersistFlag.Transparent)
-public class ConferenceChangeModelContent extends MessageContent {
+public class ConferenceChangeModeContent extends MessageContent {
     private String callId;
     private boolean audience;
 
 
-    public ConferenceChangeModelContent() {
+    public ConferenceChangeModeContent() {
     }
 
-    public ConferenceChangeModelContent(String callId, boolean audience) {
+    public ConferenceChangeModeContent(String callId, boolean audience) {
         this.callId = callId;
         this.audience = audience;
     }
@@ -102,21 +102,21 @@ public class ConferenceChangeModelContent extends MessageContent {
         dest.writeInt(this.audience ? 1 : 0);
     }
 
-    protected ConferenceChangeModelContent(Parcel in) {
+    protected ConferenceChangeModeContent(Parcel in) {
         super(in);
         this.callId = in.readString();
         this.audience = in.readInt() == 1;
     }
 
-    public static final Creator<ConferenceChangeModelContent> CREATOR = new Creator<ConferenceChangeModelContent>() {
+    public static final Creator<ConferenceChangeModeContent> CREATOR = new Creator<ConferenceChangeModeContent>() {
         @Override
-        public ConferenceChangeModelContent createFromParcel(Parcel source) {
-            return new ConferenceChangeModelContent(source);
+        public ConferenceChangeModeContent createFromParcel(Parcel source) {
+            return new ConferenceChangeModeContent(source);
         }
 
         @Override
-        public ConferenceChangeModelContent[] newArray(int size) {
-            return new ConferenceChangeModelContent[size];
+        public ConferenceChangeModeContent[] newArray(int size) {
+            return new ConferenceChangeModeContent[size];
         }
     };
 }
