@@ -126,7 +126,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                 }
             }
             if(!session.videoMuted){
-                session.startVideoSource();
                 if (session.isLocalVideoCreated()) {
                     didCreateLocalVideoTrack();
                 }

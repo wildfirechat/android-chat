@@ -65,7 +65,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     SurfaceView localSurfaceView;
     SurfaceView remoteSurfaceView;
 
-    // True if local view is in the fullscreen renderer.
+    private String focusUserId;
     private String targetId;
     private AVEngineKit gEngineKit;
 
@@ -167,6 +167,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @Override
     public void didReceiveRemoteVideoTrack(String userId) {
         pipRenderer.setVisibility(View.VISIBLE);
+        pipRenderer.setBackgroundColor(R.color.red0);
         if (localSurfaceView != null) {
             ((ViewGroup) localSurfaceView.getParent()).removeView(localSurfaceView);
             pipRenderer.addView(localSurfaceView);
@@ -178,6 +179,11 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             fullscreenRenderer.addView(remoteSurfaceView);
         }
         gEngineKit.getCurrentSession().setupRemoteVideo(userId, remoteSurfaceView, scalingType);
+
+        remoteSurfaceView.setZOrderOnTop(false);
+        remoteSurfaceView.setZOrderMediaOverlay(false);
+        localSurfaceView.setZOrderMediaOverlay(true);
+        localSurfaceView.setZOrderOnTop(true);
     }
 
     @Override
@@ -320,14 +326,32 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @OnClick(R2.id.pip_video_view)
     void setSwappedFeeds() {
-        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Connected && !session.isScreenSharing()) {
-            SurfaceView tmp = localSurfaceView;
-            localSurfaceView = remoteSurfaceView;
-            remoteSurfaceView = tmp;
-            session.setupRemoteVideo(targetId, remoteSurfaceView, scalingType);
-            session.setupLocalVideo(localSurfaceView, scalingType);
-        }
+        // TODO 临时禁用
+//        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+//        if (session != null && session.getState() == AVEngineKit.CallState.Connected && !session.isScreenSharing()) {
+//
+//            remoteSurfaceView = AVEngineKit.Instance().getCurrentSession().createRendererView();
+//            localSurfaceView = AVEngineKit.Instance().getCurrentSession().createRendererView();
+//
+//            if(focusUserId == null){
+//                focusUserId = targetId;
+//                pipRenderer.removeAllViews();
+//                pipRenderer.addView(remoteSurfaceView);
+//                fullscreenRenderer.removeAllViews();
+//                fullscreenRenderer.addView(localSurfaceView);
+//
+//            }else {
+//                focusUserId = null;
+//                pipRenderer.removeAllViews();
+//                pipRenderer.addView(localSurfaceView);
+//                fullscreenRenderer.removeAllViews();
+//                fullscreenRenderer.addView(remoteSurfaceView);
+//
+//            }
+//
+//            session.setupRemoteVideo(targetId, remoteSurfaceView, scalingType);
+//            session.setupLocalVideo(localSurfaceView, scalingType);
+//        }
     }
 
     private void init() {
@@ -350,7 +374,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
                 shareScreenTextView.setText("开始屏幕共享");
             }
 
-            session.startVideoSource();
             didCreateLocalVideoTrack();
             didReceiveRemoteVideoTrack(targetId);
         } else {
