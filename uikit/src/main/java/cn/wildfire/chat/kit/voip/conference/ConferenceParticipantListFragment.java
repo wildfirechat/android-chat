@@ -67,9 +67,7 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
             }
         } else if(selfUid.equals(userInfo.getUserInfo().uid)) {
             AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
-            if(profile.isAudience()) {
-                items.add("参与互动");
-            } else {
+            if(!profile.isAudience()) {
                 items.add("结束互动");
             }
         }
