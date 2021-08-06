@@ -96,7 +96,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         initParticipantsView(session);
 
         if (session.getState() == AVEngineKit.CallState.Connected) {
-            session.startVideoSource();
             List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
             for (AVEngineKit.ParticipantProfile profile : profiles) {
                 if (profile.getState() == AVEngineKit.CallState.Connected) {
