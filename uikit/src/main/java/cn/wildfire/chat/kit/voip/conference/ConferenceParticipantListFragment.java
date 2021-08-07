@@ -59,16 +59,19 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
     public void onUserClick(UIUserInfo userInfo) {
         List<String> items = new ArrayList<>();
         items.add("查看用户信息");
-        if (selfUid.equals(session.getHost())) {
+        if (selfUid.equals(session.getHost()) && !selfUid.equals(userInfo.getUserInfo().uid)) {
             if ("audience".equals(userInfo.getExtra())) {
                 items.add("邀请参与互动");
             } else {
                 items.add("取消互动");
             }
+            items.add("移除成员");
         } else if(selfUid.equals(userInfo.getUserInfo().uid)) {
             AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
             if(!profile.isAudience()) {
                 items.add("结束互动");
+            } else {
+                items.add("参与互动");
             }
         }
 
@@ -85,7 +88,7 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                     case 1:
                         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
                         AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
-                        if (selfUid.equals(session.getHost())) {
+                        if (selfUid.equals(session.getHost()) && !selfUid.equals(userInfo.getUserInfo().uid)) {
                             requestChangeMode(session.getCallId(), userInfo.getUserInfo().uid, !profile.isAudience());
                             if(profile.isAudience()) {
                                 Toast.makeText(getActivity(), "已经请求用户，等待用户同意...", Toast.LENGTH_SHORT).show();
@@ -94,8 +97,22 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                             }
                         } else if(selfUid.equals(userInfo.getUserInfo().uid)) {
                             session.switchAudience(!profile.isAudience());
-                            loadAndShowConferenceParticipants();
+                            new Handler().postDelayed(this::loadAndShowConferenceParticipants, 1500);
                         }
+                        break;
+                    case 2:
+                        AVEngineKit.CallSession session2 = AVEngineKit.Instance().getCurrentSession();
+                        session2.kickoffParticipant(userInfo.getUserInfo().uid, new AVEngineKit.GeneralCallback() {
+                            @Override
+                            public void onSuccess() {
+                                new Handler().postDelayed(ConferenceParticipantListFragment.this::loadAndShowConferenceParticipants, 1500);
+                            }
+
+                            @Override
+                            public void onFailure(int error_code) {
+
+                            }
+                        });
                         break;
                     default:
                         break;
