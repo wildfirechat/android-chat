@@ -387,6 +387,10 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         }
     }
 
+    public void didMuteStateChanged(List<String> participants) {
+
+    }
+
     private Handler handler = new Handler();
 
     private void updateCallDuration() {
