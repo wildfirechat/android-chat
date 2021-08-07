@@ -439,10 +439,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         }
     }
 
-    public void didMuteStateChanged(List<String> participants) {
-
-    }
-
     private void removeParticipantView(String userId) {
         View view = participantGridView.findViewWithTag(userId);
         if (view != null) {
