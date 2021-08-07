@@ -493,20 +493,13 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                 }
 
                 View surfaceView = item.findViewWithTag("v_" + participant);
+                if(surfaceView == null){
+                    continue;
+                }
                 if (profile.isVideoMuted()) {
-                    if (me.uid.equals(participant)) {
-                        //item.removeView(surfaceView);
-                        surfaceView.setVisibility(View.INVISIBLE);
-                    } else {
-                        surfaceView.setVisibility(View.INVISIBLE);
-                    }
+                    surfaceView.setVisibility(View.INVISIBLE);
                 } else {
-                    if (me.uid.equals(participant)) {
-                        //didCreateLocalVideoTrack();
-                        surfaceView.setVisibility(View.VISIBLE);
-                    } else {
-                        surfaceView.setVisibility(View.VISIBLE);
-                    }
+                    surfaceView.setVisibility(View.VISIBLE);
                 }
             }
         }
