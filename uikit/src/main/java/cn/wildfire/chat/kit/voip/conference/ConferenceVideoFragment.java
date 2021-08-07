@@ -52,7 +52,7 @@ import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class ConferenceVideoFragment extends BaseConferenceFragment implements AVEngineKit.CallSessionCallback{
+public class ConferenceVideoFragment extends BaseConferenceFragment implements AVEngineKit.CallSessionCallback {
     @BindView(R2.id.rootView)
     RelativeLayout rootLinearLayout;
 
@@ -125,7 +125,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                     didReceiveRemoteVideoTrack(profile.getUserId());
                 }
             }
-            if(!session.videoMuted){
+            if (!session.videoMuted) {
                 if (session.isLocalVideoCreated()) {
                     didCreateLocalVideoTrack();
                 }
@@ -240,8 +240,8 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     private void updateParticipantStatus(AVEngineKit.CallSession session) {
         String meUid = userViewModel.getUserId();
         ConferenceItem item = rootLinearLayout.findViewWithTag(meUid);
-        if(item != null){
-            if (session.videoMuted){
+        if (item != null) {
+            if (session.videoMuted) {
                 item.getStatusTextView().setVisibility(View.VISIBLE);
                 item.getStatusTextView().setText("关闭摄像头");
             }
@@ -249,7 +249,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
         for (String userId : session.getParticipantIds()) {
             item = rootLinearLayout.findViewWithTag(userId);
-            if(item == null){
+            if (item == null) {
                 continue;
             }
             PeerConnectionClient client = session.getClient(userId);
@@ -479,6 +479,44 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     }
 
     @Override
+    public void didMuteStateChanged(List<String> participants) {
+        for (String participant : participants) {
+            Log.e(TAG, "didMuteStateChanged" + participant);
+            AVEngineKit.ParticipantProfile profile = AVEngineKit.Instance().getCurrentSession().getParticipantProfile(participant);
+            ConferenceItem item = rootLinearLayout.findViewWithTag(participant);
+            if (item != null) {
+                if (profile.isVideoMuted()) {
+                    item.getStatusTextView().setVisibility(View.VISIBLE);
+                    item.getStatusTextView().setText("用户关闭摄像头");
+
+                } else if (profile.isAudioMuted()) {
+                    item.getStatusTextView().setVisibility(View.VISIBLE);
+                    item.getStatusTextView().setText("用户静音");
+                } else {
+                    item.getStatusTextView().setVisibility(View.GONE);
+                }
+
+                View surfaceView = item.findViewWithTag("v_" + participant);
+                if (profile.isVideoMuted()) {
+                    if (me.uid.equals(participant)) {
+                        //item.removeView(surfaceView);
+                        surfaceView.setVisibility(View.INVISIBLE);
+                    } else {
+                        surfaceView.setVisibility(View.INVISIBLE);
+                    }
+                } else {
+                    if (me.uid.equals(participant)) {
+                        //didCreateLocalVideoTrack();
+                        surfaceView.setVisibility(View.VISIBLE);
+                    } else {
+                        surfaceView.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void didCreateLocalVideoTrack() {
         ConferenceItem item = rootLinearLayout.findViewWithTag(me.uid);
         if (item == null) {
@@ -552,7 +590,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     public void didVideoMuted(String userId, boolean videoMuted) {
         if (videoMuted) {
             ConferenceItem item = rootLinearLayout.findViewWithTag(userId);
-            if(item != null){
+            if (item != null) {
 //                View surfaceView = item.findViewWithTag("v_" + userId);
 //                surfaceView.setVisibility(View.GONE);
                 item.getStatusTextView().setVisibility(View.VISIBLE);

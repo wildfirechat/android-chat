@@ -219,9 +219,15 @@ public class ConferenceActivity extends VoipBaseActivity {
         });
     }
 
+    // multi call
     @Override
     public void didVideoMuted(String s, boolean b) {
         postAction(() -> currentCallSessionCallback.didVideoMuted(s, b));
+    }
+
+    @Override
+    public void didMuteStateChanged(List<String> participants) {
+        postAction(() -> currentCallSessionCallback.didMuteStateChanged(participants));
     }
 
     void showParticipantList() {
