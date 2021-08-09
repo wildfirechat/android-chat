@@ -132,6 +132,9 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         for (int result : grantResults) {
             if (result != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "需要录音和摄像头权限，才能进行语音通话", Toast.LENGTH_SHORT).show();
+                if(gEngineKit.getCurrentSession() != null || gEngineKit.getCurrentSession().getState() != AVEngineKit.CallState.Idle) {
+                    gEngineKit.getCurrentSession().endCall();
+                }
                 finishFadeout();
                 return;
             }
