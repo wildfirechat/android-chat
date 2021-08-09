@@ -23,7 +23,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -134,7 +133,12 @@ public class VoipCallService extends Service {
                 } else if (session.isAudioOnly()) {
                     showAudioView(session);
                 } else {
-                    showVideoView(session);
+                    String nextFocusUserId = nextFocusUserId(session);
+                    if (nextFocusUserId != null) {
+                        showVideoView(session, nextFocusUserId);
+                    } else {
+                        showAudioView(session);
+                    }
                 }
             }
             handler.postDelayed(this::checkCallState, 1000);
@@ -233,7 +237,12 @@ public class VoipCallService extends Service {
             } else if (session.isAudioOnly()) {
                 showAudioView(session);
             } else {
-                showVideoView(session);
+                String nextFocusUserId = nextFocusUserId(session);
+                if (nextFocusUserId != null) {
+                    showVideoView(session, nextFocusUserId);
+                } else {
+                    showAudioView(session);
+                }
             }
         }
     }
@@ -316,22 +325,22 @@ public class VoipCallService extends Service {
     private String nextFocusUserId(AVEngineKit.CallSession session) {
         if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId))) {
             PeerConnectionClient client = session.getClient(focusTargetId);
-            if (client != null && !client.videoMuted) {
+            if (client != null && client.state == AVEngineKit.CallState.Connected && !client.videoMuted) {
                 return focusTargetId;
             }
         }
         if (ChatManager.Instance().getUserId().equals(focusTargetId)) {
-            if (!session.videoMuted) {
+            if (session.state == AVEngineKit.CallState.Connected && !session.videoMuted) {
                 return focusTargetId;
             }
         }
-        String targetId = ChatManager.Instance().getUserId();
+        String targetId = null;
         if (session.isConference()) {
             List<String> participants = session.getParticipantIds();
             if (!participants.isEmpty()) {
                 for (String participant : participants) {
                     PeerConnectionClient client = session.getClient(participant);
-                    if (!client.audience) {
+                    if (client.state == AVEngineKit.CallState.Connected && !client.audience && !client.videoMuted) {
                         targetId = participant;
                         break;
                     }
@@ -350,39 +359,33 @@ public class VoipCallService extends Service {
                 targetId = session.getConversation().target;
             }
         }
+        if (targetId == null && session.state == AVEngineKit.CallState.Connected && !session.videoMuted) {
+            targetId = ChatManager.Instance().getUserId();
+        }
         return targetId;
     }
 
-    private void showVideoView(AVEngineKit.CallSession session) {
+    private void showVideoView(AVEngineKit.CallSession session, String nextFocusUserId) {
         view.findViewById(R.id.audioLinearLayout).setVisibility(View.GONE);
         FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
         remoteVideoFrameLayout.setVisibility(View.VISIBLE);
 
-        String nextFocusUserId = nextFocusUserId(session);
         Log.e("wfc", "nextFocusUserId " + nextFocusUserId);
         if (!rendererInitialized || lastState != session.getState() || !TextUtils.equals(lastFocusUserId, nextFocusUserId)) {
             rendererInitialized = true;
-            if (lastState != session.getState()) {
-                session.resetRenderer();
-            }
+//            if (lastState != session.getState()) {
+//                session.resetRenderer();
+//            }
             lastState = session.getState();
 
             ImageView portraitImageView = remoteVideoFrameLayout.findViewById(R.id.portraitImageView);
             UserInfo userInfo = ChatManager.Instance().getUserInfo(nextFocusUserId, false);
             GlideApp.with(remoteVideoFrameLayout).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
 
-            View view = remoteVideoFrameLayout.findViewWithTag("renderer");
-            if (view != null) {
-                remoteVideoFrameLayout.removeView(view);
-            }
-            SurfaceView surfaceView = session.createRendererView();
-            surfaceView.setTag("renderer");
-            remoteVideoFrameLayout.addView(surfaceView);
-
             if (TextUtils.equals(ChatManager.Instance().getUserId(), nextFocusUserId)) {
-                session.setupLocalVideo(surfaceView, SCALE_ASPECT_BALANCED);
+                session.setupLocalVideoView(remoteVideoFrameLayout, SCALE_ASPECT_BALANCED);
             } else {
-                session.setupRemoteVideo(nextFocusUserId, surfaceView, SCALE_ASPECT_BALANCED);
+                session.setupRemoteVideoView(nextFocusUserId, remoteVideoFrameLayout, SCALE_ASPECT_BALANCED);
             }
             lastFocusUserId = nextFocusUserId;
         }
@@ -395,9 +398,9 @@ public class VoipCallService extends Service {
                 session.stopScreenShare();
             }
 
-            if (rendererInitialized) {
-                session.resetRenderer();
-            }
+//            if (rendererInitialized) {
+//                session.resetRenderer();
+//            }
         }
         showFloatingWindow = false;
         startActivity(resumeActivityIntent);

@@ -326,7 +326,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @OnClick(R2.id.pip_video_view)
     void setSwappedFeeds() {
-        // TODO 临时禁用
+        // TODO 临时禁用，采用多人、会议版本的方案
 //        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
 //        if (session != null && session.getState() == AVEngineKit.CallState.Connected && !session.isScreenSharing()) {
 //
