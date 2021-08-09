@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.voip.conference;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -64,5 +65,15 @@ public class ConferenceItem extends FrameLayout {
         return statusTextView;
     }
 
+
+    private SurfaceView getSurfaceView() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            if (view instanceof SurfaceView) {
+                return (SurfaceView) view;
+            }
+        }
+        return null;
+    }
     // TODO video
 }
