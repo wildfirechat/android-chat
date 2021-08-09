@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import java.util.List;
 
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
-import cn.wildfire.chat.kit.voip.conference.message.ConferenceKickoffMemberContent;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
@@ -29,12 +28,6 @@ public abstract class BaseConferenceFragment extends Fragment implements OnRecei
         ChatManager.Instance().removeOnReceiveMessageListener(this);
     }
 
-    public void requestLeave(String conferenceId, String userId) {
-        ConferenceKickoffMemberContent content = new ConferenceKickoffMemberContent(conferenceId);
-        Conversation conversation = new Conversation(Conversation.ConversationType.Single, userId);
-        ChatManager.Instance().sendMessage(conversation, content, null, 0, null);
-    }
-
     public void changeMode(String conferenceId, boolean audience) {
         if (AVEngineKit.Instance().getCurrentSession() != null
             && AVEngineKit.Instance().getCurrentSession().isConference()
@@ -50,17 +43,11 @@ public abstract class BaseConferenceFragment extends Fragment implements OnRecei
                 if (msg.content instanceof ConferenceChangeModeContent) {
                     ConferenceChangeModeContent content = (ConferenceChangeModeContent) msg.content;
                     onChangeModeRequest(content.getCallId(), content.isAudience());
-                } else if (msg.content instanceof ConferenceKickoffMemberContent) {
-                    ConferenceKickoffMemberContent content = (ConferenceKickoffMemberContent) msg.content;
-                    onKickoffRequest(content.getCallId());
                 }
             }
         }
     }
 
     public void onChangeModeRequest(String conferenceId, boolean audience) {
-    }
-
-    public void onKickoffRequest(String conferenceId) {
     }
 }
