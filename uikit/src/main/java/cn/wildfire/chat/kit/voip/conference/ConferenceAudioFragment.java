@@ -436,13 +436,4 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
             }
         }
     }
-
-    @Override
-    public void onKickoffRequest(String conferenceId) {
-        if (AVEngineKit.Instance().getCurrentSession() != null
-            && AVEngineKit.Instance().getCurrentSession().isConference()
-            && AVEngineKit.Instance().getCurrentSession().getCallId().equals(conferenceId)) {
-            AVEngineKit.Instance().getCurrentSession().leaveConference(false);
-        }
-    }
 }
