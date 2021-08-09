@@ -143,6 +143,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             // 多人版，最多支持9人；高级版，最多支持16人
             //AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT= 16;
             AVEngineKit.init(application, this);
+            AVEngineKit.Instance().setVideoProfile(VideoProfile.VP360P, false);
 
             ChatManager.Instance().registerMessageContent(ConferenceChangeModeContent.class);
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
@@ -275,11 +276,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         }
 
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId);
-        if (participants.size() >= 4) {
-            AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P, false);
-        } else if (participants.size() >= 6) {
-            AVEngineKit.Instance().setVideoProfile(VideoProfile.VP120P_3, false);
-        }
         AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
