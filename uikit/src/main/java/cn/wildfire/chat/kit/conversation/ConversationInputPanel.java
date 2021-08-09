@@ -480,7 +480,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private void updateConversationDraft() {
         Editable editable = editText.getText();
         String draft = Draft.toDraftJson(editable, messageEmojiCount, quoteInfo);
-        messageViewModel.saveDraft(conversation, draft);
+        if(conversation != null) {
+            messageViewModel.saveDraft(conversation, draft);
+        }
     }
 
     private void showAudioButton() {

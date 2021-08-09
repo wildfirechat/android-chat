@@ -3042,6 +3042,10 @@ public class ChatManager {
      * @param draft
      */
     public void setConversationDraft(Conversation conversation, @Nullable String draft) {
+        if(conversation == null) {
+            return;
+        }
+
         if (!checkRemoteService()) {
             return;
         }
