@@ -18,27 +18,27 @@ import androidx.annotation.RequiresApi;
 
 import cn.wildfire.chat.kit.R;
 
-public class MultiCallItem extends FrameLayout {
+public class VoipCallItem extends FrameLayout {
     private ImageView portraitImageView;
     private TextView statusTextView;
 
-    public MultiCallItem(@NonNull Context context) {
+    public VoipCallItem(@NonNull Context context) {
         super(context);
         init(context, null);
     }
 
-    public MultiCallItem(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public VoipCallItem(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public MultiCallItem(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public VoipCallItem(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public MultiCallItem(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public VoipCallItem(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);
     }

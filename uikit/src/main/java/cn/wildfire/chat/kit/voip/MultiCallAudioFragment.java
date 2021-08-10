@@ -103,13 +103,13 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
         participantUserInfos.add(me);
         int size = with / Math.max((int) Math.ceil(Math.sqrt(participantUserInfos.size())), 3);
         for (UserInfo userInfo : participantUserInfos) {
-            MultiCallItem multiCallItem = new MultiCallItem(getActivity());
-            multiCallItem.setTag(userInfo.uid);
+            VoipCallItem voipCallItem = new VoipCallItem(getActivity());
+            voipCallItem.setTag(userInfo.uid);
 
-            multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(size, size));
-            multiCallItem.getStatusTextView().setText(R.string.connecting);
-            GlideApp.with(multiCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
-            audioContainerGridLayout.addView(multiCallItem);
+            voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(size, size));
+            voipCallItem.getStatusTextView().setText(R.string.connecting);
+            GlideApp.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+            audioContainerGridLayout.addView(voipCallItem);
         }
     }
 
@@ -119,11 +119,11 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
             View view = audioContainerGridLayout.getChildAt(i);
             String userId = (String) view.getTag();
             if (me.uid.equals(userId)) {
-                ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
+                ((VoipCallItem) view).getStatusTextView().setVisibility(View.GONE);
             } else {
                 PeerConnectionClient client = session.getClient(userId);
                 if (client.state == AVEngineKit.CallState.Connected) {
-                    ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
+                    ((VoipCallItem) view).getStatusTextView().setVisibility(View.GONE);
                 }
             }
         }
@@ -205,21 +205,21 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
             if (me.uid.equals(view.getTag())) {
 
                 UserInfo info = userViewModel.getUserInfo(userId, false);
-                MultiCallItem multiCallItem = new MultiCallItem(getActivity());
-                multiCallItem.setTag(info.uid);
+                VoipCallItem voipCallItem = new VoipCallItem(getActivity());
+                voipCallItem.setTag(info.uid);
 
-                multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+                voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
 
-                multiCallItem.getStatusTextView().setText(R.string.connecting);
-                GlideApp.with(multiCallItem).load(info.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
-                audioContainerGridLayout.addView(multiCallItem, i);
+                voipCallItem.getStatusTextView().setText(R.string.connecting);
+                GlideApp.with(voipCallItem).load(info.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+                audioContainerGridLayout.addView(voipCallItem, i);
                 break;
             }
         }
         participants.add(userId);
     }
 
-    private MultiCallItem getUserMultiCallItem(String userId) {
+    private VoipCallItem getUserVoipCallItem(String userId) {
         return audioContainerGridLayout.findViewWithTag(userId);
     }
 
@@ -277,14 +277,14 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     @Override
     public void didReportAudioVolume(String userId, int volume) {
         Log.d(TAG, userId + " volume " + volume);
-        MultiCallItem multiCallItem = getUserMultiCallItem(userId);
-        if (multiCallItem != null) {
+        VoipCallItem voipCallItem = getUserVoipCallItem(userId);
+        if (voipCallItem != null) {
             if (volume > 1000) {
-                multiCallItem.getStatusTextView().setVisibility(View.VISIBLE);
-                multiCallItem.getStatusTextView().setText("正在说话");
+                voipCallItem.getStatusTextView().setVisibility(View.VISIBLE);
+                voipCallItem.getStatusTextView().setText("正在说话");
             } else {
-                multiCallItem.getStatusTextView().setVisibility(View.GONE);
-                multiCallItem.getStatusTextView().setText("");
+                voipCallItem.getStatusTextView().setVisibility(View.GONE);
+                voipCallItem.getStatusTextView().setText("");
             }
         }
     }

@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -46,6 +45,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
+import cn.wildfire.chat.kit.voip.VoipCallItem;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
@@ -87,7 +87,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     // TODO 移除，并将VoipBaseActivity.focusVideoUserId 修改为static
     private String focusVideoUserId;
-    private ConferenceItem focusConferenceItem;
+    private VoipCallItem focusConferenceItem;
 
     private Timer hiddenBarTimer = new Timer();
 
@@ -110,6 +110,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     private void init() {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             getActivity().finish();
@@ -140,7 +141,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
         updateCallDuration();
         updateParticipantStatus(session);
-        bringParticipantVideoFront();
 
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_NORMAL);
@@ -198,11 +198,12 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         focusConferenceItem = null;
 
         if (participants.size() > 0) {
+            // TODO focusVideoUserId 这个值现在不准，需要由VoipCallService传过来
             focusVideoUserId = participants.get(0);
             ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
             List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
             for (UserInfo userInfo : participantUserInfos) {
-                ConferenceItem conferenceItem = new ConferenceItem(getActivity());
+                VoipCallItem conferenceItem = new VoipCallItem(getActivity());
                 conferenceItem.setTag(userInfo.uid);
 
 
@@ -211,15 +212,18 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                 GlideApp.with(conferenceItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(conferenceItem.getPortraitImageView());
 
                 // self
-                if (userInfo.uid.equals(focusVideoUserId)) {
+                if (userInfo.uid.equals(me.uid)) {
                     conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                    focusConferenceItem = conferenceItem;
                     session.setupLocalVideoView(conferenceItem, scalingType);
-
                 } else {
                     conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
-                    participantGridView.addView(conferenceItem);
                     session.setupRemoteVideoView(userInfo.uid, conferenceItem, scalingType);
+                }
+
+                if (userInfo.uid.equals(focusVideoUserId)) {
+                    focusConferenceItem = conferenceItem;
+                } else {
+                    participantGridView.addView(conferenceItem);
                 }
             }
         }
@@ -230,19 +234,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         }
     }
 
-    private ConferenceItem createSelfView(int with, int height) {
-        ConferenceItem multiCallItem = new ConferenceItem(getActivity());
-        multiCallItem.setTag(me.uid);
-        multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with, height));
-        multiCallItem.getStatusTextView().setText(me.displayName);
-        multiCallItem.setOnClickListener(clickListener);
-        GlideApp.with(multiCallItem).load(me.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
-        return multiCallItem;
-    }
-
     private void updateParticipantStatus(AVEngineKit.CallSession session) {
         String meUid = userViewModel.getUserId();
-        ConferenceItem item = rootLinearLayout.findViewWithTag(meUid);
+        VoipCallItem item = rootLinearLayout.findViewWithTag(meUid);
         if (item != null) {
             if (session.videoMuted) {
                 item.getStatusTextView().setVisibility(View.VISIBLE);
@@ -268,13 +262,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     @OnClick(R2.id.minimizeImageView)
     void minimize() {
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-//        session.stopVideoSource();
-        List<String> participants = session.getParticipantIds();
-        for (String participant : participants) {
-            session.setupRemoteVideoView(participant, null, scalingType);
-        }
-        ((ConferenceActivity) getActivity()).showFloatingView(focusVideoUserId);
+//        ((ConferenceActivity) getActivity()).showFloatingView(focusVideoUserId);
+        // VoipBaseActivity#onStop会处理，这儿仅仅finish
+        getActivity().finish();
     }
 
     @OnClick(R2.id.manageParticipantView)
@@ -398,7 +388,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         participantGridView.getLayoutParams().height = with;
 
         UserInfo userInfo = userViewModel.getUserInfo(userId, false);
-        ConferenceItem conferenceItem = new ConferenceItem(getActivity());
+        VoipCallItem conferenceItem = new VoipCallItem(getActivity());
         conferenceItem.setTag(userInfo.uid);
         conferenceItem.getStatusTextView().setText(userInfo.displayName);
         conferenceItem.setOnClickListener(clickListener);
@@ -483,7 +473,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         for (String participant : participants) {
             Log.e(TAG, "didMuteStateChanged" + participant);
             AVEngineKit.ParticipantProfile profile = AVEngineKit.Instance().getCurrentSession().getParticipantProfile(participant);
-            ConferenceItem item = rootLinearLayout.findViewWithTag(participant);
+            VoipCallItem item = rootLinearLayout.findViewWithTag(participant);
             if (item != null) {
                 if (profile.isVideoMuted()) {
                     item.getStatusTextView().setVisibility(View.VISIBLE);
@@ -518,50 +508,14 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     @Override
     public void didCreateLocalVideoTrack() {
-//        ConferenceItem item = rootLinearLayout.findViewWithTag(me.uid);
-//        if (item == null) {
-//            DisplayMetrics dm = getResources().getDisplayMetrics();
-//            int with = dm.widthPixels;
-//            item = createSelfView(with / 3, with / 3);
-//            participantGridView.addView(item);
-//        }
-//
-//        if (item.findViewWithTag("v_" + me.uid) != null) {
-//            return;
-//        }
-//
-//        SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
-//        if (surfaceView != null && getEngineKit().getCurrentSession() != null) {
-//            surfaceView.setZOrderMediaOverlay(false);
-//            surfaceView.setTag("v_" + me.uid);
-//            item.addView(surfaceView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//            getEngineKit().getCurrentSession().setupLocalVideoView(item, scalingType);
-//        }
     }
 
     @Override
     public void didReceiveRemoteVideoTrack(String userId) {
-//        ConferenceItem item = rootLinearLayout.findViewWithTag(userId);
-//        if (item == null) {
-//            didParticipantJoined(userId);
-//        }
-//        item = rootLinearLayout.findViewWithTag(userId);
-//        SurfaceView surfaceView = item.findViewWithTag("v_" + userId);
-//        if (surfaceView == null) {
-//            surfaceView = getEngineKit().getCurrentSession().createRendererView();
-//            surfaceView.setZOrderMediaOverlay(false);
-//            surfaceView.setTag("v_" + userId);
-//            item.addView(surfaceView);
-//        }
-//
-//        getEngineKit().getCurrentSession().setupRemoteVideo(userId, surfaceView, scalingType);
-//        bringParticipantVideoFront();
     }
 
     @Override
     public void didRemoveRemoteVideoTrack(String userId) {
-        // do nothing
-        //removeParticipantView(userId);
     }
 
     @Override
@@ -584,14 +538,14 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         // 会议版时，不会走到这儿
     }
 
-    private ConferenceItem getUserConferenceItem(String userId) {
+    private VoipCallItem getUserVoipCallItem(String userId) {
         return participantGridView.findViewWithTag(userId);
     }
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
         Log.d(TAG, userId + " volume " + volume);
-        ConferenceItem multiCallItem = getUserConferenceItem(userId);
+        VoipCallItem multiCallItem = getUserVoipCallItem(userId);
         if (multiCallItem != null) {
             if (volume > 1000) {
                 multiCallItem.getStatusTextView().setVisibility(View.VISIBLE);
@@ -613,7 +567,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         public void onClick(View v) {
             String userId = (String) v.getTag();
             if (userId != null && !userId.equals(focusVideoUserId)) {
-                ConferenceItem clickedConferenceItem = (ConferenceItem) v;
+                VoipCallItem clickedConferenceItem = (VoipCallItem) v;
                 int clickedIndex = participantGridView.indexOfChild(v);
                 participantGridView.removeView(clickedConferenceItem);
                 participantGridView.endViewTransition(clickedConferenceItem);
@@ -629,9 +583,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                 focusVideoContainerFrameLayout.addView(clickedConferenceItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 focusConferenceItem = clickedConferenceItem;
                 focusVideoUserId = userId;
+                Log.e(TAG, "focusVideoUserId " + userId + " " + ChatManager.Instance().getUserId());
                 ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
 
-                bringParticipantVideoFront();
                 if (bottomPanel.getVisibility() == View.GONE) {
                     bottomPanel.setVisibility(View.VISIBLE);
                     topBarView.setVisibility(View.VISIBLE);
@@ -677,37 +631,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
             hiddenBarTimer.cancel();
 
         hiddenBarTimer = new Timer();
-    }
-
-    private void bringParticipantVideoFront() {
-        if (focusConferenceItem == null) {
-            return;
-        }
-
-        SurfaceView focusSurfaceView = findSurfaceView(focusConferenceItem);
-        if (focusSurfaceView != null) {
-            focusSurfaceView.setZOrderOnTop(false);
-            focusSurfaceView.setZOrderMediaOverlay(false);
-        }
-        int count = participantGridView.getChildCount();
-        for (int i = 0; i < count; i++) {
-            ConferenceItem callItem = (ConferenceItem) participantGridView.getChildAt(i);
-            SurfaceView surfaceView = findSurfaceView(callItem);
-            if (surfaceView != null) {
-                surfaceView.setZOrderMediaOverlay(true);
-                surfaceView.setZOrderOnTop(true);
-            }
-        }
-    }
-
-    private SurfaceView findSurfaceView(ConferenceItem item) {
-        for (int i = 0; i < item.getChildCount(); i++) {
-            View view = item.getChildAt(i);
-            if (view instanceof SurfaceView) {
-                return (SurfaceView) view;
-            }
-        }
-        return null;
     }
 
     private Handler handler = new Handler();
