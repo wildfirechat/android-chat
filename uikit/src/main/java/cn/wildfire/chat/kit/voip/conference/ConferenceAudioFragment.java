@@ -38,6 +38,7 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.voip.VoipCallItem;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
@@ -135,7 +136,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
 
         int size = with / Math.max((int) Math.ceil(Math.sqrt(participantUserInfos.size())), 3);
         for (UserInfo userInfo : participantUserInfos) {
-            ConferenceItem multiCallItem = new ConferenceItem(getActivity());
+            VoipCallItem multiCallItem = new VoipCallItem(getActivity());
             multiCallItem.setTag(userInfo.uid);
 
             multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(size, size));
@@ -151,11 +152,11 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
             View view = participantGridView.getChildAt(i);
             String userId = (String) view.getTag();
             if (me.uid.equals(userId)) {
-                ((ConferenceItem) view).getStatusTextView().setVisibility(View.GONE);
+                ((VoipCallItem) view).getStatusTextView().setVisibility(View.GONE);
             } else {
                 PeerConnectionClient client = session.getClient(userId);
                 if (client.state == AVEngineKit.CallState.Connected) {
-                    ((ConferenceItem) view).getStatusTextView().setVisibility(View.GONE);
+                    ((VoipCallItem) view).getStatusTextView().setVisibility(View.GONE);
                 }
             }
         }
@@ -256,7 +257,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int with = dm.widthPixels;
         UserInfo info = userViewModel.getUserInfo(userId, false);
-        ConferenceItem multiCallItem = new ConferenceItem(getActivity());
+        VoipCallItem multiCallItem = new VoipCallItem(getActivity());
         multiCallItem.setTag(info.uid);
 
         multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
@@ -276,7 +277,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         participantGridView.addView(multiCallItem, pos);
     }
 
-    private ConferenceItem getUserConferenceItem(String userId) {
+    private VoipCallItem getUserVoipCallItem(String userId) {
         return participantGridView.findViewWithTag(userId);
     }
 
@@ -340,7 +341,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     @Override
     public void didReportAudioVolume(String userId, int volume) {
         Log.d(TAG, userId + " volume " + volume);
-        ConferenceItem multiCallItem = getUserConferenceItem(userId);
+        VoipCallItem multiCallItem = getUserVoipCallItem(userId);
         if (multiCallItem != null) {
             if (volume > 1000) {
                 multiCallItem.getStatusTextView().setVisibility(View.VISIBLE);

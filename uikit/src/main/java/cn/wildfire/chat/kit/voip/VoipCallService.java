@@ -86,37 +86,35 @@ public class VoipCallService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session == null || session.state == AVEngineKit.CallState.Idle) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
         boolean screenShare = intent.getBooleanExtra("screenShare", false);
         if (screenShare) {
-            if (session != null) {
-                Intent data = intent.getParcelableExtra("data");
-                session.startScreenShare(data);
-            }
+            Intent data = intent.getParcelableExtra("data");
+            session.startScreenShare(data);
             return START_NOT_STICKY;
         }
 
         focusTargetId = intent.getStringExtra("focusTargetId");
         Log.e("wfc", "on startCommand " + focusTargetId);
-        if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
-            stopSelf();
+        if (!initialized) {
+            initialized = true;
+            startForeground(NOTIFICATION_ID, buildNotification(session));
+            checkCallState();
+        }
+        showFloatingWindow = intent.getBooleanExtra("showFloatingView", false);
+        if (showFloatingWindow) {
+            rendererInitialized = false;
+            lastState = null;
+            try {
+                showFloatingWindow(session);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
-            if (!initialized) {
-                initialized = true;
-                startForeground(NOTIFICATION_ID, buildNotification(session));
-                checkCallState();
-            }
-            showFloatingWindow = intent.getBooleanExtra("showFloatingView", false);
-            if (showFloatingWindow) {
-                rendererInitialized = false;
-                lastState = null;
-                try {
-                    showFloatingWindow(session);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                hideFloatBox();
-            }
+            hideFloatBox();
         }
         return START_NOT_STICKY;
     }
@@ -204,6 +202,7 @@ public class VoipCallService extends Service {
         if (wm != null) {
             return;
         }
+        session.restVideoViews();
 
         wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         params = new WindowManager.LayoutParams();
@@ -373,9 +372,6 @@ public class VoipCallService extends Service {
         Log.e("wfc", "nextFocusUserId " + nextFocusUserId);
         if (!rendererInitialized || lastState != session.getState() || !TextUtils.equals(lastFocusUserId, nextFocusUserId)) {
             rendererInitialized = true;
-//            if (lastState != session.getState()) {
-//                session.resetRenderer();
-//            }
             lastState = session.getState();
 
             ImageView portraitImageView = remoteVideoFrameLayout.findViewById(R.id.portraitImageView);

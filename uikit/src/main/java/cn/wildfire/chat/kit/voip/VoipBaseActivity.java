@@ -173,7 +173,6 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
-            session.resetRenderer();
             session.setCallback(null);
             if (!isChangingConfigurations()) {
                 showFloatingView(focusVideoUserId);

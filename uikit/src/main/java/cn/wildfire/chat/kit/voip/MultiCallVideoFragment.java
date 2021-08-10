@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.voip;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -11,7 +12,6 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -29,7 +29,6 @@ import androidx.lifecycle.ViewModelProviders;
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -63,7 +62,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     private UserInfo me;
     private UserViewModel userViewModel;
 
-    private MultiCallItem focusMultiCallItem;
+    private VoipCallItem focusVoipCallItem;
 
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
     private boolean micEnabled = true;
@@ -113,7 +112,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
         updateCallDuration();
         updateParticipantStatus(session);
-        bringParticipantVideoFront();
 
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_NORMAL);
@@ -133,36 +131,32 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
         List<UserInfo> unfocusedParticipantUserInfos;
         UserInfo focusedUserInfo;
-        if (session.isScreenSharing()) {
-            unfocusedParticipantUserInfos = participantUserInfos.size() > 1 ? participantUserInfos.subList(1, participantUserInfos.size()) : new ArrayList<>();
-            focusedUserInfo = participantUserInfos.get(0);
-            unfocusedParticipantUserInfos.add(me);
-
-        } else {
-            unfocusedParticipantUserInfos = participantUserInfos;
-            focusedUserInfo = me;
-        }
+        unfocusedParticipantUserInfos = participantUserInfos;
+        focusedUserInfo = me;
 
         for (UserInfo userInfo : unfocusedParticipantUserInfos) {
-            MultiCallItem multiCallItem = new MultiCallItem(getActivity());
-            multiCallItem.setTag(userInfo.uid);
+            VoipCallItem voipCallItem = new VoipCallItem(getActivity());
+            voipCallItem.setTag(userInfo.uid);
 
-            multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
-            multiCallItem.getStatusTextView().setText(R.string.connecting);
-            multiCallItem.setOnClickListener(clickListener);
-            GlideApp.with(multiCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
-            participantGridView.addView(multiCallItem);
+            voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+            voipCallItem.getStatusTextView().setText(R.string.connecting);
+            voipCallItem.setOnClickListener(clickListener);
+            GlideApp.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+            participantGridView.addView(voipCallItem);
+
+            session.setupRemoteVideoView(userInfo.uid, voipCallItem, scalingType);
         }
 
-        MultiCallItem multiCallItem = new MultiCallItem(getActivity());
-        multiCallItem.setTag(focusedUserInfo.uid);
-        multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with, with));
-        multiCallItem.getStatusTextView().setText(focusedUserInfo.displayName);
-        GlideApp.with(multiCallItem).load(focusedUserInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
+        VoipCallItem voipCallItem = new VoipCallItem(getActivity());
+        voipCallItem.setTag(focusedUserInfo.uid);
+        voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(with, with));
+        voipCallItem.getStatusTextView().setText(focusedUserInfo.displayName);
+        GlideApp.with(voipCallItem).load(focusedUserInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+        session.setupLocalVideoView(voipCallItem, scalingType);
 
         focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(with, with));
-        focusVideoContainerFrameLayout.addView(multiCallItem);
-        focusMultiCallItem = multiCallItem;
+        focusVideoContainerFrameLayout.addView(voipCallItem);
+        focusVoipCallItem = voipCallItem;
         ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusedUserInfo.uid);
     }
 
@@ -173,14 +167,14 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             View view = participantGridView.getChildAt(i);
             String userId = (String) view.getTag();
             if (meUid.equals(userId)) {
-                ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
+                ((VoipCallItem) view).getStatusTextView().setVisibility(View.GONE);
             } else {
                 PeerConnectionClient client = session.getClient(userId);
                 if (client.state == AVEngineKit.CallState.Connected) {
-                    ((MultiCallItem) view).getStatusTextView().setVisibility(View.GONE);
+                    ((VoipCallItem) view).getStatusTextView().setVisibility(View.GONE);
                 } else if (client.videoMuted) {
-                    ((MultiCallItem) view).getStatusTextView().setText("关闭摄像头");
-                    ((MultiCallItem) view).getStatusTextView().setVisibility(View.VISIBLE);
+                    ((VoipCallItem) view).getStatusTextView().setText("关闭摄像头");
+                    ((VoipCallItem) view).getStatusTextView().setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -189,13 +183,10 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @OnClick(R2.id.minimizeImageView)
     void minimize() {
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-//        session.stopVideoSource();
-        List<String> participants = session.getParticipantIds();
-        for (String participant : participants) {
-            session.setupRemoteVideo(participant, null, scalingType);
+        Activity activity = getActivity();
+        if(activity != null && !activity.isFinishing()){
+            activity.finish();
         }
-        ((MultiCallActivity) getActivity()).showFloatingView(((VoipBaseActivity) getActivity()).getFocusVideoUserId());
     }
 
     @OnClick(R2.id.addParticipantImageView)
@@ -287,14 +278,19 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         participantGridView.getLayoutParams().height = with;
 
         UserInfo userInfo = userViewModel.getUserInfo(userId, false);
-        MultiCallItem multiCallItem = new MultiCallItem(getActivity());
-        multiCallItem.setTag(userInfo.uid);
-        multiCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
-        multiCallItem.getStatusTextView().setText(userInfo.displayName);
-        multiCallItem.setOnClickListener(clickListener);
-        GlideApp.with(multiCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(multiCallItem.getPortraitImageView());
-        participantGridView.addView(multiCallItem);
+        VoipCallItem voipCallItem = new VoipCallItem(getActivity());
+        voipCallItem.setTag(userInfo.uid);
+        voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+        voipCallItem.getStatusTextView().setText(userInfo.displayName);
+        voipCallItem.setOnClickListener(clickListener);
+        GlideApp.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+        participantGridView.addView(voipCallItem);
         participants.add(userId);
+
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session != null){
+            session.setupRemoteVideoView(userId, voipCallItem, scalingType);
+        }
     }
 
     @Override
@@ -312,8 +308,8 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
         if (userId.equals(((VoipBaseActivity) getActivity()).getFocusVideoUserId())) {
             ((VoipBaseActivity) getActivity()).setFocusVideoUserId(null);
-            focusVideoContainerFrameLayout.removeView(focusMultiCallItem);
-            focusMultiCallItem = null;
+            focusVideoContainerFrameLayout.removeView(focusVoipCallItem);
+            focusVoipCallItem = null;
         }
 
         Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了通话", Toast.LENGTH_SHORT).show();
@@ -326,44 +322,16 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didCreateLocalVideoTrack() {
-        MultiCallItem item = rootLinearLayout.findViewWithTag(me.uid);
-        SurfaceView surfaceView = item.findViewWithTag("v_" + me.uid);
-
-        if (surfaceView == null) {
-            surfaceView = getEngineKit().getCurrentSession().createRendererView();
-            surfaceView.setZOrderMediaOverlay(false);
-            surfaceView.setTag("v_" + me.uid);
-            item.addView(surfaceView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
-        getEngineKit().getCurrentSession().setupLocalVideo(surfaceView, scalingType);
     }
 
     @Override
     public void didReceiveRemoteVideoTrack(String userId) {
-        MultiCallItem item = rootLinearLayout.findViewWithTag(userId);
-        if (item == null) {
-            return;
-        }
-
-        SurfaceView surfaceView = getEngineKit().getCurrentSession().createRendererView();
-        if (surfaceView != null) {
-            surfaceView.setZOrderMediaOverlay(false);
-            item.addView(surfaceView);
-            surfaceView.setTag("v_" + userId);
-            getEngineKit().getCurrentSession().setupRemoteVideo(userId, surfaceView, scalingType);
-        }
-        bringParticipantVideoFront();
     }
 
     @Override
     public void didRemoveRemoteVideoTrack(String userId) {
-        MultiCallItem item = rootLinearLayout.findViewWithTag(userId);
+        VoipCallItem item = rootLinearLayout.findViewWithTag(userId);
         if (item != null) {
-            View view = item.findViewWithTag("v_" + userId);
-            if (view != null) {
-                item.removeView(view);
-            }
-
             item.getStatusTextView().setText("关闭摄像头");
             item.getStatusTextView().setVisibility(View.VISIBLE);
         }
@@ -383,30 +351,24 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     public void didVideoMuted(String userId, boolean videoMuted) {
         if (videoMuted) {
             didRemoveRemoteVideoTrack(userId);
-        } else {
-            if (userId.equals(me.uid)) {
-                didCreateLocalVideoTrack();
-            } else {
-                didReceiveRemoteVideoTrack(userId);
-            }
         }
     }
 
-    private MultiCallItem getUserMultiCallItem(String userId) {
+    private VoipCallItem getUserVoipCallItem(String userId) {
         return participantGridView.findViewWithTag(userId);
     }
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
         Log.d(TAG, userId + " volume " + volume);
-        MultiCallItem multiCallItem = getUserMultiCallItem(userId);
-        if (multiCallItem != null) {
+        VoipCallItem voipCallItem = getUserVoipCallItem(userId);
+        if (voipCallItem != null) {
             if (volume > 1000) {
-                multiCallItem.getStatusTextView().setVisibility(View.VISIBLE);
-                multiCallItem.getStatusTextView().setText("正在说话");
+                voipCallItem.getStatusTextView().setVisibility(View.VISIBLE);
+                voipCallItem.getStatusTextView().setText("正在说话");
             } else {
-                multiCallItem.getStatusTextView().setVisibility(View.GONE);
-                multiCallItem.getStatusTextView().setText("");
+                voipCallItem.getStatusTextView().setVisibility(View.GONE);
+                voipCallItem.getStatusTextView().setText("");
             }
         }
     }
@@ -428,49 +390,31 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             }
 
             if (!userId.equals(((VoipBaseActivity) getActivity()).getFocusVideoUserId())) {
-                MultiCallItem clickedMultiCallItem = (MultiCallItem) v;
+                VoipCallItem clickedVoipCallItem = (VoipCallItem) v;
                 int clickedIndex = participantGridView.indexOfChild(v);
-                participantGridView.removeView(clickedMultiCallItem);
-                participantGridView.endViewTransition(clickedMultiCallItem);
+                participantGridView.removeView(clickedVoipCallItem);
+                participantGridView.endViewTransition(clickedVoipCallItem);
 
-                if (focusMultiCallItem != null) {
-                    focusVideoContainerFrameLayout.removeView(focusMultiCallItem);
-                    focusVideoContainerFrameLayout.endViewTransition(focusMultiCallItem);
+                if (focusVoipCallItem != null) {
+                    focusVideoContainerFrameLayout.removeView(focusVoipCallItem);
+                    focusVideoContainerFrameLayout.endViewTransition(focusVoipCallItem);
                     DisplayMetrics dm = getResources().getDisplayMetrics();
                     int with = dm.widthPixels;
-                    participantGridView.addView(focusMultiCallItem, clickedIndex, new FrameLayout.LayoutParams(with / 3, with / 3));
-                    focusMultiCallItem.setOnClickListener(clickListener);
+                    participantGridView.addView(focusVoipCallItem, clickedIndex, new FrameLayout.LayoutParams(with / 3, with / 3));
+                    focusVoipCallItem.setOnClickListener(clickListener);
                 }
-                focusVideoContainerFrameLayout.addView(clickedMultiCallItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                clickedMultiCallItem.setOnClickListener(null);
-                focusMultiCallItem = clickedMultiCallItem;
+                focusVideoContainerFrameLayout.addView(clickedVoipCallItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                clickedVoipCallItem.setOnClickListener(null);
+                focusVoipCallItem = clickedVoipCallItem;
                 ((VoipBaseActivity) getActivity()).setFocusVideoUserId(userId);
 
 
-                bringParticipantVideoFront();
             } else {
                 // do nothing
 
             }
         }
     };
-
-    private void bringParticipantVideoFront() {
-        SurfaceView focusSurfaceView = focusMultiCallItem.findViewWithTag("v_" + ((VoipBaseActivity) getActivity()).getFocusVideoUserId());
-        if (focusSurfaceView != null) {
-            focusSurfaceView.setZOrderOnTop(false);
-            focusSurfaceView.setZOrderMediaOverlay(false);
-        }
-        int count = participantGridView.getChildCount();
-        for (int i = 0; i < count; i++) {
-            MultiCallItem callItem = (MultiCallItem) participantGridView.getChildAt(i);
-            SurfaceView surfaceView = callItem.findViewWithTag("v_" + callItem.getTag());
-            if (surfaceView != null) {
-                surfaceView.setZOrderMediaOverlay(true);
-                surfaceView.setZOrderOnTop(true);
-            }
-        }
-    }
 
     private Handler handler = new Handler();
 
