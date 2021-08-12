@@ -227,6 +227,10 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @OnClick(R2.id.shareScreenImageView)
     void shareScreen() {
+        if(!AVEngineKit.isSupportConference() && !AVEngineKit.isSupportMultiCall()){
+            Toast.makeText(getActivity(), "该版本不支持屏幕共享", Toast.LENGTH_SHORT).show();
+            return;
+        }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
             return;
