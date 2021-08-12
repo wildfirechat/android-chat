@@ -94,20 +94,8 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
         initParticipantsView(session);
 
-        if (session.getState() == AVEngineKit.CallState.Connected) {
-            List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
-            for (AVEngineKit.ParticipantProfile profile : profiles) {
-                if (profile.getState() == AVEngineKit.CallState.Connected) {
-                    didReceiveRemoteVideoTrack(profile.getUserId());
-                }
-            }
-            didCreateLocalVideoTrack();
-        } else {
-            if (session.isLocalVideoCreated()) {
-                didCreateLocalVideoTrack();
-            } else {
-                session.startPreview();
-            }
+        if (session.getState() == AVEngineKit.CallState.Outgoing) {
+            session.startPreview();
         }
 
         updateCallDuration();
@@ -184,7 +172,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @OnClick(R2.id.minimizeImageView)
     void minimize() {
         Activity activity = getActivity();
-        if(activity != null && !activity.isFinishing()){
+        if (activity != null && !activity.isFinishing()) {
             activity.finish();
         }
     }
@@ -237,7 +225,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
             return;
         }
-        if(session.videoMuted){
+        if (session.videoMuted) {
             // TODO 目前关闭摄像头之后，不支持屏幕共享
             return;
         }
@@ -292,7 +280,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         participants.add(userId);
 
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null){
+        if (session != null) {
             session.setupRemoteVideoView(userId, voipCallItem, scalingType);
         }
     }

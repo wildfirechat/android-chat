@@ -119,24 +119,8 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
         initParticipantsView(session);
 
-        if (session.getState() == AVEngineKit.CallState.Connected) {
-            List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
-            for (AVEngineKit.ParticipantProfile profile : profiles) {
-                if (profile.getState() == AVEngineKit.CallState.Connected && !profile.isAudience() && !profile.isVideoMuted()) {
-                    didReceiveRemoteVideoTrack(profile.getUserId());
-                }
-            }
-            if (!session.videoMuted) {
-                if (session.isLocalVideoCreated()) {
-                    didCreateLocalVideoTrack();
-                }
-            }
-        } else {
-            if (session.isLocalVideoCreated()) {
-                didCreateLocalVideoTrack();
-            } else {
-                session.startPreview();
-            }
+        if (session.getState() == AVEngineKit.CallState.Outgoing) {
+            session.startPreview();
         }
 
         updateCallDuration();
@@ -229,7 +213,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         }
 
         if (focusConferenceItem != null) {
-            focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            focusConferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             focusVideoContainerFrameLayout.addView(focusConferenceItem);
         }
     }
@@ -329,7 +313,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     void shareScreen() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            if(session.videoMuted){
+            if (session.videoMuted) {
                 // TODO 目前关闭摄像头之后，不支持屏幕共享
                 return;
             }
@@ -406,7 +390,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
             focusVideoUserId = userId;
             ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
 
-            focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            focusConferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             focusVideoContainerFrameLayout.addView(focusConferenceItem);
         } else {
             conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
@@ -489,23 +473,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                     item.getStatusTextView().setText("用户静音");
                 } else {
                     item.getStatusTextView().setVisibility(View.GONE);
-                }
-
-                View surfaceView = item.findViewWithTag("v_" + participant);
-                if (profile.isVideoMuted()) {
-                    if (surfaceView == null) {
-                        if (me.uid.equals(participant)) {
-                            didCreateLocalVideoTrack();
-                        } else {
-                            didReceiveRemoteVideoTrack(participant);
-                        }
-                    } else {
-                        surfaceView.setVisibility(View.INVISIBLE);
-                    }
-                } else {
-                    if (surfaceView != null) {
-                        surfaceView.setVisibility(View.VISIBLE);
-                    }
                 }
             }
         }
