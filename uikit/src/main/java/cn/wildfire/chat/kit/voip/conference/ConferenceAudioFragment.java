@@ -399,7 +399,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             String text;
             if(session.getConnectedTime() == 0) {
-                text = "未开始";
+                text = "会议连接中";
             } else {
                 long s = System.currentTimeMillis() - session.getConnectedTime();
                 s = s / 1000;
