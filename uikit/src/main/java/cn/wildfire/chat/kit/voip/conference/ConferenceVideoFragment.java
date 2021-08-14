@@ -612,7 +612,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             String text;
             if (session.getConnectedTime() == 0) {
-                text = "未开始";
+                text = "会议连接中";
             } else {
                 long s = System.currentTimeMillis() - session.getConnectedTime();
                 s = s / 1000;
@@ -641,7 +641,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                     .positiveText("接受")
                     .negativeText("忽略")
                     .cancelable(false)
-                    .onPositive((dialog1, which) -> changeMode(AVEngineKit.Instance().getCurrentSession().getCallId(), audience))
+                    .onPositive((dialog1, which) -> changeMode(AVEngineKit.Instance().getCurrentSession().getCallId(), false))
                     .onNegative((dialog12, which) -> {
                         // do nothing
                     })
