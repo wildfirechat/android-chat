@@ -197,16 +197,15 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
                 // self
                 if (userInfo.uid.equals(me.uid)) {
-                    conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     session.setupLocalVideoView(conferenceItem, scalingType);
                 } else {
-                    conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
                     session.setupRemoteVideoView(userInfo.uid, conferenceItem, scalingType);
                 }
 
                 if (userInfo.uid.equals(focusVideoUserId)) {
                     focusConferenceItem = conferenceItem;
                 } else {
+                    conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
                     participantGridView.addView(conferenceItem);
                 }
             }
