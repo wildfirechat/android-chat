@@ -36,7 +36,6 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     private AVEngineKit gEngineKit;
-    private boolean audioEnable = true;
 
     @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
@@ -173,9 +172,9 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     public void mute() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            audioEnable = !audioEnable;
-            session.muteAudio(!audioEnable);
-            muteImageView.setSelected(!audioEnable);
+            boolean toMute = !session.isAudioMuted();
+            session.muteAudio(toMute);
+            muteImageView.setSelected(toMute);
         }
     }
 
@@ -256,8 +255,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         GlideApp.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
-        audioEnable = session.isEnableAudio();
-        muteImageView.setSelected(!audioEnable);
+        muteImageView.setSelected(session.isAudioMuted());
         updateCallDuration();
 
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
