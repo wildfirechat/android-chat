@@ -233,7 +233,7 @@ public class ConferenceActivity extends VoipBaseActivity {
     void showParticipantList() {
         isInvitingNewParticipant = true;
         Intent intent = new Intent(this, ConferenceParticipantListActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
     }
 
     @Override
@@ -241,13 +241,6 @@ public class ConferenceActivity extends VoipBaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_ADD_PARTICIPANT) {
             isInvitingNewParticipant = false;
-            if (resultCode == RESULT_OK) {
-                List<String> newParticipants = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
-                if (newParticipants != null && !newParticipants.isEmpty()) {
-                    AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-                    session.inviteNewParticipants(newParticipants);
-                }
-            }
         }
     }
 }
