@@ -102,6 +102,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_NORMAL);
         audioManager.setSpeakerphoneOn(true);
+
+        muteImageView.setSelected(session.isAudioMuted());
+        videoImageView.setSelected(session.videoMuted);
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
