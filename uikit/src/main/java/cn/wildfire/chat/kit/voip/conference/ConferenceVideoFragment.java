@@ -373,7 +373,11 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         conferenceItem.getStatusTextView().setText(userInfo.displayName);
         conferenceItem.setOnClickListener(clickListener);
         GlideApp.with(conferenceItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(conferenceItem.getPortraitImageView());
+        if (me.uid.equals(userId)) {
+            session.setupLocalVideoView(conferenceItem, scalingType);
+        } else {
         session.setupRemoteVideoView(userInfo.uid, conferenceItem, scalingType);
+        }
 
         if (focusVideoUserId == null) {
             conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
