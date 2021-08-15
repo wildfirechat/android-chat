@@ -65,8 +65,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     private VoipCallItem focusVoipCallItem;
 
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
-    private boolean micEnabled = true;
-    private boolean videoEnabled = true;
 
     public static final String TAG = "MultiCallVideoFragment";
 
@@ -186,9 +184,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            micEnabled = !micEnabled;
-            session.muteAudio(!micEnabled);
-            muteImageView.setSelected(!micEnabled);
+            boolean toMute = !session.isAudioMuted();
+            session.muteAudio(toMute);
+            muteImageView.setSelected(toMute);
         }
     }
 
@@ -204,9 +202,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     void video() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected && !session.isScreenSharing()) {
-            session.muteVideo(!videoEnabled);
-            videoEnabled = !videoEnabled;
-            videoImageView.setSelected(videoEnabled);
+            boolean toMute = !session.videoMuted;
+            session.muteVideo(toMute);
+            videoImageView.setSelected(toMute);
         }
     }
 

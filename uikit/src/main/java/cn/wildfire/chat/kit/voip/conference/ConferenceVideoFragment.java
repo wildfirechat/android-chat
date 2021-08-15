@@ -143,17 +143,13 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
             return;
         }
 
-        muteImageView.setEnabled(!session.isAudience());
-        videoImageView.setEnabled(!session.isAudience());
-        shareScreenImageView.setEnabled(!session.isAudience());
-
         if (session.isAudience()) {
-            muteImageView.setSelected(false);
-            videoImageView.setSelected(false);
-            shareScreenImageView.setSelected(false);
+            muteImageView.setSelected(true);
+            videoImageView.setSelected(true);
+            shareScreenImageView.setSelected(true);
         } else {
-            muteImageView.setSelected(session.isEnableAudio());
-            videoImageView.setSelected(!session.videoMuted);
+            muteImageView.setSelected(session.isAudioMuted());
+            videoImageView.setSelected(session.videoMuted);
             shareScreenImageView.setSelected(session.isScreenSharing());
         }
     }
@@ -259,8 +255,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            muteImageView.setSelected(!session.isEnableAudio());
-            session.muteAudio(session.isEnableAudio());
+            boolean toMute = !session.isAudioMuted();
+            muteImageView.setSelected(toMute);
+            session.muteAudio(toMute);
             startHideBarTimer();
         }
     }
@@ -278,8 +275,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     void video() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            videoImageView.setSelected(session.videoMuted);
-            session.muteVideo(!session.videoMuted);
+            boolean toMute = !session.videoMuted;
+            videoImageView.setSelected(toMute);
+            session.muteVideo(toMute);
             startHideBarTimer();
         }
     }
@@ -317,20 +315,14 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                 return;
             }
 
-            shareScreenImageView.setSelected(!session.isScreenSharing());
+//            shareScreenImageView.setSelected(!session.isScreenSharing());
             if (!session.isScreenSharing()) {
                 ((VoipBaseActivity) getActivity()).startScreenShare();
             } else {
                 ((VoipBaseActivity) getActivity()).stopScreenShare();
             }
-//            List<String> participants = session.getParticipantIds();
-//
-//            tiny = !tiny;
-//            session.switchStream(participants.get(0), tiny);
         }
     }
-
-//    private boolean tiny = false;
 
     // hangup 触发
     @Override

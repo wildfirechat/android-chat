@@ -67,7 +67,6 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     private UserInfo me;
     private UserViewModel userViewModel;
     private boolean isSpeakerOn;
-    private boolean audioEnable = false;
 
     public static final String TAG = "ConferenceVideoFragment";
 
@@ -88,8 +87,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
             return;
         }
 
-        audioEnable = session.isEnableAudio();
-        audioImageView.setSelected(audioEnable);
+        audioImageView.setSelected(session.isAudioMuted());
 
         initParticipantsView(session);
         updateParticipantStatus(session);
@@ -176,9 +174,9 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            session.muteAudio(audioEnable);
-            audioEnable = !audioEnable;
-            audioImageView.setSelected(audioEnable);
+            boolean toMute = !session.isAudioMuted();
+            session.muteAudio(toMute);
+            audioImageView.setSelected(toMute);
         }
     }
 
