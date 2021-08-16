@@ -376,7 +376,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         if (me.uid.equals(userId)) {
             session.setupLocalVideoView(conferenceItem, scalingType);
         } else {
-        session.setupRemoteVideoView(userInfo.uid, conferenceItem, scalingType);
+            session.setupRemoteVideoView(userInfo.uid, conferenceItem, scalingType);
         }
 
         if (focusVideoUserId == null) {
@@ -438,7 +438,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     @Override
     public void didChangeMode(boolean audioOnly) {
-
     }
 
     @Override
@@ -511,7 +510,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-        Log.d(TAG, userId + " volume " + volume);
+//        Log.d(TAG, userId + " volume " + volume);
         VoipCallItem multiCallItem = getUserVoipCallItem(userId);
         if (multiCallItem != null) {
             if (volume > 1000) {
