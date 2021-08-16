@@ -314,6 +314,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                 // TODO 目前关闭摄像头之后，不支持屏幕共享
                 return;
             }
+            if(session.isAudience()){
+                return;
+            }
 
 //            shareScreenImageView.setSelected(!session.isScreenSharing());
             if (!session.isScreenSharing()) {

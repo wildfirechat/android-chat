@@ -27,7 +27,7 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceActivity extends VoipBaseActivity {
 
-    private static final int REQUEST_CODE_ADD_PARTICIPANT = 100;
+    private static final int REQUEST_CODE_ADD_PARTICIPANT = 102;
     private AVEngineKit.CallSessionCallback currentCallSessionCallback;
 
     @Override

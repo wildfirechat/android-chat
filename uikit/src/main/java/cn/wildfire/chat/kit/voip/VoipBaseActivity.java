@@ -61,7 +61,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         Manifest.permission.INTERNET
     };
 
-    private static final int CAPTURE_PERMISSION_REQUEST_CODE = 100;
+    private static final int CAPTURE_PERMISSION_REQUEST_CODE = 101;
 
     protected AVEngineKit gEngineKit;
     protected PowerManager.WakeLock wakeLock;
