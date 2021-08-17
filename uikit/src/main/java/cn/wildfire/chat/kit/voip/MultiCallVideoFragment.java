@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,9 +46,11 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class MultiCallVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     @BindView(R2.id.rootView)
-    LinearLayout rootLinearLayout;
+    RelativeLayout rootLinearLayout;
     @BindView(R2.id.durationTextView)
     TextView durationTextView;
+    @BindView(R2.id.fullScreenDurationTextView)
+    TextView fullScreenDurationTextView;
     @BindView(R2.id.videoContainerGridLayout)
     GridLayout participantGridView;
     @BindView(R2.id.focusVideoContainerFrameLayout)
@@ -57,6 +59,10 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     ImageView muteImageView;
     @BindView(R2.id.videoImageView)
     ImageView videoImageView;
+    @BindView(R2.id.topActions)
+    View topActionContainer;
+    @BindView(R2.id.callControlActions)
+    View callControlActionContainer;
 
     private List<String> participants;
     private UserInfo me;
@@ -94,6 +100,8 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
         if (session.getState() == AVEngineKit.CallState.Outgoing) {
             session.startPreview();
+        } else if (session.getState() == AVEngineKit.CallState.Connected) {
+            setControlViewVisibility(View.VISIBLE);
         }
 
         updateCallDuration();
@@ -138,12 +146,11 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
         VoipCallItem voipCallItem = new VoipCallItem(getActivity());
         voipCallItem.setTag(focusedUserInfo.uid);
-        voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(with, with));
+        voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         voipCallItem.getStatusTextView().setText(focusedUserInfo.displayName);
         GlideApp.with(voipCallItem).load(focusedUserInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
         session.setupLocalVideoView(voipCallItem, scalingType);
 
-        focusVideoContainerFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(with, with));
         focusVideoContainerFrameLayout.addView(voipCallItem);
         focusVoipCallItem = voipCallItem;
         ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusedUserInfo.uid);
@@ -250,6 +257,13 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
         if (callState == AVEngineKit.CallState.Connected) {
             updateParticipantStatus(callSession);
+            setControlViewVisibility(View.VISIBLE);
+            focusVideoContainerFrameLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setControlViewVisibility(topActionContainer.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                }
+            });
         } else if (callState == AVEngineKit.CallState.Idle) {
             if (getActivity() == null) {
                 return;
@@ -268,7 +282,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int with = dm.widthPixels;
 
-        participantGridView.getLayoutParams().height = with;
+        //participantGridView.getLayoutParams().height = with;
 
         UserInfo userInfo = userViewModel.getUserInfo(userId, false);
         VoipCallItem voipCallItem = new VoipCallItem(getActivity());
@@ -423,7 +437,18 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                 text = String.format("%02d:%02d", s / 60, (s % 60));
             }
             durationTextView.setText(text);
+            fullScreenDurationTextView.setText(text);
         }
         handler.postDelayed(this::updateCallDuration, 1000);
+    }
+
+    private void setControlViewVisibility(int visibility) {
+        topActionContainer.setVisibility(visibility);
+        callControlActionContainer.setVisibility(visibility);
+        fullScreenDurationTextView.setVisibility(visibility == View.VISIBLE ? View.GONE : View.VISIBLE);
+
+        if (visibility == View.VISIBLE) {
+            handler.postDelayed(() -> setControlViewVisibility(View.GONE), 3000);
+        }
     }
 }

@@ -34,8 +34,6 @@ import org.webrtc.StatsReport;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,7 +87,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     private String focusVideoUserId;
     private VoipCallItem focusConferenceItem;
 
-    private Timer hiddenBarTimer = new Timer();
 
     private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
 
@@ -314,7 +311,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                 // TODO 目前关闭摄像头之后，不支持屏幕共享
                 return;
             }
-            if(session.isAudience()){
+            if (session.isAudience()) {
                 return;
             }
 
@@ -574,35 +571,25 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     };
 
     private void startHideBarTimer() {
-        cancelHideBarTimer();
         if (bottomPanel.getVisibility() == View.GONE) {
             return;
         }
+        handler.removeCallbacks(hideBarCallback);
+        handler.postDelayed(hideBarCallback, 3000);
+    }
 
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                getActivity().runOnUiThread(() -> {
-                    AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-                    if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
-                        bottomPanel.setVisibility(View.GONE);
-                        topBarView.setVisibility(View.GONE);
-                    }
-                });
+    private final Runnable hideBarCallback = new Runnable() {
+        @Override
+        public void run() {
+            AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+            if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
+                bottomPanel.setVisibility(View.GONE);
+                topBarView.setVisibility(View.GONE);
             }
-        };
+        }
+    };
 
-        hiddenBarTimer.schedule(task, 3000);
-    }
-
-    private void cancelHideBarTimer() {
-        if (hiddenBarTimer != null)
-            hiddenBarTimer.cancel();
-
-        hiddenBarTimer = new Timer();
-    }
-
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     private void updateCallDuration() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
@@ -650,9 +637,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     @Override
     public void onStop() {
         super.onStop();
-        if (hiddenBarTimer != null) {
-            hiddenBarTimer.cancel();
-            hiddenBarTimer = null;
-        }
+        handler.removeCallbacks(hideBarCallback);
     }
 }
