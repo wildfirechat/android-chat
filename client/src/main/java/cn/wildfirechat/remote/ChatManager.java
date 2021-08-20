@@ -5633,6 +5633,7 @@ public class ChatManager {
     }
 
     public void startLog() {
+        Log.d(TAG, "startLog");
         startLog = true;
         if (!checkRemoteService()) {
             return;
@@ -5647,6 +5648,7 @@ public class ChatManager {
     }
 
     public void stopLog() {
+        Log.d(TAG, "stopLog");
         startLog = false;
         if (!checkRemoteService()) {
             return;

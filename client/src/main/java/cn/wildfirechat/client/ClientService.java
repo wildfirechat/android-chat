@@ -161,9 +161,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public boolean connect(String userName, String userPwd) throws RemoteException {
+            Log.d(TAG, "client connect:" + userName);
             if (logined) {
                 if (!accountInfo.userName.equals(userName)) {
                     Log.e(TAG, "Error, 错误，切换户用户时一定要先disconnect，再connect");
+                } else {
+                    Log.e(TAG, "Error, 错误，已经connect过了，为啥还要调用connect。必须先调用disconnect之后才能再次调用connect");
                 }
                 return false;
             }
@@ -235,6 +238,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void disconnect(boolean disablePush, boolean clearSession) throws RemoteException {
+            Log.d(TAG, "client disconnect");
             onConnectionStatusChanged(ConnectionStatusLogout);
 
             logined = false;
@@ -254,6 +258,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ProtoLogic.disconnect(flag);
 
             resetProto();
+            Log.d(TAG, "client disconnect done");
         }
 
         @Override
@@ -1020,6 +1025,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void startLog() throws RemoteException {
+            android.util.Log.d(TAG, "stargLog");
             Xlog.setConsoleLogOpen(true);
             String path = getLogPath();
             //wflog为ChatSManager中使用判断日志文件，如果修改需要对应修改
@@ -1032,6 +1038,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void stopLog() throws RemoteException {
+            android.util.Log.d(TAG, "stopLog");
             Xlog.setConsoleLogOpen(false);
         }
 
@@ -2632,6 +2639,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setConnectionStatusCallback(ClientService.this);
         ProtoLogic.setReceiveMessageCallback(ClientService.this);
         ProtoLogic.setConferenceEventCallback(ClientService.this);
+        Log.i(TAG, "Proto connect:" + userName);
         ProtoLogic.setAuthInfo(userName, userPwd);
         return ProtoLogic.connect(mHost);
     }
