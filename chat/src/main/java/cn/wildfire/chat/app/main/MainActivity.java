@@ -124,10 +124,11 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
         connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
             if (status == ConnectionStatus.ConnectionStatusTokenIncorrect || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch || status == ConnectionStatus.ConnectionStatusRejected || status == ConnectionStatus.ConnectionStatusLogout) {
-                if(status != ConnectionStatus.ConnectionStatusLogout) {
+                if(status == ConnectionStatus.ConnectionStatusLogout) {
+                    reLogin();
+                } else {
                     ChatManager.Instance().disconnect(true, false);
                 }
-                reLogin();
             }
         });
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
