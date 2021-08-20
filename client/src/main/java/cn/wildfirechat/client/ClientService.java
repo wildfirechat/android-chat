@@ -238,7 +238,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void disconnect(boolean disablePush, boolean clearSession) throws RemoteException {
-            Log.d(TAG, "client disconnect");
+            Log.d(TAG, "client disconnect:"+logined);
+            if(!logined) {
+                return;
+            }
             onConnectionStatusChanged(ConnectionStatusLogout);
 
             logined = false;
