@@ -5,12 +5,13 @@
 package cn.wildfirechat.remote;
 
 
+import static android.content.Context.BIND_AUTO_CREATE;
+
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -141,8 +142,6 @@ import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
-
-import static android.content.Context.BIND_AUTO_CREATE;
 
 /**
  * Created by WF Chat on 2017/12/11.
@@ -315,10 +314,6 @@ public class ChatManager {
         });
 
         INST.checkRemoteService();
-
-        SharedPreferences sp = gContext.getSharedPreferences("wildfirechat.config", Context.MODE_PRIVATE);
-        INST.userId = sp.getString("userId", null);
-        INST.token = sp.getString("token", null);
 
         INST.cleanLogFiles();
         INST.registerCoreMessageContents();
@@ -1596,11 +1591,6 @@ public class ChatManager {
 
         if (mClient != null) {
             try {
-                SharedPreferences sp = gContext.getSharedPreferences("wildfirechat.config", Context.MODE_PRIVATE);
-                sp.edit()
-                    .putString("userId", userId)
-                    .putString("token", token)
-                    .commit();
                 Log.d(TAG, "connect " + userId + " " + token);
                 return mClient.connect(this.userId, this.token);
             } catch (RemoteException e) {
@@ -1621,8 +1611,6 @@ public class ChatManager {
             try {
                 Log.d(TAG, "disconnect " + disablePush + " " + cleanSession);
                 mClient.disconnect(disablePush, cleanSession);
-                SharedPreferences sp = gContext.getSharedPreferences("wildfirechat.config", Context.MODE_PRIVATE);
-                sp.edit().clear().commit();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
