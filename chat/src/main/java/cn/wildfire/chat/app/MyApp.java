@@ -6,11 +6,14 @@ package cn.wildfire.chat.app;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 
+import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
@@ -45,6 +48,15 @@ public class MyApp extends BaseApp {
             PushService.init(this, BuildConfig.APPLICATION_ID);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
             setupWFCDirs();
+
+            SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+            String id = sp.getString("id", null);
+            String token = sp.getString("token", null);
+            if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(token)) {
+                //需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
+                //另外不能多次connect，如果需要切换用户请先disconnect，然后3秒钟之后再connect（如果是用户手动登录可以不用等，因为用户操作很难3秒完成，如果程序自动切换请等3秒）
+                ChatManagerHolder.gChatManager.connect(id, token);
+            }
         }
     }
 
