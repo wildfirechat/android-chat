@@ -120,7 +120,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
             session.startPreview();
         }
 
-        updateCallDuration();
+        handler.post(updateCallDurationRunnable);
         updateParticipantStatus(session);
 
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
@@ -589,27 +589,30 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         }
     };
 
-    private final Handler handler = new Handler();
+    private final Handler handler = ChatManager.Instance().getMainHandler();
 
-    private void updateCallDuration() {
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            String text;
-            if (session.getConnectedTime() == 0) {
-                text = "会议连接中";
-            } else {
-                long s = System.currentTimeMillis() - session.getConnectedTime();
-                s = s / 1000;
-                if (s > 3600) {
-                    text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+    private final Runnable updateCallDurationRunnable = new Runnable() {
+        @Override
+        public void run() {
+            AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+            if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
+                String text;
+                if (session.getConnectedTime() == 0) {
+                    text = "会议连接中";
                 } else {
-                    text = String.format("%02d:%02d", s / 60, (s % 60));
+                    long s = System.currentTimeMillis() - session.getConnectedTime();
+                    s = s / 1000;
+                    if (s > 3600) {
+                        text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+                    } else {
+                        text = String.format("%02d:%02d", s / 60, (s % 60));
+                    }
                 }
+                durationTextView.setText(text);
             }
-            durationTextView.setText(text);
+            handler.postDelayed(updateCallDurationRunnable, 1000);
         }
-        handler.postDelayed(this::updateCallDuration, 1000);
-    }
+    };
 
     @Override
     public void onChangeModeRequest(String conferenceId, boolean audience) {
@@ -638,5 +641,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     public void onStop() {
         super.onStop();
         handler.removeCallbacks(hideBarCallback);
+        handler.removeCallbacks(updateCallDurationRunnable);
     }
 }
