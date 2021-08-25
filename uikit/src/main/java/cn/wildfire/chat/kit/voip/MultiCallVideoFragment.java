@@ -258,12 +258,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         if (callState == AVEngineKit.CallState.Connected) {
             updateParticipantStatus(callSession);
             setControlViewVisibility(View.VISIBLE);
-            focusVideoContainerFrameLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setControlViewVisibility(topActionContainer.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-                }
-            });
         } else if (callState == AVEngineKit.CallState.Idle) {
             if (getActivity() == null) {
                 return;
@@ -385,6 +379,12 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        handler.removeCallbacks(updateCallDurationRunnable);
+    }
+
     private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -411,36 +411,35 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                     focusVoipCallItem.setOnClickListener(clickListener);
                 }
                 focusVideoContainerFrameLayout.addView(clickedVoipCallItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                clickedVoipCallItem.setOnClickListener(null);
                 focusVoipCallItem = clickedVoipCallItem;
                 ((VoipBaseActivity) getActivity()).setFocusVideoUserId(userId);
 
-
             } else {
-                // do nothing
-
+                setControlViewVisibility(View.VISIBLE);
             }
         }
     };
 
-    private Handler handler = new Handler();
-
-    private void updateCallDuration() {
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            long s = System.currentTimeMillis() - session.getConnectedTime();
-            s = s / 1000;
-            String text;
-            if (s > 3600) {
-                text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
-            } else {
-                text = String.format("%02d:%02d", s / 60, (s % 60));
+    private final Handler handler = new Handler();
+    private final Runnable updateCallDurationRunnable = new Runnable() {
+        @Override
+        public void run() {
+            AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+            if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
+                long s = System.currentTimeMillis() - session.getConnectedTime();
+                s = s / 1000;
+                String text;
+                if (s > 3600) {
+                    text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+                } else {
+                    text = String.format("%02d:%02d", s / 60, (s % 60));
+                }
+                durationTextView.setText(text);
+                fullScreenDurationTextView.setText(text);
             }
-            durationTextView.setText(text);
-            fullScreenDurationTextView.setText(text);
+            handler.postDelayed(updateCallDurationRunnable, 1000);
         }
-        handler.postDelayed(this::updateCallDuration, 1000);
-    }
+    };
 
     private void setControlViewVisibility(int visibility) {
         topActionContainer.setVisibility(visibility);
