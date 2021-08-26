@@ -148,6 +148,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         voipCallItem.setTag(focusedUserInfo.uid);
         voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         voipCallItem.getStatusTextView().setText(focusedUserInfo.displayName);
+        voipCallItem.setOnClickListener(clickListener);
         GlideApp.with(voipCallItem).load(focusedUserInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
         session.setupLocalVideoView(voipCallItem, scalingType);
 
@@ -408,7 +409,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
                     DisplayMetrics dm = getResources().getDisplayMetrics();
                     int with = dm.widthPixels;
                     participantGridView.addView(focusVoipCallItem, clickedIndex, new FrameLayout.LayoutParams(with / 3, with / 3));
-                    focusVoipCallItem.setOnClickListener(clickListener);
                 }
                 focusVideoContainerFrameLayout.addView(clickedVoipCallItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 focusVoipCallItem = clickedVoipCallItem;
