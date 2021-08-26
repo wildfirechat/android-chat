@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 import cn.wildfire.chat.kit.GlideApp;
@@ -37,7 +36,6 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GetGroupInfoCallback;
 import cn.wildfirechat.remote.GetGroupMembersCallback;
-import cn.wildfirechat.remote.GetUserInfoCallback;
 
 /**
  * @创建者 CSDN_LQR
@@ -164,125 +162,92 @@ public class ImageUtils {
     private static String getDigest(String str) {
         if (TextUtils.isEmpty(str))
             return "";
-        return str.hashCode() + "";
+        String hash = str.hashCode() + "";
+        return hash.replaceAll("-", "");
     }
 
-    private static long lastGenerateTime = 0;
-
     private static void generateNewGroupPortrait(Context context, String groupId, int width) {
-        if (System.currentTimeMillis() - lastGenerateTime < 15 * 1000) {
-            return;
-        }
-        lastGenerateTime = System.currentTimeMillis();
-        ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
-            @Override
-            public void onSuccess(List<GroupMember> groupMembers) {
-                if (groupMembers == null || groupMembers.size() == 0) {
-                    return;
-                }
-
-                new Thread(() -> {
-                    List<Bitmap> bitmaps = new ArrayList<>();
-                    final String[] fullPath = {""};
-                    for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
-                        String memberId = groupMembers.get(i).memberId;
-                        final CountDownLatch latch = new CountDownLatch(1);
-
-                        ChatManager.Instance().getUserInfo(memberId, false, new GetUserInfoCallback() {
-                            @Override
-                            public void onSuccess(UserInfo userInfo) {
-                                new Thread(() -> {
-                                    fullPath[0] += userInfo.portrait;
-                                    Drawable drawable = null;
-                                    try {
-                                        drawable = GlideApp.with(context).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        try {
-                                            drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
-                                        } catch (ExecutionException ex) {
-                                            ex.printStackTrace();
-                                        } catch (InterruptedException ex) {
-                                            ex.printStackTrace();
-                                        }
-                                    }
-                                    if (drawable instanceof BitmapDrawable) {
-                                        bitmaps.add(((BitmapDrawable) drawable).getBitmap());
-                                    }
-                                    latch.countDown();
-                                }).start();
-                            }
-
-                            @Override
-                            public void onFail(int errorCode) {
-                                new Thread(() -> {
-                                    Drawable drawable = null;
-                                    try {
-                                        drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
-                                        if (drawable instanceof BitmapDrawable) {
-                                            bitmaps.add(((BitmapDrawable) drawable).getBitmap());
-                                        }
-                                    } catch (ExecutionException e) {
-                                        e.printStackTrace();
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    latch.countDown();
-                                });
-                            }
-                        });
-
-                        try {
-                            latch.await();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    Bitmap bitmap = CombineBitmapTools.combimeBitmap(context, 60, 60, bitmaps);
-                    if (bitmap == null) {
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
+                @Override
+                public void onSuccess(List<GroupMember> groupMembers) {
+                    if (groupMembers == null || groupMembers.size() == 0) {
                         return;
                     }
 
-                    if (fullPath[0].length() == 0) {
-                        fullPath[0] = "null";
-                    }
-                    String hash = getDigest(fullPath[0]);
-                    //Path 格式为 groupId-updatetime-width-hash
-                    String fileName = groupId + "-" + System.currentTimeMillis() + "-" + width + "-" + hash;
-                    try {
-                        //create a file to write bitmap data
-                        File f = new File(context.getCacheDir(), fileName);
-                        f.createNewFile();
-                        //Convert bitmap to byte array
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
-                        byte[] bitmapData = bos.toByteArray();
+                    ChatManager.Instance().getWorkHandler().post(() -> {
+                        List<Bitmap> bitmaps = new ArrayList<>();
+                        StringBuilder fullPathBuilder = new StringBuilder();
+                        List<String> memberIds = new ArrayList<>();
+                        for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
+                            memberIds.add(groupMembers.get(i).memberId);
+                        }
 
-                        //write the bytes in file
-                        FileOutputStream fos = new FileOutputStream(f);
-                        fos.write(bitmapData);
-                        fos.flush();
-                        fos.close();
+                        List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
+                        if (userInfos == null) {
+                            return;
+                        }
 
-                        SharedPreferences sp = context.getSharedPreferences("wfc", Context.MODE_PRIVATE);
-                        String key = "wfc_group_generated_portrait_" + groupId + "_" + width;
-                        sp.edit().putString(key, f.getAbsolutePath()).apply();
+                        for (UserInfo info : userInfos) {
+                            fullPathBuilder.append(info.portrait);
 
-                        //Todo notify
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+                            Drawable drawable = null;
+                            try {
+                                drawable = GlideApp.with(context).load(info.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                try {
+                                    drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
+                                } catch (ExecutionException ex) {
+                                    ex.printStackTrace();
+                                } catch (InterruptedException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                            if (drawable instanceof BitmapDrawable) {
+                                bitmaps.add(((BitmapDrawable) drawable).getBitmap());
+                            }
+                        }
 
+                        Bitmap bitmap = CombineBitmapTools.combimeBitmap(context, 60, 60, bitmaps);
+                        if (bitmap == null) {
+                            return;
+                        }
 
-            }
+                        String hash = getDigest(fullPathBuilder.toString());
+                        //Path 格式为 groupId-updatetime-width-hash
+                        String fileName = groupId + "-" + System.currentTimeMillis() + "-" + width + "-" + hash;
+                        try {
+                            //create a file to write bitmap data
+                            File f = new File(context.getCacheDir(), fileName);
+                            f.createNewFile();
+                            //Convert bitmap to byte array
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+                            byte[] bitmapData = bos.toByteArray();
 
-            @Override
-            public void onFail(int errorCode) {
+                            //write the bytes in file
+                            FileOutputStream fos = new FileOutputStream(f);
+                            fos.write(bitmapData);
+                            fos.flush();
+                            fos.close();
 
-            }
+                            SharedPreferences sp = context.getSharedPreferences("wfc", Context.MODE_PRIVATE);
+                            String key = "wfc_group_generated_portrait_" + groupId + "_" + width;
+                            sp.edit().putString(key, f.getAbsolutePath()).apply();
+
+                            //Todo notify
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+
+                }
+            });
         });
     }
 
@@ -297,11 +262,11 @@ public class ImageUtils {
                 ChatManager.Instance().getGroupInfo(groupId, false, new GetGroupInfoCallback() {
                     @Override
                     public void onSuccess(GroupInfo groupInfo) {
-                        new Thread(() -> {
+                        ChatManager.Instance().getWorkHandler().post(() -> {
                             //分析文件名，获取更新时间，hash值
                             //Path 格式为 groupId-updatetime-width-hash
                             String name = file.getName();
-                            name = name.substring(groupId.length());
+                            name = name.substring(groupId.length() + 1);
                             String[] arr = name.split("-");
                             long timestamp = Long.parseLong(arr[1]);
 
@@ -314,37 +279,21 @@ public class ImageUtils {
                                             return;
                                         }
 
-                                        new Thread(() -> {
-                                            final String[] fullPath = {""};
-                                            for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
-                                                String memberId = groupMembers.get(i).memberId;
-                                                CountDownLatch latch = new CountDownLatch(1);
+                                        StringBuilder fullPathBuilder = new StringBuilder();
+                                        List<String> memberIds = new ArrayList<>();
+                                        for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
+                                            memberIds.add(groupMembers.get(i).memberId);
+                                        }
+                                        List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
+                                        for (UserInfo info : userInfos) {
+                                            fullPathBuilder.append(info.portrait);
+                                        }
 
-                                                ChatManager.Instance().getUserInfo(memberId, false, new GetUserInfoCallback() {
-                                                    @Override
-                                                    public void onSuccess(UserInfo userInfo) {
-                                                        fullPath[0] += userInfo.portrait;
-                                                        latch.countDown();
-                                                    }
+                                        String fullPath = fullPathBuilder.toString();
 
-                                                    @Override
-                                                    public void onFail(int errorCode) {
-                                                        latch.countDown();
-                                                    }
-                                                });
-                                                try {
-                                                    latch.await();
-                                                } catch (InterruptedException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                            if (fullPath[0].length() == 0) {
-                                                fullPath[0] = "null";
-                                            }
-                                            if (!arr[3].equals(getDigest(fullPath[0]))) {
-                                                generateNewGroupPortrait(context, groupId, width);
-                                            }
-                                        }).start();
+                                        if (!arr[2].equals(getDigest(fullPath))) {
+                                            generateNewGroupPortrait(context, groupId, width);
+                                        }
                                     }
 
                                     @Override
@@ -353,7 +302,7 @@ public class ImageUtils {
                                     }
                                 });
                             }
-                        }).start();
+                        });
                     }
 
                     @Override

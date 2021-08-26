@@ -153,7 +153,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     private void initParticipantsView(AVEngineKit.CallSession session) {
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        int with = dm.widthPixels;
+        int with = Math.min(dm.widthPixels, dm.heightPixels);
 
         participantGridView.removeAllViews();
 
