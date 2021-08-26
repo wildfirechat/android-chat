@@ -88,8 +88,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     private VoipCallItem focusConferenceItem;
 
 
-    private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
-
+    private final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
     public static final String TAG = "ConferenceVideoFragment";
 
     @Nullable
