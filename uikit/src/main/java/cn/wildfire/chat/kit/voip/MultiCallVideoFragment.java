@@ -104,7 +104,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             setControlViewVisibility(View.VISIBLE);
         }
 
-        updateCallDuration();
+        handler.post(updateCallDurationRunnable);
         updateParticipantStatus(session);
 
         AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
