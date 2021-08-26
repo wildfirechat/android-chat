@@ -56,6 +56,11 @@ public class Config {
      */
     public static int DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND = 60;
 
+    /**
+     * 应用层用于存储配置信息(userId，token等)的SP文件的名字
+     */
+    public static final String SP_CONFIG_FILE_NAME = "config";
+
     public static String VIDEO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/video";
     public static String AUDIO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/audio";
     public static String PHOTO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/photo";

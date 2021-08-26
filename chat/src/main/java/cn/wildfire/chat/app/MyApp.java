@@ -49,7 +49,7 @@ public class MyApp extends BaseApp {
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
             setupWFCDirs();
 
-            SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+            SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
             String id = sp.getString("id", null);
             String token = sp.getString("token", null);
             if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(token)) {

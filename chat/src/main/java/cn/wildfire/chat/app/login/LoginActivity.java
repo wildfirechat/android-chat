@@ -22,6 +22,7 @@ import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.chat.R;
 
@@ -88,7 +89,7 @@ public class LoginActivity extends WfcBaseActivity {
 
                 //需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
                 ChatManagerHolder.gChatManager.connect(loginResult.getUserId(), loginResult.getToken());
-                SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+                SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
                 sp.edit()
                     .putString("id", loginResult.getUserId())
                     .putString("token", loginResult.getToken())
