@@ -40,7 +40,7 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         setContentView(contentLayout());
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
         if (sp.getBoolean("darkTheme", true)) {
             // dark
             toolbar.getContext().setTheme(R.style.AppTheme_DarkAppbar);
@@ -90,7 +90,7 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
     }
 
     protected boolean isDarkTheme() {
-        SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences("wfc_kit_config", MODE_PRIVATE);
         return sp.getBoolean("darkTheme", true);
     }
 

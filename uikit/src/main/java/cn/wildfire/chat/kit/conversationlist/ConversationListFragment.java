@@ -148,7 +148,7 @@ public class ConversationListFragment extends ProgressFragment {
                     PCOnlineStatusNotification notification = new PCOnlineStatusNotification(info);
                     statusNotificationViewModel.showStatusNotification(notification);
 
-                    SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+                    SharedPreferences sp = getActivity().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
                     sp.edit().putBoolean("wfc_uikit_had_pc_session", true).commit();
                 }
             }
@@ -159,7 +159,7 @@ public class ConversationListFragment extends ProgressFragment {
                 PCOnlineStatusNotification notification = new PCOnlineStatusNotification(info);
                 statusNotificationViewModel.showStatusNotification(notification);
 
-                SharedPreferences sp = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+                SharedPreferences sp = getActivity().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
                 sp.edit().putBoolean("wfc_uikit_had_pc_session", true).commit();
             }
         }

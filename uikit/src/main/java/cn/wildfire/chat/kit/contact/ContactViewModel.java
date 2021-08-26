@@ -109,7 +109,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         loadingCount.incrementAndGet();
         ChatManager.Instance().getWorkHandler().post(() -> {
             loadingCount.decrementAndGet();
-            SharedPreferences sp = WfcUIKit.getWfcUIKit().getApplication().getSharedPreferences("config", Context.MODE_PRIVATE);
+            SharedPreferences sp = WfcUIKit.getWfcUIKit().getApplication().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
             boolean pcLogined = sp.getBoolean("wfc_uikit_had_pc_session", false);
             UserInfo fileHelpUserInfo = null;
             if (pcLogined) {

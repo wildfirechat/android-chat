@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -124,7 +125,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
         connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
             if (status == ConnectionStatus.ConnectionStatusTokenIncorrect || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch || status == ConnectionStatus.ConnectionStatusRejected || status == ConnectionStatus.ConnectionStatusLogout) {
-                if(status == ConnectionStatus.ConnectionStatusLogout) {
+                SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+                sp.edit().clear().apply();
+                OKHttpHelper.clearCookies();
+                if (status == ConnectionStatus.ConnectionStatusLogout) {
                     reLogin();
                 } else {
                     ChatManager.Instance().disconnect(true, false);
@@ -141,10 +145,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     }
 
     private void reLogin() {
-        SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
-        sp.edit().clear().apply();
-        OKHttpHelper.clearCookies();
-
         Intent intent = new Intent(this, SplashActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -461,7 +461,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private boolean checkDisplayName() {
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        SharedPreferences sp = getSharedPreferences("config", Context.MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences("wfc_config", Context.MODE_PRIVATE);
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         if (userInfo != null && TextUtils.equals(userInfo.displayName, userInfo.mobile)) {
             if (!sp.getBoolean("updatedDisplayName", false)) {

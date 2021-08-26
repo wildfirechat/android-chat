@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.app.main;
 
+import static cn.wildfire.chat.app.BaseApp.getContext;
+
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -27,9 +29,8 @@ import androidx.core.content.ContextCompat;
 
 import butterknife.ButterKnife;
 import cn.wildfire.chat.app.login.SMSLoginActivity;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfirechat.chat.R;
-
-import static cn.wildfire.chat.app.BaseApp.getContext;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -53,7 +54,7 @@ public class SplashActivity extends AppCompatActivity {
         hideSystemUI();
         setStatusBarColor(R.color.white);
 
-        sharedPreferences = getSharedPreferences("config", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         id = sharedPreferences.getString("id", null);
         token = sharedPreferences.getString("token", null);
 
