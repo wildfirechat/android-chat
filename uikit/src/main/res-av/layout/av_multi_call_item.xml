@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
@@ -7,16 +8,28 @@
 
     <ImageView
         android:id="@+id/portraitImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
         android:scaleType="fitXY"
         android:src="@mipmap/avatar_def" />
 
     <TextView
         android:id="@+id/statusTextView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:text="接通中"
         android:textColor="@color/red6" />
+
+    <LinearLayout
+        android:id="@+id/surfaceViewContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+    </LinearLayout>
 </merge>
