@@ -88,7 +88,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     private VoipCallItem focusConferenceItem;
 
 
-    private final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
+    private final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
     public static final String TAG = "ConferenceVideoFragment";
 
     @Nullable
@@ -118,6 +118,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         if (session.getState() == AVEngineKit.CallState.Outgoing) {
             session.startPreview();
         }
+
+        // 建议需要观看PC端屏幕共享时设置为：SCALE_ASPECT_FIT，如果不需要则设置为：SCALE_ASPECT_FILL
+//        session.setFocusVideoScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
 
         handler.post(updateCallDurationRunnable);
         updateParticipantStatus(session);
@@ -153,7 +156,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     private void initParticipantsView(AVEngineKit.CallSession session) {
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        int with = Math.min(dm.widthPixels, dm.heightPixels);
+        int size = Math.min(dm.widthPixels, dm.heightPixels);
 
         participantGridView.removeAllViews();
 
@@ -189,15 +192,15 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
                 // self
                 if (userInfo.uid.equals(me.uid)) {
-                    session.setupLocalVideoView(conferenceItem, scalingType);
+                    session.setupLocalVideoView(conferenceItem.videoContainer, scalingType);
                 } else {
-                    session.setupRemoteVideoView(userInfo.uid, conferenceItem, scalingType);
+                    session.setupRemoteVideoView(userInfo.uid, conferenceItem.videoContainer, scalingType);
                 }
 
                 if (userInfo.uid.equals(focusVideoUserId)) {
                     focusConferenceItem = conferenceItem;
                 } else {
-                    conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+                    conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(size / 3, size / 3));
                     participantGridView.addView(conferenceItem);
                 }
             }
@@ -362,9 +365,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
             return;
         }
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        int with = dm.widthPixels;
+        int size = Math.min(dm.widthPixels, dm.heightPixels);
 
-        participantGridView.getLayoutParams().height = with;
+        participantGridView.getLayoutParams().height = size;
 
         UserInfo userInfo = userViewModel.getUserInfo(userId, false);
         VoipCallItem conferenceItem = new VoipCallItem(getActivity());
@@ -373,9 +376,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         conferenceItem.setOnClickListener(clickListener);
         GlideApp.with(conferenceItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(conferenceItem.getPortraitImageView());
         if (me.uid.equals(userId)) {
-            session.setupLocalVideoView(conferenceItem, scalingType);
+            session.setupLocalVideoView(conferenceItem.videoContainer, scalingType);
         } else {
-            session.setupRemoteVideoView(userInfo.uid, conferenceItem, scalingType);
+            session.setupRemoteVideoView(userInfo.uid, conferenceItem.videoContainer, scalingType);
         }
 
         if (focusVideoUserId == null) {
@@ -387,7 +390,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
             focusConferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             focusVideoContainerFrameLayout.addView(focusConferenceItem);
         } else {
-            conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
+            conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(size / 3, size / 3));
             participantGridView.addView(conferenceItem);
         }
         participants.add(userId);
@@ -542,8 +545,8 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
                     focusVideoContainerFrameLayout.removeView(focusConferenceItem);
                     focusVideoContainerFrameLayout.endViewTransition(focusConferenceItem);
                     DisplayMetrics dm = getResources().getDisplayMetrics();
-                    int with = dm.widthPixels;
-                    participantGridView.addView(focusConferenceItem, clickedIndex, new FrameLayout.LayoutParams(with / 3, with / 3));
+                    int size = Math.min(dm.widthPixels, dm.heightPixels);
+                    participantGridView.addView(focusConferenceItem, clickedIndex, new FrameLayout.LayoutParams(size / 3, size / 3));
                 }
                 focusVideoContainerFrameLayout.addView(clickedConferenceItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 focusConferenceItem = clickedConferenceItem;

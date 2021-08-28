@@ -7,9 +7,11 @@ package cn.wildfire.chat.kit.voip;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,8 +21,9 @@ import androidx.annotation.RequiresApi;
 import cn.wildfire.chat.kit.R;
 
 public class VoipCallItem extends FrameLayout {
-    private ImageView portraitImageView;
-    private TextView statusTextView;
+    public ImageView portraitImageView;
+    public TextView statusTextView;
+    public LinearLayout videoContainer;
 
     public VoipCallItem(@NonNull Context context) {
         super(context);
@@ -52,6 +55,7 @@ public class VoipCallItem extends FrameLayout {
         View view = inflate(context, R.layout.av_multi_call_item, this);
         portraitImageView = view.findViewById(R.id.portraitImageView);
         statusTextView = view.findViewById(R.id.statusTextView);
+        videoContainer =view.findViewById(R.id.surfaceViewContainer);
     }
 
     public ImageView getPortraitImageView() {
