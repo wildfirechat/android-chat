@@ -119,9 +119,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
             session.startPreview();
         }
 
-        // 建议需要观看PC端屏幕共享时设置为：SCALE_ASPECT_FIT，如果不需要则设置为：SCALE_ASPECT_FILL
-//        session.setFocusVideoScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
-
         handler.post(updateCallDurationRunnable);
         updateParticipantStatus(session);
 
