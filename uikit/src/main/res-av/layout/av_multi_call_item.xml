@@ -23,7 +23,7 @@
         android:textColor="@color/red6" />
 
     <LinearLayout
-        android:id="@+id/surfaceViewContainer"
+        android:id="@+id/videoContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/transparent"

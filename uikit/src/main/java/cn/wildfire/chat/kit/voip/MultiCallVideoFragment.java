@@ -141,7 +141,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             GlideApp.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
             participantGridView.addView(voipCallItem);
 
-            session.setupRemoteVideoView(userInfo.uid, voipCallItem, scalingType);
+            session.setupRemoteVideoView(userInfo.uid, voipCallItem.videoContainer, scalingType);
         }
 
         VoipCallItem voipCallItem = new VoipCallItem(getActivity());
@@ -150,7 +150,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         voipCallItem.getStatusTextView().setText(focusedUserInfo.displayName);
         voipCallItem.setOnClickListener(clickListener);
         GlideApp.with(voipCallItem).load(focusedUserInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
-        session.setupLocalVideoView(voipCallItem, scalingType);
+        session.setupLocalVideoView(voipCallItem.videoContainer, scalingType);
 
         focusVideoContainerFrameLayout.addView(voipCallItem);
         focusVoipCallItem = voipCallItem;
@@ -291,7 +291,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            session.setupRemoteVideoView(userId, voipCallItem, scalingType);
+            session.setupRemoteVideoView(userId, voipCallItem.videoContainer, scalingType);
         }
     }
 
