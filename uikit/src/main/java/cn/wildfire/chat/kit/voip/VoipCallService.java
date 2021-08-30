@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -368,6 +369,7 @@ public class VoipCallService extends Service {
         view.findViewById(R.id.audioLinearLayout).setVisibility(View.GONE);
         FrameLayout remoteVideoFrameLayout = view.findViewById(R.id.remoteVideoFrameLayout);
         remoteVideoFrameLayout.setVisibility(View.VISIBLE);
+        LinearLayout videoContainer = remoteVideoFrameLayout.findViewById(R.id.videoContainer);
 
         Log.e("wfc", "nextFocusUserId " + nextFocusUserId);
         if (!rendererInitialized || lastState != session.getState() || !TextUtils.equals(lastFocusUserId, nextFocusUserId)) {
@@ -379,9 +381,9 @@ public class VoipCallService extends Service {
             GlideApp.with(remoteVideoFrameLayout).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
 
             if (TextUtils.equals(ChatManager.Instance().getUserId(), nextFocusUserId)) {
-                session.setupLocalVideoView(remoteVideoFrameLayout, SCALE_ASPECT_BALANCED);
+                session.setupLocalVideoView(videoContainer, SCALE_ASPECT_BALANCED);
             } else {
-                session.setupRemoteVideoView(nextFocusUserId, remoteVideoFrameLayout, SCALE_ASPECT_BALANCED);
+                session.setupRemoteVideoView(nextFocusUserId, videoContainer, SCALE_ASPECT_BALANCED);
             }
             lastFocusUserId = nextFocusUserId;
         }
