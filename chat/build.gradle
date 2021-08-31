@@ -5,17 +5,17 @@ apply plugin: 'com.huawei.agconnect'
 android {
     signingConfigs {
         wfc {
-            keyAlias 'wfc'
-            keyPassword 'wildfirechat'
-            storeFile file('../wfc.keystore')
-            storePassword 'wildfirechat'
+            keyAlias 'wf'
+            keyPassword 'wfc95955'
+            storeFile file('../../wfc_new.keystore')
+            storePassword 'wfc95955'
         }
     }
     compileSdkVersion 29
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
     defaultConfig {
-        applicationId "cn.wildfirechat.chat"
+        applicationId "net.wildfirechat.demo"
         minSdkVersion 21
         targetSdkVersion 29 //当targetversion大于23时，需要使用fileprovider
         versionCode 39
