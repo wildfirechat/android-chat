@@ -306,10 +306,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     void shareScreen() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            if (session.videoMuted) {
-                // TODO 目前关闭摄像头之后，不支持屏幕共享
-                return;
-            }
             if (session.isAudience()) {
                 return;
             }
