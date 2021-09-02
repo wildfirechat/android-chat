@@ -19,7 +19,6 @@ import org.webrtc.StatsReport;
 
 import java.util.List;
 
-import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -92,7 +91,7 @@ public class ConferenceActivity extends VoipBaseActivity {
                         .positiveText("是")
                         .onPositive((dialog, which) -> {
                             finish();
-                            new Handler().postDelayed(()->{
+                            new Handler().postDelayed(() -> {
                                 AVEngineKit.CallSession newSession = AVEngineKit.Instance().startConference(callId, audioOnly, pin, host, title, desc, audience, advanced, false, this);
                                 if (newSession == null) {
                                     Toast.makeText(this, "创建会议失败", Toast.LENGTH_SHORT).show();
@@ -109,7 +108,7 @@ public class ConferenceActivity extends VoipBaseActivity {
                     finish();
                 }
             } else if (callEndReason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
-                AVEngineKit.CallSession newSession = AVEngineKit.Instance().joinConference(callId, audioOnly, pin, host, title, desc, audience, advanced, this);
+                AVEngineKit.CallSession newSession = AVEngineKit.Instance().joinConference(callId, audioOnly, pin, host, title, desc, audience, advanced, false, false, this);
                 if (newSession == null) {
                     Toast.makeText(this, "加入会议失败", Toast.LENGTH_SHORT).show();
                     finish();

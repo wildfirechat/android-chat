@@ -316,7 +316,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                     iterator.remove();
                 }
             }
-            WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
+            if(AVEngineKit.Instance().getCurrentSession() != null){
+                WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
+            }
         } else {
             // do nothing
         }
