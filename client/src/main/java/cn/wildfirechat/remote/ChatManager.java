@@ -3710,6 +3710,10 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return new NullGroupInfo(groupId);
         }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.d(TAG, "get group info error, group id is empty");
+            return null;
+        }
 
         try {
             GroupInfo groupInfo = mClient.getGroupInfo(groupId, refresh);
