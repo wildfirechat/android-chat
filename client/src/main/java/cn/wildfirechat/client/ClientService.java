@@ -1352,6 +1352,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public GroupInfo getGroupInfo(String groupId, boolean refresh) throws RemoteException {
+            if(TextUtils.isEmpty(groupId)) {
+                android.util.Log.d(TAG, "get group info error, group id is empty");
+                return null;
+            }
+
             ProtoGroupInfo protoGroupInfo = ProtoLogic.getGroupInfo(groupId, refresh);
             return convertProtoGroupInfo(protoGroupInfo);
         }
