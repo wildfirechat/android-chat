@@ -27,20 +27,19 @@ public class MessagePayload implements Parcelable {
     public String content;
     public byte[] binaryContent;
 
+    public String extra;
+    
     public int mentionedType;
     public List<String> mentionedTargets;
 
-
     public MessageContentMediaType mediaType;
     public String remoteMediaUrl;
-
 
     //前面的属性都会在网络发送，下面的属性只在本地存储
     public String localMediaPath;
 
     //前面的属性都会在网络发送，下面的属性只在本地存储
     public String localContent;
-    public String extra;
 
     public MessagePayload() {
     }
