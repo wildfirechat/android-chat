@@ -1,16 +1,37 @@
 {
 	"agcgw":{
 		"backurl":"connect-drcn.dbankcloud.cn",
-		"url":"connect-drcn.hispace.hicloud.com"
+		"url":"connect-drcn.hispace.hicloud.com",
+		"websocketbackurl":"connect-ws-drcn.hispace.dbankcloud.cn",
+		"websocketurl":"connect-ws-drcn.hispace.dbankcloud.com"
+	},
+	"agcgw_all":{
+		"CN":"connect-drcn.hispace.hicloud.com",
+		"CN_back":"connect-drcn.dbankcloud.cn",
+		"DE":"connect-dre.hispace.hicloud.com",
+		"DE_back":"connect-dre.dbankcloud.cn",
+		"RU":"connect-drru.hispace.hicloud.com",
+		"RU_back":"connect-drru.dbankcloud.cn",
+		"SG":"connect-dra.hispace.hicloud.com",
+		"SG_back":"connect-dra.dbankcloud.cn"
 	},
 	"client":{
 		"cp_id":"890086000102114683",
-		"product_id":"9105385871708008303",
-		"client_id":"363427384201839680",
-		"client_secret":"D438F2D56536240581DC197C468900E6EA0E0FF37F563B79D7765B34A5077B7F",
-		"app_id":"100221325",
-		"package_name":"cn.wildfirechat.chat",
-		"api_key":"CV7m3BB7QS4BJqCKyrCkda06gp0tWFCMYzZP+a7I5NJHi7l4dTk0rP87aDCDh3dRU1sDrLOMiZr2bMNNKQ34zuwJ6KjT"
+		"product_id":"737518067793539820",
+		"client_id":"710619983528330432",
+		"client_secret":"733A9FE3498D9C585B24FE5B721B5E4C101696DB010A1094B9C480F9C39BF687",
+		"project_id":"737518067793539820",
+		"app_id":"104709415",
+		"api_key":"CwEAAAAAMnq/8ksnukXnluVYiUH7LooTxofjCvNBRlaT97EC4gAYYepbaP0zL7/NVsuGulBhXwsByVGrQbAwjlLYgQEXjUcNkhs=",
+		"package_name":"net.wildfirechat.demo"
+	},
+	"oauth_client":{
+		"client_id":"104709415",
+		"client_type":1
+	},
+	"app_info":{
+		"app_id":"104709415",
+		"package_name":"net.wildfirechat.demo"
 	},
 	"service":{
 		"analytics":{
@@ -18,10 +39,32 @@
 			"resource_id":"p1",
 			"channel_id":""
 		},
+		"search":{
+			"url":"https://search-drcn.cloud.huawei.com"
+		},
+		"cloudstorage":{
+			"storage_url":"https://agc-storage-drcn.platform.dbankcloud.cn"
+		},
 		"ml":{
 			"mlservice_url":"ml-api-drcn.ai.dbankcloud.com,ml-api-drcn.ai.dbankcloud.cn"
 		}
 	},
 	"region":"CN",
-	"configuration_version":"1.0"
+	"configuration_version":"3.0",
+	"appInfos":[
+		{
+			"package_name":"net.wildfirechat.demo",
+			"client":{
+				"app_id":"104709415"
+			},
+			"app_info":{
+				"package_name":"net.wildfirechat.demo",
+				"app_id":"104709415"
+			},
+			"oauth_client":{
+				"client_type":1,
+				"client_id":"104709415"
+			}
+		}
+	]
 }
