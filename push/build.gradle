@@ -14,8 +14,8 @@ android {
 
         manifestPlaceholders = [
 
-                MI_APP_ID    : "2882303761517722456",
-                MI_APP_KEY   : "5731772292456",
+                MI_APP_ID    : "2882303761520041607",
+                MI_APP_KEY   : "5152004127607",
 
                 HMS_APP_ID   : "100221325",
 
