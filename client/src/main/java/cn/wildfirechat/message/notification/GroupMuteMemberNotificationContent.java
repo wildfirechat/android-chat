@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message.notification;
 
+import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_MUTE_MEMBER;
+
 import android.os.Parcel;
 
 import org.json.JSONArray;
@@ -18,8 +20,6 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
-
-import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_MUTE_MEMBER;
 
 @ContentTag(type = CONTENT_TYPE_MUTE_MEMBER, flag = PersistFlag.Persist)
 public class GroupMuteMemberNotificationContent extends NotificationMessageContent {
@@ -39,11 +39,13 @@ public class GroupMuteMemberNotificationContent extends NotificationMessageConte
         }
         sb.append("把");
         if (memberIds != null) {
-            for (String member : memberIds) {
+            for (int i = 0; i < memberIds.size() && i < 4; i++) {
                 sb.append(" ");
-                sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, member));
+                sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, memberIds.get(i)));
             }
-            sb.append(" ");
+            if (memberIds.size() > 4) {
+                sb.append(" 等");
+            }
         }
         if (type == 0) {
             sb.append("取消禁言");

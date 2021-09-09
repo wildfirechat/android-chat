@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message.notification;
 
+import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_SET_MANAGER;
+
 import android.os.Parcel;
 
 import org.json.JSONArray;
@@ -18,8 +20,6 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
-
-import static cn.wildfirechat.message.core.MessageContentType.CONTENT_TYPE_SET_MANAGER;
 
 @ContentTag(type = CONTENT_TYPE_SET_MANAGER, flag = PersistFlag.Persist)
 public class GroupSetManagerNotificationContent extends GroupNotificationMessageContent {
