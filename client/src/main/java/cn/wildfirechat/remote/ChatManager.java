@@ -1596,6 +1596,8 @@ public class ChatManager {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        } else {
+            Log.d(TAG, "Mars service not start yet!");
         }
         return false;
     }
@@ -6216,7 +6218,7 @@ public class ChatManager {
     }
 
     /**
-     设置PC/Web在线时，手机是否默认静音。缺省值为YES，如果IM服务配置server.mobile_default_silent_when_pc_online 为false时，需要调用此函数设置为false。
+     设置PC/Web在线时，手机是否默认静音。缺省值为YES，如果IM服务配置server.mobile_default_silent_when_pc_online 为false时，需要调用此函数设置为false，此时翻转静音的意义。
 
      @param defaultSilent 缺省值是否为静音。
      */
@@ -6237,7 +6239,11 @@ public class ChatManager {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
-        setUserSetting(UserSettingScope.MuteWhenPcOnline, "", isMute ? "1" : "0", callback);
+
+        if(!defaultSilentWhenPCOnline) {
+            isMute = !isMute;
+        }
+        setUserSetting(UserSettingScope.MuteWhenPcOnline, "", isMute ? "0" : "1", callback);
     }
 
     public void getApplicationId(String applicationId, final GeneralCallback2 callback) {
