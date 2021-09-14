@@ -4,12 +4,19 @@
 
 package cn.wildfirechat.client;
 
+import static com.tencent.mars.comm.PlatformComm.context;
+import static com.tencent.mars.xlog.Xlog.AppednerModeAsync;
+import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnected;
+import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnecting;
+import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusLogout;
+import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusReceiveing;
+import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
+import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
+
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.IInterface;
@@ -96,15 +103,6 @@ import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.RecoverReceiver;
 
-import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnected;
-import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnecting;
-import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusLogout;
-import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusReceiveing;
-import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
-import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
-import static com.tencent.mars.comm.PlatformComm.context;
-import static com.tencent.mars.xlog.Xlog.AppednerModeAsync;
-
 
 /**
  * Created by heavyrain lee on 2017/11/19.
@@ -175,7 +173,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 return false;
             }
 
-            if(useSM4) {
+            if (useSM4) {
                 ProtoLogic.useEncryptSM4();
             }
 
@@ -238,8 +236,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void disconnect(boolean disablePush, boolean clearSession) throws RemoteException {
-            Log.d(TAG, "client disconnect:"+logined);
-            if(!logined) {
+            Log.d(TAG, "client disconnect:" + logined);
+            if (!logined) {
                 return;
             }
             onConnectionStatusChanged(ConnectionStatusLogout);
@@ -1345,7 +1343,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public GroupInfo getGroupInfo(String groupId, boolean refresh) throws RemoteException {
-            if(TextUtils.isEmpty(groupId)) {
+            if (TextUtils.isEmpty(groupId)) {
                 android.util.Log.d(TAG, "get group info error, group id is empty");
                 return null;
             }
@@ -2627,7 +2625,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         SdtLogic.setCallBack(this);
 
         Mars.onCreate(true);
-        openXlog();
+        //openXlog();
 
         ProtoLogic.setUserInfoUpdateCallback(this);
         ProtoLogic.setSettingUpdateCallback(this);
@@ -2667,44 +2665,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void openXlog() {
-
-//        int pid = android.os.Process.myPid();
-        String processName = getApplicationInfo().packageName;
-//        ActivityManager am = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-//        for (ActivityManager.RunningAppProcessInfo appProcess : am.getRunningAppProcesses()) {
-//            if (appProcess.pid == pid) {
-//                processName = appProcess.processName;
-//                break;
-//            }
-//        }
-
-        if (processName == null) {
-            return;
-        }
-
-        final String SDCARD;
-        if (checkCallingOrSelfPermission("android.permission.WRITE_EXTERNAL_STORAGE") != PackageManager.PERMISSION_GRANTED) {
-            SDCARD = getCacheDir().getAbsolutePath();
-        } else {
-            SDCARD = Environment.getExternalStorageDirectory().getAbsolutePath();
-        }
-
-        final String logPath = SDCARD + "/marscore/log";
-        final String logCache = SDCARD + "/marscore/cache";
-
-        String logFileName = processName.indexOf(":") == -1 ? "MarsSample" : ("MarsSample_" + processName.substring(processName.indexOf(":") + 1));
-
-        if (BuildConfig.DEBUG) {
-            Xlog.appenderOpen(Xlog.LEVEL_VERBOSE, AppednerModeAsync, logCache, logPath, logFileName, "");
-            Xlog.setConsoleLogOpen(true);
-        } else {
-            Xlog.appenderOpen(Xlog.LEVEL_INFO, AppednerModeAsync, logCache, logPath, logFileName, "");
-            Xlog.setConsoleLogOpen(false);
-        }
-        Log.setLogImp(new Xlog());
     }
 
     private class WfcRemoteCallbackList<E extends IInterface> extends RemoteCallbackList<E> {
