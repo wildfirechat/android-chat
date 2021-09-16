@@ -2625,7 +2625,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         SdtLogic.setCallBack(this);
 
         Mars.onCreate(true);
-        //openXlog();
 
         ProtoLogic.setUserInfoUpdateCallback(this);
         ProtoLogic.setSettingUpdateCallback(this);
