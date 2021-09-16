@@ -3,6 +3,8 @@ include ':client',
     ':push',
     ':uikit',
     ':mars-core-release',
+    // 如果不能从网络下载webrtc时，请取消下面的注释
+//    ':webrtc',
     ':emojilibrary',
     ':imagepicker',
 //    ':momentclient',
