@@ -9,6 +9,7 @@ package cn.wildfirechat.client;
  */
 
 public interface ConnectionStatus {
+    int ConnectionStatusKickedoff = -7;
     int ConnectionStatusSecretKeyMismatch = -6;
     int ConnectionStatusTokenIncorrect = -5;
     int ConnectionStatusServerDown = -4;

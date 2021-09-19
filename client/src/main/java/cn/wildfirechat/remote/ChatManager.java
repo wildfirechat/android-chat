@@ -5701,7 +5701,7 @@ public class ChatManager {
     }
 
     /**
-     * 判断是否是是全局免打扰
+     * 判断是否是是全局消息免打扰
      *
      * @return
      */
@@ -5719,7 +5719,7 @@ public class ChatManager {
     }
 
     /**
-     * 设置全局免打扰
+     * 设置全局消息免打扰
      *
      * @param isSilent
      * @param callback
@@ -5734,6 +5734,59 @@ public class ChatManager {
 
         try {
             mClient.setUserSetting(UserSettingScope.GlobalSilent, "", isSilent ? "1" : "0", new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess());
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 判断是否是是实时音视频通话免打扰
+     *
+     * @return
+     */
+    public boolean isVoipSilent() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return "1".equals(mClient.getUserSetting(UserSettingScope.VoipSilent, ""));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 设置实时音视频通话免打扰
+     *
+     * @param isSilent
+     * @param callback
+     */
+    public void setVoipSilent(boolean isSilent, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+
+        try {
+            mClient.setUserSetting(UserSettingScope.VoipSilent, "", isSilent ? "1" : "0", new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
