@@ -25,9 +25,11 @@ public class AndroidPushMessage implements Parcelable {
     public long serverTime;
     public int pushMessageType; //0 normal, 1 voip invite, 2 voip bye
     public String pushContent;
+    public String pushData;
     public int unReceivedMsg;
     public int mentionedType;
     public boolean isHiddenDetail;
+    public long messageId;
 
     protected AndroidPushMessage(Parcel in) {
         sender = in.readString();
@@ -40,9 +42,11 @@ public class AndroidPushMessage implements Parcelable {
         serverTime = in.readLong();
         pushMessageType = in.readInt();
         pushContent = in.readString();
+        pushData = in.readString();
         unReceivedMsg = in.readInt();
         mentionedType = in.readInt();
         isHiddenDetail = in.readInt()>0;
+        messageId = in.readLong();
     }
 
     public static final Creator<AndroidPushMessage> CREATOR = new Creator<AndroidPushMessage>() {
@@ -74,9 +78,11 @@ public class AndroidPushMessage implements Parcelable {
         pushMessage.serverTime = jsonObject.getLong("serverTime");
         pushMessage.pushMessageType = jsonObject.getInt("pushMessageType");
         pushMessage.pushContent = jsonObject.optString("pushContent");
+        pushMessage.pushData = jsonObject.optString("pushData");
         pushMessage.unReceivedMsg = jsonObject.optInt("unReceivedMsg", 1);
         pushMessage.mentionedType = jsonObject.optInt("mentionedType", 0);
         pushMessage.isHiddenDetail = jsonObject.optBoolean("isHiddenDetail");
+        pushMessage.messageId = jsonObject.optLong("messageId");
         return pushMessage;
     }
 
@@ -97,8 +103,10 @@ public class AndroidPushMessage implements Parcelable {
         dest.writeLong(serverTime);
         dest.writeInt(pushMessageType);
         dest.writeString(pushContent);
+        dest.writeString(pushData);
         dest.writeInt(unReceivedMsg);
         dest.writeInt(mentionedType);
         dest.writeInt(isHiddenDetail?1:0);
+        dest.writeLong(messageId);
     }
 }
