@@ -124,14 +124,21 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         imServiceStatusViewModel.imServiceStatusLiveData().observe(this, imStatusLiveDataObserver);
         IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
         connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
-            if (status == ConnectionStatus.ConnectionStatusTokenIncorrect || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch || status == ConnectionStatus.ConnectionStatusRejected || status == ConnectionStatus.ConnectionStatusLogout) {
+            if (status == ConnectionStatus.ConnectionStatusTokenIncorrect
+                || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch
+                || status == ConnectionStatus.ConnectionStatusRejected
+                || status == ConnectionStatus.ConnectionStatusLogout
+                || status == ConnectionStatus.ConnectionStatusKickedoff) {
                 SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
                 sp.edit().clear().apply();
                 OKHttpHelper.clearCookies();
                 if (status == ConnectionStatus.ConnectionStatusLogout) {
-                    reLogin();
+                    reLogin(false);
                 } else {
                     ChatManager.Instance().disconnect(true, false);
+                    if (status == ConnectionStatus.ConnectionStatusKickedoff) {
+                        reLogin(true);
+                    }
                 }
             }
         });
@@ -144,8 +151,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         });
     }
 
-    private void reLogin() {
+    private void reLogin(boolean isKickedOff) {
         Intent intent = new Intent(this, SplashActivity.class);
+        intent.putExtra("isKickedOff", isKickedOff);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
