@@ -221,6 +221,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void shouldStartRing(boolean isIncoming) {
+        if (isIncoming && ChatManager.Instance().isVoipSilent()) {
+            Log.d("wfcUIKit", "用户设置禁止voip通知，忽略来电提醒");
+            return;
+        }
         ChatManager.Instance().getMainHandler().postDelayed(() -> {
             AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
             if (callSession == null || (callSession.getState() != AVEngineKit.CallState.Incoming && callSession.getState() != AVEngineKit.CallState.Outgoing)) {
@@ -316,7 +320,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                     iterator.remove();
                 }
             }
-            if(AVEngineKit.Instance().getCurrentSession() != null){
+            if (AVEngineKit.Instance().getCurrentSession() != null) {
                 WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
             }
         } else {
