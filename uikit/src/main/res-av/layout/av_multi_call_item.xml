@@ -22,7 +22,7 @@
         android:text="接通中"
         android:textColor="@color/red6" />
 
-    <LinearLayout
+    <cn.wildfire.chat.kit.voip.ZoomableFrameLayout
         android:id="@+id/videoContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,5 +31,5 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-    </LinearLayout>
+    </cn.wildfire.chat.kit.voip.ZoomableFrameLayout>
 </merge>

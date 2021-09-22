@@ -12,6 +12,13 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
+
+/**
+ * 支持缩放的FrameLayout
+ * <p>
+ * Child View 设置onClickLister会导致缩放失效
+ */
 public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDetector.OnScaleGestureListener {
 
     private enum Mode {
@@ -24,6 +31,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     private static final float MIN_ZOOM = 1.0f;
     private static final float MAX_ZOOM = 4.0f;
 
+    private boolean enableZoom = true;
     private Mode mode = Mode.NONE;
     private float scale = 1.0f;
     private float lastScaleFactor = 0f;
@@ -37,6 +45,8 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     private float dy = 0f;
     private float prevDx = 0f;
     private float prevDy = 0f;
+    private int lastX, lastY;
+    private OnClickListener onClickListener;
 
     public ZoomableFrameLayout(Context context) {
         super(context);
@@ -58,10 +68,13 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Log.e("jyj", "onTouch " + motionEvent.getPointerCount());
+                int y = (int) motionEvent.getY();
+                int x = (int) motionEvent.getX();
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                         Log.i(TAG, "DOWN");
+                        lastX = x;
+                        lastY = y;
                         if (scale > MIN_ZOOM) {
                             mode = Mode.DRAG;
                             startX = motionEvent.getX() - prevDx;
@@ -85,6 +98,12 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                         mode = Mode.NONE;
                         prevDx = dx;
                         prevDy = dy;
+                        if (Math.abs(y - lastY) < 5 && Math.abs(x - lastX) < 5) {
+                            //todo 如果横纵坐标的偏移量都小于五个像素，那么就把它当做点击事件触发
+                            if (onClickListener != null) {
+                                onClickListener.onClick(ZoomableFrameLayout.this);
+                            }
+                        }
                         break;
                 }
                 scaleDetector.onTouchEvent(motionEvent);
@@ -142,7 +161,21 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         Log.i(TAG, "onScaleEnd");
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (changed) {
+            scale = 1;
+            dx = 0;
+            dy = 0;
+            applyScaleAndTranslation();
+        }
+    }
+
     private void applyScaleAndTranslation() {
+        if (child() == null || !enableZoom) {
+            return;
+        }
         child().setScaleX(scale);
         child().setScaleY(scale);
         child().setPivotX(0f);  // default is to pivot at view center
@@ -153,5 +186,19 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
 
     private View child() {
         return getChildAt(0);
+    }
+
+    @Override
+    public void setOnClickListener(@Nullable View.OnClickListener l) {
+        this.onClickListener = l;
+    }
+
+    /**
+     * 是否开启缩放，默认开启
+     *
+     * @param enable
+     */
+    public void setEnableZoom(boolean enable) {
+        this.enableZoom = enable;
     }
 }

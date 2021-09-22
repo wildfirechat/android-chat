@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +21,8 @@ import cn.wildfire.chat.kit.R;
 public class VoipCallItem extends FrameLayout {
     public ImageView portraitImageView;
     public TextView statusTextView;
-    public LinearLayout videoContainer;
+    public ZoomableFrameLayout videoContainer;
+    private boolean enableVideoZoom = true;
 
     public VoipCallItem(@NonNull Context context) {
         super(context);
@@ -54,7 +54,8 @@ public class VoipCallItem extends FrameLayout {
         View view = inflate(context, R.layout.av_multi_call_item, this);
         portraitImageView = view.findViewById(R.id.portraitImageView);
         statusTextView = view.findViewById(R.id.statusTextView);
-        videoContainer =view.findViewById(R.id.videoContainer);
+        videoContainer = view.findViewById(R.id.videoContainer);
+        videoContainer.setEnableZoom(enableVideoZoom);
     }
 
     public ImageView getPortraitImageView() {
@@ -65,5 +66,21 @@ public class VoipCallItem extends FrameLayout {
         return statusTextView;
     }
 
-    // TODO video
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
+        if (l != null) {
+            videoContainer.setOnClickListener(v -> l.onClick(VoipCallItem.this));
+        } else {
+            videoContainer.setOnClickListener(null);
+        }
+    }
+
+    /**
+     * 是否开启视频缩放
+     */
+    public void setEnableVideoZoom(boolean enable) {
+        this.enableVideoZoom = enable;
+        videoContainer.setEnableZoom(enable);
+    }
 }
