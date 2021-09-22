@@ -523,7 +523,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     }
 
-    private View.OnClickListener clickListener = new View.OnClickListener() {
+    private final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             String userId = (String) v.getTag();
