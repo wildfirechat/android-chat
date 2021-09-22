@@ -18,6 +18,8 @@ import cn.wildfirechat.remote.GeneralCallback;
 public class MessageNotifySettingActivity extends WfcBaseActivity {
     @BindView(R2.id.switchMsgNotification)
     SwitchButton switchMsgNotification;
+    @BindView(R2.id.switchVoipNotification)
+    SwitchButton switchVoipNotification;
     @BindView(R2.id.switchShowMsgDetail)
     SwitchButton switchShowMsgDetail;
     @BindView(R2.id.switchUserReceipt)
@@ -39,6 +41,21 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
 
         switchMsgNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
             ChatManager.Instance().setGlobalSilent(!isChecked, new GeneralCallback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    Toast.makeText(MessageNotifySettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+                }
+            });
+        });
+
+        switchVoipNotification.setChecked(!ChatManager.Instance().isVoipSilent());
+        switchVoipNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            ChatManager.Instance().setVoipSilent(!isChecked, new GeneralCallback() {
                 @Override
                 public void onSuccess() {
 
