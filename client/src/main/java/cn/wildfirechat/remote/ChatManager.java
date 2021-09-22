@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.UserSource;
@@ -3032,7 +3033,7 @@ public class ChatManager {
      * @param draft
      */
     public void setConversationDraft(Conversation conversation, @Nullable String draft) {
-        if(conversation == null) {
+        if (conversation == null) {
             return;
         }
 
@@ -3712,7 +3713,7 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return new NullGroupInfo(groupId);
         }
-        if(TextUtils.isEmpty(groupId)) {
+        if (TextUtils.isEmpty(groupId)) {
             Log.d(TAG, "get group info error, group id is empty");
             return null;
         }
@@ -5685,7 +5686,7 @@ public class ChatManager {
      * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.PushType}
      */
     public void setDeviceToken(String token, int pushType) {
-        Log.d(TAG, "setDeviceToken " + token + " " +pushType);
+        Log.d(TAG, "setDeviceToken " + token + " " + pushType);
         deviceToken = token;
         this.pushType = pushType;
         if (!checkRemoteService()) {
@@ -5878,6 +5879,37 @@ public class ChatManager {
     }
 
     /**
+     * 当前时间是否免打扰
+     *
+     * @return
+     */
+    public boolean isNoDisturbing() {
+        CountDownLatch count = new CountDownLatch(1);
+        boolean[] results = {false};
+        getNoDisturbingTimes((isNoDisturbing, startMins, endMins) -> {
+            int nowMin = ((int) (System.currentTimeMillis() / 1000 / 60)) % (24 * 60);
+            if (isNoDisturbing) {
+                if (endMins > startMins) {
+                    if (nowMin > startMins && nowMin < endMins) {
+                        results[0] = true;
+                    }
+                } else {
+                    if (nowMin > startMins || nowMin < endMins) {
+                        results[0] = true;
+                    }
+                }
+            }
+            count.countDown();
+        });
+        try {
+            count.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return results[0];
+    }
+
+    /**
      * 获取免打扰时间回调
      */
     public interface GetNoDisturbingTimesCallback {
@@ -5892,7 +5924,7 @@ public class ChatManager {
     }
 
     /**
-     * 判断是否是是全局免打扰
+     * 获取免打扰时间段
      *
      * @param callback 结果回调。
      */
@@ -6271,13 +6303,14 @@ public class ChatManager {
     }
 
     /**
-     设置PC/Web在线时，手机是否默认静音。缺省值为YES，如果IM服务配置server.mobile_default_silent_when_pc_online 为false时，需要调用此函数设置为false，此时翻转静音的意义。
-
-     @param defaultSilent 缺省值是否为静音。
+     * 设置PC/Web在线时，手机是否默认静音。缺省值为YES，如果IM服务配置server.mobile_default_silent_when_pc_online 为false时，需要调用此函数设置为false，此时翻转静音的意义。
+     *
+     * @param defaultSilent 缺省值是否为静音。
      */
     public void setDefaultSilentWhenPcOnline(boolean defaultSilent) {
         defaultSilentWhenPCOnline = defaultSilent;
     }
+
     /**
      * 设置开启了PC在线时，移动端是否静音操作
      *
@@ -6293,7 +6326,7 @@ public class ChatManager {
             return;
         }
 
-        if(!defaultSilentWhenPCOnline) {
+        if (!defaultSilentWhenPCOnline) {
             isMute = !isMute;
         }
         setUserSetting(UserSettingScope.MuteWhenPcOnline, "", isMute ? "0" : "1", callback);
@@ -6448,7 +6481,7 @@ public class ChatManager {
             Log.d(TAG, "marsClientService connected");
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             try {
-                if(useSM4) {
+                if (useSM4) {
                     mClient.useSM4();
                 }
 

@@ -51,12 +51,13 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.OnDeleteMessageListener;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 
 
-public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnFriendUpdateListener {
+public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnDeleteMessageListener, OnFriendUpdateListener {
 
     private boolean isBackground = true;
     private Application application;
@@ -320,7 +321,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                     iterator.remove();
                 }
             }
-            if (AVEngineKit.Instance().getCurrentSession() != null) {
+            if (AVEngineKit.Instance().getCurrentSession() == null) {
                 WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
             }
         } else {
@@ -332,6 +333,13 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void onRecallMessage(Message message) {
         if (isBackground) {
             WfcNotificationManager.getInstance().handleRecallMessage(application, message);
+        }
+    }
+
+    @Override
+    public void onDeleteMessage(Message message) {
+        if (isBackground) {
+            WfcNotificationManager.getInstance().handleDeleteMessage(application, message);
         }
     }
 
