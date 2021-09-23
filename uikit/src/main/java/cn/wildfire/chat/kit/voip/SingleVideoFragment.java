@@ -227,7 +227,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @OnClick(R2.id.shareScreenImageView)
     void shareScreen() {
-        if(!AVEngineKit.isSupportConference() && !AVEngineKit.isSupportMultiCall()){
+        if (!AVEngineKit.isSupportConference() && !AVEngineKit.isSupportMultiCall()) {
             Toast.makeText(getActivity(), "该版本不支持屏幕共享", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -278,17 +278,26 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @OnClick(R2.id.pip_video_view)
     void setSwappedFeeds() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if(session != null ){
-            if(focusUserId == null || focusUserId.equals(targetId)){
+        if (session != null) {
+            if (focusUserId == null || focusUserId.equals(targetId)) {
                 session.setupLocalVideoView(fullscreenVideoContainer, scalingType);
                 session.setupRemoteVideoView(targetId, pipVideoContainer, scalingType);
                 focusUserId = ChatManager.Instance().getUserId();
-            }else {
+            } else {
                 session.setupLocalVideoView(pipVideoContainer, scalingType);
                 session.setupRemoteVideoView(targetId, fullscreenVideoContainer, scalingType);
                 focusUserId = targetId;
             }
         }
+
+        // pls refer to https://github.com/google/ExoPlayer/issues/7999
+        ViewGroup p = (ViewGroup) pipVideoContainer.getParent();
+        p.removeView(fullscreenVideoContainer);
+        p.removeView(pipVideoContainer);
+        ChatManager.Instance().getMainHandler().post(() -> {
+            p.addView(fullscreenVideoContainer, 0);
+            p.addView(pipVideoContainer, 1);
+        });
     }
 
     private void init() {
@@ -316,6 +325,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             session.setupRemoteVideoView(targetId, fullscreenVideoContainer, scalingType);
         } else {
             targetId = session.getParticipantIds().get(0);
+            focusUserId = ChatManager.Instance().getUserId();
 
             session.setupLocalVideoView(fullscreenVideoContainer, scalingType);
             session.setupRemoteVideoView(targetId, pipVideoContainer, scalingType);
