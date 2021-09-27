@@ -166,7 +166,7 @@ public class ChatManager {
     private String clientId;
     private int pushType;
     private Map<Integer, Class<? extends MessageContent>> messageContentMap = new HashMap<>();
-
+    private boolean isLiteMode = false;
     private UserSource userSource;
 
     private boolean startLog;
@@ -1573,6 +1573,23 @@ public class ChatManager {
         return false;
     }
 
+    /**
+     * 设置Lite模式。
+     *
+     * Lite模式下，协议栈不存储任何内容，无法获取任何信息，只能接收/发送消息，接收连接之后的消息。
+     *
+     * @param isLiteMode 是否是Lite模式
+     */
+    public void setLiteMode(boolean isLiteMode) {
+        this.isLiteMode = isLiteMode;
+        if (mClient != null) {
+            try {
+                mClient.setLiteMode(isLiteMode);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      * 连接服务器
      * userId和token都不允许为空
@@ -6585,6 +6602,8 @@ public class ChatManager {
                         ChatManager.this.onConferenceEvent(event);
                     }
                 });
+
+                mClient.setLiteMode(isLiteMode);
 
                 if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
                     mClient.connect(userId, token);
