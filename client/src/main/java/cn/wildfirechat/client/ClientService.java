@@ -293,6 +293,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setLiteMode(boolean isLiteMode) throws RemoteException {
+            ProtoLogic.setLiteMode(isLiteMode);
+        }
+
+        @Override
         public void registerMessageContent(String msgContentCls) throws RemoteException {
             try {
                 Class cls = Class.forName(msgContentCls);
