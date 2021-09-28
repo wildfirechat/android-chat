@@ -965,22 +965,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public List<UserInfo> getMyFriendListInfo(boolean refresh) throws RemoteException {
-            List<String> users = getMyFriendList(refresh);
-            List<UserInfo> userInfos = new ArrayList<>();
-            UserInfo userInfo;
-            for (String user : users) {
-                userInfo = getUserInfo(user, null, false);
-                if (userInfo == null) {
-                    userInfo = new UserInfo();
-                    userInfo.uid = user;
-                }
-                userInfos.add(userInfo);
-            }
-            return userInfos;
-        }
-
-        @Override
         public void loadFriendRequestFromRemote() throws RemoteException {
             ProtoLogic.loadFriendRequestFromRemote();
         }
