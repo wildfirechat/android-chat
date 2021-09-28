@@ -3392,11 +3392,32 @@ public class ChatManager {
         }
 
         try {
-            return mClient.getMyFriendListInfo(refresh);
+            List<String> userIds = mClient.getMyFriendList(refresh);
+            if(userIds != null && !userIds.isEmpty()) {
+                List<UserInfo> userInfos = new ArrayList<>();
+                int step = 400;
+                int startIndex, endIndex;
+                for (int i = 0; i <= userIds.size() / step; i++) {
+                    startIndex = i * step;
+                    endIndex = (i + 1) * step;
+                    endIndex = Math.min(endIndex, userIds.size());
+                    List<UserInfo> us = mClient.getUserInfos(userIds.subList(startIndex, endIndex), null);
+                    userInfos.addAll(us);
+                }
+                if (userInfos.size() > 0) {
+                    for (UserInfo info : userInfos) {
+                        if (info != null) {
+                            userInfoCache.put(info.uid, info);
+                        }
+                    }
+                }
+                return userInfos;
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
         }
+        return null;
     }
 
     /**

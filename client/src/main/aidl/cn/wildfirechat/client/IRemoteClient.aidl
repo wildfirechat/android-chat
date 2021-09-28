@@ -142,7 +142,6 @@ interface IRemoteClient {
     boolean isMyFriend(in String userId);
     List<String> getMyFriendList(in boolean refresh);
     List<Friend> getFriendList(in boolean refresh);
-    List<UserInfo> getMyFriendListInfo(in boolean refresh);
     oneway void loadFriendRequestFromRemote();
 
     String getUserSetting(in int scope, in String key);
