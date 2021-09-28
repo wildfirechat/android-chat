@@ -864,6 +864,12 @@ public class ChatManager {
                 callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        if(TextUtils.isEmpty(channelId)) {
+            Log.e(TAG, "Error, channelId is empty");
+            if (callback != null)
+                callback.onFail(-1);
+            return;
+        }
 
         try {
             mClient.modifyChannelInfo(channelId, modifyType.ordinal(), newValue, new cn.wildfirechat.client.IGeneralCallback.Stub() {
@@ -911,6 +917,10 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return new NullChannelInfo(channelId);
         }
+        if(TextUtils.isEmpty(channelId)) {
+            Log.e(TAG, "Error, channelId is empty");
+            return new NullChannelInfo(channelId);
+        }
 
         try {
             ChannelInfo channelInfo = mClient.getChannelInfo(channelId, refresh);
@@ -934,6 +944,12 @@ public class ChatManager {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if(TextUtils.isEmpty(keyword)) {
+            Log.e(TAG, "Error, keyword is empty");
+            if (callback != null)
+                callback.onFail(-1);
             return;
         }
 
@@ -982,6 +998,10 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return false;
         }
+        if(TextUtils.isEmpty(channelId)) {
+            Log.e(TAG, "Error, channelId is empty");
+            return false;
+        }
 
         try {
             return mClient.isListenedChannel(channelId);
@@ -1003,6 +1023,12 @@ public class ChatManager {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if(TextUtils.isEmpty(channelId)) {
+            Log.e(TAG, "Error, channelId is empty");
+            if (callback != null)
+                callback.onFail(-1);
             return;
         }
 
@@ -1050,6 +1076,12 @@ public class ChatManager {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if(TextUtils.isEmpty(channelId)) {
+            Log.e(TAG, "Error, channelId is empty");
+            if (callback != null)
+                callback.onFail(-1);
             return;
         }
 
@@ -1492,6 +1524,10 @@ public class ChatManager {
 
         try {
             Message message = mClient.getMessage(messageId);
+            if(message == null) {
+                Log.e(TAG, "update message failure, message not exist");
+                return false;
+            }
             message.content = newMsgContent;
             boolean result = mClient.updateMessageContent(message);
             mainHandler.post(() -> {
@@ -1521,6 +1557,10 @@ public class ChatManager {
 
         try {
             Message message = mClient.getMessage(messageId);
+            if(message == null) {
+                Log.e(TAG, "update message failure, message not exist");
+                return false;
+            }
             message.content = newMsgContent;
             message.serverTime = timestamp;
 
@@ -1552,6 +1592,7 @@ public class ChatManager {
         try {
             Message message = mClient.getMessage(messageId);
             if (message == null) {
+                Log.e(TAG, "update message failure, message not exist");
                 return false;
             }
 
@@ -1576,7 +1617,8 @@ public class ChatManager {
     /**
      * 设置Lite模式。
      *
-     * Lite模式下，协议栈不存储任何内容，无法获取任何信息，只能接收/发送消息，接收连接之后的消息。
+     * Lite模式下，协议栈不存储数据库，不同步所有信息，只能收发消息，接收消息只接收连接以后发送的消息。
+     *  此函数只能在connect之前调用。
      *
      * @param isLiteMode 是否是Lite模式
      */
@@ -3783,9 +3825,17 @@ public class ChatManager {
      */
     public void joinChatRoom(String chatRoomId, GeneralCallback callback) {
         if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
+            if(callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        if(TextUtils.isEmpty(chatRoomId)) {
+            Log.e(TAG, "Error, chatroomid is empty");
+            if(callback != null)
+                callback.onFail(-1);
+            return;
+        }
+
         try {
             mClient.joinChatRoom(chatRoomId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
@@ -3936,6 +3986,7 @@ public class ChatManager {
      */
     public UserInfo getUserInfo(String userId, String groupId, boolean refresh) {
         if (TextUtils.isEmpty(userId)) {
+            Log.e(TAG, "Error, user id is null");
             return null;
         }
         UserInfo userInfo = null;
@@ -4504,6 +4555,12 @@ public class ChatManager {
                 callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
+            return;
+        }
 
         int[] inlines = new int[lines.size()];
         for (int j = 0; j < lines.size(); j++) {
@@ -4567,6 +4624,12 @@ public class ChatManager {
                 callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
+            return;
+        }
 
         int[] inlines = new int[lines.size()];
         for (int j = 0; j < lines.size(); j++) {
@@ -4620,6 +4683,12 @@ public class ChatManager {
                 callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
+            return;
+        }
 
         int[] inlines = new int[lines.size()];
         for (int j = 0; j < lines.size(); j++) {
@@ -4670,6 +4739,12 @@ public class ChatManager {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
             return;
         }
 
@@ -4725,6 +4800,12 @@ public class ChatManager {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
             return;
         }
 
@@ -4783,6 +4864,13 @@ public class ChatManager {
             return;
         }
 
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
+            return;
+        }
+
         int[] inlines = new int[lines.size()];
         for (int j = 0; j < lines.size(); j++) {
             inlines[j] = lines.get(j);
@@ -4835,6 +4923,13 @@ public class ChatManager {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
             return;
         }
 
@@ -4892,6 +4987,12 @@ public class ChatManager {
                 callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
+            return;
+        }
 
         int[] inlines = new int[lines.size()];
         for (int j = 0; j < lines.size(); j++) {
@@ -4942,7 +5043,10 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return null;
         }
-
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            return null;
+        }
         try {
             return mClient.getGroupMembers(groupId, forceUpdate);
         } catch (RemoteException e) {
@@ -4953,6 +5057,10 @@ public class ChatManager {
 
     public List<GroupMember> getGroupMembersByType(String groupId, GroupMember.GroupMemberType type) {
         if (!checkRemoteService()) {
+            return null;
+        }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "group id is null");
             return null;
         }
 
@@ -4966,6 +5074,14 @@ public class ChatManager {
 
     public void getGroupMembers(String groupId, boolean forceUpdate, GetGroupMembersCallback callback) {
         if (!checkRemoteService()) {
+            if(callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if(callback != null)
+                callback.onFail(-1);
             return;
         }
 
@@ -5005,6 +5121,11 @@ public class ChatManager {
         if (TextUtils.isEmpty(groupId) || TextUtils.isEmpty(memberId)) {
             return null;
         }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            return null;
+        }
+
         String key = groupMemberCacheKey(groupId, memberId);
         GroupMember groupMember = groupMemberCache.get(key);
         if (groupMember != null) {
@@ -5038,6 +5159,12 @@ public class ChatManager {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
             return;
         }
 
@@ -5095,6 +5222,12 @@ public class ChatManager {
                 callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
+            return;
+        }
 
         int[] inlines = new int[lines.size()];
         for (int j = 0; j < lines.size(); j++) {
@@ -5141,6 +5274,12 @@ public class ChatManager {
                 callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if (callback != null)
+                callback.onFail(-1);
+            return;
+        }
 
         int[] inlines = new int[lines.size()];
         for (int j = 0; j < lines.size(); j++) {
@@ -5185,6 +5324,12 @@ public class ChatManager {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        if(TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "Error, group id is null");
+            if(callback != null)
+                callback.onFail(-1);
             return;
         }
 
@@ -5400,6 +5545,10 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return false;
         }
+        if(TextUtils.isEmpty(userId)) {
+            Log.e(TAG, "Error, user id is null");
+            return false;
+        }
 
         String value = getUserSetting(UserSettingScope.FavoriteUser, userId);
         if (value == null || !value.equals("1")) {
@@ -5409,13 +5558,18 @@ public class ChatManager {
     }
 
     public void setFavUser(String userId, boolean isSet, GeneralCallback callback) {
-        if (callback == null) {
-            return;
-        }
         if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
+            if(callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
+        if(TextUtils.isEmpty(userId)) {
+            Log.e(TAG, "Error, user id is null");
+            if(callback != null)
+                callback.onFail(-1);
+            return;
+        }
+
         setUserSetting(UserSettingScope.FavoriteUser, userId, isSet ? "1" : "0", callback);
     }
 
