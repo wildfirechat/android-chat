@@ -778,9 +778,8 @@ public class ChatManager {
         String imei = null;
         try (
             RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsoluteFile() + "/.wfcClientId", "rw");
-        ) {
-
             FileChannel chan = fw.getChannel();
+        ) {
             FileLock lock = chan.lock();
             imei = fw.readLine();
             if (TextUtils.isEmpty(imei)) {
@@ -799,7 +798,6 @@ public class ChatManager {
                 }
                 fw.writeBytes(imei);
             }
-            fw.close();
             lock.release();
         } catch (Exception ex) {
             ex.printStackTrace();
