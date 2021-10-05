@@ -94,7 +94,7 @@ public class PttActivity extends VoipBaseActivity {
             return;
         }
         String[] items;
-        if (ChatManager.Instance().getUserId().equals(session.getHost())) {
+        if (!ChatManager.Instance().getUserId().equals(session.getHost())) {
             items = new String[]{"最小化对讲机", "退出对讲机"};
         } else {
             items = new String[]{"最小化对讲机", "退出对讲机", "结束对讲"};
@@ -112,6 +112,7 @@ public class PttActivity extends VoipBaseActivity {
                         case 1:
                             session.leavePttChannel();
                             finishFadeout();
+                            break;
                         case 2:
                             AppService.Instance().destroyPttChannel(session.getCallId(), new SimpleCallback<Void>() {
                                 @Override
