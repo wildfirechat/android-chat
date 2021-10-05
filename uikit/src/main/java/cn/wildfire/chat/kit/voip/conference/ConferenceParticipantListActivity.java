@@ -11,6 +11,8 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
+import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.PttInviteMessageContent;
 
 public class ConferenceParticipantListActivity extends WfcBaseActivity {
     @Override
@@ -41,7 +43,12 @@ public class ConferenceParticipantListActivity extends WfcBaseActivity {
 
     private void addParticipant() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
+        MessageContent invite;
+        if (session.isPtt) {
+            invite = new PttInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getPin());
+        } else {
+            invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
+        }
 
         Intent intent = new Intent(this, ConferenceInviteActivity.class);
         intent.putExtra("inviteMessage", invite);
