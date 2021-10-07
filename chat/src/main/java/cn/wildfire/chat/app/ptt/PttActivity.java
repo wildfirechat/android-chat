@@ -193,11 +193,11 @@ public class PttActivity extends VoipBaseActivity {
 
     @Override
     public void didParticipantJoined(String s) {
-        updateParticipantCount();
+        postAction(this::updateParticipantCount);
     }
 
     @Override
     public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
-        updateParticipantCount();
+        postAction(this::updateParticipantCount);
     }
 }
