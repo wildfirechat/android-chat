@@ -24,6 +24,7 @@ import java.util.Map;
 
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.login.model.PCSession;
+import cn.wildfire.chat.app.ptt.PttChannelInfo;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
@@ -445,6 +446,16 @@ public class AppService implements AppServiceProvider {
     @Override
     public void removeFavoriteItem(int favId, SimpleCallback<Void> callback) {
         String url = APP_SERVER_ADDRESS + "/fav/del/" + favId;
+        OKHttpHelper.post(url, null, callback);
+    }
+
+    public void createPttChannel(PttChannelInfo channelInfo, SimpleCallback<String> callback) {
+        String url = APP_SERVER_ADDRESS + "/ptt/create";
+        OKHttpHelper.post(url, channelInfo, callback);
+    }
+
+    public void destroyPttChannel(String channelId, SimpleCallback<Void> callback) {
+        String url = APP_SERVER_ADDRESS + "/ptt/destroy/" + channelId;
         OKHttpHelper.post(url, null, callback);
     }
 

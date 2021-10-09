@@ -265,6 +265,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setForeground(int isForeground) throws RemoteException {
             BaseEvent.onForeground(isForeground == 1);
+            if(isForeground == 1 && mConnectionStatus != ConnectionStatusConnected && mConnectionStatus != ConnectionStatusReceiveing) {
+                onNetworkChange();
+            }
         }
 
         @Override
@@ -287,6 +290,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             if (!TextUtils.isEmpty(host)) {
                 ProtoLogic.setBackupAddress(host, port);
             }
+        }
+
+        @Override
+        public void setLiteMode(boolean isLiteMode) throws RemoteException {
+            ProtoLogic.setLiteMode(isLiteMode);
         }
 
         @Override
@@ -954,22 +962,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
             return out;
-        }
-
-        @Override
-        public List<UserInfo> getMyFriendListInfo(boolean refresh) throws RemoteException {
-            List<String> users = getMyFriendList(refresh);
-            List<UserInfo> userInfos = new ArrayList<>();
-            UserInfo userInfo;
-            for (String user : users) {
-                userInfo = getUserInfo(user, null, false);
-                if (userInfo == null) {
-                    userInfo = new UserInfo();
-                    userInfo.uid = user;
-                }
-                userInfos.add(userInfo);
-            }
-            return userInfos;
         }
 
         @Override
@@ -2212,6 +2204,52 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
             return out;
+        }
+
+        @Override
+        public void requireLock(String lockId, long duration, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.requireLock(lockId, duration, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void releaseLock(String lockId, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.releaseLock(lockId, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override

@@ -66,6 +66,7 @@ interface IRemoteClient {
     void setServerAddress(in String host);
     void setBackupAddressStrategy(in int strategy);
     void setBackupAddress(in String host, in int port);
+    void setLiteMode(in boolean isLiteMode);
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
     oneway void setOnConnectionStatusChangeListener(in IOnConnectionStatusChangeListener listener);
@@ -141,7 +142,6 @@ interface IRemoteClient {
     boolean isMyFriend(in String userId);
     List<String> getMyFriendList(in boolean refresh);
     List<Friend> getFriendList(in boolean refresh);
-    List<UserInfo> getMyFriendListInfo(in boolean refresh);
     oneway void loadFriendRequestFromRemote();
 
     String getUserSetting(in int scope, in String key);
@@ -223,6 +223,8 @@ interface IRemoteClient {
     oneway void destoryChannel(in String channelId, in IGeneralCallback callback);
     List<String> getMyChannels();
     List<String> getListenedChannels();
+    oneway void requireLock(in String lockId, in long duration, in IGeneralCallback callback);
+    oneway void releaseLock(in String lockId, in IGeneralCallback callback);
 
     String getImageThumbPara();
 
