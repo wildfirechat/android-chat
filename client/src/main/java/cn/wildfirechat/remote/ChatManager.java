@@ -4503,6 +4503,86 @@ public class ChatManager {
         }
     }
 
+    public void requireLock(String lockId, long duration, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.requireLock(lockId, duration, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    public void releaseLock(String lockId, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.releaseLock(lockId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
     /**
      * 创建群组
      *
