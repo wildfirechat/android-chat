@@ -223,6 +223,8 @@ interface IRemoteClient {
     oneway void destoryChannel(in String channelId, in IGeneralCallback callback);
     List<String> getMyChannels();
     List<String> getListenedChannels();
+    oneway void requireLock(in String lockId, in long duration, in IGeneralCallback callback);
+    oneway void releaseLock(in String lockId, in IGeneralCallback callback);
 
     String getImageThumbPara();
 

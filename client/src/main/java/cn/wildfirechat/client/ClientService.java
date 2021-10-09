@@ -2207,6 +2207,52 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void requireLock(String lockId, long duration, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.requireLock(lockId, duration, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void releaseLock(String lockId, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.releaseLock(lockId, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public String getImageThumbPara() throws RemoteException {
             return ProtoLogic.getImageThumbPara();
         }
