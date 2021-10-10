@@ -6,9 +6,9 @@ include ':client',
     // 如果不能从网络下载webrtc时，请取消下面的注释
 //    ':webrtc',
     ':emojilibrary',
-    ':imagepicker'
+    ':imagepicker',
 //    ':momentclient',
-//    ':avenginekit'
+    ':avenginekit'
 
 //project(':avenginekit').projectDir = new File('../android-av/avenginekit')
 //project(':momentclient').projectDir = new File('../android-momentclient/momentclient')
