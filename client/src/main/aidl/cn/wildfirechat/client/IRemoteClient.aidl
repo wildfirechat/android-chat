@@ -67,6 +67,7 @@ interface IRemoteClient {
     void setBackupAddressStrategy(in int strategy);
     void setBackupAddress(in String host, in int port);
     void setLiteMode(in boolean isLiteMode);
+    int getConnectionStatus();
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
     oneway void setOnConnectionStatusChangeListener(in IOnConnectionStatusChangeListener listener);

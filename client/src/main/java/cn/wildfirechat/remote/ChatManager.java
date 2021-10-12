@@ -6862,6 +6862,11 @@ public class ChatManager {
                 if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
                     mClient.connect(userId, token);
                 }
+
+                int clientConnectionStatus = mClient.getConnectionStatus();
+                if(connectionStatus != clientConnectionStatus) {
+                    onConnectionStatusChange(clientConnectionStatus);
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
