@@ -298,6 +298,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public int getConnectionStatus() throws RemoteException {
+            return mConnectionStatus;
+        }
+
+        @Override
         public void registerMessageContent(String msgContentCls) throws RemoteException {
             try {
                 Class cls = Class.forName(msgContentCls);
