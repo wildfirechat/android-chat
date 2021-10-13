@@ -455,7 +455,7 @@ public class AppService implements AppServiceProvider {
     }
 
     public void destroyPttChannel(String channelId, SimpleCallback<Void> callback) {
-        String url = APP_SERVER_ADDRESS + "/ptt/destroy/" + channelId;
+        String url = APP_SERVER_ADDRESS + "/ptt/create/" + channelId;
         OKHttpHelper.post(url, null, callback);
     }
 
