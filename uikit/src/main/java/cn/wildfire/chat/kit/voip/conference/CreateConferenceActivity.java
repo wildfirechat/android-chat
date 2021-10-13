@@ -48,7 +48,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
 
     @Override
     protected int contentLayout() {
-        return R.layout.av_conference_create_activity;
+        return R.layout.conference_create_activity;
     }
 
     @Override

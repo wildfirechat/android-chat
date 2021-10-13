@@ -8,9 +8,9 @@
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/momentOptionItemView"
         style="@style/OptionItem"
-        android:layout_marginBottom="10dp"
         android:background="@drawable/selector_common_item"
         app:show_arrow_indicator="true"
+        android:layout_marginBottom="10dp"
         app:start_src="@mipmap/ic_moment"
         app:title="朋友圈" />
 
@@ -41,7 +41,6 @@
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_channel"
         app:title="频道" />
-
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/cookbookOptionItemView"
         style="@style/OptionItem"
@@ -61,14 +60,4 @@
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_conference"
         app:title="会议" />
-
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/pttOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="false"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_ptt"
-        app:title="对讲机" />
 </LinearLayout>

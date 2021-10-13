@@ -85,7 +85,6 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.PTextMessageContent;
-import cn.wildfirechat.message.PttInviteMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
@@ -6895,7 +6894,6 @@ public class ChatManager {
         registerMessageContent(AddGroupMemberNotificationContent.class);
         registerMessageContent(CallStartMessageContent.class);
         registerMessageContent(ConferenceInviteMessageContent.class);
-        registerMessageContent(PttInviteMessageContent.class);
         registerMessageContent(ChangeGroupNameNotificationContent.class);
         registerMessageContent(ChangeGroupPortraitNotificationContent.class);
         registerMessageContent(CreateGroupNotificationContent.class);

@@ -20,14 +20,13 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 
 public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
-    private MessageContent inviteMessage;
+    private ConferenceInviteMessageContent inviteMessage;
     private MessageViewModel messageViewModel;
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
@@ -64,13 +63,7 @@ public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
 
     private void invite(String targetName, String targetPortrait, Conversation targetConversation) {
         ForwardPromptView view = new ForwardPromptView(this);
-        String content;
-        if (inviteMessage instanceof ConferenceInviteMessageContent) {
-            content = "会议邀请";
-        } else {
-            content = "对讲邀请";
-        }
-        view.bind(targetName, targetPortrait, content);
+        view.bind(targetName, targetPortrait, "会议邀请");
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .customView(view, false)
             .negativeText("取消")

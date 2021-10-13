@@ -57,9 +57,6 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
-        if (session.isPtt) {
-            return;
-        }
         List<String> items = new ArrayList<>();
         items.add("查看用户信息");
         if (selfUid.equals(session.getHost()) && !selfUid.equals(userInfo.getUserInfo().uid)) {
@@ -69,9 +66,9 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                 items.add("取消互动");
             }
             items.add("移除成员");
-        } else if (selfUid.equals(userInfo.getUserInfo().uid)) {
+        } else if(selfUid.equals(userInfo.getUserInfo().uid)) {
             AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
-            if (!profile.isAudience()) {
+            if(!profile.isAudience()) {
                 items.add("结束互动");
             } else {
                 items.add("参与互动");
@@ -93,12 +90,12 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                         AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
                         if (selfUid.equals(session.getHost()) && !selfUid.equals(userInfo.getUserInfo().uid)) {
                             requestChangeMode(session.getCallId(), userInfo.getUserInfo().uid, !profile.isAudience());
-                            if (profile.isAudience()) {
+                            if(profile.isAudience()) {
                                 Toast.makeText(getActivity(), "已经请求用户，等待用户同意...", Toast.LENGTH_SHORT).show();
                             } else {
                                 new Handler().postDelayed(this::loadAndShowConferenceParticipants, 1500);
                             }
-                        } else if (selfUid.equals(userInfo.getUserInfo().uid)) {
+                        } else if(selfUid.equals(userInfo.getUserInfo().uid)) {
                             session.switchAudience(!profile.isAudience());
                             new Handler().postDelayed(this::loadAndShowConferenceParticipants, 1500);
                         }
@@ -160,22 +157,16 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
             }
         });
 
-        if (session.isPtt) {
-            for (UIUserInfo uiUserInfo : uiUserInfos) {
+        String lastCategory = null;
+        for (UIUserInfo uiUserInfo : uiUserInfos) {
+            if (lastCategory == null) {
+                uiUserInfo.setShowCategory(true);
+                lastCategory = uiUserInfo.getCategory();
+            } else if (!lastCategory.equals(uiUserInfo.getCategory())) {
+                uiUserInfo.setShowCategory(true);
+                lastCategory = uiUserInfo.getCategory();
+            } else {
                 uiUserInfo.setShowCategory(false);
-            }
-        } else {
-            String lastCategory = null;
-            for (UIUserInfo uiUserInfo : uiUserInfos) {
-                if (lastCategory == null) {
-                    uiUserInfo.setShowCategory(true);
-                    lastCategory = uiUserInfo.getCategory();
-                } else if (!lastCategory.equals(uiUserInfo.getCategory())) {
-                    uiUserInfo.setShowCategory(true);
-                    lastCategory = uiUserInfo.getCategory();
-                } else {
-                    uiUserInfo.setShowCategory(false);
-                }
             }
         }
 
