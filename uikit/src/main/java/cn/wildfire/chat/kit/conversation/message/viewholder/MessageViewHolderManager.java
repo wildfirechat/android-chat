@@ -36,7 +36,6 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(RecallMessageContentViewHolder.class, R.layout.conversation_item_recall_notification, R.layout.conversation_item_recall_notification);
         registerMessageViewHolder(UserCardMessageContentViewHolder.class, R.layout.conversation_item_user_card_send, R.layout.conversation_item_user_card_receive);
         registerMessageViewHolder(ConferenceInviteMessageContentViewHolder.class, R.layout.conversation_item_conference_invite_send, R.layout.conversation_item_conference_invite_receive);
-        registerMessageViewHolder(PttInviteMessageContentViewHolder.class, R.layout.conversation_item_ptt_invite_send, R.layout.conversation_item_ptt_invite_receive);
         registerMessageViewHolder(CompositeMessageContentViewHolder.class, R.layout.conversation_item_composite_send, R.layout.conversation_item_composite_receive);
     }
 
