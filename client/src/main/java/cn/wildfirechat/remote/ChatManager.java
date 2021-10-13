@@ -6864,7 +6864,7 @@ public class ChatManager {
                 }
 
                 int clientConnectionStatus = mClient.getConnectionStatus();
-                if(connectionStatus != clientConnectionStatus) {
+                if(connectionStatus == ConnectionStatus.ConnectionStatusConnected) {
                     onConnectionStatusChange(clientConnectionStatus);
                 }
             } catch (RemoteException e) {
