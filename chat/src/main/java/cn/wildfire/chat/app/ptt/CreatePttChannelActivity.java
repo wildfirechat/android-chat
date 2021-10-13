@@ -95,7 +95,7 @@ public class CreatePttChannelActivity extends WfcBaseActivity {
                     JSONObject object = new JSONObject(response);
                     if (object.optInt("code", -1) == 0) {
                         String channelId = object.getString("result");
-                        AVEngineKit.CallSession session = AVEngineKit.Instance().joinPttChannel(channelId, true, info.getPin(), info.getOwner(), info.getChannelTitle(), null);
+                        AVEngineKit.CallSession session = AVEngineKit.Instance().joinPttChannel(channelId, false, info.getPin(), info.getOwner(), info.getChannelTitle(), null);
                         if (session != null) {
                             Intent intent = new Intent(CreatePttChannelActivity.this, PttActivity.class);
                             startActivity(intent);
