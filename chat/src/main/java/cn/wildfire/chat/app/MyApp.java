@@ -13,6 +13,7 @@ import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 
+import cn.wildfire.chat.app.ptt.PttInviteMessageContentViewHolder;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -20,7 +21,10 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderMan
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.message.PttInviteMessageContent;
+import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.push.PushService;
+import cn.wildfirechat.remote.ChatManager;
 
 
 public class MyApp extends BaseApp {
@@ -57,6 +61,10 @@ public class MyApp extends BaseApp {
                 //另外不能多次connect，如果需要切换用户请先disconnect，然后3秒钟之后再connect（如果是用户手动登录可以不用等，因为用户操作很难3秒完成，如果程序自动切换请等3秒）
                 ChatManagerHolder.gChatManager.connect(id, token);
             }
+
+            PTTClient.getInstance().init(this);
+            ChatManager.Instance().registerMessageContent(PttInviteMessageContent.class);
+            MessageViewHolderManager.getInstance().registerMessageViewHolder(PttInviteMessageContentViewHolder.class, R.layout.conversation_item_ptt_invite_send, R.layout.conversation_item_ptt_invite_receive);
         }
     }
 
