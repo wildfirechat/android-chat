@@ -11,12 +11,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.OnTouch;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.ptt.ChannelInfo;
 import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.ptt.TalkingCallback;
 import cn.wildfirechat.remote.GeneralCallback;
@@ -34,7 +33,6 @@ public class PttActivity extends WfcBaseActivity {
 
     @Override
     protected int menu() {
-        List<String> xxx = PTTClient.getInstance().getSubscribedChannels();
         return R.menu.ptt;
     }
 
@@ -42,6 +40,8 @@ public class PttActivity extends WfcBaseActivity {
     protected void afterViews() {
         super.afterViews();
         channelId = getIntent().getStringExtra("channelId");
+        ChannelInfo channelInfo = PTTClient.getInstance().getChannelInfo(channelId);
+        setTitle(channelInfo.name);
     }
 
     @Override
