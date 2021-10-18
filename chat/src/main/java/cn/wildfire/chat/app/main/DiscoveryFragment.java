@@ -22,6 +22,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.app.ptt.PttListActivity;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
@@ -113,6 +114,12 @@ public class DiscoveryFragment extends Fragment {
     @OnClick(R.id.conferenceOptionItemView)
     void conference() {
         Intent intent = new Intent(getActivity(), CreateConferenceActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.pttOptionItemView)
+    void pttList() {
+        Intent intent = new Intent(getActivity(), PttListActivity.class);
         startActivity(intent);
     }
 }
