@@ -117,7 +117,7 @@
             android:name="cn.wildfire.chat.app.ptt.PttInviteActivity"
             android:label="对讲邀请" />
         <activity
-            android:name="cn.wildfire.chat.app.ptt.PttListActivity"
+            android:name="cn.wildfire.chat.app.ptt.PttChannelListActivity"
             android:label="对讲频道列表" />
 
     </application>
