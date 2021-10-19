@@ -189,7 +189,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         observerGroupInfoUpdate();
         observerGroupMembersUpdate();
 
-        if(ChatManager.Instance().isCommercialServer()) {
+        if (ChatManager.Instance().isCommercialServer()) {
             fileRecordOptionItem.setVisibility(View.VISIBLE);
         } else {
             fileRecordOptionItem.setVisibility(View.GONE);
@@ -454,7 +454,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     @OnClick(R2.id.fileRecordOptionItemView)
-    void fileRecord(){
+    void fileRecord() {
         Intent intent = new Intent(getActivity(), FileRecordActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
@@ -493,6 +493,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
         conversationListViewModel.setConversationTop(conversationInfo, top);
+        conversationInfo.isTop = top;
     }
 
     private void markGroup(boolean mark) {
@@ -501,6 +502,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     private void silent(boolean silent) {
         conversationViewModel.setConversationSilent(conversationInfo.conversation, silent);
+        conversationInfo.isSilent = silent;
     }
 
     @Override
