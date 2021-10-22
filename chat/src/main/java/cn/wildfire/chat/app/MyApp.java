@@ -62,7 +62,8 @@ public class MyApp extends BaseApp {
                 ChatManagerHolder.gChatManager.connect(id, token);
             }
 
-            PTTClient.getInstance().init(this);
+            // 对讲机
+             PTTClient.getInstance().init(this);
             ChatManager.Instance().registerMessageContent(PttInviteMessageContent.class);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(PttInviteMessageContentViewHolder.class, R.layout.conversation_item_ptt_invite_send, R.layout.conversation_item_ptt_invite_receive);
         }

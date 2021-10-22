@@ -44,6 +44,8 @@ public class DiscoveryFragment extends Fragment {
     OptionItemView momentOptionItemView;
     @BindView(R.id.conferenceOptionItemView)
     OptionItemView conferenceOptionItemView;
+    @BindView(R.id.pttOptionItemView)
+    OptionItemView pttOptionItem;
 
     @Nullable
     @Override
@@ -53,6 +55,12 @@ public class DiscoveryFragment extends Fragment {
         initMoment();
         if (!AVEngineKit.isSupportConference()) {
             conferenceOptionItemView.setVisibility(View.GONE);
+        }
+        try {
+            Class.forName("cn.wildfire.chat.app.ptt.PttChannelListActivity");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            pttOptionItem.setVisibility(View.GONE);
         }
         return view;
     }
