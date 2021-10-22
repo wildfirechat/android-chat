@@ -13,7 +13,6 @@ import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 
-import cn.wildfire.chat.app.ptt.PttInviteMessageContentViewHolder;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -21,10 +20,10 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderMan
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.message.PttInviteMessageContent;
-import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.push.PushService;
-import cn.wildfirechat.remote.ChatManager;
+
+//import cn.wildfire.chat.app.ptt.PttInviteMessageContentViewHolder;
+//import cn.wildfirechat.ptt.PTTClient;
 
 
 public class MyApp extends BaseApp {
@@ -63,9 +62,9 @@ public class MyApp extends BaseApp {
             }
 
             // 对讲机
-             PTTClient.getInstance().init(this);
-            ChatManager.Instance().registerMessageContent(PttInviteMessageContent.class);
-            MessageViewHolderManager.getInstance().registerMessageViewHolder(PttInviteMessageContentViewHolder.class, R.layout.conversation_item_ptt_invite_send, R.layout.conversation_item_ptt_invite_receive);
+//             PTTClient.getInstance().init(this);
+//            ChatManager.Instance().registerMessageContent(PttInviteMessageContent.class);
+//            MessageViewHolderManager.getInstance().registerMessageViewHolder(PttInviteMessageContentViewHolder.class, R.layout.conversation_item_ptt_invite_send, R.layout.conversation_item_ptt_invite_receive);
         }
     }
 
