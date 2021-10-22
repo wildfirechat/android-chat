@@ -22,7 +22,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.app.ptt.PttChannelListActivity;
+//import cn.wildfire.chat.app.ptt.PttChannelListActivity;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
@@ -127,7 +127,7 @@ public class DiscoveryFragment extends Fragment {
 
     @OnClick(R.id.pttOptionItemView)
     void pttList() {
-        Intent intent = new Intent(getActivity(), PttChannelListActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(getActivity(), PttChannelListActivity.class);
+//        startActivity(intent);
     }
 }
