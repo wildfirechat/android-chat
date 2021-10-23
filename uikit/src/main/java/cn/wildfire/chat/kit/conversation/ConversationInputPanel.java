@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.conversation;
 
+import static cn.wildfire.chat.kit.conversation.ConversationFragment.REQUEST_PICK_MENTION_CONTACT;
+
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -52,6 +54,7 @@ import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.audio.AudioRecorderPanel;
+import cn.wildfire.chat.kit.audio.PttPanel;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExtension;
 import cn.wildfire.chat.kit.conversation.mention.Mention;
 import cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity;
@@ -68,8 +71,8 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.QuoteInfo;
-
-import static cn.wildfire.chat.kit.conversation.ConversationFragment.REQUEST_PICK_MENTION_CONTACT;
+import cn.wildfirechat.ptt.PTTClient;
+import cn.wildfirechat.remote.ChatManager;
 
 public class ConversationInputPanel extends FrameLayout implements IEmotionSelectedListener {
 
@@ -80,6 +83,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @BindView(R2.id.audioImageView)
     ImageView audioImageView;
+    @BindView(R2.id.pttImageView)
+    ImageView pttImageView;
     @BindView(R2.id.audioButton)
     Button audioButton;
     @BindView(R2.id.editText)
@@ -114,6 +119,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private Fragment fragment;
     private FragmentActivity activity;
     private AudioRecorderPanel audioRecorderPanel;
+    private PttPanel pttPanel;
 
     private long lastTypingTime;
     private String draftString;
@@ -121,6 +127,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private static final int MAX_EMOJI_PER_MESSAGE = 50;
     private int messageEmojiCount = 0;
     private SharedPreferences sharedPreferences;
+
+    private boolean isPttMode = false;
 
     private OnConversationInputPanelStateChangeListener onConversationInputPanelStateChangeListener;
 
@@ -233,6 +241,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 }
             }
         });
+        if (PTTClient.checkAddress(ChatManager.Instance().getHost())){
+            pttImageView.setVisibility(View.VISIBLE);
+            pttPanel = new PttPanel(getContext());
+        }
 
         // emotion
         emotionLayout.setEmotionSelectedListener(this);
@@ -270,7 +282,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     @OnClick(R2.id.emotionImageView)
     void onEmotionImageViewClick() {
 
-        if (audioRecorderPanel.isShowingRecorder()) {
+        if (audioRecorderPanel.isShowingRecorder() || (pttPanel != null && pttPanel.isShowingTalking())) {
             return;
         }
         if (rootLinearLayout.getCurrentInput() == emotionContainerFrameLayout) {
@@ -354,8 +366,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-    @OnClick(R2.id.audioImageView)
-    public void showRecordPanel() {
+    @OnClick({R2.id.audioImageView, R2.id.pttImageView})
+    public void showRecordPanel(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 fragment.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 100);
@@ -367,14 +379,22 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             hideAudioButton();
             editText.requestFocus();
             rootLinearLayout.showSoftkey(editText);
+            isPttMode = false;
         } else {
 //            editText.clearFocus();
+
+            if (view.getId() == R.id.pttImageView) {
+                isPttMode = true;
+            }else {
+                isPttMode = false;
+            }
             showAudioButton();
             hideEmotionLayout();
             rootLinearLayout.hideSoftkey(editText, null);
             hideConversationExtension();
         }
     }
+
 
     @OnClick(R2.id.sendButton)
     void sendMessage() {
@@ -480,14 +500,18 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private void updateConversationDraft() {
         Editable editable = editText.getText();
         String draft = Draft.toDraftJson(editable, messageEmojiCount, quoteInfo);
-        if(conversation != null) {
+        if (conversation != null) {
             messageViewModel.saveDraft(conversation, draft);
         }
     }
 
     private void showAudioButton() {
         audioButton.setVisibility(View.VISIBLE);
-        audioRecorderPanel.attach(rootLinearLayout, audioButton);
+        if (isPttMode) {
+            pttPanel.attach(rootLinearLayout, audioButton, conversation);
+        } else {
+            audioRecorderPanel.attach(rootLinearLayout, audioButton);
+        }
         editText.setVisibility(View.GONE);
         extImageView.setVisibility(VISIBLE);
         sendButton.setVisibility(View.GONE);
@@ -500,6 +524,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private void hideAudioButton() {
         audioButton.setVisibility(View.GONE);
         audioRecorderPanel.deattch();
+        if (pttPanel != null){
+            pttPanel.deattch();
+        }
         editText.setVisibility(View.VISIBLE);
         if (TextUtils.isEmpty(editText.getText())) {
             extImageView.setVisibility(VISIBLE);

@@ -22,7 +22,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-//import cn.wildfire.chat.app.ptt.PttChannelListActivity;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
@@ -44,8 +43,6 @@ public class DiscoveryFragment extends Fragment {
     OptionItemView momentOptionItemView;
     @BindView(R.id.conferenceOptionItemView)
     OptionItemView conferenceOptionItemView;
-    @BindView(R.id.pttOptionItemView)
-    OptionItemView pttOptionItem;
 
     @Nullable
     @Override
@@ -55,12 +52,6 @@ public class DiscoveryFragment extends Fragment {
         initMoment();
         if (!AVEngineKit.isSupportConference()) {
             conferenceOptionItemView.setVisibility(View.GONE);
-        }
-        try {
-            Class.forName("cn.wildfire.chat.app.ptt.PttChannelListActivity");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            pttOptionItem.setVisibility(View.GONE);
         }
         return view;
     }
@@ -125,9 +116,4 @@ public class DiscoveryFragment extends Fragment {
         startActivity(intent);
     }
 
-    @OnClick(R.id.pttOptionItemView)
-    void pttList() {
-//        Intent intent = new Intent(getActivity(), PttChannelListActivity.class);
-//        startActivity(intent);
-    }
 }

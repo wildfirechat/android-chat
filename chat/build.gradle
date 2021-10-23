@@ -48,14 +48,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    sourceSets {
-        main {
-            // ptt start
-//            java.srcDirs += ['./src/main/java-ptt']
-//            res.srcDirs += ['./src/main/res-ptt']
-            // ptt end
-        }
-    }
     lintOptions {
         abortOnError false
     }
@@ -74,5 +66,4 @@ dependencies {
     implementation 'q.rorbin:badgeview:1.1.3'
     implementation project(':uikit')
     implementation project(':push')
-//    implementation project(':pttclient')
 }

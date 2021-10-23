@@ -47,9 +47,11 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.PttInviteMessageContent;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnDeleteMessageListener;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
@@ -82,6 +84,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         UIUtils.application = application;
         initWFClient(application);
         initMomentClient(application);
+        initPttClient(application);
         //初始化表情控件
         LQREmotionKit.init(application, (context, path, imageView) -> Glide.with(context).load(path).apply(new RequestOptions().centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE).dontAnimate()).into(imageView));
 
@@ -176,6 +179,13 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void initPttClient(Application application) {
+        // 对讲机
+        PTTClient.getInstance().init(application);
+        PTTClient.getInstance().setEnablePtt(true);
+        ChatManager.Instance().registerMessageContent(PttInviteMessageContent.class);
     }
 
     /**

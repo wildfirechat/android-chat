@@ -33,6 +33,17 @@
                 android:scaleType="centerInside"
                 android:src="@mipmap/ic_cheat_voice" />
 
+            <ImageView
+                android:id="@+id/pttImageView"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_ptt" />
+
+
             <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
