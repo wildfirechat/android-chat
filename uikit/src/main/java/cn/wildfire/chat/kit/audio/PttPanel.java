@@ -56,6 +56,7 @@ public class PttPanel implements View.OnTouchListener {
     public void attach(View rootView, Button button, Conversation conversation) {
         this.rootView = rootView;
         this.button = button;
+        this.button.setText("按住 对讲");
         this.button.setOnTouchListener(this);
         this.conversation = conversation;
         this.maxDuration = PTTClient.getInstance().getMaxSpeakTime(conversation) * 1000;
