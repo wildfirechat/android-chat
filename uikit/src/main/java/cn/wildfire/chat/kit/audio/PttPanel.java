@@ -119,7 +119,7 @@ public class PttPanel implements View.OnTouchListener {
 
             @Override
             public void onTalkingEnd(Conversation conversation, int reason) {
-                playSoundEffect(true);
+                playSoundEffect(false);
                 stopTalk();
             }
 
