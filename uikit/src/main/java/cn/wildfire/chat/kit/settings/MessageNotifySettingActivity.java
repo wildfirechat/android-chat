@@ -4,11 +4,13 @@
 
 package cn.wildfire.chat.kit.settings;
 
+import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import com.kyleduo.switchbutton.SwitchButton;
 
 import butterknife.BindView;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -26,6 +28,8 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
     SwitchButton switchUserReceipt;
     @BindView(R2.id.switchSyncDraft)
     SwitchButton switchSyncDraft;
+    @BindView(R2.id.switchPtt)
+    SwitchButton switchPtt;
 
     @Override
     protected int contentLayout() {
@@ -107,5 +111,13 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
 
             }
         }));
+
+        SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, MODE_PRIVATE);
+        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
+        switchPtt.setChecked(pttEnabled);
+        switchSyncDraft.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sp.edit().putBoolean("pttEnabled", isChecked).apply();
+            Toast.makeText(this, "开关对讲功能，重新启动应用生效", Toast.LENGTH_SHORT).show();
+        });
     }
 }

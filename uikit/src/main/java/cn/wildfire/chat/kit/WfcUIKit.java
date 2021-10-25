@@ -9,6 +9,7 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.util.Log;
@@ -183,9 +184,13 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     private void initPttClient(Application application) {
         // 对讲机
-        PTTClient.getInstance().init(application);
-        PTTClient.getInstance().setEnablePtt(true);
-        ChatManager.Instance().registerMessageContent(PttInviteMessageContent.class);
+        SharedPreferences sp = application.getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
+        if (pttEnabled){
+            PTTClient.getInstance().init(application);
+            PTTClient.getInstance().setEnablePtt(true);
+            ChatManager.Instance().registerMessageContent(PttInviteMessageContent.class);
+        }
     }
 
     /**
