@@ -5,6 +5,8 @@
 package cn.wildfire.chat.kit.audio;
 
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -41,6 +43,10 @@ public class PttPanel implements View.OnTouchListener {
     private ImageView stateImageView;
     private PopupWindow talkingWindow;
 
+    private SoundPool soundPool;
+    private int startSoundId;
+    private int stopSoundId;
+
     public PttPanel(Context context) {
         this.context = context;
         this.handler = ChatManager.Instance().getMainHandler();
@@ -60,12 +66,18 @@ public class PttPanel implements View.OnTouchListener {
         this.button.setOnTouchListener(this);
         this.conversation = conversation;
         this.maxDuration = PTTClient.getInstance().getMaxSpeakTime(conversation) * 1000;
+        this.soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+        this.startSoundId = this.soundPool.load(context, R.raw.ptt_begin, 1);
+        this.stopSoundId = this.soundPool.load(context, R.raw.ptt_end, 1);
     }
 
     public void deattch() {
         rootView = null;
         button = null;
         this.conversation = null;
+        this.soundPool.unload(this.startSoundId);
+        this.soundPool.unload(this.stopSoundId);
+        this.soundPool = null;
     }
 
     @Override
@@ -92,11 +104,12 @@ public class PttPanel implements View.OnTouchListener {
     }
 
     private void requestTalk() {
-        // FIXME: 2018/10/10 权限是否有权限，没权限提示错误，并返回
         handler.removeCallbacks(this::hideTalking);
+        // TODO 开始、结束、失败，播放对应的声音提示
         PTTClient.getInstance().requestTalk(conversation, new TalkingCallback() {
             @Override
             public void onStartTalking(Conversation conversation) {
+                playSoundEffect(true);
                 showTalking();
                 startTime = System.currentTimeMillis();
                 isTalking = true;
@@ -106,6 +119,7 @@ public class PttPanel implements View.OnTouchListener {
 
             @Override
             public void onTalkingEnd(Conversation conversation, int reason) {
+                playSoundEffect(true);
                 stopTalk();
             }
 
@@ -115,11 +129,14 @@ public class PttPanel implements View.OnTouchListener {
                 Toast.makeText(context, "请求对讲失败 " + errorCode, Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     public boolean isShowingTalking() {
         return talkingWindow != null;
+    }
+
+    private void playSoundEffect(boolean start) {
+        this.soundPool.play(start ? startSoundId : stopSoundId, 1, 1, 0, 0, 1);
     }
 
     private void stopTalk() {
