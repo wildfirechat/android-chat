@@ -51,6 +51,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.audio.AudioRecorderPanel;
@@ -241,7 +242,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 }
             }
         });
-        if (PTTClient.checkAddress(ChatManager.Instance().getHost())){
+        SharedPreferences sp = fragment.getContext().getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
+        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost())){
             pttImageView.setVisibility(View.VISIBLE);
             pttPanel = new PttPanel(getContext());
         }
