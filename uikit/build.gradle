@@ -107,7 +107,7 @@ dependencies {
     // moment end
 
     implementation project(':pttclient')
-
+    implementation 'io.kvh:amr:1.1.1'
 }
 
 apply plugin: 'com.jakewharton.butterknife'

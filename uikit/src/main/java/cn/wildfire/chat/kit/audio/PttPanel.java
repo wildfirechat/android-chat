@@ -136,7 +136,7 @@ public class PttPanel implements View.OnTouchListener {
     }
 
     private void playSoundEffect(boolean start) {
-        this.soundPool.play(start ? startSoundId : stopSoundId, 1, 1, 0, 0, 1);
+        this.soundPool.play(start ? startSoundId : stopSoundId, 0.1f, 0.1f, 0, 0, 1);
     }
 
     private void stopTalk() {
