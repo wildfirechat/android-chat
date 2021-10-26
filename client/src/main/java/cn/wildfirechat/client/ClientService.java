@@ -293,6 +293,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setProtoUserAgent(String userAgent) throws RemoteException {
+            ProtoLogic.setUserAgent(userAgent);
+        }
+
+        @Override
         public void setLiteMode(boolean isLiteMode) throws RemoteException {
             ProtoLogic.setLiteMode(isLiteMode);
         }
