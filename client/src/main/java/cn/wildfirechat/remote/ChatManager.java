@@ -179,6 +179,7 @@ public class ChatManager {
     private int backupAddressStrategy = 1;
     private String backupAddressHost = null;
     private int backupAddressPort = 80;
+    private String protoUserAgent = null;
 
     private boolean useSM4 = false;
     private boolean defaultSilentWhenPCOnline = true;
@@ -1723,6 +1724,24 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 设置协议栈短连接UA。
+     *
+     * @param userAgent 协议栈短连接使用的UA
+     */
+    public void setProtoUserAgent(String userAgent) {
+        protoUserAgent = userAgent;
+
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setProtoUserAgent(userAgent);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * 发送已经保存的消息
      *
@@ -6861,6 +6880,10 @@ public class ChatManager {
                 });
 
                 mClient.setLiteMode(isLiteMode);
+
+                if(!TextUtils.isEmpty(protoUserAgent)) {
+                    mClient.setProtoUserAgent(protoUserAgent);
+                }
 
                 if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
                     mClient.connect(userId, token);
