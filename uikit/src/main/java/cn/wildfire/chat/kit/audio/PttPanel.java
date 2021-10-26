@@ -72,6 +72,9 @@ public class PttPanel implements View.OnTouchListener {
     }
 
     public void deattch() {
+        if (rootView == null){
+            return;
+        }
         rootView = null;
         button = null;
         this.conversation = null;

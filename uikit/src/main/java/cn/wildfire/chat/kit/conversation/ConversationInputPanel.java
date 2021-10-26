@@ -529,6 +529,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         audioRecorderPanel.deattch();
         if (pttPanel != null){
             pttPanel.deattch();
+            pttPanel = null;
         }
         editText.setVisibility(View.VISIBLE);
         if (TextUtils.isEmpty(editText.getText())) {
