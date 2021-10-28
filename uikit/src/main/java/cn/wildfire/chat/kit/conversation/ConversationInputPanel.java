@@ -382,14 +382,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             hideAudioButton();
             editText.requestFocus();
             rootLinearLayout.showSoftkey(editText);
-            isPttMode = false;
         } else {
 //            editText.clearFocus();
 
             if (view.getId() == R.id.pttImageView) {
                 isPttMode = true;
-            }else {
-                isPttMode = false;
             }
             showAudioButton();
             hideEmotionLayout();
@@ -529,7 +526,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         audioRecorderPanel.deattch();
         if (pttPanel != null){
             pttPanel.deattch();
-            pttPanel = null;
+            isPttMode = false;
         }
         editText.setVisibility(View.VISIBLE);
         if (TextUtils.isEmpty(editText.getText())) {
