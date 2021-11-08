@@ -499,7 +499,9 @@ public class ConversationFragment extends Fragment implements
             return;
         }
         if (groupInfo.mute == 1) {
-            if (groupMember.type != GroupMember.GroupMemberType.Owner && groupMember.type != GroupMember.GroupMemberType.Manager) {
+            if (groupMember.type != GroupMember.GroupMemberType.Owner
+                && groupMember.type != GroupMember.GroupMemberType.Manager
+                && groupMember.type != GroupMember.GroupMemberType.Allowed) {
                 inputPanel.disableInput("全员禁言中");
             }
         } else {
