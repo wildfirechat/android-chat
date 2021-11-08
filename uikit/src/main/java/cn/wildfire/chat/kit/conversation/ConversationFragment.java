@@ -498,12 +498,11 @@ public class ConversationFragment extends Fragment implements
         if (groupInfo == null || groupMember == null) {
             return;
         }
-        if (groupInfo.mute == 1) {
-            if (groupMember.type != GroupMember.GroupMemberType.Owner
-                && groupMember.type != GroupMember.GroupMemberType.Manager
-                && groupMember.type != GroupMember.GroupMemberType.Allowed) {
-                inputPanel.disableInput("全员禁言中");
-            }
+        if (groupInfo.mute == 1
+            && groupMember.type != GroupMember.GroupMemberType.Owner
+            && groupMember.type != GroupMember.GroupMemberType.Manager
+            && groupMember.type != GroupMember.GroupMemberType.Allowed) {
+            inputPanel.disableInput("全员禁言中");
         } else {
             inputPanel.enableInput();
         }
@@ -659,7 +658,7 @@ public class ConversationFragment extends Fragment implements
         if (userInfo.deleted == 0) {
             Intent intent = new Intent(getActivity(), UserInfoActivity.class);
             intent.putExtra("userInfo", userInfo);
-            if(conversation.type == Conversation.ConversationType.Group) {
+            if (conversation.type == Conversation.ConversationType.Group) {
                 intent.putExtra("groupId", conversation.target);
             }
             startActivity(intent);
