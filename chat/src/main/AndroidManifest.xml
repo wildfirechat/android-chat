@@ -105,15 +105,20 @@
 
         <activity android:name="cn.wildfire.chat.app.login.SMSLoginActivity" />
 
+        <activity android:name="cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity" />
+        <activity android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity" />
+        <activity
+            android:name="cn.wildfire.chat.app.ptt.PttActivity"
+            android:label="对讲机" />
         <activity
             android:name="cn.wildfire.chat.app.ptt.CreatePttChannelActivity"
             android:label="创建对讲频道" />
-        <activity android:name="cn.wildfire.chat.app.ptt.PttActivity">
-            <intent-filter>
-                <action android:name="${packageName}.voip.ptt" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+        <activity
+            android:name="cn.wildfire.chat.app.ptt.PttInviteActivity"
+            android:label="对讲邀请" />
+        <activity
+            android:name="cn.wildfire.chat.app.ptt.PttChannelListActivity"
+            android:label="对讲频道列表" />
 
     </application>
 </manifest>

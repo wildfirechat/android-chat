@@ -9,6 +9,7 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.util.Log;
@@ -47,9 +48,11 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.PttInviteMessageContent;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnDeleteMessageListener;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
@@ -82,6 +85,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         UIUtils.application = application;
         initWFClient(application);
         initMomentClient(application);
+        initPttClient(application);
         //初始化表情控件
         LQREmotionKit.init(application, (context, path, imageView) -> Glide.with(context).load(path).apply(new RequestOptions().centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE).dontAnimate()).into(imageView));
 
@@ -175,6 +179,17 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void initPttClient(Application application) {
+        // 对讲机
+        SharedPreferences sp = application.getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
+        if (pttEnabled){
+            PTTClient.getInstance().init(application);
+            PTTClient.getInstance().setEnablePtt(true);
+            ChatManager.Instance().registerMessageContent(PttInviteMessageContent.class);
         }
     }
 
@@ -321,9 +336,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                     iterator.remove();
                 }
             }
-            if (AVEngineKit.Instance().getCurrentSession() == null) {
-                WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
-            }
+
+            WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
         } else {
             // do nothing
         }

@@ -181,10 +181,12 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
             .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
         conversationListViewModel.setConversationTop(conversationInfo, top);
+        conversationInfo.isTop = top;
     }
 
     private void silent(boolean silent) {
         conversationViewModel.setConversationSilent(conversationInfo.conversation, silent);
+        conversationInfo.isSilent = silent;
     }
 
     @Override

@@ -62,13 +62,4 @@
         app:start_src="@mipmap/ic_conference"
         app:title="会议" />
 
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/pttOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="false"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_ptt"
-        app:title="对讲机" />
 </LinearLayout>

@@ -22,7 +22,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wildfire.chat.app.ptt.CreatePttChannelActivity;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
@@ -117,9 +116,4 @@ public class DiscoveryFragment extends Fragment {
         startActivity(intent);
     }
 
-    @OnClick(R.id.pttOptionItemView)
-    void ptt() {
-        Intent intent = new Intent(getActivity(), CreatePttChannelActivity.class);
-        startActivity(intent);
-    }
 }

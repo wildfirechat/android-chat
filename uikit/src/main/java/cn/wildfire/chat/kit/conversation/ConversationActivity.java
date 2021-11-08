@@ -92,6 +92,7 @@ public class ConversationActivity extends WfcBaseActivity {
         conversation = intent.getParcelableExtra("conversation");
         if (conversation == null) {
             finish();
+            return;
         }
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
         String channelPrivateChatUser = intent.getStringExtra("channelPrivateChatUser");
@@ -106,6 +107,7 @@ public class ConversationActivity extends WfcBaseActivity {
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
         if (conversation == null) {
             finish();
+            return;
         }
         conversationFragment.setupConversation(conversation, conversationTitle, initialFocusedMessageId, null);
     }

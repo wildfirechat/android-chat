@@ -29,7 +29,6 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -41,7 +40,6 @@ import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetGroupsCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
-import cn.wildfirechat.remote.UploadMediaCallback;
 
 public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;
@@ -134,52 +132,15 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
 
         MutableLiveData<OperateResult<String>> groupLiveData = new MutableLiveData<>();
         String finalGroupName = groupName;
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            String groupPortrait = null;
-            try {
-                groupPortrait = generateGroupPortrait(context, selectedUsers);
-            } catch (Exception e) {
-                e.printStackTrace();
+        ChatManager.Instance().createGroup(null, finalGroupName, null, GroupInfo.GroupType.Restricted, null, selectedIds, null, lines, notifyMsg, new GeneralCallback2() {
+            @Override
+            public void onSuccess(String groupId) {
+                groupLiveData.setValue(new OperateResult<>(groupId, 0));
             }
-            if (groupPortrait != null) {
-                ChatManager.Instance().uploadMediaFile(groupPortrait, MessageContentMediaType.PORTRAIT.getValue(), new UploadMediaCallback() {
-                    @Override
-                    public void onSuccess(String result) {
-                        ChatManager.Instance().createGroup(null, finalGroupName, result, GroupInfo.GroupType.Restricted, null, selectedIds, null, lines, notifyMsg, new GeneralCallback2() {
-                            @Override
-                            public void onSuccess(String groupId) {
-                                groupLiveData.setValue(new OperateResult<>(groupId, 0));
-                            }
 
-                            @Override
-                            public void onFail(int errorCode) {
-                                groupLiveData.setValue(new OperateResult<>(errorCode));
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onProgress(long uploaded, long total) {
-
-                    }
-
-                    @Override
-                    public void onFail(int errorCode) {
-                        groupLiveData.setValue(new OperateResult<>("上传群头像失败", errorCode));
-                    }
-                });
-            } else {
-                ChatManager.Instance().createGroup(null, finalGroupName, null, GroupInfo.GroupType.Restricted, null, selectedIds, null, lines, notifyMsg, new GeneralCallback2() {
-                    @Override
-                    public void onSuccess(String groupId) {
-                        groupLiveData.setValue(new OperateResult<>(groupId, 0));
-                    }
-
-                    @Override
-                    public void onFail(int errorCode) {
-                        groupLiveData.setValue(new OperateResult<>(errorCode));
-                    }
-                });
+            @Override
+            public void onFail(int errorCode) {
+                groupLiveData.setValue(new OperateResult<>(errorCode));
             }
         });
         return groupLiveData;

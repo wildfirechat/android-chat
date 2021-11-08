@@ -106,6 +106,8 @@ dependencies {
 //    api 'me.everything:overscroll-decor-android:1.0.4'
     // moment end
 
+    implementation project(':pttclient')
+    implementation 'io.kvh:amr:1.1.1'
 }
 
 apply plugin: 'com.jakewharton.butterknife'

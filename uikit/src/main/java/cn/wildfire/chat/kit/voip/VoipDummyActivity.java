@@ -22,12 +22,7 @@ public class VoipDummyActivity extends FragmentActivity {
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             finish();
         } else if (session.isConference()) {
-            Intent intent;
-            if (session.isPtt) {
-                intent = new Intent(getPackageName() + ".voip.ptt");
-            } else {
-                intent = new Intent(this, ConferenceActivity.class);
-            }
+            Intent intent = new Intent(this, ConferenceActivity.class);
             startActivity(intent);
             finish();
         } else {
