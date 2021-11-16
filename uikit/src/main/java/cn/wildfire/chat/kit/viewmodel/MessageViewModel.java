@@ -170,7 +170,10 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         ChatManager.Instance().recallMessage(message, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                Message msg = ChatManager.Instance().getMessage(message.messageId);
+                Message msg = message;
+                if(message.messageId > 0) {
+                    msg = ChatManager.Instance().getMessage(message.messageId);
+                }
                 postMessageUpdate(new UiMessage(msg));
             }
 

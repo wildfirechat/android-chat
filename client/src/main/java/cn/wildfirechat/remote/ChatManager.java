@@ -1967,18 +1967,39 @@ public class ChatManager {
      * @param msg      想撤回的消息
      * @param callback 撤回回调
      */
-    public void recallMessage(final Message msg, final GeneralCallback callback) {
+    public void recallMessage(Message msg, final GeneralCallback callback) {
         try {
             mClient.recall(msg.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    Message recallMsg = mClient.getMessage(msg.messageId);
+                    if(msg.messageId > 0) {
+                        Message recallMsg = mClient.getMessage(msg.messageId);
+                        msg.content = recallMsg.content;
+                        msg.sender = recallMsg.sender;
+                        msg.serverTime = recallMsg.serverTime;
+                    } else {
+                        MessagePayload payload = msg.content.encode();
+                        RecallMessageContent recallCnt = new RecallMessageContent();
+                        recallCnt.setOperatorId(userId);
+                        recallCnt.setMessageUid(msg.messageUid);
+                        recallCnt.fromSelf = true;
+                        recallCnt.setOriginalSender(msg.sender);
+                        recallCnt.setOriginalContent(payload.content);
+                        recallCnt.setOriginalContentType(payload.contentType);
+                        recallCnt.setOriginalExtra(payload.extra);
+                        recallCnt.setOriginalSearchableContent(payload.searchableContent);
+                        recallCnt.setOriginalMessageTimestamp(msg.serverTime);
+                        msg.content = recallCnt;
+                        msg.sender = userId;
+                        msg.serverTime = System.currentTimeMillis();
+                    }
+
                     mainHandler.post(() -> {
                         if (callback != null) {
                             callback.onSuccess();
                         }
                         for (OnRecallMessageListener listener : recallMessageListeners) {
-                            listener.onRecallMessage(recallMsg);
+                            listener.onRecallMessage(msg);
                         }
                     });
                 }
