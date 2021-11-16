@@ -40,7 +40,7 @@ public class FileMessageContent extends MediaMessageContent {
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
-        payload.searchableContent = FILE_NAME_PREFIX + name;
+        payload.searchableContent = name;
         payload.content = size + "";
 
         return payload;
