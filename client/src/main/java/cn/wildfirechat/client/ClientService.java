@@ -2006,6 +2006,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             object.putOpt("to", feed.toUsers);
             object.putOpt("ex", feed.excludeUsers);
             object.putOpt("extra", feed.extra);
+            object.putOpt("mu", feed.mentionedUsers);
             if (feed.getComments() != null && feed.getComments().length > 0) {
                 JSONArray commentArray = new JSONArray();
                 for (ProtoMomentsComment comment : feed.getComments()) {
