@@ -39,7 +39,7 @@ public class AudioRecorder implements AudioManager.OnAudioFocusChangeListener {
         }
 
         try {
-            this.audioManager.setMode(0);
+//            this.audioManager.setMode(0);
             this.mediaRecorder = new MediaRecorder();
 
             try {
@@ -51,7 +51,7 @@ public class AudioRecorder implements AudioManager.OnAudioFocusChangeListener {
             }
 
             this.mediaRecorder.setAudioChannels(1);
-            this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION);
             this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
             this.mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             this.mediaRecorder.setOutputFile(outputAudioFile);
