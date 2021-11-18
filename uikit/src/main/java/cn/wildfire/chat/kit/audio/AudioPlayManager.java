@@ -13,6 +13,7 @@ import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.net.rtp.AudioStream;
 import android.os.Build;
 import android.os.PowerManager;
 import android.util.Log;
@@ -56,7 +57,7 @@ public class AudioPlayManager implements SensorEventListener {
 
                     try {
                         this._mediaPlayer.reset();
-                        this._mediaPlayer.setAudioStreamType(3);
+                        this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         this._mediaPlayer.setVolume(1.0F, 1.0F);
                         this._mediaPlayer.setDataSource(this.context, this._playingUri);
                         this._mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -111,7 +112,7 @@ public class AudioPlayManager implements SensorEventListener {
     private void setScreenOff() {
         if (this._wakeLock == null) {
             if (Build.VERSION.SDK_INT >= 21) {
-                this._wakeLock = this._powerManager.newWakeLock(32, "AudioPlayManager");
+                this._wakeLock = this._powerManager.newWakeLock(32, "wfc:AudioPlayManager");
             } else {
                 Log.e(TAG, "Does not support on level " + Build.VERSION.SDK_INT);
             }
