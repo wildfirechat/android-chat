@@ -216,6 +216,15 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().setConversationTop(conversationInfo.conversation, top);
     }
 
+    public void clearConversationUnread(ConversationInfo conversationInfo) {
+        ChatManager.Instance().clearUnreadStatus(conversationInfo.conversation);
+    }
+
+    public void markConversationUnread(ConversationInfo conversationInfo) {
+        ChatManager.Instance().markAsUnRead(conversationInfo.conversation, true);
+        //Todo 更新未读数，包括tabbar和会话列表的。
+    }
+
     @Override
     public void onDeleteMessage(Message message) {
         reloadConversationList();

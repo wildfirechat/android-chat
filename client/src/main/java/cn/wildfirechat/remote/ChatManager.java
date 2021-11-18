@@ -2913,6 +2913,18 @@ public class ChatManager {
         }
     }
 
+    public boolean markAsUnRead(Conversation conversation, boolean syncToOtherClient) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return mClient.markAsUnRead(conversation.type.getValue(), conversation.target, conversation.line, syncToOtherClient);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void clearMessageUnreadStatus(long messageId) {
         if (!checkRemoteService()) {
             return;

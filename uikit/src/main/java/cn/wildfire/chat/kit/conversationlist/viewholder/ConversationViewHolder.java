@@ -197,6 +197,16 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         conversationListViewModel.setConversationTop(conversationInfo, false);
     }
 
+    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_MarkAsRead, priority = 3)
+    public void clearConversationUnread(View itemView, ConversationInfo conversationInfo) {
+        conversationListViewModel.clearConversationUnread(conversationInfo);
+    }
+
+    @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_MarkAsUnread, priority = 2)
+    public void markConversationUnread(View itemView, ConversationInfo conversationInfo) {
+        conversationListViewModel.markConversationUnread(conversationInfo);
+    }
+
     /**
      * 长按触发的context menu的标题
      *
@@ -214,6 +224,12 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                 break;
             case ConversationContextMenuItemTags.TAG_CANCEL_TOP:
                 title = "取消置顶";
+                break;
+            case ConversationContextMenuItemTags.TAG_MarkAsRead:
+                title = "设为已读";
+                break;
+            case ConversationContextMenuItemTags.TAG_MarkAsUnread:
+                title = "标记未读";
             default:
                 break;
 
@@ -249,6 +265,14 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 
         if (ConversationContextMenuItemTags.TAG_CANCEL_TOP.equals(itemTag)) {
             return !conversationInfo.isTop;
+        }
+
+        if (ConversationContextMenuItemTags.TAG_MarkAsRead.equals(itemTag)) {
+            return conversationInfo.unreadCount.unread == 0;
+        }
+
+        if (ConversationContextMenuItemTags.TAG_MarkAsUnread.equals(itemTag)) {
+            return conversationInfo.unreadCount.unread > 0;
         }
         return false;
     }
