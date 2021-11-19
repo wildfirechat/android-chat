@@ -67,6 +67,7 @@ interface IRemoteClient {
     void setBackupAddressStrategy(in int strategy);
     void setBackupAddress(in String host, in int port);
     void setProtoUserAgent(in String userAgent);
+    void addHttpHeader(in String header, in String value);
     void setLiteMode(in boolean isLiteMode);
     int getConnectionStatus();
 
