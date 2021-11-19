@@ -46,7 +46,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.BiConsumer;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.UserSource;
@@ -180,6 +182,7 @@ public class ChatManager {
     private String backupAddressHost = null;
     private int backupAddressPort = 80;
     private String protoUserAgent = null;
+    private Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
     private boolean defaultSilentWhenPCOnline = true;
@@ -1738,6 +1741,27 @@ public class ChatManager {
 
         try {
             mClient.setProtoUserAgent(userAgent);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * 添加协议栈短连接自定义Header
+     *
+     * @param header 协议栈短连接使用的UA
+     * @param value 协议栈短连接使用的UA
+     */
+    public void addHttpHeader(String header, String value) {
+        if(!TextUtils.isEmpty(value)) {
+            protoHttpHeaderMap.put(header, value);
+        }
+
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.addHttpHeader(header, value);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -6916,6 +6940,15 @@ public class ChatManager {
 
                 if(!TextUtils.isEmpty(protoUserAgent)) {
                     mClient.setProtoUserAgent(protoUserAgent);
+                }
+                if(!protoHttpHeaderMap.isEmpty()) {
+                    protoHttpHeaderMap.forEach((String s, String s2) -> {
+                        try {
+                            mClient.addHttpHeader(s,s2);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
 
                 if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
