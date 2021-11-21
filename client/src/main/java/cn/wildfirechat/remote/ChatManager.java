@@ -2942,7 +2942,14 @@ public class ChatManager {
             return false;
         }
         try {
-            return mClient.markAsUnRead(conversation.type.getValue(), conversation.target, conversation.line, syncToOtherClient);
+            boolean result = mClient.markAsUnRead(conversation.type.getValue(), conversation.target, conversation.line, syncToOtherClient);
+            if (result){
+                ConversationInfo conversationInfo = getConversation(conversation);
+                for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
+                    listener.onConversationUnreadStatusClear(conversationInfo);
+                }
+            }
+            return result;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
