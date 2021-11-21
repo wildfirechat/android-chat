@@ -84,6 +84,7 @@ import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
+import cn.wildfirechat.message.MarkUnreadMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
@@ -7028,6 +7029,7 @@ public class ChatManager {
         registerMessageContent(QuitGroupVisibleNotificationContent.class);
         registerMessageContent(CardMessageContent.class);
         registerMessageContent(CompositeMessageContent.class);
+        registerMessageContent(MarkUnreadMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
