@@ -134,17 +134,15 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     public void reloadConversationUnreadStatus() {
         ChatManager.Instance().getWorkHandler().post(() -> {
             List<ConversationInfo> conversations = ChatManager.Instance().getConversationList(types, lines);
-            if (conversations != null) {
-                UnreadCount unreadCount = new UnreadCount();
-                for (ConversationInfo info : conversations) {
-                    if (!info.isSilent) {
-                        unreadCount.unread += info.unreadCount.unread;
-                    }
-                    unreadCount.unreadMention += info.unreadCount.unreadMention;
-                    unreadCount.unreadMentionAll += info.unreadCount.unreadMentionAll;
+            UnreadCount unreadCount = new UnreadCount();
+            for (ConversationInfo info : conversations) {
+                if (!info.isSilent) {
+                    unreadCount.unread += info.unreadCount.unread;
                 }
-                postUnreadCount(unreadCount);
+                unreadCount.unreadMention += info.unreadCount.unreadMention;
+                unreadCount.unreadMentionAll += info.unreadCount.unreadMentionAll;
             }
+            postUnreadCount(unreadCount);
         });
     }
 
@@ -222,7 +220,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     public void markConversationUnread(ConversationInfo conversationInfo) {
         ChatManager.Instance().markAsUnRead(conversationInfo.conversation, true);
-        //Todo 更新未读数，包括tabbar和会话列表的。
+        reloadConversationUnreadStatus();
     }
 
     @Override

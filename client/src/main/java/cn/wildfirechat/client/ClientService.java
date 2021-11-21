@@ -4,13 +4,13 @@
 
 package cn.wildfirechat.client;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Mark_Unread_Sync;
 import static com.tencent.mars.comm.PlatformComm.context;
 import static com.tencent.mars.xlog.Xlog.AppednerModeAsync;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnected;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnecting;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusLogout;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusReceiveing;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Mark_Unread_Sync;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
 
@@ -358,7 +358,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             MessagePayload payload = msg.content.encode();
             protoMessage.setContent(payload.toProtoContent());
             protoMessage.setMessageId(msg.messageId);
+            if (msg.direction == null){
+                msg.direction = MessageDirection.Send;
+            }
             protoMessage.setDirection(msg.direction.ordinal());
+            if (msg.status == null){
+                msg.status = MessageStatus.Sending;
+            }
             protoMessage.setStatus(msg.status.value());
             protoMessage.setMessageUid(msg.messageUid);
             protoMessage.setTimestamp(msg.serverTime);
