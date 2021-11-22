@@ -42,16 +42,12 @@ public class WfcWebViewActivity extends WfcBaseActivity {
     protected void afterViews() {
         url = getIntent().getStringExtra("url");
         String htmlContent = getIntent().getStringExtra("content");
-        if (!TextUtils.isEmpty(htmlContent)) {
-            webView.loadDataWithBaseURL("", htmlContent, "text/html", "UTF-8", "");
-        } else {
-            webView.loadUrl(url);
-        }
 
         String title = getIntent().getStringExtra("title");
         if (!TextUtils.isEmpty(title)) {
             setTitle(title);
         }
+
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
@@ -66,5 +62,10 @@ public class WfcWebViewActivity extends WfcBaseActivity {
                 }
             }
         });
+        if (!TextUtils.isEmpty(htmlContent)) {
+            webView.loadDataWithBaseURL("", htmlContent, "text/html", "UTF-8", "");
+        } else {
+            webView.loadUrl(url);
+        }
     }
 }
