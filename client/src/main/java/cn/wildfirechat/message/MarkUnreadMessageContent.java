@@ -22,12 +22,14 @@ import cn.wildfirechat.message.core.PersistFlag;
 @ContentTag(type = ContentType_Mark_Unread_Sync, flag = PersistFlag.No_Persist)
 public class MarkUnreadMessageContent extends MessageContent {
     private long messageUid;
+    private long timestamp;
 
     public MarkUnreadMessageContent() {
     }
 
-    public MarkUnreadMessageContent(long messageUid) {
+    public MarkUnreadMessageContent(long messageUid, long timestamp) {
         this.messageUid = messageUid;
+        this.timestamp = timestamp;
     }
 
     public long getMessageUid() {
@@ -38,12 +40,21 @@ public class MarkUnreadMessageContent extends MessageContent {
         this.messageUid = messageUid;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("u", messageUid);
+            objWrite.put("t", timestamp);
             payload.binaryContent = objWrite.toString().getBytes();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -59,6 +70,7 @@ public class MarkUnreadMessageContent extends MessageContent {
             if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 messageUid = jsonObject.optLong("u");
+                timestamp = jsonObject.optLong("t");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -80,11 +92,13 @@ public class MarkUnreadMessageContent extends MessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeLong(this.messageUid);
+        dest.writeLong(this.timestamp);
     }
 
     protected MarkUnreadMessageContent(Parcel in) {
         super(in);
         this.messageUid = in.readLong();
+        this.timestamp = in.readLong();
     }
 
     public static final Creator<MarkUnreadMessageContent> CREATOR = new Creator<MarkUnreadMessageContent>() {

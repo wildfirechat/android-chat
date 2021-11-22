@@ -847,9 +847,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public boolean markAsUnRead(int conversationType, String target, int line, boolean sync) throws RemoteException {
-            long messageUid = ProtoLogic.setLastReceivedMessageUnRead(conversationType, target, line, 0);
+            long messageUid = ProtoLogic.setLastReceivedMessageUnRead(conversationType, target, line, 0, 0);
             if(messageUid > 0 && sync) {
-                MarkUnreadMessageContent content = new MarkUnreadMessageContent(messageUid);
+                MarkUnreadMessageContent content = new MarkUnreadMessageContent(messageUid, ProtoLogic.getMessageByUid(messageUid).getTimestamp());
                 Message message = new Message();
                 message.conversation = new Conversation(Conversation.ConversationType.type(conversationType), target, line);
                 message.content = content;
@@ -2970,7 +2970,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if(protoMessage.getContent().getType() == ContentType_Mark_Unread_Sync) {
             Message msg = convertProtoMessage(protoMessage);
             MarkUnreadMessageContent content = (MarkUnreadMessageContent)msg.content;
-            ProtoLogic.setLastReceivedMessageUnRead(msg.conversation.type.getValue(), msg.conversation.target, msg.conversation.line, content.getMessageUid());
+            ProtoLogic.setLastReceivedMessageUnRead(msg.conversation.type.getValue(), msg.conversation.target, msg.conversation.line, content.getMessageUid(), content.getTimestamp());
         }
     }
     @Override
