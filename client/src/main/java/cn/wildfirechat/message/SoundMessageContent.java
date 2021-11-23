@@ -20,7 +20,7 @@ import cn.wildfirechat.message.core.PersistFlag;
 
 @ContentTag(type = MessageContentType.ContentType_Voice, flag = PersistFlag.Persist_And_Count)
 public class SoundMessageContent extends MediaMessageContent {
-    private int duration;
+    protected int duration;
 
     public SoundMessageContent() {
         this.mediaType = MessageContentMediaType.VOICE;

@@ -48,7 +48,6 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.PttInviteMessageContent;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.model.Conversation;
@@ -189,7 +188,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         if (pttEnabled){
             PTTClient.getInstance().init(application);
             PTTClient.getInstance().setEnablePtt(true);
-            ChatManager.Instance().registerMessageContent(PttInviteMessageContent.class);
         }
     }
 

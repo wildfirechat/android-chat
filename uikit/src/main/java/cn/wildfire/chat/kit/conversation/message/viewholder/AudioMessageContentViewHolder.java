@@ -26,11 +26,13 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 
-@MessageContentType(SoundMessageContent.class)
+@MessageContentType(value = {SoundMessageContent.class, PTTSoundMessageContent.class})
+
 @EnableContextMenu
 public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder {
     @BindView(R2.id.audioImageView)

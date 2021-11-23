@@ -25,8 +25,11 @@ public interface MessageContentType {
     int ContentType_Card = 10;
     int ContentType_Composite_Message = 11;
 
+    // 21, 23内部使用
     int ContentType_Dumy1 = 21;
     int ContentType_Dumy2 = 22;
+
+    int ContentType_Ptt_Voice = 23;
 
     int ContentType_Mark_Unread_Sync = 31;
 
@@ -85,7 +88,6 @@ public interface MessageContentType {
     int ContentType_Conference_Invite = 408;
     int ContentType_Conference_Change_Model = 410;
     int ContentType_Conference_Kickoff_Member = 411;
-    int ContentType_Ptt_Invite = 420;
 
     int MESSAGE_CONTENT_TYPE_FEED = 501;
     int MESSAGE_CONTENT_TYPE_FEED_COMMENT = 502;
