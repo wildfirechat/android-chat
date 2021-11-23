@@ -89,6 +89,7 @@ import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
+import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
@@ -7030,6 +7031,7 @@ public class ChatManager {
         registerMessageContent(CardMessageContent.class);
         registerMessageContent(CompositeMessageContent.class);
         registerMessageContent(MarkUnreadMessageContent.class);
+        registerMessageContent(PTTSoundMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
