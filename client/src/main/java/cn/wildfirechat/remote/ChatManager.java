@@ -98,6 +98,7 @@ import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
+import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
@@ -2587,13 +2588,20 @@ public class ChatManager {
      * @param count           获取消息的条数
      * @param callback
      */
-    public void getRemoteMessages(Conversation conversation, long beforeMessageId, int count, GetRemoteMessageCallback callback) {
+    public void getRemoteMessages(Conversation conversation, List<Integer> contentTypes, long beforeMessageId, int count, GetRemoteMessageCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
 
         try {
-            mClient.getRemoteMessages(conversation, beforeMessageId, count, new IGetRemoteMessageCallback.Stub() {
+            int[] intypes = null;
+            if(contentTypes != null && !contentTypes.isEmpty()) {
+                intypes = new int[contentTypes.size()];
+                for (int i = 0; i < contentTypes.size(); i++) {
+                    intypes[i] = contentTypes.get(i);
+                }
+            }
+            mClient.getRemoteMessages(conversation, intypes, beforeMessageId, count, new IGetRemoteMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages) throws RemoteException {
                     if (callback != null) {

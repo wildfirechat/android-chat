@@ -53,7 +53,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                         }
                         result.postValue(messages);
                     } else {
-                        ChatManager.Instance().getRemoteMessages(conversation, fromMessageUid, count, new GetRemoteMessageCallback() {
+                        ChatManager.Instance().getRemoteMessages(conversation, null, fromMessageUid, count, new GetRemoteMessageCallback() {
                             @Override
                             public void onSuccess(List<Message> messages) {
                                 if (messages != null && !messages.isEmpty()) {
@@ -89,7 +89,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     public LiveData<List<Message>> loadRemoteHistoryMessage(Conversation conversation, long fromMessageUid, int count) {
         MutableLiveData<List<Message>> data = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            ChatManager.Instance().getRemoteMessages(conversation, fromMessageUid, count, new GetRemoteMessageCallback() {
+            ChatManager.Instance().getRemoteMessages(conversation, null, fromMessageUid, count, new GetRemoteMessageCallback() {
                 @Override
                 public void onSuccess(List<Message> messages) {
                     data.setValue(messages);
