@@ -18,7 +18,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.ptt.PTTClient;
@@ -26,7 +25,7 @@ import cn.wildfirechat.ptt.TalkingCallback;
 import cn.wildfirechat.remote.ChatManager;
 
 public class PttPanel implements View.OnTouchListener {
-    private int maxDuration = Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * 1000;
+    private int maxDuration;
     private int countDown = 10 * 1000;
     private boolean isTalking;
     private long startTime;
@@ -72,7 +71,7 @@ public class PttPanel implements View.OnTouchListener {
     }
 
     public void deattch() {
-        if (rootView == null){
+        if (rootView == null) {
             return;
         }
         rootView = null;
@@ -130,6 +129,11 @@ public class PttPanel implements View.OnTouchListener {
             public void onRequestFail(Conversation conversation, int errorCode) {
                 // do nothing
                 Toast.makeText(context, "请求对讲失败 " + errorCode, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAmplitudeUpdate(int averageAmplitude) {
+                updateVolume(averageAmplitude);
             }
         });
     }
@@ -215,15 +219,16 @@ public class PttPanel implements View.OnTouchListener {
                 int tmp = (int) ((maxDuration - (now - startTime)) / 1000);
                 tmp = Math.max(tmp, 1);
                 showCountDown(tmp);
-            } else {
-                updateVolume();
             }
             handler.postDelayed(this::tick, 100);
         }
     }
 
-    private void updateVolume() {
-        int db = ((int) (System.currentTimeMillis() / 1000)) % 8;
+    private void updateVolume(int averageAmplitude) {
+        if (this.stateImageView == null){
+            return;
+        }
+        int db = (averageAmplitude / 1000) % 8;
         switch (db) {
             case 0:
                 this.stateImageView.setImageResource(R.mipmap.ic_volume_1);
