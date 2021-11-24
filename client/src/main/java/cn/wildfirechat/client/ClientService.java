@@ -10,6 +10,7 @@ import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnected;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusConnecting;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusLogout;
 import static cn.wildfirechat.client.ConnectionStatus.ConnectionStatusReceiveing;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Mark_Unread_Sync;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
 
@@ -55,6 +56,7 @@ import java.util.Map;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.message.CompositeMessageContent;
+import cn.wildfirechat.message.MarkUnreadMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
@@ -298,6 +300,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void addHttpHeader(String header, String value) throws RemoteException {
+            ProtoLogic.addHttpHeader(header, value);
+        }
+
+        @Override
         public void setLiteMode(boolean isLiteMode) throws RemoteException {
             ProtoLogic.setLiteMode(isLiteMode);
         }
@@ -351,7 +358,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             MessagePayload payload = msg.content.encode();
             protoMessage.setContent(payload.toProtoContent());
             protoMessage.setMessageId(msg.messageId);
+            if (msg.direction == null){
+                msg.direction = MessageDirection.Send;
+            }
             protoMessage.setDirection(msg.direction.ordinal());
+            if (msg.status == null){
+                msg.status = MessageStatus.Sending;
+            }
             protoMessage.setStatus(msg.status.value());
             protoMessage.setMessageUid(msg.messageUid);
             protoMessage.setTimestamp(msg.serverTime);
@@ -370,7 +383,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onSuccess(long messageUid, long timestamp) {
                 try {
-                    callback.onSuccess(messageUid, timestamp);
+                    if(callback != null)
+                        callback.onSuccess(messageUid, timestamp);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -379,7 +393,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onFailure(int errorCode) {
                 try {
-                    callback.onFailure(errorCode);
+                    if(callback != null)
+                        callback.onFailure(errorCode);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -388,7 +403,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onPrepared(long messageId, long savedTime) {
                 try {
-                    callback.onPrepared(messageId, savedTime);
+                    if(callback != null)
+                        callback.onPrepared(messageId, savedTime);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -397,7 +413,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onProgress(long uploaded, long total) {
                 try {
-                    callback.onProgress(uploaded, total);
+                    if(callback != null)
+                        callback.onProgress(uploaded, total);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -406,7 +423,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onMediaUploaded(String remoteUrl) {
                 try {
-                    callback.onMediaUploaded(remoteUrl);
+                    if(callback != null)
+                        callback.onMediaUploaded(remoteUrl);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -575,8 +593,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getRemoteMessages(Conversation conversation, long beforeMessageUid, int count, IGetRemoteMessageCallback callback) throws RemoteException {
-            ProtoLogic.getRemoteMessages(conversation.type.ordinal(), conversation.target, conversation.line, beforeMessageUid, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
+        public void getRemoteMessages(Conversation conversation, int[] conversationTypes, long beforeMessageUid, int count, IGetRemoteMessageCallback callback) throws RemoteException {
+            if(conversationTypes == null) {
+                conversationTypes = new int[0];
+            }
+
+            ProtoLogic.getRemoteMessages(conversation.type.ordinal(), conversation.target, conversation.line, beforeMessageUid, count, conversationTypes, new ProtoLogic.ILoadRemoteMessagesCallback() {
                 @Override
                 public void onSuccess(ProtoMessage[] list) {
                     try {
@@ -825,6 +847,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void clearAllUnreadStatus() throws RemoteException {
             ProtoLogic.clearAllUnreadStatus();
+        }
+
+        @Override
+        public boolean markAsUnRead(int conversationType, String target, int line, boolean sync) throws RemoteException {
+            long messageUid = ProtoLogic.setLastReceivedMessageUnRead(conversationType, target, line, 0, 0);
+            if(messageUid > 0 && sync) {
+                MarkUnreadMessageContent content = new MarkUnreadMessageContent(messageUid, ProtoLogic.getMessageByUid(messageUid).getTimestamp());
+                Message message = new Message();
+                message.conversation = new Conversation(Conversation.ConversationType.type(conversationType), target, line);
+                message.content = content;
+                send(message, null, 86400);
+            }
+
+            return messageUid > 0;
         }
 
         @Override
@@ -2006,6 +2042,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             object.putOpt("to", feed.toUsers);
             object.putOpt("ex", feed.excludeUsers);
             object.putOpt("extra", feed.extra);
+            object.putOpt("mu", feed.mentionedUsers);
             if (feed.getComments() != null && feed.getComments().length > 0) {
                 JSONArray commentArray = new JSONArray();
                 for (ProtoMomentsComment comment : feed.getComments()) {
@@ -2927,9 +2964,19 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (messages.isEmpty()) {
             return;
         }
+        for (ProtoMessage message:messages) {
+            filterNewMessage(message);
+        }
         handler.post(() -> onReceiveMessageInternal(messages.toArray(new ProtoMessage[0])));
     }
 
+    private void filterNewMessage(ProtoMessage protoMessage) {
+        if(protoMessage.getContent().getType() == ContentType_Mark_Unread_Sync) {
+            Message msg = convertProtoMessage(protoMessage);
+            MarkUnreadMessageContent content = (MarkUnreadMessageContent)msg.content;
+            ProtoLogic.setLastReceivedMessageUnRead(msg.conversation.type.getValue(), msg.conversation.target, msg.conversation.line, content.getMessageUid(), content.getTimestamp());
+        }
+    }
     @Override
     public void onFriendListUpdated(String[] friendList) {
 //        if (friendList == null || friendList.length == 0) {

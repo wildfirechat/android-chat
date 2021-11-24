@@ -112,6 +112,30 @@ public class RecallMessageContent extends NotificationMessageContent {
         this.messageUid = messageUid;
     }
 
+    public void setOriginalSender(String originalSender) {
+        this.originalSender = originalSender;
+    }
+
+    public void setOriginalContentType(int originalContentType) {
+        this.originalContentType = originalContentType;
+    }
+
+    public void setOriginalSearchableContent(String originalSearchableContent) {
+        this.originalSearchableContent = originalSearchableContent;
+    }
+
+    public void setOriginalContent(String originalContent) {
+        this.originalContent = originalContent;
+    }
+
+    public void setOriginalExtra(String originalExtra) {
+        this.originalExtra = originalExtra;
+    }
+
+    public void setOriginalMessageTimestamp(long originalMessageTimestamp) {
+        this.originalMessageTimestamp = originalMessageTimestamp;
+    }
+
     @Override
     public String formatNotification(Message message) {
         String notification = "%s撤回了一条消息";

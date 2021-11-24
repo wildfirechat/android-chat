@@ -46,7 +46,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.BiConsumer;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.UserSource;
@@ -82,10 +84,12 @@ import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
+import cn.wildfirechat.message.MarkUnreadMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
+import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
@@ -94,6 +98,7 @@ import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
+import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
@@ -180,6 +185,7 @@ public class ChatManager {
     private String backupAddressHost = null;
     private int backupAddressPort = 80;
     private String protoUserAgent = null;
+    private Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
     private boolean defaultSilentWhenPCOnline = true;
@@ -1743,6 +1749,27 @@ public class ChatManager {
         }
     }
     /**
+     * 添加协议栈短连接自定义Header
+     *
+     * @param header 协议栈短连接使用的UA
+     * @param value 协议栈短连接使用的UA
+     */
+    public void addHttpHeader(String header, String value) {
+        if(!TextUtils.isEmpty(value)) {
+            protoHttpHeaderMap.put(header, value);
+        }
+
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.addHttpHeader(header, value);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
      * 发送已经保存的消息
      *
      * @param msg
@@ -1967,18 +1994,39 @@ public class ChatManager {
      * @param msg      想撤回的消息
      * @param callback 撤回回调
      */
-    public void recallMessage(final Message msg, final GeneralCallback callback) {
+    public void recallMessage(Message msg, final GeneralCallback callback) {
         try {
             mClient.recall(msg.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    Message recallMsg = mClient.getMessage(msg.messageId);
+                    if(msg.messageId > 0) {
+                        Message recallMsg = mClient.getMessage(msg.messageId);
+                        msg.content = recallMsg.content;
+                        msg.sender = recallMsg.sender;
+                        msg.serverTime = recallMsg.serverTime;
+                    } else {
+                        MessagePayload payload = msg.content.encode();
+                        RecallMessageContent recallCnt = new RecallMessageContent();
+                        recallCnt.setOperatorId(userId);
+                        recallCnt.setMessageUid(msg.messageUid);
+                        recallCnt.fromSelf = true;
+                        recallCnt.setOriginalSender(msg.sender);
+                        recallCnt.setOriginalContent(payload.content);
+                        recallCnt.setOriginalContentType(payload.contentType);
+                        recallCnt.setOriginalExtra(payload.extra);
+                        recallCnt.setOriginalSearchableContent(payload.searchableContent);
+                        recallCnt.setOriginalMessageTimestamp(msg.serverTime);
+                        msg.content = recallCnt;
+                        msg.sender = userId;
+                        msg.serverTime = System.currentTimeMillis();
+                    }
+
                     mainHandler.post(() -> {
                         if (callback != null) {
                             callback.onSuccess();
                         }
                         for (OnRecallMessageListener listener : recallMessageListeners) {
-                            listener.onRecallMessage(recallMsg);
+                            listener.onRecallMessage(msg);
                         }
                     });
                 }
@@ -2540,13 +2588,20 @@ public class ChatManager {
      * @param count           获取消息的条数
      * @param callback
      */
-    public void getRemoteMessages(Conversation conversation, long beforeMessageId, int count, GetRemoteMessageCallback callback) {
+    public void getRemoteMessages(Conversation conversation, List<Integer> contentTypes, long beforeMessageId, int count, GetRemoteMessageCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
 
         try {
-            mClient.getRemoteMessages(conversation, beforeMessageId, count, new IGetRemoteMessageCallback.Stub() {
+            int[] intypes = null;
+            if(contentTypes != null && !contentTypes.isEmpty()) {
+                intypes = new int[contentTypes.size()];
+                for (int i = 0; i < contentTypes.size(); i++) {
+                    intypes[i] = contentTypes.get(i);
+                }
+            }
+            mClient.getRemoteMessages(conversation, intypes, beforeMessageId, count, new IGetRemoteMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages) throws RemoteException {
                     if (callback != null) {
@@ -2890,6 +2945,25 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean markAsUnRead(Conversation conversation, boolean syncToOtherClient) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            boolean result = mClient.markAsUnRead(conversation.type.getValue(), conversation.target, conversation.line, syncToOtherClient);
+            if (result){
+                ConversationInfo conversationInfo = getConversation(conversation);
+                for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
+                    listener.onConversationUnreadStatusClear(conversationInfo);
+                }
+            }
+            return result;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void clearMessageUnreadStatus(long messageId) {
@@ -6884,6 +6958,15 @@ public class ChatManager {
                 if(!TextUtils.isEmpty(protoUserAgent)) {
                     mClient.setProtoUserAgent(protoUserAgent);
                 }
+                if(!protoHttpHeaderMap.isEmpty()) {
+                    protoHttpHeaderMap.forEach((String s, String s2) -> {
+                        try {
+                            mClient.addHttpHeader(s,s2);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
 
                 if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
                     mClient.connect(userId, token);
@@ -6955,6 +7038,8 @@ public class ChatManager {
         registerMessageContent(QuitGroupVisibleNotificationContent.class);
         registerMessageContent(CardMessageContent.class);
         registerMessageContent(CompositeMessageContent.class);
+        registerMessageContent(MarkUnreadMessageContent.class);
+        registerMessageContent(PTTSoundMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {

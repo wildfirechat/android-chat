@@ -46,6 +46,8 @@ import java.util.List;
 
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.client.NotInitializedExecption;
+import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -132,7 +134,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         for (int result : grantResults) {
             if (result != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "需要录音和摄像头权限，才能进行语音通话", Toast.LENGTH_SHORT).show();
-                if(gEngineKit.getCurrentSession() != null || gEngineKit.getCurrentSession().getState() != AVEngineKit.CallState.Idle) {
+                if (gEngineKit.getCurrentSession() != null || gEngineKit.getCurrentSession().getState() != AVEngineKit.CallState.Idle) {
                     gEngineKit.getCurrentSession().endCall();
                 }
                 finishFadeout();
@@ -291,6 +293,32 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     public void didRemoveRemoteVideoTrack(String s) {
 
+    }
+
+    @Override
+    public void didMediaLostPacket(String media, int lostPacket) {
+        postAction(() -> {
+            //发送方丢包超过6为网络不好
+            if (lostPacket > 6) {
+                Toast.makeText(this, "您的网络不好", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void didMediaLostPacket(String userId, String media, int lostPacket, boolean uplink) {
+        postAction(() -> {
+            //如果uplink ture对方网络不好，false您的网络不好
+            //接受方丢包超过10为网络不好
+            if (lostPacket > 10) {
+                if (uplink) {
+                    UserInfo userInfo = ChatManager.Instance().getUserInfo(userId, false);
+                    Toast.makeText(this, userInfo.displayName + " 的网络不好", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "您的网络不好", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     protected void postAction(Runnable action) {
