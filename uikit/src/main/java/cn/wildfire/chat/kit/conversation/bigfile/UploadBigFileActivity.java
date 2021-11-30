@@ -113,7 +113,7 @@ public class UploadBigFileActivity extends WfcBaseActivity implements View.OnCli
     }
 
     private void uploadFile() {
-        ChatManager.Instance().getUploadUrl(new File(filePath).getName(), MessageContentMediaType.FILE, new GetUploadUrlCallback() {
+        ChatManager.Instance().getUploadUrl(new File(filePath).getName(), MessageContentMediaType.FILE, null, new GetUploadUrlCallback() {
             @Override
             public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
                 if(serverType == 1) {
