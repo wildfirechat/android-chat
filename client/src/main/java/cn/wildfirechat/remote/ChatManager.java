@@ -388,6 +388,13 @@ public class ChatManager {
             // TODO
             Log.d(TAG, "连接失败，请参考：" + "https://docs.wildfirechat.cn/faq/general.html");
         }
+
+        //连接成功，如果Manager有缓存需要清掉
+        if(status == ConnectionStatus.ConnectionStatusConnected) {
+            receiptStatus = -1;
+            userReceiptStatus = -1;
+        }
+
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
