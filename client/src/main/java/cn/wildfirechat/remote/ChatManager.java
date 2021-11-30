@@ -6564,10 +6564,15 @@ public class ChatManager {
         }
     }
 
-    /*
-    获取上传文件链接，一般用在大文件上传，通过isSupportBigFilesUpload方法检查之后才可以使用。
+    /**
+     * 获取文件上传的链接地址，一般用在大文件上传，通过isSupportBigFilesUpload方法检查之后才可以使用。
+     *
+     * @param fileName 文件名
+     * @param mediaType  媒体类型
+     * @param contentType Http的ContentType Header，可以为空，为空时默认为"application/octet-stream"
+     * @param callback   返回上传地址
      */
-    public void getUploadUrl(String fileName, MessageContentMediaType mediaType, GetUploadUrlCallback callback) {
+    public void getUploadUrl(String fileName, MessageContentMediaType mediaType, String contentType, GetUploadUrlCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -6575,7 +6580,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.getUploadUrl(fileName, mediaType.ordinal(), new IGetUploadUrlCallback.Stub() {
+            mClient.getUploadUrl(fileName, mediaType.ordinal(), contentType, new IGetUploadUrlCallback.Stub() {
                 @Override
                 public void onSuccess(String uploadUrl, String remoteUrl, String backupUploadUrl, int type) throws RemoteException {
                     if (callback != null) {

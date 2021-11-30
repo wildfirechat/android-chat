@@ -2374,8 +2374,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getUploadUrl(String fileName, int mediaType, IGetUploadUrlCallback callback) throws RemoteException {
-            ProtoLogic.getUploadMediaUrl(fileName, mediaType, new ProtoLogic.IGetUploadMediaUrlCallback() {
+        public void getUploadUrl(String fileName, int mediaType, String contentType, IGetUploadUrlCallback callback) throws RemoteException {
+            ProtoLogic.getUploadMediaUrl(fileName, mediaType, contentType, new ProtoLogic.IGetUploadMediaUrlCallback() {
                 @Override
                 public void onSuccess(String s, String s1, String s2, int i) {
                     try {
