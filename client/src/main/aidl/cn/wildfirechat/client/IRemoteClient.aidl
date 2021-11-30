@@ -235,7 +235,7 @@ interface IRemoteClient {
     void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
     void getApplicationId(in String applicationId, in IGeneralCallback2 callback);
     oneway void getAuthorizedMediaUrl(in long messageUid, in int mediaType, in String mediaPath, in IGetAuthorizedMediaUrlCallback callback);
-    oneway void getUploadUrl(in String fileName, in int mediaType, in IGetUploadUrlCallback callback);
+    oneway void getUploadUrl(in String fileName, in int mediaType, in String contentType, in IGetUploadUrlCallback callback);
 
     boolean isSupportBigFilesUpload();
 
