@@ -593,12 +593,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getRemoteMessages(Conversation conversation, int[] conversationTypes, long beforeMessageUid, int count, IGetRemoteMessageCallback callback) throws RemoteException {
-            if(conversationTypes == null) {
-                conversationTypes = new int[0];
+        public void getRemoteMessages(Conversation conversation, int[] contentTypes, long beforeMessageUid, int count, IGetRemoteMessageCallback callback) throws RemoteException {
+            if(contentTypes == null) {
+                contentTypes = new int[0];
             }
 
-            ProtoLogic.getRemoteMessages(conversation.type.ordinal(), conversation.target, conversation.line, beforeMessageUid, count, conversationTypes, new ProtoLogic.ILoadRemoteMessagesCallback() {
+            ProtoLogic.getRemoteMessages(conversation.type.ordinal(), conversation.target, conversation.line, beforeMessageUid, count, contentTypes, new ProtoLogic.ILoadRemoteMessagesCallback() {
                 @Override
                 public void onSuccess(ProtoMessage[] list) {
                     try {
