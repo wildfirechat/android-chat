@@ -65,7 +65,8 @@
         <activity
             android:name="cn.wildfire.chat.app.main.SplashActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.FullScreen">
+            android:theme="@style/AppTheme.FullScreen"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -86,7 +87,8 @@
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
             android:label="野火IM"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:exported="false">
             <intent-filter>
                 <action android:name="${applicationId}.main" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -95,7 +97,8 @@
 
         <activity
             android:name="cn.wildfire.chat.app.main.PCLoginActivity"
-            android:label="PC登录">
+            android:label="PC登录"
+            android:exported="false">
             <intent-filter>
                 <action android:name="${packageName}.pc.login" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -107,18 +110,6 @@
 
         <activity android:name="cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity" />
         <activity android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity" />
-        <activity
-            android:name="cn.wildfire.chat.app.ptt.PttActivity"
-            android:label="对讲机" />
-        <activity
-            android:name="cn.wildfire.chat.app.ptt.CreatePttChannelActivity"
-            android:label="创建对讲频道" />
-        <activity
-            android:name="cn.wildfire.chat.app.ptt.PttInviteActivity"
-            android:label="对讲邀请" />
-        <activity
-            android:name="cn.wildfire.chat.app.ptt.PttChannelListActivity"
-            android:label="对讲频道列表" />
 
     </application>
 </manifest>
