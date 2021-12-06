@@ -26,7 +26,7 @@ allprojects {
         google()
         jcenter()
         maven {
-            url "http://developer.huawei.com/repo/"
+            url "https://developer.huawei.com/repo/"
         }
 
         maven { url 'https://jitpack.io' }
