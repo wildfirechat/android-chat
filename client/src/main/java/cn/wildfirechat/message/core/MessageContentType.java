@@ -25,9 +25,10 @@ public interface MessageContentType {
     int ContentType_Card = 10;
     int ContentType_Composite_Message = 11;
 
-    // 21, 23内部使用
+    // 21, 23，24内部使用
     int ContentType_Dumy1 = 21;
     int ContentType_Dumy2 = 22;
+    int ContentType_Dumy4 = 24;
 
     int ContentType_Ptt_Voice = 23;
 
