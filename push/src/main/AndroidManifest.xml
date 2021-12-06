@@ -43,7 +43,7 @@
         <!--huawei-->
         <service
             android:name=".huawei.HwPushService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
             </intent-filter>
@@ -101,7 +101,7 @@
         </receiver>
         <receiver
             android:name="com.xiaomi.push.service.receivers.PingReceiver"
-            android:exported="false"
+            android:exported="true"
             android:process=":pushservice">
             <intent-filter>
                 <action android:name="com.xiaomi.push.PING_TIMER" />
@@ -109,7 +109,8 @@
         </receiver>
 
         <!--meizu-->
-        <receiver android:name=".meizu.MeizuPushReceiver">
+        <receiver android:name=".meizu.MeizuPushReceiver"
+            android:exported="true">
             <intent-filter>
                 <!-- 接收push消息 -->
                 <action android:name="com.meizu.flyme.push.intent.MESSAGE" />
@@ -143,7 +144,8 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!-- push应用定义消息receiver声明 -->
-        <receiver android:name="cn.wildfirechat.push.vivo.PushMessageReceiverImpl">
+        <receiver android:name="cn.wildfirechat.push.vivo.PushMessageReceiverImpl"
+            android:exported="true">
             <intent-filter>
                 <!-- 接收push消息 -->
                 <action android:name="com.vivo.pushclient.action.RECEIVE" />
@@ -161,7 +163,8 @@
         <!--        Oppo push-->
         <service
             android:name="com.heytap.mcssdk.PushService"
-            android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE">
+            android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.coloros.mcs.action.RECEIVE_MCS_MESSAGE" />
             </intent-filter>
@@ -169,7 +172,8 @@
 
         <service
             android:name="com.heytap.mcssdk.AppPushService"
-            android:permission="com.heytap.mcs.permission.SEND_MCS_MESSAGE">
+            android:permission="com.heytap.mcs.permission.SEND_MCS_MESSAGE"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.heytap.mcs.action.RECEIVE_MCS_MESSAGE" />
             </intent-filter>
@@ -186,7 +190,7 @@
         <!--        Google  -->
         <service
             android:name="cn.wildfirechat.push.firebase.MyFirebaseMessagingService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
