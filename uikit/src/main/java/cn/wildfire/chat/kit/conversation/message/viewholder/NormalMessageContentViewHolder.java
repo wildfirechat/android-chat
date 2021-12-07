@@ -438,12 +438,11 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             Long readTimestamp = readEntries != null && !readEntries.isEmpty() ? readEntries.get(message.message.conversation.target) : null;
             Long deliverTimestamp = deliveries != null && !deliveries.isEmpty() ? deliveries.get(message.message.conversation.target) : null;
 
-
             if (readTimestamp != null && readTimestamp >= message.message.serverTime) {
                 ImageViewCompat.setImageTintList(singleReceiptImageView, null);
                 return;
             }
-            if (deliverTimestamp != null && deliverTimestamp >= message.message.serverTime) {
+            if (deliverTimestamp == null || deliverTimestamp >= message.message.serverTime) {
                 ImageViewCompat.setImageTintList(singleReceiptImageView, ColorStateList.valueOf(ContextCompat.getColor(fragment.getContext(), R.color.gray)));
             }
         } else if (item.conversation.type == Conversation.ConversationType.Group) {

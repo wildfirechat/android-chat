@@ -9,4 +9,6 @@ public interface ConversationContextMenuItemTags {
     String TAG_TOP = "stick_top";
     String TAG_CANCEL_TOP = "cancel_stick_top";
     String TAG_UNSUBSCRIBE = "unSubscribe_channel";
+    String TAG_MarkAsUnread = "mark_as_unread";
+    String TAG_MarkAsRead = "mark_as_read";
 }

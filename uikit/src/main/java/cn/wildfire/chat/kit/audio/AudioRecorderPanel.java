@@ -76,6 +76,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     public void attach(View rootView, Button button) {
         this.rootView = rootView;
         this.button = button;
+        this.button.setText("按住 说话");
         this.button.setOnTouchListener(this);
     }
 

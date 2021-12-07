@@ -115,4 +115,5 @@ public class DiscoveryFragment extends Fragment {
         Intent intent = new Intent(getActivity(), CreateConferenceActivity.class);
         startActivity(intent);
     }
+
 }

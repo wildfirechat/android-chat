@@ -25,6 +25,15 @@ public interface MessageContentType {
     int ContentType_Card = 10;
     int ContentType_Composite_Message = 11;
 
+    // 21, 23，24内部使用
+    int ContentType_Dumy1 = 21;
+    int ContentType_Dumy2 = 22;
+    int ContentType_Dumy4 = 24;
+
+    int ContentType_Ptt_Voice = 23;
+
+    int ContentType_Mark_Unread_Sync = 31;
+
     int ContentType_Recall = 80;
     //删除消息，请勿直接发送此消息，此消息是服务器端删除时的同步消息
     int ContentType_Delete = 81;

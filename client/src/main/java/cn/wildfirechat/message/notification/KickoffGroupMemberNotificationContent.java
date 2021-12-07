@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message.notification;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_KICKOF_GROUP_MEMBER;
+
 import android.os.Parcel;
 
 import org.json.JSONArray;
@@ -18,8 +20,6 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_KICKOF_GROUP_MEMBER;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
@@ -44,9 +44,12 @@ public class KickoffGroupMemberNotificationContent extends GroupNotificationMess
         }
 
         if (kickedMembers != null) {
-            for (String member : kickedMembers) {
+            for (int i = 0; i < kickedMembers.size() && i < 4; i++) {
                 sb.append(" ");
-                sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, member));
+                sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, kickedMembers.get(i)));
+            }
+            if (kickedMembers.size() > 4) {
+                sb.append(" 等");
             }
         }
 

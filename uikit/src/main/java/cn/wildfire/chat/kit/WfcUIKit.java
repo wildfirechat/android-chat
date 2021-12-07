@@ -9,6 +9,7 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.util.Log;
@@ -50,13 +51,15 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.OnDeleteMessageListener;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 
 
-public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnFriendUpdateListener {
+public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnDeleteMessageListener, OnFriendUpdateListener {
 
     private boolean isBackground = true;
     private Application application;
@@ -81,6 +84,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         UIUtils.application = application;
         initWFClient(application);
         initMomentClient(application);
+        initPttClient(application);
         //初始化表情控件
         LQREmotionKit.init(application, (context, path, imageView) -> Glide.with(context).load(path).apply(new RequestOptions().centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE).dontAnimate()).into(imageView));
 
@@ -177,6 +181,16 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         }
     }
 
+    private void initPttClient(Application application) {
+        // 对讲机
+        SharedPreferences sp = application.getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
+        if (pttEnabled){
+            PTTClient.getInstance().init(application);
+            PTTClient.getInstance().setEnablePtt(true);
+        }
+    }
+
     /**
      * 当{@link androidx.lifecycle.ViewModel} 需要跨{@link android.app.Activity} 共享数据时使用
      */
@@ -221,6 +235,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void shouldStartRing(boolean isIncoming) {
+        if (isIncoming && ChatManager.Instance().isVoipSilent()) {
+            Log.d("wfcUIKit", "用户设置禁止voip通知，忽略来电提醒");
+            return;
+        }
         ChatManager.Instance().getMainHandler().postDelayed(() -> {
             AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
             if (callSession == null || (callSession.getState() != AVEngineKit.CallState.Incoming && callSession.getState() != AVEngineKit.CallState.Outgoing)) {
@@ -316,9 +334,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                     iterator.remove();
                 }
             }
-            if(AVEngineKit.Instance().getCurrentSession() != null){
-                WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
-            }
+
+            WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
         } else {
             // do nothing
         }
@@ -328,6 +345,13 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void onRecallMessage(Message message) {
         if (isBackground) {
             WfcNotificationManager.getInstance().handleRecallMessage(application, message);
+        }
+    }
+
+    @Override
+    public void onDeleteMessage(Message message) {
+        if (isBackground) {
+            WfcNotificationManager.getInstance().handleDeleteMessage(application, message);
         }
     }
 

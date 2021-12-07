@@ -86,7 +86,8 @@
         <activity
             android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="false">
             <intent-filter>
                 <action android:name="${packageName}.kit.voip.single" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -155,7 +156,8 @@
             android:windowSoftInputMode="adjustPan|stateHidden|adjustResize" />
 
         <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
-        <activity android:name="cn.wildfire.chat.kit.WfcWebViewActivity">
+        <activity android:name="cn.wildfire.chat.kit.WfcWebViewActivity"
+            android:exported="false">
             <intent-filter>
                 <action android:name="${packageName}.webview" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -204,7 +206,8 @@
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="false">
             <intent-filter>
                 <action android:name="${packageName}.kit.voip.multi" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -229,7 +232,8 @@
         <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
         <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />
         <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />
-        <activity android:name="cn.wildfire.chat.moment.FeedListActivity">
+        <activity android:name="cn.wildfire.chat.moment.FeedListActivity"
+            android:exported="false">
             <intent-filter>
                 <action android:name="${packageName}.moment" />
                 <category android:name="android.intent.category.DEFAULT" />

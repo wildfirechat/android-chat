@@ -4,6 +4,11 @@
 
 package cn.wildfire.chat.kit;
 
+import static androidx.core.app.NotificationCompat.CATEGORY_MESSAGE;
+import static androidx.core.app.NotificationCompat.DEFAULT_ALL;
+import static cn.wildfirechat.message.core.PersistFlag.Persist_And_Count;
+import static cn.wildfirechat.model.Conversation.ConversationType.Single;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -33,17 +38,15 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GetUserInfoCallback;
 
-import static androidx.core.app.NotificationCompat.CATEGORY_MESSAGE;
-import static androidx.core.app.NotificationCompat.DEFAULT_ALL;
-import static cn.wildfirechat.message.core.PersistFlag.Persist_And_Count;
-import static cn.wildfirechat.model.Conversation.ConversationType.Single;
-
 public class WfcNotificationManager {
     private WfcNotificationManager() {
 
     }
 
     private static WfcNotificationManager notificationManager;
+
+    private final List<Long> notificationMessages = new ArrayList<>();
+    private int friendRequestNotificationId = 10000;
 
     public synchronized static WfcNotificationManager getInstance() {
         if (notificationManager == null) {
@@ -55,7 +58,7 @@ public class WfcNotificationManager {
     public void clearAllNotification(Context context) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
-        notificationConversations.clear();
+        notificationMessages.clear();
     }
 
     private void showNotification(Context context, String tag, int id, String title, String content, PendingIntent pendingIntent) {
@@ -89,8 +92,19 @@ public class WfcNotificationManager {
         handleReceiveMessage(context, Collections.singletonList(message));
     }
 
+    public void handleDeleteMessage(Context context, Message message) {
+        if (notificationMessages.contains(message.messageUid)) {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(notificationMessages.indexOf(message.messageUid));
+        }
+    }
+
     public void handleReceiveMessage(Context context, List<Message> messages) {
         if (messages == null || messages.isEmpty()) {
+            return;
+        }
+
+        if (ChatManager.Instance().isNoDisturbing()) {
             return;
         }
 
@@ -98,9 +112,9 @@ public class WfcNotificationManager {
             return;
         }
 
-        if(ChatManager.Instance().isMuteNotificationWhenPcOnline()) {
-            for (PCOnlineInfo onlineInfo:ChatManager.Instance().getPCOnlineInfos()) {
-                if(onlineInfo.isOnline()) {
+        if (ChatManager.Instance().isMuteNotificationWhenPcOnline()) {
+            for (PCOnlineInfo onlineInfo : ChatManager.Instance().getPCOnlineInfos()) {
+                if (onlineInfo.isOnline()) {
                     return;
                 }
             }
@@ -117,7 +131,7 @@ public class WfcNotificationManager {
                 continue;
             }
             ConversationInfo conversationInfo = ChatManager.Instance().getConversation(message.conversation);
-            if (conversationInfo.isSilent) {
+            if (conversationInfo != null && conversationInfo.isSilent) {
                 continue;
             }
 
@@ -144,9 +158,9 @@ public class WfcNotificationManager {
             Intent mainIntent = new Intent(context.getPackageName() + ".main");
             Intent conversationIntent = new Intent(context, ConversationActivity.class);
             conversationIntent.putExtra("conversation", message.conversation);
-            PendingIntent pendingIntent = PendingIntent.getActivities(context, notificationId(message.conversation), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
             String tag = "wfc notification tag";
-            showNotification(context, tag, notificationId(message.conversation), title, pushContent, pendingIntent);
+            showNotification(context, tag, notificationId(message.messageUid), title, pushContent, pendingIntent);
         }
     }
 
@@ -177,19 +191,17 @@ public class WfcNotificationManager {
     private void showFriendRequestNotification(Context context, String title, String text) {
         Intent mainIntent = new Intent(context.getPackageName() + ".main");
         Intent friendRequestListIntent = new Intent(context, FriendRequestListActivity.class);
-        int notificationId = 10000;
-        PendingIntent pendingIntent = PendingIntent.getActivities(context, notificationId, new Intent[]{mainIntent, friendRequestListIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
+        friendRequestNotificationId++;
+        PendingIntent pendingIntent = PendingIntent.getActivities(context, friendRequestNotificationId, new Intent[]{mainIntent, friendRequestListIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
         String tag = "wfc friendRequest notification tag";
-        showNotification(context, tag, notificationId, title, text, pendingIntent);
+        showNotification(context, tag, friendRequestNotificationId, title, text, pendingIntent);
 
     }
 
-    private List<Conversation> notificationConversations = new ArrayList<>();
-
-    private int notificationId(Conversation conversation) {
-        if (!notificationConversations.contains(conversation)) {
-            notificationConversations.add(conversation);
+    private int notificationId(long messageUid) {
+        if (!notificationMessages.contains(messageUid)) {
+            notificationMessages.add(messageUid);
         }
-        return notificationConversations.indexOf(conversation);
+        return notificationMessages.indexOf(messageUid);
     }
 }

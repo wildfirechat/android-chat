@@ -126,6 +126,7 @@ public class SplashActivity extends AppCompatActivity {
     private void showLogin() {
         Intent intent;
         intent = new Intent(this, SMSLoginActivity.class);
+        intent.putExtra("isKickedOff", getIntent().getBooleanExtra("isKickedOff", false));
         Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
             android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
         startActivity(intent, bundle);

@@ -8,7 +8,6 @@ buildscript {
         jcenter()
         mavenCentral()
         maven {url 'https://developer.huawei.com/repo/'}
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.2'
@@ -27,7 +26,7 @@ allprojects {
         google()
         jcenter()
         maven {
-            url "http://developer.huawei.com/repo/"
+            url "https://developer.huawei.com/repo/"
         }
 
         maven { url 'https://jitpack.io' }

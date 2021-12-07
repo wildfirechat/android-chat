@@ -66,6 +66,10 @@ interface IRemoteClient {
     void setServerAddress(in String host);
     void setBackupAddressStrategy(in int strategy);
     void setBackupAddress(in String host, in int port);
+    void setProtoUserAgent(in String userAgent);
+    void addHttpHeader(in String header, in String value);
+    void setLiteMode(in boolean isLiteMode);
+    int getConnectionStatus();
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
     oneway void setOnConnectionStatusChangeListener(in IOnConnectionStatusChangeListener listener);
@@ -102,7 +106,7 @@ interface IRemoteClient {
     oneway void getUserMessages(in String userId, in Conversation conversation, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
     oneway void getUserMessagesEx(in String userId, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
 
-    oneway void getRemoteMessages(in Conversation conversation, in long beforeMessageUid, in int count, in IGetRemoteMessageCallback callback);
+    oneway void getRemoteMessages(in Conversation conversation, in int[] contentTypes, in long beforeMessageUid, in int count, in IGetRemoteMessageCallback callback);
     oneway void getConversationFileRecords(in Conversation conversation, in String fromUser, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void getMyFileRecords(in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void deleteFileRecord(in long messageUid, in IGeneralCallback callback);
@@ -124,6 +128,7 @@ interface IRemoteClient {
     boolean clearUnreadStatusEx(in int[] conversationTypes, in int[] lines);
     boolean clearMessageUnreadStatus(long messageId);
     void clearAllUnreadStatus();
+    boolean markAsUnRead(in int conversationType, in String target, in int line, in boolean sync);
     void clearMessages(in int conversationType, in String target, in int line);
     void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
     void setMediaMessagePlayed(in long messageId);
@@ -141,7 +146,6 @@ interface IRemoteClient {
     boolean isMyFriend(in String userId);
     List<String> getMyFriendList(in boolean refresh);
     List<Friend> getFriendList(in boolean refresh);
-    List<UserInfo> getMyFriendListInfo(in boolean refresh);
     oneway void loadFriendRequestFromRemote();
 
     String getUserSetting(in int scope, in String key);
@@ -223,13 +227,15 @@ interface IRemoteClient {
     oneway void destoryChannel(in String channelId, in IGeneralCallback callback);
     List<String> getMyChannels();
     List<String> getListenedChannels();
+    oneway void requireLock(in String lockId, in long duration, in IGeneralCallback callback);
+    oneway void releaseLock(in String lockId, in IGeneralCallback callback);
 
     String getImageThumbPara();
 
     void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
     void getApplicationId(in String applicationId, in IGeneralCallback2 callback);
     oneway void getAuthorizedMediaUrl(in long messageUid, in int mediaType, in String mediaPath, in IGetAuthorizedMediaUrlCallback callback);
-    oneway void getUploadUrl(in String fileName, in int mediaType, in IGetUploadUrlCallback callback);
+    oneway void getUploadUrl(in String fileName, in int mediaType, in String contentType, in IGetUploadUrlCallback callback);
 
     boolean isSupportBigFilesUpload();
 
