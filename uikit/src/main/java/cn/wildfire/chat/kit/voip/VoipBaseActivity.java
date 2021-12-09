@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.media.AudioManager;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
@@ -126,7 +125,6 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             return;
         }
         session.setCallback(this);
-        setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
     }
 
     @Override
@@ -235,9 +233,6 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
 
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason reason) {
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(AudioManager.MODE_NORMAL);
-        audioManager.setSpeakerphoneOn(false);
         finishFadeout();
     }
 

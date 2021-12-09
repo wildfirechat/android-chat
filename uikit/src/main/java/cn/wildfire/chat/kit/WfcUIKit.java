@@ -214,11 +214,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 return;
             }
 
-            boolean speakerOff = session.getConversation().type == Conversation.ConversationType.Single && session.isAudioOnly();
-            AudioManager audioManager = (AudioManager) application.getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setMode(speakerOff ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
-            audioManager.setSpeakerphoneOn(!speakerOff);
-
             Conversation conversation = session.getConversation();
             if (conversation.type == Conversation.ConversationType.Single) {
                 Intent intent = new Intent(WfcIntent.ACTION_VOIP_SINGLE);

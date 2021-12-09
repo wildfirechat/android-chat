@@ -5,8 +5,6 @@
 package cn.wildfire.chat.kit.voip.conference;
 
 import android.app.AlertDialog;
-import android.content.Context;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -66,7 +64,6 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     private List<String> participants;
     private UserInfo me;
     private UserViewModel userViewModel;
-    private boolean isSpeakerOn;
 
     public static final String TAG = "ConferenceVideoFragment";
 
@@ -93,9 +90,8 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         updateParticipantStatus(session);
         updateCallDuration();
 
-        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-        isSpeakerOn = audioManager.getMode() == AudioManager.MODE_NORMAL;
-        speakerImageView.setSelected(isSpeakerOn);
+        AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
+        speakerImageView.setSelected(audioManager.getSelectedAudioDevice() == AVAudioManager.AudioDevice.SPEAKER_PHONE);
 
         manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
     }
@@ -184,11 +180,18 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     void speaker() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-            isSpeakerOn = !isSpeakerOn;
-            audioManager.setMode(isSpeakerOn ? AudioManager.MODE_NORMAL : AudioManager.MODE_IN_COMMUNICATION);
-            speakerImageView.setSelected(isSpeakerOn);
-            audioManager.setSpeakerphoneOn(isSpeakerOn);
+            AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
+            AVAudioManager.AudioDevice currentAudioDevice = audioManager.getSelectedAudioDevice();
+            if(currentAudioDevice == AVAudioManager.AudioDevice.WIRED_HEADSET ||currentAudioDevice == AVAudioManager.AudioDevice.BLUETOOTH){
+                return;
+            }
+            if(currentAudioDevice == AVAudioManager.AudioDevice.SPEAKER_PHONE){
+                audioManager.selectAudioDevice(AVAudioManager.AudioDevice.EARPIECE);
+                speakerImageView.setSelected(false);
+            }else {
+                audioManager.selectAudioDevice(AVAudioManager.AudioDevice.SPEAKER_PHONE);
+                speakerImageView.setSelected(true);
+            }
         }
     }
 
@@ -353,19 +356,10 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
 
     @Override
     public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
-        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-        if (audioManager.isSpeakerphoneOn()) {
-            isSpeakerOn = true;
-            speakerImageView.setSelected(true);
-        } else {
-            isSpeakerOn = false;
+        if (device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.EARPIECE || device == AVAudioManager.AudioDevice.BLUETOOTH) {
             speakerImageView.setSelected(false);
-        }
-
-        if (device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.BLUETOOTH) {
-            speakerImageView.setEnabled(false);
         } else {
-            speakerImageView.setEnabled(true);
+            speakerImageView.setSelected(true);
         }
     }
 
