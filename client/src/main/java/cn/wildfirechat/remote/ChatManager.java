@@ -2920,7 +2920,6 @@ public class ChatManager {
         }
 
         try {
-
             if (mClient.clearUnreadStatus(conversation.type.getValue(), conversation.target, conversation.line)) {
                 ConversationInfo conversationInfo = getConversation(conversation);
                 conversationInfo.unreadCount = new UnreadCount();
@@ -2948,7 +2947,15 @@ public class ChatManager {
         }
 
         try {
-            mClient.clearUnreadStatusEx(inTypes, inLines);
+            boolean result = mClient.clearUnreadStatusEx(inTypes, inLines);
+            if (result){
+                List<ConversationInfo> conversationInfos = mClient.getConversationList(inTypes, inLines);
+                for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
+                    for (ConversationInfo info : conversationInfos) {
+                        listener.onConversationUnreadStatusClear(info);
+                    }
+                }
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -6057,7 +6064,7 @@ public class ChatManager {
      * 设置第三方推送设备token
      *
      * @param token
-     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.PushType}
+     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.PushService.PushServiceType}
      */
     public void setDeviceToken(String token, int pushType) {
         Log.d(TAG, "setDeviceToken " + token + " " + pushType);
