@@ -198,6 +198,12 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     public void onDestroy() {
         this.extension.onDestroy();
+        if (audioRecorderPanel != null){
+            audioRecorderPanel.deattch();
+        }
+        if (pttPanel != null){
+            pttPanel.deattch();
+        }
     }
 
     public void init(Fragment fragment, InputAwareLayout rootInputAwareLayout) {

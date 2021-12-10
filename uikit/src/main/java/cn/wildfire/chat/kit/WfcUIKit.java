@@ -187,7 +187,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
         if (pttEnabled){
             PTTClient.getInstance().init(application);
-            PTTClient.getInstance().setEnablePtt(true);
         }
     }
 
