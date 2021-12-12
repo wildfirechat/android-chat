@@ -86,6 +86,7 @@ public class Draft {
         }catch (Exception e){
             Log.e("Draft", e.getMessage());
             // fallback
+            draft = new Draft();
             draft.content = json;
         }
         return draft;
