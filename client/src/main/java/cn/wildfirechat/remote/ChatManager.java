@@ -120,6 +120,8 @@ import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberVisibleNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
+import cn.wildfirechat.message.notification.ModifyGroupExtraNotificationContent;
+import cn.wildfirechat.message.notification.ModifyGroupMemberExtraNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
@@ -7033,6 +7035,8 @@ public class ChatManager {
         registerMessageContent(KickoffGroupMemberNotificationContent.class);
         registerMessageContent(LocationMessageContent.class);
         registerMessageContent(ModifyGroupAliasNotificationContent.class);
+        registerMessageContent(ModifyGroupExtraNotificationContent.class);
+        registerMessageContent(ModifyGroupMemberExtraNotificationContent.class);
         registerMessageContent(QuitGroupNotificationContent.class);
         registerMessageContent(RecallMessageContent.class);
         registerMessageContent(DeleteMessageContent.class);
