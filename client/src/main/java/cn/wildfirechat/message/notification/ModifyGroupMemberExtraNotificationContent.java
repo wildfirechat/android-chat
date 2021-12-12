@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message.notification;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_MEMBER_EXTRA;
+
 import android.os.Parcel;
 import android.text.TextUtils;
 
@@ -16,8 +18,6 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_MODIFY_GROUP_MEMBER_EXTRA;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
@@ -61,7 +61,7 @@ public class ModifyGroupMemberExtraNotificationContent extends GroupNotification
             }
             sb.append("的");
         }
-        sb.append("群昵称为");
+        sb.append("群成员附加信息为");
         sb.append(groupMemberExtra);
 
         return sb.toString();
