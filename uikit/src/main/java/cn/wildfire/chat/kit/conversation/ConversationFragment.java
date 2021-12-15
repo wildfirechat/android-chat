@@ -37,6 +37,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -963,10 +964,19 @@ public class ConversationFragment extends Fragment implements
     public void onMessageReceiptCLick(Message message) {
         Map<String, Long> deliveries = adapter.getDeliveries();
         Map<String, Long> readEntries = adapter.getReadEntries();
+        List<GroupMember> groupMembers = ChatManager.Instance().getGroupMembers(groupInfo.target, false);
+        if(groupMembers == null){
+            return;
+        }
+        List<String> groupMemberIds = new ArrayList<>();
+        for (GroupMember groupMember : groupMembers) {
+            groupMemberIds.add(groupMember.memberId);
+        }
+
         int deliveryCount = 0;
         if (deliveries != null) {
             for (Map.Entry<String, Long> delivery : deliveries.entrySet()) {
-                if (delivery.getValue() >= message.serverTime) {
+                if (delivery.getValue() >= message.serverTime && groupMemberIds.contains(delivery.getKey())) {
                     deliveryCount++;
                 }
             }
@@ -974,7 +984,7 @@ public class ConversationFragment extends Fragment implements
         int readCount = 0;
         if (readEntries != null) {
             for (Map.Entry<String, Long> readEntry : readEntries.entrySet()) {
-                if (readEntry.getValue() >= message.serverTime) {
+                if (readEntry.getValue() >= message.serverTime && groupMemberIds.contains(readEntry.getKey())) {
                     readCount++;
                 }
             }
