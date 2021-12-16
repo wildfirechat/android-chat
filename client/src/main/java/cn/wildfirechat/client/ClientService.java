@@ -904,6 +904,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setConversationDraft(int conversationType, String target, int line, String draft) throws RemoteException {
             ConversationInfo conversationInfo = getConversation(conversationType, target, line);
+            if (conversationInfo == null){
+                return;
+            }
             if ((TextUtils.isEmpty(conversationInfo.draft) && TextUtils.isEmpty(draft)) || TextUtils.equals(conversationInfo.draft, draft)) {
                 return;
             }
