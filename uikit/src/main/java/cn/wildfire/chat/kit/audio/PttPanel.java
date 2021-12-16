@@ -99,7 +99,7 @@ public class PttPanel implements View.OnTouchListener {
             case MotionEvent.ACTION_CANCEL:
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_normal);
                 if (isTalking) {
-                    stopTalk();
+                stopTalk();
                 }
                 break;
             default:
@@ -114,16 +114,16 @@ public class PttPanel implements View.OnTouchListener {
         PTTClient.getInstance().requestTalk(conversation, new TalkingCallback() {
             @Override
             public void onStartTalking(Conversation conversation) {
-                playSoundEffect(true);
-                showTalking();
                 startTime = System.currentTimeMillis();
                 isTalking = true;
+                playSoundEffect(true);
                 showTalking();
                 tick();
             }
 
             @Override
             public void onTalkingEnd(Conversation conversation, int reason) {
+                isTalking = false;
                 playSoundEffect(false);
                 stopTalk();
             }
@@ -146,18 +146,14 @@ public class PttPanel implements View.OnTouchListener {
     }
 
     private void playSoundEffect(boolean start) {
-        this.soundPool.play(start ? startSoundId : stopSoundId, 0.1f, 0.1f, 0, 0, 1);
+        if (this.soundPool != null) {
+            this.soundPool.play(start ? startSoundId : stopSoundId, 0.1f, 0.1f, 0, 0, 1);
+        }
     }
 
     private void stopTalk() {
-        if (!isTalking) {
-            return;
-        }
         PTTClient.getInstance().releaseTalking(conversation);
         hideTalking();
-
-        isTalking = false;
-
     }
 
     private void showTalking() {
@@ -228,7 +224,7 @@ public class PttPanel implements View.OnTouchListener {
     }
 
     private void updateVolume(int averageAmplitude) {
-        if (this.stateImageView == null){
+        if (conversation == null || this.stateImageView == null) {
             return;
         }
         int db = (averageAmplitude / 1000) % 8;
