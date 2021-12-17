@@ -2974,12 +2974,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     private void filterNewMessage(ProtoMessage protoMessage) {
-        if(protoMessage.getContent().getType() == ContentType_Mark_Unread_Sync) {
+        if(protoMessage.getContent().getType() == ContentType_Mark_Unread_Sync && userId != null && userId.equals(protoMessage.getFrom())) {
             Message msg = convertProtoMessage(protoMessage);
             MarkUnreadMessageContent content = (MarkUnreadMessageContent)msg.content;
             ProtoLogic.setLastReceivedMessageUnRead(msg.conversation.type.getValue(), msg.conversation.target, msg.conversation.line, content.getMessageUid(), content.getTimestamp());
         }
     }
+
     @Override
     public void onFriendListUpdated(String[] friendList) {
 //        if (friendList == null || friendList.length == 0) {
