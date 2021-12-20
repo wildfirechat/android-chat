@@ -18,7 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lqr.emoji.MoonUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,9 +37,11 @@ import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 @SuppressWarnings("unused")
 public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
@@ -267,12 +271,20 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (ConversationContextMenuItemTags.TAG_MarkAsRead.equals(itemTag)) {
-            return conversationInfo.unreadCount.unread == 0;
+            return conversationInfo.unreadCount.unread == 0 && conversationInfo.unreadCount.unreadMention == 0 && conversationInfo.unreadCount.unreadMentionAll == 0;
         }
 
         if (ConversationContextMenuItemTags.TAG_MarkAsUnread.equals(itemTag)) {
-            return conversationInfo.unreadCount.unread > 0;
+            if (conversationInfo.unreadCount.unread > 0 || conversationInfo.unreadCount.unreadMention > 0 || conversationInfo.unreadCount.unreadMentionAll > 0) {
+                return true;
+            }
+            List<Integer> messageStatuses = new ArrayList<>();
+            messageStatuses.add(MessageStatus.Readed.value());
+            messageStatuses.add(MessageStatus.Played.value());
+            List<Message> messages = ChatManager.Instance().getMessagesByMessageStatus(conversationInfo.conversation, messageStatuses, 0, false, 1, "");
+            return messages == null || messages.size() == 0;
         }
+
         return false;
     }
 
