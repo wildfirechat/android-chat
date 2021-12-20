@@ -545,6 +545,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<Message> getMessagesInStatusSync(Conversation conversation, int[] messageStatus, long fromIndex, boolean before, int count, String withUser) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesInStatus(conversation.type.ordinal(), conversation.target, conversation.line, messageStatus, fromIndex, before, count, withUser);
+            SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, before);
+            if (entry.messages.size() != protoMessages.length) {
+                android.util.Log.e(TAG, "getMessagesEx2, drop messages " + (protoMessages.length - entry.messages.size()));
+            }
+            return entry.messages;
+        }
+
+        @Override
         public void getMessagesInTypesAsync(Conversation conversation, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.getMessagesInTypes(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, fromIndex, before, count, withUser);
             safeMessagesCallback(protoMessages, before, callback);

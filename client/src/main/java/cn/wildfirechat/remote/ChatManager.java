@@ -2309,6 +2309,24 @@ public class ChatManager {
             mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
+    /**
+     * 根据消息状态获取会话消息
+     *
+     * @param conversation  会话
+     * @param messageStatus 消息状态列表
+     * @param fromIndex     消息起始id(messageId)
+     * @param before        true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count         获取消息条数
+     * @param withUser      只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     */
+    public List<Message> getMessagesByMessageStatus(Conversation conversation, List<Integer> messageStatus, long fromIndex, boolean before, int count, String withUser) {
+        try {
+            return mClient.getMessagesInStatusSync(conversation, convertIntegers(messageStatus), fromIndex, before, count, withUser);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * 根据消息状态获取会话消息
