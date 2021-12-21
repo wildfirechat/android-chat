@@ -2653,6 +2653,42 @@ public class ChatManager {
     }
 
     /**
+     * 获取远程历史消息
+     *
+     * @param messageUid       消息uid
+     * @param callback
+     */
+    public void getRemoteMessage(long messageUid, GetOneRemoteMessageCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.getRemoteMessage(messageUid, new IGetRemoteMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess(messages.get(0));
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 获取远程文件记录
      *
      * @param conversation    会话，如果为空则获取当前用户所有收到和发出的文件记录
