@@ -635,6 +635,38 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             });
         }
 
+        @Override
+        public void getRemoteMessage(long messageUid, IGetRemoteMessageCallback callback) throws RemoteException {
+            ProtoLogic.getRemoteMessage(messageUid, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, false);
+                    if(callback != null) {
+                        try {
+                            if(entry == null || entry.messages == null || entry.messages.isEmpty()) {
+                                callback.onFailure(245);
+                            } else {
+                                callback.onSuccess(entry.messages);
+                            }
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    if(callback != null) {
+                        try {
+                            callback.onFailure(i);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+
         private List<FileRecord> convertProtoFileRecord(ProtoFileRecord[] protoFileRecords) {
             List<FileRecord> records = new ArrayList<>();
             for (ProtoFileRecord pfr : protoFileRecords) {
