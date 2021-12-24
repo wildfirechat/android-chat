@@ -266,9 +266,21 @@ public class ImageUtils {
                             //分析文件名，获取更新时间，hash值
                             //Path 格式为 groupId-updatetime-width-hash
                             String name = file.getName();
+                            if (!name.startsWith(groupId) || name.length() <= groupId.length()) {
+                                return;
+                            }
                             name = name.substring(groupId.length() + 1);
                             String[] arr = name.split("-");
-                            long timestamp = Long.parseLong(arr[1]);
+                            if (arr.length != 3) {
+                                return;
+                            }
+                            long timestamp;
+                            try {
+                                timestamp = Long.parseLong(arr[0]);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                return;
+                            }
 
                             long now = System.currentTimeMillis();
                             if (now - timestamp > 7 * 24 * 3600 * 1000 || timestamp < groupInfo.updateDt) {
