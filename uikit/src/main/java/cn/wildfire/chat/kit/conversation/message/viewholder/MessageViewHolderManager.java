@@ -46,7 +46,7 @@ public class MessageViewHolderManager {
     public void registerMessageViewHolder(Class<? extends MessageContentViewHolder> clazz, int sendLayoutRes, int receiveLayoutRes) {
         MessageContentType contentType = clazz.getAnnotation(MessageContentType.class);
         if (contentType == null) {
-            throw new IllegalArgumentException("the message content viewHolder must be annotated with MessageContentType");
+            throw new IllegalArgumentException("the message content viewHolder must be annotated with MessageContentType " + clazz.getSimpleName());
         }
 
         if (sendLayoutRes == 0 && receiveLayoutRes == 0) {
