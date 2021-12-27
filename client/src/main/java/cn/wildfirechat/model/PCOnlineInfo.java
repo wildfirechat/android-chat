@@ -18,11 +18,13 @@ public class PCOnlineInfo implements Parcelable {
      * - PC_Online: PC客户端在线
      * - Web_Online: Web客户端在线
      * - WX_Online: WX小程序客户端在线
+     * - Pad_Online: Pad客户端在线
      */
     public enum PCOnlineType {
         PC_Online,
         Web_Online,
-        WX_Online
+        WX_Online,
+        Pad_Online
     }
 
     private PCOnlineType type;
