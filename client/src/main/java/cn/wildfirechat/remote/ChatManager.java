@@ -6680,6 +6680,7 @@ public class ChatManager {
         String pcOnline = getUserSetting(UserSettingScope.PCOnline, "PC");
         String webOnline = getUserSetting(UserSettingScope.PCOnline, "Web");
         String wxOnline = getUserSetting(UserSettingScope.PCOnline, "WX");
+        String padOnline = getUserSetting(UserSettingScope.PCOnline, "Pad");
 
         List<PCOnlineInfo> infos = new ArrayList<>();
         PCOnlineInfo info = PCOnlineInfo.infoFromStr(pcOnline, PCOnlineInfo.PCOnlineType.PC_Online);
@@ -6691,6 +6692,10 @@ public class ChatManager {
             infos.add(info);
         }
         info = PCOnlineInfo.infoFromStr(wxOnline, PCOnlineInfo.PCOnlineType.WX_Online);
+        if (info != null) {
+            infos.add(info);
+        }
+        info = PCOnlineInfo.infoFromStr(padOnline, PCOnlineInfo.PCOnlineType.Pad_Online);
         if (info != null) {
             infos.add(info);
         }

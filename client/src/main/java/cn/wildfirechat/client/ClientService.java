@@ -2843,6 +2843,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             info.device = Build.MANUFACTURER;
             info.deviceversion = Build.VERSION.RELEASE;
             info.phonename = Build.MODEL;
+            //如果是android pad设备，需要改这里，另外需要在gettoken时也使用pad类型，请在AppService代码中搜索"android pad"
+//            if(当前设备是android Pad) {
+//                info.platform = 9;
+//            } else { //当前设备是android手机
+//                info.platform = 2;
+//            }
 
             Locale locale;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
