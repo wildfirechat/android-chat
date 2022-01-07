@@ -191,6 +191,7 @@ interface IRemoteClient {
     void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
     List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
+    List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset);
     oneway void searchMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in String keyword, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
 
     List<GroupSearchResult> searchGroups(in String keyword);
