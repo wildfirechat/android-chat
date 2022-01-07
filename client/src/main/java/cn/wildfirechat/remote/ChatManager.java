@@ -4577,6 +4577,30 @@ public class ChatManager {
     /**
      * 搜索消息
      *
+     * @param conversation 会话为空时，搜索所有会话消息
+     * @param keyword
+     * @param contentTypes
+     * @param desc
+     * @param limit
+     * @param offset
+     * @return
+     */
+    public List<Message> searchMessageByTypes(Conversation conversation, String keyword, List<Integer> contentTypes, boolean desc, int limit, int offset) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.searchMessage(conversation, keyword, desc, limit, offset);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 搜索消息
+     *
      * @param conversationTypes 会话类型
      * @param lines             会话线路
      * @param contentTypes      消息类型
