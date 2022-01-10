@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -57,6 +58,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     private OnMessageCheckListener onMessageCheckListener;
     private OnPortraitLongClickListener onPortraitLongClickListener;
     private OnMessageReceiptClickListener onMessageReceiptClickListener;
+
+    long oldestMessageUid = Long.MAX_VALUE;
+    long oldestMessageId = Long.MAX_VALUE;
 
     public ConversationMessageAdapter(ConversationFragment fragment) {
         super();
@@ -97,8 +101,14 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     public void setMessages(List<UiMessage> messages) {
-        this.messages = messages;
-        if (this.messages == null) {
+        if (messages != null && !messages.isEmpty()) {
+            oldestMessageUid = messages.get(0).message.messageUid;
+            messages = messages.stream().filter(m -> m.message.messageId != 0).collect(Collectors.toList());
+            if (!messages.isEmpty()) {
+                oldestMessageId = messages.get(0).message.messageId;
+            }
+            this.messages = messages;
+        } else {
             this.messages = new ArrayList<>();
         }
     }
@@ -154,6 +164,13 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public void addMessagesAtHead(List<UiMessage> newMessages) {
         if (newMessages == null || newMessages.isEmpty()) {
             return;
+        }
+        oldestMessageUid = newMessages.get(0).message.messageUid;
+        newMessages = newMessages.stream().filter(m -> m.message.messageId != 0).collect(Collectors.toList());
+        if (newMessages.isEmpty()) {
+            return;
+        } else {
+            oldestMessageId = newMessages.get(0).message.messageId;
         }
         this.messages.addAll(0, newMessages);
         notifyItemRangeInserted(0, newMessages.size());
