@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.function.BiConsumer;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.UserSource;
@@ -98,7 +97,6 @@ import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
-import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
@@ -2611,11 +2609,11 @@ public class ChatManager {
      * 获取远程历史消息
      *
      * @param conversation    会话
-     * @param beforeMessageId 起始消息的消息id
+     * @param beforeMessageUid 起始消息的消息uid
      * @param count           获取消息的条数
      * @param callback
      */
-    public void getRemoteMessages(Conversation conversation, List<Integer> contentTypes, long beforeMessageId, int count, GetRemoteMessageCallback callback) {
+    public void getRemoteMessages(Conversation conversation, List<Integer> contentTypes, long beforeMessageUid, int count, GetRemoteMessageCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
@@ -2628,7 +2626,7 @@ public class ChatManager {
                     intypes[i] = contentTypes.get(i);
                 }
             }
-            mClient.getRemoteMessages(conversation, intypes, beforeMessageId, count, new IGetRemoteMessageCallback.Stub() {
+            mClient.getRemoteMessages(conversation, intypes, beforeMessageUid, count, new IGetRemoteMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages) throws RemoteException {
                     if (callback != null) {

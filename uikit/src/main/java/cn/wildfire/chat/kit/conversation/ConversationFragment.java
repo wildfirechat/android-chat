@@ -784,14 +784,8 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void loadMoreOldMessages() {
-        long fromMessageId = Long.MAX_VALUE;
-        long fromMessageUid = Long.MAX_VALUE;
-        if (adapter.getMessages() != null && !adapter.getMessages().isEmpty()) {
-            fromMessageId = adapter.getItem(0).message.messageId;
-            fromMessageUid = adapter.getItem(0).message.messageUid;
-        }
 
-        conversationViewModel.loadOldMessages(conversation, channelPrivateChatUser, fromMessageId, fromMessageUid, MESSAGE_LOAD_COUNT_PER_TIME)
+        conversationViewModel.loadOldMessages(conversation, channelPrivateChatUser, adapter.oldestMessageId, adapter.oldestMessageUid, MESSAGE_LOAD_COUNT_PER_TIME)
             .observe(this, uiMessages -> {
                 adapter.addMessagesAtHead(uiMessages);
 
@@ -965,7 +959,7 @@ public class ConversationFragment extends Fragment implements
         Map<String, Long> deliveries = adapter.getDeliveries();
         Map<String, Long> readEntries = adapter.getReadEntries();
         List<GroupMember> groupMembers = ChatManager.Instance().getGroupMembers(groupInfo.target, false);
-        if(groupMembers == null){
+        if (groupMembers == null) {
             return;
         }
         List<String> groupMemberIds = new ArrayList<>();

@@ -40,6 +40,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     protected void onCleared() {
     }
 
+    // 包含不存储类型消息
     public MutableLiveData<List<UiMessage>> loadOldMessages(Conversation conversation, String withUser, long fromMessageId, long fromMessageUid, int count) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
@@ -59,9 +60,9 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                                 if (messages != null && !messages.isEmpty()) {
                                     List<UiMessage> msgs = new ArrayList<>();
                                     for (Message msg : messages) {
-                                        if(msg.messageId != 0) {
+//                                        if (msg.messageId != 0) {
                                             msgs.add(new UiMessage(msg));
-                                        }
+//                                        }
                                     }
                                     result.postValue(msgs);
                                 } else {
@@ -171,11 +172,11 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
         }
     }
 
-    public void clearRemoteConversationMessage(Conversation conversation){
+    public void clearRemoteConversationMessage(Conversation conversation) {
         ChatManager.Instance().clearRemoteConversationMessage(conversation, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                if (clearConversationMessageLiveData != null){
+                if (clearConversationMessageLiveData != null) {
                     clearConversationMessageLiveData.setValue(conversation);
                 }
             }
