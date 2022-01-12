@@ -65,6 +65,7 @@ import cn.wildfirechat.client.IGetUploadUrlCallback;
 import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
+import cn.wildfirechat.client.IOnConnectToServerListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
@@ -193,6 +194,7 @@ public class ChatManager {
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
     private List<OnConnectionStatusChangeListener> onConnectionStatusChangeListeners = new ArrayList<>();
+    private List<OnConnectToServerListener> onConnectToServerListeners = new ArrayList<>();
     private List<OnSendMessageListener> sendMessageListeners = new ArrayList<>();
     private List<OnGroupInfoUpdateListener> groupInfoUpdateListeners = new ArrayList<>();
     private List<OnGroupMembersUpdateListener> groupMembersUpdateListeners = new ArrayList<>();
@@ -404,6 +406,27 @@ public class ChatManager {
                 while (iterator.hasNext()) {
                     listener = iterator.next();
                     listener.onConnectionStatusChange(status);
+                }
+            }
+        });
+    }
+
+    /**
+     * 连接状态回调
+     *
+     * @param host 服务器host
+     * @param ip 服务器ip
+     * @param port 服务器port
+     */
+    private void onConnectToServer(final String host, final String ip, final int port) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Iterator<OnConnectToServerListener> iterator = onConnectToServerListeners.iterator();
+                OnConnectToServerListener listener;
+                while (iterator.hasNext()) {
+                    listener = iterator.next();
+                    listener.onConnectToServer(host, ip, port);
                 }
             }
         });
@@ -662,6 +685,32 @@ public class ChatManager {
             return;
         }
         onConnectionStatusChangeListeners.remove(listener);
+    }
+
+    /**
+     * 添加连接到服务监听
+     *
+     * @param listener
+     */
+    public void addConnectToServerListener(OnConnectToServerListener listener) {
+        if (listener == null) {
+            return;
+        }
+        if (!onConnectToServerListeners.contains(listener)) {
+            onConnectToServerListeners.add(listener);
+        }
+    }
+
+    /**
+     * 删除连接到服务监听
+     *
+     * @param listener
+     */
+    public void removeConnectToServerListener(OnConnectToServerListener listener) {
+        if (listener == null) {
+            return;
+        }
+        onConnectToServerListeners.remove(listener);
     }
 
     /**
@@ -4520,6 +4569,45 @@ public class ChatManager {
     }
 
     /**
+     * 更新远程消息消息内容，只有专业版支持。客户端仅能更新自己发送的消息，更新的消息类型不能变，更新的消息类型是服务配置允许更新的内容。Server API更新则没有限制。
+     *
+     * @param messageUid 消息的UID
+     * @param messageContent 消息内容
+     * @param distribute 是否分发给其他客户端
+     * @param updateLocal 是否更新本地消息内容
+     * @param callback   操作结果回调
+     */
+    public void updateRemoteMessageContent(long messageUid, MessageContent messageContent, boolean distribute, boolean updateLocal, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.updateRemoteMessageContent(messageUid, messageContent.encode(), distribute, updateLocal, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    mainHandler.post(() -> {
+                        onDeleteMessage(messageUid);
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
      * 搜索会话
      *
      * @param keyword
@@ -7006,7 +7094,12 @@ public class ChatManager {
                         ChatManager.this.onConnectionStatusChange(connectionStatus);
                     }
                 });
-
+                mClient.setOnConnectToServerListener(new IOnConnectToServerListener.Stub() {
+                    @Override
+                    public void onConnectToServer(String host, String ip, int port) throws RemoteException {
+                        ChatManager.this.onConnectToServer(host, ip, port);
+                    }
+                });
                 mClient.setOnUserInfoUpdateListener(new IOnUserInfoUpdateListener.Stub() {
                     @Override
                     public void onUserInfoUpdated(List<UserInfo> userInfos) throws RemoteException {
