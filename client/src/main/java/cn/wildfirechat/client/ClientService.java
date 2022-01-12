@@ -113,6 +113,7 @@ import cn.wildfirechat.remote.RecoverReceiver;
 public class ClientService extends Service implements SdtLogic.ICallBack,
     AppLogic.ICallBack,
     ProtoLogic.IConnectionStatusCallback,
+    ProtoLogic.IConnectToServerCallback,
     ProtoLogic.IReceiveMessageCallback,
     ProtoLogic.IUserInfoUpdateCallback,
     ProtoLogic.ISettingUpdateCallback,
@@ -134,6 +135,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private String clientId;
     private RemoteCallbackList<IOnReceiveMessageListener> onReceiveMessageListeners = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnConnectionStatusChangeListener> onConnectionStatusChangeListenes = new WfcRemoteCallbackList<>();
+    private RemoteCallbackList<IOnConnectToServerListener> onConnectToServerListenes = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnFriendUpdateListener> onFriendUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnUserInfoUpdateListener> onUserInfoUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnGroupInfoUpdateListener> onGroupInfoUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
@@ -155,7 +157,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private String mHost;
 
     private boolean useSM4 = false;
-
 
     private class ClientServiceStub extends IRemoteClient.Stub {
 
@@ -197,6 +198,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setOnConnectionStatusChangeListener(IOnConnectionStatusChangeListener listener) throws RemoteException {
             onConnectionStatusChangeListenes.register(listener);
+        }
+
+        @Override
+        public void setOnConnectToServerListener(IOnConnectToServerListener listener) throws RemoteException {
+            onConnectToServerListenes.register(listener);
         }
 
 
@@ -1607,6 +1613,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void updateRemoteMessageContent(long messageUid, MessagePayload payload, boolean distribute, boolean updateLocal, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.updateRemoteMessageContent(messageUid, payload.toProtoContent(), distribute, updateLocal, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public List<ConversationSearchResult> searchConversation(String keyword, int[] conversationTypes, int[] lines) throws RemoteException {
             ProtoConversationSearchresult[] protoResults = ProtoLogic.searchConversation(keyword, conversationTypes, lines);
             List<ConversationSearchResult> output = new ArrayList<>();
@@ -2786,6 +2815,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setFriendRequestListUpdateCallback(this);
 
         ProtoLogic.setConnectionStatusCallback(ClientService.this);
+        ProtoLogic.setConnectToServerCallback(ClientService.this);
         ProtoLogic.setReceiveMessageCallback(ClientService.this);
         ProtoLogic.setConferenceEventCallback(ClientService.this);
         Log.i(TAG, "Proto connect:" + userName);
@@ -2922,6 +2952,26 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onConnectToServer(String host, String ip, int port) {
+        android.util.Log.d(TAG, "onConnectToServer:" + host);
+
+        handler.post(() -> {
+            int i = onConnectToServerListenes.beginBroadcast();
+            IOnConnectToServerListener listener;
+            while (i > 0) {
+                i--;
+                listener = onConnectToServerListenes.getBroadcastItem(i);
+                try {
+                    listener.onConnectToServer(host, ip, port);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onConnectToServerListenes.finishBroadcast();
+        });
     }
 
     @Override

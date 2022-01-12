@@ -9,6 +9,7 @@ import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IUploadMediaCallback;
 import cn.wildfirechat.client.IOnReceiveMessageListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
+import cn.wildfirechat.client.IOnConnectToServerListener;
 import cn.wildfirechat.client.IGetChatRoomInfoCallback;
 import cn.wildfirechat.client.IGetChatRoomMembersInfoCallback;
 import cn.wildfirechat.client.IGetGroupInfoCallback;
@@ -73,6 +74,7 @@ interface IRemoteClient {
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
     oneway void setOnConnectionStatusChangeListener(in IOnConnectionStatusChangeListener listener);
+    oneway void setOnConnectToServerListener(in IOnConnectToServerListener listener);
 
     oneway void setOnUserInfoUpdateListener(in IOnUserInfoUpdateListener listener);
     oneway void setOnGroupInfoUpdateListener(in IOnGroupInfoUpdateListener listener);
@@ -189,6 +191,7 @@ interface IRemoteClient {
     oneway void modifyMyInfo(in List<ModifyMyInfoEntry> values, in IGeneralCallback callback);
     boolean deleteMessage(in long messageId);
     void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
+    void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
     List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
     List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset);
