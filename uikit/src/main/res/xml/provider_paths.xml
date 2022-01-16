@@ -9,4 +9,7 @@
     <cache-path
         name="cache-documents"
         path="documents" />
+    <cache-path
+        name="cache-img"
+        path="img" />
 </paths>
