@@ -13,6 +13,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 
+import androidx.annotation.NonNull;
+
 import com.lqr.imagepicker.ImageDataSource;
 import com.lqr.imagepicker.ImagePickStore;
 import com.lqr.imagepicker.ImagePicker;
@@ -25,8 +27,6 @@ import com.lqr.imagepicker.bean.ImageItem;
 import com.lqr.imagepicker.view.FolderPopUpWindow;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
 
 public class ImageGridActivity extends ImageBaseActivity implements ImageDataSource.OnImageLoadListener, ImageGridAdapter.OnImageItemClickListener, View.OnClickListener {
 
@@ -121,7 +121,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     }
 
     public void takePhoto() {
-        takePhotoOutputPath = Utils.genTakePhotoOutputPath();
+        takePhotoOutputPath = Utils.genTakePhotoOutputPath(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!checkPermission(Manifest.permission.CAMERA)) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, ImageGridActivity.REQUEST_PERMISSION_CAMERA);

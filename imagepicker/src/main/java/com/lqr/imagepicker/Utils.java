@@ -8,12 +8,12 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 
+import androidx.core.content.FileProvider;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import androidx.core.content.FileProvider;
 
 public class Utils {
 
@@ -77,21 +77,17 @@ public class Utils {
     public static void takePhoto(Activity activity, String outputPath, int requestCode) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", new File(outputPath)));
-        }
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", new File(outputPath)));
         activity.startActivityForResult(takePictureIntent, requestCode);
     }
 
     /**
      * @return 绝对路径
      */
-    public static String genTakePhotoOutputPath() {
-        File takeImageFile;
-        if (existSDCard()) {
-            takeImageFile = new File(Environment.getExternalStorageDirectory(), "/DCIM/camera/");
-        } else {
-            takeImageFile = Environment.getDataDirectory();
+    public static String genTakePhotoOutputPath(Context context) {
+        File takeImageFile = new File(context.getCacheDir(), "img");
+        if (!takeImageFile.exists()) {
+            takeImageFile.mkdirs();
         }
         takeImageFile = createFile(takeImageFile, "IMG_", ".jpg");
         return takeImageFile.getAbsolutePath();
