@@ -4,8 +4,6 @@
 
 package cn.wildfire.chat.kit;
 
-import android.os.Environment;
-
 /**
  * Created by heavyrain lee on 2017/11/24.
  */
@@ -61,9 +59,9 @@ public class Config {
      */
     public static final String SP_CONFIG_FILE_NAME = "config";
 
-    public static String VIDEO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/video";
-    public static String AUDIO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/audio";
-    public static String PHOTO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/photo";
-    public static String FILE_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/file";
+    public static String VIDEO_SAVE_DIR;
+    public static String AUDIO_SAVE_DIR;
+    public static String PHOTO_SAVE_DIR;
+    public static String FILE_SAVE_DIR;
 
 }
