@@ -114,6 +114,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     AppLogic.ICallBack,
     ProtoLogic.IConnectionStatusCallback,
     ProtoLogic.IConnectToServerCallback,
+    ProtoLogic.ITrafficDataCallback,
     ProtoLogic.IReceiveMessageCallback,
     ProtoLogic.IUserInfoUpdateCallback,
     ProtoLogic.ISettingUpdateCallback,
@@ -2816,6 +2817,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         ProtoLogic.setConnectionStatusCallback(ClientService.this);
         ProtoLogic.setConnectToServerCallback(ClientService.this);
+        ProtoLogic.setTrafficDataCallback(ClientService.this);
         ProtoLogic.setReceiveMessageCallback(ClientService.this);
         ProtoLogic.setConferenceEventCallback(ClientService.this);
         Log.i(TAG, "Proto connect:" + userName);
@@ -2972,6 +2974,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             onConnectToServerListenes.finishBroadcast();
         });
+    }
+
+    @Override
+    public void onTrafficData(long send, long recv) {
+        Log.d("client", "on traffic data(" + send + ", " + recv + ")");
     }
 
     @Override
