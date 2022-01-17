@@ -220,7 +220,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     public void markConversationUnread(ConversationInfo conversationInfo) {
         ChatManager.Instance().markAsUnRead(conversationInfo.conversation, true);
-        reloadConversationUnreadStatus();
     }
 
     @Override

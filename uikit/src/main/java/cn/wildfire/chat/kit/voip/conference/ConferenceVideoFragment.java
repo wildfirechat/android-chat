@@ -6,8 +6,6 @@ package cn.wildfire.chat.kit.voip.conference;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -121,10 +119,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
         handler.post(updateCallDurationRunnable);
         updateParticipantStatus(session);
-
-        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(AudioManager.MODE_NORMAL);
-        audioManager.setSpeakerphoneOn(true);
 
         updateControlStatus();
 

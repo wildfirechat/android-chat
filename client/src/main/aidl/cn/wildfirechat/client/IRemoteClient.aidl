@@ -9,6 +9,7 @@ import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IUploadMediaCallback;
 import cn.wildfirechat.client.IOnReceiveMessageListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
+import cn.wildfirechat.client.IOnConnectToServerListener;
 import cn.wildfirechat.client.IGetChatRoomInfoCallback;
 import cn.wildfirechat.client.IGetChatRoomMembersInfoCallback;
 import cn.wildfirechat.client.IGetGroupInfoCallback;
@@ -73,6 +74,7 @@ interface IRemoteClient {
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
     oneway void setOnConnectionStatusChangeListener(in IOnConnectionStatusChangeListener listener);
+    oneway void setOnConnectToServerListener(in IOnConnectToServerListener listener);
 
     oneway void setOnUserInfoUpdateListener(in IOnUserInfoUpdateListener listener);
     oneway void setOnGroupInfoUpdateListener(in IOnGroupInfoUpdateListener listener);
@@ -95,6 +97,7 @@ interface IRemoteClient {
     List<Message> getMessages(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser);
     List<Message> getMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser);
     List<Message> getMessagesEx2(in int[] conversationTypes, in int[] lines, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser);
+    List<Message> getMessagesInStatusSync(in Conversation conversation, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser);
 
     oneway void getMessagesAsync(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesInTypesAsync(in Conversation conversation, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
@@ -107,6 +110,7 @@ interface IRemoteClient {
     oneway void getUserMessagesEx(in String userId, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
 
     oneway void getRemoteMessages(in Conversation conversation, in int[] contentTypes, in long beforeMessageUid, in int count, in IGetRemoteMessageCallback callback);
+    oneway void getRemoteMessage(in long messageUid, in IGetRemoteMessageCallback callback);
     oneway void getConversationFileRecords(in Conversation conversation, in String fromUser, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void getMyFileRecords(in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void deleteFileRecord(in long messageUid, in IGeneralCallback callback);
@@ -187,8 +191,10 @@ interface IRemoteClient {
     oneway void modifyMyInfo(in List<ModifyMyInfoEntry> values, in IGeneralCallback callback);
     boolean deleteMessage(in long messageId);
     void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
+    void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
     List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
+    List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset);
     oneway void searchMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in String keyword, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
 
     List<GroupSearchResult> searchGroups(in String keyword);

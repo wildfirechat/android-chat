@@ -34,10 +34,8 @@ import cn.wildfirechat.chat.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static String[] permissions = {
-        Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    };
+    private String[] mandatoryPermissions;
+
     private static final int REQUEST_CODE_DRAW_OVERLAY = 101;
 
     private SharedPreferences sharedPreferences;
@@ -58,17 +56,31 @@ public class SplashActivity extends AppCompatActivity {
         id = sharedPreferences.getString("id", null);
         token = sharedPreferences.getString("token", null);
 
+        if (Build.VERSION.SDK_INT >= 31) {
+            mandatoryPermissions = new String[]{
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                "android.permission.BLUETOOTH_CONNECT"
+            };
+        } else {
+            mandatoryPermissions = new String[]{
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            };
+        }
+
+
         if (checkPermission()) {
             new Handler().postDelayed(this::showNextScreen, 1000);
         } else {
-            requestPermissions(permissions, 100);
+            requestPermissions(mandatoryPermissions, 100);
         }
     }
 
     private boolean checkPermission() {
         boolean granted = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : permissions) {
+            for (String permission : mandatoryPermissions) {
                 granted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
                 if (!granted) {
                     break;

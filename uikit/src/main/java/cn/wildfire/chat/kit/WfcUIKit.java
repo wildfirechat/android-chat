@@ -187,7 +187,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
         if (pttEnabled){
             PTTClient.getInstance().init(application);
-            PTTClient.getInstance().setEnablePtt(true);
         }
     }
 
@@ -213,11 +212,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             if (participants == null || participants.isEmpty()) {
                 return;
             }
-
-            boolean speakerOff = session.getConversation().type == Conversation.ConversationType.Single && session.isAudioOnly();
-            AudioManager audioManager = (AudioManager) application.getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setMode(speakerOff ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
-            audioManager.setSpeakerphoneOn(!speakerOff);
 
             Conversation conversation = session.getConversation();
             if (conversation.type == Conversation.ConversationType.Single) {

@@ -45,6 +45,9 @@ public class PCOnlineNotificationViewHolder extends StatusNotificationViewHolder
             case WX_Online:
                 desc = "微信小程序 在线";
                 break;
+            case Pad_Online:
+                desc = "Pad 在线";
+                break;
             default:
                 break;
         }

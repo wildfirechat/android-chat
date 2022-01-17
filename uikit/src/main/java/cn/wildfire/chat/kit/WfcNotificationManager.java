@@ -158,7 +158,13 @@ public class WfcNotificationManager {
             Intent mainIntent = new Intent(context.getPackageName() + ".main");
             Intent conversationIntent = new Intent(context, ConversationActivity.class);
             conversationIntent.putExtra("conversation", message.conversation);
-            PendingIntent pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            PendingIntent pendingIntent;
+            if (Build.VERSION.SDK_INT >= 23){
+                pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            }else {
+                pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
+            }
             String tag = "wfc notification tag";
             showNotification(context, tag, notificationId(message.messageUid), title, pushContent, pendingIntent);
         }

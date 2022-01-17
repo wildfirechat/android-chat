@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'kotlin-android'
 
 group = 'com.github.wildfirechat'
 
@@ -56,6 +55,5 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 }
 repositories {
-    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     mavenCentral()
 }

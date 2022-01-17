@@ -109,6 +109,14 @@ public class AppService implements AppServiceProvider {
         //Platform_OSX = 4,
         //Platform_WEB = 5,
         //Platform_WX = 6,
+        //Platform_linux = 7,
+        //Platform_iPad = 8,
+        //Platform_APad = 9,
+
+        //如果是android pad设备，需要改这里，另外需要在ClientService对象中修改设备类型，请在ClientService代码中搜索"android pad"
+        //if（当前设备是android pad)
+        //  params.put("platform", new Integer(9));
+        //else
         params.put("platform", new Integer(2));
 
         try {
