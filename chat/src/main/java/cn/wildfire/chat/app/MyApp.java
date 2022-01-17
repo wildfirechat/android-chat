@@ -20,15 +20,10 @@ import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.push.PushService;
 
-//import cn.wildfire.chat.app.ptt.PttInviteMessageContentViewHolder;
-//import cn.wildfirechat.ptt.PTTClient;
-
-
 public class MyApp extends BaseApp {
 
-
     // 一定记得替换为你们自己的，ID请从BUGLY官网申请。关于BUGLY，可以从BUGLY官网了解，或者百度。
-    public static String BUGLY_ID = "34490ba79f";
+    public static String BUGLY_ID = "15dfd5f6d1";
 
     @Override
     public void onCreate() {
@@ -36,7 +31,7 @@ public class MyApp extends BaseApp {
         AppService.validateConfig(this);
 
         // bugly，务必替换为你自己的!!!
-        if ("wildfirechat.cn".equals(Config.IM_SERVER_HOST)) {
+        if ("wildfirechat.net".equals(Config.IM_SERVER_HOST)) {
             CrashReport.initCrashReport(getApplicationContext(), BUGLY_ID, false);
         }
         // 只在主进程初始化，否则会导致重复收到消息
