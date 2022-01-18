@@ -14,13 +14,13 @@ android {
     compileSdkVersion 30
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
-    //ndkVersion '18.1.5063045'
+    ndkVersion '18.1.5063045'
     defaultConfig {
         applicationId "net.wildfirechat.demo"
         minSdkVersion 21
         targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
-        versionCode 40
-        versionName '0.9.2'
+        versionCode 41
+        versionName '0.9.3'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -56,8 +56,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'com.tencent.bugly:crashreport:2.8.6.0'
-    implementation 'com.tencent.bugly:nativecrashreport:3.6.0.1'
+    implementation 'com.tencent.bugly:crashreport:4.0.0'
+    implementation 'com.tencent.bugly:nativecrashreport:3.9.2'
     implementation 'com.jakewharton:butterknife:10.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
     implementation "androidx.multidex:multidex:2.0.1"
