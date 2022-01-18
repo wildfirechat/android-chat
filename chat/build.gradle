@@ -14,13 +14,13 @@ android {
     compileSdkVersion 29
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
-    //ndkVersion '18.1.5063045'
+    ndkVersion '18.1.5063045'
     defaultConfig {
         applicationId "cn.wildfirechat.chat"
         minSdkVersion 21
         targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
-        versionCode 40
-        versionName '0.9.2'
+        versionCode 41
+        versionName '0.9.3'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
