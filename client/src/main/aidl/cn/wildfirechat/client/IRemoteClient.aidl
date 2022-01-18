@@ -34,6 +34,7 @@ import cn.wildfirechat.client.IGetGroupsCallback;
 import cn.wildfirechat.client.IOnUserInfoUpdateListener;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
+import cn.wildfirechat.client.IOnTrafficDataListener;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -84,6 +85,7 @@ interface IRemoteClient {
     oneway void setOnChannelInfoUpdateListener(in IOnChannelInfoUpdateListener listener);
     oneway void setOnConferenceEventListener(in IOnConferenceEventListener listener);
 
+    oneway void setOnTrafficDataListener(in IOnTrafficDataListener listener);
 
     oneway void registerMessageContent(in String msgContentCls);
 

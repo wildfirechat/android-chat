@@ -144,6 +144,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private RemoteCallbackList<IOnChannelInfoUpdateListener> onChannelInfoUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnGroupMembersUpdateListener> onGroupMembersUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnConferenceEventListener> onConferenceEventListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
+    private RemoteCallbackList<IOnTrafficDataListener> onTrafficDataListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
 
     private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
     //        public final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
@@ -238,6 +239,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setOnTrafficDataListener(IOnTrafficDataListener listener) throws RemoteException {
+            onTrafficDataListenerRemoteCallbackList.register(listener);
+        }
+
+        @Override
         public void setOnGroupMembersUpdateListener(IOnGroupMembersUpdateListener listener) throws RemoteException {
             onGroupMembersUpdateListenerRemoteCallbackList.register(listener);
         }
@@ -274,7 +280,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setForeground(int isForeground) throws RemoteException {
             BaseEvent.onForeground(isForeground == 1);
-            if(isForeground == 1 && mConnectionStatus != ConnectionStatusConnected && mConnectionStatus != ConnectionStatusReceiveing) {
+            if (isForeground == 1 && mConnectionStatus != ConnectionStatusConnected && mConnectionStatus != ConnectionStatusReceiveing) {
                 onNetworkChange();
             }
         }
@@ -365,11 +371,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             MessagePayload payload = msg.content.encode();
             protoMessage.setContent(payload.toProtoContent());
             protoMessage.setMessageId(msg.messageId);
-            if (msg.direction == null){
+            if (msg.direction == null) {
                 msg.direction = MessageDirection.Send;
             }
             protoMessage.setDirection(msg.direction.ordinal());
-            if (msg.status == null){
+            if (msg.status == null) {
                 msg.status = MessageStatus.Sending;
             }
             protoMessage.setStatus(msg.status.value());
@@ -390,7 +396,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onSuccess(long messageUid, long timestamp) {
                 try {
-                    if(callback != null)
+                    if (callback != null)
                         callback.onSuccess(messageUid, timestamp);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -400,7 +406,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onFailure(int errorCode) {
                 try {
-                    if(callback != null)
+                    if (callback != null)
                         callback.onFailure(errorCode);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -410,7 +416,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onPrepared(long messageId, long savedTime) {
                 try {
-                    if(callback != null)
+                    if (callback != null)
                         callback.onPrepared(messageId, savedTime);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -420,7 +426,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onProgress(long uploaded, long total) {
                 try {
-                    if(callback != null)
+                    if (callback != null)
                         callback.onProgress(uploaded, total);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -430,7 +436,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onMediaUploaded(String remoteUrl) {
                 try {
-                    if(callback != null)
+                    if (callback != null)
                         callback.onMediaUploaded(remoteUrl);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -611,7 +617,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void getRemoteMessages(Conversation conversation, int[] contentTypes, long beforeMessageUid, int count, IGetRemoteMessageCallback callback) throws RemoteException {
-            if(contentTypes == null) {
+            if (contentTypes == null) {
                 contentTypes = new int[0];
             }
 
@@ -648,9 +654,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 @Override
                 public void onSuccess(ProtoMessage[] protoMessages) {
                     SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, false);
-                    if(callback != null) {
+                    if (callback != null) {
                         try {
-                            if(entry == null || entry.messages == null || entry.messages.isEmpty()) {
+                            if (entry == null || entry.messages == null || entry.messages.isEmpty()) {
                                 callback.onFailure(245);
                             } else {
                                 callback.onSuccess(entry.messages);
@@ -663,7 +669,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
                 @Override
                 public void onFailure(int i) {
-                    if(callback != null) {
+                    if (callback != null) {
                         try {
                             callback.onFailure(i);
                         } catch (RemoteException e) {
@@ -901,7 +907,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean markAsUnRead(int conversationType, String target, int line, boolean sync) throws RemoteException {
             long messageUid = ProtoLogic.setLastReceivedMessageUnRead(conversationType, target, line, 0, 0);
-            if(messageUid > 0 && sync) {
+            if (messageUid > 0 && sync) {
                 MarkUnreadMessageContent content = new MarkUnreadMessageContent(messageUid, ProtoLogic.getMessageByUid(messageUid).getTimestamp());
                 Message message = new Message();
                 message.conversation = new Conversation(Conversation.ConversationType.type(conversationType), target, line);
@@ -953,7 +959,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setConversationDraft(int conversationType, String target, int line, String draft) throws RemoteException {
             ConversationInfo conversationInfo = getConversation(conversationType, target, line);
-            if (conversationInfo == null){
+            if (conversationInfo == null) {
                 return;
             }
             if ((TextUtils.isEmpty(conversationInfo.draft) && TextUtils.isEmpty(draft)) || TextUtils.equals(conversationInfo.draft, draft)) {
@@ -2978,7 +2984,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onTrafficData(long send, long recv) {
-        Log.d("client", "on traffic data(" + send + ", " + recv + ")");
+        handler.post(() -> {
+            int i = onTrafficDataListenerRemoteCallbackList.beginBroadcast();
+            IOnTrafficDataListener listener;
+            while (i > 0) {
+                i--;
+                listener = onTrafficDataListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onTrafficData(send, recv);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onTrafficDataListenerRemoteCallbackList.finishBroadcast();
+        });
     }
 
     @Override
@@ -3093,16 +3112,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (messages.isEmpty()) {
             return;
         }
-        for (ProtoMessage message:messages) {
+        for (ProtoMessage message : messages) {
             filterNewMessage(message);
         }
         handler.post(() -> onReceiveMessageInternal(messages.toArray(new ProtoMessage[0])));
     }
 
     private void filterNewMessage(ProtoMessage protoMessage) {
-        if(protoMessage.getContent().getType() == ContentType_Mark_Unread_Sync && userId != null && userId.equals(protoMessage.getFrom())) {
+        if (protoMessage.getContent().getType() == ContentType_Mark_Unread_Sync && userId != null && userId.equals(protoMessage.getFrom())) {
             Message msg = convertProtoMessage(protoMessage);
-            MarkUnreadMessageContent content = (MarkUnreadMessageContent)msg.content;
+            MarkUnreadMessageContent content = (MarkUnreadMessageContent) msg.content;
             ProtoLogic.setLastReceivedMessageUnRead(msg.conversation.type.getValue(), msg.conversation.target, msg.conversation.line, content.getMessageUid(), content.getTimestamp());
         }
     }

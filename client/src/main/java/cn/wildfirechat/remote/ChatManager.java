@@ -72,6 +72,7 @@ import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
 import cn.wildfirechat.client.IOnGroupMembersUpdateListener;
 import cn.wildfirechat.client.IOnReceiveMessageListener;
 import cn.wildfirechat.client.IOnSettingUpdateListener;
+import cn.wildfirechat.client.IOnTrafficDataListener;
 import cn.wildfirechat.client.IOnUserInfoUpdateListener;
 import cn.wildfirechat.client.IRemoteClient;
 import cn.wildfirechat.client.IUploadMediaCallback;
@@ -194,6 +195,7 @@ public class ChatManager {
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
     private List<OnConnectionStatusChangeListener> onConnectionStatusChangeListeners = new ArrayList<>();
+    private List<OnTrafficDataListener> onTrafficDataListeners = new ArrayList<>();
     private List<OnConnectToServerListener> onConnectToServerListeners = new ArrayList<>();
     private List<OnSendMessageListener> sendMessageListeners = new ArrayList<>();
     private List<OnGroupInfoUpdateListener> groupInfoUpdateListeners = new ArrayList<>();
@@ -616,6 +618,14 @@ public class ChatManager {
         });
     }
 
+    private void onTrafficData(long send, long recv){
+        mainHandler.post(() -> {
+            for (OnTrafficDataListener listener : onTrafficDataListeners) {
+                listener.onTrafficData(send, recv);
+            }
+        });
+    }
+
     /**
      * 添加新消息监听, 记得调用{@link #removeOnReceiveMessageListener(OnReceiveMessageListener)}删除监听
      *
@@ -816,6 +826,33 @@ public class ChatManager {
     public void removeSettingUpdateListener(OnSettingUpdateListener listener) {
         settingUpdateListeners.remove(listener);
     }
+
+    /**
+     * 添加流量监听
+     *
+     * @param listener
+     */
+    public void addTrafficDataListener(OnTrafficDataListener listener) {
+        if (listener == null) {
+            return;
+        }
+        if (!onTrafficDataListeners.contains(listener)) {
+            onTrafficDataListeners.add(listener);
+        }
+    }
+
+    /**
+     * 删除流量监听
+     *
+     * @param listener
+     */
+    public void removeTrafficDataListener(OnTrafficDataListener listener) {
+        if (listener == null) {
+            return;
+        }
+        onTrafficDataListeners.remove(listener);
+    }
+
 
     /**
      * 启用国密加密，需要在connect之前调用，需要IM服务开启国密才可以使用。
@@ -7147,6 +7184,13 @@ public class ChatManager {
                         ChatManager.this.onConferenceEvent(event);
                     }
                 });
+                mClient.setOnTrafficDataListener(new IOnTrafficDataListener.Stub() {
+                    @Override
+                    public void onTrafficData(long send, long recv) throws RemoteException {
+                        ChatManager.this.onTrafficData(send, recv);
+                    }
+                });
+
 
                 mClient.setLiteMode(isLiteMode);
 
