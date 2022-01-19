@@ -52,7 +52,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                         for (Message msg : messageList) {
                             messages.add(new UiMessage(msg));
                         }
-                        result.postValue(messages);
+                        result.setValue(messages);
                     } else {
                         ChatManager.Instance().getRemoteMessages(conversation, null, fromMessageUid, count, new GetRemoteMessageCallback() {
                             @Override
