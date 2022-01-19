@@ -474,9 +474,16 @@ public class ConversationFragment extends Fragment implements
         swipeRefreshLayout.setRefreshing(true);
         adapter.setDeliveries(ChatManager.Instance().getMessageDelivery(conversation));
         adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
+        final boolean[] firstCB = {true};
         messages.observe(this, uiMessages -> {
             swipeRefreshLayout.setRefreshing(false);
-            adapter.setMessages(uiMessages);
+            if(firstCB[0]) {
+                adapter.setMessages(uiMessages);
+                firstCB[0] = false;
+            } else {
+                adapter.addMessagesAtHead(uiMessages);
+            }
+
             adapter.notifyDataSetChanged();
 
             if (adapter.getItemCount() > 1) {
