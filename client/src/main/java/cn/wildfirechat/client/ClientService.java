@@ -628,7 +628,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         SafeIPCMessageEntry entry;
                         int startIndex = 0;
                         do {
-                            entry = buildSafeIPCMessages(list, startIndex, false);
+                            entry = buildSafeIPCMessages(list, startIndex, true);
                             callback.onSuccess(entry.messages);
                             startIndex = entry.index + 1;
                         } while (entry.index > 0 && entry.index < list.length - 1);
@@ -653,7 +653,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ProtoLogic.getRemoteMessage(messageUid, new ProtoLogic.ILoadRemoteMessagesCallback() {
                 @Override
                 public void onSuccess(ProtoMessage[] protoMessages) {
-                    SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, false);
+                    SafeIPCMessageEntry entry = buildSafeIPCMessages(protoMessages, 0, true);
                     if (callback != null) {
                         try {
                             if (entry == null || entry.messages == null || entry.messages.isEmpty()) {
