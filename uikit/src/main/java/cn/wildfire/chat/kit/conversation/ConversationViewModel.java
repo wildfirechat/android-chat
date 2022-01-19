@@ -44,35 +44,38 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     public MutableLiveData<List<UiMessage>> loadOldMessages(Conversation conversation, String withUser, long fromMessageId, long fromMessageUid, int count) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
+            List<UiMessage> uiMessages = new ArrayList<>();
             ChatManager.Instance().getMessages(conversation, fromMessageId, true, count, withUser, new GetMessageCallback() {
                 @Override
                 public void onSuccess(List<Message> messageList, boolean hasMore) {
                     if (messageList != null && !messageList.isEmpty()) {
-                        List<UiMessage> messages = new ArrayList<>();
+                        List<UiMessage> uiMsgs = new ArrayList<>();
                         for (Message msg : messageList) {
-                            messages.add(new UiMessage(msg));
+                            uiMsgs.add(new UiMessage(msg));
                         }
-                        result.setValue(messages);
+                        uiMessages.addAll(0, uiMsgs);
+                        if (!hasMore){
+                            result.setValue(uiMessages);
+                        }
                     } else {
                         ChatManager.Instance().getRemoteMessages(conversation, null, fromMessageUid, count, new GetRemoteMessageCallback() {
                             @Override
                             public void onSuccess(List<Message> messages) {
                                 if (messages != null && !messages.isEmpty()) {
-                                    List<UiMessage> msgs = new ArrayList<>();
                                     for (Message msg : messages) {
 //                                        if (msg.messageId != 0) {
-                                            msgs.add(new UiMessage(msg));
+                                            uiMessages.add(new UiMessage(msg));
 //                                        }
                                     }
-                                    result.postValue(msgs);
+                                    result.postValue(uiMessages);
                                 } else {
-                                    result.postValue(new ArrayList<UiMessage>());
+                                    result.postValue(uiMessages);
                                 }
                             }
 
                             @Override
                             public void onFail(int errorCode) {
-                                result.postValue(new ArrayList<UiMessage>());
+                                result.postValue(uiMessages);
                             }
                         });
                     }
