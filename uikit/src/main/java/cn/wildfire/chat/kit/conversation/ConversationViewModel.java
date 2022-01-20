@@ -142,17 +142,20 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     public MutableLiveData<List<UiMessage>> loadNewMessages(Conversation conversation, String withUser, long startIndex, int count) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
+            List<UiMessage> uiMessages = new ArrayList<>();
             ChatManager.Instance().getMessages(conversation, startIndex, false, count, withUser, new GetMessageCallback() {
                 @Override
                 public void onSuccess(List<Message> messageList, boolean hasMore) {
-                    List<UiMessage> messages = new ArrayList<>();
+                    List<UiMessage> uiMsgs = new ArrayList<>();
                     if (messageList != null) {
                         for (Message msg : messageList) {
-                            messages.add(new UiMessage(msg));
+                            uiMsgs.add(new UiMessage(msg));
+                        }
+                        uiMessages.addAll(0, uiMsgs);
+                        if (!hasMore){
+                            result.setValue(uiMessages);
                         }
                     }
-                    result.postValue(messages);
-
                 }
 
                 @Override
