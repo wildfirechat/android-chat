@@ -44,7 +44,6 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     public MutableLiveData<List<UiMessage>> loadOldMessages(Conversation conversation, String withUser, long fromMessageId, long fromMessageUid, int count) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<UiMessage> uiMessages = new ArrayList<>();
             ChatManager.Instance().getMessages(conversation, fromMessageId, true, count, withUser, new GetMessageCallback() {
                 @Override
                 public void onSuccess(List<Message> messageList, boolean hasMore) {
@@ -53,29 +52,27 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                         for (Message msg : messageList) {
                             uiMsgs.add(new UiMessage(msg));
                         }
-                        uiMessages.addAll(0, uiMsgs);
-                        if (!hasMore){
-                            result.setValue(uiMessages);
-                        }
+                        result.setValue(uiMsgs);
                     } else {
                         ChatManager.Instance().getRemoteMessages(conversation, null, fromMessageUid, count, new GetRemoteMessageCallback() {
                             @Override
                             public void onSuccess(List<Message> messages) {
                                 if (messages != null && !messages.isEmpty()) {
+                                    List<UiMessage> uiMsgs = new ArrayList<>();
                                     for (Message msg : messages) {
 //                                        if (msg.messageId != 0) {
-                                            uiMessages.add(new UiMessage(msg));
+                                        uiMsgs.add(new UiMessage(msg));
 //                                        }
                                     }
-                                    result.postValue(uiMessages);
+                                    result.postValue(uiMsgs);
                                 } else {
-                                    result.postValue(uiMessages);
+                                    result.postValue(new ArrayList<>());
                                 }
                             }
 
                             @Override
                             public void onFail(int errorCode) {
-                                result.postValue(uiMessages);
+                                result.postValue(new ArrayList<>());
                             }
                         });
                     }
@@ -152,7 +149,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                             uiMsgs.add(new UiMessage(msg));
                         }
                         uiMessages.addAll(0, uiMsgs);
-                        if (!hasMore){
+                        if (!hasMore) {
                             result.setValue(uiMessages);
                         }
                     }

@@ -16,6 +16,7 @@ import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.GetConversationListCallback;
 import cn.wildfirechat.remote.OnClearMessageListener;
 import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
 import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
@@ -97,13 +98,18 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
         ChatManager.Instance().getWorkHandler().post(() -> {
             loadingCount.decrementAndGet();
-            List<ConversationInfo> conversationInfos = ChatManager.Instance().getConversationList(types, lines);
-            conversationListLiveData.postValue(conversationInfos);
-        });
-    }
+            ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
+                @Override
+                public void onSuccess(List<ConversationInfo> conversationInfos) {
+                    conversationListLiveData.postValue(conversationInfos);
+                }
 
-    public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
-        return ChatManager.Instance().getConversationList(conversationTypes, lines);
+                @Override
+                public void onFail(int errorCode) {
+
+                }
+            });
+        });
     }
 
     public MutableLiveData<List<ConversationInfo>> conversationListLiveData() {
@@ -111,8 +117,17 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
             conversationListLiveData = new MutableLiveData<>();
         }
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<ConversationInfo> conversationInfos = ChatManager.Instance().getConversationList(types, lines);
-            conversationListLiveData.postValue(conversationInfos);
+            ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
+                @Override
+                public void onSuccess(List<ConversationInfo> conversationInfos) {
+                    conversationListLiveData.postValue(conversationInfos);
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+
+                }
+            });
         });
 
         return conversationListLiveData;
@@ -133,16 +148,25 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     public void reloadConversationUnreadStatus() {
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<ConversationInfo> conversations = ChatManager.Instance().getConversationList(types, lines);
-            UnreadCount unreadCount = new UnreadCount();
-            for (ConversationInfo info : conversations) {
-                if (!info.isSilent) {
-                    unreadCount.unread += info.unreadCount.unread;
+            ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
+                @Override
+                public void onSuccess(List<ConversationInfo> conversationInfos) {
+                    UnreadCount unreadCount = new UnreadCount();
+                    for (ConversationInfo info : conversationInfos) {
+                        if (!info.isSilent) {
+                            unreadCount.unread += info.unreadCount.unread;
+                        }
+                        unreadCount.unreadMention += info.unreadCount.unreadMention;
+                        unreadCount.unreadMentionAll += info.unreadCount.unreadMentionAll;
+                    }
+                    postUnreadCount(unreadCount);
                 }
-                unreadCount.unreadMention += info.unreadCount.unreadMention;
-                unreadCount.unreadMentionAll += info.unreadCount.unreadMentionAll;
-            }
-            postUnreadCount(unreadCount);
+
+                @Override
+                public void onFail(int errorCode) {
+
+                }
+            });
         });
     }
 

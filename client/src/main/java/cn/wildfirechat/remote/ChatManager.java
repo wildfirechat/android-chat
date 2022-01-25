@@ -56,11 +56,12 @@ import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.IGeneralCallback;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
+import cn.wildfirechat.client.IGetConversationListCallback;
 import cn.wildfirechat.client.IGetFileRecordCallback;
 import cn.wildfirechat.client.IGetGroupCallback;
 import cn.wildfirechat.client.IGetGroupMemberCallback;
 import cn.wildfirechat.client.IGetMessageCallback;
-import cn.wildfirechat.client.IGetRemoteMessageCallback;
+import cn.wildfirechat.client.IGetRemoteMessagesCallback;
 import cn.wildfirechat.client.IGetUploadUrlCallback;
 import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
@@ -394,7 +395,7 @@ public class ChatManager {
         }
 
         //连接成功，如果Manager有缓存需要清掉
-        if(status == ConnectionStatus.ConnectionStatusConnected) {
+        if (status == ConnectionStatus.ConnectionStatusConnected) {
             receiptStatus = -1;
             userReceiptStatus = -1;
         }
@@ -417,7 +418,7 @@ public class ChatManager {
      * 连接状态回调
      *
      * @param host 服务器host
-     * @param ip 服务器ip
+     * @param ip   服务器ip
      * @param port 服务器port
      */
     private void onConnectToServer(final String host, final String ip, final int port) {
@@ -618,7 +619,7 @@ public class ChatManager {
         });
     }
 
-    private void onTrafficData(long send, long recv){
+    private void onTrafficData(long send, long recv) {
         mainHandler.post(() -> {
             for (OnTrafficDataListener listener : onTrafficDataListeners) {
                 listener.onTrafficData(send, recv);
@@ -1841,14 +1842,15 @@ public class ChatManager {
             e.printStackTrace();
         }
     }
+
     /**
      * 添加协议栈短连接自定义Header
      *
      * @param header 协议栈短连接使用的UA
-     * @param value 协议栈短连接使用的UA
+     * @param value  协议栈短连接使用的UA
      */
     public void addHttpHeader(String header, String value) {
-        if(!TextUtils.isEmpty(value)) {
+        if (!TextUtils.isEmpty(value)) {
             protoHttpHeaderMap.put(header, value);
         }
 
@@ -1862,6 +1864,7 @@ public class ChatManager {
             e.printStackTrace();
         }
     }
+
     /**
      * 发送已经保存的消息
      *
@@ -2092,7 +2095,7 @@ public class ChatManager {
             mClient.recall(msg.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    if(msg.messageId > 0) {
+                    if (msg.messageId > 0) {
                         Message recallMsg = mClient.getMessage(msg.messageId);
                         msg.content = recallMsg.content;
                         msg.sender = recallMsg.sender;
@@ -2164,6 +2167,8 @@ public class ChatManager {
     /**
      * 获取会话列表
      *
+     * 由于 ipc 大小限制，有丢失会话风险，建议使用 {@link ChatManager#getConversationListAsync}
+     *
      * @param conversationTypes 获取哪些类型的会话
      * @param lines             获取哪些会话线路
      * @return
@@ -2197,6 +2202,60 @@ public class ChatManager {
             e.printStackTrace();
         }
         return new ArrayList<>();
+    }
+
+    /**
+     * 获取会话列表
+     *
+     * @param conversationTypes 获取哪些类型的会话
+     * @param lines             获取哪些会话线路
+     * @param callback          会话列表回调
+     */
+    public void getConversationListAsync(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, GetConversationListCallback callback) {
+        if (!checkRemoteService()) {
+            Log.e(TAG, "Remote service not available");
+        }
+        if (callback == null){
+            return ;
+        }
+
+        if (conversationTypes == null || conversationTypes.size() == 0 ||
+            lines == null || lines.size() == 0) {
+            Log.e(TAG, "Invalid conversation type and lines");
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        int[] inlines = new int[lines.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+
+        for (int j = 0; j < lines.size(); j++) {
+            inlines[j] = lines.get(j);
+        }
+
+        try {
+            List<ConversationInfo> convs = new ArrayList<>();
+            mClient.getConversationListAsync(intypes, inlines, new IGetConversationListCallback.Stub() {
+                @Override
+                public void onSuccess(List<ConversationInfo> infos, boolean hasMore) throws RemoteException {
+                    convs.addAll(infos);
+                   if (!hasMore){
+                       mainHandler.post(()-> {
+                           callback.onSuccess(convs);
+                       });
+                   }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(()-> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            callback.onFail(-1);
+        }
     }
 
     /**
@@ -2339,10 +2398,14 @@ public class ChatManager {
         }
 
         try {
+            List<Message> outMsgs = new ArrayList<>();
             mClient.getMessagesAsync(conversation, fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
+                    outMsgs.addAll(messages);
+                    if (!hasMore) {
+                        mainHandler.post(() -> callback.onSuccess(outMsgs, false));
+                    }
                 }
 
                 @Override
@@ -2377,10 +2440,14 @@ public class ChatManager {
         }
 
         try {
+            List<Message> outMsgs = new ArrayList<>();
             mClient.getMessagesInTypesAsync(conversation, convertIntegers(contentTypes), fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
+                    outMsgs.addAll(messages);
+                    if (!hasMore) {
+                        mainHandler.post(() -> callback.onSuccess(outMsgs, false));
+                    }
                 }
 
                 @Override
@@ -2393,6 +2460,7 @@ public class ChatManager {
             mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
+
     /**
      * 根据消息状态获取会话消息
      *
@@ -2694,9 +2762,9 @@ public class ChatManager {
     /**
      * 获取远程历史消息
      *
-     * @param conversation    会话
+     * @param conversation     会话
      * @param beforeMessageUid 起始消息的消息uid
-     * @param count           获取消息的条数
+     * @param count            获取消息的条数
      * @param callback
      */
     public void getRemoteMessages(Conversation conversation, List<Integer> contentTypes, long beforeMessageUid, int count, GetRemoteMessageCallback callback) {
@@ -2706,19 +2774,21 @@ public class ChatManager {
 
         try {
             int[] intypes = null;
-            if(contentTypes != null && !contentTypes.isEmpty()) {
+            if (contentTypes != null && !contentTypes.isEmpty()) {
                 intypes = new int[contentTypes.size()];
                 for (int i = 0; i < contentTypes.size(); i++) {
                     intypes[i] = contentTypes.get(i);
                 }
             }
-            mClient.getRemoteMessages(conversation, intypes, beforeMessageUid, count, new IGetRemoteMessageCallback.Stub() {
+            List<Message> outMsgs = new ArrayList<>();
+            mClient.getRemoteMessages(conversation, intypes, beforeMessageUid, count, new IGetRemoteMessagesCallback.Stub() {
                 @Override
-                public void onSuccess(List<Message> messages) throws RemoteException {
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(() -> {
-                            callback.onSuccess(messages);
-                        });
+                        outMsgs.addAll(messages);
+                        if (!hasMore) {
+                            mainHandler.post(() -> callback.onSuccess(outMsgs));
+                        }
                     }
                 }
 
@@ -2739,7 +2809,7 @@ public class ChatManager {
     /**
      * 获取远程历史消息
      *
-     * @param messageUid       消息uid
+     * @param messageUid 消息uid
      * @param callback
      */
     public void getRemoteMessage(long messageUid, GetOneRemoteMessageCallback callback) {
@@ -2748,13 +2818,17 @@ public class ChatManager {
         }
 
         try {
-            mClient.getRemoteMessage(messageUid, new IGetRemoteMessageCallback.Stub() {
+            List<Message> outMsgs = new ArrayList<>();
+            mClient.getRemoteMessage(messageUid, new IGetRemoteMessagesCallback.Stub() {
                 @Override
-                public void onSuccess(List<Message> messages) throws RemoteException {
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(() -> {
-                            callback.onSuccess(messages.get(0));
-                        });
+                        outMsgs.addAll(messages);
+                        if (!hasMore){
+                            mainHandler.post(() -> {
+                                callback.onSuccess(messages.get(0));
+                            });
+                        }
                     }
                 }
 
@@ -3088,7 +3162,7 @@ public class ChatManager {
 
         try {
             boolean result = mClient.clearUnreadStatusEx(inTypes, inLines);
-            if (result){
+            if (result) {
                 List<ConversationInfo> conversationInfos = mClient.getConversationList(inTypes, inLines);
                 for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                     for (ConversationInfo info : conversationInfos) {
@@ -3107,7 +3181,7 @@ public class ChatManager {
         }
         try {
             boolean result = mClient.markAsUnRead(conversation.type.getValue(), conversation.target, conversation.line, syncToOtherClient);
-            if (result){
+            if (result) {
                 ConversationInfo conversationInfo = getConversation(conversation);
                 for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                     listener.onConversationUnreadStatusClear(conversationInfo);
@@ -3350,6 +3424,10 @@ public class ChatManager {
         }
 
         try {
+            ConversationInfo conversationInfo = getConversation(conversation);
+            if (conversationInfo == null || TextUtils.equals(draft, conversationInfo.draft)){
+                return;
+            }
             mClient.setConversationDraft(conversation.type.ordinal(), conversation.target, conversation.line, draft);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -4608,11 +4686,11 @@ public class ChatManager {
     /**
      * 更新远程消息消息内容，只有专业版支持。客户端仅能更新自己发送的消息，更新的消息类型不能变，更新的消息类型是服务配置允许更新的内容。Server API更新则没有限制。
      *
-     * @param messageUid 消息的UID
+     * @param messageUid     消息的UID
      * @param messageContent 消息内容
-     * @param distribute 是否分发给其他客户端
-     * @param updateLocal 是否更新本地消息内容
-     * @param callback   操作结果回调
+     * @param distribute     是否分发给其他客户端
+     * @param updateLocal    是否更新本地消息内容
+     * @param callback       操作结果回调
      */
     public void updateRemoteMessageContent(long messageUid, MessageContent messageContent, boolean distribute, boolean updateLocal, GeneralCallback callback) {
         if (!checkRemoteService()) {
@@ -6784,10 +6862,10 @@ public class ChatManager {
     /**
      * 获取文件上传的链接地址，一般用在大文件上传，通过isSupportBigFilesUpload方法检查之后才可以使用。
      *
-     * @param fileName 文件名
-     * @param mediaType  媒体类型
+     * @param fileName    文件名
+     * @param mediaType   媒体类型
      * @param contentType Http的ContentType Header，可以为空，为空时默认为"application/octet-stream"
-     * @param callback   返回上传地址
+     * @param callback    返回上传地址
      */
     public void getUploadUrl(String fileName, MessageContentMediaType mediaType, String contentType, GetUploadUrlCallback callback) {
         if (!checkRemoteService()) {
@@ -7194,13 +7272,13 @@ public class ChatManager {
 
                 mClient.setLiteMode(isLiteMode);
 
-                if(!TextUtils.isEmpty(protoUserAgent)) {
+                if (!TextUtils.isEmpty(protoUserAgent)) {
                     mClient.setProtoUserAgent(protoUserAgent);
                 }
-                if(!protoHttpHeaderMap.isEmpty()) {
+                if (!protoHttpHeaderMap.isEmpty()) {
                     protoHttpHeaderMap.forEach((String s, String s2) -> {
                         try {
-                            mClient.addHttpHeader(s,s2);
+                            mClient.addHttpHeader(s, s2);
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -7350,7 +7428,7 @@ public class ChatManager {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             Log.d(TAG, "*************** SDK检查 *****************");
         }
         return true;

@@ -31,6 +31,8 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GetConversationListCallback;
 
 public class PickOrCreateConversationFragment extends Fragment implements PickOrCreateConversationAdapter.OnConversationItemClickListener, PickOrCreateConversationAdapter.OnNewConversationItemClickListener {
     private static final int REQUEST_CODE_PICK_CONVERSATION_TARGET = 100;
@@ -64,11 +66,20 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
         List<Conversation.ConversationType> types = Arrays.asList(Conversation.ConversationType.Single,
             Conversation.ConversationType.Group);
         List<Integer> liens = Arrays.asList(0);
-        List<ConversationInfo> conversationInfos = conversationListViewModel.getConversationList(types, liens);
-        adapter.setConversations(conversationInfos);
+        ChatManager.Instance().getConversationListAsync(types, liens, new GetConversationListCallback() {
+            @Override
+            public void onSuccess(List<ConversationInfo> conversationInfos) {
+                adapter.setConversations(conversationInfos);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
         adapter.setOnConversationItemClickListener(this);
         adapter.setNewConversationItemClickListener(this);
-        adapter.notifyDataSetChanged();
     }
 
     @Override
