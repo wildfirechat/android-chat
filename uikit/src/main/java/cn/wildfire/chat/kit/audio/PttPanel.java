@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.ptt.TalkingCallback;
@@ -113,6 +114,11 @@ public class PttPanel implements View.OnTouchListener {
         // TODO 开始、结束、失败，播放对应的声音提示
         PTTClient.getInstance().requestTalk(conversation, new TalkingCallback() {
             @Override
+            public int talkingPriority(Conversation conversation) {
+                return 0;
+            }
+
+            @Override
             public void onStartTalking(Conversation conversation) {
                 startTime = System.currentTimeMillis();
                 isTalking = true;
@@ -137,6 +143,11 @@ public class PttPanel implements View.OnTouchListener {
             @Override
             public void onAmplitudeUpdate(int averageAmplitude) {
                 updateVolume(averageAmplitude);
+            }
+
+            @Override
+            public SoundMessageContent onCreateSoundMessageContent(String soundFilePath) {
+                return TalkingCallback.super.onCreateSoundMessageContent(soundFilePath);
             }
         });
     }
