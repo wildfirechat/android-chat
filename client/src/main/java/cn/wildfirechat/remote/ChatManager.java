@@ -4110,6 +4110,7 @@ public class ChatManager {
 
     /**
      * 获取群信息
+     * @discussion refresh 为true会导致一次网络同步，代价特别大，应该尽量避免使用true，仅当在进入此群会话中时使用一次true。
      *
      * @param groupId
      * @param refresh
@@ -4137,6 +4138,14 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取群信息
+     * @discussion refresh 为true会导致一次网络同步，代价特别大，应该尽量避免使用true，仅当在进入此群会话中时使用一次true。
+     *
+     * @param groupId
+     * @param refresh
+     * @param callback
+     */
     public void getGroupInfo(String groupId, boolean refresh, GetGroupInfoCallback callback) {
         if (!checkRemoteService()) {
             return;
@@ -4315,6 +4324,7 @@ public class ChatManager {
 
     /**
      * 获取用户信息
+     * @discussion refresh 为true会导致一次网络同步，代价特别大，应该尽量避免使用true，仅当在进入此人的单聊会话中时或者此人的用户信息页面使用一次true。
      *
      * @param userId
      * @param refresh
@@ -4326,6 +4336,7 @@ public class ChatManager {
 
     /**
      * 当对应用户，本地不存在时，返回的{@link UserInfo}为{@link NullUserInfo}
+     * @discussion refresh 为true会导致一次网络同步，代价特别大，应该尽量避免使用true，仅当在进入此人的单聊会话中时或者此人的用户信息页面使用一次true。
      *
      * @param userId
      * @param groupId
@@ -5525,6 +5536,7 @@ public class ChatManager {
 
     /**
      * 获取群成员列表
+     * @discussion forceUpdate 为true会导致一次网络同步，代价特别大，应该尽量避免使用true，仅当在进入此群成员列表时使用一次true。
      *
      * @param groupId
      * @param forceUpdate
@@ -5563,6 +5575,14 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取群成员列表
+     * @discussion forceUpdate 为true会导致一次网络同步，代价特别大，应该尽量避免使用true，仅当在进入此群成员列表时使用一次true。
+     *
+     * @param groupId
+     * @param forceUpdate
+     * @param callback
+     */
     public void getGroupMembers(String groupId, boolean forceUpdate, GetGroupMembersCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
