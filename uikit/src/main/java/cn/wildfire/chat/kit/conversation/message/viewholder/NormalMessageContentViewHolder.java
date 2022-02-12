@@ -29,6 +29,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -189,8 +191,15 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, confirm = false, priority = 11)
     public void removeMessage(View itemView, UiMessage message) {
+
+        List<String> items = new ArrayList();
+        items.add("删除本地消息");
+        if (message.message.conversation.type == Conversation.ConversationType.Group || message.message.conversation.type == Conversation.ConversationType.Single) {
+            items.add("删除远程消息");
+        }
+
         new MaterialDialog.Builder(fragment.getContext())
-            .items("删除本地消息", "删除远程消息")
+            .items(items)
             .itemsCallback(new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
