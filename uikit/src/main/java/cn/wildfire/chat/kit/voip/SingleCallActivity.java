@@ -140,8 +140,8 @@ public class SingleCallActivity extends VoipBaseActivity {
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack(String s) {
-        postAction(() -> currentCallback.didReceiveRemoteVideoTrack(s));
+    public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
+        postAction(() -> currentCallback.didReceiveRemoteVideoTrack(userId, screenSharing));
     }
 
     @Override

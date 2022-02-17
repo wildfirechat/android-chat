@@ -237,7 +237,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didParticipantJoined(String userId) {
+    public void didParticipantJoined(String userId, boolean screenSharing) {
         if (participants.contains(userId)) {
             return;
         }
@@ -283,12 +283,12 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didParticipantConnected(String userId) {
+    public void didParticipantConnected(String userId, boolean screenSharing) {
 
     }
 
     @Override
-    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason) {
+    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason, boolean screenSharing) {
         View view = participantGridView.findViewWithTag(userId);
         if (view != null) {
             participantGridView.removeView(view);
@@ -315,7 +315,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack(String userId) {
+    public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
 
     }
 
@@ -364,9 +364,9 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didChangeType(String userId, boolean audience) {
+    public void didChangeType(String userId, boolean audience, boolean screenSharing) {
         if(!audience) {
-            didParticipantJoined(userId);
+            didParticipantJoined(userId, screenSharing);
         } else {
             participants.remove(userId);
             int count = participantGridView.getChildCount();

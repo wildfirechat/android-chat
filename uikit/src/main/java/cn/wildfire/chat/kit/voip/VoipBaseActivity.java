@@ -263,17 +263,17 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     }
 
     @Override
-    public void didParticipantJoined(String s) {
+    public void didParticipantJoined(String userId, boolean screenSharing) {
 
     }
 
     @Override
-    public void didParticipantConnected(String userId) {
+    public void didParticipantConnected(String userId, boolean screenSharing) {
 
     }
 
     @Override
-    public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
+    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason, boolean screenSharing) {
 
     }
 
@@ -282,16 +282,16 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack(String s) {
+    public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
     }
 
     @Override
-    public void didRemoveRemoteVideoTrack(String s) {
+    public void didRemoveRemoteVideoTrack(String userId) {
 
     }
 
     @Override
-    public void didMediaLostPacket(String media, int lostPacket) {
+    public void didMediaLostPacket(String media, int lostPacket, boolean screenSharing) {
         postAction(() -> {
             //发送方丢包超过6为网络不好
             if (lostPacket > 6) {
@@ -301,7 +301,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     }
 
     @Override
-    public void didMediaLostPacket(String userId, String media, int lostPacket, boolean uplink) {
+    public void didMediaLostPacket(String userId, String media, int lostPacket, boolean uplink, boolean screenSharing) {
         postAction(() -> {
             //如果uplink ture对方网络不好，false您的网络不好
             //接受方丢包超过10为网络不好
