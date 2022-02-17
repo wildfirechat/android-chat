@@ -111,7 +111,7 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
     }
 
     @Override
-    public void didParticipantJoined(String userId) {
+    public void didParticipantJoined(String userId, boolean screenSharing) {
         List<UserInfo> participants = ((MultiCallParticipantAdapter)participantRecyclerView.getAdapter()).getParticipants();
         boolean exist = false;
         for (UserInfo user :
@@ -129,12 +129,12 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
     }
 
     @Override
-    public void didParticipantConnected(String userId) {
+    public void didParticipantConnected(String userId, boolean screenSharing) {
 
     }
 
     @Override
-    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason reason) {
+    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason reason, boolean screenSharing) {
         List<UserInfo> participants = ((MultiCallParticipantAdapter)participantRecyclerView.getAdapter()).getParticipants();
         for (UserInfo user :
                 participants) {
@@ -161,7 +161,7 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack(String userId) {
+    public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
 
     }
 

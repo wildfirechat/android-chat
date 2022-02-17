@@ -335,7 +335,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didParticipantJoined(String userId) {
+    public void didParticipantJoined(String userId, boolean screenSharing) {
         if (participants.contains(userId) || userId.equals(focusVideoUserId)) {
             return;
         }
@@ -385,12 +385,15 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didParticipantConnected(String userId) {
+    public void didParticipantConnected(String userId, boolean screenSharing) {
 
     }
 
     @Override
-    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason) {
+    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason, boolean screenSharing) {
+        if (userId.equals(ChatManager.Instance().getUserId()) && screenSharing) {
+            return;
+        }
         removeParticipantView(userId);
         Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了会议", Toast.LENGTH_SHORT).show();
 
@@ -430,12 +433,15 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didChangeType(String userId, boolean audience) {
+    public void didChangeType(String userId, boolean audience, boolean screenSharing) {
+        if (userId.equals(ChatManager.Instance().getUserId()) && screenSharing) {
+            return;
+        }
         if (audience) {
             removeParticipantView(userId);
             Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "结束了互动", Toast.LENGTH_SHORT).show();
         } else {
-            didParticipantJoined(userId);
+            didParticipantJoined(userId, screenSharing);
         }
         updateControlStatus();
     }
@@ -466,7 +472,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack(String userId) {
+    public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
     }
 
     @Override
