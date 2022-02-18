@@ -501,7 +501,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
 
     @Override
     public void onMessageUpdate(Message message) {
-        postNewMessage(new UiMessage(message));
+        postMessageUpdate(new UiMessage(message));
     }
 
     @Override

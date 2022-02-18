@@ -71,6 +71,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
@@ -155,7 +156,7 @@ public class ConversationFragment extends Fragment implements
                 return;
             }
             MessageContent content = uiMessage.message.content;
-            if (isDisplayableMessage(uiMessage)) {
+            if (isDisplayableMessage(uiMessage) && !(content instanceof RecallMessageContent)) {
                 // 消息定位时，如果收到新消息、或者发送消息，需要重新加载消息列表
                 if (shouldContinueLoadNewMessage) {
                     shouldContinueLoadNewMessage = false;
