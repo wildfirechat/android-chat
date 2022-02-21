@@ -382,4 +382,12 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     public String getFocusVideoUserId() {
         return focusVideoUserId;
     }
+
+    public static String participantKey(String userId, boolean screenSharing) {
+        if (screenSharing) {
+            return AVEngineKit.SCREEN_SHARING_ID_PREFIX + userId;
+        } else {
+            return userId;
+        }
+    }
 }
