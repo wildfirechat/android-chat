@@ -2214,7 +2214,12 @@ public class ChatManager {
     public void getConversationListAsync(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, GetConversationListCallback callback) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
         }
+
         if (callback == null){
             return ;
         }
@@ -3682,6 +3687,7 @@ public class ChatManager {
             if (callback != null) {
                 callback.onFail(ErrorCode.SERVICE_DIED);
             }
+            return;
         }
 
         try {
@@ -6614,6 +6620,7 @@ public class ChatManager {
     public void getNoDisturbingTimes(GetNoDisturbingTimesCallback callback) {
         if (!checkRemoteService()) {
             callback.onResult(false, 0, 0);
+            return;
         }
 
         try {
