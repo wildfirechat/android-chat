@@ -122,7 +122,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
         updateControlStatus();
 
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
         rootLinearLayout.setOnClickListener(clickListener);
         startHideBarTimer();
     }
@@ -358,7 +358,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
             return;
         }
 
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int size = Math.min(dm.widthPixels, dm.heightPixels);
@@ -411,7 +411,8 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         removeParticipantView(VoipBaseActivity.participantKey(userId, screenSharing));
         Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了会议", Toast.LENGTH_SHORT).show();
 
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
+//        manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
+        manageParticipantTextView.setText("xx 0");
 
         if (focusVideoUserId == null) {
             bottomPanel.setVisibility(View.VISIBLE);

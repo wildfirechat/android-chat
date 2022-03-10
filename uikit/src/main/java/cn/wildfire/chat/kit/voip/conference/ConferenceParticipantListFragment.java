@@ -24,7 +24,6 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -66,9 +65,9 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                 items.add("取消互动");
             }
             items.add("移除成员");
-        } else if(selfUid.equals(userInfo.getUserInfo().uid)) {
+        } else if (selfUid.equals(userInfo.getUserInfo().uid)) {
             AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
-            if(!profile.isAudience()) {
+            if (!profile.isAudience()) {
                 items.add("结束互动");
             } else {
                 items.add("参与互动");
@@ -90,12 +89,12 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                         AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
                         if (selfUid.equals(session.getHost()) && !selfUid.equals(userInfo.getUserInfo().uid)) {
                             requestChangeMode(session.getCallId(), userInfo.getUserInfo().uid, !profile.isAudience());
-                            if(profile.isAudience()) {
+                            if (profile.isAudience()) {
                                 Toast.makeText(getActivity(), "已经请求用户，等待用户同意...", Toast.LENGTH_SHORT).show();
                             } else {
                                 new Handler().postDelayed(this::loadAndShowConferenceParticipants, 1500);
                             }
-                        } else if(selfUid.equals(userInfo.getUserInfo().uid)) {
+                        } else if (selfUid.equals(userInfo.getUserInfo().uid)) {
                             session.switchAudience(!profile.isAudience());
                             new Handler().postDelayed(this::loadAndShowConferenceParticipants, 1500);
                         }
@@ -122,30 +121,40 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
     }
 
     private void loadAndShowConferenceParticipants() {
-        List<String> participantIds = session.getParticipantIds();
+        List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
         List<UIUserInfo> uiUserInfos = new ArrayList<>();
-        if (participantIds != null && participantIds.size() > 0) {
-            List<UserInfo> participantUserInfos = ChatManager.Instance().getUserInfos(participantIds, null);
-            for (UserInfo userInfo : participantUserInfos) {
-                PeerConnectionClient client = session.getClient(userInfo.uid);
+        if (profiles != null && profiles.size() > 0) {
+            for (AVEngineKit.ParticipantProfile p : profiles) {
+                UserInfo userInfo = ChatManager.Instance().getUserInfo(p.getUserId(), false);
                 UIUserInfo uiUserInfo = new UIUserInfo(userInfo);
-                uiUserInfo.setCategory(client.audience ? "听众" : "互动成员");
-                uiUserInfo.setExtra(client.audience ? "audience" : "");
+                uiUserInfo.setCategory(p.isAudience() ? "听众" : "互动成员");
+                uiUserInfo.setExtra(p.isAudience() ? "audience" : "");
 
+                String desc = "";
                 if (session.getHost().equals(userInfo.uid)) {
-                    uiUserInfo.setDesc("主持人");
+                    desc = "主持人";
                     uiUserInfos.add(0, uiUserInfo);
                 } else {
                     uiUserInfos.add(uiUserInfo);
                 }
+                if (p.isScreenSharing()) {
+                    desc += " 屏幕共享";
+                }
+                uiUserInfo.setDesc(desc);
             }
         }
         UIUserInfo selfUiUserInfo = new UIUserInfo(ChatManager.Instance().getUserInfo(selfUid, false));
+        AVEngineKit.ParticipantProfile mp = session.getMyProfile();
+        String desc = "";
         if (session.getHost().equals(selfUid)) {
-            selfUiUserInfo.setDesc("我、主持人");
+            desc = "我、主持人";
         } else {
-            selfUiUserInfo.setDesc("我");
+            desc = "我";
         }
+        if (mp.isScreenSharing()) {
+            desc += " 屏幕共享";
+        }
+        selfUiUserInfo.setDesc(desc);
         selfUiUserInfo.setCategory(session.isAudience() ? "听众" : "互动成员");
         uiUserInfos.add(selfUiUserInfo);
 
