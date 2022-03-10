@@ -188,7 +188,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             userId = userName;
             boolean initialSuccess = initProto(userName, userPwd);
-            onConnectionStatusChanged(ConnectionStatusConnecting);
+            if (mConnectionStatus != ConnectionStatusConnecting
+                && mConnectionStatus != ConnectionStatusConnected
+                && mConnectionStatus != ConnectionStatusReceiveing) {
+                onConnectionStatusChanged(ConnectionStatusConnecting);
+            }
 
             return initialSuccess;
         }
