@@ -4861,7 +4861,33 @@ public class ChatManager {
         }
 
         try {
-            return mClient.searchMessage(conversation, keyword, desc, limit, offset);
+            return mClient.searchMessageByTypes(conversation, keyword, convertIntegers(contentTypes), desc, limit, offset);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 搜索消息
+     *
+     * @param conversation 会话为空时，搜索所有会话消息
+     * @param keyword
+     * @param contentTypes
+     * @param startTime
+     * @param endTime
+     * @param desc
+     * @param limit
+     * @param offset
+     * @return
+     */
+    public List<Message> searchMessageByTypesAndTimes(Conversation conversation, String keyword, List<Integer> contentTypes, long startTime, long endTime, boolean desc, int limit, int offset) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.searchMessageByTypesAndTimes(conversation, keyword, convertIntegers(contentTypes), startTime, endTime, desc, limit, offset);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -7454,6 +7480,10 @@ public class ChatManager {
     }
 
     private static int[] convertIntegers(List<Integer> integers) {
+        if(integers == null) {
+            return new int[0];
+        }
+
         int[] ret = new int[integers.size()];
         for (int i = 0; i < ret.length; i++) {
             ret[i] = integers.get(i).intValue();
