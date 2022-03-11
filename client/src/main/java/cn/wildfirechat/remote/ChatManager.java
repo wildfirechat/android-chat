@@ -1888,29 +1888,80 @@ public class ChatManager {
             mClient.sendSavedMessage(msg, expireDuration, new cn.wildfirechat.client.ISendMessageCallback.Stub() {
                 @Override
                 public void onSuccess(long messageUid, long timestamp) throws RemoteException {
+                    msg.messageUid = messageUid;
+                    msg.serverTime = timestamp;
+                    msg.status = MessageStatus.Sent;
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (callback != null) {
+                                callback.onSuccess(messageUid, timestamp);
+                            }
+                            for (OnSendMessageListener listener : sendMessageListeners) {
+                                listener.onSendSuccess(msg);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    msg.status = MessageStatus.Send_Failure;
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (callback != null) {
+                                callback.onFail(errorCode);
+                            }
+                            for (OnSendMessageListener listener : sendMessageListeners) {
+                                listener.onSendFail(msg, errorCode);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onPrepared(final long messageId, final long savedTime) throws RemoteException {
+                    msg.messageId = messageId;
+                    msg.serverTime = savedTime;
+                    mainHandler.post(() -> {
+                        if (callback != null) {
+                            callback.onPrepare(messageId, savedTime);
+                        }
+                        for (OnSendMessageListener listener : sendMessageListeners) {
+                            listener.onSendPrepare(msg, savedTime);
+                        }
+                    });
+                }
+
+                @Override
+                public void onProgress(final long uploaded, final long total) throws RemoteException {
                     if (callback != null) {
-                        mainHandler.post(() -> callback.onSuccess(messageUid, timestamp));
+                        mainHandler.post(() -> callback.onProgress(uploaded, total));
                     }
+
+                    mainHandler.post(() -> {
+                        for (OnSendMessageListener listener : sendMessageListeners) {
+                            listener.onProgress(msg, uploaded, total);
+                        }
+                    });
                 }
 
                 @Override
-                public void onFailure(int errorCode) throws RemoteException {
+                public void onMediaUploaded(final String remoteUrl) throws RemoteException {
+                    MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
+                    mediaMessageContent.remoteUrl = remoteUrl;
+                    if (msg.messageId == 0) {
+                        return;
+                    }
                     if (callback != null) {
-                        mainHandler.post(() -> callback.onFail(errorCode));
+                        mainHandler.post(() -> callback.onMediaUpload(remoteUrl));
                     }
-                }
-
-                @Override
-                public void onPrepared(long messageId, long savedTime) throws RemoteException {
-                }
-
-                @Override
-                public void onProgress(long uploaded, long total) throws RemoteException {
-                }
-
-                @Override
-                public void onMediaUploaded(String remoteUrl) throws RemoteException {
-
+                    mainHandler.post(() -> {
+                        for (OnSendMessageListener listener : sendMessageListeners) {
+                            listener.onMediaUpload(msg, remoteUrl);
+                        }
+                    });
                 }
             });
         } catch (RemoteException e) {
