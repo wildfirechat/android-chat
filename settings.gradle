@@ -7,11 +7,10 @@ include ':client',
 //    ':webrtc',
     ':emojilibrary',
     ':imagepicker',
-//    ':momentclient',
+    ':momentclient',
     ':pttclient',
-//    ':pttclient',
     ':avenginekit'
 
-//project(':avenginekit').projectDir = new File('../android-av/avenginekit')
-//project(':momentclient').projectDir = new File('../android-momentclient/momentclient')
-//project(':pttclient').projectDir = new File('../android-pttclient/pttclient')
+project(':avenginekit').projectDir = new File('../android-av/avenginekit')
+project(':momentclient').projectDir = new File('../android-momentclient/momentclient')
+project(':pttclient').projectDir = new File('../android-pttclient/pttclient')
