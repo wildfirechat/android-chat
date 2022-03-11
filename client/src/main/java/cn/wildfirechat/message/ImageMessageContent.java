@@ -9,11 +9,13 @@ import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.os.Parcel;
 import android.text.TextUtils;
-import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -80,6 +82,8 @@ public class ImageMessageContent extends MediaMessageContent {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }else if (thumbnailBytes != null){
+            payload.binaryContent = thumbnailBytes;
         }
 
         if (imageHeight > 0 && imageWidth > 0) {

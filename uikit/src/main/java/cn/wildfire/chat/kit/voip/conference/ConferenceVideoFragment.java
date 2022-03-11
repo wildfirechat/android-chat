@@ -122,7 +122,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
         updateControlStatus();
 
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
         rootLinearLayout.setOnClickListener(clickListener);
         startHideBarTimer();
     }
@@ -152,43 +152,49 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         participantGridView.removeAllViews();
 
         participants = new ArrayList();
+        List<String> participantIds = new ArrayList<>();
         List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
-        if (profiles != null && !profiles.isEmpty()) {
-            for (AVEngineKit.ParticipantProfile profile : profiles) {
-                if (!profile.isAudience()) {
-                    participants.add(profile.getUserId());
-                }
+        if (profiles == null) {
+            profiles = new ArrayList<>();
+        }
+        for (AVEngineKit.ParticipantProfile profile : profiles) {
+            if (!profile.isAudience()) {
+                participants.add(VoipBaseActivity.participantKey(profile.getUserId(), profile.isScreenSharing()));
+                participantIds.add(profile.getUserId());
             }
         }
 
         AVEngineKit.ParticipantProfile myProfile = session.getMyProfile();
         if (!myProfile.isAudience()) {
-            participants.add(myProfile.getUserId());
+            participants.add(VoipBaseActivity.participantKey(myProfile.getUserId(), myProfile.isScreenSharing()));
+            participantIds.add(myProfile.getUserId());
+            profiles.add(myProfile);
         }
         focusConferenceItem = null;
 
         if (participants.size() > 0) {
             // TODO focusVideoUserId 这个值现在不准，需要由VoipCallService传过来
-            focusVideoUserId = participants.get(0);
+            AVEngineKit.ParticipantProfile p = profiles.get(0);
+            focusVideoUserId = VoipBaseActivity.participantKey(p.getUserId(), p.isScreenSharing());
             ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
-            List<UserInfo> participantUserInfos = userViewModel.getUserInfos(participants);
-            for (UserInfo userInfo : participantUserInfos) {
+            for (AVEngineKit.ParticipantProfile profile : profiles) {
                 VoipCallItem conferenceItem = new VoipCallItem(getActivity());
-                conferenceItem.setTag(userInfo.uid);
-
+                String participantKey = VoipBaseActivity.participantKey(profile.getUserId(), profile.isScreenSharing());
+                UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
+                conferenceItem.setTag(participantKey);
 
                 conferenceItem.getStatusTextView().setText(R.string.connecting);
                 conferenceItem.setOnClickListener(clickListener);
                 GlideApp.with(conferenceItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(conferenceItem.getPortraitImageView());
 
                 // self
-                if (userInfo.uid.equals(me.uid)) {
+                if (profile.getUserId().equals(me.uid)) {
                     session.setupLocalVideoView(conferenceItem.videoContainer, scalingType);
                 } else {
-                    session.setupRemoteVideoView(userInfo.uid, conferenceItem.videoContainer, scalingType);
+                    session.setupRemoteVideoView(userInfo.uid, profile.isScreenSharing(), conferenceItem.videoContainer, scalingType);
                 }
 
-                if (userInfo.uid.equals(focusVideoUserId)) {
+                if (participantKey.equals(focusVideoUserId)) {
                     focusConferenceItem = conferenceItem;
                 } else {
                     conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(size / 3, size / 3));
@@ -335,22 +341,25 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didParticipantJoined(String userId) {
-        if (participants.contains(userId) || userId.equals(focusVideoUserId)) {
-            return;
-        }
-
+    public void didParticipantJoined(String userId, boolean screenSharing) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             return;
         }
 
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
-
-        AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userId);
+        AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userId, screenSharing);
         if (profile == null || profile.isAudience()) {
             return;
         }
+
+        String participantKey = VoipBaseActivity.participantKey(userId, screenSharing);
+        if (participants.contains(participantKey) || participantKey.equals(focusVideoUserId)) {
+            return;
+        }
+
+        manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
+
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int size = Math.min(dm.widthPixels, dm.heightPixels);
 
@@ -358,20 +367,20 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
         UserInfo userInfo = userViewModel.getUserInfo(userId, false);
         VoipCallItem conferenceItem = new VoipCallItem(getActivity());
-        conferenceItem.setTag(userInfo.uid);
+        conferenceItem.setTag(participantKey);
         conferenceItem.getStatusTextView().setText(userInfo.displayName);
         conferenceItem.setOnClickListener(clickListener);
         GlideApp.with(conferenceItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(conferenceItem.getPortraitImageView());
         if (me.uid.equals(userId)) {
             session.setupLocalVideoView(conferenceItem.videoContainer, scalingType);
         } else {
-            session.setupRemoteVideoView(userInfo.uid, conferenceItem.videoContainer, scalingType);
+            session.setupRemoteVideoView(userInfo.uid, screenSharing, conferenceItem.videoContainer, scalingType);
         }
 
         if (focusVideoUserId == null) {
             conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             focusConferenceItem = conferenceItem;
-            focusVideoUserId = userId;
+            focusVideoUserId = participantKey;
             ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
 
             focusConferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -380,25 +389,30 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
             conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(size / 3, size / 3));
             participantGridView.addView(conferenceItem);
         }
-        participants.add(userId);
+        participants.add(participantKey);
         startHideBarTimer();
     }
 
     @Override
-    public void didParticipantConnected(String userId) {
+    public void didParticipantConnected(String userId, boolean screenSharing) {
 
     }
 
     @Override
-    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason) {
-        removeParticipantView(userId);
-        Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了会议", Toast.LENGTH_SHORT).show();
-
+    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason, boolean screenSharing) {
+        if (userId.equals(ChatManager.Instance().getUserId()) && screenSharing) {
+            return;
+        }
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             return;
         }
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
+
+        removeParticipantView(VoipBaseActivity.participantKey(userId, screenSharing));
+        Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了会议", Toast.LENGTH_SHORT).show();
+
+//        manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
+        manageParticipantTextView.setText("xx 0");
 
         if (focusVideoUserId == null) {
             bottomPanel.setVisibility(View.VISIBLE);
@@ -430,12 +444,16 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didChangeType(String userId, boolean audience) {
+    public void didChangeType(String userId, boolean audience, boolean screenSharing) {
+        if (userId.equals(ChatManager.Instance().getUserId()) && screenSharing) {
+            return;
+        }
+        String participantKey = VoipBaseActivity.participantKey(userId, screenSharing);
         if (audience) {
-            removeParticipantView(userId);
+            removeParticipantView(participantKey);
             Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "结束了互动", Toast.LENGTH_SHORT).show();
         } else {
-            didParticipantJoined(userId);
+            didParticipantJoined(userId, screenSharing);
         }
         updateControlStatus();
     }
@@ -466,7 +484,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack(String userId) {
+    public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
     }
 
     @Override

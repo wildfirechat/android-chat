@@ -48,31 +48,31 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                 @Override
                 public void onSuccess(List<Message> messageList, boolean hasMore) {
                     if (messageList != null && !messageList.isEmpty()) {
-                        List<UiMessage> messages = new ArrayList<>();
+                        List<UiMessage> uiMsgs = new ArrayList<>();
                         for (Message msg : messageList) {
-                            messages.add(new UiMessage(msg));
+                            uiMsgs.add(new UiMessage(msg));
                         }
-                        result.postValue(messages);
+                        result.setValue(uiMsgs);
                     } else {
                         ChatManager.Instance().getRemoteMessages(conversation, null, fromMessageUid, count, new GetRemoteMessageCallback() {
                             @Override
                             public void onSuccess(List<Message> messages) {
                                 if (messages != null && !messages.isEmpty()) {
-                                    List<UiMessage> msgs = new ArrayList<>();
+                                    List<UiMessage> uiMsgs = new ArrayList<>();
                                     for (Message msg : messages) {
 //                                        if (msg.messageId != 0) {
-                                            msgs.add(new UiMessage(msg));
+                                        uiMsgs.add(new UiMessage(msg));
 //                                        }
                                     }
-                                    result.postValue(msgs);
+                                    result.postValue(uiMsgs);
                                 } else {
-                                    result.postValue(new ArrayList<UiMessage>());
+                                    result.postValue(new ArrayList<>());
                                 }
                             }
 
                             @Override
                             public void onFail(int errorCode) {
-                                result.postValue(new ArrayList<UiMessage>());
+                                result.postValue(new ArrayList<>());
                             }
                         });
                     }
@@ -139,17 +139,20 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     public MutableLiveData<List<UiMessage>> loadNewMessages(Conversation conversation, String withUser, long startIndex, int count) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
+            List<UiMessage> uiMessages = new ArrayList<>();
             ChatManager.Instance().getMessages(conversation, startIndex, false, count, withUser, new GetMessageCallback() {
                 @Override
                 public void onSuccess(List<Message> messageList, boolean hasMore) {
-                    List<UiMessage> messages = new ArrayList<>();
+                    List<UiMessage> uiMsgs = new ArrayList<>();
                     if (messageList != null) {
                         for (Message msg : messageList) {
-                            messages.add(new UiMessage(msg));
+                            uiMsgs.add(new UiMessage(msg));
+                        }
+                        uiMessages.addAll(0, uiMsgs);
+                        if (!hasMore) {
+                            result.setValue(uiMessages);
                         }
                     }
-                    result.postValue(messages);
-
                 }
 
                 @Override

@@ -112,17 +112,17 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     }
 
     @Override
-    public void didParticipantJoined(String s) {
+    public void didParticipantJoined(String userId, boolean screenSharing) {
 
     }
 
     @Override
-    public void didParticipantConnected(String userId) {
+    public void didParticipantConnected(String userId, boolean screenSharing) {
 
     }
 
     @Override
-    public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason) {
+    public void didParticipantLeft(String s, AVEngineKit.CallEndReason callEndReason, boolean screenSharing) {
 
     }
 
@@ -144,7 +144,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack(String userId) {
+    public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
     }
 
     @Override

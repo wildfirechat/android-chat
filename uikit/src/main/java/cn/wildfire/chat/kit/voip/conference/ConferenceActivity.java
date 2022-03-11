@@ -130,16 +130,16 @@ public class ConferenceActivity extends VoipBaseActivity {
     }
 
     @Override
-    public void didParticipantJoined(String userId) {
+    public void didParticipantJoined(String userId, boolean screenSharing) {
         postAction(() -> {
-            currentCallSessionCallback.didParticipantJoined(userId);
+            currentCallSessionCallback.didParticipantJoined(userId, screenSharing);
         });
     }
 
     @Override
-    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason) {
+    public void didParticipantLeft(String userId, AVEngineKit.CallEndReason callEndReason, boolean screenSharing) {
         postAction(() -> {
-            currentCallSessionCallback.didParticipantLeft(userId, callEndReason);
+            currentCallSessionCallback.didParticipantLeft(userId, callEndReason, screenSharing);
         });
     }
 
@@ -184,9 +184,9 @@ public class ConferenceActivity extends VoipBaseActivity {
     }
 
     @Override
-    public void didReceiveRemoteVideoTrack(String userId) {
+    public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
         postAction(() -> {
-            currentCallSessionCallback.didReceiveRemoteVideoTrack(userId);
+            currentCallSessionCallback.didReceiveRemoteVideoTrack(userId, screenSharing);
         });
     }
 
@@ -212,9 +212,9 @@ public class ConferenceActivity extends VoipBaseActivity {
     }
 
     @Override
-    public void didChangeType(String userId, boolean audience) {
+    public void didChangeType(String userId, boolean audience, boolean screenSharing) {
         postAction(() -> {
-            currentCallSessionCallback.didChangeType(userId, audience);
+            currentCallSessionCallback.didChangeType(userId, audience, screenSharing);
         });
     }
 

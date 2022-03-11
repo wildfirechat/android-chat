@@ -15,7 +15,7 @@ import cn.wildfirechat.client.IGetChatRoomMembersInfoCallback;
 import cn.wildfirechat.client.IGetGroupInfoCallback;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ISearchChannelCallback;
-import cn.wildfirechat.client.IGetRemoteMessageCallback;
+import cn.wildfirechat.client.IGetRemoteMessagesCallback;
 import cn.wildfirechat.client.IGetFileRecordCallback;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetUploadUrlCallback;
@@ -24,6 +24,7 @@ import cn.wildfirechat.client.IGetMessageCallback;
 import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IGetGroupCallback;
 import cn.wildfirechat.client.IGetGroupMemberCallback;
+import cn.wildfirechat.client.IGetConversationListCallback;
 
 
 import cn.wildfirechat.client.IOnFriendUpdateListener;
@@ -34,6 +35,7 @@ import cn.wildfirechat.client.IGetGroupsCallback;
 import cn.wildfirechat.client.IOnUserInfoUpdateListener;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
+import cn.wildfirechat.client.IOnTrafficDataListener;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -84,6 +86,7 @@ interface IRemoteClient {
     oneway void setOnChannelInfoUpdateListener(in IOnChannelInfoUpdateListener listener);
     oneway void setOnConferenceEventListener(in IOnConferenceEventListener listener);
 
+    oneway void setOnTrafficDataListener(in IOnTrafficDataListener listener);
 
     oneway void registerMessageContent(in String msgContentCls);
 
@@ -92,6 +95,7 @@ interface IRemoteClient {
     oneway void recall(in long messageUid, IGeneralCallback callback);
     long getServerDeltaTime();
     List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines);
+    oneway void getConversationListAsync(in int[] conversationTypes, in int[] lines, in IGetConversationListCallback callback);
     ConversationInfo getConversation(in int conversationType, in String target, in int line);
     long getFirstUnreadMessageId(in int conversationType, in String target, in int line);
     List<Message> getMessages(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser);
@@ -109,8 +113,8 @@ interface IRemoteClient {
     oneway void getUserMessages(in String userId, in Conversation conversation, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
     oneway void getUserMessagesEx(in String userId, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
 
-    oneway void getRemoteMessages(in Conversation conversation, in int[] contentTypes, in long beforeMessageUid, in int count, in IGetRemoteMessageCallback callback);
-    oneway void getRemoteMessage(in long messageUid, in IGetRemoteMessageCallback callback);
+    oneway void getRemoteMessages(in Conversation conversation, in int[] contentTypes, in long beforeMessageUid, in int count, in IGetRemoteMessagesCallback callback);
+    oneway void getRemoteMessage(in long messageUid, in IGetRemoteMessagesCallback callback);
     oneway void getConversationFileRecords(in Conversation conversation, in String fromUser, in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void getMyFileRecords(in long beforeMessageUid, in int count, in IGetFileRecordCallback callback);
     oneway void deleteFileRecord(in long messageUid, in IGeneralCallback callback);
@@ -195,6 +199,7 @@ interface IRemoteClient {
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
     List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
     List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset);
+    List<Message> searchMessageByTypesAndTimes(in Conversation conversation, in String keyword, in int[] contentTypes, in long startTime, in long endTime, in boolean desc, in int limit, in int offset);
     oneway void searchMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in String keyword, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
 
     List<GroupSearchResult> searchGroups(in String keyword);

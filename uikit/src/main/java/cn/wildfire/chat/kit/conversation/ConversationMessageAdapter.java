@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.conversation;
 
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,11 +104,22 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public void setMessages(List<UiMessage> messages) {
         if (messages != null && !messages.isEmpty()) {
             oldestMessageUid = messages.get(0).message.messageUid;
-            messages = messages.stream().filter(m -> m.message.messageId != 0).collect(Collectors.toList());
-            if (!messages.isEmpty()) {
-                oldestMessageId = messages.get(0).message.messageId;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                messages = messages.stream().filter(m -> m.message.messageId != 0).collect(Collectors.toList());
+                if (!messages.isEmpty()) {
+                    oldestMessageId = messages.get(0).message.messageId;
+                }
+                this.messages = messages;
+            } else {
+                for (UiMessage uiMsg : messages) {
+                    if (uiMsg.message.messageId != 0) {
+                        this.messages.add(uiMsg);
+                    }
+                }
+                if (!this.messages.isEmpty()) {
+                    oldestMessageId = this.messages.get(0).message.messageId;
+                }
             }
-            this.messages = messages;
         } else {
             this.messages = new ArrayList<>();
         }
