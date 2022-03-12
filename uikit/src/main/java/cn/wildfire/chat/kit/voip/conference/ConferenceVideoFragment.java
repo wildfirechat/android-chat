@@ -32,6 +32,7 @@ import org.webrtc.StatsReport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -157,11 +158,10 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         if (profiles == null) {
             profiles = new ArrayList<>();
         }
+        profiles = profiles.stream().filter(p -> !p.isAudience()).collect(Collectors.toList());
         for (AVEngineKit.ParticipantProfile profile : profiles) {
-            if (!profile.isAudience()) {
-                participants.add(VoipBaseActivity.participantKey(profile.getUserId(), profile.isScreenSharing()));
-                participantIds.add(profile.getUserId());
-            }
+            participants.add(VoipBaseActivity.participantKey(profile.getUserId(), profile.isScreenSharing()));
+            participantIds.add(profile.getUserId());
         }
 
         AVEngineKit.ParticipantProfile myProfile = session.getMyProfile();
@@ -454,7 +454,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         String participantKey = VoipBaseActivity.participantKey(userId, screenSharing);
         if (audience) {
             removeParticipantView(participantKey);
-            if (!screenSharing){
+            if (!screenSharing) {
                 Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "结束了互动", Toast.LENGTH_SHORT).show();
             }
         } else {
@@ -490,6 +490,8 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     @Override
     public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
+        // 不能将头像等放在 surfaceView 的上面，然后在这儿隐藏头像，因为屏幕共享虽然收到流了，但可能还没有数据，如果通过这儿隐藏头像，会是透明的
+        // 只能将头像等，放在 surfaceView 的下面
     }
 
     @Override
@@ -522,15 +524,17 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-//        Log.d(TAG, userId + " volume " + volume);
-        VoipCallItem multiCallItem = getUserVoipCallItem(userId);
+        Log.d("jyj", userId + " volume " + volume);
+        VoipCallItem multiCallItem = getUserVoipCallItem(VoipBaseActivity.participantKey(userId, false));
         if (multiCallItem != null) {
             if (volume > 1000) {
                 multiCallItem.getStatusTextView().setVisibility(View.VISIBLE);
                 multiCallItem.getStatusTextView().setText("正在说话");
             } else {
-                multiCallItem.getStatusTextView().setVisibility(View.GONE);
-                multiCallItem.getStatusTextView().setText("");
+//                multiCallItem.getStatusTextView().setVisibility(View.GONE);
+//                multiCallItem.getStatusTextView().setText("");
+                multiCallItem.getStatusTextView().setVisibility(View.VISIBLE);
+                multiCallItem.getStatusTextView().setText("正在说话");
             }
         }
     }
