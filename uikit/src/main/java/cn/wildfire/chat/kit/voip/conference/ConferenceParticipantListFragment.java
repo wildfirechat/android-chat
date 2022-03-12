@@ -140,6 +140,12 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
                 if (p.isScreenSharing()) {
                     desc += " 屏幕共享";
                 }
+                if (p.isVideoMuted()){
+                    desc += " 关闭摄像头";
+                }
+                if (p.isAudioMuted()){
+                    desc += " 静音";
+                }
                 uiUserInfo.setDesc(desc);
             }
         }
@@ -153,6 +159,12 @@ public class ConferenceParticipantListFragment extends BaseUserListFragment {
         }
         if (mp.isScreenSharing()) {
             desc += " 屏幕共享";
+        }
+        if (mp.isVideoMuted()){
+            desc += " 关闭摄像头";
+        }
+        if (mp.isAudioMuted()){
+            desc += " 静音";
         }
         selfUiUserInfo.setDesc(desc);
         selfUiUserInfo.setCategory(session.isAudience() ? "听众" : "互动成员");

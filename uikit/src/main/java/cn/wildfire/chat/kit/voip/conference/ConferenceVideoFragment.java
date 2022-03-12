@@ -409,10 +409,13 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         }
 
         removeParticipantView(VoipBaseActivity.participantKey(userId, screenSharing));
-        Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了会议", Toast.LENGTH_SHORT).show();
+        if (!screenSharing) {
+            Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "离开了会议", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "结束了屏幕共享", Toast.LENGTH_SHORT).show();
+        }
 
-//        manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
-        manageParticipantTextView.setText("xx 0");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
 
         if (focusVideoUserId == null) {
             bottomPanel.setVisibility(View.VISIBLE);
@@ -451,7 +454,9 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         String participantKey = VoipBaseActivity.participantKey(userId, screenSharing);
         if (audience) {
             removeParticipantView(participantKey);
-            Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "结束了互动", Toast.LENGTH_SHORT).show();
+            if (!screenSharing){
+                Toast.makeText(getActivity(), ChatManager.Instance().getUserDisplayName(userId) + "结束了互动", Toast.LENGTH_SHORT).show();
+            }
         } else {
             didParticipantJoined(userId, screenSharing);
         }
