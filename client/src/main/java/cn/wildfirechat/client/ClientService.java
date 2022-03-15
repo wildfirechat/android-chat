@@ -72,6 +72,7 @@ import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
+import cn.wildfirechat.model.ClientState;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.ConversationSearchResult;
@@ -99,11 +100,14 @@ import cn.wildfirechat.model.ProtoMessage;
 import cn.wildfirechat.model.ProtoMomentsComment;
 import cn.wildfirechat.model.ProtoMomentsFeed;
 import cn.wildfirechat.model.ProtoMomentsMedia;
+import cn.wildfirechat.model.ProtoOnlineState;
 import cn.wildfirechat.model.ProtoReadEntry;
 import cn.wildfirechat.model.ProtoUserInfo;
+import cn.wildfirechat.model.ProtoUserOnlineState;
 import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.RecoverReceiver;
 
 
@@ -123,6 +127,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     ProtoLogic.IFriendListUpdateCallback,
     ProtoLogic.IGroupInfoUpdateCallback,
     ProtoLogic.IConferenceEventCallback,
+    ProtoLogic.IOnlineEventCallback,
     ProtoLogic.IChannelInfoUpdateCallback, ProtoLogic.IGroupMembersUpdateCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
@@ -145,6 +150,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private RemoteCallbackList<IOnChannelInfoUpdateListener> onChannelInfoUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnGroupMembersUpdateListener> onGroupMembersUpdateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnConferenceEventListener> onConferenceEventListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
+    private RemoteCallbackList<IOnUserOnlineEventListener> onUserOnlineEventListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnTrafficDataListener> onTrafficDataListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
 
     private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
@@ -2623,6 +2629,87 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             useSM4 = true;
             ProtoLogic.useEncryptSM4();
         }
+
+        @Override
+        public void watchUserOnlineState(int conversationType, String[] targets, int duration, IWatchUserOnlineStateCallback callback) throws RemoteException {
+            ProtoLogic.watchOnlineState(conversationType, targets, duration, new ProtoLogic.IWatchOnlineStateCallback() {
+                @Override
+                public void onSuccess(ProtoUserOnlineState[] protoUserOnlineStates) {
+                    try {
+                        callback.onSuccess(convertProtoUserOnlineStates(protoUserOnlineStates));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void unwatchOnlineState(int conversationType, String[] targets, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.unwatchOnlineState(conversationType, targets, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        }
+
+        @Override
+        public void setUserOnlineEventListener(IOnUserOnlineEventListener listener) throws RemoteException {
+            onUserOnlineEventListenerRemoteCallbackList.register(listener);
+        }
+    }
+
+    private static UserOnlineState[] convertProtoUserOnlineStates(ProtoUserOnlineState[] protoUserOnlineStates) {
+        UserOnlineState[] userOnlineStates = new UserOnlineState[protoUserOnlineStates.length];
+        for (int i = 0; i < protoUserOnlineStates.length; i++) {
+            userOnlineStates[i] = convertProtoUserOnlineState(protoUserOnlineStates[i]);
+        }
+
+        return userOnlineStates;
+    }
+
+    private static UserOnlineState convertProtoUserOnlineState(ProtoUserOnlineState protoUserOnlineState) {
+        UserOnlineState userOnlineState = new UserOnlineState();
+        userOnlineState.setUserId(protoUserOnlineState.getUserId());
+        userOnlineState.setCustomState(protoUserOnlineState.getCustomState());
+        userOnlineState.setCustomText(protoUserOnlineState.getCustomText());
+
+        ProtoOnlineState[] states = protoUserOnlineState.getStates();
+        if (states != null) {
+            ClientState[] oss = new ClientState[states.length];
+            for (int i = 0; i < states.length; i++) {
+                ProtoOnlineState state = states[i];
+                ClientState os = new ClientState(state.getPlatform(), state.getState(), state.getLastSeen());
+                oss[i] = os;
+            }
+            userOnlineState.setClientStates(oss);
+        }
+
+        return userOnlineState;
     }
 
     private ChannelInfo converProtoChannelInfo(ProtoChannelInfo protoChannelInfo) {
@@ -2899,6 +2986,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setTrafficDataCallback(ClientService.this);
         ProtoLogic.setReceiveMessageCallback(ClientService.this);
         ProtoLogic.setConferenceEventCallback(ClientService.this);
+        ProtoLogic.setOnlineEventCallback(ClientService.this);
         Log.i(TAG, "Proto connect:" + userName);
         ProtoLogic.setAuthInfo(userName, userPwd);
         return ProtoLogic.connect(mHost);
@@ -3377,6 +3465,25 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
             onConferenceEventListenerRemoteCallbackList.finishBroadcast();
+        });
+    }
+
+
+    @Override
+    public void onOnlineEvent(ProtoUserOnlineState[] protoUserOnlineStates) {
+        handler.post(() -> {
+            int i = onUserOnlineEventListenerRemoteCallbackList.beginBroadcast();
+            IOnUserOnlineEventListener listener;
+            while (i > 0) {
+                i--;
+                listener = onUserOnlineEventListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onUserOnlineEvent(convertProtoUserOnlineStates(protoUserOnlineStates));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onUserOnlineEventListenerRemoteCallbackList.finishBroadcast();
         });
     }
 
