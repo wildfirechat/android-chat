@@ -64,6 +64,7 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
+import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -80,6 +81,7 @@ import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.UserSettingScope;
 
@@ -128,6 +130,7 @@ public class ConversationFragment extends Fragment implements
     private boolean moveToBottom = true;
     private ConversationViewModel conversationViewModel;
     private SettingViewModel settingViewModel;
+    private UserOnlineStateViewModel userOnlineStateViewModel;
     private MessageViewModel messageViewModel;
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
@@ -255,6 +258,19 @@ public class ConversationFragment extends Fragment implements
         }
     };
 
+    private Observer<Map<String, UserOnlineState>> userOnlineStateLiveDataObserver = new Observer<Map<String, UserOnlineState>>() {
+        @Override
+        public void onChanged(Map<String, UserOnlineState> userOnlineStateMap) {
+            if (conversation == null) {
+                return;
+            }
+            if (conversation.type == Conversation.ConversationType.Single) {
+                conversationTitle = null;
+                setTitle();
+            }
+        }
+    };
+
     private void initGroupObservers() {
         groupMembersUpdateLiveDataObserver = groupMembers -> {
             if (groupMembers == null || groupInfo == null) {
@@ -331,6 +347,14 @@ public class ConversationFragment extends Fragment implements
     }
 
     public void setupConversation(Conversation conversation, String title, long focusMessageId, String target) {
+        if (this.conversation != null) {
+            userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
+        }
+
+        if (conversation.type == Conversation.ConversationType.Single || conversation.type == Conversation.ConversationType.Group) {
+            userOnlineStateViewModel.watchUserOnlineState(conversation.type.getValue(), new String[]{conversation.target});
+        }
+
         this.conversation = conversation;
         this.conversationTitle = title;
         this.initialFocusedMessageId = focusMessageId;
@@ -385,7 +409,6 @@ public class ConversationFragment extends Fragment implements
         inputPanel.init(this, rootLinearLayout);
         inputPanel.setOnConversationInputPanelStateChangeListener(this);
 
-        settingViewModel = ViewModelProviders.of(this).get(SettingViewModel.class);
         conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
         conversationViewModel.clearConversationMessageLiveData().observeForever(clearConversationMessageObserver);
         messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
@@ -425,10 +448,17 @@ public class ConversationFragment extends Fragment implements
             }
             reloadMessage();
         };
+
+        settingViewModel = ViewModelProviders.of(this).get(SettingViewModel.class);
         settingViewModel.settingUpdatedLiveData().observeForever(settingUpdateLiveDataObserver);
+
+        userOnlineStateViewModel = ViewModelProviders.of(this).get(UserOnlineStateViewModel.class);
+        userOnlineStateViewModel.getUserOnlineStateLiveData().observe(getViewLifecycleOwner(), userOnlineStateLiveDataObserver);
+
     }
 
     private void setupConversation(Conversation conversation) {
+
 
         if (conversation.type == Conversation.ConversationType.Group) {
             groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
@@ -599,6 +629,14 @@ public class ConversationFragment extends Fragment implements
         if (conversation.type == Conversation.ConversationType.Single) {
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversation.target, false);
             conversationTitle = userViewModel.getUserDisplayName(userInfo);
+
+            UserOnlineState userOnlineState = ChatManager.Instance().getUserOnlineStateMap().get(userInfo.uid);
+            if (userOnlineState != null) {
+                String onlineDesc = userOnlineState.desc();
+                if (!TextUtils.isEmpty(onlineDesc)) {
+                    conversationTitle += " (" + userOnlineState.desc() + ")";
+                }
+            }
         } else if (conversation.type == Conversation.ConversationType.Group) {
             if (groupInfo != null) {
                 conversationTitle = groupInfo.name + "(" + groupInfo.memberCount + "人)";
@@ -619,6 +657,7 @@ public class ConversationFragment extends Fragment implements
                 }
             }
         }
+
         setActivityTitle(conversationTitle);
     }
 
@@ -735,6 +774,10 @@ public class ConversationFragment extends Fragment implements
         super.onDestroy();
         if (conversation == null) {
             return;
+        }
+
+        if (conversation.type == Conversation.ConversationType.Single || conversation.type == Conversation.ConversationType.Group) {
+            userOnlineStateViewModel.unwatchOnlineState(conversation.type.getValue(), new String[]{conversation.target});
         }
 
         if (conversation.type == Conversation.ConversationType.ChatRoom) {

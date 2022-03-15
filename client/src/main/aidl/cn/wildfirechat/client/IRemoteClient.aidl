@@ -25,7 +25,7 @@ import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IGetGroupCallback;
 import cn.wildfirechat.client.IGetGroupMemberCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
-
+import cn.wildfirechat.client.IWatchUserOnlineStateCallback;
 
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
@@ -35,6 +35,7 @@ import cn.wildfirechat.client.IGetGroupsCallback;
 import cn.wildfirechat.client.IOnUserInfoUpdateListener;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
+import cn.wildfirechat.client.IOnUserOnlineEventListener;
 import cn.wildfirechat.client.IOnTrafficDataListener;
 
 import cn.wildfirechat.message.Message;
@@ -259,4 +260,9 @@ interface IRemoteClient {
     boolean isGlobalDisableSyncDraft();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
+
+    oneway void watchUserOnlineState(in int conversationType, in String[] targets, in int duration, in IWatchUserOnlineStateCallback callback);
+    oneway void unwatchOnlineState(in int conversationType, in String[] targets, in IGeneralCallback callback);
+    oneway void setUserOnlineEventListener(in IOnUserOnlineEventListener listener);
+
 }
