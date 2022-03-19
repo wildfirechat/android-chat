@@ -348,10 +348,14 @@ public class ConversationFragment extends Fragment implements
 
     public void setupConversation(Conversation conversation, String title, long focusMessageId, String target) {
         if (this.conversation != null) {
-            userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
+            if ((this.conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(this.conversation.target))
+                    || this.conversation.type == Conversation.ConversationType.Group) {
+                userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
+            }
         }
 
-        if (conversation.type == Conversation.ConversationType.Single || conversation.type == Conversation.ConversationType.Group) {
+        if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
+                || conversation.type == Conversation.ConversationType.Group) {
             userOnlineStateViewModel.watchUserOnlineState(conversation.type.getValue(), new String[]{conversation.target});
         }
 
@@ -776,7 +780,8 @@ public class ConversationFragment extends Fragment implements
             return;
         }
 
-        if (conversation.type == Conversation.ConversationType.Single || conversation.type == Conversation.ConversationType.Group) {
+        if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
+                || conversation.type == Conversation.ConversationType.Group) {
             userOnlineStateViewModel.unwatchOnlineState(conversation.type.getValue(), new String[]{conversation.target});
         }
 
