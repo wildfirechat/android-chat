@@ -22,6 +22,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -636,6 +637,10 @@ public class ChatManager {
                 listener.onUserOnlineEvent(userOnlineStateMap);
             }
         });
+    }
+
+    public UserOnlineState getUserOnlineState(String userId) {
+        return userOnlineStateMap.get(userId);
     }
 
     public Map<String, UserOnlineState> getUserOnlineStateMap() {
@@ -6264,6 +6269,39 @@ public class ChatManager {
     @Deprecated
     public void getMyGroups(final GetGroupsCallback callback) {
         getFavGroups(callback);
+    }
+    
+    /**
+     * 获取自己的自定义状态。
+     * @return 返回自己的自定义状态。
+     */
+    public Pair<Integer, String> getMyCustomState() {
+        try {
+            String str = getUserSetting(UserSettingScope.CustomState, "");
+            if(TextUtils.isEmpty(str) || !str.contains("-")) {
+                return new Pair<>(0, null);
+            }
+            int index = str.indexOf("-");
+            int state = Integer.parseInt(str.substring(0, index));
+            String text = str.substring(index+1);
+            return new Pair<>(state, text);
+        } catch (Exception e) {
+            return new Pair<>(0, null);
+        }
+    }
+
+    /**
+     * 设置自己的自定义状态。
+     * @param state     自定义状态
+     * @param text      自定义状态描述
+     * @param callback  设置结果回调
+     */
+    public void setMyCustomState(int state, String text, GeneralCallback callback) {
+        String str = state + "-";
+        if(!TextUtils.isEmpty(text)) {
+            str += text;
+        }
+        setUserSetting(UserSettingScope.CustomState, "", str, callback);
     }
 
     /**
