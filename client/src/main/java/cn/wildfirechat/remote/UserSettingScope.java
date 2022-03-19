@@ -37,9 +37,11 @@ public interface UserSettingScope {
     int DisableSyncDraft = 20;
     //不能直接使用，协议栈内会使用此值
     int VoipSilent = 21;
+    //不能直接使用，协议栈内会使用此值
+    int PTTReserved = 22;
+    //不能直接使用，协议栈内会使用此值
+    int CustomState = 23;
 
-
-
-
+    //自定义用户设置，请使用1000以上的key
     int kUserSettingCustomBegin = 1000;
 }
