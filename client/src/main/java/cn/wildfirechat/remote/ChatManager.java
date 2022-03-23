@@ -2286,6 +2286,7 @@ public class ChatManager {
     }
 
     public void shutdown() {
+        Log.d(TAG, "shutdown");
         if (mClient != null) {
             gContext.unbindService(serviceConnection);
         }
@@ -6270,7 +6271,7 @@ public class ChatManager {
     public void getMyGroups(final GetGroupsCallback callback) {
         getFavGroups(callback);
     }
-    
+
     /**
      * 获取自己的自定义状态。
      * @return 返回自己的自定义状态。
