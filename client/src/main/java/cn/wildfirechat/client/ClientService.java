@@ -2958,6 +2958,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "ClientService onDestroy");
         Log.appenderClose();
         super.onDestroy();
         resetProto();
@@ -3039,7 +3040,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             return file.toString();
         } catch (Exception e) {
-            Log.e("ddd", "", e);
+            Log.e(TAG, e.getMessage());
         }
 
         return null;
