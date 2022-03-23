@@ -311,6 +311,14 @@ public class MMPreviewActivity extends Activity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (currentVideoView != null){
+            resetVideoView(currentVideoView);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         entries = null;
