@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,6 +86,15 @@ public class SplashActivity extends AppCompatActivity {
                 if (!granted) {
                     break;
                 }
+            }
+        }
+        // Android 10 之后，从后台弹出音视频通话，必须要有该权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (!Settings.canDrawOverlays(this)) {
+                granted = false;
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, REQUEST_CODE_DRAW_OVERLAY);
             }
         }
         return granted;
