@@ -53,6 +53,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.ChannelInfo;
+import cn.wildfirechat.model.Socks5ProxyInfo;
 
 
 import java.util.List;
@@ -260,6 +261,8 @@ interface IRemoteClient {
     boolean isGlobalDisableSyncDraft();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
+
+    oneway void setProxyInfo(in Socks5ProxyInfo proxyInfo);
 
     oneway void watchUserOnlineState(in int conversationType, in String[] targets, in int duration, in IWatchUserOnlineStateCallback callback);
     oneway void unwatchOnlineState(in int conversationType, in String[] targets, in IGeneralCallback callback);
