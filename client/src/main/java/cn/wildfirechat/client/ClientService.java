@@ -105,6 +105,7 @@ import cn.wildfirechat.model.ProtoReadEntry;
 import cn.wildfirechat.model.ProtoUserInfo;
 import cn.wildfirechat.model.ProtoUserOnlineState;
 import cn.wildfirechat.model.ReadEntry;
+import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
@@ -2628,6 +2629,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void useSM4() throws RemoteException {
             useSM4 = true;
             ProtoLogic.useEncryptSM4();
+        }
+
+        @Override
+        public void setProxyInfo(Socks5ProxyInfo proxyInfo) throws RemoteException {
+            ProtoLogic.setProxyInfo(proxyInfo.host, proxyInfo.ip, proxyInfo.port, proxyInfo.username, proxyInfo.password);
         }
 
         @Override

@@ -154,6 +154,7 @@ import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.ReadEntry;
+import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
@@ -196,6 +197,8 @@ public class ChatManager {
 
     private boolean useSM4 = false;
     private boolean defaultSilentWhenPCOnline = true;
+
+    private Socks5ProxyInfo proxyInfo;
 
     private boolean isBackground = true;
     private List<OnReceiveMessageListener> onReceiveMessageListeners = new ArrayList<>();
@@ -6448,6 +6451,21 @@ public class ChatManager {
     }
 
     /**
+     * 设置代理，只支持socks5代理，只有专业版支持。
+     * @param proxyInfo 代理信息
+     */
+    public void setProxyInfo(Socks5ProxyInfo proxyInfo) {
+        this.proxyInfo = proxyInfo;
+        if(checkRemoteService()) {
+            try {
+                mClient.setProxyInfo(proxyInfo);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * 开启事务，数据库备份、批量插入数据时，可使用事务，那样效率更高。
      *
      * @return
@@ -7394,6 +7412,10 @@ public class ChatManager {
                 mClient.setBackupAddressStrategy(backupAddressStrategy);
                 if (!TextUtils.isEmpty(backupAddressHost))
                     mClient.setBackupAddress(backupAddressHost, backupAddressPort);
+
+                if(proxyInfo != null) {
+                    mClient.setProxyInfo(proxyInfo);
+                }
 
                 mClient.setServerAddress(SERVER_HOST);
                 for (Class clazz : messageContentMap.values()) {

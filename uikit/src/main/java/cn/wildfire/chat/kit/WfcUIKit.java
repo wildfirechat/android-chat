@@ -51,6 +51,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnDeleteMessageListener;
@@ -125,6 +126,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     private void initWFClient(Application application) {
         ChatManager.init(application, Config.IM_SERVER_HOST);
+//        ChatManager.Instance().setProxyInfo(new Socks5ProxyInfo("", "192.168.1.80", 1080));
         try {
             ChatManagerHolder.gChatManager = ChatManager.Instance();
             ChatManagerHolder.gChatManager.startLog();
