@@ -75,7 +75,11 @@ public class VoipCallService extends Service {
     public static void start(Context context, boolean showFloatingView) {
         Intent intent = new Intent(context, VoipCallService.class);
         intent.putExtra("showFloatingView", showFloatingView);
-        context.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
     }
 
     public static void stop(Context context) {
@@ -155,9 +159,9 @@ public class VoipCallService extends Service {
         resumeActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         PendingIntent pendingIntent;
-        if (Build.VERSION.SDK_INT >= 23){
+        if (Build.VERSION.SDK_INT >= 23) {
             pendingIntent = PendingIntent.getActivity(this, 0, resumeActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        }else {
+        } else {
             pendingIntent = PendingIntent.getActivity(this, 0, resumeActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
