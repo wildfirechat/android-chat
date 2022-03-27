@@ -177,7 +177,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 if (!accountInfo.userName.equals(userName)) {
                     Log.e(TAG, "Error, 错误，切换户用户时一定要先disconnect，再connect");
                 } else {
-                    Log.e(TAG, "Error, 错误，已经connect过了，为啥还要调用connect。必须先调用disconnect之后才能再次调用connect");
+                    Log.e(TAG, "Error, 错误，已经connect过了， 不能再次调用connect。必须先调用disconnect之后才能再次调用connect");
                 }
                 return false;
             }
