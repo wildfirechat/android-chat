@@ -140,6 +140,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.ConversationSearchResult;
 import cn.wildfirechat.model.FileRecord;
+import cn.wildfirechat.model.FileRecordOrder;
 import cn.wildfirechat.model.Friend;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.GroupInfo;
@@ -3009,16 +3010,21 @@ public class ChatManager {
      * @param conversation    会话，如果为空则获取当前用户所有收到和发出的文件记录
      * @param fromUser        文件发送用户，如果为空则获取该用户发出的文件记录
      * @param beforeMessageId 起始消息的消息id
+     * @param order           文件记录排序
      * @param count           获取消息的条数
      * @param callback
      */
-    public void getConversationFileRecords(Conversation conversation, String fromUser, long beforeMessageId, int count, GetFileRecordCallback callback) {
+    public void getConversationFileRecords(Conversation conversation, String fromUser, long beforeMessageId, FileRecordOrder order, int count, GetFileRecordCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
 
         try {
-            mClient.getConversationFileRecords(conversation, fromUser, beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+            int intOrder = 0;
+            if(order != null) {
+                intOrder = order.value;
+            }
+            mClient.getConversationFileRecords(conversation, fromUser, beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
                 @Override
                 public void onSuccess(List<FileRecord> messages) throws RemoteException {
                     if (callback != null) {
@@ -3042,13 +3048,17 @@ public class ChatManager {
         }
     }
 
-    public void getMyFileRecords(long beforeMessageId, int count, GetFileRecordCallback callback) {
+    public void getMyFileRecords(long beforeMessageId, FileRecordOrder order, int count, GetFileRecordCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
 
         try {
-            mClient.getMyFileRecords(beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+            int intOrder = 0;
+            if(order != null) {
+                intOrder = order.value;
+            }
+            mClient.getMyFileRecords(beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
                 @Override
                 public void onSuccess(List<FileRecord> messages) throws RemoteException {
                     if (callback != null) {
@@ -3112,13 +3122,17 @@ public class ChatManager {
         }
     }
 
-    public void searchMyFileRecords(String keyword, long beforeMessageId, int count, GetFileRecordCallback callback) {
+    public void searchMyFileRecords(String keyword, long beforeMessageId, FileRecordOrder order, int count, GetFileRecordCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
 
         try {
-            mClient.searchMyFileRecords(keyword, beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+            int intOrder = 0;
+            if(order != null) {
+                intOrder = order.value;
+            }
+            mClient.searchMyFileRecords(keyword, beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
                 @Override
                 public void onSuccess(List<FileRecord> messages) throws RemoteException {
                     if (callback != null) {
@@ -3152,13 +3166,17 @@ public class ChatManager {
      * @param count           获取消息的条数
      * @param callback
      */
-    public void searchFileRecords(String keyword, Conversation conversation, String fromUser, long beforeMessageId, int count, GetFileRecordCallback callback) {
+    public void searchFileRecords(String keyword, Conversation conversation, String fromUser, long beforeMessageId, FileRecordOrder order, int count, GetFileRecordCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
 
         try {
-            mClient.searchFileRecords(keyword, conversation, fromUser, beforeMessageId, count, new IGetFileRecordCallback.Stub() {
+            int intOrder = 0;
+            if(order != null) {
+                intOrder = order.value;
+            }
+            mClient.searchFileRecords(keyword, conversation, fromUser, beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
                 @Override
                 public void onSuccess(List<FileRecord> messages) throws RemoteException {
                     if (callback != null) {

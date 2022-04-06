@@ -740,8 +740,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getConversationFileRecords(Conversation conversation, String fromUser, long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
-            ProtoLogic.getConversationFileRecords(conversation == null ? 0 : conversation.type.getValue(), conversation == null ? "" : conversation.target, conversation == null ? 0 : conversation.line, fromUser, beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+        public void getConversationFileRecords(Conversation conversation, String fromUser, long beforeMessageUid, int order, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.getConversationFileRecords(conversation == null ? 0 : conversation.type.getValue(), conversation == null ? "" : conversation.target, conversation == null ? 0 : conversation.line, fromUser, beforeMessageUid, order, count, new ProtoLogic.ILoadFileRecordCallback() {
                 @Override
                 public void onSuccess(ProtoFileRecord[] protoFileRecords) {
                     try {
@@ -763,8 +763,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getMyFileRecords(long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
-            ProtoLogic.getMyFileRecords(beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+        public void getMyFileRecords(long beforeMessageUid, int order, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.getMyFileRecords(beforeMessageUid, order, count, new ProtoLogic.ILoadFileRecordCallback() {
                 @Override
                 public void onSuccess(ProtoFileRecord[] protoFileRecords) {
                     try {
@@ -809,8 +809,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void searchFileRecords(String keyword, Conversation conversation, String fromUser, long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
-            ProtoLogic.searchConversationFileRecords(keyword, conversation == null ? 0 : conversation.type.getValue(), conversation == null ? "" : conversation.target, conversation == null ? 0 : conversation.line, fromUser, beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+        public void searchFileRecords(String keyword, Conversation conversation, String fromUser, long beforeMessageUid, int order, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.searchConversationFileRecords(keyword, conversation == null ? 0 : conversation.type.getValue(), conversation == null ? "" : conversation.target, conversation == null ? 0 : conversation.line, fromUser, beforeMessageUid, order, count, new ProtoLogic.ILoadFileRecordCallback() {
                 @Override
                 public void onSuccess(ProtoFileRecord[] protoFileRecords) {
                     try {
@@ -832,8 +832,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void searchMyFileRecords(String keyword, long beforeMessageUid, int count, IGetFileRecordCallback callback) throws RemoteException {
-            ProtoLogic.searchMyFileRecords(keyword, beforeMessageUid, count, new ProtoLogic.ILoadFileRecordCallback() {
+        public void searchMyFileRecords(String keyword, long beforeMessageUid, int order, int count, IGetFileRecordCallback callback) throws RemoteException {
+            ProtoLogic.searchMyFileRecords(keyword, beforeMessageUid, order, count, new ProtoLogic.ILoadFileRecordCallback() {
                 @Override
                 public void onSuccess(ProtoFileRecord[] protoFileRecords) {
                     try {
