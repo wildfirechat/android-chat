@@ -433,6 +433,7 @@ public class ChatManager {
      * @param port 服务器port
      */
     private void onConnectToServer(final String host, final String ip, final int port) {
+        Log.e("jyj", "connectToServer " + host + ip + port);
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -2257,7 +2258,7 @@ public class ChatManager {
                         recallCnt.fromSelf = true;
                         recallCnt.setOriginalSender(msg.sender);
                         recallCnt.setOriginalContent(payload.content);
-                        recallCnt.setOriginalContentType(payload.contentType);
+                        recallCnt.setOriginalContentType(payload.type);
                         recallCnt.setOriginalExtra(payload.extra);
                         recallCnt.setOriginalSearchableContent(payload.searchableContent);
                         recallCnt.setOriginalMessageTimestamp(msg.serverTime);
@@ -5290,7 +5291,7 @@ public class ChatManager {
             return null;
         }
         MessagePayload payload = content.encode();
-        payload.contentType = content.getClass().getAnnotation(ContentTag.class).type();
+        payload.type = content.getClass().getAnnotation(ContentTag.class).type();
         return payload;
     }
 
@@ -7330,7 +7331,7 @@ public class ChatManager {
 
         MessageContent content = null;
         try {
-            content = messageContentMap.get(payload.contentType).newInstance();
+            content = messageContentMap.get(payload.type).newInstance();
             if (content instanceof CompositeMessageContent) {
                 ((CompositeMessageContent) content).decode(payload, this);
             } else {
@@ -7349,7 +7350,7 @@ public class ChatManager {
             }
             content.extra = payload.extra;
         } catch (Exception e) {
-            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.contentType);
+            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.type);
             e.printStackTrace();
             if (content == null) {
                 return null;

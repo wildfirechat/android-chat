@@ -20,7 +20,7 @@ import cn.wildfirechat.model.ProtoMessageContent;
 
 public class MessagePayload implements Parcelable {
 
-    public /*MessageContentType*/ int contentType;
+    public /*MessageContentType*/ int type;
     public String searchableContent;
     public String pushContent;
     public String pushData;
@@ -28,7 +28,7 @@ public class MessagePayload implements Parcelable {
     public byte[] binaryContent;
 
     public String extra;
-    
+
     public int mentionedType;
     public List<String> mentionedTargets;
 
@@ -45,7 +45,7 @@ public class MessagePayload implements Parcelable {
     }
 
     public MessagePayload(ProtoMessageContent protoMessageContent) {
-        this.contentType = protoMessageContent.getType();
+        this.type = protoMessageContent.getType();
         this.searchableContent = protoMessageContent.getSearchableContent();
         this.pushContent = protoMessageContent.getPushContent();
         this.pushData = protoMessageContent.getPushData();
@@ -66,7 +66,7 @@ public class MessagePayload implements Parcelable {
 
     public ProtoMessageContent toProtoContent() {
         ProtoMessageContent out = new ProtoMessageContent();
-        out.setType(contentType);
+        out.setType(type);
         out.setSearchableContent(searchableContent);
         out.setPushContent(pushContent);
         out.setPushData(pushData);
@@ -96,7 +96,7 @@ public class MessagePayload implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.contentType);
+        dest.writeInt(this.type);
         dest.writeString(this.searchableContent);
         dest.writeString(this.pushContent);
         dest.writeString(this.pushData);
@@ -112,7 +112,7 @@ public class MessagePayload implements Parcelable {
     }
 
     protected MessagePayload(Parcel in) {
-        this.contentType = in.readInt();
+        this.type = in.readInt();
         this.searchableContent = in.readString();
         this.pushContent = in.readString();
         this.pushData = in.readString();
