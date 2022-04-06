@@ -2875,7 +2875,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
 
-        MessageContent content = contentOfType(payload.contentType);
+        MessageContent content = contentOfType(payload.type);
         try {
             if (content instanceof CompositeMessageContent) {
                 ((CompositeMessageContent) content).decode(payload, this);
@@ -2894,7 +2894,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             content.extra = payload.extra;
         } catch (Exception e) {
-            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.contentType);
+            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.type);
             e.printStackTrace();
             if (content.getPersistFlag() == PersistFlag.Persist || content.getPersistFlag() == PersistFlag.Persist_And_Count) {
                 content = new UnknownMessageContent();

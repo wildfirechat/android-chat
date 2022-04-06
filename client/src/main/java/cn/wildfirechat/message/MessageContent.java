@@ -4,7 +4,6 @@
 
 package cn.wildfirechat.message;
 
-import android.media.MediaScannerConnection;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -52,7 +51,7 @@ public abstract class MessageContent implements Parcelable {
 
     public MessagePayload encode() {
         MessagePayload payload = new MessagePayload();
-        payload.contentType = getMessageContentType();
+        payload.type = getMessageContentType();
         payload.mentionedType = mentionedType;
         payload.mentionedTargets = mentionedTargets;
         payload.extra = extra;

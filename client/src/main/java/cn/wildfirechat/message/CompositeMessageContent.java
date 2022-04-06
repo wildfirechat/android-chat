@@ -74,9 +74,9 @@ public class CompositeMessageContent extends MessageContent {
                 }
 
                 MessagePayload messagePayload = message.content.encode();
-                messagePayload.contentType = message.content.getMessageContentType();
+                messagePayload.type = message.content.getMessageContentType();
 
-                msgObj.put("ctype", messagePayload.contentType);
+                msgObj.put("ctype", messagePayload.type);
                 if(!TextUtils.isEmpty(messagePayload.searchableContent)) {
                     msgObj.put("csc", messagePayload.searchableContent);
                     payload.searchableContent = payload.searchableContent + messagePayload.searchableContent + " ";
@@ -147,7 +147,7 @@ public class CompositeMessageContent extends MessageContent {
                 message.localExtra = object.optString("le");
 
                 MessagePayload messagePayload = super.encode();
-                messagePayload.contentType = object.optInt("ctype");
+                messagePayload.type = object.optInt("ctype");
                 messagePayload.searchableContent = object.optString("csc");
                 messagePayload.pushContent = object.optString("cpc");
                 messagePayload.pushData = object.optString("cpd");
