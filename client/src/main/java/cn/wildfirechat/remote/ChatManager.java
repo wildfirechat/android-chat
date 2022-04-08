@@ -183,6 +183,7 @@ public class ChatManager {
     private int pushType;
     private Map<Integer, Class<? extends MessageContent>> messageContentMap = new HashMap<>();
     private boolean isLiteMode = false;
+    private boolean isLowBPSMode = false;
     private UserSource userSource;
 
     private boolean startLog;
@@ -1836,6 +1837,24 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 设置低速模式。
+     * <p>
+     * 低速模式首次登陆不同步历史消息，不同步设置，一般用户极窄带宽设备下。
+     * 此函数只能在connect之前调用。
+     *
+     * @param isLowBPSMode 是否是低速模式
+     */
+    public void setLowBPSMode(boolean isLowBPSMode) {
+        this.isLowBPSMode = isLowBPSMode;
+        if (mClient != null) {
+            try {
+                mClient.setLowBPSMode(isLowBPSMode);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      * 连接服务器
      * userId和token都不允许为空
@@ -7555,6 +7574,7 @@ public class ChatManager {
 
 
                 mClient.setLiteMode(isLiteMode);
+                mClient.setLowBPSMode(isLowBPSMode);
 
                 if (!TextUtils.isEmpty(protoUserAgent)) {
                     mClient.setProtoUserAgent(protoUserAgent);

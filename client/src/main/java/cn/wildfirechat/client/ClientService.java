@@ -335,6 +335,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setLowBPSMode(boolean isLowBPSMode) throws RemoteException {
+            ProtoLogic.setLowBPSMode(isLowBPSMode);
+        }
+
+        @Override
         public int getConnectionStatus() throws RemoteException {
             return mConnectionStatus;
         }
