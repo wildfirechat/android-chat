@@ -74,6 +74,7 @@ interface IRemoteClient {
     void setProtoUserAgent(in String userAgent);
     void addHttpHeader(in String header, in String value);
     void setLiteMode(in boolean isLiteMode);
+    void setLowBPSMode(in boolean isLowBPSMode);
     int getConnectionStatus();
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
