@@ -35,6 +35,7 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private boolean pick = false;
+    private boolean showChannel = true;
     private List<String> filterUserList;
     private static final int REQUEST_CODE_PICK_CHANNEL = 100;
 
@@ -53,6 +54,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         Bundle bundle = getArguments();
         if (bundle != null) {
             pick = bundle.getBoolean("pick", false);
+            showChannel = bundle.getBoolean("showChannel", true);
             filterUserList = bundle.getStringArrayList("filterUserList");
         }
     }
@@ -89,7 +91,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     }
 
     private void patchUserOnlineState(List<UIUserInfo> userInfos) {
-        if (userInfos == null){
+        if (userInfos == null) {
             return;
         }
         Map<String, UserOnlineState> userOnlineStateMap = ChatManager.Instance().getUserOnlineStateMap();
@@ -112,7 +114,9 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             addHeaderViewHolder(FriendRequestViewHolder.class, R.layout.contact_header_friend, new FriendRequestValue(contactViewModel.getUnreadFriendRequestCount()));
             addHeaderViewHolder(GroupViewHolder.class, R.layout.contact_header_group, new GroupValue());
         }
-        addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
+        if (showChannel) {
+            addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
+        }
     }
 
     @Override
