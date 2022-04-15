@@ -976,7 +976,7 @@ public class ChatManager {
             FileLock lock = chan.lock();
             imei = fw.readLine();
             if (TextUtils.isEmpty(imei)) {
-                // 迁移就的clientId
+                //  迁移旧的clientId
                 imei = PreferenceManager.getDefaultSharedPreferences(gContext).getString("mars_core_uid", "");
                 if (TextUtils.isEmpty(imei)) {
                     try {
@@ -1793,6 +1793,7 @@ public class ChatManager {
 
         try {
             Message message = mClient.getMessage(messageId);
+            message.status = status;
             if (message == null) {
                 Log.e(TAG, "update message failure, message not exist");
                 return false;
