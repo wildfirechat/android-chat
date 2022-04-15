@@ -44,6 +44,8 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         this.fragment = context;
     }
 
+    private OnClickConversationItemListener onClickConversationItemListener;
+
     private boolean isEmpty(List list) {
         return list == null || list.isEmpty();
     }
@@ -58,6 +60,11 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public void setConversationInfos(List<ConversationInfo> conversationInfos) {
         submit(this.statusNotifications, conversationInfos);
+    }
+
+    public void setOnClickConversationItemListener(OnClickConversationItemListener onClickConversationItemListener) {
+        this.onClickConversationItemListener = onClickConversationItemListener;
+        notifyDataSetChanged();
     }
 
     private void submit(List<StatusNotification> notifications, List<ConversationInfo> conversationInfos) {
@@ -97,7 +104,18 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     private void processConversationClick(ConversationViewHolder viewHolder, View itemView) {
-        itemView.setOnClickListener(viewHolder::onClick);
+        if (onClickConversationItemListener != null) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = viewHolder.getAdapterPosition();
+                    ConversationInfo conversationInfo = conversationInfos.get(position - headerCount());
+                    onClickConversationItemListener.onClickConversationItem(conversationInfo);
+                }
+            });
+        } else {
+            itemView.setOnClickListener(viewHolder::onClick);
+        }
     }
 
     private static class ContextMenuItemWrapper {
