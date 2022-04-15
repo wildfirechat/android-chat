@@ -186,6 +186,9 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void updateHeader(int index, HeaderValue value) {
+        if (headerValues == null){
+            return;
+        }
         HeaderValueWrapper wrapper = headerValues.get(index);
         headerValues.set(index, new HeaderValueWrapper(wrapper.headerViewHolderClazz, wrapper.layoutResId, value));
         notifyItemChanged(index);
