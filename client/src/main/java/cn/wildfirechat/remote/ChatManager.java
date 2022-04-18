@@ -132,6 +132,7 @@ import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.QuitGroupVisibleNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.message.notification.StartSecretChatMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
@@ -7802,6 +7803,7 @@ public class ChatManager {
         registerMessageContent(CompositeMessageContent.class);
         registerMessageContent(MarkUnreadMessageContent.class);
         registerMessageContent(PTTSoundMessageContent.class);
+        registerMessageContent(StartSecretChatMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {

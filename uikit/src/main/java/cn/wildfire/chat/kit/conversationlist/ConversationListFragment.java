@@ -39,7 +39,8 @@ public class ConversationListFragment extends ProgressFragment {
     private ConversationListAdapter adapter;
     private static final List<Conversation.ConversationType> types = Arrays.asList(Conversation.ConversationType.Single,
         Conversation.ConversationType.Group,
-        Conversation.ConversationType.Channel);
+        Conversation.ConversationType.Channel,
+        Conversation.ConversationType.SecretChat);
     private static final List<Integer> lines = Arrays.asList(0);
 
     private ConversationListViewModel conversationListViewModel;
