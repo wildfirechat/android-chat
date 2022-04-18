@@ -38,6 +38,9 @@ public class ConversationInfoActivity extends WfcBaseActivity {
             case Channel:
                 fragment = ChannelConversationInfoFragment.newInstance(conversationInfo);
                 break;
+            case SecretChat:
+                fragment = SecretConversationInfoFragment.newInstance(conversationInfo);
+                break;
             default:
                 break;
         }

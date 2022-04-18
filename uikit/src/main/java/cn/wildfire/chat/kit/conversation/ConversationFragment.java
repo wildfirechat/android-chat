@@ -349,13 +349,13 @@ public class ConversationFragment extends Fragment implements
     public void setupConversation(Conversation conversation, String title, long focusMessageId, String target) {
         if (this.conversation != null) {
             if ((this.conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(this.conversation.target))
-                    || this.conversation.type == Conversation.ConversationType.Group) {
+                || this.conversation.type == Conversation.ConversationType.Group) {
                 userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
             }
         }
 
         if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
-                || conversation.type == Conversation.ConversationType.Group) {
+            || conversation.type == Conversation.ConversationType.Group) {
             userOnlineStateViewModel.watchUserOnlineState(conversation.type.getValue(), new String[]{conversation.target});
         }
 
@@ -660,6 +660,10 @@ public class ConversationFragment extends Fragment implements
                     conversationTitle += "@<" + channelPrivateChatUser + ">";
                 }
             }
+        } else if (conversation.type == Conversation.ConversationType.SecretChat) {
+            String userId = ChatManager.Instance().getSecretChatUserId(conversation.target);
+            UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(userId, false);
+            conversationTitle = userViewModel.getUserDisplayName(userInfo);
         }
 
         setActivityTitle(conversationTitle);
@@ -781,7 +785,7 @@ public class ConversationFragment extends Fragment implements
         }
 
         if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
-                || conversation.type == Conversation.ConversationType.Group) {
+            || conversation.type == Conversation.ConversationType.Group) {
             userOnlineStateViewModel.unwatchOnlineState(conversation.type.getValue(), new String[]{conversation.target});
         }
 

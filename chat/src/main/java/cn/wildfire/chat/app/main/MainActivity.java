@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -44,9 +45,12 @@ import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
+import cn.wildfire.chat.kit.contact.ContactListActivity;
 import cn.wildfire.chat.kit.contact.ContactListFragment;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
+import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
@@ -88,6 +92,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private QBadgeView discoveryBadgeView;
 
     private static final int REQUEST_CODE_SCAN_QR_CODE = 100;
+    private static final int REQUEST_CODE_PICK_CONTACT = 101;
 
     private boolean isInitialized = false;
 
@@ -152,6 +157,16 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         });
     }
 
+    @Override
+    protected void afterMenus(Menu menu) {
+        super.afterMenus(menu);
+        boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
+        if (!isEnableSecretChat) {
+            MenuItem menuItem = menu.findItem(R.id.secretChat);
+            menuItem.setEnabled(false);
+        }
+    }
+
     private void reLogin(boolean isKickedOff) {
         Intent intent = new Intent(this, SplashActivity.class);
         intent.putExtra("isKickedOff", isKickedOff);
@@ -163,7 +178,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void init() {
         initView();
 
-        conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
+        conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
 
@@ -323,6 +338,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             case R.id.chat:
                 createConversation();
                 break;
+            case R.id.secretChat:
+                pickContactToCreateSecretConversation();
+                break;
             case R.id.add_contact:
                 searchUser();
                 break;
@@ -349,6 +367,23 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void createConversation() {
         Intent intent = new Intent(this, CreateConversationActivity.class);
         startActivity(intent);
+    }
+
+    private void createSecretChat(String userId) {
+        ConversationViewModel conversationViewModel = ViewModelProviders.of(this).get(ConversationViewModel.class);
+        conversationViewModel.createSecretChat(userId).observeForever(stringOperateResult -> {
+            if (stringOperateResult.isSuccess()) {
+                Conversation conversation = new Conversation(Conversation.ConversationType.SecretChat, stringOperateResult.getResult());
+                Intent intent = new Intent(this, ConversationActivity.class);
+                intent.putExtra("conversation", conversation);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void pickContactToCreateSecretConversation() {
+        Intent intent = new Intent(this, ContactListActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_PICK_CONTACT);
     }
 
     private void searchUser() {
@@ -393,11 +428,19 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode != RESULT_OK) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
         switch (requestCode) {
             case REQUEST_CODE_SCAN_QR_CODE:
-                if (resultCode == RESULT_OK) {
-                    String result = data.getStringExtra(Intents.Scan.RESULT);
-                    onScanPcQrCode(result);
+                String result = data.getStringExtra(Intents.Scan.RESULT);
+                onScanPcQrCode(result);
+                break;
+            case REQUEST_CODE_PICK_CONTACT:
+                UserInfo userInfo = data.getParcelableExtra("userInfo");
+                if (userInfo != null) {
+                    createSecretChat(userInfo.uid);
                 }
                 break;
             default:
@@ -414,6 +457,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             startActivityForResult(new Intent(this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
         }
     }
+
 
     private void onScanPcQrCode(String qrcode) {
         String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);

@@ -14,6 +14,7 @@ public class ConversationViewHolderManager {
 
     private ConversationViewHolderManager() {
         registerConversationViewHolder(SingleConversationViewHolder.class);
+        registerConversationViewHolder(SecretConversationViewHolder.class);
         registerConversationViewHolder(GroupConversationViewHolder.class);
         registerConversationViewHolder(ChannelConversationViewHolder.class);
         registerConversationViewHolder(ChatRoomConversationViewHolder.class);
