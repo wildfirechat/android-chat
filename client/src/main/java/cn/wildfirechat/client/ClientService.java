@@ -129,6 +129,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     ProtoLogic.IGroupInfoUpdateCallback,
     ProtoLogic.IConferenceEventCallback,
     ProtoLogic.IOnlineEventCallback,
+    ProtoLogic.ISecretChatStateCallback,
     ProtoLogic.IChannelInfoUpdateCallback, ProtoLogic.IGroupMembersUpdateCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
@@ -153,6 +154,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private RemoteCallbackList<IOnConferenceEventListener> onConferenceEventListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnUserOnlineEventListener> onUserOnlineEventListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnTrafficDataListener> onTrafficDataListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
+    private RemoteCallbackList<IOnSecretChatStateListener> onSecretChatStateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
 
     private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
     //        public final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
@@ -2476,6 +2478,62 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void createSecretChat(String userId, IGeneralCallback2 callback) throws RemoteException {
+            ProtoLogic.createSecretChat(userId, new ProtoLogic.IGeneralCallback2() {
+                @Override
+                public void onSuccess(String s) {
+                    try {
+                        callback.onSuccess(s);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void destroySecretChat(String targetId, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.destroySecretChat(targetId, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public String getSecretChatUserId(String targetId) throws RemoteException {
+            return ProtoLogic.getSecretChatUserId(targetId);
+        }
+
+        @Override
+        public int getSecretChatState(String targetId) throws RemoteException {
+            return ProtoLogic.getSecretChatState(targetId);
+        }
+
+        @Override
         public String getImageThumbPara() throws RemoteException {
             return ProtoLogic.getImageThumbPara();
         }
@@ -2608,6 +2666,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean isEnableSecretChat() throws RemoteException {
+            return ProtoLogic.isEnableSecretChat();
+        }
+
+        @Override
         public void sendConferenceRequest(long sessionId, String roomId, String request, boolean advanced, String data, IGeneralCallback2 callback) throws RemoteException {
             ProtoLogic.sendConferenceRequest(sessionId, roomId, request, advanced, data, new ProtoLogic.IGeneralCallback2() {
                 @Override
@@ -2691,6 +2754,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setUserOnlineEventListener(IOnUserOnlineEventListener listener) throws RemoteException {
             onUserOnlineEventListenerRemoteCallbackList.register(listener);
+        }
+
+        @Override
+        public void setSecretChatStateChangedListener(IOnSecretChatStateListener listener) throws RemoteException {
+            onSecretChatStateListenerRemoteCallbackList.register(listener);
         }
     }
 
@@ -2999,6 +3067,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setReceiveMessageCallback(ClientService.this);
         ProtoLogic.setConferenceEventCallback(ClientService.this);
         ProtoLogic.setOnlineEventCallback(ClientService.this);
+        ProtoLogic.setSecretChatStateCallback(ClientService.this);
         Log.i(TAG, "Proto connect:" + userName);
         ProtoLogic.setAuthInfo(userName, userPwd);
         return ProtoLogic.connect(mHost);
@@ -3496,6 +3565,25 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
             onUserOnlineEventListenerRemoteCallbackList.finishBroadcast();
+        });
+    }
+
+
+    @Override
+    public void onSecretChatStateChanged(String targetId, int state) {
+        handler.post(() -> {
+            int i = onSecretChatStateListenerRemoteCallbackList.beginBroadcast();
+            IOnSecretChatStateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onSecretChatStateListenerRemoteCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onSecretChatStateChanged(targetId, state);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onSecretChatStateListenerRemoteCallbackList.finishBroadcast();
         });
     }
 

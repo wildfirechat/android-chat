@@ -37,6 +37,7 @@ import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
 import cn.wildfirechat.client.IOnUserOnlineEventListener;
 import cn.wildfirechat.client.IOnTrafficDataListener;
+import cn.wildfirechat.client.IOnSecretChatStateListener;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -244,6 +245,11 @@ interface IRemoteClient {
     oneway void requireLock(in String lockId, in long duration, in IGeneralCallback callback);
     oneway void releaseLock(in String lockId, in IGeneralCallback callback);
 
+    oneway void createSecretChat(in String userId, in IGeneralCallback2 callback);
+    oneway void destroySecretChat(in String targetId, in IGeneralCallback callback);
+    String getSecretChatUserId(String targetId);
+    int getSecretChatState(String targetId);
+
     String getImageThumbPara();
 
     void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
@@ -260,6 +266,7 @@ interface IRemoteClient {
     boolean isCommercialServer();
     boolean isReceiptEnabled();
     boolean isGlobalDisableSyncDraft();
+    boolean isEnableSecretChat();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
 
@@ -268,5 +275,6 @@ interface IRemoteClient {
     oneway void watchUserOnlineState(in int conversationType, in String[] targets, in int duration, in IWatchUserOnlineStateCallback callback);
     oneway void unwatchOnlineState(in int conversationType, in String[] targets, in IGeneralCallback callback);
     oneway void setUserOnlineEventListener(in IOnUserOnlineEventListener listener);
+    oneway void setSecretChatStateChangedListener(in IOnSecretChatStateListener listener);
 
 }

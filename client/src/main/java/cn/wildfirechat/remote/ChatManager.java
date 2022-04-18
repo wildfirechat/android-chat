@@ -73,6 +73,7 @@ import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
 import cn.wildfirechat.client.IOnGroupMembersUpdateListener;
 import cn.wildfirechat.client.IOnReceiveMessageListener;
+import cn.wildfirechat.client.IOnSecretChatStateListener;
 import cn.wildfirechat.client.IOnSettingUpdateListener;
 import cn.wildfirechat.client.IOnTrafficDataListener;
 import cn.wildfirechat.client.IOnUserInfoUpdateListener;
@@ -226,6 +227,8 @@ public class ChatManager {
     private List<OnMessageReadListener> messageReadListeners = new ArrayList<>();
     private List<OnConferenceEventListener> conferenceEventListeners = new ArrayList<>();
     private List<OnUserOnlineEventListener> userOnlineEventListeners = new ArrayList<>();
+    private List<SecretChatStateChangedListener> secretChatStateChangedListeners = new ArrayList<>();
+
 
     // key = userId
     private LruCache<String, UserInfo> userInfoCache;
@@ -258,6 +261,38 @@ public class ChatManager {
         }
     }
 
+
+    public enum SecretChatState {
+        //密聊会话建立中
+        Starting(0),
+
+        //密聊会话接受中
+        Accepting(1),
+
+        //密聊会话已建立
+        Established(2),
+
+        //密聊会话已取消
+        Canceled(3);
+
+        private int value;
+
+        SecretChatState(int value) {
+            this.value = value;
+        }
+
+        public int value() {
+            return this.value;
+        }
+
+        public static SecretChatState fromValue(int value) {
+            for (SecretChatState secretChatState : SecretChatState.values()) {
+                if(secretChatState.value == value)
+                    return secretChatState;
+            }
+            return Canceled;
+        }
+    }
     /**
      * 获取当前用户的id
      *
@@ -641,6 +676,14 @@ public class ChatManager {
 
             for (OnUserOnlineEventListener listener : userOnlineEventListeners) {
                 listener.onUserOnlineEvent(userOnlineStateMap);
+            }
+        });
+    }
+
+    private void onSecretChatStateChanged(String targetId, int state) {
+        mainHandler.post(() -> {
+            for (SecretChatStateChangedListener listener : secretChatStateChangedListeners) {
+                listener.onSecretChatStateChanged(targetId, state);
             }
         });
     }
@@ -1579,6 +1622,17 @@ public class ChatManager {
 
     public void removeUserOnlineEventListener(OnUserOnlineEventListener listener) {
         userOnlineEventListeners.remove(listener);
+    }
+
+    public void addSecretChatStateChangedListener(SecretChatStateChangedListener listener) {
+        if (listener == null) {
+            return;
+        }
+        secretChatStateChangedListeners.add(listener);
+    }
+
+    public void removeSecretChatStateChangedListener(SecretChatStateChangedListener listener) {
+        secretChatStateChangedListeners.remove(listener);
     }
 
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
@@ -6570,6 +6624,17 @@ public class ChatManager {
         return false;
     }
 
+    public boolean isEnableSecretChat() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return mClient.isEnableSecretChat();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     /**
      * IM服务进程是否bind成功
      *
@@ -7318,6 +7383,73 @@ public class ChatManager {
         }
     }
 
+    public void createSecretChat(String userId, final  GeneralCallback2 callback) {
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        try {
+            mClient.createSecretChat(userId, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
+                @Override
+                public void onSuccess(String s) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(s));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void destroySecretChat(String userId, final  GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        try {
+            mClient.destroySecretChat(userId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess());
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getSecretChatUserId(String targetId) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        try {
+            return mClient.getSecretChatUserId(targetId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public SecretChatState getSecretChatState(String targetId) {
+        if (!checkRemoteService()) {
+            return SecretChatState.Canceled;
+        }
+        try {
+            return SecretChatState.fromValue(mClient.getSecretChatState(targetId));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return SecretChatState.Canceled;
+    }
 
     public void sendConferenceRequest(long sessionId, String roomId, String request, String data, final GeneralCallback2 callback) {
         sendConferenceRequest(sessionId, roomId, request, false, data, callback);
@@ -7569,6 +7701,13 @@ public class ChatManager {
                     @Override
                     public void onUserOnlineEvent(UserOnlineState[] states) throws RemoteException {
                         ChatManager.this.onUserOnlineEvent(states);
+                    }
+                });
+
+                mClient.setSecretChatStateChangedListener(new IOnSecretChatStateListener.Stub() {
+                    @Override
+                    public void onSecretChatStateChanged(String targetid, int state) throws RemoteException {
+                        ChatManager.this.onSecretChatStateChanged(targetid, state);
                     }
                 });
 
