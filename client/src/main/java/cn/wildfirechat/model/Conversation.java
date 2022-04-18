@@ -22,7 +22,11 @@ public class Conversation implements Parcelable {
         // 聊天室
         ChatRoom(2),
         //频道
-        Channel(3);
+        Channel(3),
+        //设备
+        Things(4),
+        //密聊
+        SecretChat(5);
 
 
         private int value;
