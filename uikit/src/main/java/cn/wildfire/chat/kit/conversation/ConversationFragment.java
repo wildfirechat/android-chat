@@ -615,7 +615,7 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void setChatRoomConversationTitle() {
-        chatRoomViewModel.getChatRoomInfo(conversation.target, System.currentTimeMillis())
+        chatRoomViewModel.getChatRoomInfo(conversation.target, 0)
             .observe(this, chatRoomInfoOperateResult -> {
                 if (chatRoomInfoOperateResult.isSuccess()) {
                     ChatRoomInfo chatRoomInfo = chatRoomInfoOperateResult.getResult();
