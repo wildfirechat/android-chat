@@ -4,6 +4,6 @@ package cn.wildfirechat.client;
 
 
 interface IOnSecretMessageBurnStateListener {
-    void onSecretMessageStartBurning(String targetId, long playedMsgId);
-    void onSecretMessageBurned();
+    void onSecretMessageStartBurning(in String targetId, in long playedMsgId);
+    void onSecretMessageBurned(in int[] messageIds);
 }

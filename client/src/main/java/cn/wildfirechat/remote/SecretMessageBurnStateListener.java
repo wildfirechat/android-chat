@@ -4,7 +4,9 @@
 
 package cn.wildfirechat.remote;
 
+import java.util.List;
+
 public interface SecretMessageBurnStateListener {
     void onSecretMessageStartBurning(String targetId, long playedMsgId);
-    void onSecretMessageBurned();
+    void onSecretMessageBurned(List<Long> messageIds);
 }

@@ -136,6 +136,7 @@ import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.StartSecretChatMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
+import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -700,10 +701,10 @@ public class ChatManager {
             }
         });
     }
-    private void onSecretMessageBurned() {
+    private void onSecretMessageBurned(List<Long> messageIds) {
         mainHandler.post(() -> {
             for (SecretMessageBurnStateListener listener : secretMessageBurnStateListeners) {
-                listener.onSecretMessageBurned();
+                listener.onSecretMessageBurned(messageIds);
             }
         });
     }
@@ -7470,6 +7471,31 @@ public class ChatManager {
         return null;
     }
 
+    public byte[] decodeSecretChatData(String targetid, byte[] mediaData) {
+        if (!checkRemoteService()) {
+            return new byte[0];
+        }
+        try {
+            return mClient.decodeSecretChatData(targetid, mediaData);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return new byte[0];
+    }
+
+    public BurnMessageInfo getBurnMessageInfo(long messageId) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getBurnMessageInfo(messageId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void sendConferenceRequest(long sessionId, String roomId, String request, String data, final GeneralCallback2 callback) {
         sendConferenceRequest(sessionId, roomId, request, false, data, callback);
     }
@@ -7738,8 +7764,14 @@ public class ChatManager {
                     }
 
                     @Override
-                    public void onSecretMessageBurned() throws RemoteException {
-                        ChatManager.this.onSecretMessageBurned();
+                    public void onSecretMessageBurned(int[] messageIds) throws RemoteException {
+                        if(messageIds != null && messageIds.length > 0) {
+                            List<Long> arr = new ArrayList<>();
+                            for (int i = 0; i < messageIds.length; i++) {
+                                arr.add((long)messageIds[i]);
+                            }
+                            ChatManager.this.onSecretMessageBurned(arr);
+                        }
                     }
                 });
 

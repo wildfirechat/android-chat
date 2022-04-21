@@ -75,7 +75,7 @@ public class SecretChatInfo implements Parcelable {
     }
 
     protected SecretChatInfo(Parcel in) {
-        this.userId = in.readString();
+        this.targetId = in.readString();
         this.userId = in.readString();
         this.state = ChatManager.SecretChatState.fromValue(in.readInt());
         this.burnTime = in.readInt();
