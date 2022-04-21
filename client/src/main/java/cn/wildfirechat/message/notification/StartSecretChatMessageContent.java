@@ -23,7 +23,7 @@ public class StartSecretChatMessageContent extends NotificationMessageContent {
 
     @Override
     public String formatNotification(Message message) {
-        ChatManager.SecretChatState state = ChatManager.Instance().getSecretChatState(message.conversation.target);
+        ChatManager.SecretChatState state = ChatManager.Instance().getSecretChatInfo(message.conversation.target).getState();
         if (state == ChatManager.SecretChatState.Starting) {
             return "等待对方响应";
         } else if (state == ChatManager.SecretChatState.Accepting) {

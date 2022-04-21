@@ -74,6 +74,7 @@ import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
 import cn.wildfirechat.client.IOnGroupMembersUpdateListener;
 import cn.wildfirechat.client.IOnReceiveMessageListener;
 import cn.wildfirechat.client.IOnSecretChatStateListener;
+import cn.wildfirechat.client.IOnSecretMessageBurnStateListener;
 import cn.wildfirechat.client.IOnSettingUpdateListener;
 import cn.wildfirechat.client.IOnTrafficDataListener;
 import cn.wildfirechat.client.IOnUserInfoUpdateListener;
@@ -157,6 +158,7 @@ import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.ReadEntry;
+import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
@@ -229,6 +231,8 @@ public class ChatManager {
     private List<OnConferenceEventListener> conferenceEventListeners = new ArrayList<>();
     private List<OnUserOnlineEventListener> userOnlineEventListeners = new ArrayList<>();
     private List<SecretChatStateChangeListener> secretChatStateChangeListeners = new ArrayList<>();
+    private List<SecretMessageBurnStateListener> secretMessageBurnStateListeners = new ArrayList<>();
+
 
 
     // key = userId
@@ -685,6 +689,21 @@ public class ChatManager {
         mainHandler.post(() -> {
             for (SecretChatStateChangeListener listener : secretChatStateChangeListeners) {
                 listener.onSecretChatStateChanged(targetId, SecretChatState.fromValue(state));
+            }
+        });
+    }
+
+    private void onSecretMessageStartBurning(String targetId, long playedMsgId) {
+        mainHandler.post(() -> {
+            for (SecretMessageBurnStateListener listener : secretMessageBurnStateListeners) {
+                listener.onSecretMessageStartBurning(targetId, playedMsgId);
+            }
+        });
+    }
+    private void onSecretMessageBurned() {
+        mainHandler.post(() -> {
+            for (SecretMessageBurnStateListener listener : secretMessageBurnStateListeners) {
+                listener.onSecretMessageBurned();
             }
         });
     }
@@ -1634,6 +1653,17 @@ public class ChatManager {
 
     public void removeSecretChatStateChangedListener(SecretChatStateChangeListener listener) {
         secretChatStateChangeListeners.remove(listener);
+    }
+
+    public void addSecretMessageBurnStateListener(SecretMessageBurnStateListener listener) {
+        if (listener == null) {
+            return;
+        }
+        secretMessageBurnStateListeners.add(listener);
+    }
+
+    public void removeSecretMessageBurnStateListener(SecretMessageBurnStateListener listener) {
+        secretMessageBurnStateListeners.remove(listener);
     }
 
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
@@ -7428,28 +7458,16 @@ public class ChatManager {
         }
     }
 
-    public String getSecretChatUserId(String targetId) {
+    public SecretChatInfo getSecretChatInfo(String targetId) {
         if (!checkRemoteService()) {
             return null;
         }
         try {
-            return mClient.getSecretChatUserId(targetId);
+            return mClient.getSecretChatInfo(targetId);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public SecretChatState getSecretChatState(String targetId) {
-        if (!checkRemoteService()) {
-            return SecretChatState.Canceled;
-        }
-        try {
-            return SecretChatState.fromValue(mClient.getSecretChatState(targetId));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return SecretChatState.Canceled;
     }
 
     public void sendConferenceRequest(long sessionId, String roomId, String request, String data, final GeneralCallback2 callback) {
@@ -7709,6 +7727,19 @@ public class ChatManager {
                     @Override
                     public void onSecretChatStateChanged(String targetid, int state) throws RemoteException {
                         ChatManager.this.onSecretChatStateChanged(targetid, state);
+                    }
+                });
+
+
+                mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
+                    @Override
+                    public void onSecretMessageStartBurning(String targetId, long playedMsgId) throws RemoteException {
+                        ChatManager.this.onSecretMessageStartBurning(targetId, playedMsgId);
+                    }
+
+                    @Override
+                    public void onSecretMessageBurned() throws RemoteException {
+                        ChatManager.this.onSecretMessageBurned();
                     }
                 });
 
