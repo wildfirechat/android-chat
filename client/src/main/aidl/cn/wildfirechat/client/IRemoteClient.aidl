@@ -56,6 +56,7 @@ import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.SecretChatInfo;
+import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.Socks5ProxyInfo;
 
 
@@ -278,4 +279,7 @@ interface IRemoteClient {
     oneway void setUserOnlineEventListener(in IOnUserOnlineEventListener listener);
     oneway void setSecretChatStateChangedListener(in IOnSecretChatStateListener listener);
     oneway void setSecretMessageBurnStateListener(in IOnSecretMessageBurnStateListener listener);
+    oneway void setSecretChatBurnTime(in String targetId, int burnTime);
+    BurnMessageInfo getBurnMessageInfo(in long messageId);
+    byte[] decodeSecretChatData(in String targetid, in byte[] mediaData);
 }

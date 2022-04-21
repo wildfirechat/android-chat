@@ -69,6 +69,7 @@ import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -85,6 +86,7 @@ import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.NullGroupMember;
 import cn.wildfirechat.model.NullUserInfo;
+import cn.wildfirechat.model.ProtoBurnMessageInfo;
 import cn.wildfirechat.model.ProtoChannelInfo;
 import cn.wildfirechat.model.ProtoChatRoomInfo;
 import cn.wildfirechat.model.ProtoChatRoomMembersInfo;
@@ -2773,6 +2775,33 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void setSecretMessageBurnStateListener(IOnSecretMessageBurnStateListener listener) throws RemoteException {
             onSecretMessageBurnStateCallbackList.register(listener);
         }
+
+        @Override
+        public void setSecretChatBurnTime(String targetId, int burnTime) throws RemoteException {
+
+        }
+
+        @Override
+        public BurnMessageInfo getBurnMessageInfo(long messageId) throws RemoteException {
+            ProtoBurnMessageInfo protoBurnMessageInfo = ProtoLogic.getBurnMessageInfo(messageId);
+            if(protoBurnMessageInfo.getMessageId() > 0) {
+                BurnMessageInfo bi = new BurnMessageInfo();
+                bi.setMessageId(protoBurnMessageInfo.getMessageId());
+                bi.setMessageUid(protoBurnMessageInfo.getMessageUid());
+                bi.setTargetId(protoBurnMessageInfo.getTargetId());
+                bi.setDirection(protoBurnMessageInfo.getDirection());
+                bi.setIsMedia(protoBurnMessageInfo.getIsMedia());
+                bi.setBurnTime(protoBurnMessageInfo.getBurnTime());
+                bi.setMessageDt(protoBurnMessageInfo.getMessageDt());
+                return bi;
+            }
+            return null;
+        }
+
+        @Override
+        public byte[] decodeSecretChatData(String targetid, byte[] mediaData) throws RemoteException {
+            return ProtoLogic.decodeSecretChatData(targetid, mediaData);
+        }
     }
 
     private static UserOnlineState[] convertProtoUserOnlineStates(ProtoUserOnlineState[] protoUserOnlineStates) {
@@ -3081,6 +3110,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setConferenceEventCallback(ClientService.this);
         ProtoLogic.setOnlineEventCallback(ClientService.this);
         ProtoLogic.setSecretChatStateCallback(ClientService.this);
+        ProtoLogic.setSecretMessageBurnStateCallback(ClientService.this);
         Log.i(TAG, "Proto connect:" + userName);
         ProtoLogic.setAuthInfo(userName, userPwd);
         return ProtoLogic.connect(mHost);
@@ -3619,7 +3649,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     @Override
-    public void onSecretMessageBurned() {
+    public void onSecretMessageBurned(int[] messageIds) {
         handler.post(() -> {
             int i = onSecretMessageBurnStateCallbackList.beginBroadcast();
             IOnSecretMessageBurnStateListener listener;
@@ -3627,7 +3657,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 i--;
                 listener = onSecretMessageBurnStateCallbackList.getBroadcastItem(i);
                 try {
-                    listener.onSecretMessageBurned();
+                    listener.onSecretMessageBurned(messageIds);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
