@@ -14,6 +14,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -415,6 +416,14 @@ public class ConversationFragment extends Fragment implements
 
         conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
         conversationViewModel.clearConversationMessageLiveData().observeForever(clearConversationMessageObserver);
+        conversationViewModel.secretConversationStateLiveData().observe(getViewLifecycleOwner(), new Observer<Pair<String, ChatManager.SecretChatState>>() {
+            @Override
+            public void onChanged(Pair<String, ChatManager.SecretChatState> stringSecretChatStatePair) {
+                if (conversation != null && conversation.type == Conversation.ConversationType.SecretChat && conversation.target.equals(stringSecretChatStatePair.first)) {
+                    reloadMessage();
+                }
+            }
+        });
         messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
 
         messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);

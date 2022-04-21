@@ -228,7 +228,7 @@ public class ChatManager {
     private List<OnMessageReadListener> messageReadListeners = new ArrayList<>();
     private List<OnConferenceEventListener> conferenceEventListeners = new ArrayList<>();
     private List<OnUserOnlineEventListener> userOnlineEventListeners = new ArrayList<>();
-    private List<SecretChatStateChangedListener> secretChatStateChangedListeners = new ArrayList<>();
+    private List<SecretChatStateChangeListener> secretChatStateChangeListeners = new ArrayList<>();
 
 
     // key = userId
@@ -683,8 +683,8 @@ public class ChatManager {
 
     private void onSecretChatStateChanged(String targetId, int state) {
         mainHandler.post(() -> {
-            for (SecretChatStateChangedListener listener : secretChatStateChangedListeners) {
-                listener.onSecretChatStateChanged(targetId, state);
+            for (SecretChatStateChangeListener listener : secretChatStateChangeListeners) {
+                listener.onSecretChatStateChanged(targetId, SecretChatState.fromValue(state));
             }
         });
     }
@@ -1625,15 +1625,15 @@ public class ChatManager {
         userOnlineEventListeners.remove(listener);
     }
 
-    public void addSecretChatStateChangedListener(SecretChatStateChangedListener listener) {
+    public void addSecretChatStateChangedListener(SecretChatStateChangeListener listener) {
         if (listener == null) {
             return;
         }
-        secretChatStateChangedListeners.add(listener);
+        secretChatStateChangeListeners.add(listener);
     }
 
-    public void removeSecretChatStateChangedListener(SecretChatStateChangedListener listener) {
-        secretChatStateChangedListeners.remove(listener);
+    public void removeSecretChatStateChangedListener(SecretChatStateChangeListener listener) {
+        secretChatStateChangeListeners.remove(listener);
     }
 
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
