@@ -37,7 +37,7 @@ public class SecretConversationViewHolder extends ConversationViewHolder {
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
         secretChatIndicator.setVisibility(View.VISIBLE);
-        String userId = ChatManager.Instance().getSecretChatUserId(conversationInfo.conversation.target);
+        String userId = ChatManager.Instance().getSecretChatInfo(conversationInfo.conversation.target).getUserId();
         if (TextUtils.isEmpty(userId)){
             return;
         }

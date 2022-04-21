@@ -38,6 +38,7 @@ import cn.wildfirechat.client.IOnConferenceEventListener;
 import cn.wildfirechat.client.IOnUserOnlineEventListener;
 import cn.wildfirechat.client.IOnTrafficDataListener;
 import cn.wildfirechat.client.IOnSecretChatStateListener;
+import cn.wildfirechat.client.IOnSecretMessageBurnStateListener;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -54,6 +55,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.ChannelInfo;
+import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.Socks5ProxyInfo;
 
 
@@ -247,8 +249,7 @@ interface IRemoteClient {
 
     oneway void createSecretChat(in String userId, in IGeneralCallback2 callback);
     oneway void destroySecretChat(in String targetId, in IGeneralCallback callback);
-    String getSecretChatUserId(String targetId);
-    int getSecretChatState(String targetId);
+    SecretChatInfo getSecretChatInfo(String targetId);
 
     String getImageThumbPara();
 
@@ -276,5 +277,5 @@ interface IRemoteClient {
     oneway void unwatchOnlineState(in int conversationType, in String[] targets, in IGeneralCallback callback);
     oneway void setUserOnlineEventListener(in IOnUserOnlineEventListener listener);
     oneway void setSecretChatStateChangedListener(in IOnSecretChatStateListener listener);
-
+    oneway void setSecretMessageBurnStateListener(in IOnSecretMessageBurnStateListener listener);
 }

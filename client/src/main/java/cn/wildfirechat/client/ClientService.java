@@ -102,13 +102,16 @@ import cn.wildfirechat.model.ProtoMomentsFeed;
 import cn.wildfirechat.model.ProtoMomentsMedia;
 import cn.wildfirechat.model.ProtoOnlineState;
 import cn.wildfirechat.model.ProtoReadEntry;
+import cn.wildfirechat.model.ProtoSecretChatInfo;
 import cn.wildfirechat.model.ProtoUserInfo;
 import cn.wildfirechat.model.ProtoUserOnlineState;
 import cn.wildfirechat.model.ReadEntry;
+import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
+import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.RecoverReceiver;
 
 
@@ -130,6 +133,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     ProtoLogic.IConferenceEventCallback,
     ProtoLogic.IOnlineEventCallback,
     ProtoLogic.ISecretChatStateCallback,
+    ProtoLogic.ISecretMessageBurnStateCallback,
     ProtoLogic.IChannelInfoUpdateCallback, ProtoLogic.IGroupMembersUpdateCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
@@ -155,6 +159,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private RemoteCallbackList<IOnUserOnlineEventListener> onUserOnlineEventListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnTrafficDataListener> onTrafficDataListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnSecretChatStateListener> onSecretChatStateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
+    private RemoteCallbackList<IOnSecretMessageBurnStateListener> onSecretMessageBurnStateCallbackList = new WfcRemoteCallbackList<>();
 
     private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
     //        public final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
@@ -169,6 +174,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private String mHost;
 
     private boolean useSM4 = false;
+
 
     private class ClientServiceStub extends IRemoteClient.Stub {
 
@@ -2524,13 +2530,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public String getSecretChatUserId(String targetId) throws RemoteException {
-            return ProtoLogic.getSecretChatUserId(targetId);
-        }
-
-        @Override
-        public int getSecretChatState(String targetId) throws RemoteException {
-            return ProtoLogic.getSecretChatState(targetId);
+        public SecretChatInfo getSecretChatInfo(String targetId) throws RemoteException {
+            ProtoSecretChatInfo protoSecretChatInfo = ProtoLogic.getSecretChatInfo(targetId);
+            SecretChatInfo info = new SecretChatInfo();
+            info.setTargetId(protoSecretChatInfo.getTargetId());
+            info.setUserId(protoSecretChatInfo.getUserId());
+            info.setState(ChatManager.SecretChatState.fromValue(protoSecretChatInfo.getState()));
+            info.setBurnTime(protoSecretChatInfo.getBurnTime());
+            info.setCreateTime(protoSecretChatInfo.getCreateTime());
+            return info;
         }
 
         @Override
@@ -2759,6 +2767,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setSecretChatStateChangedListener(IOnSecretChatStateListener listener) throws RemoteException {
             onSecretChatStateListenerRemoteCallbackList.register(listener);
+        }
+
+        @Override
+        public void setSecretMessageBurnStateListener(IOnSecretMessageBurnStateListener listener) throws RemoteException {
+            onSecretMessageBurnStateCallbackList.register(listener);
         }
     }
 
@@ -3587,6 +3600,41 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         });
     }
 
+    @Override
+    public void onSecretMessageStartBurning(String s, long l) {
+        handler.post(() -> {
+            int i = onSecretMessageBurnStateCallbackList.beginBroadcast();
+            IOnSecretMessageBurnStateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onSecretMessageBurnStateCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onSecretMessageStartBurning(s, l);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onSecretChatStateListenerRemoteCallbackList.finishBroadcast();
+        });
+    }
+
+    @Override
+    public void onSecretMessageBurned() {
+        handler.post(() -> {
+            int i = onSecretMessageBurnStateCallbackList.beginBroadcast();
+            IOnSecretMessageBurnStateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onSecretMessageBurnStateCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onSecretMessageBurned();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onSecretChatStateListenerRemoteCallbackList.finishBroadcast();
+        });
+    }
 //    // 只是大概大小
 //    private int getMessageLength(ProtoMessage message) {
 //        int length = 0;

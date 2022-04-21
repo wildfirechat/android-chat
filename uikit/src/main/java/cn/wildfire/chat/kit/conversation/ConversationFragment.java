@@ -670,7 +670,7 @@ public class ConversationFragment extends Fragment implements
                 }
             }
         } else if (conversation.type == Conversation.ConversationType.SecretChat) {
-            String userId = ChatManager.Instance().getSecretChatUserId(conversation.target);
+            String userId = ChatManager.Instance().getSecretChatInfo(conversation.target).getUserId();
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(userId, false);
             conversationTitle = userViewModel.getUserDisplayName(userInfo);
         }
