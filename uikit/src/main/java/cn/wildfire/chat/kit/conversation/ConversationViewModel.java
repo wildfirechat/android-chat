@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.conversation;
 
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -24,9 +25,15 @@ import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetMessageCallback;
 import cn.wildfirechat.remote.GetRemoteMessageCallback;
+import cn.wildfirechat.remote.SecretChatStateChangeListener;
 
-public class ConversationViewModel extends ViewModel implements AppScopeViewModel {
+public class ConversationViewModel extends ViewModel implements AppScopeViewModel, SecretChatStateChangeListener {
     private MutableLiveData<Conversation> clearConversationMessageLiveData;
+    private MutableLiveData<Pair<String, ChatManager.SecretChatState>> secretConversationStateLiveData;
+
+    public ConversationViewModel() {
+        ChatManager.Instance().addSecretChatStateChangedListener(this);
+    }
 
     public MutableLiveData<Conversation> clearConversationMessageLiveData() {
         if (clearConversationMessageLiveData == null) {
@@ -35,11 +42,16 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
         return clearConversationMessageLiveData;
     }
 
-    public ConversationViewModel() {
+    public MutableLiveData<Pair<String, ChatManager.SecretChatState>> secretConversationStateLiveData() {
+        if (secretConversationStateLiveData == null) {
+            secretConversationStateLiveData = new MutableLiveData<>();
+        }
+        return secretConversationStateLiveData;
     }
 
     @Override
     protected void onCleared() {
+        ChatManager.Instance().removeSecretChatStateChangedListener(this);
     }
 
     // 包含不存储类型消息
@@ -227,4 +239,11 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
         return resultLiveData;
     }
 
+    @Override
+    public void onSecretChatStateChanged(String targetId, ChatManager.SecretChatState state) {
+        Pair<String, ChatManager.SecretChatState> pair = new Pair<>(targetId, state);
+        if (secretConversationStateLiveData != null){
+            secretConversationStateLiveData.postValue(pair);
+        }
+    }
 }

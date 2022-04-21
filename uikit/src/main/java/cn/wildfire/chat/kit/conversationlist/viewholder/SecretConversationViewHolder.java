@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.conversationlist.viewholder;
 
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
@@ -28,13 +29,18 @@ import cn.wildfirechat.remote.ChatManager;
 @ConversationInfoType(type = Conversation.ConversationType.SecretChat, line = 0)
 @EnableContextMenu
 public class SecretConversationViewHolder extends ConversationViewHolder {
+
     public SecretConversationViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
     }
 
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
+        secretChatIndicator.setVisibility(View.VISIBLE);
         String userId = ChatManager.Instance().getSecretChatUserId(conversationInfo.conversation.target);
+        if (TextUtils.isEmpty(userId)){
+            return;
+        }
         UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(userId, false);
         UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         String name = userViewModel.getUserDisplayName(userInfo);

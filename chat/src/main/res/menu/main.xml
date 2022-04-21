@@ -25,7 +25,7 @@
                 android:id="@+id/secretChat"
                 android:icon="@mipmap/ic_create_group_cheat"
                 android:orderInCategory="100"
-                android:title="发起 密聊"
+                android:title="发起密聊"
                 app:iconTint="@color/colorPrimary"
                 app:showAsAction="never" />
 

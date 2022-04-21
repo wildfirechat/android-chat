@@ -72,6 +72,9 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     @BindView(R2.id.statusImageView)
     protected ImageView statusImageView;
 
+    @BindView(R2.id.secretChatIndicator)
+    protected ImageView secretChatIndicator;
+
     public ConversationViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(itemView);
         this.fragment = fragment;
@@ -96,6 +99,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected abstract void onBindConversationInfo(ConversationInfo conversationInfo);
 
     public void onBind(ConversationInfo conversationInfo) {
+        secretChatIndicator.setVisibility(View.GONE);
         onBindConversationInfo(conversationInfo);
 
         timeTextView.setText(TimeUtils.getMsgFormatTime(conversationInfo.timestamp));
