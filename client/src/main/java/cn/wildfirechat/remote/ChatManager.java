@@ -55,6 +55,7 @@ import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
+import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
@@ -6667,6 +6668,64 @@ public class ChatManager {
         }
         return false;
     }
+
+
+    /**
+     * 判断当前用户是否开启密聊功能。开关仅影响密聊的创建，已经创建的密聊不受此开关影响。
+     *
+     * @return
+     */
+    public boolean isUserEnableSecretChat() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            boolean disable = "1".equals(mClient.getUserSetting(UserSettingScope.DisableSecretChat, ""));
+            return !disable;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 设置当前用户是否开启密聊功能。开关仅影响密聊的创建，已经创建的密聊不受此开关影响。
+     *
+     * @param enable
+     * @param callback
+     */
+    public void setUserEnableSecretChat(boolean enable, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+
+        try {
+            mClient.setUserSetting(UserSettingScope.DisableSecretChat, "", enable ? "0" : "1", new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess();
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * IM服务进程是否bind成功
      *
@@ -7415,16 +7474,16 @@ public class ChatManager {
         }
     }
 
-    public void createSecretChat(String userId, final  GeneralCallback2 callback) {
+    public void createSecretChat(String userId, final  CreateSecretChatCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
         try {
-            mClient.createSecretChat(userId, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
+            mClient.createSecretChat(userId, new ICreateSecretChatCallback.Stub() {
                 @Override
-                public void onSuccess(String s) throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess(s));
+                public void onSuccess(String s, int i) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(s, i));
                 }
 
                 @Override

@@ -19,6 +19,7 @@ import cn.wildfirechat.client.IGetRemoteMessagesCallback;
 import cn.wildfirechat.client.IGetFileRecordCallback;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetUploadUrlCallback;
+import cn.wildfirechat.client.ICreateSecretChatCallback;
 
 import cn.wildfirechat.client.IGetMessageCallback;
 import cn.wildfirechat.client.IGetUserCallback;
@@ -248,7 +249,7 @@ interface IRemoteClient {
     oneway void requireLock(in String lockId, in long duration, in IGeneralCallback callback);
     oneway void releaseLock(in String lockId, in IGeneralCallback callback);
 
-    oneway void createSecretChat(in String userId, in IGeneralCallback2 callback);
+    oneway void createSecretChat(in String userId, in ICreateSecretChatCallback callback);
     oneway void destroySecretChat(in String targetId, in IGeneralCallback callback);
     SecretChatInfo getSecretChatInfo(String targetId);
 

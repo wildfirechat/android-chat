@@ -21,6 +21,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.CreateSecretChatCallback;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetMessageCallback;
@@ -222,18 +223,17 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
         ChatManager.Instance().setConversationSilent(conversation, silent);
     }
 
-    public MutableLiveData<OperateResult<String>> createSecretChat(String userId) {
-        MutableLiveData<OperateResult<String>> resultLiveData = new MutableLiveData<>();
-        ChatManager.Instance().createSecretChat(userId, new GeneralCallback2() {
+    public MutableLiveData<OperateResult<Pair<String, Integer>>> createSecretChat(String userId) {
+        MutableLiveData<OperateResult<Pair<String, Integer>>> resultLiveData = new MutableLiveData<>();
+        ChatManager.Instance().createSecretChat(userId, new CreateSecretChatCallback() {
             @Override
-            public void onSuccess(String result) {
-                resultLiveData.postValue(new OperateResult<String>(result, 0));
-
+            public void onSuccess(String target, int line) {
+                resultLiveData.postValue(new OperateResult<Pair<String, Integer>>(new Pair<>(target, line), 0));
             }
 
             @Override
             public void onFail(int errorCode) {
-                resultLiveData.postValue(new OperateResult<String>(null, errorCode));
+                resultLiveData.postValue(new OperateResult<Pair<String, Integer>>(null, errorCode));
             }
         });
         return resultLiveData;

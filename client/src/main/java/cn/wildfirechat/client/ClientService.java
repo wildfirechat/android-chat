@@ -2486,12 +2486,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void createSecretChat(String userId, IGeneralCallback2 callback) throws RemoteException {
-            ProtoLogic.createSecretChat(userId, new ProtoLogic.IGeneralCallback2() {
+        public void createSecretChat(String userId, ICreateSecretChatCallback callback) throws RemoteException {
+            ProtoLogic.createSecretChat(userId, new ProtoLogic.ICreateSecretChatCallback() {
                 @Override
-                public void onSuccess(String s) {
+                public void onSuccess(String s, int i) {
                     try {
-                        callback.onSuccess(s);
+                        callback.onSuccess(s, i);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -3644,7 +3644,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     e.printStackTrace();
                 }
             }
-            onSecretChatStateListenerRemoteCallbackList.finishBroadcast();
+            onSecretMessageBurnStateCallbackList.finishBroadcast();
         });
     }
 
@@ -3662,7 +3662,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     e.printStackTrace();
                 }
             }
-            onSecretChatStateListenerRemoteCallbackList.finishBroadcast();
+            onSecretMessageBurnStateCallbackList.finishBroadcast();
         });
     }
 //    // 只是大概大小

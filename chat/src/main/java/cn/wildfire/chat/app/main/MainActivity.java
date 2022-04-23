@@ -373,10 +373,18 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         ConversationViewModel conversationViewModel = ViewModelProviders.of(this).get(ConversationViewModel.class);
         conversationViewModel.createSecretChat(userId).observeForever(stringOperateResult -> {
             if (stringOperateResult.isSuccess()) {
-                Conversation conversation = new Conversation(Conversation.ConversationType.SecretChat, stringOperateResult.getResult());
+                Conversation conversation = new Conversation(Conversation.ConversationType.SecretChat, stringOperateResult.getResult().first, stringOperateResult.getResult().second);
                 Intent intent = new Intent(this, ConversationActivity.class);
                 intent.putExtra("conversation", conversation);
                 startActivity(intent);
+            } else {
+                if (stringOperateResult.getErrorCode() == 86) {
+                    //自己关闭了密聊功能
+                } else if(stringOperateResult.getErrorCode() == 87) {
+                    //对方关闭了密聊功能
+                } else {
+                    //提示网络错误
+                }
             }
         });
     }
