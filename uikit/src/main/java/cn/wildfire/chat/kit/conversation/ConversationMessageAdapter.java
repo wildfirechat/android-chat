@@ -248,6 +248,38 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
+    public void removeMessageById(long messageId) {
+        int position = -1;
+        UiMessage msg;
+        for (int i = 0; i < messages.size(); i++) {
+            msg = messages.get(i);
+            if (msg.message.messageId == messageId) {
+                messages.remove(msg);
+                position = i;
+                break;
+            }
+        }
+        if (position >= 0) {
+            notifyItemRemoved(position);
+        }
+    }
+
+    public void removeMessageByUid(long messageUid) {
+        int position = -1;
+        UiMessage msg;
+        for (int i = 0; i < messages.size(); i++) {
+            msg = messages.get(i);
+            if (msg.message.messageUid == messageUid) {
+                messages.remove(msg);
+                position = i;
+                break;
+            }
+        }
+        if (position >= 0) {
+            notifyItemRemoved(position);
+        }
+    }
+
     @Override
     public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewRecycled(holder);

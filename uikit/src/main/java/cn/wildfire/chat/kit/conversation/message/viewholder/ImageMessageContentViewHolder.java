@@ -24,6 +24,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.utils.WeChatImageUtils;
 
 /**
@@ -64,6 +65,10 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
 
     @OnClick(R2.id.imageView)
     void preview() {
+        if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {
+            message.message.status = MessageStatus.Played;
+            ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
+        }
         previewMM();
     }
 

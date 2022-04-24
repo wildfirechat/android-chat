@@ -22,6 +22,7 @@ import com.kyleduo.switchbutton.SwitchButton;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -38,8 +39,10 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
+import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GeneralCallback;
 
 public class SecretConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -50,6 +53,16 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
 
     @BindView(R2.id.fileRecordOptionItemView)
     OptionItemView fileRecordOptionItem;
+
+    @BindView(R2.id.burnOptionItemView)
+    OptionItemView burnOptionItemView;
+
+    @BindArray(R2.array.secret_chat_message_burn_time_desc)
+    String[] messageBurnTimeDesc;
+
+    @BindArray(R2.array.secret_chat_message_burn_time)
+    int[] messageBurnTime;
+
 
     private ConversationInfo conversationInfo;
     private ConversationViewModel conversationViewModel;
@@ -96,19 +109,33 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
         } else {
             fileRecordOptionItem.setVisibility(View.GONE);
         }
+
+        SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversationInfo.conversation.target);
+        int burnTime = secretChatInfo.getBurnTime();
+
+        if (burnTime > 0) {
+            int index = 0;
+            for (int i = 0; i < messageBurnTime.length; i++) {
+                if (messageBurnTime[i] == burnTime) {
+                    index = i;
+                    break;
+                }
+            }
+            burnOptionItemView.setDesc(messageBurnTimeDesc[index]);
+        } else {
+            burnOptionItemView.setDesc(messageBurnTimeDesc[0]);
+        }
     }
 
     @OnClick(R2.id.clearMessagesOptionItemView)
     void clearMessage() {
         new MaterialDialog.Builder(getActivity())
-            .items("清空本地会话", "清空远程会话")
+            .items("清空会话")
             .itemsCallback(new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
                     if (position == 0) {
                         conversationViewModel.clearConversationMessage(conversationInfo.conversation);
-                    } else {
-                        conversationViewModel.clearRemoteConversationMessage(conversationInfo.conversation);
                     }
                 }
             })
@@ -131,7 +158,35 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
 
     @OnClick(R2.id.destroySecretChatButton)
     void destroySecretChat() {
-        // TODO
+        ChatManager.Instance().destroySecretChat(conversationInfo.conversation.target, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                if (getActivity().isFinishing()) {
+                    return;
+                }
+                Intent intent = new Intent(getContext().getPackageName() + ".main");
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
+    }
+
+    @OnClick(R2.id.burnOptionItemView)
+    void setSecretChatBurnTime() {
+        new MaterialDialog.Builder(getActivity())
+            .items(messageBurnTimeDesc)
+            .itemsCallback(new MaterialDialog.ListCallback() {
+                @Override
+                public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                    burnOptionItemView.setDesc(messageBurnTimeDesc[position]);
+                    ChatManager.Instance().setSecretChatBurnTime(conversationInfo.conversation.target, messageBurnTime[position]);
+                }
+            })
+            .show();
     }
 
     @Override

@@ -23,6 +23,9 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.TimeConvertUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
 import cn.wildfirechat.message.VideoMessageContent;
+import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.utils.WeChatImageUtils;
 
 /**
@@ -74,5 +77,9 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
     @OnClick(R2.id.videoContentLayout)
     void play() {
         previewMM();
+        if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {
+            message.message.status = MessageStatus.Played;
+            ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
+        }
     }
 }

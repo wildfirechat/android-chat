@@ -236,7 +236,6 @@ public class ChatManager {
     private List<SecretMessageBurnStateListener> secretMessageBurnStateListeners = new ArrayList<>();
 
 
-
     // key = userId
     private LruCache<String, UserInfo> userInfoCache;
     // key = memberId@groupId
@@ -294,12 +293,13 @@ public class ChatManager {
 
         public static SecretChatState fromValue(int value) {
             for (SecretChatState secretChatState : SecretChatState.values()) {
-                if(secretChatState.value == value)
+                if (secretChatState.value == value)
                     return secretChatState;
             }
             return Canceled;
         }
     }
+
     /**
      * 获取当前用户的id
      *
@@ -702,6 +702,7 @@ public class ChatManager {
             }
         });
     }
+
     private void onSecretMessageBurned(List<Long> messageIds) {
         mainHandler.post(() -> {
             for (SecretMessageBurnStateListener listener : secretMessageBurnStateListeners) {
@@ -1942,6 +1943,7 @@ public class ChatManager {
             }
         }
     }
+
     /**
      * 连接服务器
      * userId和token都不允许为空
@@ -3128,7 +3130,7 @@ public class ChatManager {
 
         try {
             int intOrder = 0;
-            if(order != null) {
+            if (order != null) {
                 intOrder = order.value;
             }
             mClient.getConversationFileRecords(conversation, fromUser, beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
@@ -3162,7 +3164,7 @@ public class ChatManager {
 
         try {
             int intOrder = 0;
-            if(order != null) {
+            if (order != null) {
                 intOrder = order.value;
             }
             mClient.getMyFileRecords(beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
@@ -3236,7 +3238,7 @@ public class ChatManager {
 
         try {
             int intOrder = 0;
-            if(order != null) {
+            if (order != null) {
                 intOrder = order.value;
             }
             mClient.searchMyFileRecords(keyword, beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
@@ -3280,7 +3282,7 @@ public class ChatManager {
 
         try {
             int intOrder = 0;
-            if(order != null) {
+            if (order != null) {
                 intOrder = order.value;
             }
             mClient.searchFileRecords(keyword, conversation, fromUser, beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
@@ -6403,17 +6405,18 @@ public class ChatManager {
 
     /**
      * 获取自己的自定义状态。
+     *
      * @return 返回自己的自定义状态。
      */
     public Pair<Integer, String> getMyCustomState() {
         try {
             String str = getUserSetting(UserSettingScope.CustomState, "");
-            if(TextUtils.isEmpty(str) || !str.contains("-")) {
+            if (TextUtils.isEmpty(str) || !str.contains("-")) {
                 return new Pair<>(0, null);
             }
             int index = str.indexOf("-");
             int state = Integer.parseInt(str.substring(0, index));
-            String text = str.substring(index+1);
+            String text = str.substring(index + 1);
             return new Pair<>(state, text);
         } catch (Exception e) {
             return new Pair<>(0, null);
@@ -6422,13 +6425,14 @@ public class ChatManager {
 
     /**
      * 设置自己的自定义状态。
-     * @param state     自定义状态
-     * @param text      自定义状态描述
-     * @param callback  设置结果回调
+     *
+     * @param state    自定义状态
+     * @param text     自定义状态描述
+     * @param callback 设置结果回调
      */
     public void setMyCustomState(int state, String text, GeneralCallback callback) {
         String str = state + "-";
-        if(!TextUtils.isEmpty(text)) {
+        if (!TextUtils.isEmpty(text)) {
             str += text;
         }
         setUserSetting(UserSettingScope.CustomState, "", str, callback);
@@ -6578,11 +6582,12 @@ public class ChatManager {
 
     /**
      * 设置代理，只支持socks5代理，只有专业版支持。
+     *
      * @param proxyInfo 代理信息
      */
     public void setProxyInfo(Socks5ProxyInfo proxyInfo) {
         this.proxyInfo = proxyInfo;
-        if(checkRemoteService()) {
+        if (checkRemoteService()) {
             try {
                 mClient.setProxyInfo(proxyInfo);
             } catch (RemoteException e) {
@@ -7474,7 +7479,7 @@ public class ChatManager {
         }
     }
 
-    public void createSecretChat(String userId, final  CreateSecretChatCallback callback) {
+    public void createSecretChat(String userId, final CreateSecretChatCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
@@ -7496,13 +7501,13 @@ public class ChatManager {
         }
     }
 
-    public void destroySecretChat(String userId, final  GeneralCallback callback) {
+    public void destroySecretChat(String targetId, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
         try {
-            mClient.destroySecretChat(userId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.destroySecretChat(targetId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     mainHandler.post(() -> callback.onSuccess());
@@ -7540,6 +7545,18 @@ public class ChatManager {
             e.printStackTrace();
         }
         return new byte[0];
+    }
+
+    public void setSecretChatBurnTime(String targetId, int burnTime) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setSecretChatBurnTime(targetId, burnTime);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public BurnMessageInfo getBurnMessageInfo(long messageId) {
@@ -7688,7 +7705,7 @@ public class ChatManager {
                 if (!TextUtils.isEmpty(backupAddressHost))
                     mClient.setBackupAddress(backupAddressHost, backupAddressPort);
 
-                if(proxyInfo != null) {
+                if (proxyInfo != null) {
                     mClient.setProxyInfo(proxyInfo);
                 }
 
@@ -7824,10 +7841,10 @@ public class ChatManager {
 
                     @Override
                     public void onSecretMessageBurned(int[] messageIds) throws RemoteException {
-                        if(messageIds != null && messageIds.length > 0) {
+                        if (messageIds != null && messageIds.length > 0) {
                             List<Long> arr = new ArrayList<>();
                             for (int i = 0; i < messageIds.length; i++) {
-                                arr.add((long)messageIds[i]);
+                                arr.add((long) messageIds[i]);
                             }
                             ChatManager.this.onSecretMessageBurned(arr);
                         }
