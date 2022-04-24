@@ -26,6 +26,7 @@ import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnRemoveConversationListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
 import cn.wildfirechat.remote.OnSettingUpdateListener;
+import cn.wildfirechat.remote.SecretMessageBurnStateListener;
 
 /**
  * how
@@ -41,7 +42,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     OnRemoveConversationListener,
     OnConnectionStatusChangeListener,
     OnClearMessageListener,
-    OnSettingUpdateListener {
+    OnSettingUpdateListener, SecretMessageBurnStateListener {
     private MutableLiveData<List<ConversationInfo>> conversationListLiveData;
     private MutableLiveData<UnreadCount> unreadCountLiveData;
     private MutableLiveData<Integer> connectionStatusLiveData = new MutableLiveData<>();
@@ -62,6 +63,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addClearMessageListener(this);
         ChatManager.Instance().addRemoveConversationListener(this);
         ChatManager.Instance().addSettingUpdateListener(this);
+        ChatManager.Instance().addSecretMessageBurnStateListener(this);
     }
 
     @Override
@@ -76,6 +78,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeClearMessageListener(this);
         ChatManager.Instance().removeRemoveConversationListener(this);
         ChatManager.Instance().removeSettingUpdateListener(this);
+        ChatManager.Instance().removeSecretMessageBurnStateListener(this);
     }
 
     private AtomicInteger loadingCount = new AtomicInteger(0);
@@ -294,5 +297,15 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     public void onSettingUpdate() {
         reloadConversationList();
         reloadConversationUnreadStatus();
+    }
+
+    @Override
+    public void onSecretMessageStartBurning(String targetId, long playedMsgId) {
+        // do nothing
+    }
+
+    @Override
+    public void onSecretMessageBurned(List<Long> messageIds) {
+        reloadConversationList();
     }
 }

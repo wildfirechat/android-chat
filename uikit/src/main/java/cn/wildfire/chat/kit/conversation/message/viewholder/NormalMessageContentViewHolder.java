@@ -301,6 +301,17 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @Override
     public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
         Message message = uiMessage.message;
+
+        if (message.conversation.type == Conversation.ConversationType.SecretChat) {
+            if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)){
+                return true;
+            }
+            if (MessageContextMenuItemTags.TAG_FAV.equals(tag)){
+                return true;
+            }
+            return false;
+        }
+
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
             String userId = ChatManager.Instance().getUserId();
             if (message.conversation.type == Conversation.ConversationType.Group) {
@@ -349,7 +360,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             return true;
         }
 
-        // 只有部分消息支持引用
+        // 只有部分消息支持收藏
         if (MessageContextMenuItemTags.TAG_FAV.equals(tag)) {
             MessageContent messageContent = message.content;
             if (messageContent instanceof TextMessageContent
