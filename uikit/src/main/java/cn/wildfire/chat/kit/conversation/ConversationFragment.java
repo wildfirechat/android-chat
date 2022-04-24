@@ -41,6 +41,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.LongBinaryOperator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,6 +76,7 @@ import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
+import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
@@ -230,6 +232,30 @@ public class ConversationFragment extends Fragment implements
                     .apply();
             }
 
+        }
+    };
+
+    private Observer<Pair<String, Long>> messageStartBurnLiveDataObserver = new Observer<Pair<String, Long>>() {
+        @Override
+        public void onChanged(@Nullable Pair<String, Long> pair) {
+            // 当通过server api删除消息时，只知道消息的uid
+//            if (uiMessage.message.conversation != null && !isMessageInCurrentConversation(uiMessage)) {
+//                return;
+//            }
+//            if (uiMessage.message.messageId == 0 || isDisplayableMessage(uiMessage)) {
+//                adapter.removeMessage(uiMessage);
+//            }
+//            adapter.removeMessage();
+            // TODO
+        }
+    };
+
+    private Observer<List<Long>> messageBurnedLiveDataObserver = new Observer<List<Long>>() {
+        @Override
+        public void onChanged(@Nullable List<Long> messageIds) {
+            for (int i = 0; i < messageIds.size(); i++) {
+                adapter.removeMessageById(messageIds.get(i));
+            }
         }
     };
 
@@ -430,6 +456,8 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
         messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
+        messageViewModel.messageStartBurnLiveData().observeForever(messageStartBurnLiveDataObserver);
+        messageViewModel.messageBurnedLiveData().observeForever(messageBurnedLiveDataObserver);
 
         messageViewModel.messageDeliverLiveData().observe(getActivity(), stringLongMap -> {
             if (conversation == null) {

@@ -18,12 +18,12 @@ import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.CreateSecretChatCallback;
 import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetMessageCallback;
 import cn.wildfirechat.remote.GetRemoteMessageCallback;
 import cn.wildfirechat.remote.SecretChatStateChangeListener;
@@ -65,10 +65,15 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                     if (messageList != null && !messageList.isEmpty()) {
                         List<UiMessage> uiMsgs = new ArrayList<>();
                         for (Message msg : messageList) {
-                            uiMsgs.add(new UiMessage(msg));
+                            if (conversation.type == Conversation.ConversationType.SecretChat) {
+                                BurnMessageInfo burnMessageInfo = ChatManager.Instance().getBurnMessageInfo(msg.messageId);
+                                uiMsgs.add(new UiMessage(msg, burnMessageInfo));
+                            } else {
+                                uiMsgs.add(new UiMessage(msg));
+                            }
                         }
                         result.setValue(uiMsgs);
-                    } else {
+                    } else if (conversation.type != Conversation.ConversationType.SecretChat) {
                         ChatManager.Instance().getRemoteMessages(conversation, null, fromMessageUid, count, new GetRemoteMessageCallback() {
                             @Override
                             public void onSuccess(List<Message> messages) {
@@ -127,7 +132,12 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
             List<UiMessage> oldMessages = new ArrayList<>();
             if (oldMessageList != null) {
                 for (Message msg : oldMessageList) {
-                    oldMessages.add(new UiMessage(msg));
+                    if (conversation.type == Conversation.ConversationType.SecretChat) {
+                        BurnMessageInfo burnMessageInfo = ChatManager.Instance().getBurnMessageInfo(msg.messageId);
+                        oldMessages.add(new UiMessage(msg, burnMessageInfo));
+                    } else {
+                        oldMessages.add(new UiMessage(msg));
+                    }
                 }
             }
             Message message = ChatManager.Instance().getMessage(focusIndex);
@@ -135,7 +145,12 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
             List<UiMessage> newMessages = new ArrayList<>();
             if (newMessageList != null) {
                 for (Message msg : newMessageList) {
-                    newMessages.add(new UiMessage(msg));
+                    if (conversation.type == Conversation.ConversationType.SecretChat) {
+                        BurnMessageInfo burnMessageInfo = ChatManager.Instance().getBurnMessageInfo(msg.messageId);
+                        newMessages.add(new UiMessage(msg, burnMessageInfo));
+                    } else {
+                        newMessages.add(new UiMessage(msg));
+                    }
                 }
             }
 
@@ -161,7 +176,12 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                     List<UiMessage> uiMsgs = new ArrayList<>();
                     if (messageList != null) {
                         for (Message msg : messageList) {
-                            uiMsgs.add(new UiMessage(msg));
+                            if (conversation.type == Conversation.ConversationType.SecretChat) {
+                                BurnMessageInfo burnMessageInfo = ChatManager.Instance().getBurnMessageInfo(msg.messageId);
+                                uiMsgs.add(new UiMessage(msg, burnMessageInfo));
+                            } else {
+                                uiMsgs.add(new UiMessage(msg));
+                            }
                         }
                         uiMessages.addAll(0, uiMsgs);
                         if (!hasMore) {
@@ -242,7 +262,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     @Override
     public void onSecretChatStateChanged(String targetId, ChatManager.SecretChatState state) {
         Pair<String, ChatManager.SecretChatState> pair = new Pair<>(targetId, state);
-        if (secretConversationStateLiveData != null){
+        if (secretConversationStateLiveData != null) {
             secretConversationStateLiveData.postValue(pair);
         }
     }

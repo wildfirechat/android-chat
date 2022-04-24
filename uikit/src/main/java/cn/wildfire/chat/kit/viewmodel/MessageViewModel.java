@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.viewmodel;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -50,6 +51,7 @@ import cn.wildfirechat.remote.OnMessageUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
+import cn.wildfirechat.remote.SecretMessageBurnStateListener;
 
 public class MessageViewModel extends ViewModel implements OnReceiveMessageListener,
     OnSendMessageListener,
@@ -58,7 +60,8 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     OnMessageUpdateListener,
     OnMessageDeliverListener,
     OnMessageReadListener,
-    OnClearMessageListener {
+    OnClearMessageListener,
+    SecretMessageBurnStateListener {
     private MutableLiveData<UiMessage> messageLiveData;
     private MutableLiveData<UiMessage> messageUpdateLiveData;
     private MutableLiveData<UiMessage> messageRemovedLiveData;
@@ -66,6 +69,8 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     private MutableLiveData<Object> clearMessageLiveData;
     private MutableLiveData<Map<String, Long>> messageDeliverLiveData;
     private MutableLiveData<List<ReadEntry>> messageReadLiveData;
+    private MutableLiveData<Pair<String, Long>> messageStartBurnLiveData;
+    private MutableLiveData<List<Long>> messageBurnedLiveData;
 
     private Message toPlayAudioMessage;
 
@@ -77,6 +82,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         ChatManager.Instance().addClearMessageListener(this);
         ChatManager.Instance().addMessageDeliverListener(this);
         ChatManager.Instance().addMessageReadListener(this);
+        ChatManager.Instance().addSecretMessageBurnStateListener(this);
     }
 
     @Override
@@ -88,6 +94,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         ChatManager.Instance().removeClearMessageListener(this);
         ChatManager.Instance().removeMessageDeliverListener(this);
         ChatManager.Instance().removeMessageReadListener(this);
+        ChatManager.Instance().removeSecretMessageBurnStateListener(this);
     }
 
     @Override
@@ -148,6 +155,19 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         return messageReadLiveData;
     }
 
+    public MutableLiveData<Pair<String, Long>> messageStartBurnLiveData() {
+        if (messageStartBurnLiveData == null) {
+            messageStartBurnLiveData = new MutableLiveData<>();
+        }
+        return messageStartBurnLiveData;
+    }
+
+    public MutableLiveData<List<Long>> messageBurnedLiveData() {
+        if (messageBurnedLiveData == null) {
+            messageBurnedLiveData = new MutableLiveData<>();
+        }
+        return messageBurnedLiveData;
+    }
 
     @Override
     public void onRecallMessage(Message message) {
@@ -171,7 +191,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
             @Override
             public void onSuccess() {
                 Message msg = message;
-                if(message.messageId > 0) {
+                if (message.messageId > 0) {
                     msg = ChatManager.Instance().getMessage(message.messageId);
                 }
                 postMessageUpdate(new UiMessage(msg));
@@ -522,6 +542,20 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     public void onMessageRead(List<ReadEntry> readEntries) {
         if (messageReadLiveData != null) {
             messageReadLiveData.postValue(readEntries);
+        }
+    }
+
+    @Override
+    public void onSecretMessageStartBurning(String targetId, long playedMsgId) {
+        if (messageStartBurnLiveData != null) {
+            messageStartBurnLiveData.postValue(new Pair<>(targetId, playedMsgId));
+        }
+    }
+
+    @Override
+    public void onSecretMessageBurned(List<Long> messageIds) {
+        if (messageBurnedLiveData != null) {
+            messageBurnedLiveData.postValue(messageIds);
         }
     }
 }

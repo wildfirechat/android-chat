@@ -54,6 +54,12 @@ public class Conversation implements Parcelable {
                 case 3:
                     conversationType = Channel;
                     break;
+                case 4:
+                    conversationType = Things;
+                    break;
+                case 5:
+                    conversationType = SecretChat;
+                    break;
                 default:
                     throw new IllegalArgumentException("type " + type + " is invalid");
             }

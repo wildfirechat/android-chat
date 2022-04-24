@@ -2778,13 +2778,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setSecretChatBurnTime(String targetId, int burnTime) throws RemoteException {
-
+            ProtoLogic.setSecretChatBurnTime(targetId, burnTime);
         }
 
         @Override
         public BurnMessageInfo getBurnMessageInfo(long messageId) throws RemoteException {
             ProtoBurnMessageInfo protoBurnMessageInfo = ProtoLogic.getBurnMessageInfo(messageId);
-            if(protoBurnMessageInfo.getMessageId() > 0) {
+            if(protoBurnMessageInfo != null && protoBurnMessageInfo.getMessageId() > 0) {
                 BurnMessageInfo bi = new BurnMessageInfo();
                 bi.setMessageId(protoBurnMessageInfo.getMessageId());
                 bi.setMessageUid(protoBurnMessageInfo.getMessageUid());
