@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.viewmodel;
 
+import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,6 +28,7 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.AudioMessageContentV
 import cn.wildfire.chat.kit.third.location.data.LocationData;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
+import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
@@ -43,6 +45,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.GeneralCallbackBytes;
 import cn.wildfirechat.remote.OnClearMessageListener;
 import cn.wildfirechat.remote.OnDeleteMessageListener;
 import cn.wildfirechat.remote.OnMessageDeliverListener;
@@ -408,7 +411,10 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
             return null;
         }
         if (!TextUtils.isEmpty(((MediaMessageContent) content).localPath)) {
-            return new File(((MediaMessageContent) content).localPath);
+            File file = new File(((MediaMessageContent) content).localPath);
+            if (file.exists()) {
+                return file;
+            }
         }
 
         switch (((MediaMessageContent) content).mediaType) {
@@ -429,6 +435,12 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         if (TextUtils.isEmpty(dir) || TextUtils.isEmpty(name)) {
             return null;
         }
+
+        if (message.conversation.type == Conversation.ConversationType.SecretChat) {
+            Context context = ChatManager.Instance().getApplicationContext();
+            File cacheDir = context.getCacheDir();
+            return new File(cacheDir.getAbsolutePath() + "_sc_" + name);
+        }
         return new File(dir, name);
     }
 
@@ -447,11 +459,28 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         DownloadManager.download(((MediaMessageContent) content).remoteUrl, targetFile.getParent(), targetFile.getName() + ".tmp", new DownloadManager.OnDownloadListener() {
             @Override
             public void onSuccess(File file) {
-                file.renameTo(targetFile);
+                if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
+                    byte[] encryptedBytes = FileUtils.readBytesFromFile(file.getAbsolutePath());
+                    ChatManager.Instance().decodeSecretDataAsync(message.message.conversation.target, encryptedBytes, new GeneralCallbackBytes() {
+                        @Override
+                        public void onSuccess(byte[] data) {
+                            message.isDownloading = false;
+                            message.progress = 100;
+                            FileUtils.writeBytesToFile(data, targetFile);
+                        }
+                        @Override
+                        public void onFail(int errorCode) {
+                            message.isDownloading = false;
+                            Log.d("MessageVideModel", "decodeSecretDataAsync error " + errorCode);
+                        }
+                    });
 
-                message.isDownloading = false;
-                message.progress = 100;
-                postMessageUpdate(message);
+                } else {
+                    file.renameTo(targetFile);
+                    message.isDownloading = false;
+                    message.progress = 100;
+                    postMessageUpdate(message);
+                }
             }
 
             @Override

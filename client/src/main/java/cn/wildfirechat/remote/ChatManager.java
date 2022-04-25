@@ -7553,6 +7553,12 @@ public class ChatManager {
         return new byte[0];
     }
 
+    /**
+     *  解密密聊媒体数据，回调是在工作线程
+     * @param targetId
+     * @param mediaData
+     * @param callback
+     */
     public void decodeSecretDataAsync(String targetId, byte[] mediaData, GeneralCallbackBytes callback) {
         if (!checkRemoteService()) {
             return;
@@ -7568,18 +7574,15 @@ public class ChatManager {
                 @Override
                 public void onSuccess(int length) throws RemoteException {
                     if (callback != null) {
+                        // TODO ByteArrayOutputStream
                         byte[] data = new byte[length];
                         try {
                             finalMemoryFile.readBytes(data, 0, 0, length);
-                            mainHandler.post(() -> {
-                                callback.onSuccess(data);
-                            });
+                            callback.onSuccess(data);
                         } catch (IOException e) {
                             e.printStackTrace();
-                            mainHandler.post(() -> {
-                                callback.onFail(-1);
-                            });
-                        }finally {
+                            callback.onFail(-1);
+                        } finally {
                             finalMemoryFile.close();
                         }
                     }
@@ -7587,11 +7590,9 @@ public class ChatManager {
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> {
-                        if (callback != null) {
-                            callback.onFail(errorCode);
-                        }
-                    });
+                    if (callback != null) {
+                        callback.onFail(errorCode);
+                    }
                     finalMemoryFile.close();
                 }
             });
