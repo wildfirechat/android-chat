@@ -15,7 +15,9 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.MemoryFile;
 import android.os.Parcel;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -32,6 +34,8 @@ import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -57,6 +61,7 @@ import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
 import cn.wildfirechat.client.IGetFileRecordCallback;
@@ -165,6 +170,7 @@ import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
+import cn.wildfirechat.utils.MemoryFileUtil;
 
 /**
  * Created by WF Chat on 2017/12/11.
@@ -7545,6 +7551,55 @@ public class ChatManager {
             e.printStackTrace();
         }
         return new byte[0];
+    }
+
+    public void decodeSecretDataAsync(String targetId, byte[] mediaData, GeneralCallbackBytes callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        MemoryFile memoryFile = null;
+        try {
+            memoryFile = new MemoryFile(targetId, mediaData.length);
+            memoryFile.writeBytes(mediaData, 0, 0, memoryFile.length());
+            FileDescriptor fileDescriptor = MemoryFileUtil.getFileDescriptor(memoryFile);
+            ParcelFileDescriptor pdf = ParcelFileDescriptor.dup(fileDescriptor);
+            MemoryFile finalMemoryFile = memoryFile;
+            mClient.decodeSecretChatDataAsync(targetId, pdf, mediaData.length, new IGeneralCallbackInt.Stub() {
+                @Override
+                public void onSuccess(int length) throws RemoteException {
+                    if (callback != null) {
+                        byte[] data = new byte[length];
+                        try {
+                            finalMemoryFile.readBytes(data, 0, 0, length);
+                            mainHandler.post(() -> {
+                                callback.onSuccess(data);
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            mainHandler.post(() -> {
+                                callback.onFail(-1);
+                            });
+                        }finally {
+                            finalMemoryFile.close();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> {
+                        if (callback != null) {
+                            callback.onFail(errorCode);
+                        }
+                    });
+                    finalMemoryFile.close();
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setSecretChatBurnTime(String targetId, int burnTime) {

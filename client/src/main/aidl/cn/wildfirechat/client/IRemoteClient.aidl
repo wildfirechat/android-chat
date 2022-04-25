@@ -4,6 +4,7 @@ package cn.wildfirechat.client;
 import cn.wildfirechat.client.ISendMessageCallback;
 import cn.wildfirechat.client.ISearchUserCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGeneralCallback2;
 import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IUploadMediaCallback;
@@ -64,6 +65,7 @@ import cn.wildfirechat.model.Socks5ProxyInfo;
 import java.util.List;
 import java.util.Map;
 
+import android.os.ParcelFileDescriptor;
 
 
 // Declare any non-default types here with import statements
@@ -283,4 +285,6 @@ interface IRemoteClient {
     oneway void setSecretChatBurnTime(in String targetId, int burnTime);
     BurnMessageInfo getBurnMessageInfo(in long messageId);
     byte[] decodeSecretChatData(in String targetid, in byte[] mediaData);
+
+    oneway void decodeSecretChatDataAsync(in String targetId, in ParcelFileDescriptor pfd, in int length, in IGeneralCallbackInt callback);
 }

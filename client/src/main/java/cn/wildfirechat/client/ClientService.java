@@ -23,7 +23,9 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.LocaleList;
 import android.os.Looper;
+import android.os.MemoryFile;
 import android.os.Parcel;
+import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
@@ -47,6 +49,7 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -115,6 +118,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.RecoverReceiver;
+import cn.wildfirechat.utils.MemoryFileHelper;
 
 
 /**
@@ -2784,7 +2788,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public BurnMessageInfo getBurnMessageInfo(long messageId) throws RemoteException {
             ProtoBurnMessageInfo protoBurnMessageInfo = ProtoLogic.getBurnMessageInfo(messageId);
-            if(protoBurnMessageInfo != null && protoBurnMessageInfo.getMessageId() > 0) {
+            if (protoBurnMessageInfo != null && protoBurnMessageInfo.getMessageId() > 0) {
                 BurnMessageInfo bi = new BurnMessageInfo();
                 bi.setMessageId(protoBurnMessageInfo.getMessageId());
                 bi.setMessageUid(protoBurnMessageInfo.getMessageUid());
@@ -2801,6 +2805,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public byte[] decodeSecretChatData(String targetid, byte[] mediaData) throws RemoteException {
             return ProtoLogic.decodeSecretChatData(targetid, mediaData);
+        }
+
+        @Override
+        public void decodeSecretChatDataAsync(String targetId, ParcelFileDescriptor pfd, int length, IGeneralCallbackInt callback) throws RemoteException {
+            MemoryFile memoryFile = MemoryFileHelper.openMemoryFile(pfd, length, MemoryFileHelper.OPEN_READWRITE);
+            byte[] data = new byte[length];
+            try {
+                memoryFile.readBytes(data, 0, 0, data.length);
+                data = ProtoLogic.decodeSecretChatData(targetId, data);
+                memoryFile.writeBytes(data, 0, 0, data.length);
+                if (callback != null) {
+                    callback.onSuccess(data.length);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                if (callback != null) {
+                    callback.onFailure(-1);
+                }
+            } finally {
+                if (memoryFile != null) {
+                    memoryFile.close();
+                }
+            }
         }
     }
 
