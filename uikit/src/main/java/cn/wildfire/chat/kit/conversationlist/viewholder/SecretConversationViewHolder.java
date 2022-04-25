@@ -52,7 +52,7 @@ public class SecretConversationViewHolder extends ConversationViewHolder {
             .placeholder(R.mipmap.avatar_def)
             .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
             .into(portraitImageView);
-        nameTextView.setText("sc " + name);
+        nameTextView.setText(name);
     }
 
 }
