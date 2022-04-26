@@ -158,6 +158,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
             objWrite.put("pin", pin);
 
             JSONArray array = new JSONArray();
+            List<String> epids = new ArrayList<>();
             for (ParticipantStatus status : existParticipants) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("userId", status.userId);
@@ -165,10 +166,25 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
                 jsonObject.put("joinTime", status.joinTime);
                 jsonObject.put("videoMuted", status.videoMuted);
                 array.put(jsonObject);
+                epids.add(status.userId);
             }
 
             objWrite.put("existParticipants", array);
             payload.binaryContent = objWrite.toString().getBytes();
+
+            JSONObject pushDataWrite = new JSONObject();
+            pushDataWrite.put("callId", callId);
+            pushDataWrite.put("audioOnly", audioOnly);
+            if(participants != null && !participants.isEmpty()) {
+                pushDataWrite.put("participants", participants);
+            }
+
+            if(!epids.isEmpty()) {
+                pushDataWrite.put("existParticipants", epids);
+            }
+
+
+            payload.pushData = pushDataWrite.toString();
         } catch (JSONException e) {
             e.printStackTrace();
         }
