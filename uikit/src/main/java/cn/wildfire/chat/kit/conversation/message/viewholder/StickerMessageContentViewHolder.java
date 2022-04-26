@@ -19,11 +19,8 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallbackBytes;
 
 @MessageContentType(StickerMessageContent.class)
 @EnableContextMenu
@@ -50,43 +47,17 @@ public class StickerMessageContentViewHolder extends NormalMessageContentViewHol
                 .into(imageView);
             path = stickerMessage.localPath;
         } else {
+            String imagePath = stickerMessage.remoteUrl;
             if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
-                DownloadManager.download(stickerMessage.remoteUrl, new DownloadManager.OnDownloadListenerEx() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        ChatManager.Instance().decodeSecretDataAsync(message.message.conversation.target, bytes, new GeneralCallbackBytes() {
-                            @Override
-                            public void onSuccess(byte[] data) {
-                                GlideApp.with(fragment).load(data)
-                                    .into(imageView);
-                            }
-
-                            @Override
-                            public void onFail(int errorCode) {
-
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onProgress(int progress) {
-
-                    }
-
-                    @Override
-                    public void onFail() {
-
-                    }
-                });
-            } else {
-                CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
-                progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
-                progressDrawable.start();
-                GlideApp.with(fragment)
-                    .load(stickerMessage.remoteUrl)
-                    .placeholder(progressDrawable)
-                    .into(imageView);
+                imagePath += "?target=" + message.message.conversation.target + "&secret=true";
             }
+            CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
+            progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
+            progressDrawable.start();
+            GlideApp.with(fragment)
+                .load(imagePath)
+                .placeholder(progressDrawable)
+                .into(imageView);
         }
     }
 
