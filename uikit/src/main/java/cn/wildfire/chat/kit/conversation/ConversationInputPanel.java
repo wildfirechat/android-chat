@@ -198,10 +198,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     public void onDestroy() {
         this.extension.onDestroy();
-        if (audioRecorderPanel != null){
+        if (audioRecorderPanel != null) {
             audioRecorderPanel.deattch();
         }
-        if (pttPanel != null){
+        if (pttPanel != null) {
             pttPanel.deattch();
         }
     }
@@ -250,7 +250,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         });
         SharedPreferences sp = fragment.getContext().getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
-        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost())){
+        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost())) {
             pttImageView.setVisibility(View.VISIBLE);
             pttPanel = new PttPanel(getContext());
         }
@@ -530,7 +530,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private void hideAudioButton() {
         audioButton.setVisibility(View.GONE);
         audioRecorderPanel.deattch();
-        if (pttPanel != null){
+        if (pttPanel != null) {
             pttPanel.deattch();
             isPttMode = false;
         }
@@ -629,7 +629,13 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @Override
     public void onStickerSelected(String categoryName, String stickerName, String stickerBitmapPath) {
-        String remoteUrl = sharedPreferences.getString(stickerBitmapPath, null);
+        String key;
+        if (conversation.type == Conversation.ConversationType.SecretChat) {
+            key = conversation.target + "_" + stickerBitmapPath;
+        } else {
+            key = stickerBitmapPath;
+        }
+        String remoteUrl = sharedPreferences.getString(key, null);
         messageViewModel.sendStickerMsg(conversation, stickerBitmapPath, remoteUrl);
     }
 
