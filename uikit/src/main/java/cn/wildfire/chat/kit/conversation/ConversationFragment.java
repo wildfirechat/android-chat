@@ -222,19 +222,6 @@ public class ConversationFragment extends Fragment implements
         return uiMessage.message.messageId != 0;
     }
 
-    private Observer<Map<String, String>> mediaUploadedLiveDataObserver = new Observer<Map<String, String>>() {
-        @Override
-        public void onChanged(@Nullable Map<String, String> stringStringMap) {
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("sticker", Context.MODE_PRIVATE);
-            for (Map.Entry<String, String> entry : stringStringMap.entrySet()) {
-                sharedPreferences.edit()
-                    .putString(entry.getKey(), entry.getValue())
-                    .apply();
-            }
-
-        }
-    };
-
     private Observer<Pair<String, Long>> messageStartBurnLiveDataObserver = new Observer<Pair<String, Long>>() {
         @Override
         public void onChanged(@Nullable Pair<String, Long> pair) {
@@ -455,7 +442,6 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
-        messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
         messageViewModel.messageStartBurnLiveData().observeForever(messageStartBurnLiveDataObserver);
         messageViewModel.messageBurnedLiveData().observeForever(messageBurnedLiveDataObserver);
 
@@ -833,7 +819,6 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.messageLiveData().removeObserver(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().removeObserver(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().removeObserver(messageRemovedLiveDataObserver);
-        messageViewModel.mediaUpdateLiveData().removeObserver(mediaUploadedLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoUpdateLiveDataObserver);
         conversationViewModel.clearConversationMessageLiveData().removeObserver(clearConversationMessageObserver);
         settingViewModel.settingUpdatedLiveData().removeObserver(settingUpdateLiveDataObserver);

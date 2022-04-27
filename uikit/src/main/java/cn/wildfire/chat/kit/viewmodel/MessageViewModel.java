@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.viewmodel;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -468,6 +469,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
                             message.progress = 100;
                             FileUtils.writeBytesToFile(data, targetFile);
                         }
+
                         @Override
                         public void onFail(int errorCode) {
                             message.isDownloading = false;
@@ -541,6 +543,18 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
 
     @Override
     public void onMediaUpload(Message message, String remoteUrl) {
+        String key;
+        MediaMessageContent content = (MediaMessageContent) message.content;
+        if (message.conversation.type == Conversation.ConversationType.SecretChat) {
+            key = message.conversation.target + "_" + content.localPath;
+        } else {
+            key = content.localPath;
+        }
+        SharedPreferences sharedPreferences = ChatManager.Instance().getApplicationContext().getSharedPreferences("sticker", Context.MODE_PRIVATE);
+        sharedPreferences.edit()
+            .putString(key, content.remoteUrl)
+            .apply();
+
         if (mediaUploadedLiveData != null) {
             Map<String, String> map = new HashMap<>();
             map.put(((MediaMessageContent) message.content).localPath, remoteUrl);
