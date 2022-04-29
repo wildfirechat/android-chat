@@ -2802,9 +2802,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             return null;
         }
 
+        //用来密聊上层上传文件使用
+        private byte[] encodeSecretChatData(String targetId, byte[] mediaData) throws RemoteException {
+            return ProtoLogic.encodeSecretChatData(targetId, mediaData);
+        }
+
         @Override
-        public byte[] decodeSecretChatData(String targetid, byte[] mediaData) throws RemoteException {
-            return ProtoLogic.decodeSecretChatData(targetid, mediaData);
+        public byte[] decodeSecretChatData(String targetId, byte[] mediaData) throws RemoteException {
+            return ProtoLogic.decodeSecretChatData(targetId, mediaData);
         }
 
         @Override
