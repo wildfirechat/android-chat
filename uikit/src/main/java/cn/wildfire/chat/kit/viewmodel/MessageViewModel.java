@@ -87,6 +87,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         ChatManager.Instance().addMessageDeliverListener(this);
         ChatManager.Instance().addMessageReadListener(this);
         ChatManager.Instance().addSecretMessageBurnStateListener(this);
+        ChatManager.Instance().addDeleteMessageListener(this);
     }
 
     @Override
@@ -99,6 +100,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         ChatManager.Instance().removeMessageDeliverListener(this);
         ChatManager.Instance().removeMessageReadListener(this);
         ChatManager.Instance().removeSecretMessageBurnStateListener(this);
+        ChatManager.Instance().removeDeleteMessageListener(this);
     }
 
     @Override
