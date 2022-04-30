@@ -196,6 +196,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         items.add("删除本地消息");
         if (message.message.conversation.type == Conversation.ConversationType.Group || message.message.conversation.type == Conversation.ConversationType.Single) {
             items.add("删除远程消息");
+        }else if (message.message.conversation.type == Conversation.ConversationType.SecretChat){
+            items.add("删除自己及对方消息");
         }
 
         new MaterialDialog.Builder(fragment.getContext())
