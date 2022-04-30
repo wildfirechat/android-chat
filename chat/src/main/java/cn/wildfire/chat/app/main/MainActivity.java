@@ -391,6 +391,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private void pickContactToCreateSecretConversation() {
         Intent intent = new Intent(this, ContactListActivity.class);
+        intent.putExtra("showChannel", false);
         startActivityForResult(intent, REQUEST_CODE_PICK_CONTACT);
     }
 
