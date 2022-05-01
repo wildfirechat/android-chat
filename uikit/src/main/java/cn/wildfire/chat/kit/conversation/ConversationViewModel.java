@@ -95,12 +95,14 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                                 result.postValue(new ArrayList<>());
                             }
                         });
+                    }else {
+                        result.postValue(new ArrayList<>());
                     }
                 }
 
                 @Override
                 public void onFail(int errorCode) {
-
+                    result.postValue(new ArrayList<>());
                 }
             });
         });
