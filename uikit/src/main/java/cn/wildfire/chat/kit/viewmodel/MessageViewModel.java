@@ -376,7 +376,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
 
     private void playAudio(UiMessage message, File file) {
         Uri uri = Uri.fromFile(file);
-        AudioPlayManager.getInstance().startPlay(WfcUIKit.getWfcUIKit().getApplication(), uri, new IAudioPlayListener() {
+        IAudioPlayListener audioPlayListener = new IAudioPlayListener() {
             @Override
             public void onStart(Uri var1) {
                 if (uri.equals(var1)) {
@@ -402,7 +402,26 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
                     postMessageUpdate(message);
                 }
             }
-        });
+        };
+
+        if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
+            byte[] encryptedBytes = FileUtils.readBytesFromFile(file.getAbsolutePath());
+            ChatManager.Instance().decodeSecretDataAsync(message.message.conversation.target, encryptedBytes, new GeneralCallbackBytes() {
+                @Override
+                public void onSuccess(byte[] data) {
+                    AudioPlayManager.getInstance().startPlay(WfcUIKit.getWfcUIKit().getApplication(), uri, data, audioPlayListener);
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    message.isDownloading = false;
+                    Log.d("MessageVideModel", "decodeSecretDataAsync error " + errorCode);
+                }
+            });
+
+        } else {
+            AudioPlayManager.getInstance().startPlay(WfcUIKit.getWfcUIKit().getApplication(), uri, audioPlayListener);
+        }
     }
 
     public File mediaMessageContentFile(Message message) {
@@ -438,12 +457,6 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         if (TextUtils.isEmpty(dir) || TextUtils.isEmpty(name)) {
             return null;
         }
-
-        if (message.conversation.type == Conversation.ConversationType.SecretChat) {
-            Context context = ChatManager.Instance().getApplicationContext();
-            File cacheDir = context.getCacheDir();
-            return new File(cacheDir.getAbsolutePath() + "_sc_" + name);
-        }
         return new File(dir, name);
     }
 
@@ -462,29 +475,10 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         DownloadManager.download(((MediaMessageContent) content).remoteUrl, targetFile.getParent(), targetFile.getName() + ".tmp", new DownloadManager.OnDownloadListener() {
             @Override
             public void onSuccess(File file) {
-                if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
-                    byte[] encryptedBytes = FileUtils.readBytesFromFile(file.getAbsolutePath());
-                    ChatManager.Instance().decodeSecretDataAsync(message.message.conversation.target, encryptedBytes, new GeneralCallbackBytes() {
-                        @Override
-                        public void onSuccess(byte[] data) {
-                            message.isDownloading = false;
-                            message.progress = 100;
-                            FileUtils.writeBytesToFile(data, targetFile);
-                        }
-
-                        @Override
-                        public void onFail(int errorCode) {
-                            message.isDownloading = false;
-                            Log.d("MessageVideModel", "decodeSecretDataAsync error " + errorCode);
-                        }
-                    });
-
-                } else {
-                    file.renameTo(targetFile);
-                    message.isDownloading = false;
-                    message.progress = 100;
-                    postMessageUpdate(message);
-                }
+                file.renameTo(targetFile);
+                message.isDownloading = false;
+                message.progress = 100;
+                postMessageUpdate(message);
             }
 
             @Override

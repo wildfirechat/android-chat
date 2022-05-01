@@ -11,12 +11,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
+import android.media.MediaDataSource;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.net.rtp.AudioStream;
 import android.os.Build;
 import android.os.PowerManager;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.IOException;
 
@@ -155,7 +157,24 @@ public class AudioPlayManager implements SensorEventListener {
 
     }
 
+    public void startPlay(Context context, Uri audioUri, byte[] data, IAudioPlayListener playListener) {
+        //   低于 Android 6.0 的版本，不支持
+        if (data != null && data.length > 0) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                startPlay(context, audioUri, new ByteArrayMediaDataSource(data), playListener);
+            } else {
+                Log.d(TAG, "not support mediaDataSource");
+            }
+        } else {
+            startPlay(context, audioUri, playListener);
+        }
+    }
+
     public void startPlay(Context context, Uri audioUri, IAudioPlayListener playListener) {
+        startPlay(context, audioUri, (MediaDataSource) null, playListener);
+    }
+
+    private void startPlay(Context context, Uri audioUri, MediaDataSource mediaDataSource, IAudioPlayListener playListener) {
         if (context != null && audioUri != null) {
             this.context = context;
             if (this._playListener != null && this._playingUri != null) {
@@ -205,10 +224,22 @@ public class AudioPlayManager implements SensorEventListener {
                         return true;
                     }
                 });
-                this._mediaPlayer.setDataSource(context, audioUri);
-                this._mediaPlayer.setAudioStreamType(3);
-                this._mediaPlayer.prepare();
-                this._mediaPlayer.start();
+                this._mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        Log.e(TAG, "onPrepared");
+                        mp.start();
+                    }
+                });
+                this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                if (mediaDataSource != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        this._mediaPlayer.setDataSource(mediaDataSource);
+                    }
+                } else {
+                    this._mediaPlayer.setDataSource(context, audioUri);
+                }
+                this._mediaPlayer.prepareAsync();
                 if (this._playListener != null) {
                     this._playListener.onStart(this._playingUri);
                 }
@@ -270,7 +301,6 @@ public class AudioPlayManager implements SensorEventListener {
                 this._mediaPlayer.release();
                 this._mediaPlayer = null;
             } catch (IllegalStateException var2) {
-                ;
             }
         }
 
@@ -299,6 +329,39 @@ public class AudioPlayManager implements SensorEventListener {
         static AudioPlayManager sInstance = new AudioPlayManager();
 
         SingletonHolder() {
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private static class ByteArrayMediaDataSource extends MediaDataSource {
+        private final byte[] data;
+
+        public ByteArrayMediaDataSource(byte[] data) {
+            this.data = data;
+        }
+
+        @Override
+        public int readAt(long position, byte[] buffer, int offset, int size) throws IOException {
+            int length = data.length;
+            if (position >= length) {
+                return -1; // -1 indicates EOF
+            }
+            if (position + size > length) {
+                size -= (position + size) - length;
+            }
+            System.arraycopy(data, (int)position, buffer, offset, size);
+            return size;
+        }
+
+        @Override
+        public long getSize() throws IOException {
+            return this.data.length;
+        }
+
+        @Override
+        public void close() throws IOException {
+            // do nothing
+
         }
     }
 }
