@@ -389,11 +389,6 @@ public class ConversationFragment extends Fragment implements
                 swipeRefreshLayout.setRefreshing(false);
                 return;
             }
-            // 密聊就没有远程历史消息
-            if (conversation.type == Conversation.ConversationType.SecretChat){
-                swipeRefreshLayout.setRefreshing(false);
-                return;
-            }
             loadMoreOldMessages();
         });
 
