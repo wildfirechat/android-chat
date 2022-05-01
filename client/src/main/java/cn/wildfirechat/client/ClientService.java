@@ -2539,6 +2539,21 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public SecretChatInfo getSecretChatInfo(String targetId) throws RemoteException {
             ProtoSecretChatInfo protoSecretChatInfo = ProtoLogic.getSecretChatInfo(targetId);
             SecretChatInfo info = new SecretChatInfo();
+            if(TextUtils.isEmpty(protoSecretChatInfo.getUserId())) {
+                destroySecretChat(targetId, new IGeneralCallback.Stub() {
+                    @Override
+                    public void onSuccess() throws RemoteException {
+
+                    }
+
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+
+                    }
+                });
+                return info;
+            }
+            
             info.setTargetId(protoSecretChatInfo.getTargetId());
             info.setUserId(protoSecretChatInfo.getUserId());
             info.setState(ChatManager.SecretChatState.fromValue(protoSecretChatInfo.getState()));
