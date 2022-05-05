@@ -72,13 +72,16 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     @BindView(R2.id.statusImageView)
     protected ImageView statusImageView;
 
+    @BindView(R2.id.secretChatIndicator)
+    protected ImageView secretChatIndicator;
+
     public ConversationViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(itemView);
         this.fragment = fragment;
         this.itemView = itemView;
         this.adapter = adapter;
         ButterKnife.bind(this, itemView);
-        conversationListViewModel = new ViewModelProvider(fragment.getActivity(), new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
+        conversationListViewModel = new ViewModelProvider(fragment.getActivity(), new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.SecretChat), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
         conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
     }
@@ -96,6 +99,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected abstract void onBindConversationInfo(ConversationInfo conversationInfo);
 
     public void onBind(ConversationInfo conversationInfo) {
+        secretChatIndicator.setVisibility(View.GONE);
         onBindConversationInfo(conversationInfo);
 
         timeTextView.setText(TimeUtils.getMsgFormatTime(conversationInfo.timestamp));

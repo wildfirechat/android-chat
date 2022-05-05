@@ -9,7 +9,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.contact.ContactListActivity;
+import cn.wildfire.chat.kit.contact.pick.PickContactActivity;
 import cn.wildfire.chat.kit.conversation.pick.PickConversationActivity;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.UserInfo;
@@ -57,7 +57,7 @@ public class FileRecordListActivity extends WfcBaseActivity {
     @OnClick(R2.id.userFilesItemView)
     void userFiles() {
         //Todo Select a user first.
-        Intent intent = new Intent(this, ContactListActivity.class);
+        Intent intent = new Intent(this, PickContactActivity.class);
         intent.putExtra("showChannel", false);
         startActivityForResult(intent, PICK_CONTACT_REQUEST);
     }

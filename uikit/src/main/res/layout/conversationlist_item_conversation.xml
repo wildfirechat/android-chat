@@ -63,6 +63,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
+            <ImageView
+                android:id="@+id/secretChatIndicator"
+                android:visibility="gone"
+                android:src="@mipmap/ic_lock"
+                android:layout_width="20dp"
+                android:layout_marginRight="10px"
+                android:layout_height="20dp"/>
             <!--昵称或群名-->
             <TextView
                 android:id="@+id/nameTextView"

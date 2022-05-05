@@ -24,6 +24,8 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.utils.WeChatImageUtils;
 
 /**
@@ -58,12 +60,19 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
         } else {
             imagePath = imageMessage.remoteUrl;
         }
+        if (message.message.conversation.type == Conversation.ConversationType.SecretChat){
+            imagePath += "?target=" + message.message.conversation.target + "&secret=true";
+        }
         loadMedia(thumbnail, imagePath, imageView);
 
     }
 
     @OnClick(R2.id.imageView)
     void preview() {
+        if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {
+            message.message.status = MessageStatus.Played;
+            ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
+        }
         previewMM();
     }
 

@@ -4,6 +4,7 @@ package cn.wildfirechat.client;
 import cn.wildfirechat.client.ISendMessageCallback;
 import cn.wildfirechat.client.ISearchUserCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGeneralCallback2;
 import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IUploadMediaCallback;
@@ -19,6 +20,7 @@ import cn.wildfirechat.client.IGetRemoteMessagesCallback;
 import cn.wildfirechat.client.IGetFileRecordCallback;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetUploadUrlCallback;
+import cn.wildfirechat.client.ICreateSecretChatCallback;
 
 import cn.wildfirechat.client.IGetMessageCallback;
 import cn.wildfirechat.client.IGetUserCallback;
@@ -37,6 +39,8 @@ import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
 import cn.wildfirechat.client.IOnUserOnlineEventListener;
 import cn.wildfirechat.client.IOnTrafficDataListener;
+import cn.wildfirechat.client.IOnSecretChatStateListener;
+import cn.wildfirechat.client.IOnSecretMessageBurnStateListener;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -53,12 +57,15 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.ChannelInfo;
+import cn.wildfirechat.model.SecretChatInfo;
+import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.Socks5ProxyInfo;
 
 
 import java.util.List;
 import java.util.Map;
 
+import android.os.ParcelFileDescriptor;
 
 
 // Declare any non-default types here with import statements
@@ -244,6 +251,10 @@ interface IRemoteClient {
     oneway void requireLock(in String lockId, in long duration, in IGeneralCallback callback);
     oneway void releaseLock(in String lockId, in IGeneralCallback callback);
 
+    oneway void createSecretChat(in String userId, in ICreateSecretChatCallback callback);
+    oneway void destroySecretChat(in String targetId, in IGeneralCallback callback);
+    SecretChatInfo getSecretChatInfo(String targetId);
+
     String getImageThumbPara();
 
     void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
@@ -260,6 +271,7 @@ interface IRemoteClient {
     boolean isCommercialServer();
     boolean isReceiptEnabled();
     boolean isGlobalDisableSyncDraft();
+    boolean isEnableSecretChat();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
 
@@ -268,5 +280,11 @@ interface IRemoteClient {
     oneway void watchUserOnlineState(in int conversationType, in String[] targets, in int duration, in IWatchUserOnlineStateCallback callback);
     oneway void unwatchOnlineState(in int conversationType, in String[] targets, in IGeneralCallback callback);
     oneway void setUserOnlineEventListener(in IOnUserOnlineEventListener listener);
+    oneway void setSecretChatStateChangedListener(in IOnSecretChatStateListener listener);
+    oneway void setSecretMessageBurnStateListener(in IOnSecretMessageBurnStateListener listener);
+    oneway void setSecretChatBurnTime(in String targetId, int burnTime);
+    BurnMessageInfo getBurnMessageInfo(in long messageId);
+    byte[] decodeSecretChatData(in String targetid, in byte[] mediaData);
 
+    oneway void decodeSecretChatDataAsync(in String targetId, in ParcelFileDescriptor pfd, in int length, in IGeneralCallbackInt callback);
 }

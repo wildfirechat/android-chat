@@ -31,7 +31,7 @@ public class DownloadManager {
     private static final OkHttpClient okHttpClient = new OkHttpClient();
 
     public static void download(final String url, final String saveDir, final OnDownloadListener listener) {
-        download(url, saveDir, listener);
+        download(url, saveDir, null, listener);
     }
 
     public static void download(final String url, final String saveDir, String name, final OnDownloadListener listener) {
@@ -92,6 +92,46 @@ public class DownloadManager {
         });
     }
 
+    public static void download(final String url, final OnDownloadListenerEx listener) {
+        Request request = new Request.Builder().url(url).build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // 下载失败
+                listener.onFail();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                InputStream is = null;
+                int len;
+                try {
+                    is = response.body().byteStream();
+                    long total = response.body().contentLength();
+                    byte[] buf = new byte[(int) total];
+                    long sum = 0;
+                    while ((len = is.read(buf, (int) sum, total - sum >= 1024 ? 1024 : (int) (total - sum))) != -1) {
+                        sum += len;
+                        int progress = (int) (sum * 1.0f / total * 100);
+                        // 下载中
+                        listener.onProgress(progress);
+                    }
+                    // 下载完成
+                    listener.onSuccess(buf);
+                } catch (Exception e) {
+                    listener.onFail();
+                } finally {
+                    try {
+                        if (is != null) {
+                            is.close();
+                        }
+                    } catch (IOException e) {
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * @param saveDir
      * @return
@@ -120,6 +160,23 @@ public class DownloadManager {
          * 下载成功
          */
         void onSuccess(File file);
+
+        /**
+         * @param progress 下载进度
+         */
+        void onProgress(int progress);
+
+        /**
+         * 下载失败
+         */
+        void onFail();
+    }
+
+    public interface OnDownloadListenerEx {
+        /**
+         * 下载成功
+         */
+        void onSuccess(byte[] bytes);
 
         /**
          * @param progress 下载进度

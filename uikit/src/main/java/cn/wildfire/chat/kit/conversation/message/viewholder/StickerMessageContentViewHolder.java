@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.message.StickerMessageContent;
+import cn.wildfirechat.model.Conversation;
 
 @MessageContentType(StickerMessageContent.class)
 @EnableContextMenu
@@ -46,11 +47,15 @@ public class StickerMessageContentViewHolder extends NormalMessageContentViewHol
                 .into(imageView);
             path = stickerMessage.localPath;
         } else {
+            String imagePath = stickerMessage.remoteUrl;
+            if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
+                imagePath += "?target=" + message.message.conversation.target + "&secret=true";
+            }
             CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
             progressDrawable.start();
             GlideApp.with(fragment)
-                .load(stickerMessage.remoteUrl)
+                .load(imagePath)
                 .placeholder(progressDrawable)
                 .into(imageView);
         }

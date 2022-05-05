@@ -15,7 +15,9 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.MemoryFile;
 import android.os.Parcel;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -32,6 +34,8 @@ import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -55,7 +59,9 @@ import cn.wildfirechat.UserSource;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
+import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
 import cn.wildfirechat.client.IGetFileRecordCallback;
@@ -73,6 +79,8 @@ import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
 import cn.wildfirechat.client.IOnGroupMembersUpdateListener;
 import cn.wildfirechat.client.IOnReceiveMessageListener;
+import cn.wildfirechat.client.IOnSecretChatStateListener;
+import cn.wildfirechat.client.IOnSecretMessageBurnStateListener;
 import cn.wildfirechat.client.IOnSettingUpdateListener;
 import cn.wildfirechat.client.IOnTrafficDataListener;
 import cn.wildfirechat.client.IOnUserInfoUpdateListener;
@@ -131,8 +139,10 @@ import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.QuitGroupVisibleNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.message.notification.StartSecretChatMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
+import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
@@ -155,10 +165,12 @@ import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.ReadEntry;
+import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
+import cn.wildfirechat.utils.MemoryFileUtil;
 
 /**
  * Created by WF Chat on 2017/12/11.
@@ -226,6 +238,9 @@ public class ChatManager {
     private List<OnMessageReadListener> messageReadListeners = new ArrayList<>();
     private List<OnConferenceEventListener> conferenceEventListeners = new ArrayList<>();
     private List<OnUserOnlineEventListener> userOnlineEventListeners = new ArrayList<>();
+    private List<SecretChatStateChangeListener> secretChatStateChangeListeners = new ArrayList<>();
+    private List<SecretMessageBurnStateListener> secretMessageBurnStateListeners = new ArrayList<>();
+
 
     // key = userId
     private LruCache<String, UserInfo> userInfoCache;
@@ -255,6 +270,39 @@ public class ChatManager {
 
         public int value() {
             return this.value;
+        }
+    }
+
+
+    public enum SecretChatState {
+        //密聊会话建立中
+        Starting(0),
+
+        //密聊会话接受中
+        Accepting(1),
+
+        //密聊会话已建立
+        Established(2),
+
+        //密聊会话已取消
+        Canceled(3);
+
+        private int value;
+
+        SecretChatState(int value) {
+            this.value = value;
+        }
+
+        public int value() {
+            return this.value;
+        }
+
+        public static SecretChatState fromValue(int value) {
+            for (SecretChatState secretChatState : SecretChatState.values()) {
+                if (secretChatState.value == value)
+                    return secretChatState;
+            }
+            return Canceled;
         }
     }
 
@@ -641,6 +689,30 @@ public class ChatManager {
 
             for (OnUserOnlineEventListener listener : userOnlineEventListeners) {
                 listener.onUserOnlineEvent(userOnlineStateMap);
+            }
+        });
+    }
+
+    private void onSecretChatStateChanged(String targetId, int state) {
+        mainHandler.post(() -> {
+            for (SecretChatStateChangeListener listener : secretChatStateChangeListeners) {
+                listener.onSecretChatStateChanged(targetId, SecretChatState.fromValue(state));
+            }
+        });
+    }
+
+    private void onSecretMessageStartBurning(String targetId, long playedMsgId) {
+        mainHandler.post(() -> {
+            for (SecretMessageBurnStateListener listener : secretMessageBurnStateListeners) {
+                listener.onSecretMessageStartBurning(targetId, playedMsgId);
+            }
+        });
+    }
+
+    private void onSecretMessageBurned(List<Long> messageIds) {
+        mainHandler.post(() -> {
+            for (SecretMessageBurnStateListener listener : secretMessageBurnStateListeners) {
+                listener.onSecretMessageBurned(messageIds);
             }
         });
     }
@@ -1581,6 +1653,28 @@ public class ChatManager {
         userOnlineEventListeners.remove(listener);
     }
 
+    public void addSecretChatStateChangedListener(SecretChatStateChangeListener listener) {
+        if (listener == null) {
+            return;
+        }
+        secretChatStateChangeListeners.add(listener);
+    }
+
+    public void removeSecretChatStateChangedListener(SecretChatStateChangeListener listener) {
+        secretChatStateChangeListeners.remove(listener);
+    }
+
+    public void addSecretMessageBurnStateListener(SecretMessageBurnStateListener listener) {
+        if (listener == null) {
+            return;
+        }
+        secretMessageBurnStateListeners.add(listener);
+    }
+
+    public void removeSecretMessageBurnStateListener(SecretMessageBurnStateListener listener) {
+        secretMessageBurnStateListeners.remove(listener);
+    }
+
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
         String className = msgContentClazz.getName();
         try {
@@ -1855,6 +1949,7 @@ public class ChatManager {
             }
         }
     }
+
     /**
      * 连接服务器
      * userId和token都不允许为空
@@ -3041,7 +3136,7 @@ public class ChatManager {
 
         try {
             int intOrder = 0;
-            if(order != null) {
+            if (order != null) {
                 intOrder = order.value;
             }
             mClient.getConversationFileRecords(conversation, fromUser, beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
@@ -3075,7 +3170,7 @@ public class ChatManager {
 
         try {
             int intOrder = 0;
-            if(order != null) {
+            if (order != null) {
                 intOrder = order.value;
             }
             mClient.getMyFileRecords(beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
@@ -3149,7 +3244,7 @@ public class ChatManager {
 
         try {
             int intOrder = 0;
-            if(order != null) {
+            if (order != null) {
                 intOrder = order.value;
             }
             mClient.searchMyFileRecords(keyword, beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
@@ -3193,7 +3288,7 @@ public class ChatManager {
 
         try {
             int intOrder = 0;
-            if(order != null) {
+            if (order != null) {
                 intOrder = order.value;
             }
             mClient.searchFileRecords(keyword, conversation, fromUser, beforeMessageId, intOrder, count, new IGetFileRecordCallback.Stub() {
@@ -6316,17 +6411,18 @@ public class ChatManager {
 
     /**
      * 获取自己的自定义状态。
+     *
      * @return 返回自己的自定义状态。
      */
     public Pair<Integer, String> getMyCustomState() {
         try {
             String str = getUserSetting(UserSettingScope.CustomState, "");
-            if(TextUtils.isEmpty(str) || !str.contains("-")) {
+            if (TextUtils.isEmpty(str) || !str.contains("-")) {
                 return new Pair<>(0, null);
             }
             int index = str.indexOf("-");
             int state = Integer.parseInt(str.substring(0, index));
-            String text = str.substring(index+1);
+            String text = str.substring(index + 1);
             return new Pair<>(state, text);
         } catch (Exception e) {
             return new Pair<>(0, null);
@@ -6335,13 +6431,14 @@ public class ChatManager {
 
     /**
      * 设置自己的自定义状态。
-     * @param state     自定义状态
-     * @param text      自定义状态描述
-     * @param callback  设置结果回调
+     *
+     * @param state    自定义状态
+     * @param text     自定义状态描述
+     * @param callback 设置结果回调
      */
     public void setMyCustomState(int state, String text, GeneralCallback callback) {
         String str = state + "-";
-        if(!TextUtils.isEmpty(text)) {
+        if (!TextUtils.isEmpty(text)) {
             str += text;
         }
         setUserSetting(UserSettingScope.CustomState, "", str, callback);
@@ -6491,11 +6588,12 @@ public class ChatManager {
 
     /**
      * 设置代理，只支持socks5代理，只有专业版支持。
+     *
      * @param proxyInfo 代理信息
      */
     public void setProxyInfo(Socks5ProxyInfo proxyInfo) {
         this.proxyInfo = proxyInfo;
-        if(checkRemoteService()) {
+        if (checkRemoteService()) {
             try {
                 mClient.setProxyInfo(proxyInfo);
             } catch (RemoteException e) {
@@ -6568,6 +6666,75 @@ public class ChatManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public boolean isEnableSecretChat() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return mClient.isEnableSecretChat();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    /**
+     * 判断当前用户是否开启密聊功能。开关仅影响密聊的创建，已经创建的密聊不受此开关影响。
+     *
+     * @return
+     */
+    public boolean isUserEnableSecretChat() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            boolean disable = "1".equals(mClient.getUserSetting(UserSettingScope.DisableSecretChat, ""));
+            return !disable;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 设置当前用户是否开启密聊功能。开关仅影响密聊的创建，已经创建的密聊不受此开关影响。
+     *
+     * @param enable
+     * @param callback
+     */
+    public void setUserEnableSecretChat(boolean enable, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+
+        try {
+            mClient.setUserSetting(UserSettingScope.DisableSecretChat, "", enable ? "0" : "1", new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onSuccess();
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -7318,6 +7485,148 @@ public class ChatManager {
         }
     }
 
+    public void createSecretChat(String userId, final CreateSecretChatCallback callback) {
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        try {
+            mClient.createSecretChat(userId, new ICreateSecretChatCallback.Stub() {
+                @Override
+                public void onSuccess(String s, int i) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(s, i));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void destroySecretChat(String targetId, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        try {
+            mClient.destroySecretChat(targetId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess());
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public SecretChatInfo getSecretChatInfo(String targetId) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        try {
+            return mClient.getSecretChatInfo(targetId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public byte[] decodeSecretChatData(String targetid, byte[] mediaData) {
+        if (!checkRemoteService()) {
+            return new byte[0];
+        }
+        try {
+            return mClient.decodeSecretChatData(targetid, mediaData);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return new byte[0];
+    }
+
+    /**
+     *  解密密聊媒体数据，回调是在工作线程
+     * @param targetId
+     * @param mediaData
+     * @param callback
+     */
+    public void decodeSecretDataAsync(String targetId, byte[] mediaData, GeneralCallbackBytes callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        MemoryFile memoryFile = null;
+        try {
+            memoryFile = new MemoryFile(targetId, mediaData.length);
+            memoryFile.writeBytes(mediaData, 0, 0, memoryFile.length());
+            FileDescriptor fileDescriptor = MemoryFileUtil.getFileDescriptor(memoryFile);
+            ParcelFileDescriptor pdf = ParcelFileDescriptor.dup(fileDescriptor);
+            MemoryFile finalMemoryFile = memoryFile;
+            mClient.decodeSecretChatDataAsync(targetId, pdf, mediaData.length, new IGeneralCallbackInt.Stub() {
+                @Override
+                public void onSuccess(int length) throws RemoteException {
+                    if (callback != null) {
+                        // TODO ByteArrayOutputStream
+                        byte[] data = new byte[length];
+                        try {
+                            finalMemoryFile.readBytes(data, 0, 0, length);
+                            callback.onSuccess(data);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            callback.onFail(-1);
+                        } finally {
+                            finalMemoryFile.close();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        callback.onFail(errorCode);
+                    }
+                    finalMemoryFile.close();
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setSecretChatBurnTime(String targetId, int burnTime) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setSecretChatBurnTime(targetId, burnTime);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public BurnMessageInfo getBurnMessageInfo(long messageId) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getBurnMessageInfo(messageId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public void sendConferenceRequest(long sessionId, String roomId, String request, String data, final GeneralCallback2 callback) {
         sendConferenceRequest(sessionId, roomId, request, false, data, callback);
@@ -7452,7 +7761,7 @@ public class ChatManager {
                 if (!TextUtils.isEmpty(backupAddressHost))
                     mClient.setBackupAddress(backupAddressHost, backupAddressPort);
 
-                if(proxyInfo != null) {
+                if (proxyInfo != null) {
                     mClient.setProxyInfo(proxyInfo);
                 }
 
@@ -7572,6 +7881,32 @@ public class ChatManager {
                     }
                 });
 
+                mClient.setSecretChatStateChangedListener(new IOnSecretChatStateListener.Stub() {
+                    @Override
+                    public void onSecretChatStateChanged(String targetid, int state) throws RemoteException {
+                        ChatManager.this.onSecretChatStateChanged(targetid, state);
+                    }
+                });
+
+
+                mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
+                    @Override
+                    public void onSecretMessageStartBurning(String targetId, long playedMsgId) throws RemoteException {
+                        ChatManager.this.onSecretMessageStartBurning(targetId, playedMsgId);
+                    }
+
+                    @Override
+                    public void onSecretMessageBurned(int[] messageIds) throws RemoteException {
+                        if (messageIds != null && messageIds.length > 0) {
+                            List<Long> arr = new ArrayList<>();
+                            for (int i = 0; i < messageIds.length; i++) {
+                                arr.add((long) messageIds[i]);
+                            }
+                            ChatManager.this.onSecretMessageBurned(arr);
+                        }
+                    }
+                });
+
 
                 mClient.setLiteMode(isLiteMode);
                 mClient.setLowBPSMode(isLowBPSMode);
@@ -7663,6 +7998,7 @@ public class ChatManager {
         registerMessageContent(CompositeMessageContent.class);
         registerMessageContent(MarkUnreadMessageContent.class);
         registerMessageContent(PTTSoundMessageContent.class);
+        registerMessageContent(StartSecretChatMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {

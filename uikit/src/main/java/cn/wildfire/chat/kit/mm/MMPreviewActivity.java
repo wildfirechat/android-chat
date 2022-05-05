@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.File;
@@ -48,6 +49,8 @@ public class MMPreviewActivity extends Activity {
     private View currentVideoView;
     private ViewPager viewPager;
     private MMPagerAdapter adapter;
+    private boolean secret;
+    private DiskCacheStrategy diskCacheStrategy = DiskCacheStrategy.AUTOMATIC;
 
     private static int currentPosition = -1;
     private static List<MediaEntry> entries;
@@ -154,9 +157,9 @@ public class MMPreviewActivity extends Activity {
         ImageView saveImageView = view.findViewById(R.id.saveImageView);
         saveImageView.setVisibility(View.GONE);
         if (entry.getThumbnail() != null) {
-            GlideApp.with(photoView).load(entry.getThumbnail()).into(photoView);
+            GlideApp.with(photoView).load(entry.getThumbnail()).diskCacheStrategy(diskCacheStrategy).into(photoView);
         } else {
-            GlideApp.with(photoView).load(entry.getThumbnailUrl()).into(photoView);
+            GlideApp.with(photoView).load(entry.getThumbnailUrl()).diskCacheStrategy(diskCacheStrategy).into(photoView);
         }
 
         VideoView videoView = view.findViewById(R.id.videoView);
@@ -177,7 +180,7 @@ public class MMPreviewActivity extends Activity {
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
                     String name = DownloadManager.md5(entry.getMediaUrl());
                     File videoFile = new File(Config.VIDEO_SAVE_DIR, name);
-                    if (!videoFile.exists()) {
+                    if (!videoFile.exists() && !secret) {
                         view.setTag(name);
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
@@ -191,7 +194,7 @@ public class MMPreviewActivity extends Activity {
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
                                         playVideo(targetView, file.getAbsolutePath());
                                     }
-                                    ImageUtils.saveMedia2Album(MMPreviewActivity.this,file);
+                                    ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
                                 });
                             }
 
@@ -257,7 +260,7 @@ public class MMPreviewActivity extends Activity {
         if (TextUtils.isEmpty(entry.getMediaLocalPath()) && !TextUtils.isEmpty(mediaUrl)) {
             String imageFileName = DownloadManager.md5(mediaUrl) + mediaUrl.substring(mediaUrl.lastIndexOf('.'));
             File file = new File(Config.PHOTO_SAVE_DIR, imageFileName);
-            if (file.exists()) {
+            if (file.exists() || secret) {
                 saveImageView.setVisibility(View.GONE);
             } else {
                 saveImageView.setVisibility(View.VISIBLE);
@@ -269,7 +272,7 @@ public class MMPreviewActivity extends Activity {
                             if (isFinishing()) {
                                 return;
                             }
-                            ImageUtils.saveMedia2Album(MMPreviewActivity.this,file);
+                            ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
                             Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
                         }
                     });
@@ -280,11 +283,11 @@ public class MMPreviewActivity extends Activity {
         }
 
         if (entry.getThumbnail() != null) {
-            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl())
+            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
                 .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
                 .into(photoView);
         } else {
-            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl())
+            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
                 .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
                 .into(photoView);
         }
@@ -308,12 +311,14 @@ public class MMPreviewActivity extends Activity {
             viewPager.setCurrentItem(currentPosition);
             pendingPreviewInitialMedia = true;
         }
+        secret = getIntent().getBooleanExtra("secret", false);
+        diskCacheStrategy = secret ? DiskCacheStrategy.NONE : DiskCacheStrategy.AUTOMATIC;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (currentVideoView != null){
+        if (currentVideoView != null) {
             resetVideoView(currentVideoView);
         }
     }
@@ -324,7 +329,7 @@ public class MMPreviewActivity extends Activity {
         entries = null;
     }
 
-    public static void previewMedia(Context context, List<MediaEntry> entries, int current) {
+    public static void previewMedia(Context context, List<MediaEntry> entries, int current, boolean secret) {
         if (entries == null || entries.isEmpty()) {
             Log.w(MMPreviewActivity.class.getSimpleName(), "message is null or empty");
             return;
@@ -332,6 +337,7 @@ public class MMPreviewActivity extends Activity {
         MMPreviewActivity.entries = entries;
         MMPreviewActivity.currentPosition = current;
         Intent intent = new Intent(context, MMPreviewActivity.class);
+        intent.putExtra("secret", secret);
         context.startActivity(intent);
     }
 
@@ -344,7 +350,7 @@ public class MMPreviewActivity extends Activity {
         entry.setMediaUrl(imageMessageContent.remoteUrl);
         entry.setMediaLocalPath(imageMessageContent.localPath);
         entries.add(entry);
-        previewMedia(context, entries, 0);
+        previewMedia(context, entries, 0, false);
     }
 
     public static void previewImage(Context context, String imageUrl) {
@@ -354,7 +360,7 @@ public class MMPreviewActivity extends Activity {
         entry.setType(MediaEntry.TYPE_IMAGE);
         entry.setMediaUrl(imageUrl);
         entries.add(entry);
-        previewMedia(context, entries, 0);
+        previewMedia(context, entries, 0, false);
     }
 
     public static void previewVideo(Context context, VideoMessageContent videoMessageContent) {
@@ -366,7 +372,7 @@ public class MMPreviewActivity extends Activity {
         entry.setMediaUrl(videoMessageContent.remoteUrl);
         entry.setMediaLocalPath(videoMessageContent.localPath);
         entries.add(entry);
-        previewMedia(context, entries, 0);
+        previewMedia(context, entries, 0, false);
     }
 
 
@@ -379,6 +385,6 @@ public class MMPreviewActivity extends Activity {
         entry.setMediaUrl(videoUrl);
 //        entry.setMediaLocalPath(videoMessageContent.localPath);
         entries.add(entry);
-        previewMedia(context, entries, 0);
+        previewMedia(context, entries, 0, false);
     }
 }
