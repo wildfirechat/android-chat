@@ -42,8 +42,8 @@ android {
             res.srcDirs += ['src/main/res-av']
 
             // moment start
-//            java.srcDirs += ['../../android-momentkit/src/main/java']
-//            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
+            java.srcDirs += ['../../android-momentkit/src/main/java']
+            res.srcDirs += ['../../android-momentkit/src/main/res-moment']
             // moment end
         }
     }
@@ -97,11 +97,10 @@ dependencies {
 
     // kit wfc end
 
-
     // moment start
-//    implementation project(':momentclient')
+    implementation project(':momentclient')
     //over scroller helper
-//    api 'me.everything:overscroll-decor-android:1.0.4'
+    api 'me.everything:overscroll-decor-android:1.0.4'
     // moment end
 
     implementation project(':pttclient')
