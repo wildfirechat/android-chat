@@ -329,6 +329,10 @@ public class MMPreviewActivity extends Activity {
         entries = null;
     }
 
+    public static void previewMedia(Context context, List<MediaEntry> entries, int current) {
+        previewMedia(context, entries, current, false);
+    }
+
     public static void previewMedia(Context context, List<MediaEntry> entries, int current, boolean secret) {
         if (entries == null || entries.isEmpty()) {
             Log.w(MMPreviewActivity.class.getSimpleName(), "message is null or empty");
