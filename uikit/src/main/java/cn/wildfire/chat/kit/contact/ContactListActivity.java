@@ -27,6 +27,7 @@ public class ContactListActivity extends WfcBaseActivity {
         ContactListFragment fragment = new ContactListFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean("pick", true);
+        bundle.putBoolean("showChannel", intent.getBooleanExtra("showChannel", true));
         bundle.putStringArrayList(FILTER_USER_LIST, filterUserList);
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()

@@ -14,6 +14,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,6 +41,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.LongBinaryOperator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,6 +66,7 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
+import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -73,6 +76,7 @@ import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
+import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
@@ -80,6 +84,7 @@ import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.UserSettingScope;
 
@@ -128,6 +133,7 @@ public class ConversationFragment extends Fragment implements
     private boolean moveToBottom = true;
     private ConversationViewModel conversationViewModel;
     private SettingViewModel settingViewModel;
+    private UserOnlineStateViewModel userOnlineStateViewModel;
     private MessageViewModel messageViewModel;
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
@@ -216,16 +222,27 @@ public class ConversationFragment extends Fragment implements
         return uiMessage.message.messageId != 0;
     }
 
-    private Observer<Map<String, String>> mediaUploadedLiveDataObserver = new Observer<Map<String, String>>() {
+    private Observer<Pair<String, Long>> messageStartBurnLiveDataObserver = new Observer<Pair<String, Long>>() {
         @Override
-        public void onChanged(@Nullable Map<String, String> stringStringMap) {
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("sticker", Context.MODE_PRIVATE);
-            for (Map.Entry<String, String> entry : stringStringMap.entrySet()) {
-                sharedPreferences.edit()
-                    .putString(entry.getKey(), entry.getValue())
-                    .apply();
-            }
+        public void onChanged(@Nullable Pair<String, Long> pair) {
+            // 当通过server api删除消息时，只知道消息的uid
+//            if (uiMessage.message.conversation != null && !isMessageInCurrentConversation(uiMessage)) {
+//                return;
+//            }
+//            if (uiMessage.message.messageId == 0 || isDisplayableMessage(uiMessage)) {
+//                adapter.removeMessage(uiMessage);
+//            }
+//            adapter.removeMessage();
+            // TODO
+        }
+    };
 
+    private Observer<List<Long>> messageBurnedLiveDataObserver = new Observer<List<Long>>() {
+        @Override
+        public void onChanged(@Nullable List<Long> messageIds) {
+            for (int i = 0; i < messageIds.size(); i++) {
+                adapter.removeMessageById(messageIds.get(i));
+            }
         }
     };
 
@@ -252,6 +269,19 @@ public class ConversationFragment extends Fragment implements
             int start = layoutManager.findFirstVisibleItemPosition();
             int end = layoutManager.findLastVisibleItemPosition();
             adapter.notifyItemRangeChanged(start, end - start + 1, userInfos);
+        }
+    };
+
+    private Observer<Map<String, UserOnlineState>> userOnlineStateLiveDataObserver = new Observer<Map<String, UserOnlineState>>() {
+        @Override
+        public void onChanged(Map<String, UserOnlineState> userOnlineStateMap) {
+            if (conversation == null) {
+                return;
+            }
+            if (conversation.type == Conversation.ConversationType.Single) {
+                conversationTitle = null;
+                setTitle();
+            }
         }
     };
 
@@ -331,6 +361,18 @@ public class ConversationFragment extends Fragment implements
     }
 
     public void setupConversation(Conversation conversation, String title, long focusMessageId, String target) {
+        if (this.conversation != null) {
+            if ((this.conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(this.conversation.target))
+                || this.conversation.type == Conversation.ConversationType.Group) {
+                userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
+            }
+        }
+
+        if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
+            || conversation.type == Conversation.ConversationType.Group) {
+            userOnlineStateViewModel.watchUserOnlineState(conversation.type.getValue(), new String[]{conversation.target});
+        }
+
         this.conversation = conversation;
         this.conversationTitle = title;
         this.initialFocusedMessageId = focusMessageId;
@@ -385,15 +427,23 @@ public class ConversationFragment extends Fragment implements
         inputPanel.init(this, rootLinearLayout);
         inputPanel.setOnConversationInputPanelStateChangeListener(this);
 
-        settingViewModel = ViewModelProviders.of(this).get(SettingViewModel.class);
         conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
         conversationViewModel.clearConversationMessageLiveData().observeForever(clearConversationMessageObserver);
+        conversationViewModel.secretConversationStateLiveData().observe(getViewLifecycleOwner(), new Observer<Pair<String, ChatManager.SecretChatState>>() {
+            @Override
+            public void onChanged(Pair<String, ChatManager.SecretChatState> stringSecretChatStatePair) {
+                if (conversation != null && conversation.type == Conversation.ConversationType.SecretChat && conversation.target.equals(stringSecretChatStatePair.first)) {
+                    reloadMessage();
+                }
+            }
+        });
         messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
 
         messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
-        messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
+        messageViewModel.messageStartBurnLiveData().observeForever(messageStartBurnLiveDataObserver);
+        messageViewModel.messageBurnedLiveData().observeForever(messageBurnedLiveDataObserver);
 
         messageViewModel.messageDeliverLiveData().observe(getActivity(), stringLongMap -> {
             if (conversation == null) {
@@ -425,10 +475,17 @@ public class ConversationFragment extends Fragment implements
             }
             reloadMessage();
         };
+
+        settingViewModel = ViewModelProviders.of(this).get(SettingViewModel.class);
         settingViewModel.settingUpdatedLiveData().observeForever(settingUpdateLiveDataObserver);
+
+        userOnlineStateViewModel = ViewModelProviders.of(this).get(UserOnlineStateViewModel.class);
+        userOnlineStateViewModel.getUserOnlineStateLiveData().observe(getViewLifecycleOwner(), userOnlineStateLiveDataObserver);
+
     }
 
     private void setupConversation(Conversation conversation) {
+
 
         if (conversation.type == Conversation.ConversationType.Group) {
             groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
@@ -581,7 +638,7 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void setChatRoomConversationTitle() {
-        chatRoomViewModel.getChatRoomInfo(conversation.target, System.currentTimeMillis())
+        chatRoomViewModel.getChatRoomInfo(conversation.target, 0)
             .observe(this, chatRoomInfoOperateResult -> {
                 if (chatRoomInfoOperateResult.isSuccess()) {
                     ChatRoomInfo chatRoomInfo = chatRoomInfoOperateResult.getResult();
@@ -599,6 +656,14 @@ public class ConversationFragment extends Fragment implements
         if (conversation.type == Conversation.ConversationType.Single) {
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversation.target, false);
             conversationTitle = userViewModel.getUserDisplayName(userInfo);
+
+            UserOnlineState userOnlineState = ChatManager.Instance().getUserOnlineStateMap().get(userInfo.uid);
+            if (userOnlineState != null) {
+                String onlineDesc = userOnlineState.desc();
+                if (!TextUtils.isEmpty(onlineDesc)) {
+                    conversationTitle += " (" + userOnlineState.desc() + ")";
+                }
+            }
         } else if (conversation.type == Conversation.ConversationType.Group) {
             if (groupInfo != null) {
                 conversationTitle = groupInfo.name + "(" + groupInfo.memberCount + "人)";
@@ -618,7 +683,12 @@ public class ConversationFragment extends Fragment implements
                     conversationTitle += "@<" + channelPrivateChatUser + ">";
                 }
             }
+        } else if (conversation.type == Conversation.ConversationType.SecretChat) {
+            String userId = ChatManager.Instance().getSecretChatInfo(conversation.target).getUserId();
+            UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(userId, false);
+            conversationTitle = userViewModel.getUserDisplayName(userInfo);
         }
+
         setActivityTitle(conversationTitle);
     }
 
@@ -737,6 +807,11 @@ public class ConversationFragment extends Fragment implements
             return;
         }
 
+        if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
+            || conversation.type == Conversation.ConversationType.Group) {
+            userOnlineStateViewModel.unwatchOnlineState(conversation.type.getValue(), new String[]{conversation.target});
+        }
+
         if (conversation.type == Conversation.ConversationType.ChatRoom) {
             quitChatRoom();
         }
@@ -744,7 +819,6 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.messageLiveData().removeObserver(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().removeObserver(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().removeObserver(messageRemovedLiveDataObserver);
-        messageViewModel.mediaUpdateLiveData().removeObserver(mediaUploadedLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoUpdateLiveDataObserver);
         conversationViewModel.clearConversationMessageLiveData().removeObserver(clearConversationMessageObserver);
         settingViewModel.settingUpdatedLiveData().removeObserver(settingUpdateLiveDataObserver);

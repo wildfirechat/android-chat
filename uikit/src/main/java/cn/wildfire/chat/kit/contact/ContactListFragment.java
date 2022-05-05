@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
@@ -29,9 +30,12 @@ import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.model.ChannelInfo;
+import cn.wildfirechat.model.UserOnlineState;
+import cn.wildfirechat.remote.ChatManager;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private boolean pick = false;
+    private boolean showChannel = true;
     private List<String> filterUserList;
     private static final int REQUEST_CODE_PICK_CHANNEL = 100;
 
@@ -50,6 +54,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         Bundle bundle = getArguments();
         if (bundle != null) {
             pick = bundle.getBoolean("pick", false);
+            showChannel = bundle.getBoolean("showChannel", true);
             filterUserList = bundle.getStringArrayList("filterUserList");
         }
     }
@@ -71,6 +76,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             if (filterUserList != null) {
                 userInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
             }
+            patchUserOnlineState(userInfos);
             userListAdapter.setUsers(userInfos);
         });
         contactViewModel.friendRequestUpdatedLiveData().observe(getActivity(), integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
@@ -78,8 +84,23 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             if (filterUserList != null) {
                 uiUserInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
             }
+            patchUserOnlineState(uiUserInfos);
             userListAdapter.setFavUsers(uiUserInfos);
         });
+
+    }
+
+    private void patchUserOnlineState(List<UIUserInfo> userInfos) {
+        if (userInfos == null) {
+            return;
+        }
+        Map<String, UserOnlineState> userOnlineStateMap = ChatManager.Instance().getUserOnlineStateMap();
+        for (UIUserInfo userInfo : userInfos) {
+            UserOnlineState userOnlineState = userOnlineStateMap.get(userInfo.getUserInfo().uid);
+            if (userOnlineState != null) {
+                userInfo.setDesc(userOnlineState.desc());
+            }
+        }
     }
 
     @Override
@@ -93,7 +114,9 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             addHeaderViewHolder(FriendRequestViewHolder.class, R.layout.contact_header_friend, new FriendRequestValue(contactViewModel.getUnreadFriendRequestCount()));
             addHeaderViewHolder(GroupViewHolder.class, R.layout.contact_header_group, new GroupValue());
         }
-        addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
+        if (showChannel) {
+            addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
+        }
     }
 
     @Override

@@ -148,7 +148,10 @@
             android:label="转发" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationTargetActivity"
-            android:label="选取会话" />
+            android:label="选择联系人" />
+        <activity
+            android:name="cn.wildfire.chat.kit.conversation.pick.PickConversationActivity"
+            android:label="选择会话" />
         <activity
             android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"
             android:label="频道列表" />

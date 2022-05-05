@@ -16,9 +16,14 @@ public class UiMessage {
      */
     public int progress;
     public Message message;
+    public Object extra;
 
     public UiMessage(Message message) {
         this.message = message;
     }
 
+    public UiMessage(Message message, Object extra) {
+        this.message = message;
+        this.extra = extra;
+    }
 }

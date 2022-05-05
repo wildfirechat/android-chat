@@ -28,6 +28,7 @@ import org.webrtc.StatsReport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -93,7 +94,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
         speakerImageView.setSelected(audioManager.getSelectedAudioDevice() == AVAudioManager.AudioDevice.SPEAKER_PHONE);
 
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
     }
 
     private void initParticipantsView(AVEngineKit.CallSession session) {
@@ -109,11 +110,10 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         // session里面的participants包含除自己外的所有人
         participants = new ArrayList();
         List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
-        if(profiles != null && !profiles.isEmpty()) {
+        if (profiles != null) {
+            profiles = profiles.stream().filter(p -> !p.isAudience()).collect(Collectors.toList());
             for (AVEngineKit.ParticipantProfile profile : profiles) {
-                if (!profile.isAudience()) {
-                    participants.add(profile.getUserId());
-                }
+                participants.add(profile.getUserId());
             }
         }
 
@@ -124,7 +124,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
             participantUserInfos = new ArrayList<>();
         }
         AVEngineKit.ParticipantProfile myProfile = session.getMyProfile();
-        if(!myProfile.isAudience()) {
+        if (!myProfile.isAudience()) {
             participantUserInfos.add(me);
         }
 
@@ -182,13 +182,13 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
             AVAudioManager.AudioDevice currentAudioDevice = audioManager.getSelectedAudioDevice();
-            if(currentAudioDevice == AVAudioManager.AudioDevice.WIRED_HEADSET ||currentAudioDevice == AVAudioManager.AudioDevice.BLUETOOTH){
+            if (currentAudioDevice == AVAudioManager.AudioDevice.WIRED_HEADSET || currentAudioDevice == AVAudioManager.AudioDevice.BLUETOOTH) {
                 return;
             }
-            if(currentAudioDevice == AVAudioManager.AudioDevice.SPEAKER_PHONE){
+            if (currentAudioDevice == AVAudioManager.AudioDevice.SPEAKER_PHONE) {
                 audioManager.selectAudioDevice(AVAudioManager.AudioDevice.EARPIECE);
                 speakerImageView.setSelected(false);
-            }else {
+            } else {
                 audioManager.selectAudioDevice(AVAudioManager.AudioDevice.SPEAKER_PHONE);
                 speakerImageView.setSelected(true);
             }
@@ -199,18 +199,18 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
     void hangup() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null) {
-            if(ChatManager.Instance().getUserId().equals(session.getHost())) {
+            if (ChatManager.Instance().getUserId().equals(session.getHost())) {
                 new AlertDialog.Builder(getActivity())
-                        .setMessage("请选择是否结束会议")
-                        .setIcon(R.mipmap.ic_launcher)
-                        .setNeutralButton("退出会议", (dialogInterface, i) -> {
-                            if(session.getState() != AVEngineKit.CallState.Idle) session.leaveConference(false);
-                        })
-                        .setPositiveButton("结束会议", (dialogInterface, i) -> {
-                            if(session.getState() != AVEngineKit.CallState.Idle) session.leaveConference(true);
-                        })
-                        .create()
-                        .show();
+                    .setMessage("请选择是否结束会议")
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setNeutralButton("退出会议", (dialogInterface, i) -> {
+                        if (session.getState() != AVEngineKit.CallState.Idle) session.leaveConference(false);
+                    })
+                    .setPositiveButton("结束会议", (dialogInterface, i) -> {
+                        if (session.getState() != AVEngineKit.CallState.Idle) session.leaveConference(true);
+                    })
+                    .create()
+                    .show();
             } else {
                 session.leaveConference(false);
             }
@@ -243,14 +243,14 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         }
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if(session == null || session.getState() == AVEngineKit.CallState.Idle) {
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             return;
         }
 
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
 
         AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userId);
-        if(profile == null || profile.isAudience()) {
+        if (profile == null || profile.isAudience()) {
             return;
         }
 
@@ -298,10 +298,10 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         Toast.makeText(getActivity(), "用户" + ChatManager.Instance().getUserDisplayName(userId) + "离开了通话", Toast.LENGTH_SHORT).show();
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if(session == null || session.getState() == AVEngineKit.CallState.Idle) {
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             return;
         }
-        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size()+1) +")");
+        manageParticipantTextView.setText("管理(" + (session.getParticipantIds().size() + 1) + ")");
     }
 
     @Override
@@ -365,7 +365,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
 
     @Override
     public void didChangeType(String userId, boolean audience, boolean screenSharing) {
-        if(!audience) {
+        if (!audience) {
             didParticipantJoined(userId, screenSharing);
         } else {
             participants.remove(userId);
@@ -390,7 +390,7 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             String text;
-            if(session.getConnectedTime() == 0) {
+            if (session.getConnectedTime() == 0) {
                 text = "会议连接中";
             } else {
                 long s = System.currentTimeMillis() - session.getConnectedTime();

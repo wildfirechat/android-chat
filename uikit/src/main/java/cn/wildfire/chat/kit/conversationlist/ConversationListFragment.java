@@ -39,12 +39,14 @@ public class ConversationListFragment extends ProgressFragment {
     private ConversationListAdapter adapter;
     private static final List<Conversation.ConversationType> types = Arrays.asList(Conversation.ConversationType.Single,
         Conversation.ConversationType.Group,
-        Conversation.ConversationType.Channel);
+        Conversation.ConversationType.Channel,
+        Conversation.ConversationType.SecretChat);
     private static final List<Integer> lines = Arrays.asList(0);
 
     private ConversationListViewModel conversationListViewModel;
     private SettingViewModel settingViewModel;
     private LinearLayoutManager layoutManager;
+    private OnClickConversationItemListener onClickConversationItemListener;
 
     @Override
     protected int contentLayout() {
@@ -65,6 +67,13 @@ public class ConversationListFragment extends ProgressFragment {
         }
     }
 
+    public void setOnClickConversationItemListener(OnClickConversationItemListener listener) {
+        this.onClickConversationItemListener = listener;
+        if (adapter != null) {
+            adapter.setOnClickConversationItemListener(listener);
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -73,6 +82,9 @@ public class ConversationListFragment extends ProgressFragment {
 
     private void init() {
         adapter = new ConversationListAdapter(this);
+        if (onClickConversationItemListener != null) {
+            adapter.setOnClickConversationItemListener(onClickConversationItemListener);
+        }
         conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(types, lines))
             .get(ConversationListViewModel.class);
         conversationListViewModel.conversationListLiveData().observe(this, conversationInfos -> {
