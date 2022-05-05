@@ -14,6 +14,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,6 +41,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.LongBinaryOperator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,6 +76,7 @@ import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
+import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
@@ -219,16 +222,27 @@ public class ConversationFragment extends Fragment implements
         return uiMessage.message.messageId != 0;
     }
 
-    private Observer<Map<String, String>> mediaUploadedLiveDataObserver = new Observer<Map<String, String>>() {
+    private Observer<Pair<String, Long>> messageStartBurnLiveDataObserver = new Observer<Pair<String, Long>>() {
         @Override
-        public void onChanged(@Nullable Map<String, String> stringStringMap) {
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("sticker", Context.MODE_PRIVATE);
-            for (Map.Entry<String, String> entry : stringStringMap.entrySet()) {
-                sharedPreferences.edit()
-                    .putString(entry.getKey(), entry.getValue())
-                    .apply();
-            }
+        public void onChanged(@Nullable Pair<String, Long> pair) {
+            // 当通过server api删除消息时，只知道消息的uid
+//            if (uiMessage.message.conversation != null && !isMessageInCurrentConversation(uiMessage)) {
+//                return;
+//            }
+//            if (uiMessage.message.messageId == 0 || isDisplayableMessage(uiMessage)) {
+//                adapter.removeMessage(uiMessage);
+//            }
+//            adapter.removeMessage();
+            // TODO
+        }
+    };
 
+    private Observer<List<Long>> messageBurnedLiveDataObserver = new Observer<List<Long>>() {
+        @Override
+        public void onChanged(@Nullable List<Long> messageIds) {
+            for (int i = 0; i < messageIds.size(); i++) {
+                adapter.removeMessageById(messageIds.get(i));
+            }
         }
     };
 
@@ -349,13 +363,13 @@ public class ConversationFragment extends Fragment implements
     public void setupConversation(Conversation conversation, String title, long focusMessageId, String target) {
         if (this.conversation != null) {
             if ((this.conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(this.conversation.target))
-                    || this.conversation.type == Conversation.ConversationType.Group) {
+                || this.conversation.type == Conversation.ConversationType.Group) {
                 userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
             }
         }
 
         if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
-                || conversation.type == Conversation.ConversationType.Group) {
+            || conversation.type == Conversation.ConversationType.Group) {
             userOnlineStateViewModel.watchUserOnlineState(conversation.type.getValue(), new String[]{conversation.target});
         }
 
@@ -415,12 +429,21 @@ public class ConversationFragment extends Fragment implements
 
         conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
         conversationViewModel.clearConversationMessageLiveData().observeForever(clearConversationMessageObserver);
+        conversationViewModel.secretConversationStateLiveData().observe(getViewLifecycleOwner(), new Observer<Pair<String, ChatManager.SecretChatState>>() {
+            @Override
+            public void onChanged(Pair<String, ChatManager.SecretChatState> stringSecretChatStatePair) {
+                if (conversation != null && conversation.type == Conversation.ConversationType.SecretChat && conversation.target.equals(stringSecretChatStatePair.first)) {
+                    reloadMessage();
+                }
+            }
+        });
         messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
 
         messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
-        messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
+        messageViewModel.messageStartBurnLiveData().observeForever(messageStartBurnLiveDataObserver);
+        messageViewModel.messageBurnedLiveData().observeForever(messageBurnedLiveDataObserver);
 
         messageViewModel.messageDeliverLiveData().observe(getActivity(), stringLongMap -> {
             if (conversation == null) {
@@ -660,6 +683,10 @@ public class ConversationFragment extends Fragment implements
                     conversationTitle += "@<" + channelPrivateChatUser + ">";
                 }
             }
+        } else if (conversation.type == Conversation.ConversationType.SecretChat) {
+            String userId = ChatManager.Instance().getSecretChatInfo(conversation.target).getUserId();
+            UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(userId, false);
+            conversationTitle = userViewModel.getUserDisplayName(userInfo);
         }
 
         setActivityTitle(conversationTitle);
@@ -781,7 +808,7 @@ public class ConversationFragment extends Fragment implements
         }
 
         if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
-                || conversation.type == Conversation.ConversationType.Group) {
+            || conversation.type == Conversation.ConversationType.Group) {
             userOnlineStateViewModel.unwatchOnlineState(conversation.type.getValue(), new String[]{conversation.target});
         }
 
@@ -792,7 +819,6 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.messageLiveData().removeObserver(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().removeObserver(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().removeObserver(messageRemovedLiveDataObserver);
-        messageViewModel.mediaUpdateLiveData().removeObserver(mediaUploadedLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoUpdateLiveDataObserver);
         conversationViewModel.clearConversationMessageLiveData().removeObserver(clearConversationMessageObserver);
         settingViewModel.settingUpdatedLiveData().removeObserver(settingUpdateLiveDataObserver);

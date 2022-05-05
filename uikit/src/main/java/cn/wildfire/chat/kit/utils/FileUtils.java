@@ -760,6 +760,27 @@ public class FileUtils {
 
     }
 
+    public static void writeBytesToFile(byte[] bytes, File file) {
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file);
+            outputStream.write(bytes, 0, bytes.length);
+
+            outputStream.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public static File createTempImageFile(Context context, String fileName) throws IOException {
         // Create an image file name
         File storageDir = new File(context.getCacheDir(), DOCUMENTS_DIR);

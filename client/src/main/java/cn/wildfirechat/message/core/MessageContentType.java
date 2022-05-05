@@ -34,6 +34,8 @@ public interface MessageContentType {
 
     int ContentType_Mark_Unread_Sync = 31;
 
+    int ContentType_Start_Secret_Chat = 40;
+
     int ContentType_Recall = 80;
     //删除消息，请勿直接发送此消息，此消息是服务器端删除时的同步消息
     int ContentType_Delete = 81;

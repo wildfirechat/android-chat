@@ -19,6 +19,8 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.GlideRequest;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
@@ -29,6 +31,7 @@ import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
+import cn.wildfirechat.model.Conversation;
 
 public abstract class MediaMessageContentViewHolder extends NormalMessageContentViewHolder {
 
@@ -75,8 +78,14 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
                 entry.setType(MediaEntry.TYPE_VIDEO);
                 entry.setThumbnail(((VideoMessageContent) msg.message.content).getThumbnail());
             }
-            entry.setMediaUrl(((MediaMessageContent) msg.message.content).remoteUrl);
-            entry.setMediaLocalPath(((MediaMessageContent) msg.message.content).localPath);
+            if (msg.message.conversation.type == Conversation.ConversationType.SecretChat) {
+                String url = ((MediaMessageContent) msg.message.content).remoteUrl;
+                url += "?target=" + message.message.conversation.target + "&secret=true";
+                entry.setMediaUrl(url);
+            } else {
+                entry.setMediaUrl(((MediaMessageContent) msg.message.content).remoteUrl);
+                entry.setMediaLocalPath(((MediaMessageContent) msg.message.content).localPath);
+            }
             entries.add(entry);
 
             if (message.message.messageId == msg.message.messageId) {
@@ -87,32 +96,35 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
         if (entries.isEmpty()) {
             return;
         }
-        MMPreviewActivity.previewMedia(fragment.getContext(), entries, current);
+        MMPreviewActivity.previewMedia(fragment.getContext(), entries, current, messages.get(0).message.conversation.type == Conversation.ConversationType.SecretChat);
     }
 
     /**
      * 图片 和小视频 加载的地方
      * 策略是先加载缩略图，在加载原图
-     * dhl
+     *
      * @param thumbnail
      * @param imagePath
      * @param imageView
      */
-    protected void loadMedia(Bitmap thumbnail, String imagePath, ImageView imageView){
+    protected void loadMedia(Bitmap thumbnail, String imagePath, ImageView imageView) {
         RequestBuilder<Drawable> thumbnailRequest = null;
-        if(thumbnail != null) {
+        if (thumbnail != null) {
             thumbnailRequest = Glide
-                    .with(fragment)
-                    .load(thumbnail);
-        }else{
+                .with(fragment)
+                .load(thumbnail);
+        } else {
             thumbnailRequest = Glide
-                    .with(fragment)
-                    .load(R.drawable.image_chat_placeholder);
+                .with(fragment)
+                .load(R.drawable.image_chat_placeholder);
         }
-        Glide.with(fragment)
-                .load(imagePath)
-                .thumbnail(thumbnailRequest)
-                .apply(placeholderOptions)
-                .into(imageView);
+        GlideRequest<Drawable> request = GlideApp.with(fragment)
+            .load(imagePath)
+            .thumbnail(thumbnailRequest)
+            .apply(placeholderOptions);
+        if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
+            request = request.diskCacheStrategy(DiskCacheStrategy.NONE);
+        }
+        request.into(imageView);
     }
 }
