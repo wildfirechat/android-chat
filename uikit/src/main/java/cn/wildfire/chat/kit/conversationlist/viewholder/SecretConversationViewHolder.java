@@ -23,6 +23,7 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
+import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -37,7 +38,11 @@ public class SecretConversationViewHolder extends ConversationViewHolder {
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
         secretChatIndicator.setVisibility(View.VISIBLE);
-        String userId = ChatManager.Instance().getSecretChatInfo(conversationInfo.conversation.target).getUserId();
+        SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversationInfo.conversation.target);
+        if (secretChatInfo == null){
+            return;
+        }
+        String userId = secretChatInfo.getUserId();
         if (TextUtils.isEmpty(userId)){
             return;
         }
