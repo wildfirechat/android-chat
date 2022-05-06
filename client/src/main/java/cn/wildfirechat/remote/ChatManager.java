@@ -2246,7 +2246,7 @@ public class ChatManager {
                         return;
                     }
 
-                    if (file.length() > 100 * 1024 * 1024 && !isSupportBigFilesUpload()) {
+                    if (file.length() >= 100 * 1024 * 1024 &&( !isSupportBigFilesUpload() || msg.conversation.type == Conversation.ConversationType.SecretChat)) {
                         if (callback != null) {
                             callback.onFail(ErrorCode.FILE_TOO_LARGE);
                         }
