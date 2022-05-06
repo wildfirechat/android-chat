@@ -12,19 +12,15 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import java.io.File;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
-import cn.wildfire.chat.kit.conversation.bigfile.UploadBigFileActivity;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
 
 public class FileExt extends ConversationExt {
 
@@ -46,8 +42,6 @@ public class FileExt extends ConversationExt {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
-            // TODO Android10之后，可能不能直接通过uri拿到path，这时候，会进行文件拷贝
-            // 当大文件上时，不应当进行拷贝，可以直接通过InputStream进行上传
             String path = FileUtils.getPath(activity, uri);
             if (TextUtils.isEmpty(path)) {
                 Toast.makeText(activity, "选择文件错误", Toast.LENGTH_SHORT).show();
@@ -56,26 +50,6 @@ public class FileExt extends ConversationExt {
 
             String type = path.substring(path.lastIndexOf("."));
             File file = new File(path);
-            if(file.length() > 80 * 1024 * 1024) {
-                if (ChatManager.Instance().isSupportBigFilesUpload()) {
-                    new MaterialDialog.Builder(activity)
-                        .content("文件太大，是否先上传？")
-                        .cancelable(true)
-                        .negativeText("取消")
-                        .positiveText("确定")
-                        .onPositive((dialog, which) -> {
-                    Intent intent = new Intent(activity, UploadBigFileActivity.class);
-                    intent.putExtra("filePath", file.getAbsolutePath());
-                    intent.putExtra("conversation", conversation);
-                    activity.startActivity(intent);
-
-                        })
-                        .show();
-                } else {
-                    Toast.makeText(activity, "文件太大无法发送！", Toast.LENGTH_LONG).show();
-                }
-                return;
-            }
 
             switch (type) {
                 case ".png":

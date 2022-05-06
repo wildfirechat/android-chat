@@ -483,7 +483,7 @@ public class ChatManager {
      * @param port 服务器port
      */
     private void onConnectToServer(final String host, final String ip, final int port) {
-        Log.e("jyj", "connectToServer " + host + ip + port);
+        Log.e(TAG, "connectToServer " + host + ip + port);
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -2246,7 +2246,7 @@ public class ChatManager {
                         return;
                     }
 
-                    if (file.length() > 100 * 1024 * 1024) {
+                    if (file.length() > 100 * 1024 * 1024 && !isSupportBigFilesUpload()) {
                         if (callback != null) {
                             callback.onFail(ErrorCode.FILE_TOO_LARGE);
                         }
@@ -7534,7 +7534,10 @@ public class ChatManager {
             return null;
         }
         try {
-            return mClient.getSecretChatInfo(targetId);
+            SecretChatInfo secretChatInfo = mClient.getSecretChatInfo(targetId);
+            if (secretChatInfo == null) {
+                removeConversation(new Conversation(Conversation.ConversationType.SecretChat, targetId, 0), true);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -7554,7 +7557,8 @@ public class ChatManager {
     }
 
     /**
-     *  解密密聊媒体数据，回调是在工作线程
+     * 解密密聊媒体数据，回调是在工作线程
+     *
      * @param targetId
      * @param mediaData
      * @param callback

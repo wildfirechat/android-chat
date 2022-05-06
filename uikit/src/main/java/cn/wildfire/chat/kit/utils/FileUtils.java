@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
 import java.util.Comparator;
 
@@ -275,23 +276,28 @@ public class FileUtils {
      * @see #getFile(Context, Uri)
      */
     public static String getPath(final Context context, final Uri uri) {
-        String absolutePath = getLocalPath(context, uri);
-
-        if (absolutePath == null) {
-            File tmpDri = context.getExternalCacheDir();
-            Cursor cursor =
-                context.getContentResolver().query(uri, null, null, null, null);
-            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-            cursor.moveToFirst();
-            String fileName = cursor.getString(nameIndex);
-            cursor.close();
-            File tmpFile = new File(tmpDri, fileName);
-            if (copyFile(context, uri, tmpFile)) {
-                absolutePath = tmpFile.getAbsolutePath();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            String absolutePath = getLocalPath(context, uri);
+            if (absolutePath != null) {
+                File file = new File(absolutePath);
+                if (file.exists() && file.canRead()) {
+                    return absolutePath;
+                }
             }
         }
+        File tmpDri = context.getExternalCacheDir();
+        Cursor cursor =
+            context.getContentResolver().query(uri, null, null, null, null);
+        int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        cursor.moveToFirst();
+        String fileName = cursor.getString(nameIndex);
+        cursor.close();
+        File tmpFile = new File(tmpDri, fileName);
+        if (copyFile(context, uri, tmpFile)) {
+            return tmpFile.getAbsolutePath();
+        }
 
-        return absolutePath;
+        return null;
     }
 
     public static long getSize(final Context context, final Uri uri) {
@@ -309,10 +315,18 @@ public class FileUtils {
         try {
             InputStream inputStream = context.getContentResolver().openInputStream(srcUri);
             if (inputStream == null) return false;
-            OutputStream outputStream = new FileOutputStream(dstFile);
-            copyStream(inputStream, outputStream);
-            inputStream.close();
-            outputStream.close();
+            if (inputStream instanceof FileInputStream) {
+                FileChannel src = ((FileInputStream) inputStream).getChannel();
+                FileChannel dst = new FileOutputStream(dstFile).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+            } else {
+                OutputStream outputStream = new FileOutputStream(dstFile);
+                copyStream(inputStream, outputStream);
+                inputStream.close();
+                outputStream.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
