@@ -5,9 +5,7 @@
 package cn.wildfire.chat.kit.conversation;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
@@ -41,7 +39,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.LongBinaryOperator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,13 +67,14 @@ import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.message.EnterChannelChatMessageContent;
+import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
-import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
@@ -485,8 +483,6 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void setupConversation(Conversation conversation) {
-
-
         if (conversation.type == Conversation.ConversationType.Group) {
             groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
             initGroupObservers();
@@ -503,8 +499,12 @@ public class ConversationFragment extends Fragment implements
 
         if (conversation.type != Conversation.ConversationType.ChatRoom) {
             loadMessage(initialFocusedMessageId);
-        } else {
+        }
+        if (conversation.type == Conversation.ConversationType.ChatRoom) {
             joinChatRoom();
+        } else if (conversation.type == Conversation.ConversationType.Channel) {
+            EnterChannelChatMessageContent content = new EnterChannelChatMessageContent();
+            messageViewModel.sendMessage(conversation, content);
         }
 
         ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
@@ -814,6 +814,9 @@ public class ConversationFragment extends Fragment implements
 
         if (conversation.type == Conversation.ConversationType.ChatRoom) {
             quitChatRoom();
+        } else if (conversation.type == Conversation.ConversationType.Channel) {
+            LeaveChannelChatMessageContent content = new LeaveChannelChatMessageContent();
+            messageViewModel.sendMessage(conversation, content);
         }
 
         messageViewModel.messageLiveData().removeObserver(messageLiveDataObserver);

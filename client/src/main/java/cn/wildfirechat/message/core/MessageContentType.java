@@ -36,6 +36,18 @@ public interface MessageContentType {
 
     int ContentType_Start_Secret_Chat = 40;
 
+
+    /*
+        #define MESSAGE_CONTENT_TYPE_ACCEPT_SECRET_CHAT 41
+        #define MESSAGE_CONTENT_TYPE_DESTROY_SECRET_CHAT 42
+        #define MESSAGE_CONTENT_TYPE_SECRET_CHAT_MESSAGE 43
+        #define MESSAGE_CONTENT_TYPE_BURN_MSG_READED 46
+        #define MESSAGE_CONTENT_TYPE_BURN_MSG_PLAYED 47
+     */
+    //频道进出消息
+    int ContentType_Enter_Channel_Chat = 71;
+    int ContentType_Leave_Channel_Chat = 72;
+
     int ContentType_Recall = 80;
     //删除消息，请勿直接发送此消息，此消息是服务器端删除时的同步消息
     int ContentType_Delete = 81;
