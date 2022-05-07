@@ -93,8 +93,10 @@ import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CardMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
+import cn.wildfirechat.message.EnterChannelChatMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
+import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.MarkUnreadMessageContent;
@@ -8004,6 +8006,8 @@ public class ChatManager {
         registerMessageContent(MarkUnreadMessageContent.class);
         registerMessageContent(PTTSoundMessageContent.class);
         registerMessageContent(StartSecretChatMessageContent.class);
+        registerMessageContent(EnterChannelChatMessageContent.class);
+        registerMessageContent(LeaveChannelChatMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
