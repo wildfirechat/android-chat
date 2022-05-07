@@ -6802,7 +6802,7 @@ public class ChatManager {
      * 设置第三方推送设备token
      *
      * @param token
-     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.PushService.PushServiceType}
+     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.push.PushService.PushServiceType}
      */
     public void setDeviceToken(String token, int pushType) {
         Log.d(TAG, "setDeviceToken " + token + " " + pushType);
@@ -7538,6 +7538,7 @@ public class ChatManager {
             if (secretChatInfo == null) {
                 removeConversation(new Conversation(Conversation.ConversationType.SecretChat, targetId, 0), true);
             }
+            return secretChatInfo;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
