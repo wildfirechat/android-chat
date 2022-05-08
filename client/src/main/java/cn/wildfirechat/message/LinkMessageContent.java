@@ -4,6 +4,7 @@
 
 package cn.wildfirechat.message;
 
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcel;
@@ -98,7 +99,7 @@ public class LinkMessageContent extends MessageContent {
         try {
             if (payload.content != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
-                contentDigest = jsonObject.optString("c");
+                contentDigest = jsonObject.optString("d");
                 url = jsonObject.optString("u");
                 thumbnailUrl = jsonObject.optString("t");
             }
