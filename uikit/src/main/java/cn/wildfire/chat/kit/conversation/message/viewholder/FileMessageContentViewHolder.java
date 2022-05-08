@@ -50,7 +50,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         fileIconImageView.setImageResource(FileUtils.getFileTypeImageResId(fileMessageContent.getName()));
     }
 
-    @OnClick(R2.id.imageView)
+    @OnClick(R2.id.fileMessageContentItemView)
     public void onClick(View view) {
         if (message.isDownloading) {
             return;

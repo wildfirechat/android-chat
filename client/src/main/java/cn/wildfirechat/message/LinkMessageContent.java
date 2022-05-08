@@ -5,20 +5,17 @@
 package cn.wildfirechat.message;
 
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Link;
+
 import android.os.Parcel;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Link;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -110,7 +107,7 @@ public class LinkMessageContent extends MessageContent {
 
     @Override
     public String digest(Message message) {
-        return contentDigest;
+        return !TextUtils.isEmpty(contentDigest) ? contentDigest : url;
     }
 
     @Override

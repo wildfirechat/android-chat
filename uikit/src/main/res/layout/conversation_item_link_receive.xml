@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:id="@+id/linkMessageContentItemView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:adjustViewBounds="true"
+    android:background="@drawable/img_bubble_receive"
+    android:padding="10dp"
+    android:scaleType="fitCenter">
+
+    <LinearLayout
+        android:id="@+id/titleContentContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="140dp"
+            android:maxLines="1"
+            android:textSize="18sp"
+            tool:text="link title 链接标题" />
+
+        <TextView
+            android:id="@+id/descTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:maxWidth="140dp"
+            android:maxLines="3"
+            android:paddingTop="5dp"
+            android:textColor="@color/gray3"
+            tool:text="a long long long long long long long long long long long long long long long text" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/thumbnailImageView"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/titleContentContainer"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/logo" />
+
+</RelativeLayout>
