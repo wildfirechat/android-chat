@@ -5,6 +5,7 @@
 package cn.wildfire.chat.app.main;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,6 +53,7 @@ import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
+import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -66,7 +68,10 @@ import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
+import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
@@ -155,6 +160,27 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 updateMomentBadgeView();
             }
         });
+
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+        if (Intent.ACTION_SEND.equals(action)) {
+            if ("text/plain".equals(type)) {
+                handleSend(intent);
+            }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String action = intent.getAction();
+        String type = intent.getType();
+        if (Intent.ACTION_SEND.equals(action)) {
+            if ("text/plain".equals(type)) {
+                handleSend(intent);
+            }
+        }
     }
 
     @Override
@@ -380,7 +406,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             } else {
                 if (stringOperateResult.getErrorCode() == 86) {
                     //自己关闭了密聊功能
-                } else if(stringOperateResult.getErrorCode() == 87) {
+                } else if (stringOperateResult.getErrorCode() == 87) {
                     //对方关闭了密聊功能
                 } else {
                     //提示网络错误
@@ -549,4 +575,63 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         dialog.show();
     }
 
+    // 分享
+    private void handleSend(Intent intent) {
+        String sharedText = intent.getStringExtra(Intent.EXTRA_INTENT);
+        if (!TextUtils.isEmpty(sharedText)) {
+            MessageContent content = new TextMessageContent(sharedText);
+            shareMessage(content);
+        } else {
+            ClipData clipData = intent.getClipData();
+            if (clipData != null) {
+                int count = clipData.getItemCount();
+                if (count == 1) {
+                    ClipData.Item item = clipData.getItemAt(0);
+                    sharedText = (String) item.getText();
+
+                    if (isMiShare(sharedText)) {
+                        LinkMessageContent content = parseMiShare(sharedText);
+                        shareMessage(content);
+                    } else {
+                        MessageContent content = new TextMessageContent(sharedText);
+                        shareMessage(content);
+                    }
+                }
+            }
+        }
+    }
+
+    private void shareMessage(MessageContent content) {
+        ArrayList<Message> msgs = new ArrayList<>();
+        Message message = new Message();
+        message.content = content;
+        msgs.add(message);
+        Intent intent = new Intent(this, ForwardActivity.class);
+        intent.putExtra("messages", msgs);
+        startActivity(intent);
+    }
+
+    // 小米浏览器 我分享了【xxxx】, 快来看吧！@小米浏览器 | https://xxx
+    private boolean isMiShare(String text) {
+        if (TextUtils.isEmpty(text)) {
+            return false;
+        }
+
+        if (text.startsWith("我分享了【")
+            && text.indexOf("】, 快来看吧！@小米浏览器 | http") > 1) {
+            return true;
+        }
+        return false;
+    }
+
+    private LinkMessageContent parseMiShare(String text) {
+        LinkMessageContent content = new LinkMessageContent();
+        String title = text.substring(text.indexOf("【") + 1, text.indexOf("】"));
+        content.setTitle(title);
+        String desc = text.substring(0, text.indexOf("@小米浏览器"));
+        content.setContentDigest(desc);
+        String url = text.substring(text.indexOf("http"));
+        content.setUrl(url);
+        return content;
+    }
 }
