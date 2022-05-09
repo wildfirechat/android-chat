@@ -145,7 +145,7 @@
             android:label="搜索中心" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.forward.ForwardActivity"
-            android:label="转发" />
+            android:label="选择一个聊天" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationTargetActivity"
             android:label="选择联系人" />

@@ -88,10 +88,16 @@
             android:name="cn.wildfire.chat.app.main.MainActivity"
             android:label="野火IM"
             android:launchMode="singleTask"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="${applicationId}.main" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter android:label="分享到野火IM">
+                <action android:name="android.intent.action.SENDTO"/>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*" />
             </intent-filter>
         </activity>
 
