@@ -21,7 +21,6 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.JoinCallRequestMessageContent;
 import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MultiCallOngoingMessageContent;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -52,7 +51,7 @@ public class OngoingCallAdapter extends RecyclerView.Adapter<OngoingCallAdapter.
         holder.joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MessageContent messageContent = new JoinCallRequestMessageContent(ongoingMessageContent.getCallId());
+                JoinCallRequestMessageContent messageContent = new JoinCallRequestMessageContent(ongoingMessageContent.getCallId(), ChatManager.Instance().getClientId());
                 ChatManager.Instance().sendMessage(message.conversation, messageContent, new String[]{ongoingMessageContent.getInitiator()}, 0, null);
             }
         });

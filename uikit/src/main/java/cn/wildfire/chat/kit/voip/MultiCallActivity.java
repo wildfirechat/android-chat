@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.voip;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -21,7 +22,6 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -233,11 +233,13 @@ public class MultiCallActivity extends VoipBaseActivity {
                 List<String> newParticipants = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
                 if (newParticipants != null && !newParticipants.isEmpty()) {
                     AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-                    session.inviteNewParticipants(newParticipants, true);
+                    session.inviteNewParticipants(newParticipants);
                 }
             }
         } else {
-            super.onActivityResult(requestCode, resultCode, data);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 }

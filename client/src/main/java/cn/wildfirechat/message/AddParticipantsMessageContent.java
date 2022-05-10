@@ -77,10 +77,14 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
     private String callId;
     private String initiator;
     private String pin;
+    // autoAnswer 为 true 时，只允许包含一个用户
     private List<String> participants;
     private List<ParticipantStatus> existParticipants;
     private boolean audioOnly;
+    // 设置为 true 时，新用户被邀请加入会议时，SDK会自动接听，然后加入通话
     private boolean autoAnswer;
+    // 自动接听时，由那个端进行处理
+    private String clientId;
 
     public AddParticipantsMessageContent() {
     }
@@ -150,6 +154,14 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
         this.autoAnswer = autoAnswer;
     }
 
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
@@ -180,6 +192,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
 
             objWrite.put("existParticipants", array);
             objWrite.put("autoAnswer", this.autoAnswer);
+            objWrite.put("clientId", this.clientId);
             payload.binaryContent = objWrite.toString().getBytes();
 
             JSONObject pushDataWrite = new JSONObject();
@@ -221,6 +234,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
 
                 array = jsonObject.getJSONArray("existParticipants");
                 autoAnswer = jsonObject.optBoolean("autoAnswer");
+                clientId = jsonObject.optString("clientId");
                 existParticipants = new ArrayList<>();
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject object = array.getJSONObject(i);
@@ -274,6 +288,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
         dest.writeByte(this.audioOnly ? (byte) 1 : (byte) 0);
         dest.writeByte(this.autoAnswer? (byte) 1 : (byte) 0);
         dest.writeString(pin);
+        dest.writeString(this.clientId);
     }
 
     protected AddParticipantsMessageContent(Parcel in) {
@@ -286,6 +301,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
         this.audioOnly = in.readByte() != 0;
         this.autoAnswer = in.readByte() != 0;
         this.pin = in.readString();
+        this.clientId = in.readString();
     }
 
     public static final Creator<AddParticipantsMessageContent> CREATOR = new Creator<AddParticipantsMessageContent>() {
