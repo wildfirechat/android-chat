@@ -233,7 +233,7 @@ public class MultiCallActivity extends VoipBaseActivity {
                 List<String> newParticipants = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
                 if (newParticipants != null && !newParticipants.isEmpty()) {
                     AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-                    session.inviteNewParticipants(newParticipants);
+                    session.inviteNewParticipants(newParticipants, true);
                 }
             }
         } else {

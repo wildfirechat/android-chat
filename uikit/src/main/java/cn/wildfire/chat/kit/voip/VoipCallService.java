@@ -35,18 +35,24 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.BuildConfig;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
+import cn.wildfirechat.message.JoinCallRequestMessageContent;
+import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MultiCallOngoingMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.OnReceiveMessageListener;
 
-public class VoipCallService extends Service {
+public class VoipCallService extends Service implements OnReceiveMessageListener {
     private static final int NOTIFICATION_ID = 1;
 
     private WindowManager wm;
@@ -63,6 +69,8 @@ public class VoipCallService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        ChatManager.Instance().addOnReceiveMessageListener(this);
+
     }
 
     @Nullable
@@ -144,6 +152,12 @@ public class VoipCallService extends Service {
                     }
                 }
             }
+
+            if (session.getState() == AVEngineKit.CallState.Connected
+                && ChatManager.Instance().getUserId().equals(session.getInitiator())) {
+                broadcastCallOngoing(session);
+            }
+
             handler.postDelayed(this::checkCallState, 1000);
         }
     }
@@ -206,6 +220,7 @@ public class VoipCallService extends Service {
         if (wm != null && view != null) {
             wm.removeView(view);
         }
+        ChatManager.Instance().removeOnReceiveMessageListener(this);
     }
 
     private void showFloatingWindow(AVEngineKit.CallSession session) {
@@ -413,6 +428,13 @@ public class VoipCallService extends Service {
         startActivity(resumeActivityIntent);
     }
 
+    private void broadcastCallOngoing(AVEngineKit.CallSession callSession) {
+        if (Config.ENABLE_MULTI_CALL_AUTO_JOIN && !callSession.isConference() && callSession.getConversation().type == Conversation.ConversationType.Group) {
+            MultiCallOngoingMessageContent ongoingMessageContent = new MultiCallOngoingMessageContent(callSession.getCallId(), callSession.getInitiator(), callSession.isAudioOnly(), callSession.getParticipantIds());
+            ChatManager.Instance().sendMessage(callSession.getConversation(), ongoingMessageContent, null, 0, null);
+        }
+    }
+
     View.OnTouchListener onTouchListener = new View.OnTouchListener() {
         float lastX, lastY;
         int oldOffsetX, oldOffsetY;
@@ -448,4 +470,22 @@ public class VoipCallService extends Service {
             return true;
         }
     };
+
+    @Override
+    public void onReceiveMessage(List<Message> messages, boolean hasMore) {
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
+            for (int i = 0; i < messages.size(); i++) {
+                Message message = messages.get(i);
+                if (message.content instanceof JoinCallRequestMessageContent) {
+                    JoinCallRequestMessageContent request = (JoinCallRequestMessageContent) message.content;
+                    if (session.getCallId().equals(request.getCallId()) && session.getInitiator().equals(ChatManager.Instance().getUserId())) {
+                        List<String> ps = new ArrayList<>();
+                        ps.add(message.sender);
+                        session.inviteNewParticipants(ps, true);
+                    }
+                }
+            }
+        }
+    }
 }

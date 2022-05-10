@@ -97,6 +97,7 @@ import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.message.EnterChannelChatMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
+import cn.wildfirechat.message.JoinCallRequestMessageContent;
 import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
@@ -105,6 +106,7 @@ import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
+import cn.wildfirechat.message.MultiCallOngoingMessageContent;
 import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
@@ -8038,6 +8040,8 @@ public class ChatManager {
         registerMessageContent(StartSecretChatMessageContent.class);
         registerMessageContent(EnterChannelChatMessageContent.class);
         registerMessageContent(LeaveChannelChatMessageContent.class);
+        registerMessageContent(MultiCallOngoingMessageContent.class);
+        registerMessageContent(JoinCallRequestMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
