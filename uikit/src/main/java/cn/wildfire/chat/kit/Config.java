@@ -40,7 +40,7 @@ public class Config {
     public static String FILE_TRANSFER_ID = "wfc_file_transfer";
 
     // 允许主动多人音视频通话
-    public static boolean ENABLE_MULTI_CALL_AUTO_JOIN = true;
+    public static boolean ENABLE_MULTI_CALL_AUTO_JOIN = false;
 
     /**
      * 允许撤回多长时间内的消息，不能长于服务端相关配置，单位是秒
