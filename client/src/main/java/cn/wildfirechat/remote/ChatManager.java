@@ -61,6 +61,7 @@ import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
@@ -1418,6 +1419,35 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * 获取我收听的频道id列表
+     *
+     * @return
+     */
+    public void getRemoteListenedChannels(GeneralCallback3 callback3) {
+        if (!checkRemoteService()) {
+            callback3.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getRemoteListenedChannels(new cn.wildfirechat.client.IGeneralCallback3.Stub() {
+                @Override
+                public void onSuccess(List<String> results) throws RemoteException {
+                    mainHandler.post(()->callback3.onSuccess(results));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(()->callback3.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            callback3.onFail(ErrorCode.SERVICE_DIED);
         }
     }
 

@@ -2531,6 +2531,29 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void getRemoteListenedChannels(IGeneralCallback3 callback) throws RemoteException {
+            ProtoLogic.getRemoteListenedChannels(new ProtoLogic.IGeneralCallback3() {
+                @Override
+                public void onSuccess(String[] strings) {
+                    try {
+                        callback.onSuccess(Arrays.asList(strings));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public void requireLock(String lockId, long duration, IGeneralCallback callback) throws RemoteException {
             ProtoLogic.requireLock(lockId, duration, new ProtoLogic.IGeneralCallback() {
                 @Override
