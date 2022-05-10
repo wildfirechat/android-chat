@@ -205,9 +205,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void onReceiveCall(AVEngineKit.CallSession session) {
         ChatManager.Instance().getMainHandler().postDelayed(() -> {
             AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
-            if (callSession == null || callSession.getState() != AVEngineKit.CallState.Incoming) {
-                return;
-            }
 
             List<String> participants = session.getParticipantIds();
             if (participants == null || participants.isEmpty()) {
