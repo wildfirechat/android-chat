@@ -2704,12 +2704,35 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getApplicationId(String applicationId, IGeneralCallback2 callback) throws RemoteException {
-            ProtoLogic.getApplicationToken(applicationId, new ProtoLogic.IGeneralCallback2() {
+        public void getAuthCode(String appId, int appType, String host, IGeneralCallback2 callback) throws RemoteException {
+            ProtoLogic.getAuthCode(appId, appType, host, new ProtoLogic.IGeneralCallback2() {
                 @Override
                 public void onSuccess(String s) {
                     try {
                         callback.onSuccess(s);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void configApplication(String appId, int appType, long timestamp, String nonceStr, String signature, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.applicationConfig(appId, appType, timestamp, nonceStr, signature, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }

@@ -259,7 +259,10 @@ interface IRemoteClient {
     String getImageThumbPara();
 
     void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
-    void getApplicationId(in String applicationId, in IGeneralCallback2 callback);
+
+    oneway void getAuthCode(in String appId, in int appType, in String host, in IGeneralCallback2 callback);
+    oneway void configApplication(in String appId, in int appType, in long timestamp, in String nonceStr, in String signature, in IGeneralCallback callback);
+
     oneway void getAuthorizedMediaUrl(in long messageUid, in int mediaType, in String mediaPath, in IGetAuthorizedMediaUrlCallback callback);
     oneway void getUploadUrl(in String fileName, in int mediaType, in String contentType, in IGetUploadUrlCallback callback);
 
