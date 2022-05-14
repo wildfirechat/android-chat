@@ -61,6 +61,7 @@ import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGeneralCallback2;
 import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
@@ -6572,6 +6573,53 @@ public class ChatManager {
         }
     }
 
+    public void getAuthCode(String appId, int appType, String host, GeneralCallback2 callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getAuthCode(appId, appType, host, new IGeneralCallback2.Stub() {
+                @Override
+                public void onSuccess(String success) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(success));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void configApplication(String appId, int appType, long timestamp, String nonceStr, String signature, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        try {
+            mClient.configApplication(appId, appType, timestamp, nonceStr, signature, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess());
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @return 服务器时间 - 本地时间
      */
@@ -7494,29 +7542,6 @@ public class ChatManager {
             isMute = !isMute;
         }
         setUserSetting(UserSettingScope.MuteWhenPcOnline, "", isMute ? "0" : "1", callback);
-    }
-
-    public void getApplicationId(String applicationId, final GeneralCallback2 callback) {
-        if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
-            return;
-        }
-
-        try {
-            mClient.getApplicationId(applicationId, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
-                @Override
-                public void onSuccess(String s) throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess(s));
-                }
-
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> callback.onFail(errorCode));
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     public void createSecretChat(String userId, final CreateSecretChatCallback callback) {
