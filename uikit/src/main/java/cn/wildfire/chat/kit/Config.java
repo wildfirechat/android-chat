@@ -52,6 +52,8 @@ public class Config {
      */
     public static int RECALL_REEDIT_TIME_LIMIT = 60;
 
+    public static String WORKSPACE_URL = "https://docs.wildfirechat.cn";
+
     /**
      * 语音消息最长时长，单位是秒
      */
