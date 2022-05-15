@@ -87,6 +87,7 @@ dependencies {
 
     api 'com.king.zxing:zxing-lite:1.1.1'
     api 'com.blankj:utilcodex:1.30.5'
+    api 'com.github.wendux:DSBridge-Android:3.0-SNAPSHOT'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'com.google.android:flexbox:2.0.1'

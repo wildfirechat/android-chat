@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) 2022 WildFireChat. All rights reserved.
+ */
+
+package cn.wildfire.chat.kit.workspace;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
+import wendu.dsbridge.DWebView;
+
+public class WebViewFragment extends Fragment {
+    private String url;
+    private String htmlContent;
+
+    @BindView(R2.id.webview)
+    DWebView webView;
+
+    public static WebViewFragment loadUrl(String url) {
+        WebViewFragment fragment = new WebViewFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_webview, container, false);
+        ButterKnife.bind(this, view);
+        init();
+        return view;
+    }
+
+    private void init() {
+        Bundle bundle = getArguments();
+        url = bundle.getString("url");
+        htmlContent = bundle.getString("htmlContent");
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
+        });
+
+        webView.addJavascriptObject(new JsApi(getActivity(), webView, url), null);
+        if (!TextUtils.isEmpty(htmlContent)) {
+            webView.loadDataWithBaseURL("", htmlContent, "text/html", "UTF-8", "");
+        } else {
+            webView.loadUrl(url);
+        }
+    }
+}

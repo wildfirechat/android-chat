@@ -52,6 +52,8 @@ public class Config {
      */
     public static int RECALL_REEDIT_TIME_LIMIT = 60;
 
+    public static String WORKSPACE_URL = "http://192.168.2.121:8080/";
+
     /**
      * 语音消息最长时长，单位是秒
      */
