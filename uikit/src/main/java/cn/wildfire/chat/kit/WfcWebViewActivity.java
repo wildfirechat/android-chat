@@ -12,12 +12,14 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import butterknife.BindView;
+import cn.wildfire.chat.kit.workspace.JsApi;
+import wendu.dsbridge.DWebView;
 
 public class WfcWebViewActivity extends WfcBaseActivity {
     private String url;
 
     @BindView(R2.id.webview)
-    WebView webView;
+    DWebView webView;
 
     public static void loadUrl(Context context, String title, String url) {
         Intent intent = new Intent(context, WfcWebViewActivity.class);
@@ -50,6 +52,8 @@ public class WfcWebViewActivity extends WfcBaseActivity {
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+        JsApi jsApi = new JsApi(this, webView, url);
+        webView.addJavascriptObject(jsApi, null);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
