@@ -41,6 +41,14 @@ public class WfcWebViewActivity extends WfcBaseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (webView != null){
+            webView.destroy();
+        }
+    }
+
+    @Override
     protected void afterViews() {
         url = getIntent().getStringExtra("url");
         String htmlContent = getIntent().getStringExtra("content");
