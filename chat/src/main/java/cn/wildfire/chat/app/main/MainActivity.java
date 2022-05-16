@@ -306,7 +306,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         contentLinearLayout.setVisibility(View.VISIBLE);
 
         //设置ViewPager的最大缓存页面
-        contentViewPager.setOffscreenPageLimit(3);
+        contentViewPager.setOffscreenPageLimit(4);
 
         ConversationListFragment conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();
@@ -449,9 +449,12 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 bottomNavigationView.setSelectedItemId(R.id.contact);
                 break;
             case 2:
-                bottomNavigationView.setSelectedItemId(R.id.discovery);
+                bottomNavigationView.setSelectedItemId(R.id.workspace);
                 break;
             case 3:
+                bottomNavigationView.setSelectedItemId(R.id.discovery);
+                break;
+            case 4:
                 bottomNavigationView.setSelectedItemId(R.id.me);
                 break;
             default:

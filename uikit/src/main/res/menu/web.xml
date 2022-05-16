@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/close"
+        android:icon="@mipmap/ic_delete_l"
+        android:title="关闭"
+        app:showAsAction="always" />
+
+</menu>

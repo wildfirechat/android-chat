@@ -7,6 +7,8 @@ package cn.wildfire.chat.kit;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.view.MenuItem;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -41,9 +43,33 @@ public class WfcWebViewActivity extends WfcBaseActivity {
     }
 
     @Override
+    protected int menu() {
+        return R.menu.web;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.close) {
+            finish();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (webView != null){
+        if (webView != null) {
             webView.destroy();
         }
     }
@@ -72,6 +98,11 @@ public class WfcWebViewActivity extends WfcBaseActivity {
                         setTitle(webTitle);
                     }
                 }
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return super.shouldOverrideUrlLoading(view, request);
             }
         });
         if (!TextUtils.isEmpty(htmlContent)) {
