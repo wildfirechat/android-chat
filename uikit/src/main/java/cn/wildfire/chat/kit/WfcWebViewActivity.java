@@ -13,6 +13,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.Nullable;
+
 import butterknife.BindView;
 import cn.wildfire.chat.kit.workspace.JsApi;
 import wendu.dsbridge.DWebView;
@@ -22,6 +24,7 @@ public class WfcWebViewActivity extends WfcBaseActivity {
 
     @BindView(R2.id.webview)
     DWebView webView;
+    private JsApi jsApi;
 
     public static void loadUrl(Context context, String title, String url) {
         Intent intent = new Intent(context, WfcWebViewActivity.class);
@@ -86,7 +89,7 @@ public class WfcWebViewActivity extends WfcBaseActivity {
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
-        JsApi jsApi = new JsApi(this, webView, url);
+        jsApi = new JsApi(this, webView, url);
         webView.addJavascriptObject(jsApi, null);
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -109,6 +112,13 @@ public class WfcWebViewActivity extends WfcBaseActivity {
             webView.loadDataWithBaseURL("", htmlContent, "text/html", "UTF-8", "");
         } else {
             webView.loadUrl(url);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (!jsApi.onActivityResult(requestCode, resultCode, data)){
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 }

@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.app.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,11 +20,13 @@ import androidx.fragment.app.Fragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.wildfire.chat.kit.workspace.JsApi;
 import cn.wildfirechat.chat.R;
 
 public class WorkspaceFragment extends Fragment {
     private String url;
     private String htmlContent;
+    private JsApi jsApi;
 
     @BindView(R.id.webview)
     WebView webView;
@@ -71,5 +74,10 @@ public class WorkspaceFragment extends Fragment {
         } else {
             webView.loadUrl(url);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

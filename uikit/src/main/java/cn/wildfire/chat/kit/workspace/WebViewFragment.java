@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.workspace;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import wendu.dsbridge.DWebView;
 public class WebViewFragment extends Fragment {
     private String url;
     private String htmlContent;
+    private JsApi jsApi;
 
     @BindView(R2.id.webview)
     DWebView webView;
@@ -60,11 +62,19 @@ public class WebViewFragment extends Fragment {
             }
         });
 
-        webView.addJavascriptObject(new JsApi(getActivity(), webView, url), null);
+        this.jsApi = new JsApi(this, webView, url);
+        webView.addJavascriptObject(this.jsApi, null);
         if (!TextUtils.isEmpty(htmlContent)) {
             webView.loadDataWithBaseURL("", htmlContent, "text/html", "UTF-8", "");
         } else {
             webView.loadUrl(url);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (!jsApi.onActivityResult(requestCode, resultCode, data)){
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 }
