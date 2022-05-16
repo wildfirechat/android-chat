@@ -11,6 +11,9 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
@@ -39,15 +42,12 @@ public class JsApi {
         JSONObject jsonObject = (JSONObject) obj;
         String appId = jsonObject.optString("appId");
         int type = jsonObject.optInt("type");
-        // TODO
-//        String urlHost = null;
-//        try {
-//            urlHost = new URL(webView.getUrl()).getHost().toString();
-//            Log.d("jxxx", urlHost);
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-        String host = jsonObject.optString("host");
+        String host = null;
+        try {
+            host = new URL(url).getHost().toString();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         ChatManager.Instance().getAuthCode(appId, type, host, new GeneralCallback2() {
             @Override
             public void onSuccess(String result) {
