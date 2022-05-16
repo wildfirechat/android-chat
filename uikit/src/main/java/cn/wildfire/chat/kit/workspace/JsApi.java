@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.workspace;
 
 import android.content.Context;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
@@ -22,6 +24,7 @@ import wendu.dsbridge.CompletionHandler;
 import wendu.dsbridge.DWebView;
 
 public class JsApi {
+    private static final String TAG = "JsApi";
     private Context context;
     private DWebView webView;
     private String url;
@@ -34,6 +37,10 @@ public class JsApi {
 
     @JavascriptInterface
     public void openUrl(Object url) {
+        if (!Config.WORKSPACE_URL.equals(this.url)) {
+            Log.e(TAG, "only workspace can call openurl " + this.url);
+            return;
+        }
         WfcWebViewActivity.loadUrl(context, "", url.toString());
     }
 
@@ -99,5 +106,10 @@ public class JsApi {
     @JavascriptInterface
     public void toast(Object text) {
         Toast.makeText(context, text.toString(), Toast.LENGTH_SHORT).show();
+    }
+
+    @JavascriptInterface
+    public void chooseContact(Object obj, CompletionHandler handler) {
+
     }
 }
