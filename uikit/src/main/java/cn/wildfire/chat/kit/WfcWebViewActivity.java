@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -104,8 +103,9 @@ public class WfcWebViewActivity extends WfcBaseActivity {
             }
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return super.shouldOverrideUrlLoading(view, request);
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                jsApi.setCurrentUrl(url);
+                return super.shouldOverrideUrlLoading(view, url);
             }
         });
         if (!TextUtils.isEmpty(htmlContent)) {
@@ -117,7 +117,7 @@ public class WfcWebViewActivity extends WfcBaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (!jsApi.onActivityResult(requestCode, resultCode, data)){
+        if (!jsApi.onActivityResult(requestCode, resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
