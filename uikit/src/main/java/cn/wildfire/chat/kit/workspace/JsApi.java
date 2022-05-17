@@ -83,6 +83,7 @@ public class JsApi {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+        // 开发调试时，将 host 固定写是为开发平台上该应用的回调地址对应的 host
         ChatManager.Instance().getAuthCode(appId, type, host, new GeneralCallback2() {
             @Override
             public void onSuccess(String result) {
@@ -208,6 +209,7 @@ public class JsApi {
 
     }
 
+    // 开发调试时，可以直接返回 true
     private boolean preCheck() {
         if (!this.ready) {
             return false;
