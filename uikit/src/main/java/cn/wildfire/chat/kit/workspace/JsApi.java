@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.workspace;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.webkit.JavascriptInterface;
@@ -38,15 +39,18 @@ public class JsApi {
     private Activity activity;
     private Fragment fragment;
     private DWebView webView;
-    private String url;
+    private String appUrl;
+    private String currentUrl;
     private SparseArray<CompletionHandler> jsCallbackHandlers;
+    private boolean ready;
 
     private static final int REQUEST_CODE_PICK_CONTACT = 300;
 
     public JsApi(Activity context, DWebView webView, String url) {
         this.activity = context;
         this.webView = webView;
-        this.url = url;
+        this.appUrl = url;
+        this.currentUrl = url;
         jsCallbackHandlers = new SparseArray<>();
     }
 
@@ -55,10 +59,14 @@ public class JsApi {
         this.fragment = fragment;
     }
 
+    public void setCurrentUrl(String currentUrl) {
+        this.currentUrl = currentUrl;
+    }
+
     @JavascriptInterface
     public void openUrl(Object url) {
-        if (!Config.WORKSPACE_URL.equals(this.url)) {
-            Log.e(TAG, "only workspace can call openurl " + this.url);
+        if (!Config.WORKSPACE_URL.equals(this.appUrl)) {
+            Log.e(TAG, "only workspace can call openurl " + this.appUrl);
             return;
         }
         WfcWebViewActivity.loadUrl(activity, "", url.toString());
@@ -71,7 +79,7 @@ public class JsApi {
         int type = jsonObject.optInt("appType");
         String host = null;
         try {
-            host = new URL(url).getHost().toString();
+            host = new URL(appUrl).getHost().toString();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -112,6 +120,7 @@ public class JsApi {
         ChatManager.Instance().configApplication(appId, type, timestamp, nonce, signature, new GeneralCallback() {
             @Override
             public void onSuccess() {
+                JsApi.this.ready = true;
                 webView.callHandler("ready", (Object[]) null);
             }
 
@@ -199,10 +208,21 @@ public class JsApi {
 
     }
 
-    // 判断是否 config 成功
     private boolean preCheck() {
+        if (!this.ready) {
+            return false;
+        }
+        return TextUtils.equals(getHost(this.appUrl), getHost(this.currentUrl));
+    }
 
-        return true;
+    private String getHost(String url) {
+        try {
+            String host = new URL(url).getHost();
+            return host;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

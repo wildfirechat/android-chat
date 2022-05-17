@@ -67,6 +67,12 @@ public class WorkspaceFragment extends Fragment {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
             }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                jsApi.setCurrentUrl(url);
+                return super.shouldOverrideUrlLoading(view, url);
+            }
         });
 
         if (!TextUtils.isEmpty(htmlContent)) {
