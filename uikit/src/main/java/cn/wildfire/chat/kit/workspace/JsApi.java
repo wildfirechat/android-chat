@@ -68,7 +68,7 @@ public class JsApi {
     public void getAuthCode(Object obj, CompletionHandler handler) {
         JSONObject jsonObject = (JSONObject) obj;
         String appId = jsonObject.optString("appId");
-        int type = jsonObject.optInt("type");
+        int type = jsonObject.optInt("appType");
         String host = null;
         try {
             host = new URL(url).getHost().toString();
@@ -105,14 +105,13 @@ public class JsApi {
     public void config(Object obj) {
         JSONObject jsonObject = (JSONObject) obj;
         String appId = jsonObject.optString("appId");
-        int type = jsonObject.optInt("type");
+        int type = jsonObject.optInt("appType");
         long timestamp = jsonObject.optLong("timestamp");
-        String nonce = jsonObject.optString("nonce");
+        String nonce = jsonObject.optString("nonceStr");
         String signature = jsonObject.optString("signature");
         ChatManager.Instance().configApplication(appId, type, timestamp, nonce, signature, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                Toast.makeText(activity, obj.toString(), Toast.LENGTH_SHORT).show();
                 webView.callHandler("ready", (Object[]) null);
             }
 
