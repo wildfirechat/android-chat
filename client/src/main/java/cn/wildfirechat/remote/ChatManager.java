@@ -62,7 +62,6 @@ import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
 import cn.wildfirechat.client.IGeneralCallback2;
-import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
@@ -145,6 +144,7 @@ import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.QuitGroupVisibleNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.message.notification.RichNotificationMessageContent;
 import cn.wildfirechat.message.notification.StartSecretChatMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
@@ -1440,12 +1440,12 @@ public class ChatManager {
             mClient.getRemoteListenedChannels(new cn.wildfirechat.client.IGeneralCallback3.Stub() {
                 @Override
                 public void onSuccess(List<String> results) throws RemoteException {
-                    mainHandler.post(()->callback3.onSuccess(results));
+                    mainHandler.post(() -> callback3.onSuccess(results));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(()->callback3.onFail(errorCode));
+                    mainHandler.post(() -> callback3.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
@@ -2281,7 +2281,7 @@ public class ChatManager {
                         return;
                     }
 
-                    if (file.length() >= 100 * 1024 * 1024 &&( !isSupportBigFilesUpload() || msg.conversation.type == Conversation.ConversationType.SecretChat)) {
+                    if (file.length() >= 100 * 1024 * 1024 && (!isSupportBigFilesUpload() || msg.conversation.type == Conversation.ConversationType.SecretChat)) {
                         if (callback != null) {
                             callback.onFail(ErrorCode.FILE_TOO_LARGE);
                         }
@@ -8067,6 +8067,7 @@ public class ChatManager {
         registerMessageContent(LeaveChannelChatMessageContent.class);
         registerMessageContent(MultiCallOngoingMessageContent.class);
         registerMessageContent(JoinCallRequestMessageContent.class);
+        registerMessageContent(RichNotificationMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
