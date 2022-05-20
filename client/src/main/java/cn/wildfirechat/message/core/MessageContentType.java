@@ -24,6 +24,7 @@ public interface MessageContentType {
     int ContentType_P_Text = 9;
     int ContentType_Card = 10;
     int ContentType_Composite_Message = 11;
+    int ContentType_Rich_Notification = 12;
 
     // 21, 23，24内部使用
     int ContentType_Dumy1 = 21;

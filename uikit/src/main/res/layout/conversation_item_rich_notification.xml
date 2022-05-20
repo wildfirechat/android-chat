@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/richNotificationContentItemView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="50dp"
+    android:layout_marginRight="50dp"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:paddingTop="5dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="5dp">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        tools:text='产品审核通知' />
+
+    <TextView
+        android:id="@+id/descTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        tools:text="您好，您的SSL证书已审核通过，并成功办理，请关注" />
+
+    <LinearLayout
+        android:id="@+id/dataContainerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+
+        <ImageView
+            android:id="@+id/exPortraitImageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/logo" />
+
+        <TextView
+            android:id="@+id/exNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lines="1"
+            android:textSize="12sp"
+            tools:text="证书小助手" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_right_arrow" />
+
+    </LinearLayout>
+
+</LinearLayout>
