@@ -7,20 +7,11 @@
         android:title="更多"
         app:showAsAction="always">
         <menu>
-            <item xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/create"
-                android:icon="@mipmap/ic_add"
-                android:orderInCategory="100"
-                android:title="创建"
-                app:iconTint="@color/colorPrimary"
-                app:showAsAction="always" />
-
-
             <item
                 android:id="@+id/subscribe"
                 android:icon="@mipmap/ic_subscribe_chanel"
                 android:orderInCategory="101"
-                android:title="收听"
+                android:title="订阅频道"
                 app:iconTint="@color/colorPrimary" />
         </menu>
     </item>
