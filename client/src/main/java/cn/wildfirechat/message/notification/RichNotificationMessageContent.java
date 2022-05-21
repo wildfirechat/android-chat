@@ -6,7 +6,6 @@ package cn.wildfirechat.message.notification;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +51,6 @@ public class RichNotificationMessageContent extends NotificationMessageContent{
             jObj.put("exUrl", this.exUrl);
             jObj.put("appId", this.appId);
             jObj.put("datas", this.datas);
-            Log.d("Rn", jObj.toString());
             payload.binaryContent = jObj.toString().getBytes();
         } catch (JSONException e) {
             e.printStackTrace();
