@@ -19,13 +19,9 @@ import cn.wildfire.chat.kit.channel.viewholder.ChannelViewHolder;
 import cn.wildfirechat.model.ChannelInfo;
 
 public class ChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<ChannelInfo> createdChannels;
     private List<ChannelInfo> followedChannels;
     private OnChannelClickListener onChannelClickListener;
 
-    public void setCreatedChannels(List<ChannelInfo> createdChannels) {
-        this.createdChannels = createdChannels;
-    }
 
     public void setFollowedChannels(List<ChannelInfo> followedChannels) {
         this.followedChannels = followedChannels;
@@ -48,15 +44,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (onChannelClickListener != null) {
 
                     int position = holder.getAdapterPosition();
-                    if (createdChannels == null || createdChannels.isEmpty()) {
-                        onChannelClickListener.onChannelClick(followedChannels.get(position - 2));
-                    } else {
-                        if (position > createdChannels.size()) {
-                            onChannelClickListener.onChannelClick(followedChannels.get(position - 2 - createdChannels.size()));
-                        } else {
-                            onChannelClickListener.onChannelClick(createdChannels.get(position - 1));
-                        }
-                    }
+                    onChannelClickListener.onChannelClick(followedChannels.get(position - 1));
                 }
             });
             return holder;
@@ -67,49 +55,25 @@ public class ChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder.getItemViewType() == R.layout.channel_item_category) {
             if (position == 0) {
-                ((CategoryViewHolder) holder).bind("我创建的频道");
-            } else {
                 ((CategoryViewHolder) holder).bind("我订阅的频道");
             }
         } else {
-            if (createdChannels == null || createdChannels.isEmpty()) {
-                ((ChannelViewHolder) holder).bind(followedChannels.get(position - 2));
-            } else {
-                if (position > createdChannels.size()) {
-                    ((ChannelViewHolder) holder).bind(followedChannels.get(position - 2 - createdChannels.size()));
-                } else {
-                    ((ChannelViewHolder) holder).bind(createdChannels.get(position - 1));
-                }
-            }
+            ((ChannelViewHolder) holder).bind(followedChannels.get(position - 1));
         }
     }
 
 
     @Override
     public int getItemCount() {
-        return 2 + (createdChannels == null ? 0 : createdChannels.size()) + (followedChannels == null ? 0 : followedChannels.size());
+        return 1 + (followedChannels == null ? 0 : followedChannels.size());
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (createdChannels == null || createdChannels.isEmpty()) {
-            int type;
-            switch (position) {
-                case 0:
-                case 1:
-                    type = R.layout.channel_item_category;
-                    break;
-                default:
-                    type = R.layout.channel_item;
-                    break;
-            }
-            return type;
+        if (position == 0) {
+            return R.layout.channel_item_category;
         } else {
-            if (position == 0 || position == createdChannels.size() + 1) {
-                return R.layout.channel_item_category;
-            } else {
-                return R.layout.channel_item;
-            }
+            return R.layout.channel_item;
         }
     }
 

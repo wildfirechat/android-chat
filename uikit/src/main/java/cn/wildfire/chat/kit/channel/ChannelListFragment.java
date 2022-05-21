@@ -79,9 +79,7 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
     }
 
     private void refreshChannel() {
-        List<ChannelInfo> myChannels = channelViewModel.getMyChannels();
         List<ChannelInfo> followedChannels = channelViewModel.getListenedChannels();
-        channelListAdapter.setCreatedChannels(myChannels);
         channelListAdapter.setFollowedChannels(followedChannels);
         channelListAdapter.notifyDataSetChanged();
     }
