@@ -90,6 +90,7 @@ import cn.wildfirechat.client.IRemoteClient;
 import cn.wildfirechat.client.IUploadMediaCallback;
 import cn.wildfirechat.client.IWatchUserOnlineStateCallback;
 import cn.wildfirechat.client.NotInitializedExecption;
+import cn.wildfirechat.message.ArticlesMessageContent;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CardMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
@@ -8068,6 +8069,7 @@ public class ChatManager {
         registerMessageContent(MultiCallOngoingMessageContent.class);
         registerMessageContent(JoinCallRequestMessageContent.class);
         registerMessageContent(RichNotificationMessageContent.class);
+        registerMessageContent(ArticlesMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
