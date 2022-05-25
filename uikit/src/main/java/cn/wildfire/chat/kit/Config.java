@@ -52,6 +52,11 @@ public class Config {
      */
     public static int RECALL_REEDIT_TIME_LIMIT = 60;
 
+    /**
+     * 工作台页面地址
+     *
+     * 如果不想显示工作台，置为 null 即可
+     */
     public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
 
     /**
