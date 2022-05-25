@@ -7,7 +7,6 @@ package cn.wildfire.chat.kit.workspace;
 import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
@@ -24,7 +23,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.contact.pick.PickContactActivity;
 import cn.wildfirechat.model.UserInfo;
@@ -65,11 +63,23 @@ public class JsApi {
 
     @JavascriptInterface
     public void openUrl(Object url) {
-        if (!Config.WORKSPACE_URL.equals(this.appUrl)) {
-            Log.e(TAG, "only workspace can call openurl " + this.appUrl);
-            return;
-        }
+//        if (!Config.WORKSPACE_URL.equals(this.appUrl)) {
+//            Log.e(TAG, "only workspace can call openurl " + this.appUrl);
+//            return;
+//        }
         WfcWebViewActivity.loadUrl(activity, "", url.toString());
+    }
+
+    @JavascriptInterface
+    public void close(Object obj, CompletionHandler handler) {
+        activity.finish();
+        JSONObject resultObj = new JSONObject();
+        try {
+            resultObj.put("code", 0);
+            handler.complete(resultObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @JavascriptInterface
