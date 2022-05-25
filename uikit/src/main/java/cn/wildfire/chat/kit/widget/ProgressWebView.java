@@ -11,9 +11,10 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import cn.wildfire.chat.kit.R;
+import wendu.dsbridge.DWebView;
 
 
-public class ProgressWebView extends WebView {
+public class ProgressWebView extends DWebView{
 
     private ProgressBar mProgressBar;
 

@@ -30,7 +30,9 @@
     <ViewStub
         android:id="@+id/contentViewStub"
         android:layout_gravity="center"
-        android:layout_width="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
 </cn.wildfire.chat.kit.conversation.message.MessageItemView>

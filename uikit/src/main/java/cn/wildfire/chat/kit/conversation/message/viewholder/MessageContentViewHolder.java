@@ -45,6 +45,8 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onBind(UiMessage message, int position) {
+        this.message = message;
+        this.position = position;
         setMessageTime(message.message, position);
     }
 
