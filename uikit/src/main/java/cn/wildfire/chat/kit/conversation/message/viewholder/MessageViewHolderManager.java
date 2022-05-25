@@ -33,6 +33,7 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(VideoMessageContentViewHolder.class, R.layout.conversation_item_video_send, R.layout.conversation_item_video_send);
         registerMessageViewHolder(VoipMessageViewHolder.class, R.layout.conversation_item_voip_send, R.layout.conversation_item_voip_receive);
         registerMessageViewHolder(SimpleNotificationMessageContentViewHolder.class, R.layout.conversation_item_notification, R.layout.conversation_item_notification);
+        registerMessageViewHolder(RichNotificationMessageContentViewHolder.class, R.layout.conversation_item_rich_notification, R.layout.conversation_item_rich_notification);
         registerMessageViewHolder(RecallMessageContentViewHolder.class, R.layout.conversation_item_recall_notification, R.layout.conversation_item_recall_notification);
         registerMessageViewHolder(UserCardMessageContentViewHolder.class, R.layout.conversation_item_user_card_send, R.layout.conversation_item_user_card_receive);
         registerMessageViewHolder(ConferenceInviteMessageContentViewHolder.class, R.layout.conversation_item_conference_invite_send, R.layout.conversation_item_conference_invite_receive);

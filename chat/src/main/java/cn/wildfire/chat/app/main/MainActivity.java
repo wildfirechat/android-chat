@@ -66,6 +66,7 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
+import cn.wildfire.chat.kit.workspace.WebViewFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.message.LinkMessageContent;
@@ -305,7 +306,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         contentLinearLayout.setVisibility(View.VISIBLE);
 
         //设置ViewPager的最大缓存页面
-        contentViewPager.setOffscreenPageLimit(3);
+        contentViewPager.setOffscreenPageLimit(4);
 
         ConversationListFragment conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();
@@ -313,6 +314,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         MeFragment meFragment = new MeFragment();
         mFragmentList.add(conversationListFragment);
         mFragmentList.add(contactListFragment);
+        mFragmentList.add(WebViewFragment.loadUrl(Config.WORKSPACE_URL));
         mFragmentList.add(discoveryFragment);
         mFragmentList.add(meFragment);
         contentViewPager.setAdapter(new HomeFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
@@ -334,15 +336,22 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
-                case R.id.discovery:
+                case R.id.workspace:
                     contentViewPager.setCurrentItem(2, false);
+                    setTitle("工作台");
+                    if (!isDarkTheme()) {
+                        setTitleBackgroundResource(R.color.gray5, false);
+                    }
+                    break;
+                case R.id.discovery:
+                    contentViewPager.setCurrentItem(3, false);
                     setTitle("发现");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.me:
-                    contentViewPager.setCurrentItem(3, false);
+                    contentViewPager.setCurrentItem(4, false);
                     setTitle("我的");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.white, false);
@@ -440,9 +449,12 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 bottomNavigationView.setSelectedItemId(R.id.contact);
                 break;
             case 2:
-                bottomNavigationView.setSelectedItemId(R.id.discovery);
+                bottomNavigationView.setSelectedItemId(R.id.workspace);
                 break;
             case 3:
+                bottomNavigationView.setSelectedItemId(R.id.discovery);
+                break;
+            case 4:
                 bottomNavigationView.setSelectedItemId(R.id.me);
                 break;
             default:

@@ -61,7 +61,7 @@ import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
-import cn.wildfirechat.client.IGeneralCallback3;
+import cn.wildfirechat.client.IGeneralCallback2;
 import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
@@ -90,6 +90,7 @@ import cn.wildfirechat.client.IRemoteClient;
 import cn.wildfirechat.client.IUploadMediaCallback;
 import cn.wildfirechat.client.IWatchUserOnlineStateCallback;
 import cn.wildfirechat.client.NotInitializedExecption;
+import cn.wildfirechat.message.ArticlesMessageContent;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CardMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
@@ -144,6 +145,7 @@ import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.QuitGroupVisibleNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.message.notification.RichNotificationMessageContent;
 import cn.wildfirechat.message.notification.StartSecretChatMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
@@ -1439,12 +1441,12 @@ public class ChatManager {
             mClient.getRemoteListenedChannels(new cn.wildfirechat.client.IGeneralCallback3.Stub() {
                 @Override
                 public void onSuccess(List<String> results) throws RemoteException {
-                    mainHandler.post(()->callback3.onSuccess(results));
+                    mainHandler.post(() -> callback3.onSuccess(results));
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(()->callback3.onFail(errorCode));
+                    mainHandler.post(() -> callback3.onFail(errorCode));
                 }
             });
         } catch (RemoteException e) {
@@ -2280,7 +2282,7 @@ public class ChatManager {
                         return;
                     }
 
-                    if (file.length() >= 100 * 1024 * 1024 &&( !isSupportBigFilesUpload() || msg.conversation.type == Conversation.ConversationType.SecretChat)) {
+                    if (file.length() >= 100 * 1024 * 1024 && (!isSupportBigFilesUpload() || msg.conversation.type == Conversation.ConversationType.SecretChat)) {
                         if (callback != null) {
                             callback.onFail(ErrorCode.FILE_TOO_LARGE);
                         }
@@ -6572,6 +6574,53 @@ public class ChatManager {
         }
     }
 
+    public void getAuthCode(String appId, int appType, String host, GeneralCallback2 callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getAuthCode(appId, appType, host, new IGeneralCallback2.Stub() {
+                @Override
+                public void onSuccess(String success) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(success));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void configApplication(String appId, int appType, long timestamp, String nonceStr, String signature, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        try {
+            mClient.configApplication(appId, appType, timestamp, nonceStr, signature, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess());
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @return 服务器时间 - 本地时间
      */
@@ -7496,29 +7545,6 @@ public class ChatManager {
         setUserSetting(UserSettingScope.MuteWhenPcOnline, "", isMute ? "0" : "1", callback);
     }
 
-    public void getApplicationId(String applicationId, final GeneralCallback2 callback) {
-        if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
-            return;
-        }
-
-        try {
-            mClient.getApplicationId(applicationId, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
-                @Override
-                public void onSuccess(String s) throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess(s));
-                }
-
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> callback.onFail(errorCode));
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void createSecretChat(String userId, final CreateSecretChatCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
@@ -8042,6 +8068,8 @@ public class ChatManager {
         registerMessageContent(LeaveChannelChatMessageContent.class);
         registerMessageContent(MultiCallOngoingMessageContent.class);
         registerMessageContent(JoinCallRequestMessageContent.class);
+        registerMessageContent(RichNotificationMessageContent.class);
+        registerMessageContent(ArticlesMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
