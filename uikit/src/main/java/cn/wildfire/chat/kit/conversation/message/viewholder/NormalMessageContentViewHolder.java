@@ -111,8 +111,6 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @Override
     public void onBind(UiMessage message, int position) {
         super.onBind(message, position);
-        this.message = message;
-        this.position = position;
 
         setSenderAvatar(message.message);
         setSenderName(message.message);

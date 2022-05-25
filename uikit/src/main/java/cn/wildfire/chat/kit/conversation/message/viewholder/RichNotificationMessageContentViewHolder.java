@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
@@ -18,6 +17,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -86,7 +86,8 @@ public class RichNotificationMessageContentViewHolder extends NotificationMessag
 
     @OnClick(R2.id.richNotificationContentItemView)
     public void onClick(View view) {
-        Toast.makeText(fragment.getContext(), "TODO", Toast.LENGTH_SHORT).show();
+        RichNotificationMessageContent rich = (RichNotificationMessageContent) message.message.content;
+        WfcWebViewActivity.loadUrl(fragment.getContext(), "", rich.exUrl);
     }
 
     @Override
