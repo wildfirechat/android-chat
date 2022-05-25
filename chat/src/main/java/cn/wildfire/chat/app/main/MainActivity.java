@@ -132,6 +132,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     @Override
     protected void afterViews() {
         bottomNavigationView.setItemIconTintList(null);
+        if (TextUtils.isEmpty(Config.WORKSPACE_URL)){
+            bottomNavigationView.getMenu().removeItem(R.id.workspace);
+        }
         IMServiceStatusViewModel imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
         imServiceStatusViewModel.imServiceStatusLiveData().observe(this, imStatusLiveDataObserver);
         IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
@@ -314,7 +317,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         MeFragment meFragment = new MeFragment();
         mFragmentList.add(conversationListFragment);
         mFragmentList.add(contactListFragment);
-        mFragmentList.add(WebViewFragment.loadUrl(Config.WORKSPACE_URL));
+        boolean showWorkSpace = !TextUtils.isEmpty(Config.WORKSPACE_URL);
+        if (showWorkSpace) {
+            mFragmentList.add(WebViewFragment.loadUrl(Config.WORKSPACE_URL));
+        }
         mFragmentList.add(discoveryFragment);
         mFragmentList.add(meFragment);
         contentViewPager.setAdapter(new HomeFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
@@ -344,14 +350,14 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                     }
                     break;
                 case R.id.discovery:
-                    contentViewPager.setCurrentItem(3, false);
+                    contentViewPager.setCurrentItem(showWorkSpace ? 3 : 2, false);
                     setTitle("发现");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.me:
-                    contentViewPager.setCurrentItem(4, false);
+                    contentViewPager.setCurrentItem(showWorkSpace ? 4 : 3, false);
                     setTitle("我的");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.white, false);
@@ -441,6 +447,11 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     @Override
     public void onPageSelected(int position) {
+        if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
+            if (position > 1) {
+                position++;
+            }
+        }
         switch (position) {
             case 0:
                 bottomNavigationView.setSelectedItemId(R.id.conversation_list);
