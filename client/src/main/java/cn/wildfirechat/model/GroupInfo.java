@@ -47,6 +47,7 @@ public class GroupInfo implements Parcelable {
     public GroupType type;
     public int memberCount;
     public String extra;
+    public String remark;
     public long updateDt;
 
 
@@ -86,6 +87,7 @@ public class GroupInfo implements Parcelable {
         dest.writeInt(this.type == null ? -1 : this.type.ordinal());
         dest.writeInt(this.memberCount);
         dest.writeString(this.extra);
+        dest.writeString(this.remark);
         dest.writeLong(this.updateDt);
         dest.writeInt(this.mute);
         dest.writeInt(this.joinType);
@@ -104,6 +106,7 @@ public class GroupInfo implements Parcelable {
         this.type = tmpType == -1 ? null : GroupType.values()[tmpType];
         this.memberCount = in.readInt();
         this.extra = in.readString();
+        this.remark = in.readString();
         this.updateDt = in.readLong();
         this.mute = in.readInt();
         this.joinType = in.readInt();

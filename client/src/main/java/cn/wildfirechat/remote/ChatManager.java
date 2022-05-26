@@ -6226,6 +6226,50 @@ public class ChatManager {
         }
     }
 
+    public String getGroupRemark(String groupId) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getGroupRemark(groupId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setGroupRemark(String groupId, String remark, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.setGroupRemark(groupId, remark, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess());
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
+        }
+    }
+
     public byte[] encodeData(byte[] data) {
         if (!checkRemoteService()) {
             return null;
