@@ -2288,6 +2288,34 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public String getGroupRemark(String groupId) throws RemoteException {
+            return ProtoLogic.getGroupRemark(groupId);
+        }
+
+        @Override
+        public void setGroupRemark(String groupId, String remark, IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.setGroupRemark(groupId, remark, new ProtoLogic.IGeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    try {
+                        callback.onSuccess();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public byte[] encodeData(byte[] data) throws RemoteException {
             return StnLogic.encodeData(data);
         }
@@ -3045,6 +3073,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         groupInfo.type = GroupInfo.GroupType.type(protoGroupInfo.getType());
         groupInfo.memberCount = protoGroupInfo.getMemberCount();
         groupInfo.extra = protoGroupInfo.getExtra();
+        groupInfo.remark = protoGroupInfo.getRemark();
         groupInfo.updateDt = protoGroupInfo.getUpdateDt();
         groupInfo.mute = protoGroupInfo.getMute();
         groupInfo.joinType = protoGroupInfo.getJoinType();
