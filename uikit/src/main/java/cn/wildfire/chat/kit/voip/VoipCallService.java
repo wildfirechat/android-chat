@@ -482,7 +482,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
                     if (session.getCallId().equals(request.getCallId()) && session.getInitiator().equals(ChatManager.Instance().getUserId())) {
                         List<String> ps = new ArrayList<>();
                         ps.add(message.sender);
-
+                        session.inviteNewParticipants(ps, request.getClientId(), true);
                     }
                 }
             }
