@@ -3644,6 +3644,25 @@ public class ChatManager {
         }
     }
 
+
+    /**
+     * 清除所有会话
+     *
+     * @param removeConversation 是否同时删除会话信息.
+     */
+    public void clearAllMessages(boolean removeConversation) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+
+            mClient.clearAllMessages(removeConversation);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 删除会话
      *
