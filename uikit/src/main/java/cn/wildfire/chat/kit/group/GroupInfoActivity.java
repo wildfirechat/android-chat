@@ -126,7 +126,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
             .load(groupInfo.portrait)
             .placeholder(R.mipmap.ic_group_cheat)
             .into(groupPortraitImageView);
-        groupNameTextView.setText(groupInfo.name);
+        groupNameTextView.setText(groupInfo.remark != null ? groupInfo.remark : groupInfo.name);
     }
 
     @Override

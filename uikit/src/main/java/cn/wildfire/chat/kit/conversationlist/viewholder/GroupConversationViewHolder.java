@@ -38,7 +38,7 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
         String name;
         String portrait;
         if (groupInfo != null) {
-            name = groupInfo.name;
+            name = groupInfo.remark != null ? groupInfo.remark : groupInfo.name;
             portrait = groupInfo.portrait;
         } else {
             name = "群聊";
@@ -50,11 +50,11 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
         }
 
         GlideApp
-                .with(fragment)
-                .load(portrait)
-                .placeholder(R.mipmap.ic_group_cheat)
-                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
-                .into(portraitImageView);
+            .with(fragment)
+            .load(portrait)
+            .placeholder(R.mipmap.ic_group_cheat)
+            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
+            .into(portraitImageView);
         nameTextView.setText(name);
     }
 

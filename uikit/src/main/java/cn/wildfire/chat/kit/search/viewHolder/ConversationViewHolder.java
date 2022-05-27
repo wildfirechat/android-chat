@@ -57,7 +57,7 @@ public class ConversationViewHolder extends ResultItemViewHolder<ConversationSea
             GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
             if (groupInfo != null) {
                 Glide.with(fragment).load(groupInfo.portrait).apply(new RequestOptions().placeholder(R.mipmap.ic_group_cheat).centerCrop()).into(portraitImageView);
-                nameTextView.setText(groupInfo.name);
+                nameTextView.setText(groupInfo.remark != null ? groupInfo.remark : groupInfo.name);
             }
         }
 
