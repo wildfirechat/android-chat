@@ -1076,6 +1076,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void clearAllMessages(boolean removeConversation) throws RemoteException {
+            ProtoLogic.clearAllMessages(removeConversation);
+        }
+
+        @Override
         public void setMediaMessagePlayed(long messageId) {
             try {
                 Message message = getMessage(messageId);
