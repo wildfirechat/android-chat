@@ -77,6 +77,10 @@
             android:label="修改群名称"
             android:screenOrientation="portrait" />
         <activity
+            android:name="cn.wildfire.chat.kit.group.SetGroupRemarkActivity"
+            android:label="修改群备注"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".group.SetGroupAnnouncementActivity"
             android:label="修改群公告"
             android:screenOrientation="portrait" />
@@ -243,6 +247,8 @@
             </intent-filter>
         </activity>
         <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />
+        <!--moment end-->
+
         <activity android:name=".group.manage.MuteGroupMemberActivity" />
         <activity
             android:name=".contact.ContactListActivity"
@@ -260,7 +266,6 @@
             android:name=".favorite.FavoriteListActivity"
             android:label="收藏" />
         <activity android:name=".voip.conference.ConferenceParticipantListActivity" />
-        <!--moment end-->
 
         <provider
             android:name="androidx.core.content.FileProvider"
