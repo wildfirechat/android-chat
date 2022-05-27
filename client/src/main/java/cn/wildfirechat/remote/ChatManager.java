@@ -6269,6 +6269,8 @@ public class ChatManager {
             mClient.setGroupRemark(groupId, remark, new IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
+                    GroupInfo groupInfo = mClient.getGroupInfo(groupId, false);
+                    onGroupInfoUpdated(Collections.singletonList(groupInfo));
                     if (callback != null) {
                         mainHandler.post(() -> callback.onSuccess());
                     }

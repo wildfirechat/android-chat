@@ -52,6 +52,7 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.RemoveGroupMemberActivity;
 import cn.wildfire.chat.kit.group.SetGroupAnnouncementActivity;
 import cn.wildfire.chat.kit.group.SetGroupNameActivity;
+import cn.wildfire.chat.kit.group.SetGroupRemarkActivity;
 import cn.wildfire.chat.kit.group.manage.GroupManageActivity;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
@@ -79,6 +80,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     LinearLayout groupLinearLayout_0;
     @BindView(R2.id.groupNameOptionItemView)
     OptionItemView groupNameOptionItemView;
+    @BindView(R2.id.groupRemarkOptionItemView)
+    OptionItemView groupRemarkOptionItemView;
     @BindView(R2.id.groupQRCodeOptionItemView)
     OptionItemView groupQRCodeOptionItemView;
     @BindView(R2.id.groupNoticeLinearLayout)
@@ -219,7 +222,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         groupViewModel.groupInfoUpdateLiveData().observe(this, groupInfos -> {
             for (GroupInfo groupInfo : groupInfos) {
                 if (groupInfo.target.equals(this.groupInfo.target)) {
+                    this.groupInfo = groupInfo;
                     groupNameOptionItemView.setDesc(groupInfo.name);
+                    groupRemarkOptionItemView.setDesc(groupInfo.remark);
                     loadAndShowGroupMembers(false);
                     break;
                 }
@@ -273,6 +278,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
         myGroupNickNameOptionItemView.setDesc(groupMember.alias);
         groupNameOptionItemView.setDesc(groupInfo.name);
+        groupRemarkOptionItemView.setDesc(groupInfo.remark);
 
         stickTopSwitchButton.setChecked(conversationInfo.isTop);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
@@ -342,6 +348,13 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             intent.putExtra("groupInfo", groupInfo);
             startActivity(intent);
         }
+    }
+
+    @OnClick(R2.id.groupRemarkOptionItemView)
+    void updateGroupRemark() {
+        Intent intent = new Intent(getActivity(), SetGroupRemarkActivity.class);
+        intent.putExtra("groupInfo", groupInfo);
+        startActivity(intent);
     }
 
     @OnClick(R2.id.groupNoticeLinearLayout)
