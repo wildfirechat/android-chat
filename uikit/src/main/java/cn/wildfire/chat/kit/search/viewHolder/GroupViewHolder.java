@@ -41,7 +41,7 @@ public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
     @Override
     public void onBind(String keyword, GroupSearchResult groupSearchResult) {
         GroupInfo groupInfo = groupSearchResult.groupInfo;
-        nameTextView.setText(groupInfo.remark != null ? groupInfo.remark : groupInfo.name);
+        nameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
         String portrait = groupSearchResult.groupInfo.portrait;
         if (TextUtils.isEmpty(portrait)) {
             portrait = ImageUtils.getGroupGridPortrait(fragment.getContext(), groupSearchResult.groupInfo.target, 60);
