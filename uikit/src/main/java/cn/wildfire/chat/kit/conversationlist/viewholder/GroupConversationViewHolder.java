@@ -38,7 +38,7 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
         String name;
         String portrait;
         if (groupInfo != null) {
-            name = groupInfo.remark != null ? groupInfo.remark : groupInfo.name;
+            name = !TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name;
             portrait = groupInfo.portrait;
         } else {
             name = "群聊";

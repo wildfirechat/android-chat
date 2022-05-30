@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.group;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -126,7 +127,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
             .load(groupInfo.portrait)
             .placeholder(R.mipmap.ic_group_cheat)
             .into(groupPortraitImageView);
-        groupNameTextView.setText(groupInfo.remark != null ? groupInfo.remark : groupInfo.name);
+        groupNameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
     }
 
     @Override

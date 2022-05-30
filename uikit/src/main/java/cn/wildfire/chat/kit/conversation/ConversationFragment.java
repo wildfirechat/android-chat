@@ -708,7 +708,7 @@ public class ConversationFragment extends Fragment implements
             }
         } else if (conversation.type == Conversation.ConversationType.Group) {
             if (groupInfo != null) {
-                conversationTitle = (groupInfo.remark != null ? groupInfo.remark : groupInfo.name) + "(" + groupInfo.memberCount + "人)";
+                conversationTitle = (!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name) + "(" + groupInfo.memberCount + "人)";
             }
         } else if (conversation.type == Conversation.ConversationType.Channel) {
             ChannelViewModel channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);

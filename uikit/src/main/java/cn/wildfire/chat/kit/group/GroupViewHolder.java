@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.group;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,7 +44,7 @@ public class GroupViewHolder extends RecyclerView.ViewHolder {
     public void onBind(GroupInfo groupInfo) {
         this.groupInfo = groupInfo;
         categoryTextView.setVisibility(View.GONE);
-        nameTextView.setText(groupInfo.remark != null ? groupInfo.remark : groupInfo.name);
+        nameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
         GlideApp.with(fragment).load(this.groupInfo.portrait).placeholder(R.mipmap.ic_group_cheat).into(portraitImageView);
     }
 

@@ -151,7 +151,7 @@ public class WfcNotificationManager {
                 title = TextUtils.isEmpty(name) ? "新消息" : name;
             } else if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.conversation.target, false);
-                title = groupInfo == null ? "群聊" : (groupInfo.remark != null ? groupInfo.remark : groupInfo.name);
+                title = groupInfo == null ? "群聊" : (!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
             } else {
                 title = "新消息";
             }
