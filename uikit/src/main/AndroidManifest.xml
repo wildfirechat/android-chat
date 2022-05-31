@@ -77,6 +77,10 @@
             android:label="修改群名称"
             android:screenOrientation="portrait" />
         <activity
+            android:name="cn.wildfire.chat.kit.group.SetGroupRemarkActivity"
+            android:label="修改群备注"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".group.SetGroupAnnouncementActivity"
             android:label="修改群公告"
             android:screenOrientation="portrait" />
@@ -145,7 +149,7 @@
             android:label="搜索中心" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.forward.ForwardActivity"
-            android:label="转发" />
+            android:label="选择一个聊天" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationTargetActivity"
             android:label="选择联系人" />
@@ -230,10 +234,6 @@
             android:name=".conversation.file.FileRecordListActivity"
             android:label="文件记录" />
 
-        <activity
-            android:name=".conversation.bigfile.UploadBigFileActivity"
-            android:label="大文件上传" />
-
 
         <!--moment start-->
         <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
@@ -247,6 +247,8 @@
             </intent-filter>
         </activity>
         <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />
+        <!--moment end-->
+
         <activity android:name=".group.manage.MuteGroupMemberActivity" />
         <activity
             android:name=".contact.ContactListActivity"
@@ -264,7 +266,6 @@
             android:name=".favorite.FavoriteListActivity"
             android:label="收藏" />
         <activity android:name=".voip.conference.ConferenceParticipantListActivity" />
-        <!--moment end-->
 
         <provider
             android:name="androidx.core.content.FileProvider"

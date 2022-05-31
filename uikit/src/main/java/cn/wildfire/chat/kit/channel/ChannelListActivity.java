@@ -29,10 +29,7 @@ public class ChannelListActivity extends WfcBaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.create) {
-            createChannel();
-            return true;
-        } else if (item.getItemId() == R.id.subscribe) {
+        if (item.getItemId() == R.id.subscribe) {
             subscribe();
             return true;
         }
@@ -55,11 +52,6 @@ public class ChannelListActivity extends WfcBaseActivity {
             .commit();
     }
 
-    void createChannel() {
-        Intent intent = new Intent(this, CreateChannelActivity.class);
-        startActivity(intent);
-        finish();
-    }
 
     void subscribe() {
         Intent intent = new Intent(this, SearchChannelActivity.class);

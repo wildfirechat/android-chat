@@ -73,7 +73,7 @@ public class FavoriteItem {
         switch (message.conversation.type) {
             case Group:
                 GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.conversation.target, false);
-                item.origin = groupInfo.name;
+                item.origin = !TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name;
                 break;
             case Single:
                 item.origin = ChatManager.Instance().getUserDisplayName(message.sender);

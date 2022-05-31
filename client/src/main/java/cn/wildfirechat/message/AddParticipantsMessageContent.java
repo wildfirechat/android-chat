@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_Add_Participant;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -19,8 +21,6 @@ import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.remote.ChatManager;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_Add_Participant;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -77,9 +77,14 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
     private String callId;
     private String initiator;
     private String pin;
+    // autoAnswer 为 true 时，只允许包含一个用户
     private List<String> participants;
     private List<ParticipantStatus> existParticipants;
     private boolean audioOnly;
+    // 设置为 true 时，新用户被邀请加入会议时，SDK会自动接听，然后加入通话
+    private boolean autoAnswer;
+    // 自动接听时，由那个端进行处理
+    private String clientId;
 
     public AddParticipantsMessageContent() {
     }
@@ -141,6 +146,22 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
         this.pin = pin;
     }
 
+    public boolean isAutoAnswer() {
+        return autoAnswer;
+    }
+
+    public void setAutoAnswer(boolean autoAnswer) {
+        this.autoAnswer = autoAnswer;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
@@ -170,6 +191,8 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
             }
 
             objWrite.put("existParticipants", array);
+            objWrite.put("autoAnswer", this.autoAnswer);
+            objWrite.put("clientId", this.clientId);
             payload.binaryContent = objWrite.toString().getBytes();
 
             JSONObject pushDataWrite = new JSONObject();
@@ -210,6 +233,8 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
                 pin = jsonObject.optString("pin");
 
                 array = jsonObject.getJSONArray("existParticipants");
+                autoAnswer = jsonObject.optBoolean("autoAnswer");
+                clientId = jsonObject.optString("clientId");
                 existParticipants = new ArrayList<>();
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject object = array.getJSONObject(i);
@@ -261,7 +286,9 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
         dest.writeStringList(this.participants);
         dest.writeList(this.existParticipants);
         dest.writeByte(this.audioOnly ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.autoAnswer? (byte) 1 : (byte) 0);
         dest.writeString(pin);
+        dest.writeString(this.clientId);
     }
 
     protected AddParticipantsMessageContent(Parcel in) {
@@ -272,7 +299,9 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
         this.existParticipants = new ArrayList<ParticipantStatus>();
         in.readList(this.existParticipants, ParticipantStatus.class.getClassLoader());
         this.audioOnly = in.readByte() != 0;
+        this.autoAnswer = in.readByte() != 0;
         this.pin = in.readString();
+        this.clientId = in.readString();
     }
 
     public static final Creator<AddParticipantsMessageContent> CREATOR = new Creator<AddParticipantsMessageContent>() {

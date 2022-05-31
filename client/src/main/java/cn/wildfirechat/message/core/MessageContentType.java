@@ -24,6 +24,8 @@ public interface MessageContentType {
     int ContentType_P_Text = 9;
     int ContentType_Card = 10;
     int ContentType_Composite_Message = 11;
+    int ContentType_Rich_Notification = 12;
+    int ContentType_Articles = 13;
 
     // 21, 23，24内部使用
     int ContentType_Dumy1 = 21;
@@ -35,6 +37,18 @@ public interface MessageContentType {
     int ContentType_Mark_Unread_Sync = 31;
 
     int ContentType_Start_Secret_Chat = 40;
+
+
+    /*
+        #define MESSAGE_CONTENT_TYPE_ACCEPT_SECRET_CHAT 41
+        #define MESSAGE_CONTENT_TYPE_DESTROY_SECRET_CHAT 42
+        #define MESSAGE_CONTENT_TYPE_SECRET_CHAT_MESSAGE 43
+        #define MESSAGE_CONTENT_TYPE_BURN_MSG_READED 46
+        #define MESSAGE_CONTENT_TYPE_BURN_MSG_PLAYED 47
+     */
+    //频道进出消息
+    int ContentType_Enter_Channel_Chat = 71;
+    int ContentType_Leave_Channel_Chat = 72;
 
     int ContentType_Recall = 80;
     //删除消息，请勿直接发送此消息，此消息是服务器端删除时的同步消息
@@ -91,6 +105,9 @@ public interface MessageContentType {
     int ContentType_Conference_Invite = 408;
     int ContentType_Conference_Change_Model = 410;
     int ContentType_Conference_Kickoff_Member = 411;
+
+    int ContentType_Call_Multi_Call_Ongoing = 416;
+    int ContentType_Call_Join_Call_Request = 417;
 
     int MESSAGE_CONTENT_TYPE_FEED = 501;
     int MESSAGE_CONTENT_TYPE_FEED_COMMENT = 502;

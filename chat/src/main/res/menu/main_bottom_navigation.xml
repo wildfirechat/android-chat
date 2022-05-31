@@ -12,6 +12,10 @@
         android:icon="@drawable/bottom_contact_menu_selector"
         android:title="通讯录" />
     <item
+        android:id="@+id/workspace"
+        android:icon="@drawable/bottom_work_menu_selector"
+        android:title="工作台" />
+    <item
         android:id="@+id/discovery"
         android:icon="@drawable/bottom_discovery_menu_selector"
         android:title="发现" />

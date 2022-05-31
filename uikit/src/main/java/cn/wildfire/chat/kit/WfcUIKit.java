@@ -51,7 +51,6 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.OnDeleteMessageListener;
@@ -206,9 +205,6 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void onReceiveCall(AVEngineKit.CallSession session) {
         ChatManager.Instance().getMainHandler().postDelayed(() -> {
             AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
-            if (callSession == null || callSession.getState() != AVEngineKit.CallState.Incoming) {
-                return;
-            }
 
             List<String> participants = session.getParticipantIds();
             if (participants == null || participants.isEmpty()) {
@@ -217,10 +213,12 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
             Conversation conversation = session.getConversation();
             if (conversation.type == Conversation.ConversationType.Single) {
-                Intent intent = new Intent(WfcIntent.ACTION_VOIP_SINGLE);
+                //Intent intent = new Intent(WfcIntent.ACTION_VOIP_SINGLE);
+                Intent intent = new Intent(application, SingleCallActivity.class);
                 startActivity(application, intent);
             } else {
-                Intent intent = new Intent(WfcIntent.ACTION_VOIP_MULTI);
+                //Intent intent = new Intent(WfcIntent.ACTION_VOIP_MULTI);
+                Intent intent = new Intent(application, MultiCallActivity.class);
                 startActivity(application, intent);
             }
             VoipCallService.start(application, false);

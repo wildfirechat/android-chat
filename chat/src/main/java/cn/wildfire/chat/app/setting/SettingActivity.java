@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.webkit.CookieManager;
+import android.webkit.WebStorage;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -64,6 +66,10 @@ public class SettingActivity extends WfcBaseActivity {
         sp.edit().clear().apply();
 
         OKHttpHelper.clearCookies();
+
+        WebStorage.getInstance().deleteAllData();
+        CookieManager.getInstance().removeAllCookies(null);
+        CookieManager.getInstance().flush();
 
         Intent intent = new Intent(this, SplashActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

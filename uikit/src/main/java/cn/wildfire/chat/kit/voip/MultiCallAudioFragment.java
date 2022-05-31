@@ -182,7 +182,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
             return;
         }
         AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
-        if (callState == AVEngineKit.CallState.Connected) {
+        if (callSession != null && callState == AVEngineKit.CallState.Connected) {
             updateParticipantStatus(callSession);
         } else if (callState == AVEngineKit.CallState.Idle) {
             if (getActivity() == null) {

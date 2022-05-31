@@ -76,5 +76,11 @@
                 android:visibility="gone" />
         </LinearLayout>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ongoingCallRecyclerView"
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
     </FrameLayout>
 </cn.wildfire.chat.kit.widget.InputAwareLayout>

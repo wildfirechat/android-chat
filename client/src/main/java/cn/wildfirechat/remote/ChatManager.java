@@ -61,6 +61,7 @@ import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
+import cn.wildfirechat.client.IGeneralCallback2;
 import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
@@ -89,12 +90,16 @@ import cn.wildfirechat.client.IRemoteClient;
 import cn.wildfirechat.client.IUploadMediaCallback;
 import cn.wildfirechat.client.IWatchUserOnlineStateCallback;
 import cn.wildfirechat.client.NotInitializedExecption;
+import cn.wildfirechat.message.ArticlesMessageContent;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CardMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
+import cn.wildfirechat.message.EnterChannelChatMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
+import cn.wildfirechat.message.JoinCallRequestMessageContent;
+import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.LocationMessageContent;
 import cn.wildfirechat.message.MarkUnreadMessageContent;
@@ -102,6 +107,7 @@ import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
+import cn.wildfirechat.message.MultiCallOngoingMessageContent;
 import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
@@ -139,6 +145,7 @@ import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
 import cn.wildfirechat.message.notification.QuitGroupVisibleNotificationContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.message.notification.RichNotificationMessageContent;
 import cn.wildfirechat.message.notification.StartSecretChatMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
@@ -483,7 +490,7 @@ public class ChatManager {
      * @param port 服务器port
      */
     private void onConnectToServer(final String host, final String ip, final int port) {
-        Log.e("jyj", "connectToServer " + host + ip + port);
+        Log.e(TAG, "connectToServer " + host + ip + port);
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -1420,6 +1427,35 @@ public class ChatManager {
     }
 
     /**
+     * 获取我收听的频道id列表
+     *
+     * @return
+     */
+    public void getRemoteListenedChannels(GeneralCallback3 callback3) {
+        if (!checkRemoteService()) {
+            callback3.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getRemoteListenedChannels(new cn.wildfirechat.client.IGeneralCallback3.Stub() {
+                @Override
+                public void onSuccess(List<String> results) throws RemoteException {
+                    mainHandler.post(() -> callback3.onSuccess(results));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback3.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            callback3.onFail(ErrorCode.SERVICE_DIED);
+        }
+    }
+
+    /**
      * 添加会话更新监听
      *
      * @param listener
@@ -2246,7 +2282,7 @@ public class ChatManager {
                         return;
                     }
 
-                    if (file.length() > 100 * 1024 * 1024) {
+                    if (file.length() >= 100 * 1024 * 1024 && (!isSupportBigFilesUpload() || msg.conversation.type == Conversation.ConversationType.SecretChat)) {
                         if (callback != null) {
                             callback.onFail(ErrorCode.FILE_TOO_LARGE);
                         }
@@ -3603,6 +3639,25 @@ public class ChatManager {
             for (OnClearMessageListener listener : clearMessageListeners) {
                 listener.onClearMessage(conversation);
             }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 清除所有会话
+     *
+     * @param removeConversation 是否同时删除会话信息.
+     */
+    public void clearAllMessages(boolean removeConversation) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+
+            mClient.clearAllMessages(removeConversation);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -6190,6 +6245,52 @@ public class ChatManager {
         }
     }
 
+    public String getGroupRemark(String groupId) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getGroupRemark(groupId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setGroupRemark(String groupId, String remark, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.setGroupRemark(groupId, remark, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    GroupInfo groupInfo = mClient.getGroupInfo(groupId, false);
+                    onGroupInfoUpdated(Collections.singletonList(groupInfo));
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess());
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
+        }
+    }
+
     public byte[] encodeData(byte[] data) {
         if (!checkRemoteService()) {
             return null;
@@ -6538,6 +6639,53 @@ public class ChatManager {
         }
     }
 
+    public void getAuthCode(String appId, int appType, String host, GeneralCallback2 callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getAuthCode(appId, appType, host, new IGeneralCallback2.Stub() {
+                @Override
+                public void onSuccess(String success) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(success));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void configApplication(String appId, int appType, long timestamp, String nonceStr, String signature, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+        try {
+            mClient.configApplication(appId, appType, timestamp, nonceStr, signature, new IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess());
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @return 服务器时间 - 本地时间
      */
@@ -6802,7 +6950,7 @@ public class ChatManager {
      * 设置第三方推送设备token
      *
      * @param token
-     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.PushService.PushServiceType}
+     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.push.PushService.PushServiceType}
      */
     public void setDeviceToken(String token, int pushType) {
         Log.d(TAG, "setDeviceToken " + token + " " + pushType);
@@ -7462,29 +7610,6 @@ public class ChatManager {
         setUserSetting(UserSettingScope.MuteWhenPcOnline, "", isMute ? "0" : "1", callback);
     }
 
-    public void getApplicationId(String applicationId, final GeneralCallback2 callback) {
-        if (!checkRemoteService()) {
-            callback.onFail(ErrorCode.SERVICE_DIED);
-            return;
-        }
-
-        try {
-            mClient.getApplicationId(applicationId, new cn.wildfirechat.client.IGeneralCallback2.Stub() {
-                @Override
-                public void onSuccess(String s) throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess(s));
-                }
-
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> callback.onFail(errorCode));
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void createSecretChat(String userId, final CreateSecretChatCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
@@ -7534,7 +7659,11 @@ public class ChatManager {
             return null;
         }
         try {
-            return mClient.getSecretChatInfo(targetId);
+            SecretChatInfo secretChatInfo = mClient.getSecretChatInfo(targetId);
+            if (secretChatInfo == null) {
+                removeConversation(new Conversation(Conversation.ConversationType.SecretChat, targetId, 0), true);
+            }
+            return secretChatInfo;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -7554,7 +7683,8 @@ public class ChatManager {
     }
 
     /**
-     *  解密密聊媒体数据，回调是在工作线程
+     * 解密密聊媒体数据，回调是在工作线程
+     *
      * @param targetId
      * @param mediaData
      * @param callback
@@ -7999,6 +8129,12 @@ public class ChatManager {
         registerMessageContent(MarkUnreadMessageContent.class);
         registerMessageContent(PTTSoundMessageContent.class);
         registerMessageContent(StartSecretChatMessageContent.class);
+        registerMessageContent(EnterChannelChatMessageContent.class);
+        registerMessageContent(LeaveChannelChatMessageContent.class);
+        registerMessageContent(MultiCallOngoingMessageContent.class);
+        registerMessageContent(JoinCallRequestMessageContent.class);
+        registerMessageContent(RichNotificationMessageContent.class);
+        registerMessageContent(ArticlesMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {

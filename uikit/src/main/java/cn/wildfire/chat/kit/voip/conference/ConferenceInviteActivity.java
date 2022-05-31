@@ -53,7 +53,7 @@ public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
                 break;
             case Group:
                 GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-                invite(groupInfo.name, groupInfo.portrait, conversation);
+                invite(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name, groupInfo.portrait, conversation);
                 break;
             default:
                 break;

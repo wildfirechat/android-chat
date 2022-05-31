@@ -98,7 +98,7 @@ public class UserCardExt extends ConversationExt {
             view.bind(targetUser.displayName, portrait, desc);
         } else if (conversation.type == Conversation.ConversationType.Group) {
             GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(conversation.target, false);
-            view.bind(groupInfo.name, groupInfo.portrait, desc);
+            view.bind(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name, groupInfo.portrait, desc);
         }
         MaterialDialog dialog = new MaterialDialog.Builder(fragment.getActivity())
             .customView(view, false)

@@ -31,6 +31,7 @@ import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
+import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
 
 public abstract class MediaMessageContentViewHolder extends NormalMessageContentViewHolder {
@@ -49,7 +50,7 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
 
     @Override
     protected void onBind(UiMessage message) {
-        if (message.isDownloading) {
+        if (message.isDownloading || message.message.status == MessageStatus.Sending) {
             progressBar.setVisibility(View.VISIBLE);
         } else {
             progressBar.setVisibility(View.GONE);

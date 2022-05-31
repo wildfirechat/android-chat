@@ -513,6 +513,21 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         });
         return result;
     }
+    public MutableLiveData<OperateResult<Boolean>> setGroupRemark(String groupId, String remark) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().setGroupRemark(groupId, remark, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(true, 0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(false, errorCode));
+            }
+        });
+        return result;
+    }
 
     public MutableLiveData<OperateResult> modifyMyGroupAlias(String groupId, String alias, MessageContent notifyMsg, List<Integer> notifyLines) {
         MutableLiveData<OperateResult> result = new MutableLiveData<>();

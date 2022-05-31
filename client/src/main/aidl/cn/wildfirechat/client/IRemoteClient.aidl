@@ -149,6 +149,7 @@ interface IRemoteClient {
     boolean markAsUnRead(in int conversationType, in String target, in int line, in boolean sync);
     void clearMessages(in int conversationType, in String target, in int line);
     void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
+    void clearAllMessages(in boolean removeConversation);
     void setMediaMessagePlayed(in long messageId);
     boolean setMessageLocalExtra(in long messageId, in String extra);
     void removeConversation(in int conversationType, in String target, in int line, in boolean clearMsg);
@@ -233,6 +234,9 @@ interface IRemoteClient {
     oneway void transferGroup(in String groupId, in String newOwner, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void setGroupManager(in String groupId, in boolean isSet, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void muteOrAllowGroupMember(in String groupId, in boolean isSet, in List<String> memberIds, in boolean isAllow, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
+    String getGroupRemark(in String groupId);
+    oneway void setGroupRemark(in String groupId, in String remark, in IGeneralCallback callback);
+
     byte[] encodeData(in byte[] data);
     byte[] decodeData(in byte[] data);
     byte[] decodeDataEx(in int type, in byte[] data, in boolean gzip);
@@ -248,6 +252,7 @@ interface IRemoteClient {
     oneway void destoryChannel(in String channelId, in IGeneralCallback callback);
     List<String> getMyChannels();
     List<String> getListenedChannels();
+    oneway void getRemoteListenedChannels(in IGeneralCallback3 callback);
     oneway void requireLock(in String lockId, in long duration, in IGeneralCallback callback);
     oneway void releaseLock(in String lockId, in IGeneralCallback callback);
 
@@ -258,7 +263,10 @@ interface IRemoteClient {
     String getImageThumbPara();
 
     void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
-    void getApplicationId(in String applicationId, in IGeneralCallback2 callback);
+
+    oneway void getAuthCode(in String appId, in int appType, in String host, in IGeneralCallback2 callback);
+    oneway void configApplication(in String appId, in int appType, in long timestamp, in String nonceStr, in String signature, in IGeneralCallback callback);
+
     oneway void getAuthorizedMediaUrl(in long messageUid, in int mediaType, in String mediaPath, in IGetAuthorizedMediaUrlCallback callback);
     oneway void getUploadUrl(in String fileName, in int mediaType, in String contentType, in IGetUploadUrlCallback callback);
 

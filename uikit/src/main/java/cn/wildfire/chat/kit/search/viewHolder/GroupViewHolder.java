@@ -21,6 +21,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupSearchResult;
 
 public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
@@ -39,7 +40,8 @@ public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
 
     @Override
     public void onBind(String keyword, GroupSearchResult groupSearchResult) {
-        nameTextView.setText(groupSearchResult.groupInfo.name);
+        GroupInfo groupInfo = groupSearchResult.groupInfo;
+        nameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
         String portrait = groupSearchResult.groupInfo.portrait;
         if (TextUtils.isEmpty(portrait)) {
             portrait = ImageUtils.getGroupGridPortrait(fragment.getContext(), groupSearchResult.groupInfo.target, 60);

@@ -122,6 +122,14 @@
 
                 </LinearLayout>
 
+                <cn.wildfire.chat.kit.widget.OptionItemView
+                    android:id="@+id/groupRemarkOptionItemView"
+                    style="@style/OptionItem"
+                    android:background="@drawable/selector_option_item"
+                    app:desc="@string/untitled"
+                    app:show_arrow_indicator="true"
+                    app:title="群备注" />
+
                 <View
                     android:id="@+id/groupManageDividerLine"
                     style="@style/Line"

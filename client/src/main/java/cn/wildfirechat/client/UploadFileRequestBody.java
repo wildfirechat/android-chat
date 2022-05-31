@@ -1,4 +1,4 @@
-package cn.wildfire.chat.kit.conversation.bigfile;
+package cn.wildfirechat.client;
 
 import java.io.IOException;
 
@@ -45,18 +45,23 @@ public class UploadFileRequestBody extends RequestBody {
 
     protected final class CountingSink extends ForwardingSink {
         private long bytesWritten = 0;
+
         public CountingSink(Sink delegate) {
             super(delegate);
         }
+
         @Override
         public void write(Buffer source, long byteCount) throws IOException {
             super.write(source, byteCount);
             bytesWritten += byteCount;
-            mListener.onProgress((int) (100F * bytesWritten / contentLength()));
+//            mListener.onProgress((int) (100F * bytesWritten / contentLength()));
+            if (contentLength() > 0){
+                mListener.onProgress(bytesWritten, contentLength());
+            }
         }
     }
 
     public interface Listener {
-        void onProgress(int progress);
+        void onProgress(long progress, long total);
     }
 }

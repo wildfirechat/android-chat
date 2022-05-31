@@ -39,6 +39,9 @@ public class Config {
     //文件传输助手用户ID，服务器有个默认文件助手的机器人，如果修改它的ID，需要客户端和服务器数据库同步修改
     public static String FILE_TRANSFER_ID = "wfc_file_transfer";
 
+    // 允许主动加入多人音视频通话
+    public static boolean ENABLE_MULTI_CALL_AUTO_JOIN = false;
+
     /**
      * 允许撤回多长时间内的消息，不能长于服务端相关配置，单位是秒
      */
@@ -48,6 +51,13 @@ public class Config {
      * 允许重新编辑多长时间内的撤回消息，单位是秒
      */
     public static int RECALL_REEDIT_TIME_LIMIT = 60;
+
+    /**
+     * 工作台页面地址
+     *
+     * 如果不想显示工作台，置为 null 即可
+     */
+    public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
 
     /**
      * 语音消息最长时长，单位是秒

@@ -151,7 +151,7 @@ public class WfcNotificationManager {
                 title = TextUtils.isEmpty(name) ? "新消息" : name;
             } else if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.conversation.target, false);
-                title = groupInfo == null ? "群聊" : groupInfo.name;
+                title = groupInfo == null ? "群聊" : (!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
             } else {
                 title = "新消息";
             }
@@ -160,9 +160,9 @@ public class WfcNotificationManager {
             conversationIntent.putExtra("conversation", message.conversation);
 
             PendingIntent pendingIntent;
-            if (Build.VERSION.SDK_INT >= 23){
+            if (Build.VERSION.SDK_INT >= 23) {
                 pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            }else {
+            } else {
                 pendingIntent = PendingIntent.getActivities(context, notificationId(message.messageUid), new Intent[]{mainIntent, conversationIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
             }
             String tag = "wfc notification tag";

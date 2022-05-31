@@ -70,7 +70,7 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
                 break;
             case Group:
                 GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-                forward(groupInfo.name, groupInfo.portrait, conversation);
+                forward(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name, groupInfo.portrait, conversation);
                 break;
             default:
                 break;

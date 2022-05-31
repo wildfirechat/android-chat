@@ -5,9 +5,7 @@
 package cn.wildfire.chat.kit.conversation;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
@@ -39,9 +37,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.LongBinaryOperator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,13 +69,15 @@ import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.message.EnterChannelChatMessageContent;
+import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.MultiCallOngoingMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
-import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.Conversation;
@@ -116,6 +117,9 @@ public class ConversationFragment extends Fragment implements
     @BindView(R2.id.msgRecyclerView)
     RecyclerView recyclerView;
 
+    @BindView(R2.id.ongoingCallRecyclerView)
+    RecyclerView ongoingCallRecyclerView;
+
     @BindView(R2.id.inputPanelFrameLayout)
     ConversationInputPanel inputPanel;
 
@@ -130,6 +134,7 @@ public class ConversationFragment extends Fragment implements
     TextView unreadMentionCountTextView;
 
     private ConversationMessageAdapter adapter;
+    private OngoingCallAdapter ongoingCallAdapter;
     private boolean moveToBottom = true;
     private ConversationViewModel conversationViewModel;
     private SettingViewModel settingViewModel;
@@ -154,6 +159,7 @@ public class ConversationFragment extends Fragment implements
     private Observer<List<GroupMember>> groupMembersUpdateLiveDataObserver;
     private Observer<List<GroupInfo>> groupInfosUpdateLiveDataObserver;
     private Observer<Object> settingUpdateLiveDataObserver;
+    private Map<String, Message> ongoingCalls;
 
     private Observer<UiMessage> messageLiveDataObserver = new Observer<UiMessage>() {
         @Override
@@ -162,6 +168,38 @@ public class ConversationFragment extends Fragment implements
                 return;
             }
             MessageContent content = uiMessage.message.content;
+
+            if (content instanceof MultiCallOngoingMessageContent) {
+                MultiCallOngoingMessageContent ongoingCall = (MultiCallOngoingMessageContent) content;
+                AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
+                if (ongoingCall.getInitiator().equals(ChatManager.Instance().getUserId())
+                    || ongoingCall.getTargets().contains(ChatManager.Instance().getUserId())
+                    || (callSession != null && callSession.getState() != AVEngineKit.CallState.Idle)) {
+                    return;
+                }
+
+                if (ongoingCalls == null) {
+                    ongoingCalls = new HashMap<>();
+                }
+                ongoingCalls.put(ongoingCall.getCallId(), uiMessage.message);
+
+                if (ongoingCalls.size() > 0) {
+                    ongoingCallRecyclerView.setVisibility(View.VISIBLE);
+                    if (ongoingCallAdapter == null) {
+                        ongoingCallAdapter = new OngoingCallAdapter();
+                        ongoingCallRecyclerView.setAdapter(ongoingCallAdapter);
+                        ongoingCallRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    }
+                    ongoingCallAdapter.setOngoingCalls(new ArrayList<>(ongoingCalls.values()));
+                } else {
+                    ongoingCallRecyclerView.setVisibility(View.GONE);
+                    ongoingCallAdapter.setOngoingCalls(null);
+                }
+                cleanExpiredOngoingCalls();
+
+                return;
+            }
+
             if (isDisplayableMessage(uiMessage) && !(content instanceof RecallMessageContent)) {
                 // 消息定位时，如果收到新消息、或者发送消息，需要重新加载消息列表
                 if (shouldContinueLoadNewMessage) {
@@ -485,8 +523,6 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void setupConversation(Conversation conversation) {
-
-
         if (conversation.type == Conversation.ConversationType.Group) {
             groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
             initGroupObservers();
@@ -503,8 +539,12 @@ public class ConversationFragment extends Fragment implements
 
         if (conversation.type != Conversation.ConversationType.ChatRoom) {
             loadMessage(initialFocusedMessageId);
-        } else {
+        }
+        if (conversation.type == Conversation.ConversationType.ChatRoom) {
             joinChatRoom();
+        } else if (conversation.type == Conversation.ConversationType.Channel) {
+            EnterChannelChatMessageContent content = new EnterChannelChatMessageContent();
+            messageViewModel.sendMessage(conversation, content);
         }
 
         ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
@@ -514,6 +554,8 @@ public class ConversationFragment extends Fragment implements
             showUnreadMessageCountLabel(unreadCount);
         }
         conversationViewModel.clearUnreadStatus(conversation);
+
+        ongoingCalls = null;
 
         setTitle();
     }
@@ -666,7 +708,7 @@ public class ConversationFragment extends Fragment implements
             }
         } else if (conversation.type == Conversation.ConversationType.Group) {
             if (groupInfo != null) {
-                conversationTitle = groupInfo.name + "(" + groupInfo.memberCount + "人)";
+                conversationTitle = (!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name) + "(" + groupInfo.memberCount + "人)";
             }
         } else if (conversation.type == Conversation.ConversationType.Channel) {
             ChannelViewModel channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
@@ -814,6 +856,9 @@ public class ConversationFragment extends Fragment implements
 
         if (conversation.type == Conversation.ConversationType.ChatRoom) {
             quitChatRoom();
+        } else if (conversation.type == Conversation.ConversationType.Channel) {
+            LeaveChannelChatMessageContent content = new LeaveChannelChatMessageContent();
+            messageViewModel.sendMessage(conversation, content);
         }
 
         messageViewModel.messageLiveData().removeObserver(messageLiveDataObserver);
@@ -1076,5 +1121,20 @@ public class ConversationFragment extends Fragment implements
             .content(builder.toString())
             .build()
             .show();
+    }
+
+    private void cleanExpiredOngoingCalls() {
+        for (Iterator<Map.Entry<String, Message>> it = ongoingCalls.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<String, Message> entry = it.next();
+            if (System.currentTimeMillis() - (entry.getValue().serverTime - ChatManager.Instance().getServerDeltaTime()) > 3000) {
+                it.remove();
+            }
+        }
+        if (ongoingCalls.size() > 0) {
+            handler.postDelayed(this::cleanExpiredOngoingCalls, 1000);
+        } else {
+            ongoingCallAdapter.setOngoingCalls(null);
+            ongoingCallRecyclerView.setVisibility(View.GONE);
+        }
     }
 }
