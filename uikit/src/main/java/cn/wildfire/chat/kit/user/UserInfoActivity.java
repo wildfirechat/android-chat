@@ -74,6 +74,10 @@ public class UserInfoActivity extends WfcBaseActivity {
             itemSetAlias.setVisible(false);
             itemSetName.setEnabled(true);
             itemSetName.setVisible(true);
+            itemSetFav.setVisible(false);
+            itemSetFav.setEnabled(false);
+            itemRemoveFav.setVisible(false);
+            itemRemoveFav.setEnabled(false);
         } else {
             if (contactViewModel.isFriend(userInfo.uid)) {
                 itemAddFriend.setEnabled(false);
