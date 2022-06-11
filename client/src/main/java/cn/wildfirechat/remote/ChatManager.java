@@ -2387,6 +2387,23 @@ public class ChatManager {
     }
 
     /**
+     * 取消消息发送，只有媒体类消息才可以取消发送，普通消息发送中时无法取消。
+     * @param messageId
+     * @return 是否取消成功
+     */
+    public boolean cancelSendingMessage(long messageId) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.cancelSendingMessage(messageId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    /**
      * 消息撤回
      *
      * @param msg      想撤回的消息
@@ -6924,6 +6941,23 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取协议栈版本
+     *
+     * @return 协议栈版本
+     */
+    public String getProtoRevision() {
+        if (!checkRemoteService()) {
+            return "";
+        }
+
+        try {
+            return mClient.getProtoRevision();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     private String getLogPath() {
         return gContext.getCacheDir().getAbsolutePath() + "/log";
     }

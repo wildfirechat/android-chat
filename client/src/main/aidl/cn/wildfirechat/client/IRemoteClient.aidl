@@ -102,6 +102,7 @@ interface IRemoteClient {
 
     oneway void send(in Message msg, in ISendMessageCallback callback, in int expireDuration);
     oneway void sendSavedMessage(in Message msg, in int expireDuration, in ISendMessageCallback callback);
+    boolean cancelSendingMessage(in long messageId);
     oneway void recall(in long messageUid, IGeneralCallback callback);
     long getServerDeltaTime();
     List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines);
@@ -282,6 +283,8 @@ interface IRemoteClient {
     boolean isEnableSecretChat();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
+
+    String getProtoRevision();
 
     oneway void setProxyInfo(in Socks5ProxyInfo proxyInfo);
 
