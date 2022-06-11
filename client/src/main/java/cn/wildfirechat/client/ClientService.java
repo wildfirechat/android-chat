@@ -495,6 +495,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean cancelSendingMessage(long messageId) throws RemoteException {
+            return ProtoLogic.cancelSendingMessage(messageId);
+        }
+
+        @Override
         public void send(cn.wildfirechat.message.Message msg, final ISendMessageCallback callback, int expireDuration) throws RemoteException {
 
             msg.messageId = 0;
@@ -2895,6 +2900,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void useSM4() throws RemoteException {
             useSM4 = true;
             ProtoLogic.useEncryptSM4();
+        }
+
+        @Override
+        public String getProtoRevision() throws RemoteException {
+            return ProtoLogic.getProtoRevision();
         }
 
         @Override
