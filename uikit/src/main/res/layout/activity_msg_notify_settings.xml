@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="i接收语音或视频来电通知"
+                android:text="接收语音或视频来电通知"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
