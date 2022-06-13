@@ -51,11 +51,10 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
     }
 
     /**
-     * @param uiMessage
-     * @param tag
+     * @param uiMessage 消息
+     * @param tag       菜单项 tag
      * @return 返回true，将从context menu中排除
      */
-
     public abstract boolean contextMenuItemFilter(UiMessage uiMessage, String tag);
 
     public abstract String contextMenuTitle(Context context, String tag);
