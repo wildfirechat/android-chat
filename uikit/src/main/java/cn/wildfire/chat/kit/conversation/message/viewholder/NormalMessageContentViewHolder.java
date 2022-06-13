@@ -225,7 +225,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         fragment.toggleMultiMessageMode(message);
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT, priority = 12)
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CHANNEL_PRIVATE_CHAT, priority = 12)
     public void startChanelPrivateChat(View itemView, UiMessage message) {
         Intent intent = ConversationActivity.buildConversationIntent(fragment.getContext(), Conversation.ConversationType.Channel, message.message.conversation.target, message.message.conversation.line, message.message.sender);
         fragment.startActivity(intent);
@@ -273,7 +273,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             case MessageContextMenuItemTags.TAG_MULTI_CHECK:
                 title = "多选";
                 break;
-            case MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT:
+            case MessageContextMenuItemTags.TAG_CHANNEL_PRIVATE_CHAT:
                 title = "私聊";
                 break;
             case MessageContextMenuItemTags.TAG_FAV:
@@ -339,7 +339,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         }
 
         // 只有channel 主可以发起
-        if (MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT.equals(tag)) {
+        if (MessageContextMenuItemTags.TAG_CHANNEL_PRIVATE_CHAT.equals(tag)) {
             if (uiMessage.message.conversation.type == Conversation.ConversationType.Channel
                 && uiMessage.message.direction == MessageDirection.Receive) {
                 return false;
