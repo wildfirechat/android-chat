@@ -13,4 +13,5 @@ public interface MessageContextMenuItemTags {
     String TAG_MULTI_CHECK = "multiCheck";
     String TAG_CHANEL_PRIVATE_CHAT = "chanelPrivateChat";
     String TAG_FAV = "fav";
+    String TAG_CANCEL_SEND = "cancelSend";
 }

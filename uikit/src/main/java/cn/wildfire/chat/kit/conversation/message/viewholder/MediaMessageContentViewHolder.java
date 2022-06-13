@@ -4,10 +4,12 @@
 
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +24,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.GlideRequest;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -33,6 +36,7 @@ import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.remote.ChatManager;
 
 public abstract class MediaMessageContentViewHolder extends NormalMessageContentViewHolder {
 
@@ -127,5 +131,31 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
             request = request.diskCacheStrategy(DiskCacheStrategy.NONE);
         }
         request.into(imageView);
+    }
+
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CANCEL_SEND, confirm = false, priority = 13)
+    public void cancelSend(View itemView, UiMessage message) {
+        boolean canceled = ChatManager.Instance().cancelSendingMessage(message.message.messageId);
+        if (!canceled) {
+            Toast.makeText(fragment.getContext(), "取消失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public String contextMenuTitle(Context context, String tag) {
+        if (MessageContextMenuItemTags.TAG_CANCEL_SEND.equals(tag)) {
+            return " 取消发送";
+        }
+        return super.contextMenuTitle(context, tag);
+    }
+
+    @Override
+    public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
+        if (MessageContextMenuItemTags.TAG_CANCEL_SEND.equals(tag)) {
+            return !(uiMessage.message.content instanceof MediaMessageContent && MessageStatus.Sending == uiMessage.message.status);
+        } else {
+            return super.contextMenuItemFilter(uiMessage, tag);
+        }
     }
 }
