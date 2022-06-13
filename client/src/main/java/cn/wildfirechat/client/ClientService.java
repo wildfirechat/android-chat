@@ -499,11 +499,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean cancelSendingMessage(long messageId) throws RemoteException {
             boolean canceled = ProtoLogic.cancelSendingMessage(messageId);
-            if (canceled){
+            if (!canceled){
                 try {
                     Call call = uploadingMap.remove(messageId);
                     if (call != null && !call.isCanceled()){
                         call.cancel();
+                        canceled = true;
                     }
                 }catch (Exception e){
                     // do nothing
