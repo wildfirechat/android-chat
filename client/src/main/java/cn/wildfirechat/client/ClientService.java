@@ -2423,6 +2423,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public int getPort() throws RemoteException {
+            return StnLogic.getPort();
+        }
+
+        @Override
         public String getHostEx() throws RemoteException {
             return StnLogic.getHostEx();
         }

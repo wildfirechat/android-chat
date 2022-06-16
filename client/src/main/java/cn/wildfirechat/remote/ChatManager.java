@@ -6360,6 +6360,19 @@ public class ChatManager {
         }
     }
 
+    public int getPort() {
+        if (!checkRemoteService()) {
+            return 80;
+        }
+
+        try {
+            return mClient.getPort();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return 80;
+        }
+    }
+
     public String getHostEx() {
         if (!checkRemoteService()) {
             return null;
