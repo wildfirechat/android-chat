@@ -243,6 +243,7 @@ interface IRemoteClient {
     byte[] decodeDataEx(in int type, in byte[] data, in boolean gzip);
 
     String getHost();
+    int getPort();
     String getHostEx();
     oneway void createChannel(in String channelId, in String channelName, in String channelPortrait, in String desc, in String extra, in ICreateChannelCallback callback);
     oneway void modifyChannelInfo(in String channelId, in int modifyType, in String newValue, in IGeneralCallback callback);
