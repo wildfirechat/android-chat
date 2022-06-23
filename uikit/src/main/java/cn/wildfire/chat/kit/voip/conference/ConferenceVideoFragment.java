@@ -524,7 +524,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-        Log.d(TAG, userId + " volume " + volume);
         VoipCallItem multiCallItem = getUserVoipCallItem(VoipBaseActivity.participantKey(userId, false));
         if (multiCallItem != null) {
             if (volume > 1000) {

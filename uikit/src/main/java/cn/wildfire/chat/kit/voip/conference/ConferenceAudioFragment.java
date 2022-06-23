@@ -8,7 +8,6 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -341,7 +340,6 @@ public class ConferenceAudioFragment extends BaseConferenceFragment implements A
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-        Log.d(TAG, userId + " volume " + volume);
         VoipCallItem multiCallItem = getUserVoipCallItem(userId);
         if (multiCallItem != null) {
             if (volume > 1000) {
