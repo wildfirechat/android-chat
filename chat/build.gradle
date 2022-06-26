@@ -31,6 +31,25 @@ android {
         ndk {
             abiFilters 'armeabi-v7a', 'x86', 'x86_64', 'arm64-v8a' // ，'armeabi', 'arm64-v8a', 'x86', 'x86_64'
         }
+
+        manifestPlaceholders = [
+
+            GETUI_APPID    : "nXIEPKfBMP8QmNjZtKdTk1",
+
+            HUAWEI_APP_ID  : "100221325",
+
+            XIAOMI_APP_ID  : "2882303761517722456",
+            XIAOMI_APP_KEY : "5731772292456",
+
+            OPPO_APP_KEY   : "16c6afe503b24259928e082ef01a6bf2",
+            OPPO_APP_SECRET: "16c6afe503b24259928e082ef01a6bf2",
+
+            VIVO_APP_ID    : "12918",
+            VIVO_APP_KEY   : "c42feb05-de6c-427d-af55-4f902d9e0a75",
+
+            MEIZU_APP_ID   : "113616",
+            MEIZU_APP_KEY  : "fcd886f51c144b45b87a67a28e2934d1"
+        ]
     }
     buildTypes {
         release {

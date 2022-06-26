@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 28
 
@@ -10,26 +9,6 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        manifestPlaceholders = [
-
-                MI_APP_ID    : "2882303761517722456",
-                MI_APP_KEY   : "5731772292456",
-
-                HMS_APP_ID   : "100221325",
-
-                MEIZU_APP_ID : "113616",
-                MEIZU_APP_KEY: "fcd886f51c144b45b87a67a28e2934d1",
-
-                VIVO_APP_ID  : "12918",
-                VIVO_APP_KEY : "c42feb05-de6c-427d-af55-4f902d9e0a75",
-
-                OPPO_APP_KEY  : "16c6afe503b24259928e082ef01a6bf2",
-                OPPO_APP_SECRET : "16c6afe503b24259928e082ef01a6bf2",
-
-                GETUI_APPID : "nXIEPKfBMP8QmNjZtKdTk1"
-        ]
     }
 
     buildTypes {
@@ -48,13 +27,17 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.huawei.hms:push:6.1.0.300'
-
     implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
     implementation project(':client')
-    implementation 'com.meizu.flyme.internet:push-internal:3.4.2@aar'
-    implementation platform('com.google.firebase:firebase-bom:26.6.0')
-    implementation 'com.google.firebase:firebase-messaging:20.1.6'
+
+    implementation 'com.getui:gtsdk:3.2.10.0'  //个推SDK
+    implementation 'com.getui:gtc:3.1.9.0'  //个推核心组件
+
+    implementation 'com.getui.opt:hwp:3.1.0'   // 华为
+    implementation 'com.getui.opt:xmp:3.2.0'   // 小米
+    implementation 'com.assist-v3:oppo:3.1.0'  // oppo
+    implementation 'com.assist-v3:vivo:3.1.0'  // vivo
+    implementation 'com.getui.opt:mzp:3.2.0'   // 魅族
 
     def lifecycle_version = '2.2.0'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
