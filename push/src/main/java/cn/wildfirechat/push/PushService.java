@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.push;
 
+import static com.google.firebase.messaging.Constants.MessageNotificationKeys.TAG;
+
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
@@ -15,7 +17,6 @@ import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
@@ -35,7 +36,7 @@ import com.huawei.agconnect.config.AGConnectServicesConfig;
 import com.huawei.hms.aaid.HmsInstanceId;
 import com.huawei.hms.api.HuaweiApiClient;
 import com.huawei.hms.common.ApiException;
-import com.meizu.cloud.pushsdk.util.MzSystemUtils;
+import com.igexin.sdk.IUserLoggerInterface;
 import com.vivo.push.IPushActionListener;
 import com.vivo.push.PushClient;
 import com.xiaomi.mipush.sdk.MiPushClient;
@@ -53,8 +54,6 @@ import java.util.TimeZone;
 
 import cn.wildfirechat.remote.ChatManager;
 
-import static com.google.firebase.messaging.Constants.MessageNotificationKeys.TAG;
-
 /**
  * Created by heavyrain.lee on 2018/2/26.
  */
@@ -67,35 +66,44 @@ public class PushService {
     private static String applicationId;
 
     public enum PushServiceType {
-        Unknown, Xiaomi, HMS, MeiZu, VIVO, OPPO, Google
+        Unknown, Xiaomi, HMS, MeiZu, VIVO, OPPO, Google, Getui
     }
 
     public static void init(Application gContext, String applicationId) {
-        PushService.applicationId = applicationId;
-        String sys = getSystem();
-        if (SYS_EMUI.equals(sys)) {
-            INST.pushServiceType = PushServiceType.HMS;
-            INST.initHMS(gContext);
-        } else if (/*SYS_FLYME.equals(sys) && INST.isMZConfigured(gContext)*/MzSystemUtils.isBrandMeizu()) {
-            INST.pushServiceType = PushServiceType.MeiZu;
-            INST.initMZ(gContext);
-        } else if (SYS_VIVO.equalsIgnoreCase(sys)) {
-            INST.pushServiceType = PushServiceType.VIVO;
-            INST.initVIVO(gContext);
-        } else if (PushManager.isSupportPush(gContext)) {
-            INST.pushServiceType = PushServiceType.OPPO;
-            INST.initOPPO(gContext);
-        } else if (SYS_MIUI.equals(sys) && INST.isXiaomiConfigured(gContext)) {
-            INST.pushServiceType = PushServiceType.Xiaomi;
-            INST.initXiaomi(gContext);
-        } else if(useGoogleFCM(gContext)) {
-            INST.pushServiceType = PushServiceType.Google;
-            INST.initFCM(gContext);
-        } else {
-            //其它使用小米推送
-            INST.pushServiceType = PushServiceType.Xiaomi;
-            INST.initXiaomi(gContext);
-        }
+//        PushService.applicationId = applicationId;
+//        String sys = getSystem();
+//        if (SYS_EMUI.equals(sys)) {
+//            INST.pushServiceType = PushServiceType.HMS;
+//            INST.initHMS(gContext);
+//        } else if (/*SYS_FLYME.equals(sys) && INST.isMZConfigured(gContext)*/MzSystemUtils.isBrandMeizu()) {
+//            INST.pushServiceType = PushServiceType.MeiZu;
+//            INST.initMZ(gContext);
+//        } else if (SYS_VIVO.equalsIgnoreCase(sys)) {
+//            INST.pushServiceType = PushServiceType.VIVO;
+//            INST.initVIVO(gContext);
+//        } else if (PushManager.isSupportPush(gContext)) {
+//            INST.pushServiceType = PushServiceType.OPPO;
+//            INST.initOPPO(gContext);
+//        } else if (SYS_MIUI.equals(sys) && INST.isXiaomiConfigured(gContext)) {
+//            INST.pushServiceType = PushServiceType.Xiaomi;
+//            INST.initXiaomi(gContext);
+//        } else if(useGoogleFCM(gContext)) {
+//            INST.pushServiceType = PushServiceType.Google;
+//            INST.initFCM(gContext);
+//        } else {
+//            //其它使用小米推送
+//            INST.pushServiceType = PushServiceType.Xiaomi;
+//            INST.initXiaomi(gContext);
+//        }
+        INST.pushServiceType = PushServiceType.Getui;
+        INST.initGetui(gContext);
+
+//        try {
+//            com.igexin.sdk.PushManager.getInstance().checkManifest(gContext);
+//        } catch (GetuiPushException e) {
+//            Log.e(TAG, e.getLocalizedMessage());
+//            e.printStackTrace();
+//        }
 
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -111,13 +119,13 @@ public class PushService {
     }
 
     private static boolean useGoogleFCM(Context context) {
-        if(hasGooglePlayServices(context)) { //判断是否支持google服务框架
-            TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (hasGooglePlayServices(context)) { //判断是否支持google服务框架
+            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             String no = tm.getNetworkOperator();
             String simNo = tm.getSimOperator();
 
-            if(!TextUtils.isEmpty(no) && TextUtils.isEmpty(simNo)) {
-                if(no.startsWith("460") && simNo.startsWith("460")) {
+            if (!TextUtils.isEmpty(no) && TextUtils.isEmpty(simNo)) {
+                if (no.startsWith("460") && simNo.startsWith("460")) {
                     //当sim卡和网络都是大陆运营商时，不能使用fcm
                     return false;
                 } else {
@@ -128,7 +136,7 @@ public class PushService {
 
             //区域是中国大陆简体中文且是中国标准时区，不用fcm
             Locale locale = context.getResources().getConfiguration().locale;
-            if("zh".equals(locale.getLanguage()) && "CN".equals(locale.getCountry()) && "Asia/Shanghai".equals(TimeZone.getDefault().getID())) {
+            if ("zh".equals(locale.getLanguage()) && "CN".equals(locale.getCountry()) && "Asia/Shanghai".equals(TimeZone.getDefault().getID())) {
                 return false;
             }
 
@@ -223,7 +231,7 @@ public class PushService {
             public void run() {
                 try {
                     String token = HmsInstanceId.getInstance(context).getToken(appId, "HCM");
-                    if(!TextUtils.isEmpty(token)){
+                    if (!TextUtils.isEmpty(token)) {
                         ChatManager.Instance().setDeviceToken(token, PushServiceType.HMS.ordinal());
                     }
                 } catch (ApiException e) {
@@ -372,24 +380,24 @@ public class PushService {
     private void initFCM(Context context) {
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-
-                        // Log and toast
-                        String msg = token;
-                        Log.d(TAG, msg);
-//                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-                        ChatManager.Instance().setDeviceToken(token, PushServiceType.Google.ordinal());
+            .addOnCompleteListener(new OnCompleteListener<String>() {
+                @Override
+                public void onComplete(@NonNull Task<String> task) {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                        return;
                     }
-                });
+
+                    // Get new FCM registration token
+                    String token = task.getResult();
+
+                    // Log and toast
+                    String msg = token;
+                    Log.d(TAG, msg);
+//                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                    ChatManager.Instance().setDeviceToken(token, PushServiceType.Google.ordinal());
+                }
+            });
     }
 
     /**
@@ -399,7 +407,6 @@ public class PushService {
         // 验证是否已在此设备上安装并启用Google Play服务，以及此设备上安装的旧版本是否为此客户端所需的版本
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
     }
-
 
 
     public static final String SYS_EMUI = "sys_emui";
@@ -486,6 +493,16 @@ public class PushService {
             }
         }
         return line;
+    }
+
+    private void initGetui(Context context) {
+        com.igexin.sdk.PushManager.getInstance().initialize(context);
+        com.igexin.sdk.PushManager.getInstance().setDebugLogger(context, new IUserLoggerInterface() {
+            @Override
+            public void log(String s) {
+                Log.i(TAG, s);
+            }
+        });
     }
 
     public static PushServiceType getPushServiceType() {

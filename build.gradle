@@ -25,12 +25,17 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven {
             url "https://developer.huawei.com/repo/"
         }
 
         maven { url 'https://jitpack.io' }
-        maven { url 'https://dl.bintray.com/jenly/maven' }
+//        maven { url 'https://dl.bintray.com/jenly/maven' }
+
+        maven {
+            url "https://mvn.getui.com/nexus/content/repositories/releases/"
+        }
     }
     configurations {
         all {

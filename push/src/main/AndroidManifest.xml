@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cn.wildfirechat.push">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -186,6 +187,11 @@
             android:name="OPPO_APP_PUSH_SECRET"
             android:value="${OPPO_APP_SECRET}" />
 
+        <!--个推SDK的appid 重要！必须补充-->
+        <meta-data
+            tools:replace="android:value"
+            android:name="GETUI_APPID"
+            android:value="${GETUI_APPID}" />
 
         <!--        Google  -->
         <service
@@ -202,6 +208,22 @@
             android:name="firebase_analytics_collection_enabled"
             android:value="false" />
 
+        <service
+            android:name=".getui.GetuiPushService"
+            android:exported="false"
+            android:label="PushService"
+            android:process=":pushservice"/>
+
+        <service
+            android:name=".getui.GetuiIntentService" />
+
     </application>
+
+
+    <queries>
+        <intent>
+            <action android:name="com.getui.sdk.action" />
+        </intent>
+    </queries>
 
 </manifest>

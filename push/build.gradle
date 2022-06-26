@@ -26,7 +26,9 @@ android {
                 VIVO_APP_KEY : "c42feb05-de6c-427d-af55-4f902d9e0a75",
 
                 OPPO_APP_KEY  : "16c6afe503b24259928e082ef01a6bf2",
-                OPPO_APP_SECRET : "16c6afe503b24259928e082ef01a6bf2"
+                OPPO_APP_SECRET : "16c6afe503b24259928e082ef01a6bf2",
+
+                GETUI_APPID : "nXIEPKfBMP8QmNjZtKdTk1"
         ]
     }
 
