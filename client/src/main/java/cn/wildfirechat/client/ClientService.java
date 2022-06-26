@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import cn.wildfirechat.ErrorCode;
@@ -194,6 +195,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private boolean useSM4 = false;
 
     private OkHttpClient okHttpClient;
+    private ConcurrentHashMap<Long, Call> uploadingMap;
 
 
     private class ClientServiceStub extends IRemoteClient.Stub {
@@ -495,6 +497,23 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean cancelSendingMessage(long messageId) throws RemoteException {
+            boolean canceled = ProtoLogic.cancelSendingMessage(messageId);
+            if (!canceled){
+                try {
+                    Call call = uploadingMap.remove(messageId);
+                    if (call != null && !call.isCanceled()){
+                        call.cancel();
+                        canceled = true;
+                    }
+                }catch (Exception e){
+                    // do nothing
+                }
+            }
+            return canceled;
+        }
+
+        @Override
         public void send(cn.wildfirechat.message.Message msg, final ISendMessageCallback callback, int expireDuration) throws RemoteException {
 
             msg.messageId = 0;
@@ -557,9 +576,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         };
                         if (serverType == 1) {
                             String[] ss = uploadUrl.split("\\?");
-                            uploadQiniu(ss[0], remoteUrl, ss[1], ss[2], filePath, uploadMediaCallback);
+                            uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, uploadMediaCallback);
                         } else {
-                            uploadFile(filePath, uploadUrl, remoteUrl, uploadMediaCallback);
+                            uploadFile(messageId, filePath, uploadUrl, remoteUrl, uploadMediaCallback);
                         }
                     }
 
@@ -2404,6 +2423,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public int getPort() throws RemoteException {
+            return StnLogic.getPort();
+        }
+
+        @Override
         public String getHostEx() throws RemoteException {
             return StnLogic.getHostEx();
         }
@@ -2898,6 +2922,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public String getProtoRevision() throws RemoteException {
+            return ProtoLogic.getProtoRevision();
+        }
+
+        @Override
         public void setProxyInfo(Socks5ProxyInfo proxyInfo) throws RemoteException {
             ProtoLogic.setProxyInfo(proxyInfo.host, proxyInfo.ip, proxyInfo.port, proxyInfo.username, proxyInfo.password);
         }
@@ -3292,6 +3321,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         android.util.Log.d(TAG, "onnCreate");
+        uploadingMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -3304,6 +3334,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             unregisterReceiver(mConnectionReceiver);
             mConnectionReceiver = null;
         }
+        uploadingMap = null;
     }
 
     private boolean initProto(String userName, String userPwd) {
@@ -3972,7 +4003,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     // progress, error, success
-    private void uploadFile(String filePath, String uploadUrl, String remoteUrl, UploadMediaCallback callback) {
+    private void uploadFile(long messageId, String filePath, String uploadUrl, String remoteUrl, UploadMediaCallback callback) {
 
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient.Builder()
@@ -3992,6 +4023,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
                 callback.onFail(4);
+                uploadingMap.remove(messageId);
             }
 
             @Override
@@ -4002,11 +4034,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 } else {
                     callback.onSuccess(remoteUrl);
                 }
+                uploadingMap.remove(messageId);
             }
         });
+        uploadingMap.put(messageId, call);
     }
 
-    private void uploadQiniu(String uploadUrl, String remoteUrl, String token, String key, String filePath, UploadMediaCallback callback) {
+    private void uploadQiniu(long messageId, String uploadUrl, String remoteUrl, String token, String key, String filePath, UploadMediaCallback callback) {
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -4032,6 +4066,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
                 callback.onFail(4);
+                uploadingMap.remove(messageId);
             }
 
             @Override
@@ -4042,8 +4077,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 } else {
                     callback.onSuccess(remoteUrl);
                 }
+                uploadingMap.remove(messageId);
             }
         });
+        uploadingMap.put(messageId, call);
     }
 
 }

@@ -15,6 +15,7 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfirechat.chat.R;
+import cn.wildfirechat.remote.ChatManager;
 
 public class AboutActivity extends WfcBaseActivity {
 
@@ -33,6 +34,7 @@ public class AboutActivity extends WfcBaseActivity {
             PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), PackageManager.GET_CONFIGURATIONS);
             String info = packageInfo.packageName + "\n"
                 + packageInfo.versionCode + " " + packageInfo.versionName + "\n"
+                + ChatManager.Instance().getProtoRevision() + "\n"
                 + Config.IM_SERVER_HOST + "\n"
                 + AppService.APP_SERVER_ADDRESS + "\n";
 
