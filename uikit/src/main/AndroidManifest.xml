@@ -93,9 +93,9 @@
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
+            android:exported="false"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:exported="false">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="${packageName}.kit.voip.single" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -167,7 +167,8 @@
             android:windowSoftInputMode="adjustPan|stateHidden|adjustResize" />
 
         <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
-        <activity android:name="cn.wildfire.chat.kit.WfcWebViewActivity"
+        <activity
+            android:name="cn.wildfire.chat.kit.WfcWebViewActivity"
             android:exported="false">
             <intent-filter>
                 <action android:name="${packageName}.webview" />
@@ -216,9 +217,9 @@
             android:label="联系人选择" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
+            android:exported="false"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:exported="false">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="${packageName}.kit.voip.multi" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -239,7 +240,8 @@
         <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
         <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />
         <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />
-        <activity android:name="cn.wildfire.chat.moment.FeedListActivity"
+        <activity
+            android:name="cn.wildfire.chat.moment.FeedListActivity"
             android:exported="false">
             <intent-filter>
                 <action android:name="${packageName}.moment" />
@@ -266,6 +268,9 @@
             android:name=".favorite.FavoriteListActivity"
             android:label="收藏" />
         <activity android:name=".voip.conference.ConferenceParticipantListActivity" />
+        <activity
+            android:name=".group.GroupMemberMessageHistoryActivity"
+            android:label="用户消息" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

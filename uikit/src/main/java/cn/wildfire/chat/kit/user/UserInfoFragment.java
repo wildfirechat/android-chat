@@ -45,6 +45,7 @@ import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.group.GroupMemberMessageHistoryActivity;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -237,7 +238,10 @@ public class UserInfoFragment extends Fragment {
     }
     @OnClick(R2.id.messagesOptionItemView)
     void showUserMessages() {
-        //Todo show user sent message in group
+        Intent intent = new Intent(getActivity(), GroupMemberMessageHistoryActivity.class);
+        intent.putExtra("groupId", groupId);
+        intent.putExtra("groupMemberId", userInfo.uid);
+        startActivity(intent);
     }
 
     private static final int REQUEST_CODE_PICK_IMAGE = 100;
