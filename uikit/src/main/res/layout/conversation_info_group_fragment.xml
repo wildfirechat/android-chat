@@ -184,10 +184,10 @@
                         android:textColor="@color/black0"
                         android:textSize="16sp" />
 
-                    <com.kyleduo.switchbutton.SwitchButton
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/silentSwitchButton"
                         android:layout_marginRight="@dimen/option_item_margin_right"
-                        style="@style/IosSwitch" />
+                        style="@style/defaultSwitch" />
                 </LinearLayout>
 
                 <View
@@ -207,10 +207,10 @@
                         android:textColor="@color/black0"
                         android:textSize="16sp" />
 
-                    <com.kyleduo.switchbutton.SwitchButton
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/stickTopSwitchButton"
                         android:layout_marginRight="@dimen/option_item_margin_right"
-                        style="@style/IosSwitch" />
+                        style="@style/defaultSwitch" />
                 </LinearLayout>
 
                 <View
@@ -233,10 +233,10 @@
                         android:textColor="@color/black0"
                         android:textSize="16sp" />
 
-                    <com.kyleduo.switchbutton.SwitchButton
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/markGroupSwitchButton"
                         android:layout_marginRight="16dp"
-                        style="@style/IosSwitch" />
+                        style="@style/defaultSwitch" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -273,10 +273,10 @@
                         android:textColor="@color/black0"
                         android:textSize="16sp" />
 
-                    <com.kyleduo.switchbutton.SwitchButton
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/showGroupMemberAliasSwitchButton"
                         android:layout_marginRight="@dimen/option_item_margin_right"
-                        style="@style/IosSwitch" />
+                        style="@style/defaultSwitch" />
                 </LinearLayout>
 
             </LinearLayout>

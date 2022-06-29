@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.kyleduo.switchbutton.SwitchButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,9 +47,9 @@ import cn.wildfirechat.remote.GeneralCallback;
 public class SecretConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
     @BindView(R2.id.stickTopSwitchButton)
-    SwitchButton stickTopSwitchButton;
+    SwitchMaterial stickTopSwitchButton;
     @BindView(R2.id.silentSwitchButton)
-    SwitchButton silentSwitchButton;
+    SwitchMaterial silentSwitchButton;
 
     @BindView(R2.id.fileRecordOptionItemView)
     OptionItemView fileRecordOptionItem;

@@ -52,9 +52,9 @@
                         android:textColor="@color/black0"
                         android:textSize="16sp" />
 
-                    <com.kyleduo.switchbutton.SwitchButton
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/silentSwitchButton"
-                        style="@style/IosSwitch" />
+                        style="@style/defaultSwitch" />
                 </LinearLayout>
 
                 <View
@@ -77,9 +77,9 @@
                         android:textColor="@color/black0"
                         android:textSize="16sp" />
 
-                    <com.kyleduo.switchbutton.SwitchButton
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/stickTopSwitchButton"
-                        style="@style/IosSwitch" />
+                        style="@style/defaultSwitch" />
                 </LinearLayout>
 
                 <View

@@ -59,25 +59,9 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="Switch">
-        <item name="android:thumb">@drawable/switch_thumb</item>
-        <item name="android:track">@drawable/switch_track</item>
-    </style>
-
-    <style name="IosSwitch">
+    <style name="defaultSwitch">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="kswBackDrawable">@drawable/ios_back_drawable</item>
-        <item name="kswBackMeasureRatio">1.5</item>
-        <item name="kswThumbDrawable">@drawable/ios_thumb_selector</item>
-        <item name="kswThumbMarginBottom">-8dp</item>
-        <item name="kswThumbMarginLeft">-5dp</item>
-        <item name="kswThumbMarginRight">-5dp</item>
-        <item name="kswThumbMarginTop">-2dp</item>
-    </style>
-
-    <style name="deliveryProgress" parent="Widget.MaterialProgressBar.ProgressBar.Small">
-
     </style>
 
 </resources>

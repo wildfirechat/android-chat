@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.kyleduo.switchbutton.SwitchButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Collections;
 
@@ -30,7 +30,7 @@ public class GroupMemberPermissionFragment extends Fragment {
     private GroupInfo groupInfo;
 
     @BindView(R2.id.privateChatSwitchButton)
-    SwitchButton privateChatSwitchButton;
+    SwitchMaterial privateChatSwitchButton;
 
     public static GroupMemberPermissionFragment newInstance(GroupInfo groupInfo) {
         Bundle args = new Bundle();
@@ -56,12 +56,12 @@ public class GroupMemberPermissionFragment extends Fragment {
     }
 
     private void init() {
-        privateChatSwitchButton.setCheckedNoEvent(groupInfo.privateChat == 0);
+        privateChatSwitchButton.setChecked(groupInfo.privateChat == 0);
         privateChatSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
             groupViewModel.enablePrivateChat(groupInfo.target, isChecked, null, Collections.singletonList(0)).observe(this, booleanOperateResult -> {
                 if (!booleanOperateResult.isSuccess()) {
-                    privateChatSwitchButton.setCheckedNoEvent(!isChecked);
+                    privateChatSwitchButton.setChecked(!isChecked);
                     Toast.makeText(getActivity(), "设置群成员权限失败 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
                 }
             });
