@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.kyleduo.switchbutton.SwitchButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,7 +100,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @BindView(R2.id.myGroupNickNameOptionItemView)
     OptionItemView myGroupNickNameOptionItemView;
     @BindView(R2.id.showGroupMemberAliasSwitchButton)
-    SwitchButton showGroupMemberNickNameSwitchButton;
+    SwitchMaterial showGroupMemberNickNameSwitchButton;
 
     @BindView(R2.id.quitButton)
     TextView quitGroupButton;
@@ -108,15 +108,15 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @BindView(R2.id.markGroupLinearLayout)
     LinearLayout markGroupLinearLayout;
     @BindView(R2.id.markGroupSwitchButton)
-    SwitchButton markGroupSwitchButton;
+    SwitchMaterial markGroupSwitchButton;
 
     // common
     @BindView(R2.id.memberRecyclerView)
     RecyclerView memberReclerView;
     @BindView(R2.id.stickTopSwitchButton)
-    SwitchButton stickTopSwitchButton;
+    SwitchMaterial stickTopSwitchButton;
     @BindView(R2.id.silentSwitchButton)
-    SwitchButton silentSwitchButton;
+    SwitchMaterial silentSwitchButton;
 
     @BindView(R2.id.fileRecordOptionItemView)
     OptionItemView fileRecordOptionItem;
