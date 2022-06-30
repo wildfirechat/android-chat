@@ -38,4 +38,24 @@ public enum PersistFlag {
     public int getValue() {
         return value;
     }
+    public static PersistFlag flag(int flag) {
+        PersistFlag pflag = null;
+        switch (flag) {
+            case 0:
+                pflag = No_Persist;
+                break;
+            case 1:
+                pflag = Persist;
+                break;
+            case 3:
+                pflag = Persist_And_Count;
+                break;
+            case 4:
+                pflag = Transparent;
+                break;
+            default:
+                throw new IllegalArgumentException("flag" + flag + " is invalid");
+        }
+        return pflag;
+    }
 }
