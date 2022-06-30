@@ -405,6 +405,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
         }
 
+        @Override
+        public void registerMessageFlag(int type, int flag) throws RemoteException {
+            ProtoLogic.registerMessageFlag(type, flag);
+        }
+
         private ProtoMessage convertMessage(cn.wildfirechat.message.Message msg) {
             ProtoMessage protoMessage = new ProtoMessage();
 

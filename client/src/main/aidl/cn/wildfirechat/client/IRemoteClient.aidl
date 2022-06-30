@@ -99,6 +99,7 @@ interface IRemoteClient {
     oneway void setOnTrafficDataListener(in IOnTrafficDataListener listener);
 
     oneway void registerMessageContent(in String msgContentCls);
+    oneway void registerMessageFlag(in int type, in int flag);
 
     oneway void send(in Message msg, in ISendMessageCallback callback, in int expireDuration);
     oneway void sendSavedMessage(in Message msg, in int expireDuration, in ISendMessageCallback callback);

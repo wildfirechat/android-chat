@@ -6,7 +6,6 @@ package cn.wildfirechat.message;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.os.Parcel;
 import android.provider.MediaStore;
@@ -16,7 +15,6 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageContentType;
@@ -27,6 +25,7 @@ import cn.wildfirechat.utils.WeChatImageUtils;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
+ *
  * @refactor dhl
  * 添加小视频的宽高，时长
  */
@@ -79,21 +78,20 @@ public class VideoMessageContent extends MediaMessageContent {
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.searchableContent = "[视频]";
-     /* //  if (thumbnailBytes == null && !TextUtils.isEmpty(localPath)) {
+        if (thumbnailBytes == null && !TextUtils.isEmpty(localPath)) {
             try {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(localPath, MediaStore.Video.Thumbnails.MICRO_KIND);
-//              thumbnail = ThumbnailUtils.extractThumbnail(thumbnail, 320, 240, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-                thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-                payload.binaryContent = baos.toByteArray();
+                VideoParam videoParam = WeChatImageUtils.getVideoParam(localPath);
+                duration = videoParam.getDuration();
+                thumbnailBytes = videoParam.getThumbnailBytes();
+                payload.binaryContent = thumbnailBytes;
                 Log.e(TAG,"binaryContent="+ payload.binaryContent.length/1024+"kb");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-       *//* } else {
+        } else {
             payload.binaryContent = thumbnailBytes;
-        }*/
-        payload.binaryContent = thumbnailBytes;
+        }
+        Log.e(TAG, "videoMessageContent encode " + payload.binaryContent.length + " " + duration);
         try {
             JSONObject objWrite = new JSONObject();
             objWrite.put("d", duration);
