@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.blankj.utilcode.util.FileUtils;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.R2;
@@ -21,6 +19,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.TimeConvertUtils;
+import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
