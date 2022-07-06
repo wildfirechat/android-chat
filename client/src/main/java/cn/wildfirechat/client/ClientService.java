@@ -504,14 +504,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean cancelSendingMessage(long messageId) throws RemoteException {
             boolean canceled = ProtoLogic.cancelSendingMessage(messageId);
-            if (!canceled){
+            if (!canceled) {
                 try {
                     Call call = uploadingMap.remove(messageId);
-                    if (call != null && !call.isCanceled()){
+                    if (call != null && !call.isCanceled()) {
                         call.cancel();
                         canceled = true;
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     // do nothing
                 }
             }
@@ -529,9 +529,22 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             boolean uploadThenSend = false;
             File file = null;
             if (msg.content instanceof MediaMessageContent) {
-                file = new File(((MediaMessageContent) msg.content).localPath);
-                if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload()) {
-                    uploadThenSend = true;
+                if (!TextUtils.isEmpty(((MediaMessageContent) msg.content).localPath)) {
+                    file = new File(((MediaMessageContent) msg.content).localPath);
+                    if (!file.exists() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
+                        android.util.Log.e(TAG, "mediaMessage invalid, file not exist");
+                        callback.onFailure(-1);
+                        return;
+                    }
+                    if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload()) {
+                        uploadThenSend = true;
+                    }
+                } else {
+                    if (TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
+                        android.util.Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
+                        callback.onFailure(-1);
+                        return;
+                    }
                 }
             }
 
