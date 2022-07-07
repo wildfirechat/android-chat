@@ -231,6 +231,7 @@ interface IRemoteClient {
     oneway void modifyGroupMemberExtra(in String groupId, in String memberId, in String extra, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     List<GroupMember> getGroupMembers(in String groupId, in boolean forceUpdate);
     List<GroupMember> getGroupMembersByType(in String groupId, in int type);
+    List<GroupMember> getGroupMembersByCount(in String groupId, in int count);
     GroupMember getGroupMember(in String groupId, in String memberId);
     oneway void getGroupMemberEx(in String groupId, in boolean forceUpdate, in IGetGroupMemberCallback callback);
     oneway void transferGroup(in String groupId, in String newOwner, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);

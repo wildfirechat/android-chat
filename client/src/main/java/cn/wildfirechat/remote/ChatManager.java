@@ -6013,6 +6013,23 @@ public class ChatManager {
         }
     }
 
+    public List<GroupMember> getGroupMembersByCount(String groupId, int count) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        if (TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "group id is null");
+            return null;
+        }
+
+        try {
+            return mClient.getGroupMembersByCount(groupId, count);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * 获取群成员列表
      *
