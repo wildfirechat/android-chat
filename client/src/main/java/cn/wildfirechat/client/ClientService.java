@@ -2212,6 +2212,19 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<GroupMember> getGroupMembersByCount(String groupId, int count) throws RemoteException {
+            ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembersByCount(groupId, count);
+            List<GroupMember> out = new ArrayList<>();
+            for (ProtoGroupMember protoMember : protoGroupMembers) {
+                if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
+                    GroupMember member = covertProtoGroupMember(protoMember);
+                    out.add(member);
+                }
+            }
+            return out;
+        }
+
+        @Override
         public GroupMember getGroupMember(String groupId, String memberId) throws RemoteException {
             ProtoGroupMember protoGroupMember = ProtoLogic.getGroupMember(groupId, memberId);
             if (protoGroupMember == null || TextUtils.isEmpty(protoGroupMember.getMemberId())) {
