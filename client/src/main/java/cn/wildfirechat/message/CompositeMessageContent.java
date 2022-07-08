@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Composite_Message;
+
 import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -24,8 +26,6 @@ import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Composite_Message;
 
 @ContentTag(type = ContentType_Composite_Message, flag = PersistFlag.Persist_And_Count)
 public class CompositeMessageContent extends MessageContent {
@@ -96,7 +96,7 @@ public class CompositeMessageContent extends MessageContent {
                     msgObj.put("ce", messagePayload.extra);
 
                 if (message.content instanceof MediaMessageContent) {
-                    msgObj.put("mt", ((MediaMessageContent) message.content).mediaType);
+                    msgObj.put("mt", ((MediaMessageContent) message.content).mediaType.getValue());
                     if(!TextUtils.isEmpty(((MediaMessageContent) message.content).remoteUrl))
                     msgObj.put("mru", ((MediaMessageContent) message.content).remoteUrl);
                 }
