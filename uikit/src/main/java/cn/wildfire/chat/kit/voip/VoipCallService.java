@@ -132,6 +132,15 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         return START_NOT_STICKY;
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null && session.isConference()){
+            session.leaveConference(false);
+        }
+    }
+
     private void checkCallState() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
