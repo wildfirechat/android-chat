@@ -536,7 +536,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         callback.onFailure(-1);
                         return;
                     }
-                    if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload()) {
+                    if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
                         uploadThenSend = true;
                     }
                 } else {
