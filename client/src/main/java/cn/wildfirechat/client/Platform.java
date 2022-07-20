@@ -12,7 +12,9 @@ public enum Platform {
     PlatformType_OSX(4),
     PlatformType_WEB(5),
     PlatformType_WX(6),
-    PlatformType_Linux(7);
+    PlatformType_Linux(7),
+    PlatformType_iPad(8),
+    PlatformType_APad(9);
 
     private int value;
 
@@ -25,7 +27,7 @@ public enum Platform {
     }
 
     public static Platform platform(int platform) {
-        if (platform >= 0 && platform < 7) {
+        if (platform >= 0 && platform < 9) {
             return Platform.values()[platform];
         }
         return Platform.PlatformType_UNSET;
@@ -48,6 +50,12 @@ public enum Platform {
                 break;
             case PlatformType_WX:
                 platFormName = "小程序";
+                break;
+            case PlatformType_iPad:
+                platFormName = "iPad";
+                break;
+            case PlatformType_APad:
+                platFormName = "Android 平板";
                 break;
             default:
                 break;
