@@ -71,6 +71,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         super.onCreate();
         ChatManager.Instance().addOnReceiveMessageListener(this);
 
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (session != null){
+            initialized = true;
+            startForeground(NOTIFICATION_ID, buildNotification(session));
+        }
     }
 
     @Nullable
@@ -115,8 +120,8 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         if (!initialized) {
             initialized = true;
             startForeground(NOTIFICATION_ID, buildNotification(session));
-            checkCallState();
         }
+        checkCallState();
         showFloatingWindow = intent.getBooleanExtra("showFloatingView", false);
         if (showFloatingWindow) {
             rendererInitialized = false;
@@ -167,6 +172,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
                 broadcastCallOngoing(session);
             }
 
+            handler.removeCallbacks(this::checkCallState);
             handler.postDelayed(this::checkCallState, 1000);
         }
     }
