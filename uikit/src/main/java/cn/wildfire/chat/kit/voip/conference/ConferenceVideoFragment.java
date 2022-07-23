@@ -126,6 +126,8 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
         rootLinearLayout.setOnClickListener(clickListener);
         startHideBarTimer();
+
+        session.setBigVideoProcessor(new GrayScaleVideoProcessor());
     }
 
     private void updateControlStatus() {
