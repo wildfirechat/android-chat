@@ -37,13 +37,15 @@ public class GrayScaleVideoProcessor implements VideoProcessor {
     @Override
     public void onFrameCaptured(VideoFrame videoFrame) {
         VideoFrame.I420Buffer i420Buffer = videoFrame.getBuffer().toI420();
+        ByteBuffer dataY = i420Buffer.getDataY();
         ByteBuffer dataU = i420Buffer.getDataU();
         ByteBuffer dataV = i420Buffer.getDataV();
+
         for (int i = 0; i < dataU.limit(); i++) {
-            dataU.put((byte) 127);
+            dataU.put((byte) 128);
         }
         for (int i = 0; i < dataV.limit(); i++) {
-            dataV.put((byte) 127);
+            dataV.put((byte) 128);
         }
 
         this.videoSink.onFrame(new VideoFrame(i420Buffer, videoFrame.getRotation(), videoFrame.getTimestampNs()));

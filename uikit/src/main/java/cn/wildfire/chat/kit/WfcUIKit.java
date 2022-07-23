@@ -28,6 +28,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.lqr.emoji.LQREmotionKit;
 
+import org.opencv.android.OpenCVLoader;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -76,6 +78,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         if (wfcUIKit == null) {
             wfcUIKit = new WfcUIKit();
         }
+        OpenCVLoader.initDebug();
         return wfcUIKit;
     }
 

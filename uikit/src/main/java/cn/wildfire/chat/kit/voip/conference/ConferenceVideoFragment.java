@@ -127,7 +127,7 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         rootLinearLayout.setOnClickListener(clickListener);
         startHideBarTimer();
 
-        session.setBigVideoProcessor(new GrayScaleVideoProcessor());
+        session.setBigVideoProcessor(new GrayScaleOpencvVideoProcessor());
     }
 
     private void updateControlStatus() {
