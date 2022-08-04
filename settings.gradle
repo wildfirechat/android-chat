@@ -4,7 +4,7 @@ include ':client',
     ':uikit',
     ':mars-core-release',
     // 如果不能从网络下载webrtc时，请取消下面的注释
-//    ':webrtc',
+    ':webrtc',
     ':emojilibrary',
     ':imagepicker',
     ':momentclient',

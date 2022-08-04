@@ -278,6 +278,26 @@ public class ChatManager {
         public int value() {
             return this.value;
         }
+        public static SearchUserType type(int type) {
+            SearchUserType searchUserType = null;
+            switch (type) {
+                case 0:
+                    searchUserType = General;
+                    break;
+                case 1:
+                    searchUserType = NameOrMobile;
+                    break;
+                case 2:
+                    searchUserType = Name;
+                    break;
+                case 3:
+                    searchUserType = Mobile;
+                    break;
+                default:
+                    throw new IllegalArgumentException("type " + searchUserType + " is invalid");
+            }
+            return searchUserType;
+        }
     }
 
 
@@ -351,14 +371,16 @@ public class ChatManager {
 
     public static void init(Application context, String imServerHost) {
         Log.d(TAG, "init " + imServerHost);
-        checkSDKHost(imServerHost);
+        if (imServerHost != null) {
+        	checkSDKHost(imServerHost);
+        }
         if (INST != null) {
             // TODO: Already initialized
             return;
         }
-        if (TextUtils.isEmpty(imServerHost)) {
-            throw new IllegalArgumentException("imServerHost must be empty");
-        }
+//        if (TextUtils.isEmpty(imServerHost)) {
+//            throw new IllegalArgumentException("imServerHost must be empty");
+//        }
         gContext = context.getApplicationContext();
         INST = new ChatManager(imServerHost);
         INST.mainHandler = new Handler();
@@ -1780,6 +1802,21 @@ public class ChatManager {
     }
 
     /**
+     * 注册自定义消息的存储类型
+     * 给 uniapp 原生插件使用
+     *
+     * @param type 消息类型
+     * @param flag 消息存储类型
+     */
+    public void registerMessageFlag(int type, PersistFlag flag) {
+        try {
+            mClient.registerMessageFlag(type, flag.getValue());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 插入消息
      *
      * @param conversation 目标会话
@@ -2051,6 +2088,17 @@ public class ChatManager {
             mClient.setBackupAddressStrategy(strategy);
         } catch (RemoteException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void setIMServerHost(String imServerHost) {
+        SERVER_HOST = imServerHost;
+        if (mClient != null) {
+            try {
+                mClient.setServerAddress(imServerHost);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -2386,6 +2434,24 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 取消消息发送，只有媒体类消息才可以取消发送，普通消息发送中时无法取消。
+     *
+     * @param messageId
+     * @return 是否取消成功
+     */
+    public boolean cancelSendingMessage(long messageId) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.cancelSendingMessage(messageId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     /**
      * 消息撤回
      *
@@ -5947,6 +6013,23 @@ public class ChatManager {
         }
     }
 
+    public List<GroupMember> getGroupMembersByCount(String groupId, int count) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        if (TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "group id is null");
+            return null;
+        }
+
+        try {
+            return mClient.getGroupMembersByCount(groupId, count);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * 获取群成员列表
      *
@@ -6340,6 +6423,19 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public int getPort() {
+        if (!checkRemoteService()) {
+            return 80;
+        }
+
+        try {
+            return mClient.getPort();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return 80;
         }
     }
 
@@ -6924,6 +7020,23 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取协议栈版本
+     *
+     * @return 协议栈版本
+     */
+    public String getProtoRevision() {
+        if (!checkRemoteService()) {
+            return "";
+        }
+
+        try {
+            return mClient.getProtoRevision();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     private String getLogPath() {
         return gContext.getCacheDir().getAbsolutePath() + "/log";
     }

@@ -212,6 +212,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             }
 
             Conversation conversation = session.getConversation();
+            if (conversation == null){
+                return;
+            }
             if (conversation.type == Conversation.ConversationType.Single) {
                 //Intent intent = new Intent(WfcIntent.ACTION_VOIP_SINGLE);
                 Intent intent = new Intent(application, SingleCallActivity.class);

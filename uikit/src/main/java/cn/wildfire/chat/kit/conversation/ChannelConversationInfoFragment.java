@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
-import com.kyleduo.switchbutton.SwitchButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Arrays;
 
@@ -48,9 +48,9 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
     @BindView(R2.id.stickTopSwitchButton)
-    SwitchButton stickTopSwitchButton;
+    SwitchMaterial stickTopSwitchButton;
     @BindView(R2.id.silentSwitchButton)
-    SwitchButton silentSwitchButton;
+    SwitchMaterial silentSwitchButton;
 
     @BindView(R2.id.channelNameOptionItemView)
     OptionItemView channelNameOptionItemView;

@@ -99,9 +99,11 @@ interface IRemoteClient {
     oneway void setOnTrafficDataListener(in IOnTrafficDataListener listener);
 
     oneway void registerMessageContent(in String msgContentCls);
+    oneway void registerMessageFlag(in int type, in int flag);
 
     oneway void send(in Message msg, in ISendMessageCallback callback, in int expireDuration);
     oneway void sendSavedMessage(in Message msg, in int expireDuration, in ISendMessageCallback callback);
+    boolean cancelSendingMessage(in long messageId);
     oneway void recall(in long messageUid, IGeneralCallback callback);
     long getServerDeltaTime();
     List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines);
@@ -229,6 +231,7 @@ interface IRemoteClient {
     oneway void modifyGroupMemberExtra(in String groupId, in String memberId, in String extra, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     List<GroupMember> getGroupMembers(in String groupId, in boolean forceUpdate);
     List<GroupMember> getGroupMembersByType(in String groupId, in int type);
+    List<GroupMember> getGroupMembersByCount(in String groupId, in int count);
     GroupMember getGroupMember(in String groupId, in String memberId);
     oneway void getGroupMemberEx(in String groupId, in boolean forceUpdate, in IGetGroupMemberCallback callback);
     oneway void transferGroup(in String groupId, in String newOwner, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
@@ -242,6 +245,7 @@ interface IRemoteClient {
     byte[] decodeDataEx(in int type, in byte[] data, in boolean gzip);
 
     String getHost();
+    int getPort();
     String getHostEx();
     oneway void createChannel(in String channelId, in String channelName, in String channelPortrait, in String desc, in String extra, in ICreateChannelCallback callback);
     oneway void modifyChannelInfo(in String channelId, in int modifyType, in String newValue, in IGeneralCallback callback);
@@ -282,6 +286,8 @@ interface IRemoteClient {
     boolean isEnableSecretChat();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
+
+    String getProtoRevision();
 
     oneway void setProxyInfo(in Socks5ProxyInfo proxyInfo);
 

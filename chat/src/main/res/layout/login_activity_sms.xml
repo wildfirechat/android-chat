@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="手机号"
-                android:textColor="@color/gray1"
+                android:textColor="@color/black3"
                 android:textSize="17sp" />
 
         </FrameLayout>
