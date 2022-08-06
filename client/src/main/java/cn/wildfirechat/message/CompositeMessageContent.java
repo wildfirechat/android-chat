@@ -88,7 +88,7 @@ public class CompositeMessageContent extends MessageContent {
                 if(!TextUtils.isEmpty(messagePayload.content))
                     msgObj.put("cc", messagePayload.content);
                 if (messagePayload.binaryContent != null && messagePayload.binaryContent.length > 0) {
-                    msgObj.put("cbc", Base64.encodeToString(messagePayload.binaryContent, Base64.DEFAULT));
+                    msgObj.put("cbc", Base64.encodeToString(messagePayload.binaryContent, Base64.NO_WRAP));
                 }
                 msgObj.put("cmt", messagePayload.mentionedType);
                 msgObj.put("cmts", new JSONArray(messagePayload.mentionedTargets));
@@ -153,7 +153,7 @@ public class CompositeMessageContent extends MessageContent {
                 messagePayload.pushData = object.optString("cpd");
                 messagePayload.content = object.optString("cc");
                 if (object.has("cbc")) {
-                    messagePayload.binaryContent = Base64.decode(object.getString("cbc"), Base64.DEFAULT);
+                    messagePayload.binaryContent = Base64.decode(object.getString("cbc"), Base64.NO_WRAP);
                 }
                 messagePayload.mentionedType = object.optInt("cmt");
                 JSONArray cmts = object.optJSONArray("cmts");

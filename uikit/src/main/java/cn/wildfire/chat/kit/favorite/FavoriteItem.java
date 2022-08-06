@@ -101,7 +101,7 @@ public class FavoriteItem {
                 if (imageMessageContent.getThumbnail() != null) {
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     imageMessageContent.getThumbnail().compress(Bitmap.CompressFormat.PNG, 100, out);
-                    String thumb = Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
+                    String thumb = Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP);
                     data.put("thumb", thumb);
                     item.data = new Gson().toJson(data);
                 }
@@ -112,7 +112,7 @@ public class FavoriteItem {
                 if (videoMessageContent.getThumbnail() != null) {
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     videoMessageContent.getThumbnail().compress(Bitmap.CompressFormat.PNG, 100, out);
-                    String thumb = Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
+                    String thumb = Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP);
                     data.put("thumb", thumb);
                     //  TODO add duration to videoMessageContent
                     data.put("duration", 0);
@@ -131,7 +131,7 @@ public class FavoriteItem {
                 CompositeMessageContent compositeMessageContent = (CompositeMessageContent) message.content;
                 item.title = compositeMessageContent.getTitle();
                 MessagePayload payload = compositeMessageContent.encode();
-                item.data = Base64.encodeToString(payload.binaryContent, Base64.DEFAULT);
+                item.data = Base64.encodeToString(payload.binaryContent, Base64.NO_WRAP);
                 break;
             case MessageContentType.ContentType_Voice:
                 SoundMessageContent soundMessageContent = (SoundMessageContent) message.content;
@@ -173,7 +173,7 @@ public class FavoriteItem {
                 if (!TextUtils.isEmpty(data)) {
                     try {
                         JSONObject object = new JSONObject(data);
-                        byte[] thumbnailBytes = Base64.decode(object.getString("thumb"), Base64.DEFAULT);
+                        byte[] thumbnailBytes = Base64.decode(object.getString("thumb"), Base64.NO_WRAP);
                         imageMessageContent.setThumbnailBytes(thumbnailBytes);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -187,7 +187,7 @@ public class FavoriteItem {
                 if (!TextUtils.isEmpty(data)) {
                     try {
                         JSONObject object = new JSONObject(data);
-                        byte[] thumbnailBytes = Base64.decode(object.getString("thumb"), Base64.DEFAULT);
+                        byte[] thumbnailBytes = Base64.decode(object.getString("thumb"), Base64.NO_WRAP);
                         videoMessageContent.setThumbnailBytes(thumbnailBytes);
                         // TODO duration
                     } catch (JSONException e) {
@@ -216,7 +216,7 @@ public class FavoriteItem {
 
                 compositeMessageContent.setTitle(title);
                 if (!TextUtils.isEmpty(data)) {
-                    byte[] payloadBytes = Base64.decode(data, Base64.DEFAULT);
+                    byte[] payloadBytes = Base64.decode(data, Base64.NO_WRAP);
                     MessagePayload payload = new MessagePayload();
                     payload.content = title;
                     payload.binaryContent = payloadBytes;
