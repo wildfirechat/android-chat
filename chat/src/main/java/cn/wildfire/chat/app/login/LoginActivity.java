@@ -23,32 +23,29 @@ import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
 import cn.wildfirechat.chat.R;
 
-/**
- * use {@link SMSLoginActivity} instead
- */
-@Deprecated
-public class LoginActivity extends WfcBaseActivity {
+public class LoginActivity extends WfcBaseNoToolbarActivity {
     @BindView(R.id.loginButton)
     Button loginButton;
-    @BindView(R.id.accountEditText)
+    @BindView(R.id.phoneNumberEditText)
     EditText accountEditText;
     @BindView(R.id.passwordEditText)
     EditText passwordEditText;
 
     @Override
     protected int contentLayout() {
-        return R.layout.login_activity_account;
+        return R.layout.login_activity_password;
     }
 
     @Override
-    protected boolean showHomeMenuItem() {
-        return false;
+    protected void afterViews() {
+        setStatusBarTheme(this, false);
+        setStatusBarColor(R.color.gray14);
     }
 
-    @OnTextChanged(value = R.id.accountEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    @OnTextChanged(value = R.id.phoneNumberEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void inputAccount(Editable editable) {
         if (!TextUtils.isEmpty(passwordEditText.getText()) && !TextUtils.isEmpty(editable)) {
             loginButton.setEnabled(true);
@@ -66,6 +63,12 @@ public class LoginActivity extends WfcBaseActivity {
         }
     }
 
+    @OnClick(R.id.authCodeLoginTextView)
+    void authCodeLogin() {
+        Intent intent = new Intent(this, SMSLoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     @OnClick(R.id.loginButton)
     void login() {
@@ -80,7 +83,7 @@ public class LoginActivity extends WfcBaseActivity {
             .build();
         dialog.show();
 
-        AppService.Instance().namePwdLogin(account, password, new AppService.LoginCallback() {
+        AppService.Instance().passwordLogin(account, password, new AppService.LoginCallback() {
             @Override
             public void onUiSuccess(LoginResult loginResult) {
                 if (isFinishing()) {

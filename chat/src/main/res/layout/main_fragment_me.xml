@@ -77,7 +77,7 @@
         app:title="消息与通知" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/passwordOptionItemView"
+        android:id="@+id/accountOptionItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"

@@ -22,6 +22,7 @@ import butterknife.OnTextChanged;
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.app.setting.ResetPasswordActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
@@ -39,9 +40,6 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     EditText authCodeEditText;
     @BindView(R.id.requestAuthCodeButton)
     TextView requestAuthCodeButton;
-
-    private String phoneNumber;
-
 
     @Override
     protected int contentLayout() {
@@ -79,6 +77,13 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         }
     }
 
+    @OnClick(R.id.passwordLoginTextView)
+    void authCodeLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
 
     @OnClick(R.id.loginButton)
     void login() {
@@ -111,6 +116,11 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                 Intent intent = new Intent(SMSLoginActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
+
+                Intent resetPasswordIntent = new Intent(SMSLoginActivity.this, ResetPasswordActivity.class);
+                resetPasswordIntent.putExtra("resetCode", loginResult.getResetCode());
+                startActivity(resetPasswordIntent);
+
                 finish();
             }
 
