@@ -540,7 +540,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         uploadThenSend = true;
                     }
                 } else {
-                    if (TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
+                    if (!(msg.content instanceof CompositeMessageContent) && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
                         android.util.Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
                         callback.onFailure(-1);
                         return;
