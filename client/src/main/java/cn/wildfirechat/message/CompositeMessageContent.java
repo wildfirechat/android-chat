@@ -35,8 +35,12 @@ import cn.wildfirechat.remote.ChatManager;
 @ContentTag(type = ContentType_Composite_Message, flag = PersistFlag.Persist_And_Count)
 public class CompositeMessageContent extends MediaMessageContent {
     private String title;
-    //可能会非常大，超过 ipc 限制，超过 20k 时，不进行 ipc，需要使用时，在进行 decode
+    //可能会非常大，不进行 ipc，需要使用时，在进行 decode
     private List<Message> messages;
+    // 内部 ipc 使用
+    private byte[] binaryContent;
+
+    private boolean mediaCompositeMessageLoaded = false;
 
     public String getTitle() {
         return title;
@@ -48,15 +52,37 @@ public class CompositeMessageContent extends MediaMessageContent {
 
     // 只允许在主进程调用
     public List<Message> getMessages() {
-        if (messages == null) {
-            decodeMediaCompositeMessages();
+        if (isLoaded()) {
+            if (!mediaCompositeMessageLoaded && !TextUtils.isEmpty(localPath) && new File(localPath).exists()) {
+                decodeMediaCompositeMessages();
+                mediaCompositeMessageLoaded = true;
+            } else if (this.messages == null && this.binaryContent != null && this.binaryContent.length > 0) {
+                decodeMessages(this.binaryContent, ChatManager.Instance()::messageContentFromPayload);
+            }
+        } else {
+            if (this.binaryContent != null && this.binaryContent.length > 0) {
+                decodeMessages(this.binaryContent, ChatManager.Instance()::messageContentFromPayload);
+            }
         }
-        return messages == null ? new ArrayList<>() : messages;
+        return messages;
+    }
+
+    public boolean isLoaded() {
+        if (TextUtils.isEmpty(remoteUrl)) {
+            return true;
+        } else {
+            if (TextUtils.isEmpty(localPath)) {
+                return false;
+            }
+            File file = new File(localPath);
+            return file.exists();
+        }
     }
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
-        this.encodeMediaCompositeMessages();
+        JSONObject object = this.encodeMessages(null);
+        this.binaryContent = object.toString().getBytes();
     }
 
     public CompositeMessageContent() {
@@ -66,11 +92,7 @@ public class CompositeMessageContent extends MediaMessageContent {
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.content = this.title;
-        if (this.messages != null) {
-            encodeMessages(payload);
-        } else {
-            // 采用媒体方式发送，已 encode
-        }
+        payload.binaryContent = this.binaryContent;
         return payload;
     }
 
@@ -93,33 +115,14 @@ public class CompositeMessageContent extends MediaMessageContent {
     private void decode(MessagePayload payload, Converter contentConverter) {
         super.decode(payload);
         title = payload.content;
-        if (payload.binaryContent != null) {
-            this.decodeMessages(payload.binaryContent, contentConverter);
-        } else {
-            // 采用媒体方式发送，比较大，按需 decode
-        }
-    }
-
-    private void encodeMediaCompositeMessages() {
-        JSONObject object = encodeMessages(null);
-        byte[] bytes = object.toString().getBytes();
-        if (bytes.length > 20480) {
-            File file = new File(ChatManager.Instance().getApplicationContext().getCacheDir(), "wcf-" + System.currentTimeMillis() + ".data");
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(bytes);
-                localPath = file.getAbsolutePath();
-                mediaType = MessageContentMediaType.FILE;
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        this.binaryContent = payload.binaryContent;
     }
 
     private JSONObject encodeMessages(MessagePayload targetPayload) {
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
+        JSONArray binArray = null;
+        long size = 0;
         try {
             for (Message message : messages) {
                 JSONObject msgObj = new JSONObject();
@@ -166,10 +169,40 @@ public class CompositeMessageContent extends MediaMessageContent {
                         msgObj.put("mru", ((MediaMessageContent) message.content).remoteUrl);
                 }
 
+                if (binArray == null) {
+                    size += msgObj.toString().getBytes().length;
+                    if (size > 20480 && jsonArray.length() > 0) {
+                        binArray = new JSONArray();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            binArray.put(i, jsonArray.get(i));
+                        }
+                    }
+                }
                 jsonArray.put(msgObj);
             }
-            jsonObject.put("ms", jsonArray);
 
+            if (binArray != null && TextUtils.isEmpty(localPath)) {
+                jsonObject.put("ms", jsonArray);
+
+                File file = new File(ChatManager.Instance().getApplicationContext().getCacheDir(), "wcf-" + System.currentTimeMillis() + ".data");
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    fos.write(jsonObject.toString().getBytes());
+                    localPath = file.getAbsolutePath();
+                    mediaType = MessageContentMediaType.FILE;
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                // replace
+                jsonObject.put("ms", binArray);
+            } else {
+                if (binArray != null) {
+                    jsonObject.put("ms", binArray);
+                } else {
+                    jsonObject.put("ms", jsonArray);
+                }
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -279,17 +312,18 @@ public class CompositeMessageContent extends MediaMessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.title);
-        if (TextUtils.isEmpty(this.localPath)) {
-            dest.writeTypedList(this.messages);
-        }
+        dest.writeByteArray(this.binaryContent);
+    }
+
+    public void readFromParcel(Parcel source) {
+        this.title = source.readString();
+        this.binaryContent = source.createByteArray();
     }
 
     protected CompositeMessageContent(Parcel in) {
         super(in);
         this.title = in.readString();
-        if (TextUtils.isEmpty(this.localPath)) {
-            this.messages = in.createTypedArrayList(Message.CREATOR);
-        }
+        this.binaryContent = in.createByteArray();
     }
 
     public static final Creator<CompositeMessageContent> CREATOR = new Creator<CompositeMessageContent>() {
