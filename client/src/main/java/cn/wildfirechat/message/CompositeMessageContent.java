@@ -292,11 +292,20 @@ public class CompositeMessageContent extends MediaMessageContent {
     public String compositeDigest() {
         List<Message> messages = getMessages();
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < messages.size() && i < 4; i++) {
+        for (int i = 0; i < messages.size() && i < 3; i++) {
             Message msg = messages.get(i);
             String sender = msg.sender;
             UserInfo userInfo = ChatManager.Instance().getUserInfo(sender, false);
-            sb.append(userInfo.displayName + ": " + msg.content.digest(msg));
+            String digest = msg.content.digest(msg);
+            if (digest.length() > 36){
+                digest = digest.substring(0, 33);
+                digest += "...";
+            }
+            sb.append(userInfo.displayName + ": " + digest + "\n");
+        }
+        if (messages.size() > 3){
+            sb.append("...");
+        }else {
             sb.append("\n");
         }
         return sb.toString();
