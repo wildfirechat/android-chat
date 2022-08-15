@@ -50,13 +50,6 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     protected void afterViews() {
         setStatusBarTheme(this, false);
         setStatusBarColor(R.color.gray14);
-        if (getIntent().getBooleanExtra("isKickedOff", false)) {
-            new MaterialDialog.Builder(this)
-                .content("你的账号已在其他手机登录")
-                .negativeText("知道了")
-                .build()
-                .show();
-        }
     }
 
     @OnTextChanged(value = R.id.phoneNumberEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)

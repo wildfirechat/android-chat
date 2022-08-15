@@ -4,14 +4,19 @@
 
 package cn.wildfire.chat.app.login;
 
+import static cn.wildfire.chat.app.BaseApp.getContext;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityOptionsCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -43,6 +48,13 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
     protected void afterViews() {
         setStatusBarTheme(this, false);
         setStatusBarColor(R.color.gray14);
+        if (getIntent().getBooleanExtra("isKickedOff", false)) {
+            new MaterialDialog.Builder(this)
+                .content("你的账号已在其他手机登录")
+                .negativeText("知道了")
+                .build()
+                .show();
+        }
     }
 
     @OnTextChanged(value = R.id.phoneNumberEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
@@ -68,6 +80,25 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         Intent intent = new Intent(this, SMSLoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    @OnClick(R.id.registerTextView)
+    void register() {
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+            .title("提示")
+            .content("使用短信验证码登录，将会为您创建账户，请使用短信验证码登录")
+            .cancelable(true)
+            .positiveText("确定")
+            .negativeText("取消")
+            .onPositive((dialog1, which) -> {
+                Intent intent = new Intent(LoginActivity.this, SMSLoginActivity.class);
+                Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
+                    android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
+                startActivity(intent, bundle);
+                finish();
+            })
+            .build();
+        dialog.show();
     }
 
     @OnClick(R.id.loginButton)
