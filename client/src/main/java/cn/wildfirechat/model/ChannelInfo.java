@@ -7,6 +7,9 @@ package cn.wildfirechat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by heavyrainlee on 17/12/2017.
  */
@@ -36,6 +39,7 @@ public class ChannelInfo implements Parcelable {
     public int status;
     public String extra;
     public long updateDt;
+    public List<ChannelMenu> menus;
 
     public ChannelInfo() {
     }
@@ -51,22 +55,38 @@ public class ChannelInfo implements Parcelable {
         dest.writeString(this.channelId);
         dest.writeString(this.name);
         dest.writeString(this.portrait);
-        dest.writeString(this.owner);
         dest.writeString(this.desc);
+        dest.writeString(this.owner);
         dest.writeInt(this.status);
         dest.writeString(this.extra);
         dest.writeLong(this.updateDt);
+        dest.writeList(this.menus);
+    }
+
+    public void readFromParcel(Parcel source) {
+        this.channelId = source.readString();
+        this.name = source.readString();
+        this.portrait = source.readString();
+        this.desc = source.readString();
+        this.owner = source.readString();
+        this.status = source.readInt();
+        this.extra = source.readString();
+        this.updateDt = source.readLong();
+        this.menus = new ArrayList<ChannelMenu>();
+        source.readList(this.menus, ChannelMenu.class.getClassLoader());
     }
 
     protected ChannelInfo(Parcel in) {
         this.channelId = in.readString();
         this.name = in.readString();
         this.portrait = in.readString();
-        this.owner = in.readString();
         this.desc = in.readString();
+        this.owner = in.readString();
         this.status = in.readInt();
         this.extra = in.readString();
         this.updateDt = in.readLong();
+        this.menus = new ArrayList<ChannelMenu>();
+        in.readList(this.menus, ChannelMenu.class.getClassLoader());
     }
 
     public static final Creator<ChannelInfo> CREATOR = new Creator<ChannelInfo>() {

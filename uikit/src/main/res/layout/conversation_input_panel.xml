@@ -113,6 +113,18 @@
                     android:visibility="gone"
                     tools:visibility="gone" />
 
+                <LinearLayout
+                    android:id="@+id/channelMenuContainerLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/gray"
+                    android:gravity="center_vertical"
+                    android:minHeight="42dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                </LinearLayout>
+
             </FrameLayout>
 
             <ImageView
