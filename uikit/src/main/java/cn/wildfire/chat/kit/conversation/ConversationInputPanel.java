@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.text.Editable;
@@ -19,14 +20,18 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +59,7 @@ import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.audio.AudioRecorderPanel;
 import cn.wildfire.chat.kit.audio.PttPanel;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExtension;
@@ -68,6 +74,8 @@ import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
+import cn.wildfirechat.model.ChannelInfo;
+import cn.wildfirechat.model.ChannelMenu;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -96,6 +104,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     ImageView extImageView;
     @BindView(R2.id.sendButton)
     Button sendButton;
+
+    @BindView(R2.id.channelMenuContainerLinearLayout)
+    LinearLayout channelMenuContainerLinearLayout;
 
     @BindView(R2.id.emotionContainerFrameLayout)
     KeyboardHeightFrameLayout emotionContainerFrameLayout;
@@ -250,7 +261,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         });
         SharedPreferences sp = fragment.getContext().getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
-        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost())) {
+        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost()) && conversation.type != Conversation.ConversationType.Channel) {
             pttImageView.setVisibility(View.VISIBLE);
             pttPanel = new PttPanel(getContext());
         }
@@ -271,7 +282,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
         messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
         conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
-
     }
 
     @OnClick(R2.id.extImageView)
@@ -377,6 +387,58 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @OnClick({R2.id.audioImageView, R2.id.pttImageView})
     public void showRecordPanel(View view) {
+        if (conversation.type == Conversation.ConversationType.Channel) {
+            if (extImageView.getVisibility() == VISIBLE) {
+                extImageView.setVisibility(GONE);
+                emotionImageView.setVisibility(GONE);
+                editText.setVisibility(GONE);
+                ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversation.target, false);
+                channelMenuContainerLinearLayout.setVisibility(VISIBLE);
+                channelMenuContainerLinearLayout.removeAllViews();
+                if (channelInfo != null && channelInfo.menus != null) {
+                    for (ChannelMenu menu : channelInfo.menus) {
+                        TextView textView = new TextView(getContext());
+                        textView.setText(menu.name);
+                        textView.setGravity(Gravity.CENTER);
+                        textView.setBackgroundColor(Color.parseColor("#F8F8F8"));
+                        // TODO
+//                        textView.setCompoundDrawables();
+
+                        textView.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+                        textView.setOnClickListener(v -> {
+                            if (menu.subMenus != null && menu.subMenus.size() > 0) {
+                                PopupMenu popupMenu = new PopupMenu(getContext(), textView, Gravity.TOP);
+                                for (ChannelMenu sm : menu.subMenus) {
+                                    MenuItem item = popupMenu.getMenu().add(sm.name);
+                                    item.setOnMenuItemClickListener(item1 -> {
+                                        openChannelMenu(sm);
+                                        return true;
+                                    });
+
+                                }
+                                popupMenu.show();
+                            } else {
+                                openChannelMenu(menu);
+                            }
+                        });
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 0);
+                        params.leftMargin = 2;
+                        params.weight = 1;
+                        textView.setLayoutParams(params);
+                        channelMenuContainerLinearLayout.addView(textView);
+                    }
+                }
+            } else {
+                channelMenuContainerLinearLayout.removeAllViews();
+                channelMenuContainerLinearLayout.setVisibility(GONE);
+                extImageView.setVisibility(VISIBLE);
+                emotionImageView.setVisibility(VISIBLE);
+                editText.setVisibility(VISIBLE);
+                editText.requestFocus();
+            }
+            return;
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 fragment.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 100);
@@ -398,6 +460,20 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             hideEmotionLayout();
             rootLinearLayout.hideSoftkey(editText, null);
             hideConversationExtension();
+        }
+    }
+
+    private void openChannelMenu(ChannelMenu menu) {
+        switch (menu.type) {
+            case "view":
+                if (!TextUtils.isEmpty(menu.url)) {
+                    WfcWebViewActivity.loadUrl(getContext(), "", menu.url);
+                }
+                break;
+            case "miniprogram":
+                break;
+            default:
+                break;
         }
     }
 
@@ -524,6 +600,14 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         audioImageView.setImageResource(R.mipmap.ic_cheat_keyboard);
         rootLinearLayout.hideCurrentInput(editText);
         rootLinearLayout.hideAttachedInput(true);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            PopupMenu popupMenu = new PopupMenu(getContext(), audioImageView, Gravity.TOP);
+            popupMenu.getMenu().add("AGIL");
+            popupMenu.getMenu().add("AGILarasan");
+            popupMenu.getMenu().add("Arasan");
+            popupMenu.show();
+        }
     }
 
 
