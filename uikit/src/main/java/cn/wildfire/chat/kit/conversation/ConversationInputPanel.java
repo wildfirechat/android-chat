@@ -71,6 +71,7 @@ import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
+import cn.wildfirechat.message.ChannelMenuEventMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
@@ -485,6 +486,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     private void openChannelMenu(ChannelMenu menu) {
+        ChannelMenuEventMessageContent content = new ChannelMenuEventMessageContent();
+        content.setMenu(menu);
+        ChatManager.Instance().sendMessage(conversation, content, null, 0, null);
+
         switch (menu.type) {
             case "view":
                 if (!TextUtils.isEmpty(menu.url)) {

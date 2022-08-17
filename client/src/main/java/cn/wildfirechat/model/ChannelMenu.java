@@ -7,12 +7,15 @@ package cn.wildfirechat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChannelMenu implements Parcelable {
+    public String menuId;
     public String type;
     public String name;
     public String key;
@@ -32,6 +35,30 @@ public class ChannelMenu implements Parcelable {
     }
 
 
+    public JSONObject toJsonObj() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.putOpt("menuId", this.menuId);
+            obj.putOpt("key", this.key);
+            obj.putOpt("url", this.url);
+            obj.putOpt("mediaId", this.mediaId);
+            obj.putOpt("articleId", this.articleId);
+            obj.putOpt("appId", this.appId);
+            obj.putOpt("appPage", this.appPage);
+            obj.putOpt("extra", this.extra);
+            if (this.subMenus != null && this.subMenus.size() > 0) {
+                JSONArray arr = new JSONArray();
+                for (ChannelMenu sm : this.subMenus) {
+                    arr.put(sm.toJsonObj());
+                }
+                obj.put("subMenus", arr);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -39,6 +66,7 @@ public class ChannelMenu implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.menuId);
         dest.writeString(this.type);
         dest.writeString(this.name);
         dest.writeString(this.key);
@@ -52,6 +80,7 @@ public class ChannelMenu implements Parcelable {
     }
 
     public void readFromParcel(Parcel source) {
+        this.menuId = source.readString();
         this.type = source.readString();
         this.name = source.readString();
         this.key = source.readString();
@@ -69,6 +98,7 @@ public class ChannelMenu implements Parcelable {
     }
 
     protected ChannelMenu(Parcel in) {
+        this.menuId = in.readString();
         this.type = in.readString();
         this.name = in.readString();
         this.key = in.readString();
