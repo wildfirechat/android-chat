@@ -75,7 +75,7 @@ public class ForwardPromptView extends LinearLayout {
 
     private void bind(String targetName, String targetPortrait, String contentText, Bitmap contentImage) {
         nameTextView.setText(targetName);
-        Glide.with(getContext()).load(targetPortrait).apply(new RequestOptions().placeholder(R.mipmap.ic_group_cheat).centerCrop()).into(portraitImageView);
+        Glide.with(getContext()).load(targetPortrait).apply(new RequestOptions().placeholder(R.mipmap.ic_group_chat).centerCrop()).into(portraitImageView);
         if (!TextUtils.isEmpty(contentText)) {
             contentImageView.setVisibility(GONE);
             contentTextView.setVisibility(VISIBLE);

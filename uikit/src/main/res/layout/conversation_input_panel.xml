@@ -47,7 +47,7 @@
                 android:layout_gravity="bottom"
                 android:layout_margin="5dp"
                 android:scaleType="centerInside"
-                android:src="@mipmap/ic_cheat_voice" />
+                android:src="@mipmap/ic_chat_voice" />
 
             <ImageView
                 android:id="@+id/pttImageView"
@@ -149,7 +149,7 @@
                 android:layout_gravity="bottom"
                 android:layout_margin="5dp"
                 android:scaleType="centerInside"
-                android:src="@mipmap/ic_cheat_emo" />
+                android:src="@mipmap/ic_chat_emo" />
 
             <ImageView
                 android:id="@+id/extImageView"
@@ -159,7 +159,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginBottom="5dp"
                 android:scaleType="centerInside"
-                android:src="@mipmap/ic_cheat_add" />
+                android:src="@mipmap/ic_chat_add" />
 
             <Button
                 android:id="@+id/sendButton"
