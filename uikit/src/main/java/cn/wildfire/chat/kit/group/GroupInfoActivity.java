@@ -125,7 +125,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
         }
         GlideApp.with(this)
             .load(groupInfo.portrait)
-            .placeholder(R.mipmap.ic_group_cheat)
+            .placeholder(R.mipmap.ic_group_chat)
             .into(groupPortraitImageView);
         groupNameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
     }

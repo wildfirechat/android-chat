@@ -18,7 +18,7 @@
             android:background="#E5E5E5"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
-            android:text="@string/group_cheat"
+            android:text="@string/group_chat"
             android:textColor="#989898"
             android:textSize="13sp"
             android:visibility="visible" />

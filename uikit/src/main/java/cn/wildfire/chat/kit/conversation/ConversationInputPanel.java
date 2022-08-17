@@ -302,7 +302,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             hideConversationExtension();
             rootLinearLayout.showSoftkey(editText);
         } else {
-            emotionImageView.setImageResource(R.mipmap.ic_cheat_emo);
+            emotionImageView.setImageResource(R.mipmap.ic_chat_emo);
             showConversationExtension();
         }
     }
@@ -406,7 +406,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             channelMenuContainerLinearLayout.setVisibility(GONE);
             return;
         }
-        menuImageView.setImageResource(R.mipmap.ic_cheat_keyboard);
+        menuImageView.setImageResource(R.mipmap.ic_chat_keyboard);
         audioImageView.setVisibility(GONE);
         extImageView.setVisibility(GONE);
         emotionImageView.setVisibility(GONE);
@@ -612,7 +612,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         editText.setVisibility(View.GONE);
         extImageView.setVisibility(VISIBLE);
         sendButton.setVisibility(View.GONE);
-        audioImageView.setImageResource(R.mipmap.ic_cheat_keyboard);
+        audioImageView.setImageResource(R.mipmap.ic_chat_keyboard);
         rootLinearLayout.hideCurrentInput(editText);
         rootLinearLayout.hideAttachedInput(true);
     }
@@ -633,12 +633,12 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             extImageView.setVisibility(GONE);
             sendButton.setVisibility(View.VISIBLE);
         }
-        audioImageView.setImageResource(R.mipmap.ic_cheat_voice);
+        audioImageView.setImageResource(R.mipmap.ic_chat_voice);
     }
 
     private void showEmotionLayout() {
         audioButton.setVisibility(View.GONE);
-        emotionImageView.setImageResource(R.mipmap.ic_cheat_keyboard);
+        emotionImageView.setImageResource(R.mipmap.ic_chat_keyboard);
         rootLinearLayout.show(editText, emotionContainerFrameLayout);
         if (onConversationInputPanelStateChangeListener != null) {
             onConversationInputPanelStateChangeListener.onInputPanelExpanded();
@@ -646,7 +646,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     private void hideEmotionLayout() {
-        emotionImageView.setImageResource(R.mipmap.ic_cheat_emo);
+        emotionImageView.setImageResource(R.mipmap.ic_chat_emo);
         if (onConversationInputPanelStateChangeListener != null) {
             onConversationInputPanelStateChangeListener.onInputPanelCollapsed();
         }
@@ -670,7 +670,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     void closeConversationInputPanel() {
         extension.reset();
-        emotionImageView.setImageResource(R.mipmap.ic_cheat_emo);
+        emotionImageView.setImageResource(R.mipmap.ic_chat_emo);
         rootLinearLayout.hideAttachedInput(true);
         rootLinearLayout.hideCurrentInput(editText);
     }

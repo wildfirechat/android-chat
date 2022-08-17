@@ -8,7 +8,7 @@
 
     <!--联系人-->
     <string name="new_friend">新的朋友</string>
-    <string name="group_cheat">群聊</string>
+    <string name="group_chat">群聊</string>
 
     <!--新的朋友-->
     <string name="add_friend">添加朋友</string>

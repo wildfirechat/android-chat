@@ -15,7 +15,7 @@
         <menu>
             <item
                 android:id="@+id/chat"
-                android:icon="@mipmap/ic_create_group_cheat"
+                android:icon="@mipmap/ic_create_group_chat"
                 android:orderInCategory="100"
                 android:title="发起群聊"
                 app:iconTint="@color/colorPrimary"
@@ -23,7 +23,7 @@
 
             <item
                 android:id="@+id/secretChat"
-                android:icon="@mipmap/ic_create_group_cheat"
+                android:icon="@mipmap/ic_create_group_chat"
                 android:orderInCategory="100"
                 android:title="发起密聊"
                 app:iconTint="@color/colorPrimary"
