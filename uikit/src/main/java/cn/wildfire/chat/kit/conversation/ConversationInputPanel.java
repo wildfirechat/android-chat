@@ -90,6 +90,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     @BindView(R2.id.disableInputTipTextView)
     TextView disableInputTipTextView;
 
+    @BindView(R2.id.menuImageView)
+    ImageView menuImageView;
     @BindView(R2.id.audioImageView)
     ImageView audioImageView;
     @BindView(R2.id.pttImageView)
@@ -177,6 +179,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         this.extension.bind(this.messageViewModel, conversation);
 
         setDraft();
+        if (conversation.type == Conversation.ConversationType.Channel){
+            showChannelMenu();
+        }
     }
 
     private QuoteInfo quoteInfo;
@@ -261,7 +266,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         });
         SharedPreferences sp = fragment.getContext().getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
-        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost()) && conversation.type != Conversation.ConversationType.Channel) {
+        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost()) && conversation != null && conversation.type != Conversation.ConversationType.Channel) {
             pttImageView.setVisibility(View.VISIBLE);
             pttPanel = new PttPanel(getContext());
         }
@@ -282,6 +287,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
         messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
         conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
+
+        if (conversation != null && conversation.type == Conversation.ConversationType.Channel) {
+            showChannelMenu();
+        }
     }
 
     @OnClick(R2.id.extImageView)
@@ -385,60 +394,66 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-    @OnClick({R2.id.audioImageView, R2.id.pttImageView})
-    public void showRecordPanel(View view) {
-        if (conversation.type == Conversation.ConversationType.Channel) {
-            if (extImageView.getVisibility() == VISIBLE) {
-                extImageView.setVisibility(GONE);
-                emotionImageView.setVisibility(GONE);
-                editText.setVisibility(GONE);
-                ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversation.target, false);
-                channelMenuContainerLinearLayout.setVisibility(VISIBLE);
-                channelMenuContainerLinearLayout.removeAllViews();
-                if (channelInfo != null && channelInfo.menus != null) {
-                    for (ChannelMenu menu : channelInfo.menus) {
-                        TextView textView = new TextView(getContext());
-                        textView.setText(menu.name);
-                        textView.setGravity(Gravity.CENTER);
-                        textView.setBackgroundColor(Color.parseColor("#F8F8F8"));
-                        // TODO
-//                        textView.setCompoundDrawables();
-
-                        textView.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
-                        textView.setOnClickListener(v -> {
-                            if (menu.subMenus != null && menu.subMenus.size() > 0) {
-                                PopupMenu popupMenu = new PopupMenu(getContext(), textView, Gravity.TOP);
-                                for (ChannelMenu sm : menu.subMenus) {
-                                    MenuItem item = popupMenu.getMenu().add(sm.name);
-                                    item.setOnMenuItemClickListener(item1 -> {
-                                        openChannelMenu(sm);
-                                        return true;
-                                    });
-
-                                }
-                                popupMenu.show();
-                            } else {
-                                openChannelMenu(menu);
-                            }
-                        });
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 0);
-                        params.leftMargin = 2;
-                        params.weight = 1;
-                        textView.setLayoutParams(params);
-                        channelMenuContainerLinearLayout.addView(textView);
-                    }
-                }
-            } else {
-                channelMenuContainerLinearLayout.removeAllViews();
-                channelMenuContainerLinearLayout.setVisibility(GONE);
-                extImageView.setVisibility(VISIBLE);
-                emotionImageView.setVisibility(VISIBLE);
-                editText.setVisibility(VISIBLE);
-                editText.requestFocus();
-            }
+    @OnClick(R2.id.menuImageView)
+    public void showChannelMenu() {
+        if (channelMenuContainerLinearLayout.getVisibility() == VISIBLE) {
+            menuImageView.setImageResource(R.mipmap.ic_chat_menu);
+            audioImageView.setVisibility(VISIBLE);
+            extImageView.setVisibility(VISIBLE);
+            emotionImageView.setVisibility(VISIBLE);
+            editText.setVisibility(VISIBLE);
+            channelMenuContainerLinearLayout.removeAllViews();
+            channelMenuContainerLinearLayout.setVisibility(GONE);
             return;
         }
+        menuImageView.setImageResource(R.mipmap.ic_cheat_keyboard);
+        audioImageView.setVisibility(GONE);
+        extImageView.setVisibility(GONE);
+        emotionImageView.setVisibility(GONE);
+        editText.setVisibility(GONE);
+        rootLinearLayout.hideSoftkey(editText, null);
+        channelMenuContainerLinearLayout.setVisibility(VISIBLE);
+        ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversation.target, false);
+        channelMenuContainerLinearLayout.removeAllViews();
+        if (channelInfo != null && channelInfo.menus != null) {
+            for (ChannelMenu menu : channelInfo.menus) {
+                TextView textView = new TextView(getContext());
+                if (menu.subMenus != null && menu.subMenus.size() > 0) {
+                    textView.setText("≡ " + menu.name);
+                } else {
+                    textView.setText(menu.name);
+                }
+                textView.setGravity(Gravity.CENTER);
+                textView.setBackgroundColor(Color.parseColor("#F8F8F8"));
 
+                textView.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+                textView.setOnClickListener(v -> {
+                    if (menu.subMenus != null && menu.subMenus.size() > 0) {
+                        PopupMenu popupMenu = new PopupMenu(getContext(), textView, Gravity.TOP);
+                        for (ChannelMenu sm : menu.subMenus) {
+                            MenuItem item = popupMenu.getMenu().add(sm.name);
+                            item.setOnMenuItemClickListener(item1 -> {
+                                openChannelMenu(sm);
+                                return true;
+                            });
+
+                        }
+                        popupMenu.show();
+                    } else {
+                        openChannelMenu(menu);
+                    }
+                });
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 0);
+                params.leftMargin = 2;
+                params.weight = 1;
+                textView.setLayoutParams(params);
+                channelMenuContainerLinearLayout.addView(textView);
+            }
+        }
+    }
+
+    @OnClick({R2.id.audioImageView, R2.id.pttImageView})
+    public void showRecordPanel(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 fragment.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 100);
@@ -600,14 +615,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         audioImageView.setImageResource(R.mipmap.ic_cheat_keyboard);
         rootLinearLayout.hideCurrentInput(editText);
         rootLinearLayout.hideAttachedInput(true);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            PopupMenu popupMenu = new PopupMenu(getContext(), audioImageView, Gravity.TOP);
-            popupMenu.getMenu().add("AGIL");
-            popupMenu.getMenu().add("AGILarasan");
-            popupMenu.getMenu().add("Arasan");
-            popupMenu.show();
-        }
     }
 
 
