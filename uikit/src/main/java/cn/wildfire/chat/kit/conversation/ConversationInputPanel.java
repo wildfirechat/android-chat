@@ -179,8 +179,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         this.extension.bind(this.messageViewModel, conversation);
 
         setDraft();
-        if (conversation.type == Conversation.ConversationType.Channel){
+        if (conversation.type == Conversation.ConversationType.Channel) {
             showChannelMenu();
+        } else {
+           menuImageView.setVisibility(GONE);
         }
     }
 
@@ -288,8 +290,12 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
         conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
 
-        if (conversation != null && conversation.type == Conversation.ConversationType.Channel) {
-            showChannelMenu();
+        if (conversation != null) {
+            if (conversation.type == Conversation.ConversationType.Channel) {
+                showChannelMenu();
+            } else {
+                menuImageView.setVisibility(GONE);
+            }
         }
     }
 
