@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:adjustViewBounds="true"
+    android:background="@drawable/shape_notification_bg_white"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:scaleType="fitCenter">
+
+    <LinearLayout
+        android:id="@+id/singleArticleContainerLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/singleCoverImageView"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/topRoundedImageView_5dp"
+            tool:src="@mipmap/logo" />
+
+
+        <TextView
+            android:id="@+id/singleTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:maxLines="2"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            tool:text="a long long long long long long long long long long long long long long long text" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/topArticleContainerLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/topCoverImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/topRoundedImageView_5dp"
+            tool:src="@mipmap/logo" />
+
+
+        <TextView
+            android:id="@+id/topTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:maxLines="2"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:textColor="@color/white"
+            tool:text="a long long long long long long long long long long long long long long long text" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/subArticlesContainerLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+</LinearLayout>

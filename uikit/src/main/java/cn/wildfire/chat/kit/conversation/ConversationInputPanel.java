@@ -183,7 +183,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (conversation.type == Conversation.ConversationType.Channel) {
             showChannelMenu();
         } else {
-           menuImageView.setVisibility(GONE);
+            menuImageView.setVisibility(GONE);
         }
     }
 

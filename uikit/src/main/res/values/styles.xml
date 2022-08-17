@@ -64,4 +64,10 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <style name="topRoundedImageView_5dp" parent="">
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerSizeTopLeft">5dp</item>
+        <item name="cornerSizeTopRight">5dp</item>
+    </style>
+
 </resources>
