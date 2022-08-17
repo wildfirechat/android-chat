@@ -26,6 +26,21 @@
             android:paddingBottom="6dp">
 
             <ImageView
+                android:id="@+id/menuImageView"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="5dp"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_chat_menu" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="match_parent"
+                android:background="@color/gray" />
+
+
+            <ImageView
                 android:id="@+id/audioImageView"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
