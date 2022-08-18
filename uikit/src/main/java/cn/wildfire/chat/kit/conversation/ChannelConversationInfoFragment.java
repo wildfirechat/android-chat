@@ -11,10 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -31,6 +33,7 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
+import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -165,6 +168,22 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         Intent intent = new Intent(getActivity(), FileRecordActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
+    }
+
+    @OnClick(R2.id.unsubscribeButton)
+    void unsubscribe() {
+        channelViewModel.listenChannel(this.conversationInfo.conversation.target, false).observe(this, new Observer<OperateResult<Boolean>>() {
+            @Override
+            public void onChanged(OperateResult<Boolean> booleanOperateResult) {
+                if (booleanOperateResult.isSuccess()) {
+                    Intent intent = new Intent(getContext().getPackageName() + ".main");
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getActivity(), "取消订阅失败 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
     }
 
     @Override

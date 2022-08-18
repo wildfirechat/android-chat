@@ -141,6 +141,19 @@
                 android:layout_marginTop="@dimen/option_item_margin_top"
                 android:background="@drawable/selector_option_item"
                 app:title="@string/clear_chat_log" />
+
+            <TextView
+                android:id="@+id/unsubscribeButton"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/selector_common_item"
+                android:gravity="center"
+                android:text="@string/unsubscribe"
+                android:textColor="@color/red0"
+                android:textSize="16sp"
+                android:visibility="visible" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
