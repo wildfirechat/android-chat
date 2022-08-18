@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.text.Editable;
@@ -432,6 +433,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 }
                 textView.setGravity(Gravity.CENTER);
                 textView.setBackgroundColor(Color.parseColor("#F8F8F8"));
+                Drawable drawable = getResources().getDrawable(R.drawable.selector_common_item);
+                textView.setBackground(drawable);
 
                 textView.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
                 textView.setOnClickListener(v -> {
