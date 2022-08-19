@@ -65,7 +65,7 @@ public class ArticlesMessageContent extends MessageContent {
 
     @Override
     public String digest(Message message) {
-        return null;
+        return this.topArticle.title;
     }
 
     public static class Article implements Parcelable {
