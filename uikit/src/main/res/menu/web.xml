@@ -3,9 +3,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/forward"
+        android:icon="@mipmap/ic_delete_l"
+        android:title="转发"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/openWithDefaultBrowser"
+        android:icon="@mipmap/ic_delete_l"
+        android:title="浏览器打开"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/close"
         android:icon="@mipmap/ic_delete_l"
         android:title="关闭"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
 
 </menu>
