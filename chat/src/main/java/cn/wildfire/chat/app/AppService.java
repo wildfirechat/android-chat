@@ -66,13 +66,18 @@ public class AppService implements AppServiceProvider {
         void onUiFailure(int code, String msg);
     }
 
-    @Deprecated //"已经废弃，请使用smsLogin"
-    public void namePwdLogin(String account, String password, LoginCallback callback) {
+    public void passwordLogin(String mobile, String password, LoginCallback callback) {
 
-        String url = APP_SERVER_ADDRESS + "/api/login";
+        String url = APP_SERVER_ADDRESS + "/login_pwd";
         Map<String, Object> params = new HashMap<>();
-        params.put("name", account);
+        params.put("mobile", mobile);
         params.put("password", password);
+
+        //如果是android pad设备，需要改这里，另外需要在ClientService对象中修改设备类型，请在ClientService代码中搜索"android pad"
+        //if（当前设备是android pad)
+        //  params.put("platform", new Integer(9));
+        //else
+        params.put("platform", new Integer(2));
 
         try {
             params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
@@ -141,6 +146,28 @@ public class AppService implements AppServiceProvider {
     }
 
 
+    public void resetPassword(String mobile, String code, String password, SimpleCallback<StatusResult> callback) {
+        String url = APP_SERVER_ADDRESS + "/reset_pwd";
+        Map<String, Object> params = new HashMap<>();
+        if (!TextUtils.isEmpty(mobile)) {
+            params.put("mobile", mobile);
+        }
+        params.put("resetCode", code);
+        params.put("newPassword", password);
+
+        OKHttpHelper.post(url, params, callback);
+    }
+
+    public void changePassword(String oldPassword, String newPassword, SimpleCallback<StatusResult> callback) {
+        String url = APP_SERVER_ADDRESS + "/change_pwd";
+        Map<String, Object> params = new HashMap<>();
+        params.put("oldPassword", oldPassword);
+        params.put("newPassword", newPassword);
+
+        OKHttpHelper.post(url, params, callback);
+
+    }
+
     public interface SendCodeCallback {
         void onUiSuccess();
 
@@ -152,6 +179,31 @@ public class AppService implements AppServiceProvider {
         String url = APP_SERVER_ADDRESS + "/send_code";
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", phoneNumber);
+        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (statusResult.getCode() == 0) {
+                    callback.onUiSuccess();
+                } else {
+                    callback.onUiFailure(statusResult.getCode(), "");
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
+
+    }
+
+    public void requestResetAuthCode(String phoneNumber, SendCodeCallback callback) {
+
+        String url = APP_SERVER_ADDRESS + "/send_reset_code";
+        Map<String, Object> params = new HashMap<>();
+        if (!TextUtils.isEmpty(phoneNumber)) {
+            params.put("mobile", phoneNumber);
+        }
         OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {

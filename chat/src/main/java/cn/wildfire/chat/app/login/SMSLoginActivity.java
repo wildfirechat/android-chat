@@ -22,6 +22,7 @@ import butterknife.OnTextChanged;
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.app.setting.ResetPasswordActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
@@ -40,9 +41,6 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     @BindView(R.id.requestAuthCodeButton)
     TextView requestAuthCodeButton;
 
-    private String phoneNumber;
-
-
     @Override
     protected int contentLayout() {
         return R.layout.login_activity_sms;
@@ -52,13 +50,6 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     protected void afterViews() {
         setStatusBarTheme(this, false);
         setStatusBarColor(R.color.gray14);
-        if (getIntent().getBooleanExtra("isKickedOff", false)) {
-            new MaterialDialog.Builder(this)
-                .content("你的账号已在其他手机登录")
-                .negativeText("知道了")
-                .build()
-                .show();
-        }
     }
 
     @OnTextChanged(value = R.id.phoneNumberEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
@@ -77,6 +68,13 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         if (editable.toString().length() > 2) {
             loginButton.setEnabled(true);
         }
+    }
+
+    @OnClick(R.id.passwordLoginTextView)
+    void authCodeLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 
@@ -111,6 +109,11 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                 Intent intent = new Intent(SMSLoginActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
+
+                Intent resetPasswordIntent = new Intent(SMSLoginActivity.this, ResetPasswordActivity.class);
+                resetPasswordIntent.putExtra("resetCode", loginResult.getResetCode());
+                startActivity(resetPasswordIntent);
+
                 finish();
             }
 

@@ -45,7 +45,7 @@ public class GroupViewHolder extends RecyclerView.ViewHolder {
         this.groupInfo = groupInfo;
         categoryTextView.setVisibility(View.GONE);
         nameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
-        GlideApp.with(fragment).load(this.groupInfo.portrait).placeholder(R.mipmap.ic_group_cheat).into(portraitImageView);
+        GlideApp.with(fragment).load(this.groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(portraitImageView);
     }
 
     public GroupInfo getGroupInfo() {

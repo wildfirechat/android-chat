@@ -64,9 +64,9 @@
 
         <activity
             android:name="cn.wildfire.chat.app.main.SplashActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.FullScreen"
-            android:exported="true">
+            android:theme="@style/AppTheme.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -86,25 +86,26 @@
 
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
+            android:exported="true"
             android:label="野火IM"
-            android:launchMode="singleTask"
-            android:exported="true">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="${applicationId}.main" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter android:label="分享到野火IM">
-                <action android:name="android.intent.action.SENDTO"/>
+                <action android:name="android.intent.action.SENDTO" />
                 <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT"/>
+
+                <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/*" />
             </intent-filter>
         </activity>
 
         <activity
             android:name="cn.wildfire.chat.app.main.PCLoginActivity"
-            android:label="PC登录"
-            android:exported="false">
+            android:exported="false"
+            android:label="PC登录">
             <intent-filter>
                 <action android:name="${packageName}.pc.login" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -114,8 +115,13 @@
 
         <activity android:name="cn.wildfire.chat.app.login.SMSLoginActivity" />
 
-        <activity android:name="cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity" />
-        <activity android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.ChangePasswordActivity"
+            android:label="设置新密码" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.ResetPasswordActivity"
+            android:label="设置新密码" />
+        <activity android:name="cn.wildfire.chat.app.setting.AccountActivity" />
 
     </application>
 </manifest>

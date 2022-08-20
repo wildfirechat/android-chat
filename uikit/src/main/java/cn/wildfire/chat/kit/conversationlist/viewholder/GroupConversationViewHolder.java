@@ -52,7 +52,7 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
         GlideApp
             .with(fragment)
             .load(portrait)
-            .placeholder(R.mipmap.ic_group_cheat)
+            .placeholder(R.mipmap.ic_group_chat)
             .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
             .into(portraitImageView);
         nameTextView.setText(name);

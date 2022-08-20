@@ -49,6 +49,7 @@ public interface MessageContentType {
     //频道进出消息
     int ContentType_Enter_Channel_Chat = 71;
     int ContentType_Leave_Channel_Chat = 72;
+    int ContentType_Channel_Menu_Event = 73;
 
     int ContentType_Recall = 80;
     //删除消息，请勿直接发送此消息，此消息是服务器端删除时的同步消息

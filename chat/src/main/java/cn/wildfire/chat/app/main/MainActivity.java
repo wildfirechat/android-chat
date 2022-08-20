@@ -257,7 +257,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         if (count > 0) {
             if (discoveryBadgeView == null) {
                 BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
-                View view = bottomNavigationMenuView.getChildAt(2);
+                int index = TextUtils.isEmpty(Config.WORKSPACE_URL) ? 2 : 3;
+                View view = bottomNavigationMenuView.getChildAt(index);
                 discoveryBadgeView = new QBadgeView(MainActivity.this);
                 discoveryBadgeView.bindTarget(view);
             }

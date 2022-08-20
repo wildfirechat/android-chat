@@ -85,7 +85,7 @@ public class ChannelInfoActivity extends AppCompatActivity {
         }
 
         // FIXME: 2018/12/24 只有应用launcher icon应当反倒mipmap下面，其他还是应当放到drawable下面
-        Glide.with(this).load(channelInfo.portrait).apply(new RequestOptions().placeholder(R.mipmap.ic_group_cheat)).into(portraitImageView);
+        Glide.with(this).load(channelInfo.portrait).apply(new RequestOptions().placeholder(R.mipmap.ic_group_chat)).into(portraitImageView);
         channelTextView.setText(channelInfo.name);
         channelDescTextView.setText(TextUtils.isEmpty(channelInfo.desc) ? "频道主什么也没写" : channelInfo.desc);
 

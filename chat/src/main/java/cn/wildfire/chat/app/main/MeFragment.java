@@ -32,6 +32,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.wildfire.chat.app.setting.AccountActivity;
 import cn.wildfire.chat.app.setting.SettingActivity;
 import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteListActivity;
@@ -137,6 +138,12 @@ public class MeFragment extends Fragment {
     @OnClick(R.id.favOptionItemView)
     void fav() {
         Intent intent = new Intent(getActivity(), FavoriteListActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.accountOptionItemView)
+    void account() {
+        Intent intent = new Intent(getActivity(), AccountActivity.class);
         startActivity(intent);
     }
 

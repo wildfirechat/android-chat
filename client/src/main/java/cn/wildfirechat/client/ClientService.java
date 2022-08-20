@@ -78,6 +78,7 @@ import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.ChannelInfo;
+import cn.wildfirechat.model.ChannelMenu;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ChatRoomMembersInfo;
 import cn.wildfirechat.model.ClientState;
@@ -95,6 +96,7 @@ import cn.wildfirechat.model.NullGroupMember;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.ProtoBurnMessageInfo;
 import cn.wildfirechat.model.ProtoChannelInfo;
+import cn.wildfirechat.model.ProtoChannelMenu;
 import cn.wildfirechat.model.ProtoChatRoomInfo;
 import cn.wildfirechat.model.ProtoChatRoomMembersInfo;
 import cn.wildfirechat.model.ProtoConversationInfo;
@@ -540,7 +542,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         uploadThenSend = true;
                     }
                 } else {
-                    if (TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
+                    if (!(msg.content instanceof CompositeMessageContent) && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
                         android.util.Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
                         callback.onFailure(-1);
                         return;
@@ -2469,7 +2471,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 @Override
                 public void onSuccess(ProtoChannelInfo protoChannelInfo) {
                     try {
-                        callback.onSuccess(converProtoChannelInfo(protoChannelInfo));
+                        callback.onSuccess(convertProtoChannelInfo(protoChannelInfo));
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -2511,7 +2513,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public ChannelInfo getChannelInfo(String channelId, boolean refresh) throws RemoteException {
-            return converProtoChannelInfo(ProtoLogic.getChannelInfo(channelId, refresh));
+            return convertProtoChannelInfo(ProtoLogic.getChannelInfo(channelId, refresh));
         }
 
         @Override
@@ -2522,7 +2524,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     List<ChannelInfo> out = new ArrayList<>();
                     if (protoChannelInfos != null) {
                         for (ProtoChannelInfo protoChannelInfo : protoChannelInfos) {
-                            out.add(converProtoChannelInfo(protoChannelInfo));
+                            out.add(convertProtoChannelInfo(protoChannelInfo));
                         }
                     }
                     try {
@@ -3109,7 +3111,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         return userOnlineState;
     }
 
-    private ChannelInfo converProtoChannelInfo(ProtoChannelInfo protoChannelInfo) {
+    private ChannelInfo convertProtoChannelInfo(ProtoChannelInfo protoChannelInfo) {
         if (protoChannelInfo == null) {
             return null;
         }
@@ -3122,8 +3124,35 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         channelInfo.owner = protoChannelInfo.getOwner();
         channelInfo.status = protoChannelInfo.getStatus();
         channelInfo.updateDt = protoChannelInfo.getUpdateDt();
+        List<ProtoChannelMenu> menus = protoChannelInfo.getMenus();
+        if (menus != null) {
+            channelInfo.menus = new ArrayList<>();
+            for (ProtoChannelMenu menu : menus) {
+                channelInfo.menus.add(convertProtoChannelMenu(menu));
+            }
+        }
 
         return channelInfo;
+    }
+
+    private ChannelMenu convertProtoChannelMenu(ProtoChannelMenu menu) {
+        ChannelMenu m = new ChannelMenu();
+        m.type = menu.getType();
+        m.name = menu.getName();
+        m.key = menu.getKey();
+        m.url = menu.getUrl();
+        m.mediaId = menu.getMediaId();
+        m.articleId = menu.getArticleId();
+        m.appId = menu.getMenuId();
+        m.appPage = menu.getAppPage();
+        m.extra = menu.getExtra();
+        if (menu.getSubMenus() != null) {
+            m.subMenus = new ArrayList<>();
+            for (ProtoChannelMenu sm : menu.getSubMenus()) {
+                m.subMenus.add(convertProtoChannelMenu(sm));
+            }
+        }
+        return m;
     }
 
     private GroupInfo convertProtoGroupInfo(ProtoGroupInfo protoGroupInfo) {
@@ -3789,7 +3818,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         handler.post(() -> {
             ArrayList<ChannelInfo> channels = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {
-                ChannelInfo gi = converProtoChannelInfo(list.get(i));
+                ChannelInfo gi = convertProtoChannelInfo(list.get(i));
                 if (gi != null) {
                     channels.add(gi);
                 }
