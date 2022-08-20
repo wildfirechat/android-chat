@@ -20,13 +20,15 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
+import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.ArticlesMessageContent;
 
 @MessageContentType(ArticlesMessageContent.class)
-public class ArticlesMessageContentViewHolder extends NotificationMessageContentViewHolder {
+@EnableContextMenu
+public class ArticlesMessageContentViewHolder extends ContextableNotificationMessageContentViewHolder{
     @BindView(R2.id.singleArticleContainerLinearLayout)
     LinearLayout singleArticleContainerLinearLayout;
     @BindView(R2.id.singleCoverImageView)

@@ -53,6 +53,7 @@ import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.message.ArticlesMessageContent;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
@@ -368,6 +369,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 || messageContent instanceof CompositeMessageContent
                 || messageContent instanceof VideoMessageContent
                 || messageContent instanceof SoundMessageContent
+                || messageContent instanceof ArticlesMessageContent
                 || messageContent instanceof ImageMessageContent) {
                 return false;
             }

@@ -35,6 +35,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.message.MessageItemView;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.conversation.message.viewholder.ContextableNotificationMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.LoadingViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
@@ -528,16 +529,19 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             ((MessageContentViewHolder) holder).onBind(getItem(position), position);
             MessageItemView itemView = (MessageItemView) holder.itemView;
             CheckBox checkBox = itemView.findViewById(R.id.checkbox);
-            if (checkBox == null) {
-                return;
-            }
-            itemView.setCheckable(getMode() == MODE_CHECKABLE);
-            if (getMode() == MODE_CHECKABLE) {
-                checkBox.setVisibility(View.VISIBLE);
-                UiMessage message = getItem(position);
-                checkBox.setChecked(message.isChecked);
-            } else {
-                checkBox.setVisibility(View.GONE);
+            if (checkBox != null) {
+                if (holder instanceof NotificationMessageContentViewHolder && !(holder instanceof ContextableNotificationMessageContentViewHolder)) {
+                    checkBox.setVisibility(View.GONE);
+                } else {
+                    itemView.setCheckable(getMode() == MODE_CHECKABLE);
+                    if (getMode() == MODE_CHECKABLE) {
+                        checkBox.setVisibility(View.VISIBLE);
+                        UiMessage message = getItem(position);
+                        checkBox.setChecked(message.isChecked);
+                    } else {
+                        checkBox.setVisibility(View.GONE);
+                    }
+                }
             }
 
             if (getMode() == MODE_CHECKABLE) {
