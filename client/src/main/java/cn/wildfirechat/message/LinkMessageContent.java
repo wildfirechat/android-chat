@@ -31,8 +31,9 @@ public class LinkMessageContent extends MessageContent {
     public LinkMessageContent() {
     }
 
-    public LinkMessageContent(String contentDigest) {
-        this.contentDigest = contentDigest;
+    public LinkMessageContent(String title, String url) {
+        this.title = title;
+        this.url = url;
     }
 
     public String getContentDigest() {
