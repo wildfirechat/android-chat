@@ -56,6 +56,7 @@ import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnSendMessageListener;
 import cn.wildfirechat.remote.SecretMessageBurnStateListener;
+import cn.wildfirechat.remote.SendMessageCallback;
 
 public class MessageViewModel extends ViewModel implements OnReceiveMessageListener,
     OnSendMessageListener,
@@ -290,10 +291,25 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         sendMessage(msg);
     }
 
-    public MutableLiveData<OperateResult<Boolean>> sendMessageEx(Message message) {
+    public MutableLiveData<OperateResult<Void>> sendMessageEx(Message message) {
+        MutableLiveData<OperateResult<Void>> result = new MutableLiveData<>();
+        ChatManager.Instance().sendMessage(message, 0, new SendMessageCallback() {
+            @Override
+            public void onSuccess(long messageUid, long timestamp) {
+                result.setValue(new OperateResult<>(0));
+            }
 
-        // TODO
-        return null;
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(-1));
+            }
+
+            @Override
+            public void onPrepare(long messageId, long savedTime) {
+
+            }
+        });
+        return result;
     }
 
     public void sendMessage(Message message) {

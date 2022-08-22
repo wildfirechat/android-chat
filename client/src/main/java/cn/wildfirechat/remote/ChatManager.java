@@ -279,6 +279,7 @@ public class ChatManager {
         public int value() {
             return this.value;
         }
+
         public static SearchUserType type(int type) {
             SearchUserType searchUserType = null;
             switch (type) {
@@ -373,7 +374,7 @@ public class ChatManager {
     public static void init(Application context, String imServerHost) {
         Log.d(TAG, "init " + imServerHost);
         if (imServerHost != null) {
-        	checkSDKHost(imServerHost);
+            checkSDKHost(imServerHost);
         }
         if (INST != null) {
             // TODO: Already initialized
@@ -536,13 +537,16 @@ public class ChatManager {
         Message message = getMessageByUid(messageUid);
         // 想撤回的消息已经被删除
         if (message == null) {
-            return;
+            message = new Message();
+            // 一般是聊天室
+            message.messageUid = messageUid;
         }
+        Message finalMessage = message;
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
                 for (OnRecallMessageListener listener : recallMessageListeners) {
-                    listener.onRecallMessage(message);
+                    listener.onRecallMessage(finalMessage);
                 }
             }
         });
@@ -2453,6 +2457,7 @@ public class ChatManager {
             return false;
         }
     }
+
     /**
      * 消息撤回
      *
@@ -7038,6 +7043,7 @@ public class ChatManager {
             return "";
         }
     }
+
     private String getLogPath() {
         return gContext.getCacheDir().getAbsolutePath() + "/log";
     }

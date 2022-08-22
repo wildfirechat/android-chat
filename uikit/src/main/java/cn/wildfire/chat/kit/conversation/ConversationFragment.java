@@ -234,11 +234,24 @@ public class ConversationFragment extends Fragment implements
     private Observer<UiMessage> messageUpdateLiveDatObserver = new Observer<UiMessage>() {
         @Override
         public void onChanged(@Nullable UiMessage uiMessage) {
-            if (!isMessageInCurrentConversation(uiMessage)) {
-                return;
-            }
-            if (isDisplayableMessage(uiMessage)) {
-                adapter.updateMessage(uiMessage);
+            if (conversation.type != Conversation.ConversationType.ChatRoom) {
+                if (!isMessageInCurrentConversation(uiMessage)) {
+                    return;
+                }
+                if (isDisplayableMessage(uiMessage)) {
+                    adapter.updateMessage(uiMessage);
+                }
+            } else {
+                List<UiMessage> messages = adapter.getMessages();
+                for (UiMessage uiMsg : messages) {
+                    if (uiMsg.message.messageUid == uiMessage.message.messageUid) {
+                        RecallMessageContent content = new RecallMessageContent(uiMsg.message.sender, uiMsg.message.messageUid);
+                        content.setOriginalSender(uiMsg.message.sender);
+                        uiMsg.message.content = content;
+                        adapter.updateMessage(uiMsg);
+                        break;
+                    }
+                }
             }
         }
     };
@@ -675,8 +688,10 @@ public class ConversationFragment extends Fragment implements
         } else {
             content.tip = String.format(welcome, "<" + userId + ">");
         }
-        messageViewModel.sendMessage(conversation, content);
-        chatRoomViewModel.quitChatRoom(conversation.target);
+        Message message = new Message();
+        message.conversation = conversation;
+        message.content = content;
+        messageViewModel.sendMessageEx(message).observe(this, voidOperateResult -> chatRoomViewModel.quitChatRoom(conversation.target));
     }
 
     private void setChatRoomConversationTitle() {
