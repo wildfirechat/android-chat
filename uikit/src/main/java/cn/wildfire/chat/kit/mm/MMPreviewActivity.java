@@ -180,7 +180,7 @@ public class MMPreviewActivity extends Activity {
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
                     String name = DownloadManager.md5(entry.getMediaUrl());
                     File videoFile = new File(Config.VIDEO_SAVE_DIR, name);
-                    if (!videoFile.exists() && !secret) {
+                    if (!videoFile.exists() || secret) {
                         view.setTag(name);
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
@@ -247,7 +247,9 @@ public class MMPreviewActivity extends Activity {
             resetVideoView(view);
             return true;
         });
-        videoView.setOnCompletionListener(mp -> resetVideoView(view));
+        videoView.setOnCompletionListener(mp -> {
+            resetVideoView(view);
+        });
         videoView.start();
 
     }
@@ -326,6 +328,17 @@ public class MMPreviewActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (secret) {
+            for (MediaEntry entry : entries) {
+                if (entry.getType() == MediaEntry.TYPE_VIDEO) {
+                    String name = DownloadManager.md5(entry.getMediaUrl());
+                    File secretVideoFile = new File(Config.VIDEO_SAVE_DIR, name);
+                    if (secretVideoFile.exists()) {
+                        secretVideoFile.delete();
+                    }
+                }
+            }
+        }
         entries = null;
     }
 

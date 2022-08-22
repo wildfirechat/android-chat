@@ -8,14 +8,20 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GeneralCallbackBytes;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -45,6 +51,11 @@ public class DownloadManager {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                URL _url = call.request().url().url();
+                String query = _url.getQuery();
+                String target = getQueryMap(query).get("target");
+                boolean isSecret = Boolean.parseBoolean(getQueryMap(query).get("secret"));
+
                 InputStream is = null;
                 byte[] buf = new byte[2048];
                 int len = 0;
@@ -54,20 +65,59 @@ public class DownloadManager {
                 String fileName = TextUtils.isEmpty(name) ? getNameFromUrl(url) : name;
                 try {
                     is = response.body().byteStream();
+
                     long total = response.body().contentLength();
                     File file = new File(savePath, fileName);
                     fos = new FileOutputStream(file);
+                    ByteArrayOutputStream bos = null;
+                    if (isSecret) {
+                        bos = new ByteArrayOutputStream();
+                    }
                     long sum = 0;
                     while ((len = is.read(buf)) != -1) {
-                        fos.write(buf, 0, len);
+                        if (bos != null) {
+                            bos.write(buf, 0, len);
+                        } else {
+                            fos.write(buf, 0, len);
+                        }
+
                         sum += len;
                         int progress = (int) (sum * 1.0f / total * 100);
                         // 下载中
                         listener.onProgress(progress);
                     }
-                    fos.flush();
-                    // 下载完成
-                    listener.onSuccess(file);
+                    if (isSecret) {
+                        CountDownLatch latch = new CountDownLatch(1);
+                        FileOutputStream finalFos = fos;
+                        ChatManager.Instance().decodeSecretDataAsync(target, bos.toByteArray(), new GeneralCallbackBytes() {
+                            @Override
+                            public void onSuccess(byte[] data) {
+                                try {
+                                    finalFos.write(data);
+                                    finalFos.flush();
+                                    listener.onSuccess(file);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onFail(int errorCode) {
+                                File file = new File(savePath, fileName);
+                                if (file.exists()) {
+                                    file.delete();
+                                }
+                                listener.onFail();
+                                latch.countDown();
+                            }
+                        });
+                        latch.await();
+                    } else {
+                        fos.flush();
+                        // 下载完成
+                        listener.onSuccess(file);
+                    }
                 } catch (Exception e) {
                     File file = new File(savePath, fileName);
                     if (file.exists()) {
@@ -242,5 +292,20 @@ public class DownloadManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static Map<String, String> getQueryMap(String query) {
+        Map<String, String> map = new HashMap<String, String>();
+        if (TextUtils.isEmpty(query)) {
+            return map;
+        }
+
+        String[] params = query.split("&");
+        for (String param : params) {
+            String name = param.split("=")[0];
+            String value = param.split("=")[1];
+            map.put(name, value);
+        }
+        return map;
     }
 }
