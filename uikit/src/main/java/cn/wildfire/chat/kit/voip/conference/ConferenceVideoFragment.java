@@ -548,55 +548,41 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
         @Override
         public void onClick(View v) {
             String userId = (String) v.getTag();
-            if (!userId.equals(me.uid)) {
-                AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-                count++;
-                AVEngineKit.VideoType type = AVEngineKit.VideoType.VIDEO_TYPE_SMALL_STREAM;
-                if (count % 3 == 0) {
-                    type = AVEngineKit.VideoType.VIDEO_TYPE_NONE;
+            if (userId != null && !userId.equals(focusVideoUserId)) {
+                VoipCallItem clickedConferenceItem = (VoipCallItem) v;
+                int clickedIndex = participantGridView.indexOfChild(v);
+                participantGridView.removeView(clickedConferenceItem);
+                participantGridView.endViewTransition(clickedConferenceItem);
 
-                } else if (count % 3 == 1) {
-                    type = AVEngineKit.VideoType.VIDEO_TYPE_SMALL_STREAM;
-                } else if (count % 3 == 2) {
-                    type = AVEngineKit.VideoType.VIDEO_TYPE_BIG_STREAM;
+                clickedConferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                if (focusConferenceItem != null) {
+                    focusVideoContainerFrameLayout.removeView(focusConferenceItem);
+                    focusVideoContainerFrameLayout.endViewTransition(focusConferenceItem);
+                    DisplayMetrics dm = getResources().getDisplayMetrics();
+                    int size = Math.min(dm.widthPixels, dm.heightPixels);
+                    participantGridView.addView(focusConferenceItem, clickedIndex, new FrameLayout.LayoutParams(size / 3, size / 3));
                 }
-                session.setParticipantVideoType(userId, false, type);
+                focusVideoContainerFrameLayout.addView(clickedConferenceItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                focusConferenceItem = clickedConferenceItem;
+                focusVideoUserId = userId;
+                Log.e(TAG, "focusVideoUserId " + userId + " " + ChatManager.Instance().getUserId());
+                ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
+
+                if (bottomPanel.getVisibility() == View.GONE) {
+                    bottomPanel.setVisibility(View.VISIBLE);
+                    topBarView.setVisibility(View.VISIBLE);
+                    startHideBarTimer();
+                }
+            } else {
+                if (bottomPanel.getVisibility() == View.GONE) {
+                    bottomPanel.setVisibility(View.VISIBLE);
+                    topBarView.setVisibility(View.VISIBLE);
+                    startHideBarTimer();
+                } else {
+                    bottomPanel.setVisibility(View.GONE);
+                    topBarView.setVisibility(View.GONE);
+                }
             }
-//            if (userId != null && !userId.equals(focusVideoUserId)) {
-//                VoipCallItem clickedConferenceItem = (VoipCallItem) v;
-//                int clickedIndex = participantGridView.indexOfChild(v);
-//                participantGridView.removeView(clickedConferenceItem);
-//                participantGridView.endViewTransition(clickedConferenceItem);
-//
-//                clickedConferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//                if (focusConferenceItem != null) {
-//                    focusVideoContainerFrameLayout.removeView(focusConferenceItem);
-//                    focusVideoContainerFrameLayout.endViewTransition(focusConferenceItem);
-//                    DisplayMetrics dm = getResources().getDisplayMetrics();
-//                    int size = Math.min(dm.widthPixels, dm.heightPixels);
-//                    participantGridView.addView(focusConferenceItem, clickedIndex, new FrameLayout.LayoutParams(size / 3, size / 3));
-//                }
-//                focusVideoContainerFrameLayout.addView(clickedConferenceItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//                focusConferenceItem = clickedConferenceItem;
-//                focusVideoUserId = userId;
-//                Log.e(TAG, "focusVideoUserId " + userId + " " + ChatManager.Instance().getUserId());
-//                ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
-//
-//                if (bottomPanel.getVisibility() == View.GONE) {
-//                    bottomPanel.setVisibility(View.VISIBLE);
-//                    topBarView.setVisibility(View.VISIBLE);
-//                    startHideBarTimer();
-//                }
-//            } else {
-//                if (bottomPanel.getVisibility() == View.GONE) {
-//                    bottomPanel.setVisibility(View.VISIBLE);
-//                    topBarView.setVisibility(View.VISIBLE);
-//                    startHideBarTimer();
-//                } else {
-//                    bottomPanel.setVisibility(View.GONE);
-//                    topBarView.setVisibility(View.GONE);
-//                }
-//            }
         }
     };
 
