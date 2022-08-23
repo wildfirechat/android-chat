@@ -234,14 +234,8 @@ public class ConversationFragment extends Fragment implements
     private Observer<UiMessage> messageUpdateLiveDatObserver = new Observer<UiMessage>() {
         @Override
         public void onChanged(@Nullable UiMessage uiMessage) {
-            if (conversation.type != Conversation.ConversationType.ChatRoom) {
-                if (!isMessageInCurrentConversation(uiMessage)) {
-                    return;
-                }
-                if (isDisplayableMessage(uiMessage)) {
-                    adapter.updateMessage(uiMessage);
-                }
-            } else {
+            // 聊天室，对方撤回消息
+            if (conversation.type == Conversation.ConversationType.ChatRoom && uiMessage.message.conversation == null) {
                 List<UiMessage> messages = adapter.getMessages();
                 for (UiMessage uiMsg : messages) {
                     if (uiMsg.message.messageUid == uiMessage.message.messageUid) {
@@ -251,6 +245,13 @@ public class ConversationFragment extends Fragment implements
                         adapter.updateMessage(uiMsg);
                         break;
                     }
+                }
+            } else {
+                if (!isMessageInCurrentConversation(uiMessage)) {
+                    return;
+                }
+                if (isDisplayableMessage(uiMessage)) {
+                    adapter.updateMessage(uiMessage);
                 }
             }
         }
