@@ -2323,6 +2323,7 @@ public class ChatManager {
             return;
         }
 
+        MediaMessageUploadCallback mediaMessageUploadCallback = null;
         if (msg.content instanceof MediaMessageContent) {
             if (TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
                 String localPath = ((MediaMessageContent) msg.content).localPath;
@@ -2343,9 +2344,26 @@ public class ChatManager {
                     }
                 }
             }
+        } else if (msg.content instanceof TextMessageContent) {
+            if ("*#marslog#".equals(((TextMessageContent) msg.content).getContent())) {
+                List<String> logFilesPath = getLogFilesPath();
+                if (logFilesPath.size() > 0) {
+                    FileMessageContent fileMessageContent = new FileMessageContent(logFilesPath.get(logFilesPath.size() - 1));
+                    msg.content = fileMessageContent;
+
+                    mediaMessageUploadCallback = new MediaMessageUploadCallback() {
+                        @Override
+                        public void onMediaMessageUploaded(String remoteUrl) {
+                            TextMessageContent textMessageContent = new TextMessageContent(remoteUrl);
+                            sendMessage(msg.conversation, textMessageContent, null, 0, null);
+                        }
+                    };
+                }
+            }
         }
 
         try {
+            MediaMessageUploadCallback finalMediaMessageUploadCallback = mediaMessageUploadCallback;
             mClient.send(msg, new cn.wildfirechat.client.ISendMessageCallback.Stub() {
                 @Override
                 public void onSuccess(final long messageUid, final long timestamp) throws RemoteException {
@@ -2415,6 +2433,11 @@ public class ChatManager {
                     if (msg.messageId == 0) {
                         return;
                     }
+
+                    if (finalMediaMessageUploadCallback != null){
+                        finalMediaMessageUploadCallback.onMediaMessageUploaded(remoteUrl);
+                    }
+
                     if (callback != null) {
                         mainHandler.post(() -> callback.onMediaUpload(remoteUrl));
                     }
@@ -8205,6 +8228,10 @@ public class ChatManager {
             });
         }
     };
+
+    private static interface MediaMessageUploadCallback {
+        void onMediaMessageUploaded(String remoteUrl);
+    }
 
     private void registerCoreMessageContents() {
         registerMessageContent(AddGroupMemberNotificationContent.class);
