@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.contact;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -97,8 +98,9 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         Map<String, UserOnlineState> userOnlineStateMap = ChatManager.Instance().getUserOnlineStateMap();
         for (UIUserInfo userInfo : userInfos) {
             UserOnlineState userOnlineState = userOnlineStateMap.get(userInfo.getUserInfo().uid);
-            if (userOnlineState != null) {
-                userInfo.setDesc(userOnlineState.desc());
+            String userOnlineDesc = userOnlineState.desc();
+            if (!TextUtils.isEmpty(userOnlineDesc)) {
+                userInfo.setDesc(userOnlineDesc);
             }
         }
     }

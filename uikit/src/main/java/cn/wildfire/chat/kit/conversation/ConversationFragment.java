@@ -719,7 +719,7 @@ public class ConversationFragment extends Fragment implements
             if (userOnlineState != null) {
                 String onlineDesc = userOnlineState.desc();
                 if (!TextUtils.isEmpty(onlineDesc)) {
-                    conversationTitle += " (" + userOnlineState.desc() + ")";
+                    conversationTitle += " (" + onlineDesc + ")";
                 }
             }
         } else if (conversation.type == Conversation.ConversationType.Group) {

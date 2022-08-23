@@ -121,7 +121,7 @@ public class UserOnlineState implements Parcelable {
             // //最后可见
             // lastSeen;
 
-            String[] ps = new String[]{"未知", "iOS", "Android", "Windows", "mac", "Web", "小程序", "Linux", "iPad", "Android-Pad"};
+            String[] ps = new String[]{"", "iOS", "Android", "Windows", "mac", "Web", "小程序", "Linux", "iPad", "Android-Pad"};
             if (s.getState() == 0) {
                 onlineClientDesc += ps[s.getPlatform()] + " ";
             } else {
@@ -130,9 +130,9 @@ public class UserOnlineState implements Parcelable {
             }
         }
 
-        if (!TextUtils.isEmpty(onlineClientDesc)) {
+        if (!TextUtils.isEmpty(onlineClientDesc.trim())) {
             return onlineClientDesc + "在线";
-        } else if (!TextUtils.isEmpty(lastSeenDesc)) {
+        } else if (!TextUtils.isEmpty(lastSeenDesc.trim())) {
             return lastSeenDesc + "不久前在线";
         }
         //return "不在线";
