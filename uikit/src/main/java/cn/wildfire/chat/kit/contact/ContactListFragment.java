@@ -98,9 +98,11 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         Map<String, UserOnlineState> userOnlineStateMap = ChatManager.Instance().getUserOnlineStateMap();
         for (UIUserInfo userInfo : userInfos) {
             UserOnlineState userOnlineState = userOnlineStateMap.get(userInfo.getUserInfo().uid);
-            String userOnlineDesc = userOnlineState.desc();
-            if (!TextUtils.isEmpty(userOnlineDesc)) {
-                userInfo.setDesc(userOnlineDesc);
+            if (userOnlineState != null) {
+                String userOnlineDesc = userOnlineState.desc();
+                if (!TextUtils.isEmpty(userOnlineDesc)) {
+                    userInfo.setDesc(userOnlineDesc);
+                }
             }
         }
     }
