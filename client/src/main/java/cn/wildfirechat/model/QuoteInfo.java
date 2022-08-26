@@ -50,13 +50,20 @@ public class QuoteInfo implements Parcelable {
     public void setMessageDigest(String messageDigest) {
         this.messageDigest = messageDigest;
     }
+
     public static QuoteInfo initWithMessage(Message message) {
         QuoteInfo info = new QuoteInfo();
         if (message != null) {
             info.messageUid = message.messageUid;
             info.userId = message.sender;
-            UserInfo userInfo = ChatManager.Instance().getUserInfo(message.sender, false);
-            info.userDisplayName = userInfo.displayName;
+            UserInfo userInfo;
+            if (message.conversation.type == Conversation.ConversationType.Group) {
+                userInfo = ChatManager.Instance().getUserInfo(message.sender, message.conversation.target, false);
+                info.userDisplayName = ChatManager.Instance().getGroupMemberDisplayName(userInfo);
+            } else {
+                userInfo = ChatManager.Instance().getUserInfo(message.sender, false);
+                info.userDisplayName = userInfo.displayName;
+            }
             info.messageDigest = message.content.digest(message);
             if (info.messageDigest.length() > 48) {
                 info.messageDigest = info.messageDigest.substring(0, 48);
