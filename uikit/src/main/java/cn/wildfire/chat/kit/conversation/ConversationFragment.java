@@ -824,7 +824,7 @@ public class ConversationFragment extends Fragment implements
                     spannableString = mentionAllSpannable();
                 } else {
                     String userId = data.getStringExtra("userId");
-                    UserInfo userInfo = userViewModel.getUserInfo(userId, false);
+                    UserInfo userInfo = userViewModel.getUserInfo(userId, this.groupInfo.target, false);
                     spannableString = mentionSpannable(userInfo);
                 }
                 int position = inputPanel.editText.getSelectionEnd();
@@ -845,7 +845,7 @@ public class ConversationFragment extends Fragment implements
     }
 
     private SpannableString mentionSpannable(UserInfo userInfo) {
-        String text = "@" + userInfo.displayName + " ";
+        String text = "@" + ChatManager.Instance().getGroupMemberDisplayName(userInfo) + " ";
         SpannableString spannableString = new SpannableString(text);
         spannableString.setSpan(new MentionSpan(userInfo.uid), 0, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         return spannableString;
