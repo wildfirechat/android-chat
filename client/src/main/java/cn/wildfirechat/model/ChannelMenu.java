@@ -39,6 +39,8 @@ public class ChannelMenu implements Parcelable {
         JSONObject obj = new JSONObject();
         try {
             obj.putOpt("menuId", this.menuId);
+            obj.putOpt("type", this.type);
+            obj.putOpt("name", this.name);
             obj.putOpt("key", this.key);
             obj.putOpt("url", this.url);
             obj.putOpt("mediaId", this.mediaId);
