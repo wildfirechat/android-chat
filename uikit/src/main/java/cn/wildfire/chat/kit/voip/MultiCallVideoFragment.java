@@ -232,6 +232,10 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             // TODO 目前关闭摄像头之后，不支持屏幕共享
             return;
         }
+        if (!AVEngineKit.isSupportConference()) {
+            Toast.makeText(getActivity(), "当前版本不支持屏幕共享", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (!session.isScreenSharing()) {
             ((VoipBaseActivity) getActivity()).startScreenShare();
         } else {
