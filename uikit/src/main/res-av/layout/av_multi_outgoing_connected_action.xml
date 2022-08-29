@@ -96,12 +96,12 @@
             android:id="@+id/hangupImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="30dp"
             android:src="@drawable/av_hangup_selector" />
 
         <ImageView
             android:id="@+id/shareScreenImageView"
             android:layout_width="60dp"
+            android:visibility="gone"
             android:layout_height="60dp"
             android:layout_marginLeft="30dp"
             android:src="@drawable/av_share" />
