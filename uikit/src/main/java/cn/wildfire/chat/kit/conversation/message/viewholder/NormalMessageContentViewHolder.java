@@ -245,12 +245,12 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         appServiceProvider.addFavoriteItem(favoriteItem, new SimpleCallback<Void>() {
             @Override
             public void onUiSuccess(Void aVoid) {
-                Toast.makeText(fragment.getContext(), "fav ok", Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getContext(), "收藏成功", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                Toast.makeText(fragment.getContext(), "fav error: " + code, Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getContext(), "收藏失败: " + code, Toast.LENGTH_SHORT).show();
             }
         });
     }
