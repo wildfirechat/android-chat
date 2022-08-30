@@ -1086,11 +1086,6 @@ public class ChatManager {
                 //  迁移旧的clientId
                 imei = PreferenceManager.getDefaultSharedPreferences(gContext).getString("mars_core_uid", "");
                 if (TextUtils.isEmpty(imei)) {
-                    try {
-                        imei = Settings.Secure.getString(gContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                     if (TextUtils.isEmpty(imei)) {
                         imei = UUID.randomUUID().toString();
                     }
