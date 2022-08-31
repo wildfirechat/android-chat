@@ -30,9 +30,7 @@ import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.mm.MediaEntry;
-import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
@@ -74,23 +72,7 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
                 && msg.message.content.getMessageContentType() != MessageContentType.ContentType_Video) {
                 continue;
             }
-            MediaEntry entry = new MediaEntry();
-            if (msg.message.content.getMessageContentType() == cn.wildfirechat.message.core.MessageContentType.ContentType_Image) {
-                entry.setType(MediaEntry.TYPE_IMAGE);
-                entry.setThumbnail(((ImageMessageContent) msg.message.content).getThumbnail());
-
-            } else {
-                entry.setType(MediaEntry.TYPE_VIDEO);
-                entry.setThumbnail(((VideoMessageContent) msg.message.content).getThumbnail());
-            }
-            if (msg.message.conversation.type == Conversation.ConversationType.SecretChat) {
-                String url = ((MediaMessageContent) msg.message.content).remoteUrl;
-                url += "?target=" + message.message.conversation.target + "&secret=true";
-                entry.setMediaUrl(url);
-            } else {
-                entry.setMediaUrl(((MediaMessageContent) msg.message.content).remoteUrl);
-                entry.setMediaLocalPath(((MediaMessageContent) msg.message.content).localPath);
-            }
+            MediaEntry entry = new MediaEntry(msg.message);
             entries.add(entry);
 
             if (message.message.messageId == msg.message.messageId) {

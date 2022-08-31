@@ -14,12 +14,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import cn.wildfire.chat.kit.Config;
+import cn.wildfirechat.message.FileMessageContent;
+import cn.wildfirechat.message.MediaMessageContent;
+import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallbackBytes;
 import okhttp3.Call;
@@ -142,44 +146,66 @@ public class DownloadManager {
         });
     }
 
-    public static void download(final String url, final OnDownloadListenerEx listener) {
-        Request request = new Request.Builder().url(url).build();
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                // 下载失败
-                listener.onFail();
-            }
+    /**
+     * 密聊时，媒体文件都是经过加密的，这个函数构造一个带特定参数的url，然后通过 {@link #download(String, String, String, OnDownloadListener)
+     * 或者{@link #download(String, String, OnDownloadListener)}} 下载时，回调返回的文件是解密之后的
+     *
+     * @param mediaMessage
+     * @return
+     */
+    public static String buildSecretChatMediaUrl(Message mediaMessage) {
+        if (!(mediaMessage.content instanceof MediaMessageContent) || mediaMessage.conversation.type != Conversation.ConversationType.SecretChat) {
+            return null;
+        }
+        String remoteUrl = ((MediaMessageContent) mediaMessage.content).remoteUrl;
+        if (TextUtils.isEmpty(remoteUrl)) {
+            return null;
+        }
+        if (remoteUrl.contains("?")) {
+            return remoteUrl + "&target=" + mediaMessage.conversation.target + "&secret=true";
+        } else {
+            return remoteUrl + "?target=" + mediaMessage.conversation.target + "&secret=true";
+        }
+    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                InputStream is = null;
-                int len;
-                try {
-                    is = response.body().byteStream();
-                    long total = response.body().contentLength();
-                    byte[] buf = new byte[(int) total];
-                    long sum = 0;
-                    while ((len = is.read(buf, (int) sum, total - sum >= 1024 ? 1024 : (int) (total - sum))) != -1) {
-                        sum += len;
-                        int progress = (int) (sum * 1.0f / total * 100);
-                        // 下载中
-                        listener.onProgress(progress);
-                    }
-                    // 下载完成
-                    listener.onSuccess(buf);
-                } catch (Exception e) {
-                    listener.onFail();
-                } finally {
-                    try {
-                        if (is != null) {
-                            is.close();
-                        }
-                    } catch (IOException e) {
-                    }
-                }
+    public static File mediaMessageContentFile(Message message) {
+
+        String dir = null;
+        String name = null;
+        MessageContent content = message.content;
+        if (!(content instanceof MediaMessageContent)) {
+            return null;
+        }
+        if (!TextUtils.isEmpty(((MediaMessageContent) content).localPath)) {
+            File file = new File(((MediaMessageContent) content).localPath);
+            if (file.exists()) {
+                return file;
             }
-        });
+        }
+
+        switch (((MediaMessageContent) content).mediaType) {
+            case VOICE:
+                name = message.messageUid + ".mp3";
+                dir = Config.AUDIO_SAVE_DIR;
+                break;
+            case IMAGE:
+                name = message.messageUid + ".jpg";
+                dir = Config.PHOTO_SAVE_DIR;
+                break;
+            case VIDEO:
+                name = message.messageUid + ".mp4";
+                dir = Config.VIDEO_SAVE_DIR;
+                break;
+            case FILE:
+                name = message.messageUid + "-" + ((FileMessageContent) message.content).getName();
+                dir = Config.FILE_SAVE_DIR;
+                break;
+            default:
+                dir = Config.FILE_SAVE_DIR;
+                name = message.messageUid + "-" + ".data";
+                break;
+        }
+        return new File(dir, name);
     }
 
     /**
@@ -268,30 +294,6 @@ public class DownloadManager {
         public void onUiFail() {
 
         }
-    }
-
-    public static String urlToMd5(String url) {
-        return md5(url);
-    }
-
-    public static String md5(String s) {
-        try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes());
-            byte[] messageDigest = digest.digest();
-
-            // Create Hex String
-            StringBuilder hexString = new StringBuilder();
-            for (int i = 0; i < messageDigest.length; i++) {
-                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
-            }
-
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private static Map<String, String> getQueryMap(String query) {

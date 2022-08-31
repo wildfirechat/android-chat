@@ -36,6 +36,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,6 +64,7 @@ import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
@@ -886,6 +888,19 @@ public class ConversationFragment extends Fragment implements
 
         unInitGroupObservers();
         inputPanel.onDestroy();
+
+        // 退出密聊时，清空相关临时文件
+        if (conversation.type == Conversation.ConversationType.SecretChat) {
+            List<UiMessage> messages = adapter.getMessages();
+            if (messages != null) {
+                for (UiMessage uiMsg : messages) {
+                    File file = DownloadManager.mediaMessageContentFile(uiMsg.message);
+                    if (file != null && file.exists()) {
+                        file.delete();
+                    }
+                }
+            }
+        }
     }
 
     boolean onBackPressed() {

@@ -26,6 +26,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -99,7 +100,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
     @OnClick(R2.id.audioContentLayout)
     public void onClick(View view) {
-        File file = messageViewModel.mediaMessageContentFile(message.message);
+        File file = DownloadManager.mediaMessageContentFile(message.message);
         if (file == null) {
             return;
         }
