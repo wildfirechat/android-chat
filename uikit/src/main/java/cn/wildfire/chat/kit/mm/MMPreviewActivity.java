@@ -32,14 +32,14 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
+import cn.wildfirechat.message.Message;
+import cn.wildfirechat.remote.ChatManager;
 
 /**
  * @author imndx
@@ -55,6 +55,8 @@ public class MMPreviewActivity extends Activity {
     private static int currentPosition = -1;
     private static List<MediaEntry> entries;
     private boolean pendingPreviewInitialMedia;
+
+    public static final String TAG = "MMPreviewActivity";
 
     private class MMPagerAdapter extends PagerAdapter {
         private List<MediaEntry> entries;
@@ -136,6 +138,7 @@ public class MMPreviewActivity extends Activity {
         } else {
             previewVideo(view, message);
         }
+        ChatManager.Instance().setMediaMessagePlayed(message.getMessage().messageId);
     }
 
     private void resetVideoView(View view) {
@@ -178,19 +181,19 @@ public class MMPreviewActivity extends Activity {
                 }
                 btn.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
-                    String name = DownloadManager.md5(entry.getMediaUrl());
-                    File videoFile = new File(Config.VIDEO_SAVE_DIR, name);
+                    File videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
                     if (!videoFile.exists() || secret) {
-                        view.setTag(name);
+                        String tag = entry.getMessage().messageUid + "";
+                        view.setTag(tag);
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
                         final WeakReference<View> viewWeakReference = new WeakReference<>(view);
-                        DownloadManager.download(entry.getMediaUrl(), Config.VIDEO_SAVE_DIR, name, new DownloadManager.OnDownloadListener() {
+                        DownloadManager.download(entry.getMediaUrl(), videoFile.getParent(), videoFile.getName(), new DownloadManager.OnDownloadListener() {
                             @Override
                             public void onSuccess(File file) {
                                 UIUtils.postTaskSafely(() -> {
                                     View targetView = viewWeakReference.get();
-                                    if (targetView != null && name.equals(targetView.getTag())) {
+                                    if (targetView != null && tag.equals(targetView.getTag())) {
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
                                         playVideo(targetView, file.getAbsolutePath());
                                     }
@@ -208,7 +211,7 @@ public class MMPreviewActivity extends Activity {
                             public void onFail() {
                                 View targetView = viewWeakReference.get();
                                 UIUtils.postTaskSafely(() -> {
-                                    if (targetView != null && name.equals(targetView.getTag())) {
+                                    if (targetView != null && tag.equals(targetView.getTag())) {
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
                                         targetView.findViewById(R.id.btnVideo).setVisibility(View.VISIBLE);
                                     }
@@ -260,15 +263,14 @@ public class MMPreviewActivity extends Activity {
 
         String mediaUrl = entry.getMediaUrl();
         if (TextUtils.isEmpty(entry.getMediaLocalPath()) && !TextUtils.isEmpty(mediaUrl)) {
-            String imageFileName = DownloadManager.md5(mediaUrl) + mediaUrl.substring(mediaUrl.lastIndexOf('.'));
-            File file = new File(Config.PHOTO_SAVE_DIR, imageFileName);
+            File file = DownloadManager.mediaMessageContentFile(entry.getMessage());
             if (file.exists() || secret) {
                 saveImageView.setVisibility(View.GONE);
             } else {
                 saveImageView.setVisibility(View.VISIBLE);
                 saveImageView.setOnClickListener(v -> {
                     saveImageView.setVisibility(View.GONE);
-                    DownloadManager.download(entry.getMediaUrl(), Config.PHOTO_SAVE_DIR, imageFileName, new DownloadManager.SimpleOnDownloadListener() {
+                    DownloadManager.download(entry.getMediaUrl(), file.getParent(), file.getName(), new DownloadManager.SimpleOnDownloadListener() {
                         @Override
                         public void onUiSuccess(File file1) {
                             if (isFinishing()) {
@@ -331,8 +333,7 @@ public class MMPreviewActivity extends Activity {
         if (secret) {
             for (MediaEntry entry : entries) {
                 if (entry.getType() == MediaEntry.TYPE_VIDEO) {
-                    String name = DownloadManager.md5(entry.getMediaUrl());
-                    File secretVideoFile = new File(Config.VIDEO_SAVE_DIR, name);
+                    File secretVideoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
                     if (secretVideoFile.exists()) {
                         secretVideoFile.delete();
                     }
@@ -358,14 +359,14 @@ public class MMPreviewActivity extends Activity {
         context.startActivity(intent);
     }
 
-    public static void previewImage(Context context, ImageMessageContent imageMessageContent) {
+    public static void previewImage(Context context, Message message) {
         List<MediaEntry> entries = new ArrayList<>();
 
-        MediaEntry entry = new MediaEntry();
-        entry.setType(MediaEntry.TYPE_IMAGE);
-        entry.setThumbnail(imageMessageContent.getThumbnail());
-        entry.setMediaUrl(imageMessageContent.remoteUrl);
-        entry.setMediaLocalPath(imageMessageContent.localPath);
+        if (!(message.content instanceof ImageMessageContent)) {
+            Log.e(TAG, "previewImage without imageMessageContent");
+            return;
+        }
+        MediaEntry entry = new MediaEntry(message);
         entries.add(entry);
         previewMedia(context, entries, 0, false);
     }
@@ -380,14 +381,14 @@ public class MMPreviewActivity extends Activity {
         previewMedia(context, entries, 0, false);
     }
 
-    public static void previewVideo(Context context, VideoMessageContent videoMessageContent) {
+    public static void previewVideo(Context context, Message message) {
+        if (!(message.content instanceof ImageMessageContent)) {
+            Log.e(TAG, "previewVideo without videoMessageContent");
+            return;
+        }
         List<MediaEntry> entries = new ArrayList<>();
 
-        MediaEntry entry = new MediaEntry();
-        entry.setType(MediaEntry.TYPE_VIDEO);
-        entry.setThumbnail(videoMessageContent.getThumbnail());
-        entry.setMediaUrl(videoMessageContent.remoteUrl);
-        entry.setMediaLocalPath(videoMessageContent.localPath);
+        MediaEntry entry = new MediaEntry(message);
         entries.add(entry);
         previewMedia(context, entries, 0, false);
     }

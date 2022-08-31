@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.audio.AudioPlayManager;
 import cn.wildfire.chat.kit.audio.IAudioPlayListener;
@@ -264,7 +263,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
             ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
         }
 
-        File file = mediaMessageContentFile(message.message);
+        File file = DownloadManager.mediaMessageContentFile(message.message);
 
         if (file == null) {
             return;
@@ -440,42 +439,6 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         }
     }
 
-    public File mediaMessageContentFile(Message message) {
-
-        String dir = null;
-        String name = null;
-        MessageContent content = message.content;
-        if (!(content instanceof MediaMessageContent)) {
-            return null;
-        }
-        if (!TextUtils.isEmpty(((MediaMessageContent) content).localPath)) {
-            File file = new File(((MediaMessageContent) content).localPath);
-            if (file.exists()) {
-                return file;
-            }
-        }
-
-        switch (((MediaMessageContent) content).mediaType) {
-            case VOICE:
-                name = message.messageUid + ".mp3";
-                dir = Config.AUDIO_SAVE_DIR;
-                break;
-            case FILE:
-                name = message.messageUid + "-" + ((FileMessageContent) message.content).getName();
-                dir = Config.FILE_SAVE_DIR;
-                break;
-            case VIDEO:
-                name = message.messageUid + ".mp4";
-                dir = Config.VIDEO_SAVE_DIR;
-                break;
-            default:
-        }
-        if (TextUtils.isEmpty(dir) || TextUtils.isEmpty(name)) {
-            return null;
-        }
-        return new File(dir, name);
-    }
-
     public void downloadMedia(UiMessage message, File targetFile) {
         MessageContent content = message.message.content;
         if (!(content instanceof MediaMessageContent)) {
@@ -488,10 +451,9 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         message.isDownloading = true;
         postMessageUpdate(message);
 
-        DownloadManager.download(((MediaMessageContent) content).remoteUrl, targetFile.getParent(), targetFile.getName() + ".tmp", new DownloadManager.OnDownloadListener() {
+        DownloadManager.download(((MediaMessageContent) content).remoteUrl, targetFile.getParent(), targetFile.getName(), new DownloadManager.OnDownloadListener() {
             @Override
             public void onSuccess(File file) {
-                file.renameTo(targetFile);
                 message.isDownloading = false;
                 message.progress = 100;
                 postMessageUpdate(message);

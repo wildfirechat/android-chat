@@ -19,6 +19,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
@@ -52,7 +53,7 @@ public class StickerMessageContentViewHolder extends NormalMessageContentViewHol
         } else {
             String imagePath = stickerMessage.remoteUrl;
             if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
-                imagePath += "?target=" + message.message.conversation.target + "&secret=true";
+                imagePath = DownloadManager.buildSecretChatMediaUrl(message.message);
             }
             CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
