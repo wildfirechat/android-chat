@@ -13,7 +13,7 @@ android {
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
     defaultConfig {
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 29 //当targetversion大于23时，需要使用fileprovider
         versionCode 27
         versionName "0.8.0.rc3"

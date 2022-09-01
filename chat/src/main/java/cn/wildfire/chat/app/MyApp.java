@@ -19,7 +19,6 @@ import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentView
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.push.PushService;
-import me.weishu.reflection.Reflection;
 
 public class MyApp extends BaseApp {
 
@@ -60,7 +59,7 @@ public class MyApp extends BaseApp {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        Reflection.unseal(base);
+//        Reflection.unseal(base);
     }
 
     private void setupWFCDirs() {

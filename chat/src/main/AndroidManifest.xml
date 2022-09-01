@@ -40,6 +40,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
+    <uses-sdk tools:overrideLibrary="org.webrtc"/>
+
     <application
         android:name="cn.wildfire.chat.app.MyApp"
         android:allowBackup="true"
