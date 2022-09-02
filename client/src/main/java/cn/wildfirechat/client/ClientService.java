@@ -1788,6 +1788,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean batchDeleteMessages(long[] messageUids) throws RemoteException {
+            return ProtoLogic.batchDeleteMessage(messageUids);
+        }
+
+        @Override
+        public boolean clearUserMessage(String userId, long start, long end) throws RemoteException {
+            return ProtoLogic.clearUserMessages(userId, start, end);
+        }
+
+        @Override
         public void deleteRemoteMessage(long messageUid, IGeneralCallback callback) throws RemoteException {
             ProtoLogic.deleteRemoteMessage(messageUid, new ProtoLogic.IGeneralCallback() {
                 @Override
