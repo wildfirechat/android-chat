@@ -5095,6 +5095,52 @@ public class ChatManager {
     }
 
     /**
+     * 批量删除本地消息
+     *
+     * @param messageUids  消息的Uid列表
+     * @return
+     */
+    public boolean batchDeleteMessages(List<Long> messageUids) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            long[] uids = new long[messageUids.size()];
+            for (int i = 0; i < messageUids.size(); i++) {
+                uids[i] = messageUids.get(i);
+            }
+            mClient.batchDeleteMessages(uids);
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 清除指定用户的指定时间段发送的消息。
+     *
+     * @param userId  目标用户
+     * @param startTime 开始时间，为0时忽略开始时间
+     * @param endTime  结束时间，为0时忽略结束时间。
+     * @return
+     */
+    public boolean clearUserMessage(String userId, long startTime, long endTime) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            mClient.clearUserMessage(userId, startTime, endTime);
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * 删除远程消息消息，只有专业版支持
      *
      * @param messageUid 消息的UID

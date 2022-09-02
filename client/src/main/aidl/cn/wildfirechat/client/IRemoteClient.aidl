@@ -207,6 +207,8 @@ interface IRemoteClient {
     oneway void uploadMediaFile(in String mediaPath, int mediaType, in IUploadMediaCallback callback);
     oneway void modifyMyInfo(in List<ModifyMyInfoEntry> values, in IGeneralCallback callback);
     boolean deleteMessage(in long messageId);
+    boolean batchDeleteMessages(in long[] messageUids);
+    boolean clearUserMessage(in String userId, in long start, in long end);
     void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
     void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
