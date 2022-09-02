@@ -54,7 +54,7 @@
             android:paddingLeft="@dimen/option_item_margin_left"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="加群设置" />
+            android:text="群基本设置" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/joinOptionItemView"
@@ -70,5 +70,12 @@
             android:background="@drawable/selector_common_item"
             app:desc="不允许查找"
             app:title="查找方式" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/historyMessageOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            app:desc="不允许新成员查看历史消息"
+            app:title="群历史消息" />
     </LinearLayout>
 </LinearLayout>
