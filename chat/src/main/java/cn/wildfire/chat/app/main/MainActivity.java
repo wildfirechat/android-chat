@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -517,6 +518,15 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         }
     }
 
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(
+            getBaseContext().getPackageName());
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
+        finish();
+    }
 
     private void onScanPcQrCode(String qrcode) {
         String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);
