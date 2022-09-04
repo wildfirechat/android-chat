@@ -20,7 +20,6 @@ import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
@@ -2429,7 +2428,7 @@ public class ChatManager {
                         return;
                     }
 
-                    if (finalMediaMessageUploadCallback != null){
+                    if (finalMediaMessageUploadCallback != null) {
                         finalMediaMessageUploadCallback.onMediaMessageUploaded(remoteUrl);
                     }
 
@@ -5097,7 +5096,7 @@ public class ChatManager {
     /**
      * 批量删除本地消息
      *
-     * @param messageUids  消息的Uid列表
+     * @param messageUids 消息的Uid列表
      * @return
      */
     public boolean batchDeleteMessages(List<Long> messageUids) {
@@ -5121,9 +5120,9 @@ public class ChatManager {
     /**
      * 清除指定用户的指定时间段发送的消息。
      *
-     * @param userId  目标用户
+     * @param userId    目标用户
      * @param startTime 开始时间，为0时忽略开始时间
-     * @param endTime  结束时间，为0时忽略结束时间。
+     * @param endTime   结束时间，为0时忽略结束时间。
      * @return
      */
     public boolean clearUserMessage(String userId, long startTime, long endTime) {
@@ -8066,193 +8065,193 @@ public class ChatManager {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "marsClientService connected");
             mClient = IRemoteClient.Stub.asInterface(iBinder);
-            try {
-                if (useSM4) {
-                    mClient.useSM4();
-                }
-
-                mClient.setBackupAddressStrategy(backupAddressStrategy);
-                if (!TextUtils.isEmpty(backupAddressHost))
-                    mClient.setBackupAddress(backupAddressHost, backupAddressPort);
-
-                if (proxyInfo != null) {
-                    mClient.setProxyInfo(proxyInfo);
-                }
-
-                mClient.setServerAddress(SERVER_HOST);
-                for (Class clazz : messageContentMap.values()) {
-                    mClient.registerMessageContent(clazz.getName());
-                }
-
-                if (startLog) {
-                    startLog();
-                } else {
-                    stopLog();
-                }
-
-                if (!TextUtils.isEmpty(deviceToken)) {
-                    mClient.setDeviceToken(deviceToken, pushType);
-                }
-
-                mClient.setForeground(1);
-                mClient.setOnReceiveMessageListener(new IOnReceiveMessageListener.Stub() {
-                    @Override
-                    public void onReceive(List<Message> messages, boolean hasMore) throws RemoteException {
-                        onReceiveMessage(messages, hasMore);
+            workHandler.post(() -> {
+                try {
+                    if (useSM4) {
+                        mClient.useSM4();
                     }
 
-                    @Override
-                    public void onRecall(long messageUid) throws RemoteException {
-                        onRecallMessage(messageUid);
+                    mClient.setBackupAddressStrategy(backupAddressStrategy);
+                    if (!TextUtils.isEmpty(backupAddressHost))
+                        mClient.setBackupAddress(backupAddressHost, backupAddressPort);
+
+                    if (proxyInfo != null) {
+                        mClient.setProxyInfo(proxyInfo);
                     }
 
-                    @Override
-                    public void onDelete(long messageUid) throws RemoteException {
-                        onDeleteMessage(messageUid);
+                    mClient.setServerAddress(SERVER_HOST);
+                    for (Class clazz : messageContentMap.values()) {
+                        mClient.registerMessageContent(clazz.getName());
                     }
 
-                    @Override
-                    public void onDelivered(Map deliveryMap) throws RemoteException {
-                        onMsgDelivered(deliveryMap);
+                    if (startLog) {
+                        startLog();
+                    } else {
+                        stopLog();
                     }
 
-                    @Override
-                    public void onReaded(List<ReadEntry> readEntrys) throws RemoteException {
-                        onMsgReaded(readEntrys);
-                    }
-                });
-                mClient.setOnConnectionStatusChangeListener(new IOnConnectionStatusChangeListener.Stub() {
-                    @Override
-                    public void onConnectionStatusChange(int connectionStatus) throws RemoteException {
-                        ChatManager.this.onConnectionStatusChange(connectionStatus);
-                    }
-                });
-                mClient.setOnConnectToServerListener(new IOnConnectToServerListener.Stub() {
-                    @Override
-                    public void onConnectToServer(String host, String ip, int port) throws RemoteException {
-                        ChatManager.this.onConnectToServer(host, ip, port);
-                    }
-                });
-                mClient.setOnUserInfoUpdateListener(new IOnUserInfoUpdateListener.Stub() {
-                    @Override
-                    public void onUserInfoUpdated(List<UserInfo> userInfos) throws RemoteException {
-                        ChatManager.this.onUserInfoUpdate(userInfos);
-                    }
-                });
-                mClient.setOnGroupInfoUpdateListener(new IOnGroupInfoUpdateListener.Stub() {
-                    @Override
-                    public void onGroupInfoUpdated(List<GroupInfo> groupInfos) throws RemoteException {
-                        ChatManager.this.onGroupInfoUpdated(groupInfos);
-                    }
-                });
-                mClient.setOnGroupMembersUpdateListener(new IOnGroupMembersUpdateListener.Stub() {
-                    @Override
-                    public void onGroupMembersUpdated(String groupId, List<GroupMember> members) throws RemoteException {
-                        ChatManager.this.onGroupMembersUpdate(groupId, members);
-                    }
-                });
-                mClient.setOnFriendUpdateListener(new IOnFriendUpdateListener.Stub() {
-                    @Override
-                    public void onFriendListUpdated(List<String> friendList) throws RemoteException {
-                        ChatManager.this.onFriendListUpdated(friendList);
+                    if (!TextUtils.isEmpty(deviceToken)) {
+                        mClient.setDeviceToken(deviceToken, pushType);
                     }
 
-                    @Override
-                    public void onFriendRequestUpdated(List<String> newRequests) throws RemoteException {
-                        ChatManager.this.onFriendReqeustUpdated(newRequests);
-                    }
-                });
-                mClient.setOnSettingUpdateListener(new IOnSettingUpdateListener.Stub() {
-                    @Override
-                    public void onSettingUpdated() throws RemoteException {
-                        ChatManager.this.onSettingUpdated();
-                    }
-                });
-                mClient.setOnChannelInfoUpdateListener(new IOnChannelInfoUpdateListener.Stub() {
-                    @Override
-                    public void onChannelInfoUpdated(List<ChannelInfo> channelInfos) throws RemoteException {
-                        ChatManager.this.onChannelInfoUpdate(channelInfos);
-                    }
-                });
-                mClient.setOnConferenceEventListener(new IOnConferenceEventListener.Stub() {
-                    @Override
-                    public void onConferenceEvent(String event) throws RemoteException {
-                        ChatManager.this.onConferenceEvent(event);
-                    }
-                });
-                mClient.setOnTrafficDataListener(new IOnTrafficDataListener.Stub() {
-                    @Override
-                    public void onTrafficData(long send, long recv) throws RemoteException {
-                        ChatManager.this.onTrafficData(send, recv);
-                    }
-                });
-
-                mClient.setUserOnlineEventListener(new IOnUserOnlineEventListener.Stub() {
-
-                    @Override
-                    public void onUserOnlineEvent(UserOnlineState[] states) throws RemoteException {
-                        ChatManager.this.onUserOnlineEvent(states);
-                    }
-                });
-
-                mClient.setSecretChatStateChangedListener(new IOnSecretChatStateListener.Stub() {
-                    @Override
-                    public void onSecretChatStateChanged(String targetid, int state) throws RemoteException {
-                        ChatManager.this.onSecretChatStateChanged(targetid, state);
-                    }
-                });
-
-
-                mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
-                    @Override
-                    public void onSecretMessageStartBurning(String targetId, long playedMsgId) throws RemoteException {
-                        ChatManager.this.onSecretMessageStartBurning(targetId, playedMsgId);
-                    }
-
-                    @Override
-                    public void onSecretMessageBurned(int[] messageIds) throws RemoteException {
-                        if (messageIds != null && messageIds.length > 0) {
-                            List<Long> arr = new ArrayList<>();
-                            for (int i = 0; i < messageIds.length; i++) {
-                                arr.add((long) messageIds[i]);
-                            }
-                            ChatManager.this.onSecretMessageBurned(arr);
+                    mClient.setForeground(1);
+                    mClient.setOnReceiveMessageListener(new IOnReceiveMessageListener.Stub() {
+                        @Override
+                        public void onReceive(List<Message> messages, boolean hasMore) throws RemoteException {
+                            onReceiveMessage(messages, hasMore);
                         }
-                    }
-                });
 
+                        @Override
+                        public void onRecall(long messageUid) throws RemoteException {
+                            onRecallMessage(messageUid);
+                        }
 
-                mClient.setLiteMode(isLiteMode);
-                mClient.setLowBPSMode(isLowBPSMode);
+                        @Override
+                        public void onDelete(long messageUid) throws RemoteException {
+                            onDeleteMessage(messageUid);
+                        }
 
-                if (!TextUtils.isEmpty(protoUserAgent)) {
-                    mClient.setProtoUserAgent(protoUserAgent);
-                }
-                if (!protoHttpHeaderMap.isEmpty()) {
-                    protoHttpHeaderMap.forEach((String s, String s2) -> {
-                        try {
-                            mClient.addHttpHeader(s, s2);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onDelivered(Map deliveryMap) throws RemoteException {
+                            onMsgDelivered(deliveryMap);
+                        }
+
+                        @Override
+                        public void onReaded(List<ReadEntry> readEntrys) throws RemoteException {
+                            onMsgReaded(readEntrys);
                         }
                     });
-                }
+                    mClient.setOnConnectionStatusChangeListener(new IOnConnectionStatusChangeListener.Stub() {
+                        @Override
+                        public void onConnectionStatusChange(int connectionStatus) throws RemoteException {
+                            ChatManager.this.onConnectionStatusChange(connectionStatus);
+                        }
+                    });
+                    mClient.setOnConnectToServerListener(new IOnConnectToServerListener.Stub() {
+                        @Override
+                        public void onConnectToServer(String host, String ip, int port) throws RemoteException {
+                            ChatManager.this.onConnectToServer(host, ip, port);
+                        }
+                    });
+                    mClient.setOnUserInfoUpdateListener(new IOnUserInfoUpdateListener.Stub() {
+                        @Override
+                        public void onUserInfoUpdated(List<UserInfo> userInfos) throws RemoteException {
+                            ChatManager.this.onUserInfoUpdate(userInfos);
+                        }
+                    });
+                    mClient.setOnGroupInfoUpdateListener(new IOnGroupInfoUpdateListener.Stub() {
+                        @Override
+                        public void onGroupInfoUpdated(List<GroupInfo> groupInfos) throws RemoteException {
+                            ChatManager.this.onGroupInfoUpdated(groupInfos);
+                        }
+                    });
+                    mClient.setOnGroupMembersUpdateListener(new IOnGroupMembersUpdateListener.Stub() {
+                        @Override
+                        public void onGroupMembersUpdated(String groupId, List<GroupMember> members) throws RemoteException {
+                            ChatManager.this.onGroupMembersUpdate(groupId, members);
+                        }
+                    });
+                    mClient.setOnFriendUpdateListener(new IOnFriendUpdateListener.Stub() {
+                        @Override
+                        public void onFriendListUpdated(List<String> friendList) throws RemoteException {
+                            ChatManager.this.onFriendListUpdated(friendList);
+                        }
 
-                if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
-                    mClient.connect(userId, token);
-                }
+                        @Override
+                        public void onFriendRequestUpdated(List<String> newRequests) throws RemoteException {
+                            ChatManager.this.onFriendReqeustUpdated(newRequests);
+                        }
+                    });
+                    mClient.setOnSettingUpdateListener(new IOnSettingUpdateListener.Stub() {
+                        @Override
+                        public void onSettingUpdated() throws RemoteException {
+                            ChatManager.this.onSettingUpdated();
+                        }
+                    });
+                    mClient.setOnChannelInfoUpdateListener(new IOnChannelInfoUpdateListener.Stub() {
+                        @Override
+                        public void onChannelInfoUpdated(List<ChannelInfo> channelInfos) throws RemoteException {
+                            ChatManager.this.onChannelInfoUpdate(channelInfos);
+                        }
+                    });
+                    mClient.setOnConferenceEventListener(new IOnConferenceEventListener.Stub() {
+                        @Override
+                        public void onConferenceEvent(String event) throws RemoteException {
+                            ChatManager.this.onConferenceEvent(event);
+                        }
+                    });
+                    mClient.setOnTrafficDataListener(new IOnTrafficDataListener.Stub() {
+                        @Override
+                        public void onTrafficData(long send, long recv) throws RemoteException {
+                            ChatManager.this.onTrafficData(send, recv);
+                        }
+                    });
 
-                int clientConnectionStatus = mClient.getConnectionStatus();
-                if (connectionStatus == ConnectionStatus.ConnectionStatusConnected) {
-                    onConnectionStatusChange(clientConnectionStatus);
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+                    mClient.setUserOnlineEventListener(new IOnUserOnlineEventListener.Stub() {
 
-            mainHandler.post(() -> {
-                for (IMServiceStatusListener listener : imServiceStatusListeners) {
-                    listener.onServiceConnected();
+                        @Override
+                        public void onUserOnlineEvent(UserOnlineState[] states) throws RemoteException {
+                            ChatManager.this.onUserOnlineEvent(states);
+                        }
+                    });
+
+                    mClient.setSecretChatStateChangedListener(new IOnSecretChatStateListener.Stub() {
+                        @Override
+                        public void onSecretChatStateChanged(String targetid, int state) throws RemoteException {
+                            ChatManager.this.onSecretChatStateChanged(targetid, state);
+                        }
+                    });
+
+
+                    mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
+                        @Override
+                        public void onSecretMessageStartBurning(String targetId, long playedMsgId) throws RemoteException {
+                            ChatManager.this.onSecretMessageStartBurning(targetId, playedMsgId);
+                        }
+
+                        @Override
+                        public void onSecretMessageBurned(int[] messageIds) throws RemoteException {
+                            if (messageIds != null && messageIds.length > 0) {
+                                List<Long> arr = new ArrayList<>();
+                                for (int i = 0; i < messageIds.length; i++) {
+                                    arr.add((long) messageIds[i]);
+                                }
+                                ChatManager.this.onSecretMessageBurned(arr);
+                            }
+                        }
+                    });
+
+                    mClient.setLiteMode(isLiteMode);
+                    mClient.setLowBPSMode(isLowBPSMode);
+
+                    if (!TextUtils.isEmpty(protoUserAgent)) {
+                        mClient.setProtoUserAgent(protoUserAgent);
+                    }
+                    if (!protoHttpHeaderMap.isEmpty()) {
+                        for (Map.Entry<String, String> entry : protoHttpHeaderMap.entrySet()) {
+                            try {
+                                mClient.addHttpHeader(entry.getKey(), entry.getValue());
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
+                        mClient.connect(userId, token);
+                    }
+
+                    int clientConnectionStatus = mClient.getConnectionStatus();
+                    if (connectionStatus == ConnectionStatus.ConnectionStatusConnected) {
+                        onConnectionStatusChange(clientConnectionStatus);
+                    }
+
+                    mainHandler.post(() -> {
+                        for (IMServiceStatusListener listener : imServiceStatusListeners) {
+                            listener.onServiceConnected();
+                        }
+                    });
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
             });
         }
