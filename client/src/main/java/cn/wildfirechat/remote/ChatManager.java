@@ -206,6 +206,7 @@ public class ChatManager {
     private UserSource userSource;
 
     private boolean startLog;
+    private String sendLogCommand;
     private int connectionStatus;
     private int receiptStatus = -1; // 1, enable
     private int userReceiptStatus = -1; //1, enable
@@ -2339,7 +2340,7 @@ public class ChatManager {
                 }
             }
         } else if (msg.content instanceof TextMessageContent) {
-            if ("*#marslog#".equals(((TextMessageContent) msg.content).getContent())) {
+            if (sendLogCommand != null && sendLogCommand.equals(((TextMessageContent) msg.content).getContent())) {
                 List<String> logFilesPath = getLogFilesPath();
                 if (logFilesPath.size() > 0) {
                     FileMessageContent fileMessageContent = new FileMessageContent(logFilesPath.get(logFilesPath.size() - 1));
@@ -7087,6 +7088,10 @@ public class ChatManager {
             e.printStackTrace();
             return;
         }
+    }
+
+    public void setSendLogCommand(String sendLogCommand) {
+        this.sendLogCommand = sendLogCommand;
     }
 
     /**
