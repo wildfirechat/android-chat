@@ -653,8 +653,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ConversationInfo info = new ConversationInfo();
             info.conversation = new Conversation(Conversation.ConversationType.values()[protoInfo.getConversationType()], protoInfo.getTarget(), protoInfo.getLine());
             info.lastMessage = convertProtoMessage(protoInfo.getLastMessage());
-            info.timestamp = protoInfo.getTimestamp();
             info.draft = protoInfo.getDraft();
+            if (!TextUtils.isEmpty(info.draft) && info.lastMessage != null && info.lastMessage.serverTime > 0) {
+                info.timestamp = info.lastMessage.serverTime;
+            } else {
+                info.timestamp = protoInfo.getTimestamp();
+            }
             info.unreadCount = new UnreadCount(protoInfo.getUnreadCount());
             info.isTop = protoInfo.isTop();
             info.isSilent = protoInfo.isSilent();
