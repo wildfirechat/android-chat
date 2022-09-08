@@ -514,7 +514,7 @@ public class ChatManager {
      * @param port 服务器port
      */
     private void onConnectToServer(final String host, final String ip, final int port) {
-        Log.e(TAG, "connectToServer " + host + ip + port);
+        Log.e(TAG, "connectToServer " + host + " " + ip + "" + port);
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -8372,12 +8372,6 @@ public class ChatManager {
                 Log.d(TAG, "音视频SDK是多人版");
             } else {
                 Log.d(TAG, "音视频SDK是单人版");
-            }
-
-            method = clazz.getMethod("checkAddress", String.class);
-            result = (boolean) method.invoke(null, host);
-            if (!result) {
-                Log.d(TAG, "错误，音视频SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
             }
 
             clazz = Class.forName("cn.wildfirechat.moment.MomentClient");
