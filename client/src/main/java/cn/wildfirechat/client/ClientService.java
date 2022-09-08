@@ -1048,14 +1048,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public boolean updateMessageContent(cn.wildfirechat.message.Message message) throws RemoteException {
             ProtoMessage protoMessage = convertMessage(message);
             ProtoLogic.updateMessageContent(protoMessage);
-            return false;
+            return true;
         }
 
         @Override
         public boolean updateMessageContentAndTime(Message message) throws RemoteException {
             ProtoMessage protoMessage = convertMessage(message);
             ProtoLogic.updateMessageContentAndTime(protoMessage);
-            return false;
+            return true;
         }
 
         @Override
