@@ -404,6 +404,12 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     @OnClick(R2.id.menuImageView)
     public void showChannelMenu() {
+        ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversation.target, false);
+        if (channelInfo.menus == null || channelInfo.menus.isEmpty()) {
+            Toast.makeText(activity, "频道暂未配置菜单", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (channelMenuContainerLinearLayout.getVisibility() == VISIBLE) {
             menuImageView.setImageResource(R.mipmap.ic_chat_menu);
             audioImageView.setVisibility(VISIBLE);
@@ -421,7 +427,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         editText.setVisibility(GONE);
         rootLinearLayout.hideSoftkey(editText, null);
         channelMenuContainerLinearLayout.setVisibility(VISIBLE);
-        ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversation.target, false);
         channelMenuContainerLinearLayout.removeAllViews();
         if (channelInfo != null && channelInfo.menus != null) {
             for (ChannelMenu menu : channelInfo.menus) {
