@@ -51,6 +51,7 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
 import cn.wildfire.chat.kit.chatroom.ChatRoomViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -770,6 +771,13 @@ public class ConversationFragment extends Fragment implements
 
     @Override
     public void onPortraitClick(UserInfo userInfo) {
+        if (conversation.type == Conversation.ConversationType.Channel) {
+            Intent intent = new Intent(getActivity(), ChannelInfoActivity.class);
+            intent.putExtra("channelId", conversation.target);
+            startActivity(intent);
+            return;
+        }
+
         if (groupInfo != null && groupInfo.privateChat == 1) {
             boolean allowPrivateChat = false;
             GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
