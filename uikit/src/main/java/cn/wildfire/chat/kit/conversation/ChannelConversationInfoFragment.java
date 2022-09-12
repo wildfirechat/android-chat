@@ -83,6 +83,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         assert args != null;
         conversationInfo = args.getParcelable("conversationInfo");
         assert conversationInfo != null;
+        getActivity().setTitle("频道详情");
     }
 
     @Nullable
