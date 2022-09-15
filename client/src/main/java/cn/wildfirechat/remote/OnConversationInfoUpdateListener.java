@@ -10,7 +10,7 @@ public interface OnConversationInfoUpdateListener {
 
     void onConversationDraftUpdate(ConversationInfo conversationInfo, String draft);
 
-    void onConversationTopUpdate(ConversationInfo conversationInfo, boolean top);
+    void onConversationTopUpdate(ConversationInfo conversationInfo, int top);
 
     void onConversationSilentUpdate(ConversationInfo conversationInfo, boolean silent);
 

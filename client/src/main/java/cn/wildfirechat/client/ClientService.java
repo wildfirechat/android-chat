@@ -660,7 +660,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 info.timestamp = protoInfo.getTimestamp();
             }
             info.unreadCount = new UnreadCount(protoInfo.getUnreadCount());
-            info.isTop = protoInfo.isTop();
+            info.top = protoInfo.getIsTop();
             info.isSilent = protoInfo.isSilent();
             return info;
         }
@@ -1147,8 +1147,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void setConversationTop(int conversationType, String target, int line, boolean top, IGeneralCallback callback) throws RemoteException {
-            setUserSetting(ConversationTop, conversationType + "-" + line + "-" + target, top ? "1" : "0", callback);
+        public void setConversationTop(int conversationType, String target, int line, int top, IGeneralCallback callback) throws RemoteException {
+            setUserSetting(ConversationTop, conversationType + "-" + line + "-" + target, top+"", callback);
         }
 
         @Override

@@ -99,7 +99,7 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
         conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
-        stickTopSwitchButton.setChecked(conversationInfo.isTop);
+        stickTopSwitchButton.setChecked(conversationInfo.top>0);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
@@ -214,8 +214,8 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
         ConversationListViewModel conversationListViewModel = ViewModelProviders
             .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
-        conversationListViewModel.setConversationTop(conversationInfo, top);
-        conversationInfo.isTop = top;
+        conversationListViewModel.setConversationTop(conversationInfo, top?1:0);
+        conversationInfo.top = top?1:0;
     }
 
     private void silent(boolean silent) {
