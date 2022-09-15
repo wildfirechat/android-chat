@@ -19,7 +19,7 @@ public class ConversationInfo implements Parcelable {
     public long timestamp;
     public String draft;
     public UnreadCount unreadCount;
-    public boolean isTop;
+    public int top;
     public boolean isSilent;
 
     public ConversationInfo() {
@@ -37,7 +37,7 @@ public class ConversationInfo implements Parcelable {
         dest.writeLong(this.timestamp);
         dest.writeString(this.draft);
         dest.writeParcelable(this.unreadCount, flags);
-        dest.writeByte(this.isTop ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.top);
         dest.writeByte(this.isSilent ? (byte) 1 : (byte) 0);
     }
 
@@ -47,7 +47,7 @@ public class ConversationInfo implements Parcelable {
         this.timestamp = in.readLong();
         this.draft = in.readString();
         this.unreadCount = in.readParcelable(UnreadCount.class.getClassLoader());
-        this.isTop = in.readByte() != 0;
+        this.top = in.readInt();
         this.isSilent = in.readByte() != 0;
     }
 
@@ -69,7 +69,7 @@ public class ConversationInfo implements Parcelable {
         if (o == null || getClass() != o.getClass()) return false;
         ConversationInfo that = (ConversationInfo) o;
         return timestamp == that.timestamp &&
-                isTop == that.isTop &&
+                top == that.top &&
                 isSilent == that.isSilent &&
                 Conversation.equals(conversation, that.conversation) &&
                 Conversation.equals(lastMessage, that.lastMessage) &&
@@ -79,8 +79,7 @@ public class ConversationInfo implements Parcelable {
 
     @Override
     public int hashCode() {
-
-        return Conversation.hashCode(conversation, lastMessage, timestamp, draft, unreadCount, isTop, isSilent);
+        return Conversation.hashCode(conversation, lastMessage, timestamp, draft, unreadCount, top, isSilent);
     }
 
 }

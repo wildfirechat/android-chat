@@ -3798,7 +3798,7 @@ public class ChatManager {
         }
     }
 
-    public void setConversationTop(Conversation conversation, boolean top) {
+    public void setConversationTop(Conversation conversation, int top) {
         setConversationTop(conversation, top, null);
     }
 
@@ -3808,7 +3808,7 @@ public class ChatManager {
      * @param conversation
      * @param top          true，置顶；false，取消置顶
      */
-    public void setConversationTop(Conversation conversation, boolean top, GeneralCallback callback) {
+    public void setConversationTop(Conversation conversation, int top, GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
