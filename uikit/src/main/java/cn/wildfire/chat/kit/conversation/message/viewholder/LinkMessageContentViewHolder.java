@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,7 +43,7 @@ public class LinkMessageContentViewHolder extends NormalMessageContentViewHolder
     public void onBind(UiMessage message) {
         linkMessageContent = (LinkMessageContent) message.message.content;
         titleTextView.setText(linkMessageContent.getTitle());
-        descTextView.setText(linkMessageContent.digest(message.message));
+        descTextView.setText(!TextUtils.isEmpty(linkMessageContent.getContentDigest())? linkMessageContent.getContentDigest() : linkMessageContent.getUrl());
         GlideApp.with(fragment)
             .load(linkMessageContent.getThumbnailUrl())
             .placeholder(R.mipmap.logo)

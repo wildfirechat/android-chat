@@ -108,7 +108,7 @@ public class LinkMessageContent extends MessageContent {
 
     @Override
     public String digest(Message message) {
-        return !TextUtils.isEmpty(contentDigest) ? contentDigest : url;
+        return !TextUtils.isEmpty(title) ? title : (!TextUtils.isEmpty(contentDigest) ? contentDigest : url);
     }
 
     @Override
