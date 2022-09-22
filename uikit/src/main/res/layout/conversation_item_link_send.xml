@@ -23,7 +23,7 @@
             android:id="@+id/titleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="200dp"
+            android:maxWidth="150dp"
             android:maxLines="1"
             android:textSize="18sp"
             tool:text="link title 链接标题" />
@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:maxWidth="200dp"
+            android:maxWidth="150dp"
             android:maxLines="3"
             android:paddingTop="5dp"
             android:textColor="@color/gray3"
