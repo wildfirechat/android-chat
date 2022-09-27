@@ -208,6 +208,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
 
 
             payload.pushData = pushDataWrite.toString();
+            payload.pushContent = "音视频通话邀请";
         } catch (JSONException e) {
             e.printStackTrace();
         }
