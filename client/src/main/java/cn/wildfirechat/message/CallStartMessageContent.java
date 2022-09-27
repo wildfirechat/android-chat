@@ -146,6 +146,7 @@ public class CallStartMessageContent extends MessageContent {
                 pushDataWrite.put("participants", targetIds);
             }
             payload.pushData = pushDataWrite.toString();
+            payload.pushContent = "音视频通话邀请";
         } catch (JSONException e) {
             e.printStackTrace();
         }
