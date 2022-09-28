@@ -54,10 +54,15 @@ public class Config {
 
     /**
      * 工作台页面地址
-     *
+     * <p>
      * 如果不想显示工作台，置为 null 即可
      */
     public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
+
+    /**
+     * 发送日志命令，当发送此文本消息时，会把协议栈日志发送到当前会话中，为空时关闭此功能。
+     */
+    public static String SEND_LOG_COMMAND = "*#marslog#";
 
     /**
      * 语音消息最长时长，单位是秒

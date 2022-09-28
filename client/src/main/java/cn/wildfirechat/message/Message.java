@@ -37,6 +37,19 @@ public class Message implements Parcelable {
     public Message() {
     }
 
+    public Message(Message msg){
+        this.messageId = msg.messageId;
+        this.conversation = msg.conversation;
+        this.sender = msg.sender;
+        this.toUsers = msg.toUsers;
+        this.content = msg.content;
+        this.direction = msg.direction;
+        this.status = msg.status;
+        this.messageUid = msg.messageUid;
+        this.serverTime = msg.serverTime;
+        this.localExtra = msg.localExtra;
+    }
+
     @Override
     public int describeContents() {
         return 0;

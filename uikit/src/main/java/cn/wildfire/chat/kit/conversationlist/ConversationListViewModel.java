@@ -237,7 +237,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         });
     }
 
-    public void setConversationTop(ConversationInfo conversationInfo, boolean top) {
+    public void setConversationTop(ConversationInfo conversationInfo, int top) {
         ChatManager.Instance().setConversationTop(conversationInfo.conversation, top);
     }
 
@@ -261,7 +261,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     @Override
-    public void onConversationTopUpdate(ConversationInfo conversationInfo, boolean top) {
+    public void onConversationTopUpdate(ConversationInfo conversationInfo, int top) {
         reloadConversationList();
     }
 

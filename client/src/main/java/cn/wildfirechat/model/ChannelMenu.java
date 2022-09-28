@@ -27,18 +27,12 @@ public class ChannelMenu implements Parcelable {
     public String extra;
     public List<ChannelMenu> subMenus;
 
-    public JSONObject toJson() {
-        JSONObject object = new JSONObject();
-        // TODO
-
-        return object;
-    }
-
-
     public JSONObject toJsonObj() {
         JSONObject obj = new JSONObject();
         try {
             obj.putOpt("menuId", this.menuId);
+            obj.putOpt("type", this.type);
+            obj.putOpt("name", this.name);
             obj.putOpt("key", this.key);
             obj.putOpt("url", this.url);
             obj.putOpt("mediaId", this.mediaId);

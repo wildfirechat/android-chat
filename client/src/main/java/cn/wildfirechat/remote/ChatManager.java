@@ -20,7 +20,6 @@ import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
@@ -207,6 +206,7 @@ public class ChatManager {
     private UserSource userSource;
 
     private boolean startLog;
+    private String sendLogCommand;
     private int connectionStatus;
     private int receiptStatus = -1; // 1, enable
     private int userReceiptStatus = -1; //1, enable
@@ -279,6 +279,7 @@ public class ChatManager {
         public int value() {
             return this.value;
         }
+
         public static SearchUserType type(int type) {
             SearchUserType searchUserType = null;
             switch (type) {
@@ -373,7 +374,7 @@ public class ChatManager {
     public static void init(Application context, String imServerHost) {
         Log.d(TAG, "init " + imServerHost);
         if (imServerHost != null) {
-        	checkSDKHost(imServerHost);
+            checkSDKHost(imServerHost);
         }
         if (INST != null) {
             // TODO: Already initialized
@@ -513,7 +514,7 @@ public class ChatManager {
      * @param port 服务器port
      */
     private void onConnectToServer(final String host, final String ip, final int port) {
-        Log.e(TAG, "connectToServer " + host + ip + port);
+        Log.e(TAG, "connectToServer " + host + " " + ip + "" + port);
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -536,13 +537,16 @@ public class ChatManager {
         Message message = getMessageByUid(messageUid);
         // 想撤回的消息已经被删除
         if (message == null) {
-            return;
+            message = new Message();
+            // 一般是聊天室
+            message.messageUid = messageUid;
         }
+        Message finalMessage = message;
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
                 for (OnRecallMessageListener listener : recallMessageListeners) {
-                    listener.onRecallMessage(message);
+                    listener.onRecallMessage(finalMessage);
                 }
             }
         });
@@ -1082,11 +1086,6 @@ public class ChatManager {
                 //  迁移旧的clientId
                 imei = PreferenceManager.getDefaultSharedPreferences(gContext).getString("mars_core_uid", "");
                 if (TextUtils.isEmpty(imei)) {
-                    try {
-                        imei = Settings.Secure.getString(gContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                     if (TextUtils.isEmpty(imei)) {
                         imei = UUID.randomUUID().toString();
                     }
@@ -2319,6 +2318,7 @@ public class ChatManager {
             return;
         }
 
+        MediaMessageUploadCallback mediaMessageUploadCallback = null;
         if (msg.content instanceof MediaMessageContent) {
             if (TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
                 String localPath = ((MediaMessageContent) msg.content).localPath;
@@ -2339,9 +2339,26 @@ public class ChatManager {
                     }
                 }
             }
+        } else if (msg.content instanceof TextMessageContent) {
+            if (sendLogCommand != null && sendLogCommand.equals(((TextMessageContent) msg.content).getContent())) {
+                List<String> logFilesPath = getLogFilesPath();
+                if (logFilesPath.size() > 0) {
+                    FileMessageContent fileMessageContent = new FileMessageContent(logFilesPath.get(logFilesPath.size() - 1));
+                    msg.content = fileMessageContent;
+
+                    mediaMessageUploadCallback = new MediaMessageUploadCallback() {
+                        @Override
+                        public void onMediaMessageUploaded(String remoteUrl) {
+                            TextMessageContent textMessageContent = new TextMessageContent(remoteUrl);
+                            sendMessage(msg.conversation, textMessageContent, null, 0, null);
+                        }
+                    };
+                }
+            }
         }
 
         try {
+            MediaMessageUploadCallback finalMediaMessageUploadCallback = mediaMessageUploadCallback;
             mClient.send(msg, new cn.wildfirechat.client.ISendMessageCallback.Stub() {
                 @Override
                 public void onSuccess(final long messageUid, final long timestamp) throws RemoteException {
@@ -2411,6 +2428,11 @@ public class ChatManager {
                     if (msg.messageId == 0) {
                         return;
                     }
+
+                    if (finalMediaMessageUploadCallback != null) {
+                        finalMediaMessageUploadCallback.onMediaMessageUploaded(remoteUrl);
+                    }
+
                     if (callback != null) {
                         mainHandler.post(() -> callback.onMediaUpload(remoteUrl));
                     }
@@ -2453,6 +2475,7 @@ public class ChatManager {
             return false;
         }
     }
+
     /**
      * 消息撤回
      *
@@ -3775,7 +3798,7 @@ public class ChatManager {
         }
     }
 
-    public void setConversationTop(Conversation conversation, boolean top) {
+    public void setConversationTop(Conversation conversation, int top) {
         setConversationTop(conversation, top, null);
     }
 
@@ -3785,7 +3808,7 @@ public class ChatManager {
      * @param conversation
      * @param top          true，置顶；false，取消置顶
      */
-    public void setConversationTop(Conversation conversation, boolean top, GeneralCallback callback) {
+    public void setConversationTop(Conversation conversation, int top, GeneralCallback callback) {
         if (!checkRemoteService()) {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
@@ -5064,6 +5087,52 @@ public class ChatManager {
             for (OnDeleteMessageListener listener : deleteMessageListeners) {
                 listener.onDeleteMessage(message);
             }
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 批量删除本地消息
+     *
+     * @param messageUids 消息的Uid列表
+     * @return
+     */
+    public boolean batchDeleteMessages(List<Long> messageUids) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            long[] uids = new long[messageUids.size()];
+            for (int i = 0; i < messageUids.size(); i++) {
+                uids[i] = messageUids.get(i);
+            }
+            mClient.batchDeleteMessages(uids);
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 清除指定用户的指定时间段发送的消息。
+     *
+     * @param userId    目标用户
+     * @param startTime 开始时间，为0时忽略开始时间
+     * @param endTime   结束时间，为0时忽略结束时间。
+     * @return
+     */
+    public boolean clearUserMessage(String userId, long startTime, long endTime) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            mClient.clearUserMessage(userId, startTime, endTime);
             return true;
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -7021,6 +7090,10 @@ public class ChatManager {
         }
     }
 
+    public void setSendLogCommand(String sendLogCommand) {
+        this.sendLogCommand = sendLogCommand;
+    }
+
     /**
      * 获取协议栈版本
      *
@@ -7038,6 +7111,7 @@ public class ChatManager {
             return "";
         }
     }
+
     private String getLogPath() {
         return gContext.getCacheDir().getAbsolutePath() + "/log";
     }
@@ -7996,193 +8070,193 @@ public class ChatManager {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "marsClientService connected");
             mClient = IRemoteClient.Stub.asInterface(iBinder);
-            try {
-                if (useSM4) {
-                    mClient.useSM4();
-                }
-
-                mClient.setBackupAddressStrategy(backupAddressStrategy);
-                if (!TextUtils.isEmpty(backupAddressHost))
-                    mClient.setBackupAddress(backupAddressHost, backupAddressPort);
-
-                if (proxyInfo != null) {
-                    mClient.setProxyInfo(proxyInfo);
-                }
-
-                mClient.setServerAddress(SERVER_HOST);
-                for (Class clazz : messageContentMap.values()) {
-                    mClient.registerMessageContent(clazz.getName());
-                }
-
-                if (startLog) {
-                    startLog();
-                } else {
-                    stopLog();
-                }
-
-                if (!TextUtils.isEmpty(deviceToken)) {
-                    mClient.setDeviceToken(deviceToken, pushType);
-                }
-
-                mClient.setForeground(1);
-                mClient.setOnReceiveMessageListener(new IOnReceiveMessageListener.Stub() {
-                    @Override
-                    public void onReceive(List<Message> messages, boolean hasMore) throws RemoteException {
-                        onReceiveMessage(messages, hasMore);
+            workHandler.post(() -> {
+                try {
+                    if (useSM4) {
+                        mClient.useSM4();
                     }
 
-                    @Override
-                    public void onRecall(long messageUid) throws RemoteException {
-                        onRecallMessage(messageUid);
+                    mClient.setBackupAddressStrategy(backupAddressStrategy);
+                    if (!TextUtils.isEmpty(backupAddressHost))
+                        mClient.setBackupAddress(backupAddressHost, backupAddressPort);
+
+                    if (proxyInfo != null) {
+                        mClient.setProxyInfo(proxyInfo);
                     }
 
-                    @Override
-                    public void onDelete(long messageUid) throws RemoteException {
-                        onDeleteMessage(messageUid);
+                    mClient.setServerAddress(SERVER_HOST);
+                    for (Class clazz : messageContentMap.values()) {
+                        mClient.registerMessageContent(clazz.getName());
                     }
 
-                    @Override
-                    public void onDelivered(Map deliveryMap) throws RemoteException {
-                        onMsgDelivered(deliveryMap);
+                    if (startLog) {
+                        startLog();
+                    } else {
+                        stopLog();
                     }
 
-                    @Override
-                    public void onReaded(List<ReadEntry> readEntrys) throws RemoteException {
-                        onMsgReaded(readEntrys);
-                    }
-                });
-                mClient.setOnConnectionStatusChangeListener(new IOnConnectionStatusChangeListener.Stub() {
-                    @Override
-                    public void onConnectionStatusChange(int connectionStatus) throws RemoteException {
-                        ChatManager.this.onConnectionStatusChange(connectionStatus);
-                    }
-                });
-                mClient.setOnConnectToServerListener(new IOnConnectToServerListener.Stub() {
-                    @Override
-                    public void onConnectToServer(String host, String ip, int port) throws RemoteException {
-                        ChatManager.this.onConnectToServer(host, ip, port);
-                    }
-                });
-                mClient.setOnUserInfoUpdateListener(new IOnUserInfoUpdateListener.Stub() {
-                    @Override
-                    public void onUserInfoUpdated(List<UserInfo> userInfos) throws RemoteException {
-                        ChatManager.this.onUserInfoUpdate(userInfos);
-                    }
-                });
-                mClient.setOnGroupInfoUpdateListener(new IOnGroupInfoUpdateListener.Stub() {
-                    @Override
-                    public void onGroupInfoUpdated(List<GroupInfo> groupInfos) throws RemoteException {
-                        ChatManager.this.onGroupInfoUpdated(groupInfos);
-                    }
-                });
-                mClient.setOnGroupMembersUpdateListener(new IOnGroupMembersUpdateListener.Stub() {
-                    @Override
-                    public void onGroupMembersUpdated(String groupId, List<GroupMember> members) throws RemoteException {
-                        ChatManager.this.onGroupMembersUpdate(groupId, members);
-                    }
-                });
-                mClient.setOnFriendUpdateListener(new IOnFriendUpdateListener.Stub() {
-                    @Override
-                    public void onFriendListUpdated(List<String> friendList) throws RemoteException {
-                        ChatManager.this.onFriendListUpdated(friendList);
+                    if (!TextUtils.isEmpty(deviceToken)) {
+                        mClient.setDeviceToken(deviceToken, pushType);
                     }
 
-                    @Override
-                    public void onFriendRequestUpdated(List<String> newRequests) throws RemoteException {
-                        ChatManager.this.onFriendReqeustUpdated(newRequests);
-                    }
-                });
-                mClient.setOnSettingUpdateListener(new IOnSettingUpdateListener.Stub() {
-                    @Override
-                    public void onSettingUpdated() throws RemoteException {
-                        ChatManager.this.onSettingUpdated();
-                    }
-                });
-                mClient.setOnChannelInfoUpdateListener(new IOnChannelInfoUpdateListener.Stub() {
-                    @Override
-                    public void onChannelInfoUpdated(List<ChannelInfo> channelInfos) throws RemoteException {
-                        ChatManager.this.onChannelInfoUpdate(channelInfos);
-                    }
-                });
-                mClient.setOnConferenceEventListener(new IOnConferenceEventListener.Stub() {
-                    @Override
-                    public void onConferenceEvent(String event) throws RemoteException {
-                        ChatManager.this.onConferenceEvent(event);
-                    }
-                });
-                mClient.setOnTrafficDataListener(new IOnTrafficDataListener.Stub() {
-                    @Override
-                    public void onTrafficData(long send, long recv) throws RemoteException {
-                        ChatManager.this.onTrafficData(send, recv);
-                    }
-                });
-
-                mClient.setUserOnlineEventListener(new IOnUserOnlineEventListener.Stub() {
-
-                    @Override
-                    public void onUserOnlineEvent(UserOnlineState[] states) throws RemoteException {
-                        ChatManager.this.onUserOnlineEvent(states);
-                    }
-                });
-
-                mClient.setSecretChatStateChangedListener(new IOnSecretChatStateListener.Stub() {
-                    @Override
-                    public void onSecretChatStateChanged(String targetid, int state) throws RemoteException {
-                        ChatManager.this.onSecretChatStateChanged(targetid, state);
-                    }
-                });
-
-
-                mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
-                    @Override
-                    public void onSecretMessageStartBurning(String targetId, long playedMsgId) throws RemoteException {
-                        ChatManager.this.onSecretMessageStartBurning(targetId, playedMsgId);
-                    }
-
-                    @Override
-                    public void onSecretMessageBurned(int[] messageIds) throws RemoteException {
-                        if (messageIds != null && messageIds.length > 0) {
-                            List<Long> arr = new ArrayList<>();
-                            for (int i = 0; i < messageIds.length; i++) {
-                                arr.add((long) messageIds[i]);
-                            }
-                            ChatManager.this.onSecretMessageBurned(arr);
+                    mClient.setForeground(1);
+                    mClient.setOnReceiveMessageListener(new IOnReceiveMessageListener.Stub() {
+                        @Override
+                        public void onReceive(List<Message> messages, boolean hasMore) throws RemoteException {
+                            onReceiveMessage(messages, hasMore);
                         }
-                    }
-                });
 
+                        @Override
+                        public void onRecall(long messageUid) throws RemoteException {
+                            onRecallMessage(messageUid);
+                        }
 
-                mClient.setLiteMode(isLiteMode);
-                mClient.setLowBPSMode(isLowBPSMode);
+                        @Override
+                        public void onDelete(long messageUid) throws RemoteException {
+                            onDeleteMessage(messageUid);
+                        }
 
-                if (!TextUtils.isEmpty(protoUserAgent)) {
-                    mClient.setProtoUserAgent(protoUserAgent);
-                }
-                if (!protoHttpHeaderMap.isEmpty()) {
-                    protoHttpHeaderMap.forEach((String s, String s2) -> {
-                        try {
-                            mClient.addHttpHeader(s, s2);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onDelivered(Map deliveryMap) throws RemoteException {
+                            onMsgDelivered(deliveryMap);
+                        }
+
+                        @Override
+                        public void onReaded(List<ReadEntry> readEntrys) throws RemoteException {
+                            onMsgReaded(readEntrys);
                         }
                     });
-                }
+                    mClient.setOnConnectionStatusChangeListener(new IOnConnectionStatusChangeListener.Stub() {
+                        @Override
+                        public void onConnectionStatusChange(int connectionStatus) throws RemoteException {
+                            ChatManager.this.onConnectionStatusChange(connectionStatus);
+                        }
+                    });
+                    mClient.setOnConnectToServerListener(new IOnConnectToServerListener.Stub() {
+                        @Override
+                        public void onConnectToServer(String host, String ip, int port) throws RemoteException {
+                            ChatManager.this.onConnectToServer(host, ip, port);
+                        }
+                    });
+                    mClient.setOnUserInfoUpdateListener(new IOnUserInfoUpdateListener.Stub() {
+                        @Override
+                        public void onUserInfoUpdated(List<UserInfo> userInfos) throws RemoteException {
+                            ChatManager.this.onUserInfoUpdate(userInfos);
+                        }
+                    });
+                    mClient.setOnGroupInfoUpdateListener(new IOnGroupInfoUpdateListener.Stub() {
+                        @Override
+                        public void onGroupInfoUpdated(List<GroupInfo> groupInfos) throws RemoteException {
+                            ChatManager.this.onGroupInfoUpdated(groupInfos);
+                        }
+                    });
+                    mClient.setOnGroupMembersUpdateListener(new IOnGroupMembersUpdateListener.Stub() {
+                        @Override
+                        public void onGroupMembersUpdated(String groupId, List<GroupMember> members) throws RemoteException {
+                            ChatManager.this.onGroupMembersUpdate(groupId, members);
+                        }
+                    });
+                    mClient.setOnFriendUpdateListener(new IOnFriendUpdateListener.Stub() {
+                        @Override
+                        public void onFriendListUpdated(List<String> friendList) throws RemoteException {
+                            ChatManager.this.onFriendListUpdated(friendList);
+                        }
 
-                if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
-                    mClient.connect(userId, token);
-                }
+                        @Override
+                        public void onFriendRequestUpdated(List<String> newRequests) throws RemoteException {
+                            ChatManager.this.onFriendReqeustUpdated(newRequests);
+                        }
+                    });
+                    mClient.setOnSettingUpdateListener(new IOnSettingUpdateListener.Stub() {
+                        @Override
+                        public void onSettingUpdated() throws RemoteException {
+                            ChatManager.this.onSettingUpdated();
+                        }
+                    });
+                    mClient.setOnChannelInfoUpdateListener(new IOnChannelInfoUpdateListener.Stub() {
+                        @Override
+                        public void onChannelInfoUpdated(List<ChannelInfo> channelInfos) throws RemoteException {
+                            ChatManager.this.onChannelInfoUpdate(channelInfos);
+                        }
+                    });
+                    mClient.setOnConferenceEventListener(new IOnConferenceEventListener.Stub() {
+                        @Override
+                        public void onConferenceEvent(String event) throws RemoteException {
+                            ChatManager.this.onConferenceEvent(event);
+                        }
+                    });
+                    mClient.setOnTrafficDataListener(new IOnTrafficDataListener.Stub() {
+                        @Override
+                        public void onTrafficData(long send, long recv) throws RemoteException {
+                            ChatManager.this.onTrafficData(send, recv);
+                        }
+                    });
 
-                int clientConnectionStatus = mClient.getConnectionStatus();
-                if (connectionStatus == ConnectionStatus.ConnectionStatusConnected) {
-                    onConnectionStatusChange(clientConnectionStatus);
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+                    mClient.setUserOnlineEventListener(new IOnUserOnlineEventListener.Stub() {
 
-            mainHandler.post(() -> {
-                for (IMServiceStatusListener listener : imServiceStatusListeners) {
-                    listener.onServiceConnected();
+                        @Override
+                        public void onUserOnlineEvent(UserOnlineState[] states) throws RemoteException {
+                            ChatManager.this.onUserOnlineEvent(states);
+                        }
+                    });
+
+                    mClient.setSecretChatStateChangedListener(new IOnSecretChatStateListener.Stub() {
+                        @Override
+                        public void onSecretChatStateChanged(String targetid, int state) throws RemoteException {
+                            ChatManager.this.onSecretChatStateChanged(targetid, state);
+                        }
+                    });
+
+
+                    mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
+                        @Override
+                        public void onSecretMessageStartBurning(String targetId, long playedMsgId) throws RemoteException {
+                            ChatManager.this.onSecretMessageStartBurning(targetId, playedMsgId);
+                        }
+
+                        @Override
+                        public void onSecretMessageBurned(int[] messageIds) throws RemoteException {
+                            if (messageIds != null && messageIds.length > 0) {
+                                List<Long> arr = new ArrayList<>();
+                                for (int i = 0; i < messageIds.length; i++) {
+                                    arr.add((long) messageIds[i]);
+                                }
+                                ChatManager.this.onSecretMessageBurned(arr);
+                            }
+                        }
+                    });
+
+                    mClient.setLiteMode(isLiteMode);
+                    mClient.setLowBPSMode(isLowBPSMode);
+
+                    if (!TextUtils.isEmpty(protoUserAgent)) {
+                        mClient.setProtoUserAgent(protoUserAgent);
+                    }
+                    if (!protoHttpHeaderMap.isEmpty()) {
+                        for (Map.Entry<String, String> entry : protoHttpHeaderMap.entrySet()) {
+                            try {
+                                mClient.addHttpHeader(entry.getKey(), entry.getValue());
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(token)) {
+                        mClient.connect(userId, token);
+                    }
+
+                    int clientConnectionStatus = mClient.getConnectionStatus();
+                    if (connectionStatus == ConnectionStatus.ConnectionStatusConnected) {
+                        onConnectionStatusChange(clientConnectionStatus);
+                    }
+
+                    mainHandler.post(() -> {
+                        for (IMServiceStatusListener listener : imServiceStatusListeners) {
+                            listener.onServiceConnected();
+                        }
+                    });
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
             });
         }
@@ -8199,6 +8273,10 @@ public class ChatManager {
             });
         }
     };
+
+    private static interface MediaMessageUploadCallback {
+        void onMediaMessageUploaded(String remoteUrl);
+    }
 
     private void registerCoreMessageContents() {
         registerMessageContent(AddGroupMemberNotificationContent.class);
@@ -8294,12 +8372,6 @@ public class ChatManager {
                 Log.d(TAG, "音视频SDK是多人版");
             } else {
                 Log.d(TAG, "音视频SDK是单人版");
-            }
-
-            method = clazz.getMethod("checkAddress", String.class);
-            result = (boolean) method.invoke(null, host);
-            if (!result) {
-                Log.d(TAG, "错误，音视频SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
             }
 
             clazz = Class.forName("cn.wildfirechat.moment.MomentClient");

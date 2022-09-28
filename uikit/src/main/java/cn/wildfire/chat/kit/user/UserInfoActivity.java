@@ -61,61 +61,67 @@ public class UserInfoActivity extends WfcBaseActivity {
         MenuItem itemRemoveFav = menu.findItem(R.id.removeFav);
         MenuItem itemSetName = menu.findItem(R.id.setName);
 
-        if (ChatManager.Instance().getUserId().equals(userInfo.uid)) {
-            itemAddBlacklist.setEnabled(false);
-            itemAddBlacklist.setVisible(false);
-            itemAddFriend.setEnabled(false);
-            itemAddFriend.setVisible(false);
-            itemDelete.setEnabled(false);
-            itemDelete.setVisible(false);
-            itemRemoveBlacklist.setEnabled(false);
-            itemRemoveBlacklist.setVisible(false);
-            itemSetAlias.setEnabled(false);
-            itemSetAlias.setVisible(false);
-            itemSetName.setEnabled(true);
-            itemSetName.setVisible(true);
-            itemSetFav.setVisible(false);
-            itemSetFav.setEnabled(false);
-            itemRemoveFav.setVisible(false);
-            itemRemoveFav.setEnabled(false);
-        } else {
-            if (contactViewModel.isFriend(userInfo.uid)) {
-                itemAddFriend.setEnabled(false);
-                itemAddFriend.setVisible(false);
-                itemDelete.setEnabled(true);
-                itemDelete.setVisible(true);
-                itemSetAlias.setEnabled(true);
-                itemSetAlias.setVisible(true);
-            } else {
-                itemAddFriend.setEnabled(true);
-                itemAddFriend.setVisible(true);
-                itemDelete.setEnabled(false);
-                itemDelete.setVisible(false);
-            }
+        if (userInfo.type == 0) {
 
-            if (contactViewModel.isBlacklisted(userInfo.uid)) {
+            if (ChatManager.Instance().getUserId().equals(userInfo.uid)) {
                 itemAddBlacklist.setEnabled(false);
                 itemAddBlacklist.setVisible(false);
-                itemRemoveBlacklist.setEnabled(true);
-                itemRemoveBlacklist.setVisible(true);
-            } else {
-                itemAddBlacklist.setEnabled(true);
-                itemAddBlacklist.setVisible(true);
+                itemAddFriend.setEnabled(false);
+                itemAddFriend.setVisible(false);
+                itemDelete.setEnabled(false);
+                itemDelete.setVisible(false);
                 itemRemoveBlacklist.setEnabled(false);
                 itemRemoveBlacklist.setVisible(false);
-            }
-
-            if (contactViewModel.isFav(userInfo.uid)) {
-                itemSetFav.setEnabled(false);
+                itemSetAlias.setEnabled(false);
+                itemSetAlias.setVisible(false);
+                itemSetName.setEnabled(true);
+                itemSetName.setVisible(true);
                 itemSetFav.setVisible(false);
-                itemRemoveFav.setEnabled(true);
-                itemRemoveFav.setVisible(true);
-            } else {
-                itemSetFav.setEnabled(true);
-                itemSetFav.setVisible(true);
-                itemRemoveFav.setEnabled(false);
+                itemSetFav.setEnabled(false);
                 itemRemoveFav.setVisible(false);
+                itemRemoveFav.setEnabled(false);
+            } else {
+                if (contactViewModel.isFriend(userInfo.uid)) {
+                    itemAddFriend.setEnabled(false);
+                    itemAddFriend.setVisible(false);
+                    itemDelete.setEnabled(true);
+                    itemDelete.setVisible(true);
+                    itemSetAlias.setEnabled(true);
+                    itemSetAlias.setVisible(true);
+                } else {
+                    itemAddFriend.setEnabled(true);
+                    itemAddFriend.setVisible(true);
+                    itemDelete.setEnabled(false);
+                    itemDelete.setVisible(false);
+                }
+
+                if (contactViewModel.isBlacklisted(userInfo.uid)) {
+                    itemAddBlacklist.setEnabled(false);
+                    itemAddBlacklist.setVisible(false);
+                    itemRemoveBlacklist.setEnabled(true);
+                    itemRemoveBlacklist.setVisible(true);
+                } else {
+                    itemAddBlacklist.setEnabled(true);
+                    itemAddBlacklist.setVisible(true);
+                    itemRemoveBlacklist.setEnabled(false);
+                    itemRemoveBlacklist.setVisible(false);
+                }
+
+                if (contactViewModel.isFav(userInfo.uid)) {
+                    itemSetFav.setEnabled(false);
+                    itemSetFav.setVisible(false);
+                    itemRemoveFav.setEnabled(true);
+                    itemRemoveFav.setVisible(true);
+                } else {
+                    itemSetFav.setEnabled(true);
+                    itemSetFav.setVisible(true);
+                    itemRemoveFav.setEnabled(false);
+                    itemRemoveFav.setVisible(false);
+                }
             }
+        } else {
+            itemRemoveBlacklist.setVisible(false);
+            itemAddBlacklist.setVisible(false);
         }
     }
 

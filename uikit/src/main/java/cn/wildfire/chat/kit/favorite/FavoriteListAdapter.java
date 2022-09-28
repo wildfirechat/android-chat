@@ -43,6 +43,20 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return favoriteItems;
     }
 
+    public void removeFavoriteItem(int favId) {
+        int index = -1;
+        for (int i = 0; i < this.favoriteItems.size(); i++) {
+            if (favoriteItems.get(i).getFavId() == favId) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            this.favoriteItems.remove(index);
+            notifyItemRangeRemoved(index, 1);
+        }
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

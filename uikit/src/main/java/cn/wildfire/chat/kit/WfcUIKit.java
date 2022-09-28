@@ -129,6 +129,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         try {
             ChatManagerHolder.gChatManager = ChatManager.Instance();
             ChatManagerHolder.gChatManager.startLog();
+            ChatManagerHolder.gChatManager.setSendLogCommand(Config.SEND_LOG_COMMAND);
             ChatManagerHolder.gChatManager.addOnReceiveMessageListener(this);
             ChatManagerHolder.gChatManager.addRecallMessageListener(this);
             ChatManagerHolder.gChatManager.addFriendUpdateListener(this);

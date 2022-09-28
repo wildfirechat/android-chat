@@ -166,7 +166,9 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan|stateHidden|adjustResize" />
 
-        <activity android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity" />
+        <activity
+            android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity"
+            android:label="频道信息" />
         <activity
             android:name="cn.wildfire.chat.kit.WfcWebViewActivity"
             android:exported="false">

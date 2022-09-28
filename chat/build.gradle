@@ -56,7 +56,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     implementation 'com.tencent.bugly:crashreport:4.0.0'
     implementation 'com.tencent.bugly:nativecrashreport:3.9.2'
     implementation 'com.jakewharton:butterknife:10.2.1'

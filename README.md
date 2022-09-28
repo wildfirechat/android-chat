@@ -44,6 +44,9 @@
 野火IM Android 客户端，基于```AndroidX```包开发，如果老项目采用的是```Android Support```包，可尝试采用[jetifier](https://developer.android.google.cn/studio/command-line/jetifier?hl=zh_cn)
 转成```Android Support```软件包。
 
+## Android 4.x 说明
+请使用[api-19](https://github.com/wildfirechat/android-chat/tree/api-19)分支，如果编译失败等，可能是4.x版本的协议栈版本没有及时更新所导致，请微信联系 wfchat 进行更新。
+
 ## 升级注意
 v0.8.0 版本，对代码结构及部分实现机制进行了大量调整，变动如下：
 
@@ -107,6 +110,9 @@ v0.8.0 版本，对代码结构及部分实现机制进行了大量调整，变�
 1. client部分，自行下载代码，并将client module引入你们自己的项目。
 2. uikit部分，自行下载代码，并将uikit module引入你们自己的项目。
 3. push部分，自行下载代码，将push module引入你们自己的项目。
+
+## 推送
+当应用在后台后，不同手机厂家有着不同的后台策略，可能很快或者最终会被冻结和杀掉，此时收到消息需要厂商的推送通知服务。请部署推送服务，推送服务代码可以在[Github](https://github.com/wildfirechat/push_server)和[码云](https://gitee.com/wfchat/push_server)下载。具体使用方式，请参考推送服务项目上的说明。
 
 ## 贡献
 欢迎提交pull request，一起打造一个更好的开源IM。

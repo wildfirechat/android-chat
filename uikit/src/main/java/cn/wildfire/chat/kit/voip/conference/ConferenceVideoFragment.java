@@ -543,7 +543,6 @@ public class ConferenceVideoFragment extends BaseConferenceFragment implements A
 
     }
 
-    private int count = 0;
     private final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {

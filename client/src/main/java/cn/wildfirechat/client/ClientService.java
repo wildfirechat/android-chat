@@ -653,10 +653,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             ConversationInfo info = new ConversationInfo();
             info.conversation = new Conversation(Conversation.ConversationType.values()[protoInfo.getConversationType()], protoInfo.getTarget(), protoInfo.getLine());
             info.lastMessage = convertProtoMessage(protoInfo.getLastMessage());
-            info.timestamp = protoInfo.getTimestamp();
             info.draft = protoInfo.getDraft();
+            if (!TextUtils.isEmpty(info.draft) && info.lastMessage != null && info.lastMessage.serverTime > 0) {
+                info.timestamp = info.lastMessage.serverTime;
+            } else {
+                info.timestamp = protoInfo.getTimestamp();
+            }
             info.unreadCount = new UnreadCount(protoInfo.getUnreadCount());
-            info.isTop = protoInfo.isTop();
+            info.top = protoInfo.getIsTop();
             info.isSilent = protoInfo.isSilent();
             return info;
         }
@@ -1044,14 +1048,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public boolean updateMessageContent(cn.wildfirechat.message.Message message) throws RemoteException {
             ProtoMessage protoMessage = convertMessage(message);
             ProtoLogic.updateMessageContent(protoMessage);
-            return false;
+            return true;
         }
 
         @Override
         public boolean updateMessageContentAndTime(Message message) throws RemoteException {
             ProtoMessage protoMessage = convertMessage(message);
             ProtoLogic.updateMessageContentAndTime(protoMessage);
-            return false;
+            return true;
         }
 
         @Override
@@ -1143,8 +1147,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void setConversationTop(int conversationType, String target, int line, boolean top, IGeneralCallback callback) throws RemoteException {
-            setUserSetting(ConversationTop, conversationType + "-" + line + "-" + target, top ? "1" : "0", callback);
+        public void setConversationTop(int conversationType, String target, int line, int top, IGeneralCallback callback) throws RemoteException {
+            setUserSetting(ConversationTop, conversationType + "-" + line + "-" + target, top+"", callback);
         }
 
         @Override
@@ -1785,6 +1789,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean deleteMessage(long messageId) throws RemoteException {
             return ProtoLogic.deleteMessage(messageId);
+        }
+
+        @Override
+        public boolean batchDeleteMessages(long[] messageUids) throws RemoteException {
+            return ProtoLogic.batchDeleteMessage(messageUids);
+        }
+
+        @Override
+        public boolean clearUserMessage(String userId, long start, long end) throws RemoteException {
+            return ProtoLogic.clearUserMessages(userId, start, end);
         }
 
         @Override

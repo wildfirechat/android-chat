@@ -21,6 +21,7 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 
 public class CompositeMessageContentActivity extends WfcBaseActivity {
@@ -42,9 +43,14 @@ public class CompositeMessageContentActivity extends WfcBaseActivity {
         }
         CompositeMessageContent content = (CompositeMessageContent) message.content;
         setTitle(content.getTitle());
-        if (!TextUtils.isEmpty(content.remoteUrl) && (TextUtils.isEmpty(content.localPath) || !new File(content.localPath).exists())) {
+        File file = DownloadManager.mediaMessageContentFile(message);
+        if (!TextUtils.isEmpty(content.remoteUrl) && !file.exists()) {
+            String fileUrl = content.remoteUrl;
+            if (message.conversation.type == Conversation.ConversationType.SecretChat) {
+                fileUrl = DownloadManager.buildSecretChatMediaUrl(message);
+            }
             Toast.makeText(this, "消息加载中，请稍后", Toast.LENGTH_SHORT).show();
-            DownloadManager.download(content.remoteUrl, Config.FILE_SAVE_DIR, new DownloadManager.OnDownloadListener() {
+            DownloadManager.download(fileUrl, Config.FILE_SAVE_DIR, new DownloadManager.OnDownloadListener() {
                 @Override
                 public void onSuccess(File file) {
                     content.localPath = file.getAbsolutePath();

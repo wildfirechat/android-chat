@@ -80,7 +80,22 @@ public class CompositeMessageContent extends MediaMessageContent {
     }
 
     public void setMessages(List<Message> messages) {
-        this.messages = messages;
+        this.messages = new ArrayList<>();
+        for (Message msg : messages) {
+            if (msg.content instanceof ArticlesMessageContent) {
+                List<LinkMessageContent> linkMessageContents = ((ArticlesMessageContent) msg.content).toLinkMessageContent();
+                for (LinkMessageContent linkMessageContent : linkMessageContents) {
+                    Message linkMsg = new Message(msg);
+                    linkMsg.content = linkMessageContent;
+                    this.messages.add(linkMsg);
+                }
+
+            } else {
+                this.messages.add(msg);
+
+            }
+        }
+
         JSONObject object = this.encodeMessages(null);
         this.binaryContent = object.toString().getBytes();
     }
@@ -297,15 +312,15 @@ public class CompositeMessageContent extends MediaMessageContent {
             String sender = msg.sender;
             UserInfo userInfo = ChatManager.Instance().getUserInfo(sender, false);
             String digest = msg.content.digest(msg);
-            if (digest.length() > 36){
+            if (digest.length() > 36) {
                 digest = digest.substring(0, 33);
                 digest += "...";
             }
             sb.append(userInfo.displayName + ": " + digest + "\n");
         }
-        if (messages.size() > 3){
+        if (messages.size() > 3) {
             sb.append("...");
-        }else {
+        } else {
             sb.append("\n");
         }
         return sb.toString();

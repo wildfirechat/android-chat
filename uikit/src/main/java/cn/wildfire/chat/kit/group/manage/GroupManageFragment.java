@@ -27,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.GroupInfo;
@@ -37,6 +38,9 @@ public class GroupManageFragment extends Fragment {
     OptionItemView joinOptionItemView;
     @BindView(R2.id.searchOptionItemView)
     OptionItemView searchOptionItemView;
+    @BindView(R2.id.historyMessageOptionItemView)
+    OptionItemView historyOptionItemView;
+
     private GroupViewModel groupViewModel;
 
     public static GroupManageFragment newInstance(GroupInfo groupInfo) {
@@ -62,9 +66,20 @@ public class GroupManageFragment extends Fragment {
         return view;
     }
 
-    private void init() {
+    private void setupGroupOptionsView(GroupInfo groupInfo) {
         String[] types = getResources().getStringArray(R.array.group_join_type);
         joinOptionItemView.setDesc(types[groupInfo.joinType]);
+
+        types = getResources().getStringArray(R.array.group_search_type);
+        searchOptionItemView.setDesc(types[groupInfo.searchable]);
+
+        types = getResources().getStringArray(R.array.group_history_message);
+        historyOptionItemView.setDesc(types[groupInfo.historyMessage]);
+
+    }
+
+    private void init() {
+        setupGroupOptionsView(groupInfo);
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         groupViewModel.groupInfoUpdateLiveData().observe(getActivity(), new Observer<List<GroupInfo>>() {
             @Override
@@ -72,6 +87,7 @@ public class GroupManageFragment extends Fragment {
                 for (GroupInfo info : groupInfos) {
                     if (info.target.equals(groupInfo.target)) {
                         groupInfo = info;
+                        setupGroupOptionsView(groupInfo);
                         break;
                     }
                 }
@@ -124,7 +140,34 @@ public class GroupManageFragment extends Fragment {
         new MaterialDialog.Builder(getActivity())
             .items(R.array.group_search_type)
             .itemsCallback((dialog, itemView, position, text) -> {
-                searchOptionItemView.setDesc((String) text);
+                groupViewModel.setGroupSearchType(groupInfo.target, position, null, Collections.singletonList(0))
+                    .observe(GroupManageFragment.this, booleanOperateResult -> {
+                        if (booleanOperateResult.isSuccess()) {
+                            searchOptionItemView.setDesc((String) text);
+                        } else {
+                            Toast.makeText(getActivity(), "修改群搜索方式失败", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            })
+            .show();
+    }
+
+    @OnClick(R2.id.historyMessageOptionItemView)
+    void showHistoryMessageSetting() {
+        new MaterialDialog.Builder(getActivity())
+            .items(R.array.group_history_message)
+            .itemsCallback((dialog, itemView, position, text) -> {
+                groupViewModel.setGroupHistoryMessage(groupInfo.target, position, null, Collections.singletonList(0))
+                    .observe(GroupManageFragment.this, new Observer<OperateResult<Boolean>>() {
+                        @Override
+                        public void onChanged(OperateResult<Boolean> booleanOperateResult) {
+                            if (booleanOperateResult.isSuccess()) {
+                                historyOptionItemView.setDesc((String) text);
+                            } else {
+                                Toast.makeText(getActivity(), "修改群历史消息失败", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
             })
             .show();
     }

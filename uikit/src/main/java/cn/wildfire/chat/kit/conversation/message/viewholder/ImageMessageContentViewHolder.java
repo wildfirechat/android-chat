@@ -16,6 +16,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -60,7 +61,7 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
             imagePath = imageMessage.remoteUrl;
         }
         if (message.message.conversation.type == Conversation.ConversationType.SecretChat){
-            imagePath += "?target=" + message.message.conversation.target + "&secret=true";
+            imagePath = DownloadManager.buildSecretChatMediaUrl(message.message);
         }
         loadMedia(thumbnail, imagePath, imageView);
 

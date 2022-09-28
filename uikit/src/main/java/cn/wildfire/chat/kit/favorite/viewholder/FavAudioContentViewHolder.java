@@ -23,6 +23,7 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.SoundMessageContent;
@@ -59,7 +60,7 @@ public class FavAudioContentViewHolder extends FavContentViewHolder {
         uiMessage =new UiMessage(message);
 
         MessageViewModel messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
-        File file = messageViewModel.mediaMessageContentFile(message);
+        File file = DownloadManager.mediaMessageContentFile(message);
         if (file == null) {
             return;
         }
