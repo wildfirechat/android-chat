@@ -14,15 +14,14 @@
         android:visibility="visible">
 
         <FrameLayout
-            android:id="@+id/focusVideoContainerFrameLayout"
+            android:id="@+id/focusContainerFrameLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:id="@+id/topBarView"
@@ -31,6 +30,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
+                android:background="@color/colorPrimary"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -57,19 +57,16 @@
                     app:tint="@color/white" />
             </LinearLayout>
 
-            <androidx.gridlayout.widget.GridLayout
-                android:id="@+id/videoContainerGridLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:animateLayoutChanges="true"
-                app:alignmentMode="alignBounds"
-                app:columnCount="3"
-                app:orientation="horizontal"
-                app:rowCount="3"
-                app:useDefaultMargins="false" />
-        </LinearLayout>
+            <FrameLayout
+                android:id="@+id/previewContainerFrameLayout"
+                android:layout_width="200dp"
+                android:layout_height="250dp"
+                android:layout_below="@id/topBarView"
+                android:layout_alignParentRight="true" />
+
+        </RelativeLayout>
     </FrameLayout>
+
 
     <TextView
         android:id="@+id/durationTextView"
@@ -84,7 +81,8 @@
         android:id="@+id/bottomPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary">
 
         <include layout="@layout/av_conference_video_connected_action" />
     </FrameLayout>

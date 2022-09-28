@@ -56,7 +56,7 @@ public class ConferenceActivity extends VoipBaseActivity {
         if (session.isAudioOnly()) {
             fragment = new ConferenceAudioFragment();
         } else {
-            fragment = new ConferenceVideoFragment();
+            fragment = new ConferenceFragment();
         }
 
         currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
