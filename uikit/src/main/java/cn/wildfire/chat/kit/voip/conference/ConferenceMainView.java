@@ -13,6 +13,8 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -335,38 +337,16 @@ class ConferenceMainView extends RelativeLayout {
         public void onClick(View v) {
             String userId = (String) v.getTag();
             if (userId != null && !userId.equals(focusVideoUserId)) {
-//                VoipCallItem clickedConferenceItem = (VoipCallItem) v;
-//                int clickedIndex = previewVideoContainerFrameLayout.indexOfChild(v);
-//                previewVideoContainerFrameLayout.removeView(clickedConferenceItem);
-//                previewVideoContainerFrameLayout.endViewTransition(clickedConferenceItem);
-//
-//                clickedConferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//                if (focusConferenceItem != null) {
-//                    focusVideoContainerFrameLayout.removeView(focusConferenceItem);
-//                    focusVideoContainerFrameLayout.endViewTransition(focusConferenceItem);
-//                    DisplayMetrics dm = getResources().getDisplayMetrics();
-//                    int size = Math.min(dm.widthPixels, dm.heightPixels);
-//                    previewVideoContainerFrameLayout.addView(focusConferenceItem, clickedIndex, new FrameLayout.LayoutParams(size / 3, size / 3));
-//                }
-//                focusVideoContainerFrameLayout.addView(clickedConferenceItem, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//                focusConferenceItem = clickedConferenceItem;
-//                focusVideoUserId = userId;
-//                Log.e(TAG, "focusVideoUserId " + userId + " " + ChatManager.Instance().getUserId());
-//                ((VoipBaseActivity) getActivity()).setFocusVideoUserId(focusVideoUserId);
-
                 if (bottomPanel.getVisibility() == View.GONE) {
-                    bottomPanel.setVisibility(View.VISIBLE);
-                    topBarView.setVisibility(View.VISIBLE);
+                    setPanelVisibility(View.VISIBLE);
                     startHideBarTimer();
                 }
             } else {
                 if (bottomPanel.getVisibility() == View.GONE) {
-                    bottomPanel.setVisibility(View.VISIBLE);
-                    topBarView.setVisibility(View.VISIBLE);
+                    setPanelVisibility(View.VISIBLE);
                     startHideBarTimer();
                 } else {
-                    bottomPanel.setVisibility(View.GONE);
-                    topBarView.setVisibility(View.GONE);
+                    setPanelVisibility(View.GONE);
                 }
             }
         }
@@ -385,11 +365,26 @@ class ConferenceMainView extends RelativeLayout {
         public void run() {
             AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
             if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
-                bottomPanel.setVisibility(View.GONE);
-                topBarView.setVisibility(View.GONE);
+                setPanelVisibility(View.GONE);
             }
         }
     };
+
+    private void setPanelVisibility(int visibility) {
+        bottomPanel.setVisibility(visibility);
+        topBarView.setVisibility(visibility);
+        // TODO status bar
+        Activity activity = ((Activity) getContext());
+        if (visibility == VISIBLE) {
+//            activity.requestWindowFeature(Window.FEATURE_ACTION_BAR);
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        }
+    }
 
     private final Handler handler = ChatManager.Instance().getMainHandler();
 
@@ -424,25 +419,4 @@ class ConferenceMainView extends RelativeLayout {
 //        handler.removeCallbacks(updateCallDurationRunnable);
 //    }
 
-//    private AVEngineKit.ParticipantProfile findFocusProfile(AVEngineKit.CallSession session) {
-//        List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
-//
-//        AVEngineKit.ParticipantProfile focusProfile = null;
-//        for (AVEngineKit.ParticipantProfile profile : profiles) {
-//            if (!profile.isAudience()) {
-//                if (profile.isScreenSharing()) {
-//                    focusProfile = profile;
-//                    break;
-//                } else if (!profile.isVideoMuted() && (focusProfile == null || focusProfile.isVideoMuted())) {
-//                    focusProfile = profile;
-//                } else if (!profile.isAudioMuted() && focusProfile == null) {
-//                    focusProfile = profile;
-//                }
-//            }
-//        }
-//        if (focusProfile == null) {
-//            focusProfile = session.getMyProfile();
-//        }
-//        return focusProfile;
-//    }
 }
