@@ -78,6 +78,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
         // 禁用自动设置 surfaceView 层级关系
         AVEngineKit.DISABLE_SURFACE_VIEW_AUTO_OVERLAY = true;
+        callSession.autoSwitchVideoType = false;
 
         return view;
     }
@@ -257,12 +258,24 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     @Override
     public void didVideoMuted(String userId, boolean videoMuted) {
+    }
+
+    @Override
+    public void didMuteStateChanged(List<String> participants) {
         onParticipantProfileUpdate();
     }
 
     @Override
+    public void didMediaLostPacket(String media, int lostPacket, boolean screenSharing) {
+    }
+
+    @Override
+    public void didMediaLostPacket(String userId, String media, int lostPacket, boolean uplink, boolean screenSharing) {
+    }
+
+    @Override
     public void didReportAudioVolume(String userId, int volume) {
-        Log.d(TAG, "didReportAudioVolume " + userId + " " + volume);
+//        Log.d(TAG, "didReportAudioVolume " + userId + " " + volume);
         View view = views.get(currentPosition % 3);
         if (view instanceof ConferenceMainView) {
             ((ConferenceMainView) view).updateParticipantVolume(userId, volume);
