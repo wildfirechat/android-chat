@@ -13,7 +13,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -33,7 +32,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
-import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfire.chat.kit.voip.VoipCallItem;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
@@ -317,19 +315,21 @@ class ConferenceMainView extends RelativeLayout {
 
     @OnClick(R2.id.shareScreenView)
     void shareScreen() {
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null) {
-            if (session.isAudience()) {
-                return;
-            }
+        ((ConferenceActivity) getContext()).showKeyboardDialogFragment();
 
-//            shareScreenImageView.setSelected(!session.isScreenSharing());
-            if (!session.isScreenSharing()) {
-                ((VoipBaseActivity) getContext()).startScreenShare();
-            } else {
-                ((VoipBaseActivity) getContext()).stopScreenShare();
-            }
-        }
+//        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+//        if (session != null) {
+//            if (session.isAudience()) {
+//                return;
+//            }
+//
+////            shareScreenImageView.setSelected(!session.isScreenSharing());
+//            if (!session.isScreenSharing()) {
+//                ((VoipBaseActivity) getContext()).startScreenShare();
+//            } else {
+//                ((VoipBaseActivity) getContext()).stopScreenShare();
+//            }
+//        }
     }
 
     private final View.OnClickListener clickListener = new View.OnClickListener() {
@@ -379,7 +379,7 @@ class ConferenceMainView extends RelativeLayout {
 //            activity.requestWindowFeature(Window.FEATURE_ACTION_BAR);
             activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {
-            activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
             activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 

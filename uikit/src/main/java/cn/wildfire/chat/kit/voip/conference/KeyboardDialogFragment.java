@@ -20,10 +20,10 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 
-public class KeyboardDialogFragment extends DialogFragment implements KeyboardAwareLinearLayout.OnKeyboardHiddenListener,
+public abstract class KeyboardDialogFragment extends DialogFragment implements KeyboardAwareLinearLayout.OnKeyboardHiddenListener,
     KeyboardAwareLinearLayout.OnKeyboardShownListener {
     private InputAwareLayout inputAwareLayout;
-    private InputPanel commentInputPanel;
+    private InputPanel inputPanel;
     private EditText editText;
 
     @Override
@@ -42,12 +42,12 @@ public class KeyboardDialogFragment extends DialogFragment implements KeyboardAw
         inputAwareLayout = view.findViewById(R.id.rootInputAwareLayout);
         inputAwareLayout.addOnKeyboardHiddenListener(this);
         inputAwareLayout.addOnKeyboardShownListener(this);
-        commentInputPanel = view.findViewById(R.id.inputPanel);
+        inputPanel = view.findViewById(R.id.inputPanel);
 
         inputAwareLayout.setIsBubble(true);
 
-        commentInputPanel.init(this, inputAwareLayout);
-        editText = commentInputPanel.editText;
+        inputPanel.init(this, inputAwareLayout);
+        editText = inputPanel.editText;
 
         return view;
     }
@@ -81,17 +81,19 @@ public class KeyboardDialogFragment extends DialogFragment implements KeyboardAw
         super.onResume();
     }
 
+    public abstract void sendMessage(String message);
+
     @Override
     public void onKeyboardShown() {
-        commentInputPanel.onKeyboardShown();
+        inputPanel.onKeyboardShown();
     }
 
-    public void hideKeyboard() {
-        inputAwareLayout.hideSoftkey(editText, null);
+    public void hideKeyboard(Runnable runAfterClose) {
+        inputAwareLayout.hideSoftkey(editText, runAfterClose);
     }
 
     @Override
     public void onKeyboardHidden() {
-        commentInputPanel.onKeyboardHidden();
+        inputPanel.onKeyboardHidden();
     }
 }

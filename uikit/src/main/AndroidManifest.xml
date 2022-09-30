@@ -208,6 +208,7 @@
             android:label="发起会议" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity"
+            android:windowSoftInputMode="adjustPan"
             android:label="会议" />
 
         <activity

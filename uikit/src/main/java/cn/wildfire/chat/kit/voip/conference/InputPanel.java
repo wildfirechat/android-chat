@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.lqr.emoji.EmotionLayout;
@@ -55,7 +54,7 @@ public class InputPanel extends FrameLayout implements IEmotionSelectedListener 
     LinearLayout inputContainerLinearLayout;
 
     private InputAwareLayout rootLinearLayout;
-    private Fragment commentFragment;
+    private KeyboardDialogFragment keyboardDialogFragment;
 
     private OnConversationInputPanelStateChangeListener onConversationInputPanelStateChangeListener;
 
@@ -97,7 +96,7 @@ public class InputPanel extends FrameLayout implements IEmotionSelectedListener 
         LayoutInflater.from(getContext()).inflate(R.layout.input_panel, this, true);
         ButterKnife.bind(this, this);
 
-        this.commentFragment = commentFragment;
+        this.keyboardDialogFragment = commentFragment;
         this.rootLinearLayout = rootInputAwareLayout;
 
         // emotion
@@ -139,8 +138,7 @@ public class InputPanel extends FrameLayout implements IEmotionSelectedListener 
         if (TextUtils.isEmpty(content)) {
             return;
         }
-        //TODO
-//        commentFragment.comment(content.toString());
+        keyboardDialogFragment.sendMessage(content.toString());
 
         editText.setText("");
     }
@@ -182,7 +180,7 @@ public class InputPanel extends FrameLayout implements IEmotionSelectedListener 
             editText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
         } else {
             if (commentEmojiCount >= MAX_EMOJI_PER_COMMENT) {
-                Toast.makeText(commentFragment.getContext(), "最多允许输入" + MAX_EMOJI_PER_COMMENT + "个表情符号", Toast.LENGTH_SHORT).show();
+                Toast.makeText(keyboardDialogFragment.getContext(), "最多允许输入" + MAX_EMOJI_PER_COMMENT + "个表情符号", Toast.LENGTH_SHORT).show();
                 return;
             }
             commentEmojiCount++;

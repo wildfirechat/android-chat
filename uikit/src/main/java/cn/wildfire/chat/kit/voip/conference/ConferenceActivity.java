@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -19,6 +20,7 @@ import org.webrtc.StatsReport;
 
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -29,9 +31,12 @@ public class ConferenceActivity extends VoipBaseActivity {
     private static final int REQUEST_CODE_ADD_PARTICIPANT = 102;
     private AVEngineKit.CallSessionCallback currentCallSessionCallback;
 
+    private KeyboardDialogFragment commentFragment;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.av_conference_activity);
         init();
     }
 
@@ -62,10 +67,16 @@ public class ConferenceActivity extends VoipBaseActivity {
         currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-            .add(android.R.id.content, fragment)
+            .add(R.id.mainLayoutContainer, fragment)
+            .add(R.id.messageLayoutContainer, new ConferenceMessageFragment())
             .commit();
     }
 
+    public void showKeyboardDialogFragment() {
+        KeyboardDialogFragment keyboardDialogFragment = new ConferenceMessageInputDialogFragment();
+        keyboardDialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.Dialog_FullScreen_Transparent);
+        keyboardDialogFragment.show(getSupportFragmentManager(), "keyboardDialog");
+    }
 
     // hangup 也会触发
     @Override
