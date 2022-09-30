@@ -70,4 +70,9 @@
         <item name="cornerSizeTopRight">5dp</item>
     </style>
 
+    <style name="Dialog.FullScreen.Transparent" parent="Theme.AppCompat.Dialog">
+        <item name="android:padding">0dp</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
 </resources>

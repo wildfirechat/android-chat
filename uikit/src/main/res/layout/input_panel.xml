@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/inputPanelFrameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F8F8F8"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/inputContainerLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:focusableInTouchMode="true"
+            android:orientation="horizontal"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/shape_session_text_input"
+                    android:maxLines="5"
+                    android:textColor="@color/black"
+                    android:minHeight="44dp"
+                    android:paddingLeft="5dp"
+                    android:textSize="16sp"
+                    android:visibility="visible" />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/emotionImageView"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="5dp"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_chat_emo" />
+
+            <Button
+                android:id="@+id/sendButton"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="50dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="2.5dp"
+                android:background="@drawable/shape_session_btn_send"
+                android:enabled="false"
+                android:gravity="center"
+                android:text="@string/send"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout
+            android:id="@+id/emotionContainerFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_custom_keyboard_size"
+            android:background="@color/white"
+            android:visibility="gone">
+            <!--表情-->
+            <com.lqr.emoji.EmotionLayout
+                android:id="@+id/emotionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+        </cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout>
+    </LinearLayout>
+</merge>
