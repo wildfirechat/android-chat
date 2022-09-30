@@ -40,7 +40,7 @@ public class ConferenceMessageFragment extends Fragment {
     private MessageAdapter messageAdapter;
     private Handler handler;
 
-    private final static long TIMEOUT = 5 * 1000;
+    private final static long TIMEOUT = 30 * 1000;
 
     @Nullable
     @Override
