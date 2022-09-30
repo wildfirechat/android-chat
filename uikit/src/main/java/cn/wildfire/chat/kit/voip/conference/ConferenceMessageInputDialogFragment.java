@@ -13,14 +13,19 @@ import cn.wildfirechat.remote.ChatManager;
 public class ConferenceMessageInputDialogFragment extends KeyboardDialogFragment {
     @Override
     public void sendMessage(String message) {
+        // TODO 会话不对
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, "EPhwEwgg", 0);
         ChatManager.Instance().sendMessage(conversation, new TextMessageContent(message), null, 0, null);
 
-        hideKeyboard(() -> {
-            Dialog dialog = getDialog();
-            if (dialog != null) {
-                dialog.dismiss();
-            }
-        });
+        hideKeyboard(null);
+    }
+
+    @Override
+    public void onKeyboardHidden() {
+        super.onKeyboardHidden();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            dialog.dismiss();
+        }
     }
 }

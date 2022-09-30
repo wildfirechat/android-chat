@@ -105,7 +105,7 @@ public class KeyboardAwareLinearLayout extends LinearLayoutCompat {
     private void updateRotation() {
         int oldRotation = rotation;
         rotation = getDeviceRotation();
-        if (oldRotation != rotation) {
+        if (oldRotation != -1 && oldRotation != rotation) {
             Log.i(TAG, "rotation changed");
             onKeyboardClose();
         }
