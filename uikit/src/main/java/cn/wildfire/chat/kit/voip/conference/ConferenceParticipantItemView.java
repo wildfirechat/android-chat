@@ -31,6 +31,9 @@ public class ConferenceParticipantItemView extends FrameLayout {
     public TextView statusTextView;
     public ZoomableFrameLayout videoContainer;
     private boolean enableVideoZoom = true;
+    private ImageView audioStateImageView;
+    private ImageView videoStateImageView;
+    private TextView nameTextView;
 
     private static final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
 
@@ -61,10 +64,13 @@ public class ConferenceParticipantItemView extends FrameLayout {
     }
 
     private void initView(Context context, AttributeSet attrs) {
-        View view = inflate(context, R.layout.av_multi_call_item, this);
+        View view = inflate(context, R.layout.av_conference_participant_grid_item, this);
         portraitImageView = view.findViewById(R.id.portraitImageView);
         statusTextView = view.findViewById(R.id.statusTextView);
         videoContainer = view.findViewById(R.id.videoContainer);
+        audioStateImageView = view.findViewById(R.id.audioStateImageView);
+        videoStateImageView = view.findViewById(R.id.videoStateImageView);
+        nameTextView = view.findViewById(R.id.userNameTextView);
         videoContainer.setEnableZoom(enableVideoZoom);
     }
 
@@ -111,6 +117,9 @@ public class ConferenceParticipantItemView extends FrameLayout {
         } else {
             videoContainer.setVisibility(GONE);
         }
+        videoStateImageView.setSelected(profile.isVideoMuted());
+        audioStateImageView.setSelected(profile.isAudioMuted());
+        nameTextView.setText(ChatManager.Instance().getUserDisplayName(profile.getUserId()));
     }
 
     public void updateParticipantProfile(AVEngineKit.ParticipantProfile profile) {

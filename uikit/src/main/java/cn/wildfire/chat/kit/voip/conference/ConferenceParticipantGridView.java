@@ -57,9 +57,11 @@ class ConferenceParticipantGridView extends RelativeLayout {
         this.participantGridView.removeAllViews();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int size = Math.min(dm.widthPixels, dm.heightPixels);
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
         for (AVEngineKit.ParticipantProfile profile : profiles) {
             ConferenceParticipantItemView conferenceItem = new ConferenceParticipantItemView(getContext());
-            conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(size / 3, size / 3));
+            conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 2, height / 2));
             this.participantGridView.addView(conferenceItem);
             conferenceItem.setup(session, profile);
             session.setParticipantVideoType(profile.getUserId(), profile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_SMALL_STREAM);
