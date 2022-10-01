@@ -274,6 +274,7 @@
         <activity
             android:name=".group.GroupMemberMessageHistoryActivity"
             android:label="用户消息" />
+        <activity android:name=".voip.conference.ConferencePortalActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
