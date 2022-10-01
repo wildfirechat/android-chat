@@ -29,9 +29,8 @@ import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity;
+import cn.wildfire.chat.kit.voip.conference.ConferencePortalActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-//import cn.wildfire.chat.moment.FeedListActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
@@ -115,7 +114,7 @@ public class DiscoveryFragment extends Fragment {
 
     @OnClick(R.id.conferenceOptionItemView)
     void conference() {
-        Intent intent = new Intent(getActivity(), CreateConferenceActivity.class);
+        Intent intent = new Intent(getActivity(), ConferencePortalActivity.class);
         startActivity(intent);
     }
 
