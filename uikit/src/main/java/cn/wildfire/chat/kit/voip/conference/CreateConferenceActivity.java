@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -61,6 +62,8 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     TextView endDateTimeTextView;
     @BindView(R2.id.callIdTextView)
     TextView callIdTextView;
+    @BindView(R2.id.passwordTextView)
+    TextView passwordTextView;
 
     private Date endDateTime;
 
@@ -149,20 +152,28 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     void passwordChecked(CompoundButton button, boolean checked) {
         if (checked) {
             new MaterialDialog.Builder(this)
-                    .content("请输入密码")
-                    .input("请输入6位数字", "123456", false, new MaterialDialog.InputCallback() {
-                        @Override
-                        public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                            password = input.toString();
+                .content("请输入密码")
+                .input("请输入6位数字", "123456", false, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                        password = input.toString();
+                        if (!TextUtils.isEmpty(password)) {
+                            passwordTextView.setText(password);
+                            passwordTextView.setVisibility(View.VISIBLE);
+                        } else {
+                            passwordTextView.setVisibility(View.GONE);
                         }
-                    })
-                    .inputRange(6, 6)
-                    .inputType(2)
-                    .cancelable(false)
-                    .build()
-                    .show();
+                    }
+                })
+                .inputRange(6, 6)
+                .inputType(2)
+                .cancelable(false)
+                .build()
+                .show();
         } else {
             password = null;
+            passwordTextView.setText("");
+            passwordTextView.setVisibility(View.GONE);
         }
     }
 
