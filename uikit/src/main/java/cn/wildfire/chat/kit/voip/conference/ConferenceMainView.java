@@ -22,8 +22,6 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
-import org.webrtc.RendererCommon;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +30,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
-import cn.wildfire.chat.kit.voip.VoipCallItem;
+import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.avenginekit.PeerConnectionClient;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -60,9 +57,9 @@ class ConferenceMainView extends RelativeLayout {
     FrameLayout focusContainerFrameLayout;
 
     @BindView(R2.id.muteImageView)
-    ImageView muteImageView;
+    ImageView muteAudioImageView;
     @BindView(R2.id.videoImageView)
-    ImageView videoImageView;
+    ImageView muteVideoImageView;
     @BindView(R2.id.shareScreenImageView)
     ImageView shareScreenImageView;
 
@@ -103,7 +100,15 @@ class ConferenceMainView extends RelativeLayout {
         setupConferenceMainView();
     }
 
-    public void setFocusProfile(AVEngineKit.ParticipantProfile focusProfile) {
+    public void updateMyProfile(AVEngineKit.ParticipantProfile myProfile) {
+        if (this.myProfile == null) {
+            // myProfile 和 focusProfile 换位置
+        }
+        this.myProfile = myProfile;
+        setupConferenceMainView();
+    }
+
+    public void updateFocusProfile(AVEngineKit.ParticipantProfile focusProfile) {
         if (this.focusProfile == null) {
             // myProfile 和 focusProfile 换位置
         }
@@ -126,53 +131,10 @@ class ConferenceMainView extends RelativeLayout {
     private String focusVideoUserId;
 
 
-    private final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
     public static final String TAG = "ConferenceVideoFragment";
-
 
     private AVEngineKit getEngineKit() {
         return AVEngineKit.Instance();
-    }
-
-    private void init() {
-        me = ChatManager.Instance().getUserInfo(ChatManager.Instance().getUserId(), false);
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
-            ((Activity) getContext()).finish();
-            return;
-        }
-
-        setupConferenceMainView();
-
-        if (session.getState() == AVEngineKit.CallState.Outgoing) {
-            session.startPreview();
-        }
-
-        handler.post(updateCallDurationRunnable);
-        updateParticipantStatus(session);
-
-        updateControlStatus();
-
-        manageParticipantTextView.setText("管理(" + (session.getParticipantProfiles().size() + 1) + ")");
-        rootLinearLayout.setOnClickListener(clickListener);
-        startHideBarTimer();
-    }
-
-    private void updateControlStatus() {
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
-            return;
-        }
-
-        if (session.isAudience()) {
-            muteImageView.setSelected(true);
-            videoImageView.setSelected(true);
-            shareScreenImageView.setSelected(true);
-        } else {
-            muteImageView.setSelected(session.isAudioMuted());
-            videoImageView.setSelected(session.videoMuted);
-            shareScreenImageView.setSelected(session.isScreenSharing());
-        }
     }
 
     private void setupConferenceMainView() {
@@ -216,35 +178,13 @@ class ConferenceMainView extends RelativeLayout {
                 conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 focusContainerFrameLayout.addView(conferenceItem);
             }
-
         }
+
+        handler.post(() -> {
+            muteVideoImageView.setSelected(myProfile.isVideoMuted());
+            muteAudioImageView.setSelected(myProfile.isAudioMuted());
+        });
     }
-
-    private void updateParticipantStatus(AVEngineKit.CallSession session) {
-        String meUid = ChatManager.Instance().getUserId();
-        VoipCallItem item = rootLinearLayout.findViewWithTag(meUid);
-        if (item != null) {
-            if (session.videoMuted) {
-                item.getStatusTextView().setVisibility(View.VISIBLE);
-                item.getStatusTextView().setText("关闭摄像头");
-            }
-        }
-
-        for (String userId : session.getParticipantIds()) {
-            item = rootLinearLayout.findViewWithTag(userId);
-            if (item == null) {
-                continue;
-            }
-            PeerConnectionClient client = session.getClient(userId);
-            if (client.state == AVEngineKit.CallState.Connected) {
-                item.getStatusTextView().setVisibility(View.GONE);
-            } else if (client.videoMuted) {
-                item.getStatusTextView().setText("关闭摄像头");
-                item.getStatusTextView().setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
 
     @OnClick(R2.id.minimizeImageView)
     void minimize() {
@@ -263,7 +203,7 @@ class ConferenceMainView extends RelativeLayout {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             boolean toMute = !session.isAudioMuted();
-            muteImageView.setSelected(toMute);
+            muteAudioImageView.setSelected(toMute);
             session.muteAudio(toMute);
             startHideBarTimer();
         }
@@ -283,7 +223,7 @@ class ConferenceMainView extends RelativeLayout {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             boolean toMute = !session.videoMuted;
-            videoImageView.setSelected(toMute);
+            muteVideoImageView.setSelected(toMute);
             session.muteVideo(toMute);
             startHideBarTimer();
         }
@@ -315,21 +255,19 @@ class ConferenceMainView extends RelativeLayout {
 
     @OnClick(R2.id.shareScreenView)
     void shareScreen() {
-        ((ConferenceActivity) getContext()).showKeyboardDialogFragment();
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session != null) {
+            if (session.isAudience()) {
+                return;
+            }
 
-//        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-//        if (session != null) {
-//            if (session.isAudience()) {
-//                return;
-//            }
-//
-////            shareScreenImageView.setSelected(!session.isScreenSharing());
-//            if (!session.isScreenSharing()) {
-//                ((VoipBaseActivity) getContext()).startScreenShare();
-//            } else {
-//                ((VoipBaseActivity) getContext()).stopScreenShare();
-//            }
-//        }
+//            shareScreenImageView.setSelected(!session.isScreenSharing());
+            if (!session.isScreenSharing()) {
+                ((VoipBaseActivity) getContext()).startScreenShare();
+            } else {
+                ((VoipBaseActivity) getContext()).stopScreenShare();
+            }
+        }
     }
 
     private final View.OnClickListener clickListener = new View.OnClickListener() {
