@@ -23,7 +23,7 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfire.chat.kit.voip.conference.ConferenceActivity;
+import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.model.UserInfo;
@@ -66,8 +66,10 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
             Toast.makeText(fragment.getActivity(), "本版本不支持会议功能", Toast.LENGTH_SHORT).show();
             return;
         }
-        AVEngineKit.Instance().joinConference(inviteMessageContent.getCallId(), inviteMessageContent.isAudioOnly(), inviteMessageContent.getPin(), inviteMessageContent.getHost(), inviteMessageContent.getTitle(), inviteMessageContent.getDesc(), inviteMessageContent.isAudience(), inviteMessageContent.isAdvanced(), false, false, null);
-        Intent intent = new Intent(fragment.getActivity(), ConferenceActivity.class);
+//        AVEngineKit.Instance().joinConference(inviteMessageContent.getCallId(), inviteMessageContent.isAudioOnly(), inviteMessageContent.getPin(), inviteMessageContent.getHost(), inviteMessageContent.getTitle(), inviteMessageContent.getDesc(), inviteMessageContent.isAudience(), inviteMessageContent.isAdvanced(), false, false, null);
+        Intent intent = new Intent(fragment.getActivity(), ConferenceInfoActivity.class);
+        intent.putExtra("conferenceId", inviteMessageContent.getCallId());
+        intent.putExtra("password", inviteMessageContent.getPin());
         fragment.startActivity(intent);
     }
 }
