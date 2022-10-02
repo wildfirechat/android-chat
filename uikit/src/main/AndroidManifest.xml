@@ -226,6 +226,12 @@
             android:name=".voip.conference.BookConferenceActivity"
             android:label="预定会议" />
         <activity
+            android:name=".voip.conference.ConferenceInfoActivity"
+            android:label="会议详情" />
+        <activity
+            android:name=".voip.conference.ConferenceInviteActivity"
+            android:label="会议邀请" />
+        <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
             android:exported="false"
             android:launchMode="singleInstance"
@@ -268,9 +274,6 @@
         <activity
             android:name=".user.SetNameActivity"
             android:label="修改野火ID" />
-        <activity
-            android:name=".voip.conference.ConferenceInviteActivity"
-            android:label="会议邀请" />
         <activity
             android:name=".conversation.message.CompositeMessageContentActivity"
             android:label="组合消息" />
