@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,9 @@ public class BookConferenceActivity extends WfcBaseActivity {
     TextView endDateTimeTextView;
     @BindView(R2.id.startDateTimeTextView)
     TextView startDateTimeTextView;
+
+    @BindView(R2.id.passwordTextView)
+    TextView passwordTextView;
 
     private Date endDateTime;
     private Date startDateTime;
@@ -126,6 +130,13 @@ public class BookConferenceActivity extends WfcBaseActivity {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         password = input.toString();
+                        if (!TextUtils.isEmpty(password)) {
+                            passwordTextView.setVisibility(View.VISIBLE);
+                            passwordTextView.setText(password);
+                        } else {
+                            passwordTextView.setVisibility(View.GONE);
+
+                        }
                     }
                 })
                 .inputRange(6, 6)
@@ -135,6 +146,8 @@ public class BookConferenceActivity extends WfcBaseActivity {
                 .show();
         } else {
             password = null;
+            passwordTextView.setText("");
+            passwordTextView.setVisibility(View.GONE);
         }
     }
 

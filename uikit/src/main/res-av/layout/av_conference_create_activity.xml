@@ -161,7 +161,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="123456"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:visibility="gone" />
         </LinearLayout>
 
         <View
@@ -201,16 +202,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="20dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingTop="5dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="5dp">
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/advanceSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:checked="false"
-            android:padding="20dp"
-            android:text="大规模会议(参会人员大于50人)" />
+            android:text="大规模会议" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="参会人数大于 50 人"
+            android:textColor="@color/red0"
+            android:textSize="12sp" />
 
     </LinearLayout>
 
@@ -226,7 +237,8 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:enabled="false"
-            android:text="进入会议室" />
+            android:text="进入会议室"
+            android:textColor="@color/av_conference_button_text_color_selector" />
 
     </LinearLayout>
 </LinearLayout>
