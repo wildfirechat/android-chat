@@ -101,8 +101,7 @@ public class ConferencePortalActivity extends WfcBaseActivity {
 
     @OnClick(R2.id.bookConferenceLinearLayout)
     void orderConference() {
-        // TODO
-//        Intent intent = new Intent(this, OrderConferenceActivity.class);
-//        startActivity(intent);
+        Intent intent = new Intent(this, BookConferenceActivity.class);
+        startActivity(intent);
     }
 }
