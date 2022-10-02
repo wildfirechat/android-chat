@@ -18,11 +18,13 @@ import androidx.viewpager.widget.ViewPager;
 
 import org.webrtc.StatsReport;
 
+import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.remote.ChatManager;
 
 // main view
 // participantPreviewView
@@ -157,7 +159,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             if (view instanceof ConferenceParticipantGridView) {
                 ((ConferenceParticipantGridView) view).setParticipantProfiles(callSession, getGridPageParticipantProfiles(position));
             } else if (view instanceof ConferenceMainView) {
-                ((ConferenceMainView) view).setFocusProfile(findFocusProfile(callSession));
+                ((ConferenceMainView) view).updateFocusProfile(findFocusProfile(callSession));
             }
             currentPosition = position;
         }
@@ -168,16 +170,31 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
     };
 
-    private void onParticipantProfileUpdate() {
+    private void onParticipantProfileUpdate(List<String> participants) {
         // 比如有人离开后
         if (adapter.getCount() <= currentPosition) {
             viewPager.setCurrentItem(currentPosition - 1);
         } else {
             View view = views.get(currentPosition % 3);
             if (view instanceof ConferenceMainView) {
-                ((ConferenceMainView) view).setFocusProfile(findFocusProfile(this.callSession));
+                AVEngineKit.ParticipantProfile focusProfile = findFocusProfile(this.callSession);
+                if (participants.contains(ChatManager.Instance().getUserId()) || focusProfile == null || participants.contains(focusProfile.getUserId())) {
+                    ((ConferenceMainView) view).setup(this.callSession, callSession.getMyProfile(), focusProfile);
+                }
             } else if (view instanceof ConferenceParticipantGridView) {
-                ((ConferenceParticipantGridView) view).setParticipantProfiles(this.callSession, getGridPageParticipantProfiles(currentPosition));
+                List<AVEngineKit.ParticipantProfile> currentPageParticipantProfiles = getGridPageParticipantProfiles(currentPosition);
+                boolean updateCurrentPage = false;
+                for (String userId : participants) {
+                    for (AVEngineKit.ParticipantProfile p : currentPageParticipantProfiles) {
+                        if (userId.equals(p.getUserId())) {
+                            updateCurrentPage = true;
+                            break;
+                        }
+                    }
+                }
+                if (updateCurrentPage) {
+                    ((ConferenceParticipantGridView) view).setParticipantProfiles(this.callSession, currentPageParticipantProfiles);
+                }
             }
         }
     }
@@ -203,7 +220,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     @Override
     public void didParticipantJoined(String userId, boolean screenSharing) {
         this.adapter.notifyDataSetChanged();
-        onParticipantProfileUpdate();
+        onParticipantProfileUpdate(Collections.singletonList(userId));
         Log.d(TAG, "didParticipantJoined " + userId);
     }
 
@@ -215,14 +232,14 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason reason, boolean screenSharing) {
         this.adapter.notifyDataSetChanged();
-        onParticipantProfileUpdate();
+        onParticipantProfileUpdate(Collections.singletonList(userId));
         Log.d(TAG, "didParticipantLeft " + userId);
     }
 
     @Override
     public void didChangeType(String userId, boolean audience, boolean screenSharing) {
         this.adapter.notifyDataSetChanged();
-        onParticipantProfileUpdate();
+        onParticipantProfileUpdate(Collections.singletonList(userId));
         Log.d(TAG, "didChangeType " + userId + " " + audience);
     }
 
@@ -262,7 +279,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     @Override
     public void didMuteStateChanged(List<String> participants) {
-        onParticipantProfileUpdate();
+        onParticipantProfileUpdate(participants);
     }
 
     @Override

@@ -106,7 +106,7 @@ public class ConferenceParticipantItemView extends FrameLayout {
         this.setTag(participantKey);
 
         GlideApp.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
-        if (!profile.isVideoMuted()) {
+//        if (!profile.isVideoMuted()) {
             videoContainer.setVisibility(VISIBLE);
             if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
                 session.setupLocalVideoView(videoContainer, scalingType);
@@ -114,9 +114,9 @@ public class ConferenceParticipantItemView extends FrameLayout {
                 session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, scalingType);
             }
             //statusTextView.setText(R.string.connecting);
-        } else {
-            videoContainer.setVisibility(GONE);
-        }
+//        } else {
+//            videoContainer.setVisibility(GONE);
+//        }
         videoStateImageView.setSelected(profile.isVideoMuted());
         audioStateImageView.setSelected(profile.isAudioMuted());
         nameTextView.setText(ChatManager.Instance().getUserDisplayName(profile.getUserId()));

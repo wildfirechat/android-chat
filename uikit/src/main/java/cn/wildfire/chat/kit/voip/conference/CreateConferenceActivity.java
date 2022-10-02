@@ -72,7 +72,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     private String title;
     private String conferenceId;
     private String password;
-    private String callId;
     private boolean enableVideo = false;
     private boolean enableAudio = true;
 
@@ -215,10 +214,12 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     }
 
     private void createConference(boolean join) {
+        joinConferenceButton.setEnabled(false);
         ConferenceInfo info = new ConferenceInfo();
         if (callIdSwitch.isChecked()) {
             info.setConferenceId(conferenceId);
         }
+        Toast.makeText(this, "创建会议中...", Toast.LENGTH_SHORT).show();
         info.setPassword(password);
         info.setConferenceTitle(titleEditText.getText().toString());
         Random random = new Random();
@@ -233,7 +234,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
             @Override
             public void onSuccess(String s) {
                 if (join) {
-                    AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(info.getConferenceId(), false, info.getPin(), ChatManager.Instance().getUserId(), info.getConferenceTitle(), "", audienceSwitch.isChecked(), advancedSwitch.isChecked(), false, null);
+                    AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(info.getConferenceId(), false, info.getPin(), ChatManager.Instance().getUserId(), info.getConferenceTitle(), "", !audienceSwitch.isChecked(), advancedSwitch.isChecked(), false, null);
                     if (session != null) {
                         session.muteAudio(!enableAudio);
                         session.muteVideo(!enableVideo);
@@ -251,6 +252,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
             @Override
             public void onFail(int i) {
                 Log.e(TAG, "createConference fail" + i);
+                joinConferenceButton.setEnabled(true);
             }
         });
     }
