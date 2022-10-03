@@ -18,7 +18,9 @@ import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
@@ -109,7 +111,9 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
 
     @OnClick(R2.id.conferenceQRCodeLinearLayout)
     void showConferenceQRCode() {
-        // TODO
+        String qrcodeValue = WfcScheme.buildConferenceScheme(conferenceId, password);
+        Intent intent = QRCodeActivity.buildQRCodeIntent(this, "会议二维码", null, qrcodeValue);
+        startActivity(intent);
     }
 
     @OnClick(R2.id.joinConferenceBtn)
