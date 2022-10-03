@@ -52,7 +52,7 @@
                     android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/titleContainerLinearLayout"
+                        android:id="@+id/titleLinearLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
