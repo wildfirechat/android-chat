@@ -6,11 +6,14 @@ package cn.wildfire.chat.kit.voip.conference;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -19,8 +22,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
@@ -295,6 +302,47 @@ class ConferenceMainView extends RelativeLayout {
                 ((VoipBaseActivity) getContext()).stopScreenShare();
             }
         }
+    }
+
+    @OnClick(R2.id.titleLinearLayout)
+    void showConferenceInfoDialog() {
+        BottomSheetDialog dialog = new BottomSheetDialog(getContext());
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.av_conference_info_dialog, null);
+        TextView titleTextView = view.findViewById(R.id.titleTextView);
+        TextView conferenceIdTextView = view.findViewById(R.id.conferenceIdTextView);
+        TextView conferenceHostTextView = view.findViewById(R.id.hostTextView);
+        TextView conferenceLinkTextView = view.findViewById(R.id.conferenceLinkTextView);
+
+        titleTextView.setText(callSession.getTitle());
+        conferenceIdTextView.setText(callSession.getCallId());
+        conferenceHostTextView.setText(callSession.getHost());
+        String conferenceLink = WfcScheme.buildConferenceScheme(callSession.getCallId(), callSession.getPin());
+        conferenceLinkTextView.setText(conferenceLink);
+
+        view.findViewById(R.id.copyCallIdImageView).setOnClickListener(v -> {
+            ClipboardManager clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboardManager == null) {
+                return;
+            }
+            ClipData clipData = ClipData.newPlainText("conferenceId", callSession.getCallId());
+            clipboardManager.setPrimaryClip(clipData);
+            Toast.makeText(getContext(), "已复制到剪贴板", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        view.findViewById(R.id.copyLinkImageView).setOnClickListener(v -> {
+            ClipboardManager clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboardManager == null) {
+                return;
+            }
+            ClipData clipData = ClipData.newPlainText("conferenceLink", conferenceLink);
+            clipboardManager.setPrimaryClip(clipData);
+            Toast.makeText(getContext(), "已复制到剪贴板", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(view);
+        dialog.show();
     }
 
     private final View.OnClickListener clickListener = new View.OnClickListener() {
