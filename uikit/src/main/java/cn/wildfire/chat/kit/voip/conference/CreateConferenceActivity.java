@@ -52,8 +52,8 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     SwitchMaterial modeSwitch;
     @BindView((R2.id.advanceSwitch))
     SwitchMaterial advancedSwitch;
-    @BindView(R2.id.callIdSwitch)
-    SwitchMaterial callIdSwitch;
+    @BindView(R2.id.userCallIdSwitch)
+    SwitchMaterial userCallIdSwitch;
 
     @BindView(R2.id.joinConferenceBtn)
     Button joinConferenceButton;
@@ -216,7 +216,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     private void createConference(boolean join) {
         joinConferenceButton.setEnabled(false);
         ConferenceInfo info = new ConferenceInfo();
-        if (callIdSwitch.isChecked()) {
+        if (userCallIdSwitch.isChecked()) {
             info.setConferenceId(conferenceId);
         }
         Toast.makeText(this, "创建会议中...", Toast.LENGTH_SHORT).show();
@@ -229,15 +229,20 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         info.setOwner(ChatManager.Instance().getUserId());
         info.setStartTime(System.currentTimeMillis() / 1000);
         info.setEndTime(endDateTime.getTime() / 1000);
+        info.setAudience(!audienceSwitch.isChecked());
+        info.setAllowSwitchMode(modeSwitch.isChecked());
+        info.setAdvance(advancedSwitch.isChecked());
 
         WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new GeneralCallback2() {
             @Override
-            public void onSuccess(String s) {
+            public void onSuccess(String conferenceId) {
                 if (join) {
-                    AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(info.getConferenceId(), false, info.getPin(), ChatManager.Instance().getUserId(), info.getConferenceTitle(), "", !audienceSwitch.isChecked(), advancedSwitch.isChecked(), false, null);
+                    AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(conferenceId, false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", info.isAudience(), info.isAdvance(), false, null);
                     if (session != null) {
-                        session.muteAudio(!enableAudio);
-                        session.muteVideo(!enableVideo);
+                        if (!info.isAudience()) {
+                            session.muteAudio(!enableAudio);
+                            session.muteVideo(!enableVideo);
+                        }
                         Intent intent = new Intent(CreateConferenceActivity.this, ConferenceActivity.class);
                         startActivity(intent);
                         finish();
