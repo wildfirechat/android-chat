@@ -115,10 +115,9 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     @OnClick(R2.id.joinConferenceBtn)
     void joinConference() {
         ConferenceInfo info = conferenceInfo;
-        AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(info.getConferenceId(), false, info.getPin(), ChatManager.Instance().getUserId(), info.getConferenceTitle(), "", info.isAudience(), info.isAdvance(), false, null);
+        boolean audience = info.isAudience() || (!audioSwitch.isChecked() && !videoSwitch.isChecked());
+        AVEngineKit.CallSession session = AVEngineKit.Instance().joinConference(info.getConferenceId(), false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", audience, info.isAdvance(), !audioSwitch.isChecked(), !videoSwitch.isChecked(), null);
         if (session != null) {
-            session.muteAudio(!videoSwitch.isChecked());
-            session.muteVideo(!audioSwitch.isChecked());
             Intent intent = new Intent(this, ConferenceActivity.class);
             startActivity(intent);
             finish();

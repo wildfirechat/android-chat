@@ -20,7 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="接通中"
-        android:textColor="@color/red6" />
+        android:textColor="@color/red6"
+        android:visibility="gone" />
 
     <cn.wildfire.chat.kit.voip.ZoomableFrameLayout
         android:id="@+id/videoContainer"

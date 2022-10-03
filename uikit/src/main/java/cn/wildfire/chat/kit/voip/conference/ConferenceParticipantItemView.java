@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.bumptech.glide.request.RequestOptions;
+
 import org.webrtc.RendererCommon;
 
 import cn.wildfire.chat.kit.GlideApp;
@@ -105,7 +107,7 @@ public class ConferenceParticipantItemView extends FrameLayout {
         UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
         this.setTag(participantKey);
 
-        GlideApp.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+        GlideApp.with(this).load(userInfo.portrait).apply(new RequestOptions().circleCrop()).placeholder(R.mipmap.avatar_def).into(portraitImageView);
 //        if (!profile.isVideoMuted()) {
             videoContainer.setVisibility(VISIBLE);
             if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {

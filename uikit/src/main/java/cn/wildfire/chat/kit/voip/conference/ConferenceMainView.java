@@ -147,7 +147,9 @@ class ConferenceMainView extends RelativeLayout {
         focusVideoUserId = myProfile.getUserId();
 
         List<AVEngineKit.ParticipantProfile> mainProfiles = new ArrayList<>();
-        mainProfiles.add(myProfile);
+        if (!myProfile.isAudience()) {
+            mainProfiles.add(myProfile);
+        }
         if (focusProfile != null && !focusProfile.getUserId().equals(myProfile.getUserId())) {
             mainProfiles.add(focusProfile);
             focusVideoUserId = focusProfile.getUserId();
@@ -199,7 +201,7 @@ class ConferenceMainView extends RelativeLayout {
     }
 
     @OnClick(R2.id.muteView)
-    void mute() {
+    void muteAudio() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             boolean toMute = !session.isAudioMuted();
@@ -219,7 +221,7 @@ class ConferenceMainView extends RelativeLayout {
     }
 
     @OnClick(R2.id.videoView)
-    void video() {
+    void muteVideo() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             boolean toMute = !session.videoMuted;
