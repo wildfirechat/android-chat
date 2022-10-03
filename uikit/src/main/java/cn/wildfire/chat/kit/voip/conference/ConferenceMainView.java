@@ -45,6 +45,8 @@ class ConferenceMainView extends RelativeLayout {
     @BindView(R2.id.bottomPanel)
     FrameLayout bottomPanel;
 
+    @BindView(R2.id.titleTextView)
+    TextView titleTextView;
     @BindView(R2.id.durationTextView)
     TextView durationTextView;
 
@@ -91,12 +93,14 @@ class ConferenceMainView extends RelativeLayout {
     private void initView(Context context, AttributeSet attrs) {
         View view = inflate(context, R.layout.av_conference_main, this);
         ButterKnife.bind(this, view);
+        handler.post(updateCallDurationRunnable);
     }
 
     public void setup(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile myProfile, AVEngineKit.ParticipantProfile focusProfile) {
         this.callSession = session;
         this.myProfile = myProfile;
         this.focusProfile = focusProfile;
+        titleTextView.setText(this.callSession.getTitle());
         setupConferenceMainView();
     }
 
@@ -206,7 +210,18 @@ class ConferenceMainView extends RelativeLayout {
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             boolean toMute = !session.isAudioMuted();
             muteAudioImageView.setSelected(toMute);
-            session.muteAudio(toMute);
+
+            if (toMute) {
+                if (session.videoMuted) {
+                    session.switchAudience(true);
+                }
+                session.muteAudio(true);
+            } else {
+                session.muteAudio(false);
+                if (session.videoMuted) {
+                    session.switchAudience(false);
+                }
+            }
             startHideBarTimer();
         }
     }
@@ -226,7 +241,17 @@ class ConferenceMainView extends RelativeLayout {
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             boolean toMute = !session.videoMuted;
             muteVideoImageView.setSelected(toMute);
-            session.muteVideo(toMute);
+            if (toMute) {
+                if (session.audioMuted) {
+                    session.switchAudience(true);
+                }
+                session.muteVideo(true);
+            } else {
+                session.muteVideo(false);
+                if (session.audioMuted) {
+                    session.switchAudience(false);
+                }
+            }
             startHideBarTimer();
         }
     }
@@ -326,7 +351,7 @@ class ConferenceMainView extends RelativeLayout {
         }
     }
 
-    private final Handler handler = ChatManager.Instance().getMainHandler();
+    private final Handler handler = new Handler();
 
     private final Runnable updateCallDurationRunnable = new Runnable() {
         @Override
