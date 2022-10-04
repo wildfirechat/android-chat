@@ -223,7 +223,7 @@
             android:name=".voip.conference.ConferencePortalActivity"
             android:label="野火会议" />
         <activity
-            android:name=".voip.conference.BookConferenceActivity"
+            android:name=".voip.conference.OrderConferenceActivity"
             android:label="预定会议" />
         <activity
             android:name=".voip.conference.ConferenceInfoActivity"
