@@ -33,7 +33,7 @@ public class ConferenceParticipantItemView extends FrameLayout {
     public TextView statusTextView;
     public ZoomableFrameLayout videoContainer;
     private boolean enableVideoZoom = true;
-    private ImageView audioStateImageView;
+    private MicImageView micImageView;
     private ImageView videoStateImageView;
     private TextView nameTextView;
 
@@ -70,7 +70,7 @@ public class ConferenceParticipantItemView extends FrameLayout {
         portraitImageView = view.findViewById(R.id.portraitImageView);
         statusTextView = view.findViewById(R.id.statusTextView);
         videoContainer = view.findViewById(R.id.videoContainer);
-        audioStateImageView = view.findViewById(R.id.audioStateImageView);
+        micImageView = view.findViewById(R.id.micImageView);
         videoStateImageView = view.findViewById(R.id.videoStateImageView);
         nameTextView = view.findViewById(R.id.userNameTextView);
         videoContainer.setEnableZoom(enableVideoZoom);
@@ -120,7 +120,7 @@ public class ConferenceParticipantItemView extends FrameLayout {
 //            videoContainer.setVisibility(GONE);
 //        }
         videoStateImageView.setSelected(profile.isVideoMuted());
-        audioStateImageView.setSelected(profile.isAudioMuted());
+        micImageView.setMuted(profile.isAudioMuted());
         nameTextView.setText(ChatManager.Instance().getUserDisplayName(profile.getUserId()));
     }
 
@@ -137,5 +137,6 @@ public class ConferenceParticipantItemView extends FrameLayout {
             videoContainer.setBackground(null);
         }
         videoContainer.setPadding(padding, padding, padding, padding);
+        micImageView.setVolume(volume);
     }
 }

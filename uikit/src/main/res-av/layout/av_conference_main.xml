@@ -108,6 +108,25 @@
                 android:layout_alignParentLeft="true" />
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/micLinearLayout"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="80dp"
+            android:background="@drawable/round_bg_40_half_transparent"
+            android:clickable="true"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <cn.wildfire.chat.kit.voip.conference.MicImageView
+                android:id="@+id/micImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:tint="@color/white" />
+        </LinearLayout>
     </FrameLayout>
 
     <FrameLayout

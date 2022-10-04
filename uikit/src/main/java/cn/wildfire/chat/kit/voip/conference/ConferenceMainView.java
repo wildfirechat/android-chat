@@ -76,9 +76,17 @@ class ConferenceMainView extends RelativeLayout {
     @BindView(R2.id.speakerImageView)
     ImageView speakerImageView;
 
+    @BindView(R2.id.micLinearLayout)
+    LinearLayout micLinearLayout;
+    @BindView(R2.id.micImageView)
+    MicImageView micImageView;
+
     private AVEngineKit.CallSession callSession;
     private AVEngineKit.ParticipantProfile myProfile;
     private AVEngineKit.ParticipantProfile focusProfile;
+
+    private ConferenceParticipantItemView focusParticipantItemView;
+    private ConferenceParticipantItemView myParticipantItemView;
 
     public ConferenceMainView(Context context) {
         super(context);
@@ -133,7 +141,13 @@ class ConferenceMainView extends RelativeLayout {
     }
 
     public void updateParticipantVolume(String userId, int volume) {
-
+        if (userId.equals(ChatManager.Instance().getUserId())) {
+            myParticipantItemView.updateVolume(volume);
+        } else {
+            if (focusProfile != null && focusProfile.getUserId().equals(userId)) {
+                focusParticipantItemView.updateVolume(volume);
+            }
+        }
     }
 
     public void onDestroyView() {
@@ -175,6 +189,11 @@ class ConferenceMainView extends RelativeLayout {
             ConferenceParticipantItemView conferenceItem = new ConferenceParticipantItemView(getContext());
             conferenceItem.setOnClickListener(clickListener);
             conferenceItem.setup(this.callSession, profile);
+            if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
+                myParticipantItemView = conferenceItem;
+            } else {
+                focusParticipantItemView = conferenceItem;
+            }
 
             if (focusProfile != null) {
                 if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
@@ -191,7 +210,6 @@ class ConferenceMainView extends RelativeLayout {
                 }
             } else {
                 previewContainerFrameLayout.removeAllViews();
-
                 focusContainerFrameLayout.removeAllViews();
                 conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 focusContainerFrameLayout.addView(conferenceItem);
@@ -201,6 +219,7 @@ class ConferenceMainView extends RelativeLayout {
         handler.post(() -> {
             muteVideoImageView.setSelected(myProfile.isVideoMuted());
             muteAudioImageView.setSelected(myProfile.isAudioMuted());
+            micImageView.setMuted(myProfile.isAudioMuted());
         });
     }
 
@@ -227,12 +246,13 @@ class ConferenceMainView extends RelativeLayout {
         ((ConferenceActivity) getContext()).showParticipantList();
     }
 
-    @OnClick(R2.id.muteView)
+    @OnClick({R2.id.muteView, R2.id.micLinearLayout})
     void muteAudio() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             boolean toMute = !session.isAudioMuted();
             muteAudioImageView.setSelected(toMute);
+            micImageView.setMuted(toMute);
 
             if (toMute) {
                 if (session.videoMuted) {
@@ -407,10 +427,12 @@ class ConferenceMainView extends RelativeLayout {
         if (visibility == VISIBLE) {
 //            activity.requestWindowFeature(Window.FEATURE_ACTION_BAR);
             activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            micLinearLayout.setVisibility(GONE);
         } else {
 //            activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
             activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            micLinearLayout.setVisibility(VISIBLE);
 
         }
     }
