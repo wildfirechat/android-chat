@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootView"
     android:layout_width="match_parent"
@@ -35,13 +34,20 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/minimizeImageView"
+                    android:id="@+id/speakerImageView"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:src="@drawable/av_minimize"
-                    app:tint="@color/white" />
+                    android:src="@drawable/av_conference_earphone_selector" />
+
+                <ImageView
+                    android:id="@+id/switchCameraImageView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:src="@drawable/av_conference_switch_camera" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -86,13 +92,12 @@
                 </LinearLayout>
 
                 <ImageView
-                    android:id="@+id/switchCameraImageView"
+                    android:id="@+id/hangupImageView"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:src="@drawable/av_switch_camera_selector"
-                    app:tint="@color/white" />
+                    android:src="@drawable/av_conference_hangup" />
             </LinearLayout>
 
             <FrameLayout

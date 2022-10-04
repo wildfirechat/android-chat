@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,8 @@ public class ConferencePortalActivity extends WfcBaseActivity {
 
     @BindView(R2.id.conferenceListRecyclerView)
     RecyclerView recyclerView;
+    @BindView(R2.id.emptyLinearLayout)
+    LinearLayout emptyLinearLayout;
 
     private FavConferenceAdapter adapter;
     private List<ConferenceInfo> favConferenceList;
@@ -97,12 +100,21 @@ public class ConferencePortalActivity extends WfcBaseActivity {
         WfcUIKit.getWfcUIKit().getAppServiceProvider().getFavConferences(new AppServiceProvider.FavConferenceCallback() {
             @Override
             public void onSuccess(List<ConferenceInfo> infos) {
-                favConferenceList = infos;
-                adapter.notifyDataSetChanged();
+                if (infos == null || infos.isEmpty()) {
+                    emptyLinearLayout.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyLinearLayout.setVisibility(View.GONE);
+                    favConferenceList = infos;
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
             public void onFail(int code, String msg) {
+                emptyLinearLayout.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
 
             }
         });
