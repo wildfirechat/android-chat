@@ -6,6 +6,7 @@ public class ConferenceInfo {
     private String password;
     private String pin;
     private String owner;
+    // 秒
     long startTime;
     long endTime;
     boolean audience;
