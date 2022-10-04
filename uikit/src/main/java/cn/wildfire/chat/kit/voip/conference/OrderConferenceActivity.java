@@ -170,6 +170,10 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         DateTimePickerHelper.pickDateTime(this, new DateTimePickerHelper.PickDateTimeCallBack() {
             @Override
             public void onPick(Date date) {
+                if (date.getTime() < System.currentTimeMillis()) {
+                    Toast.makeText(OrderConferenceActivity.this, "结束时间，不能早于当前时间", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 endDateTimeTextView.setText(date.toString());
                 endDateTime = date;
             }
@@ -186,6 +190,10 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         DateTimePickerHelper.pickDateTime(this, new DateTimePickerHelper.PickDateTimeCallBack() {
             @Override
             public void onPick(Date date) {
+                if (date.getTime() < System.currentTimeMillis()) {
+                    Toast.makeText(OrderConferenceActivity.this, "开始时间，不能早于当前时间", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 startDateTimeTextView.setText(date.toString());
                 startDateTime = date;
             }

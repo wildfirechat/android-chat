@@ -197,8 +197,12 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         DateTimePickerHelper.pickDateTime(this, new DateTimePickerHelper.PickDateTimeCallBack() {
             @Override
             public void onPick(Date date) {
-                endDateTimeTextView.setText(date.toString());
-                endDateTime = date;
+                if (date.getTime() < System.currentTimeMillis()) {
+                    Toast.makeText(CreateConferenceActivity.this, "结束时间不能早于当前时间", Toast.LENGTH_SHORT).show();
+                } else {
+                    endDateTimeTextView.setText(date.toString());
+                    endDateTime = date;
+                }
             }
 
             @Override
