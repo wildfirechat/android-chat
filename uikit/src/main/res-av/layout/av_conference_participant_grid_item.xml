@@ -14,6 +14,21 @@
         android:scaleType="fitXY"
         android:src="@mipmap/avatar_def" />
 
+    <LinearLayout
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:background="@drawable/round_bg_40_half_transparent"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/av_conference_video_mute" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/statusTextView"
         android:layout_width="wrap_content"
@@ -42,11 +57,10 @@
         android:gravity="center_vertical"
         android:padding="5dp">
 
-        <ImageView
-            android:id="@+id/audioStateImageView"
+        <cn.wildfire.chat.kit.voip.conference.MicImageView
+            android:id="@+id/micImageView"
             android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:src="@drawable/av_conference_audio_selector" />
+            android:layout_height="12dp" />
 
         <ImageView
             android:id="@+id/videoStateImageView"
