@@ -38,6 +38,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
+import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -72,6 +73,9 @@ class ConferenceMainView extends RelativeLayout {
     @BindView(R2.id.shareScreenImageView)
     ImageView shareScreenImageView;
 
+    @BindView(R2.id.speakerImageView)
+    ImageView speakerImageView;
+
     private AVEngineKit.CallSession callSession;
     private AVEngineKit.ParticipantProfile myProfile;
     private AVEngineKit.ParticipantProfile focusProfile;
@@ -100,6 +104,7 @@ class ConferenceMainView extends RelativeLayout {
     private void initView(Context context, AttributeSet attrs) {
         View view = inflate(context, R.layout.av_conference_main, this);
         ButterKnife.bind(this, view);
+        speakerImageView.setSelected(true);
         handler.post(updateCallDurationRunnable);
     }
 
@@ -199,12 +204,23 @@ class ConferenceMainView extends RelativeLayout {
         });
     }
 
-    @OnClick(R2.id.minimizeImageView)
-    void minimize() {
-//        ((ConferenceActivity) getActivity()).showFloatingView(focusVideoUserId);
-        // VoipBaseActivity#onStop会处理，这儿仅仅finish
-        ((Activity) getContext()).finish();
+    @OnClick(R2.id.speakerImageView)
+    void switchSpeaker() {
+        AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
+        AVAudioManager.AudioDevice selectedAudioDevice = audioManager.getSelectedAudioDevice();
+        if (selectedAudioDevice == AVAudioManager.AudioDevice.BLUETOOTH) {
+            return;
+        }
+        speakerImageView.setSelected(selectedAudioDevice == AVAudioManager.AudioDevice.EARPIECE);
+        audioManager.setDefaultAudioDevice(selectedAudioDevice == AVAudioManager.AudioDevice.EARPIECE ? AVAudioManager.AudioDevice.SPEAKER_PHONE : AVAudioManager.AudioDevice.EARPIECE);
     }
+
+//    @OnClick(R2.id.minimizeImageView)
+//    void minimize() {
+////        ((ConferenceActivity) getActivity()).showFloatingView(focusVideoUserId);
+//        // VoipBaseActivity#onStop会处理，这儿仅仅finish
+//        ((Activity) getContext()).finish();
+//    }
 
     @OnClick(R2.id.manageParticipantView)
     void addParticipant() {
@@ -263,7 +279,7 @@ class ConferenceMainView extends RelativeLayout {
         }
     }
 
-    @OnClick(R2.id.hangupView)
+    @OnClick(R2.id.hangupImageView)
     void hangup() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
