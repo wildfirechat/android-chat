@@ -38,7 +38,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback2;
 
-public class BookConferenceActivity extends WfcBaseActivity {
+public class OrderConferenceActivity extends WfcBaseActivity {
     @BindView(R2.id.conferenceTitleTextInputEditText)
     FixedTextInputEditText titleEditText;
     @BindView((R2.id.audienceSwitch))
@@ -68,7 +68,7 @@ public class BookConferenceActivity extends WfcBaseActivity {
 
     @Override
     protected int contentLayout() {
-        return R.layout.av_conference_book_activity;
+        return R.layout.av_conference_order_activity;
     }
 
     @Override
@@ -220,7 +220,7 @@ public class BookConferenceActivity extends WfcBaseActivity {
         WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new GeneralCallback2() {
             @Override
             public void onSuccess(String s) {
-                Toast.makeText(BookConferenceActivity.this, "预定会议成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OrderConferenceActivity.this, "预定会议成功", Toast.LENGTH_SHORT).show();
                 finish();
             }
 
