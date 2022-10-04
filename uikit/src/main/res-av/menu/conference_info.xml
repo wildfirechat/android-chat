@@ -6,6 +6,7 @@
         android:id="@+id/destroy"
         android:orderInCategory="100"
         android:title="销毁"
+        android:visible="false"
         app:showAsAction="always|withText" />
     <item
         android:id="@+id/fav"

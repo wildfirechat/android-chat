@@ -55,7 +55,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/bookConferenceLinearLayout"
+            android:id="@+id/orderConferenceLinearLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -86,5 +86,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="10dp" />
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp" />
 </LinearLayout>

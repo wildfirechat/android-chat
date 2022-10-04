@@ -35,7 +35,6 @@ import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfire.chat.kit.voip.conference.model.FavConferences;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
@@ -720,11 +719,11 @@ public class AppService implements AppServiceProvider {
     @Override
     public void getFavConferences(FavConferenceCallback callback) {
         String url = APP_SERVER_ADDRESS + "/conference/fav_conferences";
-        OKHttpHelper.post(url, null, new SimpleCallback<FavConferences>() {
+        OKHttpHelper.post(url, null, new SimpleCallback<List<ConferenceInfo>>() {
             @Override
-            public void onUiSuccess(FavConferences favConferences) {
+            public void onUiSuccess(List<ConferenceInfo> favConferences) {
                 if (callback != null) {
-                    callback.onSuccess(favConferences.getConferenceInfos());
+                    callback.onSuccess(favConferences);
                 }
             }
 

@@ -20,6 +20,7 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.net.BooleanCallback;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -79,6 +80,21 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
             @Override
             public void onSuccess(ConferenceInfo info) {
                 setupConferenceInfo(info);
+                if (!info.getOwner().equals(ChatManager.Instance().getUserId())) {
+                    WfcUIKit.getWfcUIKit().getAppServiceProvider().isFavConference(conferenceId, new BooleanCallback() {
+                        @Override
+                        public void onSuccess(boolean isFav) {
+                            if (isFav) {
+                                unFavItem.setVisible(true);
+                            }
+                        }
+
+                        @Override
+                        public void onFail(int code, String msg) {
+                            favItem.setVisible(true);
+                        }
+                    });
+                }
             }
 
             @Override
@@ -105,6 +121,10 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
                 }
             });
             return true;
+        } else if (item.getItemId() == R.id.fav) {
+            this.onFav(true);
+        } else if (item.getItemId() == R.id.unfav) {
+            this.onFav(false);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -155,7 +175,33 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         if (Objects.equals(owner, ChatManager.Instance().getUserId())) {
             destroyItem.setVisible(true);
         } else {
-            // TODO
+            destroyItem.setVisible(false);
         }
+    }
+
+    private void onFav(boolean fav) {
+        GeneralCallback callback = new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                if (fav) {
+                    unFavItem.setVisible(true);
+                    favItem.setVisible(false);
+                } else {
+                    unFavItem.setVisible(false);
+                    favItem.setVisible(true);
+                }
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        };
+        if (fav) {
+            WfcUIKit.getWfcUIKit().getAppServiceProvider().favConference(conferenceId, callback);
+        } else {
+            WfcUIKit.getWfcUIKit().getAppServiceProvider().unfavConference(conferenceId, callback);
+        }
+
     }
 }
