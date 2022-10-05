@@ -381,6 +381,15 @@ class ConferenceMainView extends RelativeLayout {
         dialog.show();
     }
 
+    @OnClick(R2.id.moreActionLinearLayout)
+    void showMoreActionDialog() {
+        BottomSheetDialog dialog = new BottomSheetDialog(getContext());
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.av_conference_action_more, null);
+        dialog.setContentView(view);
+        dialog.show();
+    }
+
+
     private final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
