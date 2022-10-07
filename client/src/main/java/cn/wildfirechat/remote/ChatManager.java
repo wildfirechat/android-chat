@@ -4633,12 +4633,20 @@ public class ChatManager {
             mClient.joinChatRoom(chatRoomId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess());
+                    mainHandler.post(() -> {
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
+                    });
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> callback.onFail(errorCode));
+                    mainHandler.post(() -> {
+                        if (callback != null) {
+                            callback.onFail(errorCode);
+                        }
+                    });
                 }
             });
         } catch (RemoteException e) {

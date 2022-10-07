@@ -144,6 +144,10 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         if (session != null) {
             Intent intent = new Intent(this, ConferenceActivity.class);
             startActivity(intent);
+
+            ConferenceManager.getManager().setCurrentConferenceInfo(conferenceInfo);
+            ConferenceManager.getManager().joinChatRoom();
+
             finish();
         } else {
             Toast.makeText(this, "加入会议失败", Toast.LENGTH_SHORT).show();
@@ -157,7 +161,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         String ownerName = ChatManager.Instance().getUserDisplayName(owner);
         ownerTextView.setText(ownerName);
         callIdTextView.setText(info.getConferenceId());
-        startDateTimeView.setText(new Date(info.getStartTime() * 1000).toString());
+        startDateTimeView.setText(info.getStartTime() == 0 ? "现在" : new Date(info.getStartTime() * 1000).toString());
         endDateTimeView.setText(new Date(info.getEndTime() * 1000).toString());
 
         long now = System.currentTimeMillis() / 1000;

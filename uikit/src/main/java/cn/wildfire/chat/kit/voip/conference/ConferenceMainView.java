@@ -24,8 +24,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
@@ -38,6 +41,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
@@ -217,9 +221,9 @@ class ConferenceMainView extends RelativeLayout {
         }
 
         handler.post(() -> {
-            muteVideoImageView.setSelected(myProfile.isVideoMuted());
-            muteAudioImageView.setSelected(myProfile.isAudioMuted());
-            micImageView.setMuted(myProfile.isAudioMuted());
+            muteVideoImageView.setSelected(myProfile.isAudience() || myProfile.isVideoMuted());
+            muteAudioImageView.setSelected(myProfile.isAudience() || myProfile.isAudioMuted());
+            micImageView.setMuted(myProfile.isAudience() || myProfile.isAudioMuted());
         });
     }
 
@@ -249,23 +253,65 @@ class ConferenceMainView extends RelativeLayout {
     @OnClick({R2.id.muteView, R2.id.micLinearLayout})
     void muteAudio() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            boolean toMute = !session.isAudioMuted();
-            muteAudioImageView.setSelected(toMute);
-            micImageView.setMuted(toMute);
-
-            if (toMute) {
-                if (session.videoMuted) {
-                    session.switchAudience(true);
-                }
-                session.muteAudio(true);
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            return;
+        }
+        if (!session.isAudience() && !session.isAudioMuted()) {
+            muteAudioImageView.setSelected(true);
+            micImageView.setMuted(true);
+            ConferenceManager.getManager().muteAudio(true);
+            startHideBarTimer();
+        } else {
+            ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
+            if (conferenceInfo.isAllowSwitchMode() || conferenceInfo.getOwner().equals(ChatManager.Instance().getUserId())) {
+                boolean toMute = !session.isAudioMuted();
+                muteAudioImageView.setSelected(toMute);
+                micImageView.setMuted(toMute);
+                ConferenceManager.getManager().muteAudio(toMute);
+                startHideBarTimer();
             } else {
-                session.muteAudio(false);
-                if (session.videoMuted) {
-                    session.switchAudience(false);
+                if (ConferenceManager.getManager().isApplyingUnmute()) {
+                    new MaterialDialog.Builder(getContext())
+                        .content("主持人不允许解除静音，您已经申请解除静音，正在等待主持人操作")
+                        .negativeText("取消申请")
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                Toast.makeText(getContext(), "已取消申请", Toast.LENGTH_SHORT).show();
+                                ConferenceManager.getManager().applyUnmute(true);
+                            }
+
+                        })
+                        .positiveText("继续申请")
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                                ConferenceManager.getManager().applyUnmute(false);
+                            }
+
+                        })
+                        .cancelable(false)
+                        .build()
+                        .show();
+                } else {
+                    new MaterialDialog.Builder(getContext())
+                        .content("主持人不允许解除静音，您可以向主持人申请解除静音")
+                        .negativeText("取消")
+                        .onNegative((dialog, which) -> {
+
+                        })
+                        .positiveText("申请解除静音")
+                        .onPositive((dialog, which) -> {
+                            Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                            ConferenceManager.getManager().applyUnmute(false);
+                        })
+                        .cancelable(false)
+                        .build()
+                        .show();
+
                 }
             }
-            startHideBarTimer();
         }
     }
 
@@ -284,17 +330,7 @@ class ConferenceMainView extends RelativeLayout {
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             boolean toMute = !session.videoMuted;
             muteVideoImageView.setSelected(toMute);
-            if (toMute) {
-                if (session.audioMuted) {
-                    session.switchAudience(true);
-                }
-                session.muteVideo(true);
-            } else {
-                session.muteVideo(false);
-                if (session.audioMuted) {
-                    session.switchAudience(false);
-                }
-            }
+            ConferenceManager.getManager().muteVideo(toMute);
             startHideBarTimer();
         }
     }
@@ -308,10 +344,12 @@ class ConferenceMainView extends RelativeLayout {
                     .setMessage("请选择是否结束会议")
                     .setIcon(R.mipmap.ic_launcher)
                     .setNeutralButton("退出会议", (dialogInterface, i) -> {
+                        ConferenceManager.getManager().setCurrentConferenceInfo(null);
                         if (session.getState() != AVEngineKit.CallState.Idle)
                             session.leaveConference(false);
                     })
                     .setPositiveButton("结束会议", (dialogInterface, i) -> {
+                        ConferenceManager.getManager().setCurrentConferenceInfo(null);
                         if (session.getState() != AVEngineKit.CallState.Idle)
                             session.leaveConference(true);
                     })
