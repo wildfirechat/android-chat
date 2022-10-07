@@ -13,6 +13,7 @@ public class ConferenceInfo {
     boolean advance;
     boolean allowSwitchMode;
     boolean noJoinBeforeStart;
+    boolean recording;
 
     public String getConferenceId() {
         return conferenceId;
@@ -102,7 +103,15 @@ public class ConferenceInfo {
         this.noJoinBeforeStart = noJoinBeforeStart;
     }
 
-//    public Map<String, Object> toMap() {
+    public boolean isRecording() {
+        return recording;
+    }
+
+    public void setRecording(boolean recording) {
+        this.recording = recording;
+    }
+
+    //    public Map<String, Object> toMap() {
 //        HashMap<String, Object> map = new HashMap<>();
 //        map.put("conferenceId", this.conferenceId);
 //        map.put("conferenceTitle", this.conferenceTitle);

@@ -119,8 +119,8 @@ public class ConferenceParticipantItemView extends FrameLayout {
 //        } else {
 //            videoContainer.setVisibility(GONE);
 //        }
-        videoStateImageView.setSelected(profile.isVideoMuted());
-        micImageView.setMuted(profile.isAudioMuted());
+        videoStateImageView.setSelected(profile.isAudience() || profile.isVideoMuted());
+        micImageView.setMuted(profile.isAudience() || profile.isAudioMuted());
         nameTextView.setText(ChatManager.Instance().getUserDisplayName(profile.getUserId()));
     }
 

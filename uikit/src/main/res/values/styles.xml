@@ -39,6 +39,12 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="AppThemeDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/black</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    </style>
+
     <!--圆角Dialog-->
 
     <!--自定义CheckBox样式-->

@@ -284,6 +284,9 @@
         <activity
             android:name=".group.GroupMemberMessageHistoryActivity"
             android:label="用户消息" />
+        <activity
+            android:name=".widget.AlertDialogActivity"
+            android:theme="@style/AppThemeDialog" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
