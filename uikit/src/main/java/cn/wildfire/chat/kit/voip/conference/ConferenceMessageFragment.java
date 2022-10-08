@@ -29,6 +29,8 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceMessageFragment extends Fragment {
@@ -56,9 +58,12 @@ public class ConferenceMessageFragment extends Fragment {
         messageViewModel.messageLiveData().observe(getViewLifecycleOwner(), new Observer<UiMessage>() {
             @Override
             public void onChanged(UiMessage uiMessage) {
-                if (uiMessage.message.)
-                messages.add(uiMessage);
-                messageAdapter.notifyItemInserted(messages.size() - 1);
+                Conversation conversation = uiMessage.message.conversation;
+                ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
+                if (conferenceInfo != null && conversation.type == Conversation.ConversationType.ChatRoom && conversation.line == 0 && conversation.target.equals(conferenceInfo.getConferenceId())) {
+                    messages.add(uiMessage);
+                    messageAdapter.notifyItemInserted(messages.size() - 1);
+                }
             }
         });
         messageAdapter = new MessageAdapter();

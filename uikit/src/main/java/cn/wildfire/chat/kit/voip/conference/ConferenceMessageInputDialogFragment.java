@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.voip.conference;
 
 import android.app.Dialog;
 
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
@@ -13,8 +14,11 @@ import cn.wildfirechat.remote.ChatManager;
 public class ConferenceMessageInputDialogFragment extends KeyboardDialogFragment {
     @Override
     public void sendMessage(String message) {
-        // TODO 会话不对
-        Conversation conversation = new Conversation(Conversation.ConversationType.Single, "EPhwEwgg", 0);
+        ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
+        if (conferenceInfo == null) {
+            return;
+        }
+        Conversation conversation = new Conversation(Conversation.ConversationType.ChatRoom, conferenceInfo.getConferenceId(), 0);
         ChatManager.Instance().sendMessage(conversation, new TextMessageContent(message), null, 0, null);
 
         hideKeyboard(null);

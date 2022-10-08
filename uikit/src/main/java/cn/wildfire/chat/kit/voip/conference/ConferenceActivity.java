@@ -24,6 +24,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceActivity extends VoipBaseActivity {
@@ -243,6 +244,15 @@ public class ConferenceActivity extends VoipBaseActivity {
     void showParticipantList() {
         isInvitingNewParticipant = true;
         Intent intent = new Intent(this, ConferenceParticipantListActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
+    }
+
+    public void inviteNewParticipant(){
+        isInvitingNewParticipant = true;
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
+        Intent intent = new Intent(this, ConferenceInviteActivity.class);
+        intent.putExtra("inviteMessage", invite);
         startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
     }
 

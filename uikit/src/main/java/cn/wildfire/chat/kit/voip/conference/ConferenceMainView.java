@@ -46,7 +46,6 @@ import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -429,11 +428,8 @@ class ConferenceMainView extends RelativeLayout {
         BottomSheetDialog dialog = new BottomSheetDialog(getContext());
         View view = LayoutInflater.from(getContext()).inflate(R.layout.av_conference_action_more, null);
         view.findViewById(R.id.inviteLinearLayout).setOnClickListener(v -> {
-            AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-            ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
-            Intent intent = new Intent(getContext(), ConferenceInviteActivity.class);
-            intent.putExtra("inviteMessage", invite);
-            getContext().startActivity(intent);
+            ConferenceActivity activity = (ConferenceActivity) getContext();
+            activity.inviteNewParticipant();
             dialog.dismiss();
         });
         view.findViewById(R.id.chatLinearLayout).setOnClickListener(v -> {
