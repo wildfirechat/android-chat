@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
@@ -222,6 +223,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         this.adapter.notifyDataSetChanged();
         onParticipantProfileUpdate(Collections.singletonList(userId));
         Log.d(TAG, "didParticipantJoined " + userId);
+        LiveDataBus.setValue("kConferenceMemberChanged", new Object());
     }
 
     @Override
@@ -234,6 +236,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         this.adapter.notifyDataSetChanged();
         onParticipantProfileUpdate(Collections.singletonList(userId));
         Log.d(TAG, "didParticipantLeft " + userId);
+        LiveDataBus.setValue("kConferenceMemberChanged", new Object());
     }
 
     @Override
@@ -241,6 +244,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         this.adapter.notifyDataSetChanged();
         onParticipantProfileUpdate(Collections.singletonList(userId));
         Log.d(TAG, "didChangeType " + userId + " " + audience);
+        LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
     }
 
     @Override
@@ -280,6 +284,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     @Override
     public void didMuteStateChanged(List<String> participants) {
         onParticipantProfileUpdate(participants);
+        LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
     }
 
     @Override
