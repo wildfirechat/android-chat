@@ -1,17 +1,23 @@
 package cn.wildfire.chat.kit.voip.conference.model;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
 public class ConferenceInfo {
     private String conferenceId;
     private String conferenceTitle;
     private String password;
     private String pin;
     private String owner;
+    private List<String> managers;
     // 秒
     long startTime;
     long endTime;
     boolean audience;
     boolean advance;
-    boolean allowSwitchMode;
+    @SerializedName("allowSwitchMode")
+    boolean allowTurnOnMic;
     boolean noJoinBeforeStart;
     boolean recording;
 
@@ -55,6 +61,14 @@ public class ConferenceInfo {
         this.owner = owner;
     }
 
+    public List<String> getManagers() {
+        return managers;
+    }
+
+    public void setManagers(List<String> managers) {
+        this.managers = managers;
+    }
+
     public long getStartTime() {
         return startTime;
     }
@@ -87,12 +101,12 @@ public class ConferenceInfo {
         this.advance = advance;
     }
 
-    public boolean isAllowSwitchMode() {
-        return allowSwitchMode;
+    public boolean isAllowTurnOnMic() {
+        return allowTurnOnMic;
     }
 
-    public void setAllowSwitchMode(boolean allowSwitchMode) {
-        this.allowSwitchMode = allowSwitchMode;
+    public void setAllowTurnOnMic(boolean allowTurnOnMic) {
+        this.allowTurnOnMic = allowTurnOnMic;
     }
 
     public boolean isNoJoinBeforeStart() {

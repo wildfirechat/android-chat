@@ -234,7 +234,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         info.setStartTime(System.currentTimeMillis() / 1000);
         info.setEndTime(endDateTime.getTime() / 1000);
         info.setAudience(!audienceSwitch.isChecked());
-        info.setAllowSwitchMode(modeSwitch.isChecked());
+        info.setAllowTurnOnMic(modeSwitch.isChecked());
         info.setAdvance(advancedSwitch.isChecked());
 
         WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new GeneralCallback2() {
@@ -245,6 +245,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
                     if (session != null) {
                         Intent intent = new Intent(CreateConferenceActivity.this, ConferenceActivity.class);
                         startActivity(intent);
+                        ConferenceManager.getManager().setCurrentConferenceInfo(info);
                         finish();
                     } else {
                         Toast.makeText(CreateConferenceActivity.this, "创建会议失败", Toast.LENGTH_SHORT).show();

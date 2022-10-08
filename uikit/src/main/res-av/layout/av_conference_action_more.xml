@@ -55,11 +55,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/muteView"
+            android:id="@+id/handupLinearLayout"
             style="@style/ConferenceActionItem">
 
             <ImageView
-                android:id="@+id/muteImageView"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/av_conference_handup_selector" />
@@ -73,12 +72,11 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/muteView"
+            android:id="@+id/minimizeLinearLayout"
             style="@style/ConferenceActionItem">
 
 
             <ImageView
-                android:id="@+id/muteImageView"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/av_conference_minimize" />
@@ -92,11 +90,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/muteView"
+            android:id="@+id/recordLinearLayout"
             style="@style/ConferenceActionItem">
 
             <ImageView
-                android:id="@+id/muteImageView"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/av_conference_record" />
@@ -110,11 +107,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/muteView"
+            android:id="@+id/settingLinearLayout"
             style="@style/ConferenceActionItem">
 
             <ImageView
-                android:id="@+id/muteImageView"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/av_conference_setting" />
@@ -129,6 +125,7 @@
     </androidx.gridlayout.widget.GridLayout>
 
     <Button
+        android:id="@+id/cancelButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
