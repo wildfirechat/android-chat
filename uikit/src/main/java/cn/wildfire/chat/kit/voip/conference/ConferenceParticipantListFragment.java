@@ -306,8 +306,8 @@ public class ConferenceParticipantListFragment extends Fragment {
                 descTextView.setText(desc);
             }
 
-            audioImageView.setSelected(profile.isAudioMuted());
-            videoImageView.setSelected(profile.isVideoMuted());
+            audioImageView.setSelected(profile.isAudience() || profile.isAudioMuted());
+            videoImageView.setSelected(profile.isAudience() || profile.isVideoMuted());
             this.itemView.setOnClickListener(v -> {
                 onClickParticipant(profile);
             });

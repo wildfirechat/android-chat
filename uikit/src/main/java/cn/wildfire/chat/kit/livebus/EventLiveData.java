@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.livebus;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
@@ -21,8 +22,16 @@ public class EventLiveData extends LiveData<Object> {
     }
 
     @Override
-    public void observeForever(@NonNull Observer<? super Object> observer) {
-        super.observeForever(observer);
+    public void removeObserver(@NonNull Observer<? super Object> observer) {
+        super.removeObserver(observer);
+        if (!hasObservers()) {
+            LiveDataBus.unregister(mSubject);
+        }
+    }
+
+    @Override
+    public void removeObservers(@NonNull LifecycleOwner owner) {
+        super.removeObservers(owner);
         if (!hasObservers()) {
             LiveDataBus.unregister(mSubject);
         }

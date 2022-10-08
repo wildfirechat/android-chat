@@ -21,7 +21,7 @@ public final class LiveDataBus {
     }
 
     @NonNull
-    private static EventLiveData getLiveData(String subject) {
+    private static synchronized EventLiveData getLiveData(String subject) {
         EventLiveData liveData = sSubjectMap.get(subject);
         if (liveData == null) {
             liveData = new EventLiveData(subject);
