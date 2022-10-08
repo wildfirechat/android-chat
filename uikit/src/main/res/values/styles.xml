@@ -28,7 +28,7 @@
         <item name="overlapAnchor">false</item>
         <item name="titleTextColor">@color/white</item>
         <item name="iconTint">@color/white</item>
-        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlNormal">@color/gray</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

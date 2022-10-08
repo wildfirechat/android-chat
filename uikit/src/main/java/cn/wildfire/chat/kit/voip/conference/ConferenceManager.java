@@ -20,6 +20,7 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 
 public class ConferenceManager implements OnReceiveMessageListener {
@@ -107,7 +108,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                         switch (commandContent.getCommandType()) {
                             case ConferenceCommandContent.ConferenceCommandType.MUTE_ALL:
                                 reloadConferenceInfo();
-                                muteAll();
+                                onMuteAll();
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL:
                                 reloadConferenceInfo();
@@ -228,6 +229,57 @@ public class ConferenceManager implements OnReceiveMessageListener {
         }
     }
 
+    public void requestMemberMute(String userId, boolean mute) {
+        if (!isOwner()) {
+            return;
+        }
+        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.REQUEST_MUTE, userId, mute);
+    }
+
+    public void requestMuteAll(boolean allowMemberUnmute) {
+        if (!this.isOwner()) {
+            return;
+        }
+        currentConferenceInfo.setAudience(true);
+        currentConferenceInfo.setAllowTurnOnMic(allowMemberUnmute);
+
+        WfcUIKit.getWfcUIKit().getAppServiceProvider().updateConference(currentConferenceInfo, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.MUTE_ALL, null, allowMemberUnmute);
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
+    }
+
+    public void requestUnmuteAll(boolean unmute) {
+        if (!this.isOwner()) {
+            return;
+        }
+        currentConferenceInfo.setAudience(false);
+        currentConferenceInfo.setAllowTurnOnMic(true);
+
+        WfcUIKit.getWfcUIKit().getAppServiceProvider().updateConference(currentConferenceInfo, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL, null, unmute);
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
+    }
+
+    private boolean isOwner() {
+        return currentConferenceInfo.getOwner().equals(ChatManager.Instance().getUserId());
+    }
+
     private void onRequestMute(boolean mute) {
         if (!mute) {
             AlertDialogActivity.showAlterDialog(context, "主持人邀请你发言", false, "拒绝", "接受",
@@ -241,7 +293,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
         }
     }
 
-    private void muteAll() {
+    private void onMuteAll() {
         reloadConferenceInfo();
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (!session.isAudience()) {

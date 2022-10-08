@@ -73,6 +73,8 @@ public interface AppServiceProvider {
 
     void getFavConferences(FavConferenceCallback callback);
 
+    void updateConference(ConferenceInfo conferenceInfo, GeneralCallback callback);
+
 
     interface QueryConferenceInfoCallback {
         void onSuccess(ConferenceInfo info);

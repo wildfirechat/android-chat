@@ -232,6 +232,9 @@
             android:name=".voip.conference.ConferenceInviteActivity"
             android:label="会议邀请" />
         <activity
+            android:name=".voip.conference.ConferenceParticipantListActivity"
+            android:label="参会人员" />
+        <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
             android:exported="false"
             android:launchMode="singleInstance"
@@ -280,7 +283,6 @@
         <activity
             android:name=".favorite.FavoriteListActivity"
             android:label="收藏" />
-        <activity android:name=".voip.conference.ConferenceParticipantListActivity" />
         <activity
             android:name=".group.GroupMemberMessageHistoryActivity"
             android:label="用户消息" />
