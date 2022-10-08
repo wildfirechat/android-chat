@@ -77,6 +77,7 @@ public class ConferenceCommandContent extends MessageContent {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        payload.binaryContent = jsonObject.toString().getBytes();
         return payload;
     }
 
