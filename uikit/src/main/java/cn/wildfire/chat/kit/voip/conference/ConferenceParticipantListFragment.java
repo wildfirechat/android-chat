@@ -37,6 +37,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
@@ -78,6 +79,12 @@ public class ConferenceParticipantListFragment extends Fragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         }
         conferenceManager = ConferenceManager.getManager();
+
+        LiveDataBus.subscribe("kConferenceMemberChanged", this, o -> loadAndShowConferenceParticipants());
+        LiveDataBus.subscribe("kConferenceEnded", this, o -> loadAndShowConferenceParticipants());
+        LiveDataBus.subscribe("kConferenceMutedStateChanged", this, o -> loadAndShowConferenceParticipants());
+        LiveDataBus.subscribe("kConferenceCommandStateChanged", this, o -> loadAndShowConferenceParticipants());
+
         this.loadAndShowConferenceParticipants();
     }
 
@@ -152,6 +159,7 @@ public class ConferenceParticipantListFragment extends Fragment {
 
         this.participantProfiles = callSession.getParticipantProfiles();
         this.participantProfiles.add(callSession.getMyProfile());
+        adapter.notifyDataSetChanged();
     }
 
     private void onClickParticipant(AVEngineKit.ParticipantProfile profile) {
