@@ -14,7 +14,7 @@ public interface WfcScheme {
     String QR_CODE_PREFIX_CONFERENCE = "wildfirechat://conference/";
 
     static String buildConferenceScheme(String conferenceId, String password) {
-        String value = QR_CODE_PREFIX_CONFERENCE + "/" + conferenceId;
+        String value = QR_CODE_PREFIX_CONFERENCE + conferenceId;
         if (!TextUtils.isEmpty(password)) {
             value += "/?pwd=" + password;
         }
