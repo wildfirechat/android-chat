@@ -56,6 +56,7 @@ public class ConferenceMessageFragment extends Fragment {
         messageViewModel.messageLiveData().observe(getViewLifecycleOwner(), new Observer<UiMessage>() {
             @Override
             public void onChanged(UiMessage uiMessage) {
+                if (uiMessage.message.)
                 messages.add(uiMessage);
                 messageAdapter.notifyItemInserted(messages.size() - 1);
             }

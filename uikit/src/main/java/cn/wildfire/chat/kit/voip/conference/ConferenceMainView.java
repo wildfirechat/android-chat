@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -40,10 +41,13 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
+import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.message.ConferenceInviteMessageContent;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -263,7 +267,7 @@ class ConferenceMainView extends RelativeLayout {
             startHideBarTimer();
         } else {
             ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
-            if (conferenceInfo.isAllowSwitchMode() || conferenceInfo.getOwner().equals(ChatManager.Instance().getUserId())) {
+            if (conferenceInfo.isAllowTurnOnMic() || conferenceInfo.getOwner().equals(ChatManager.Instance().getUserId())) {
                 boolean toMute = !session.isAudioMuted();
                 muteAudioImageView.setSelected(toMute);
                 micImageView.setMuted(toMute);
@@ -326,6 +330,7 @@ class ConferenceMainView extends RelativeLayout {
 
     @OnClick(R2.id.videoView)
     void muteVideo() {
+        // TODO 参考 muteAudio 处理
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             boolean toMute = !session.videoMuted;
@@ -423,6 +428,40 @@ class ConferenceMainView extends RelativeLayout {
     void showMoreActionDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(getContext());
         View view = LayoutInflater.from(getContext()).inflate(R.layout.av_conference_action_more, null);
+        view.findViewById(R.id.inviteLinearLayout).setOnClickListener(v -> {
+            AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+            ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
+            Intent intent = new Intent(getContext(), ConferenceInviteActivity.class);
+            intent.putExtra("inviteMessage", invite);
+            getContext().startActivity(intent);
+            dialog.dismiss();
+        });
+        view.findViewById(R.id.chatLinearLayout).setOnClickListener(v -> {
+            Conversation conversation = new Conversation(Conversation.ConversationType.ChatRoom, callSession.getCallId(), 0);
+            Intent intent = new Intent(getContext(), ConversationActivity.class);
+            intent.putExtra("conversation", conversation);
+            getContext().startActivity(intent);
+            dialog.dismiss();
+        });
+        view.findViewById(R.id.handupLinearLayout).setOnClickListener(v -> {
+            // TODO
+            dialog.dismiss();
+        });
+        view.findViewById(R.id.minimizeLinearLayout).setOnClickListener(v -> {
+            // TODO
+            Activity activity = (Activity) getContext();
+            activity.finish();
+            dialog.dismiss();
+        });
+        view.findViewById(R.id.recordLinearLayout).setOnClickListener(v -> {
+            // TODO
+            dialog.dismiss();
+        });
+        view.findViewById(R.id.settingLinearLayout).setOnClickListener(v -> {
+            // TODO
+            dialog.dismiss();
+        });
+        view.findViewById(R.id.cancelButton).setOnClickListener(v -> dialog.dismiss());
         dialog.setContentView(view);
         dialog.show();
     }
