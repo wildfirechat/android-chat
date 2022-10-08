@@ -58,6 +58,9 @@ public class ConferenceMessageFragment extends Fragment {
         messageViewModel.messageLiveData().observe(getViewLifecycleOwner(), new Observer<UiMessage>() {
             @Override
             public void onChanged(UiMessage uiMessage) {
+                if (uiMessage.message.messageId == 0) {
+                    return;
+                }
                 Conversation conversation = uiMessage.message.conversation;
                 ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
                 if (conferenceInfo != null && conversation.type == Conversation.ConversationType.ChatRoom && conversation.line == 0 && conversation.target.equals(conferenceInfo.getConferenceId())) {
