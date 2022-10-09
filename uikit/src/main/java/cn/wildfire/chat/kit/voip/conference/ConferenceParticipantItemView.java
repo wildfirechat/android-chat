@@ -32,7 +32,7 @@ public class ConferenceParticipantItemView extends FrameLayout {
     public ImageView portraitImageView;
     public TextView statusTextView;
     public ZoomableFrameLayout videoContainer;
-    private boolean enableVideoZoom = true;
+    private boolean enableVideoZoom = false;
     private MicImageView micImageView;
     private ImageView videoStateImageView;
     private TextView nameTextView;
@@ -109,13 +109,13 @@ public class ConferenceParticipantItemView extends FrameLayout {
 
         GlideApp.with(this).load(userInfo.portrait).apply(new RequestOptions().circleCrop()).placeholder(R.mipmap.avatar_def).into(portraitImageView);
 //        if (!profile.isVideoMuted()) {
-            videoContainer.setVisibility(VISIBLE);
-            if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
-                session.setupLocalVideoView(videoContainer, scalingType);
-            } else {
-                session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, scalingType);
-            }
-            //statusTextView.setText(R.string.connecting);
+        videoContainer.setVisibility(VISIBLE);
+        if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
+            session.setupLocalVideoView(videoContainer, scalingType);
+        } else {
+            session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, scalingType);
+        }
+        //statusTextView.setText(R.string.connecting);
 //        } else {
 //            videoContainer.setVisibility(GONE);
 //        }
