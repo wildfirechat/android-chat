@@ -126,7 +126,6 @@ public class ConferenceParticipantListFragment extends Fragment {
 
     private void loadAndShowConferenceParticipants() {
         if (ChatManager.Instance().getUserId().equals(callSession.getHost())) {
-            handupTextView.setVisibility(View.VISIBLE);
             List<String> applyingUnmuteMembers = conferenceManager.getApplyingUnmuteMembers();
             if (applyingUnmuteMembers.isEmpty()) {
                 applyingUnmuteTextView.setVisibility(View.GONE);
@@ -139,7 +138,7 @@ public class ConferenceParticipantListFragment extends Fragment {
                 text += "正在申请解除静音";
                 applyingUnmuteTextView.setText(text);
             }
-            List<String> handupMembers = conferenceManager.getHandupMembers();
+            List<String> handupMembers = conferenceManager.getHandUpMembers();
             if (handupMembers.isEmpty()) {
                 handupTextView.setVisibility(View.GONE);
             } else {
@@ -151,8 +150,17 @@ public class ConferenceParticipantListFragment extends Fragment {
                 text += "正在举手";
                 handupTextView.setText(text);
             }
+
+            if (conferenceManager.isMuteAll()) {
+                muteAllButton.setEnabled(false);
+                unmuteAllButton.setEnabled(true);
+            } else {
+                muteAllButton.setEnabled(true);
+                unmuteAllButton.setEnabled(false);
+            }
         } else {
             handupTextView.setVisibility(View.GONE);
+            applyingUnmuteTextView.setVisibility(View.GONE);
             muteAllButton.setVisibility(View.GONE);
             unmuteAllButton.setVisibility(View.GONE);
         }
@@ -229,6 +237,7 @@ public class ConferenceParticipantListFragment extends Fragment {
                 // 自己
                 if (profile.isAudience()) {
                     items.put("举手", () -> {
+                        conferenceManager.handUp(true);
                         return null;
                     });
                 } else {
