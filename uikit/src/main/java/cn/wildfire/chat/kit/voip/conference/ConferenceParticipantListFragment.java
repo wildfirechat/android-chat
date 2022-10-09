@@ -90,8 +90,8 @@ public class ConferenceParticipantListFragment extends Fragment {
 
     @OnClick(R2.id.applyingUnmuteTextView)
     void showApplyingUnmuteDialog() {
-        Toast.makeText(getActivity(), "todo", Toast.LENGTH_SHORT).show();
-
+        ConferenceApplyUnmuteListFragment fragment = new ConferenceApplyUnmuteListFragment();
+        fragment.show(getChildFragmentManager(), "applyUnmuteFragment");
     }
 
     @OnClick(R2.id.handupTextView)

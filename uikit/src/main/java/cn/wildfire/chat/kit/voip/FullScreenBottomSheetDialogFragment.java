@@ -82,7 +82,7 @@ public abstract class FullScreenBottomSheetDialogFragment extends BottomSheetDia
                 backTextView.setText(backText());
                 backTextView.setOnClickListener(view1 -> onBackClick());
             } else {
-                backTextView.setVisibility(View.GONE);
+                backTextView.setVisibility(View.INVISIBLE);
             }
 
             TextView confirmTextView = view.findViewById(R.id.confirmTextView);
@@ -90,7 +90,7 @@ public abstract class FullScreenBottomSheetDialogFragment extends BottomSheetDia
                 confirmTextView.setText(confirmText());
                 confirmTextView.setOnClickListener(view12 -> onConfirmClick());
             } else {
-                confirmTextView.setVisibility(View.GONE);
+                confirmTextView.setVisibility(View.INVISIBLE);
             }
             TextView titleTextView = view.findViewById(R.id.titleTextView);
             titleTextView.setText(title());
@@ -99,7 +99,7 @@ public abstract class FullScreenBottomSheetDialogFragment extends BottomSheetDia
             hideAppBar(appBarLayout);
         }
 
-        onCreateDialogView(view);
+        afterCreateDialogView(view);
         return bottomSheet;
     }
 
@@ -110,7 +110,7 @@ public abstract class FullScreenBottomSheetDialogFragment extends BottomSheetDia
 
     abstract protected int contentLayout();
 
-    protected void onCreateDialogView(View view) {
+    protected void afterCreateDialogView(View view) {
 
     }
 

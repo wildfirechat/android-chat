@@ -126,6 +126,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                         this.applyingUnmuteMembers.add(msg.sender);
                                     }
                                 }
+                                LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
                                 // TODO 通知上层申请列表变化
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.APPROVE_UNMUTE:
@@ -171,6 +172,26 @@ public class ConferenceManager implements OnReceiveMessageListener {
     public void applyUnmute(boolean isCancel) {
         this.isApplyingUnmute = !isCancel;
         this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE, null, isCancel);
+    }
+
+    public void approveUnmute(String userId, boolean isAllow) {
+        if (!this.isOwner()) {
+            return;
+        }
+
+        this.applyingUnmuteMembers.remove(userId);
+        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.APPROVE_UNMUTE, userId, isAllow);
+        LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
+    }
+
+    public void approveAllMemberUnmute(boolean isAllow) {
+        if (!this.isOwner()) {
+            return;
+        }
+
+        this.applyingUnmuteMembers.clear();
+        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.APPROVE_ALL_UNMUTE, null, isAllow);
+        LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
     }
 
     public void muteAudio(boolean mute) {
