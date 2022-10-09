@@ -491,9 +491,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             View view = null;
             if (position == 0) {
                 view = new ConferenceMainView(container.getContext());
-//                AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-//                AVEngineKit.ParticipantProfile myProfile = session.getMyProfile();
-//                ((ConferenceMainView) view).setup(session, myProfile, findFocusProfile(session));
             } else {
                 view = new ConferenceParticipantGridView(container.getContext());
             }
@@ -519,6 +516,11 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         @Override
         public int getCount() {
             Log.d(TAG, "getCount " + profiles.size());
+            if (profiles.size() <= 2) {
+                ((ClickableViewPager) viewPager).setPagingEnabled(false);
+                return 1;
+            }
+            ((ClickableViewPager) viewPager).setPagingEnabled(true);
             return 1 + (int) Math.ceil(profiles.size() / (double) COUNT_PER_PAGE);
         }
 
