@@ -59,11 +59,13 @@
             style="@style/ConferenceActionItem">
 
             <ImageView
+                android:id="@+id/handUpImageView"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/av_conference_handup_selector" />
 
             <TextView
+                android:id="@+id/handUpTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"

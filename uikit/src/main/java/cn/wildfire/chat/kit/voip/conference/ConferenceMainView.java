@@ -427,6 +427,11 @@ class ConferenceMainView extends RelativeLayout {
     void showMoreActionDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(getContext());
         View view = LayoutInflater.from(getContext()).inflate(R.layout.av_conference_action_more, null);
+        ImageView handUpImageView = view.findViewById(R.id.handUpImageView);
+        TextView handUpTextView = view.findViewById(R.id.handUpTextView);
+        handUpImageView.setSelected(ConferenceManager.getManager().isHandUp());
+        handUpTextView.setText(ConferenceManager.getManager().isHandUp() ? "放下" : "举手");
+
         view.findViewById(R.id.inviteLinearLayout).setOnClickListener(v -> {
             ConferenceActivity activity = (ConferenceActivity) getContext();
             activity.inviteNewParticipant();
@@ -440,11 +445,11 @@ class ConferenceMainView extends RelativeLayout {
             dialog.dismiss();
         });
         view.findViewById(R.id.handupLinearLayout).setOnClickListener(v -> {
-            // TODO
+            ConferenceManager.getManager().handUp(!handUpImageView.isSelected());
+            handUpImageView.setSelected(!handUpImageView.isSelected());
             dialog.dismiss();
         });
         view.findViewById(R.id.minimizeLinearLayout).setOnClickListener(v -> {
-            // TODO
             Activity activity = (Activity) getContext();
             activity.finish();
             dialog.dismiss();

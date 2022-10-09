@@ -12,6 +12,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
@@ -29,13 +30,14 @@ public class ConferenceManager implements OnReceiveMessageListener {
     private ConferenceInfo currentConferenceInfo;
     private final List<String> applyingUnmuteMembers;
     private boolean isApplyingUnmute;
-    private final List<String> handupMembers;
-    private boolean isHandup;
+    private final List<String> handUpMembers;
+    private boolean isHandUp;
+    private boolean isMuteAll;
 
     private ConferenceManager(Application application) {
         this.context = application;
         this.applyingUnmuteMembers = new ArrayList<>();
-        this.handupMembers = new ArrayList<>();
+        this.handUpMembers = new ArrayList<>();
     }
 
     public static void init(Application application) {
@@ -59,9 +61,9 @@ public class ConferenceManager implements OnReceiveMessageListener {
     public void setCurrentConferenceInfo(ConferenceInfo currentConferenceInfo) {
         this.currentConferenceInfo = currentConferenceInfo;
         if (currentConferenceInfo == null) {
-            handupMembers.clear();
+            handUpMembers.clear();
             applyingUnmuteMembers.clear();
-            isHandup = false;
+            isHandUp = false;
             isApplyingUnmute = false;
         }
     }
@@ -74,20 +76,16 @@ public class ConferenceManager implements OnReceiveMessageListener {
         return isApplyingUnmute;
     }
 
-    public void setApplyingUnmute(boolean applyingUnmute) {
-        isApplyingUnmute = applyingUnmute;
+    public List<String> getHandUpMembers() {
+        return handUpMembers;
     }
 
-    public List<String> getHandupMembers() {
-        return handupMembers;
+    public boolean isHandUp() {
+        return isHandUp;
     }
 
-    public boolean isHandup() {
-        return isHandup;
-    }
-
-    public void setHandup(boolean handup) {
-        isHandup = handup;
+    public boolean isMuteAll() {
+        return isMuteAll;
     }
 
     @Override
@@ -140,16 +138,16 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                 }
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.HANDUP:
-                                if (!this.handupMembers.contains(msg.sender)) {
-                                    this.handupMembers.add(msg.sender);
+                                if (!this.handUpMembers.contains(msg.sender)) {
+                                    this.handUpMembers.add(msg.sender);
                                 }
                                 // TODO 通知上层申请列表变化
 
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.PUT_HAND_DOWN:
                             case ConferenceCommandContent.ConferenceCommandType.PUT_ALL_HAND_DOWN:
-                                if (this.isHandup) {
-                                    this.isHandup = false;
+                                if (this.isHandUp) {
+                                    this.isHandUp = false;
                                 }
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.RECORDING:
@@ -240,6 +238,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
         if (!this.isOwner()) {
             return;
         }
+        this.isMuteAll = true;
         currentConferenceInfo.setAudience(true);
         currentConferenceInfo.setAllowTurnOnMic(allowMemberUnmute);
 
@@ -247,6 +246,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
             @Override
             public void onSuccess() {
                 sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.MUTE_ALL, null, allowMemberUnmute);
+                LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
             }
 
             @Override
@@ -260,6 +260,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
         if (!this.isOwner()) {
             return;
         }
+        this.isMuteAll = false;
         currentConferenceInfo.setAudience(false);
         currentConferenceInfo.setAllowTurnOnMic(true);
 
@@ -267,6 +268,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
             @Override
             public void onSuccess() {
                 sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL, null, unmute);
+                LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
             }
 
             @Override
@@ -274,6 +276,29 @@ public class ConferenceManager implements OnReceiveMessageListener {
 
             }
         });
+    }
+
+    public void handUp(boolean isHandUp) {
+        this.isHandUp = isHandUp;
+        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.HANDUP, null, isHandUp);
+    }
+
+    public void putMemberHandDown(String memberId) {
+        if (!isOwner()) {
+            return;
+        }
+        this.handUpMembers.remove(memberId);
+        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.PUT_HAND_DOWN, memberId, false);
+        LiveDataBus.setValue("kConferenceCommandStateChanged", this.handUpMembers);
+    }
+
+    public void putAllHandDown() {
+        if (!isOwner()) {
+            return;
+        }
+        this.handUpMembers.clear();
+        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.PUT_ALL_HAND_DOWN, null, false);
+        LiveDataBus.setValue("kConferenceCommandStateChanged", this.handUpMembers);
     }
 
     private boolean isOwner() {
