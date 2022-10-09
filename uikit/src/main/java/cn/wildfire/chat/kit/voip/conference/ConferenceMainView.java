@@ -467,6 +467,12 @@ class ConferenceMainView extends RelativeLayout {
         dialog.show();
     }
 
+    public void onPageUnselected() {
+        if (focusProfile != null) {
+            callSession.setParticipantVideoType(focusProfile.getUserId(), focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
+        }
+    }
+
 
     private final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override

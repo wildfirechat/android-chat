@@ -18,6 +18,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.remote.ChatManager;
 
 class ConferenceParticipantGridView extends RelativeLayout {
     private AVEngineKit.CallSession callSession;
@@ -95,6 +96,17 @@ class ConferenceParticipantGridView extends RelativeLayout {
         if (this.profiles != null) {
             for (AVEngineKit.ParticipantProfile profile : profiles) {
                 this.callSession.setParticipantVideoType(profile.getUserId(), profile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
+            }
+        }
+    }
+
+    public void onPageUnselected() {
+        if (profiles == null) {
+            return;
+        }
+        for (AVEngineKit.ParticipantProfile p : profiles) {
+            if (!p.isAudience() && !p.isVideoMuted() && !p.getUserId().equals(ChatManager.Instance().getUserId())) {
+                callSession.setParticipantVideoType(p.getUserId(), p.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
             }
         }
     }
