@@ -49,6 +49,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     private SparseArray<View> views;
     private ViewPager viewPager;
+    private List<AVEngineKit.ParticipantProfile> profiles;
     private ConferenceViewAdapter adapter;
     private AVEngineKit.CallSession callSession;
     private int currentPosition = 0;
@@ -70,6 +71,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             getActivity().finish();
             return null;
         }
+        profiles = callSession.getParticipantProfiles();
 
         views = new SparseArray<>(3);
         viewPager = view.findViewById(R.id.viewPager);
@@ -124,8 +126,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
         @Override
         public int getCount() {
-            List<AVEngineKit.ParticipantProfile> profiles = callSession.getParticipantProfiles();
-            profiles.removeIf(AVEngineKit.ParticipantProfile::isAudience);
             Log.d(TAG, "getCount " + profiles.size());
 
             return 1 + (int) Math.ceil(profiles.size() / (double) COUNT_PER_PAGE);
@@ -201,8 +201,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     private List<AVEngineKit.ParticipantProfile> getGridPageParticipantProfiles(int position) {
-        List<AVEngineKit.ParticipantProfile> profiles = callSession.getParticipantProfiles();
-        profiles.removeIf(AVEngineKit.ParticipantProfile::isAudience);
         int fromIndex = (position - 1) * COUNT_PER_PAGE;
         int endIndex = Math.min(fromIndex + COUNT_PER_PAGE, profiles.size());
         return profiles.subList(fromIndex, endIndex);
@@ -220,6 +218,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     @Override
     public void didParticipantJoined(String userId, boolean screenSharing) {
+        this.profiles = callSession.getParticipantProfiles();
         this.adapter.notifyDataSetChanged();
         onParticipantProfileUpdate(Collections.singletonList(userId));
         Log.d(TAG, "didParticipantJoined " + userId);
@@ -233,6 +232,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason reason, boolean screenSharing) {
+        this.profiles = callSession.getParticipantProfiles();
         this.adapter.notifyDataSetChanged();
         onParticipantProfileUpdate(Collections.singletonList(userId));
         Log.d(TAG, "didParticipantLeft " + userId);
@@ -241,6 +241,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     @Override
     public void didChangeType(String userId, boolean audience, boolean screenSharing) {
+        this.profiles = callSession.getParticipantProfiles();
         this.adapter.notifyDataSetChanged();
         onParticipantProfileUpdate(Collections.singletonList(userId));
         Log.d(TAG, "didChangeType " + userId + " " + audience);
@@ -283,6 +284,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     @Override
     public void didMuteStateChanged(List<String> participants) {
+        this.profiles = callSession.getParticipantProfiles();
         onParticipantProfileUpdate(participants);
         LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
     }
@@ -316,8 +318,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     private AVEngineKit.ParticipantProfile findFocusProfile(AVEngineKit.CallSession session) {
-        List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
-
         AVEngineKit.ParticipantProfile focusProfile = null;
         for (AVEngineKit.ParticipantProfile profile : profiles) {
             if (!profile.isAudience()) {
