@@ -15,6 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 public class ClickableViewPager extends ViewPager {
 
     private OnClickListener mOnClickListener;
+    private boolean enabled = true;
 
     public ClickableViewPager(Context context) {
         super(context);
@@ -36,7 +37,7 @@ public class ClickableViewPager extends ViewPager {
             public boolean onTouch(View v, MotionEvent event) {
                 tapGestureDetector.onTouchEvent(event);
 
-                return false;
+                return !enabled;
             }
         });
     }
@@ -59,5 +60,9 @@ public class ClickableViewPager extends ViewPager {
 
             return true;
         }
+    }
+
+    public void setPagingEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
