@@ -20,30 +20,42 @@ import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
 
-class VideoConferenceParticipantGridView extends RelativeLayout {
+class ConferenceParticipantGridView extends RelativeLayout {
     private AVEngineKit.CallSession callSession;
     private List<AVEngineKit.ParticipantProfile> profiles;
     private GridLayout participantGridView;
     private static final String TAG = "ParticipantGridView";
 
-    public VideoConferenceParticipantGridView(Context context, AttributeSet attrs, int defStyle) {
+    private boolean audioOnly;
+
+    public ConferenceParticipantGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initView(context);
     }
 
-    public VideoConferenceParticipantGridView(Context context, AttributeSet attrs) {
+    public ConferenceParticipantGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
     }
 
-    public VideoConferenceParticipantGridView(Context context) {
+    public ConferenceParticipantGridView(Context context) {
         super(context);
+        initView(context);
+    }
+
+    public ConferenceParticipantGridView(Context context, boolean audioOnly) {
+        super(context);
+        this.audioOnly = audioOnly;
         initView(context);
     }
 
     private void initView(Context context) {
         View view = inflate(context, R.layout.av_conference_video_participant_grid, this);
         participantGridView = view.findViewById(R.id.participantGridView);
+        if (this.audioOnly) {
+            participantGridView.setColumnCount(3);
+            participantGridView.setRowCount(4);
+        }
     }
 
     public void setParticipantProfiles(AVEngineKit.CallSession session, List<AVEngineKit.ParticipantProfile> profiles) {
@@ -61,15 +73,26 @@ class VideoConferenceParticipantGridView extends RelativeLayout {
         int size = Math.min(dm.widthPixels, dm.heightPixels);
         int width = dm.widthPixels;
         int height = dm.heightPixels;
+        int itemWidth, itemHeight;
+        if (audioOnly) {
+            itemWidth = width / 3;
+            itemHeight = height / 4;
+        } else {
+            itemWidth = width / 2;
+            itemHeight = height / 2;
+        }
         for (AVEngineKit.ParticipantProfile profile : profiles) {
             if (profile.isAudience() || profile.isVideoMuted()) {
                 ConferenceParticipantItemView conferenceItem = new ConferenceParticipantItemView(getContext());
-                conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 2, height / 2));
+                conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(itemWidth, itemHeight));
                 this.participantGridView.addView(conferenceItem);
                 conferenceItem.setup(session, profile);
+                if (this.audioOnly) {
+                    conferenceItem.setBackgroundResource(R.color.black);
+                }
             } else {
                 ConferenceParticipantItemVideoView conferenceVideoItem = new ConferenceParticipantItemVideoView(getContext());
-                conferenceVideoItem.setLayoutParams(new ViewGroup.LayoutParams(width / 2, height / 2));
+                conferenceVideoItem.setLayoutParams(new ViewGroup.LayoutParams(itemWidth, itemHeight));
                 this.participantGridView.addView(conferenceVideoItem);
                 conferenceVideoItem.setup(session, profile);
                 if (!profile.isAudience() && !profile.isVideoMuted()) {
@@ -105,7 +128,9 @@ class VideoConferenceParticipantGridView extends RelativeLayout {
     public void onDestroyView() {
         if (this.profiles != null) {
             for (AVEngineKit.ParticipantProfile profile : profiles) {
-                this.callSession.setParticipantVideoType(profile.getUserId(), profile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
+                if (!profile.isAudience() && !profile.isVideoMuted() && !profile.getUserId().equals(ChatManager.Instance().getUserId())) {
+                    this.callSession.setParticipantVideoType(profile.getUserId(), profile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
+                }
             }
         }
     }

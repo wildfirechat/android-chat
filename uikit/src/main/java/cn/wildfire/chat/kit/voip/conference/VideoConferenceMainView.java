@@ -117,6 +117,8 @@ class VideoConferenceMainView extends RelativeLayout {
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int size = Math.min(dm.widthPixels, dm.heightPixels);
+        int height = dm.heightPixels;
+        int width = dm.widthPixels;
 
         previewContainerFrameLayout.removeAllViews();
 
@@ -149,7 +151,7 @@ class VideoConferenceMainView extends RelativeLayout {
             if (focusProfile != null) {
                 if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
                     previewContainerFrameLayout.removeAllViews();
-                    conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(size / 3, size / 3));
+                    conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 3, height / 3));
                     previewContainerFrameLayout.addView(conferenceItem);
                 } else {
                     focusContainerFrameLayout.removeAllViews();
