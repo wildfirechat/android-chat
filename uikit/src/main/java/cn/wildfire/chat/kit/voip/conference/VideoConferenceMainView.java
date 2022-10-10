@@ -26,7 +26,7 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-class ConferenceMainView extends RelativeLayout {
+class VideoConferenceMainView extends RelativeLayout {
 
     @BindView(R2.id.previewContainerFrameLayout)
     FrameLayout previewContainerFrameLayout;
@@ -40,29 +40,29 @@ class ConferenceMainView extends RelativeLayout {
     private ConferenceParticipantItemView focusParticipantItemView;
     private ConferenceParticipantItemView myParticipantItemView;
 
-    public ConferenceMainView(Context context) {
+    public VideoConferenceMainView(Context context) {
         super(context);
         initView(context, null);
     }
 
-    public ConferenceMainView(Context context, AttributeSet attrs) {
+    public VideoConferenceMainView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context, attrs);
     }
 
-    public ConferenceMainView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public VideoConferenceMainView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView(context, attrs);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public ConferenceMainView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public VideoConferenceMainView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initView(context, attrs);
     }
 
     private void initView(Context context, AttributeSet attrs) {
-        View view = inflate(context, R.layout.av_conference_main, this);
+        View view = inflate(context, R.layout.av_conference_video_main, this);
         ButterKnife.bind(this, view);
     }
 

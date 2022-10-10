@@ -20,29 +20,29 @@ import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
 
-class ConferenceParticipantGridView extends RelativeLayout {
+class VideoConferenceParticipantGridView extends RelativeLayout {
     private AVEngineKit.CallSession callSession;
     private List<AVEngineKit.ParticipantProfile> profiles;
     private GridLayout participantGridView;
     private static final String TAG = "ParticipantGridView";
 
-    public ConferenceParticipantGridView(Context context, AttributeSet attrs, int defStyle) {
+    public VideoConferenceParticipantGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initView(context);
     }
 
-    public ConferenceParticipantGridView(Context context, AttributeSet attrs) {
+    public VideoConferenceParticipantGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
     }
 
-    public ConferenceParticipantGridView(Context context) {
+    public VideoConferenceParticipantGridView(Context context) {
         super(context);
         initView(context);
     }
 
     private void initView(Context context) {
-        View view = inflate(context, R.layout.av_conference_participant_grid, this);
+        View view = inflate(context, R.layout.av_conference_video_participant_grid, this);
         participantGridView = view.findViewById(R.id.participantGridView);
     }
 
