@@ -35,6 +35,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
 
 import org.webrtc.StatsReport;
 
@@ -106,6 +107,9 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     @BindView(R2.id.micImageView)
     MicImageView micImageView;
 
+    @BindView(R2.id.dotsIndicator)
+    WormDotsIndicator dotsIndicator;
+
     private SparseArray<View> conferencePages;
     private ViewPager viewPager;
     // 包含自己
@@ -143,6 +147,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         viewPager.setOffscreenPageLimit(1);
         viewPager.addOnPageChangeListener(conferencePageChangeListener);
         viewPager.setOnClickListener(clickListener);
+        dotsIndicator.setViewPager(viewPager);
         ((ClickableViewPager) viewPager).setOnViewPagerClickListener(new ClickableViewPager.OnClickListener() {
             @Override
             public void onViewPagerClick(ViewPager viewPager) {
@@ -521,12 +526,16 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         @Override
         public int getCount() {
             Log.d(TAG, "getCount " + profiles.size());
+            int count;
             if (profiles.size() <= 2) {
                 ((ClickableViewPager) viewPager).setPagingEnabled(false);
-                return 1;
+                count = 1;
+            } else {
+                ((ClickableViewPager) viewPager).setPagingEnabled(true);
+                count = 1 + (int) Math.ceil(profiles.size() / (double) VIDEO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE);
             }
-            ((ClickableViewPager) viewPager).setPagingEnabled(true);
-            return 1 + (int) Math.ceil(profiles.size() / (double) VIDEO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE);
+            dotsIndicator.setVisibility(count > 1 ? VISIBLE : GONE);
+            return count;
         }
 
         @Override
@@ -610,12 +619,16 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         @Override
         public int getCount() {
             Log.d(TAG, "getCount " + profiles.size());
+            int count;
             if (profiles.size() <= AUDIO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE) {
                 ((ClickableViewPager) viewPager).setPagingEnabled(false);
-                return 1;
+                count = 1;
+            } else {
+                ((ClickableViewPager) viewPager).setPagingEnabled(true);
+                count = 1 + (int) Math.ceil(profiles.size() / (double) AUDIO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE);
             }
-            ((ClickableViewPager) viewPager).setPagingEnabled(true);
-            return 1 + (int) Math.ceil(profiles.size() / (double) AUDIO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE);
+            dotsIndicator.setVisibility(count > 1 ? VISIBLE : GONE);
+            return count;
         }
 
         @Override
@@ -750,6 +763,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                 pagerAdapter = new AudioConferencePageAdapter();
             }
             viewPager.setAdapter(pagerAdapter);
+            dotsIndicator.setViewPager(viewPager);
             selectFirstPage = true;
             currentPosition = -1;
             return true;

@@ -137,6 +137,7 @@ class VideoConferenceMainView extends RelativeLayout {
             ConferenceParticipantItemView conferenceItem;
             if (profile.isAudience() || profile.isVideoMuted()) {
                 conferenceItem = new ConferenceParticipantItemView(getContext());
+                conferenceItem.setBackgroundResource(R.color.gray0);
             } else {
                 conferenceItem = new ConferenceParticipantItemVideoView(getContext());
             }
@@ -151,7 +152,7 @@ class VideoConferenceMainView extends RelativeLayout {
             if (focusProfile != null) {
                 if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
                     previewContainerFrameLayout.removeAllViews();
-                    conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 3, height / 3));
+                    conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 3, height / 4));
                     previewContainerFrameLayout.addView(conferenceItem);
                 } else {
                     focusContainerFrameLayout.removeAllViews();
