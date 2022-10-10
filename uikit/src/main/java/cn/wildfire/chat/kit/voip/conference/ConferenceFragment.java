@@ -108,6 +108,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     private SparseArray<View> videoConferencePages;
     private ViewPager viewPager;
+    // 包含自己
     private List<AVEngineKit.ParticipantProfile> profiles;
     private VideoConferencePageAdapter adapter;
     private AVEngineKit.CallSession callSession;
@@ -572,7 +573,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             } else if (view instanceof VideoConferenceMainView) {
                 AVEngineKit.ParticipantProfile myProfile = callSession.getMyProfile();
                 ((VideoConferenceMainView) view).setup(callSession, myProfile, findFocusProfile());
-                ((VideoConferenceMainView) view).setup(callSession, myProfile, findFocusProfile());
             }
 
             currentPosition = position;
@@ -745,6 +745,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                     focusProfile = profile;
                 }
             }
+        }
+        if (focusProfile == null && profiles.size() > 1) {
+            // 第 0 个是自己
+            focusProfile = profiles.get(1);
         }
         return focusProfile;
     }
