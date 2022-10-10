@@ -124,7 +124,7 @@ class VideoConferenceMainView extends RelativeLayout {
 
         List<AVEngineKit.ParticipantProfile> mainProfiles = new ArrayList<>();
 //        if (!myProfile.isAudience()) {
-            mainProfiles.add(myProfile);
+        mainProfiles.add(myProfile);
 //        }
         if (focusProfile != null && !focusProfile.getUserId().equals(myProfile.getUserId())) {
             mainProfiles.add(focusProfile);
@@ -132,7 +132,12 @@ class VideoConferenceMainView extends RelativeLayout {
         }
 
         for (AVEngineKit.ParticipantProfile profile : mainProfiles) {
-            ConferenceParticipantItemView conferenceItem = new ConferenceParticipantItemView(getContext());
+            ConferenceParticipantItemView conferenceItem;
+            if (profile.isAudience() || profile.isVideoMuted()) {
+                conferenceItem = new ConferenceParticipantItemView(getContext());
+            } else {
+                conferenceItem = new ConferenceParticipantItemVideoView(getContext());
+            }
 //            conferenceItem.setOnClickListener(clickListener);
             conferenceItem.setup(this.callSession, profile);
             if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
@@ -150,7 +155,7 @@ class VideoConferenceMainView extends RelativeLayout {
                     focusContainerFrameLayout.removeAllViews();
                     conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     focusContainerFrameLayout.addView(conferenceItem);
-                    if (!profile.isVideoMuted()) {
+                    if (!profile.isAudience() && !profile.isVideoMuted()) {
                         this.callSession.setParticipantVideoType(focusProfile.getUserId(), focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_BIG_STREAM);
                     }
                 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/gray0"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
@@ -10,17 +10,25 @@
         android:id="@+id/portraitImageView"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:scaleType="fitXY"
         android:src="@mipmap/avatar_def" />
+
+    <cn.wildfire.chat.kit.voip.ZoomableFrameLayout
+        android:id="@+id/videoContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_gravity="center">
+
+    </cn.wildfire.chat.kit.voip.ZoomableFrameLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/portraitImageView"
-        android:layout_centerHorizontal="true"
         android:layout_gravity="bottom"
-        android:layout_marginTop="20dp"
         android:gravity="center_vertical"
         android:padding="5dp">
 
@@ -51,4 +59,4 @@
             android:visibility="visible"
             tools:text="UserName" />
     </LinearLayout>
-</RelativeLayout>
+</FrameLayout>
