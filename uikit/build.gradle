@@ -89,6 +89,7 @@ dependencies {
 
     implementation 'com.tencent.map.geolocation:TencentLocationSdk-openplatform:7.2.6'
     implementation 'io.kvh:amr:1.1.1'
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
 
     // moment start
 //    implementation project(':momentclient')
