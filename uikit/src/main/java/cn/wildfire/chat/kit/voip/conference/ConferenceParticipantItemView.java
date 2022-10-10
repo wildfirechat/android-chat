@@ -18,12 +18,9 @@ import androidx.annotation.RequiresApi;
 
 import com.bumptech.glide.request.RequestOptions;
 
-import org.webrtc.RendererCommon;
-
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
-import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -31,13 +28,9 @@ import cn.wildfirechat.remote.ChatManager;
 public class ConferenceParticipantItemView extends FrameLayout {
     public ImageView portraitImageView;
     public TextView statusTextView;
-    public ZoomableFrameLayout videoContainer;
-    private boolean enableVideoZoom = false;
-    private MicImageView micImageView;
-    private ImageView videoStateImageView;
-    private TextView nameTextView;
-
-    private static final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+    protected MicImageView micImageView;
+    protected ImageView videoStateImageView;
+    protected TextView nameTextView;
 
     public ConferenceParticipantItemView(@NonNull Context context) {
         super(context);
@@ -65,15 +58,13 @@ public class ConferenceParticipantItemView extends FrameLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    private void initView(Context context, AttributeSet attrs) {
+    protected void initView(Context context, AttributeSet attrs) {
         View view = inflate(context, R.layout.av_conference_participant_grid_item, this);
         portraitImageView = view.findViewById(R.id.portraitImageView);
         statusTextView = view.findViewById(R.id.statusTextView);
-        videoContainer = view.findViewById(R.id.videoContainer);
         micImageView = view.findViewById(R.id.micImageView);
         videoStateImageView = view.findViewById(R.id.videoStateImageView);
         nameTextView = view.findViewById(R.id.userNameTextView);
-        videoContainer.setEnableZoom(enableVideoZoom);
     }
 
     public ImageView getPortraitImageView() {
@@ -84,37 +75,12 @@ public class ConferenceParticipantItemView extends FrameLayout {
         return statusTextView;
     }
 
-    @Override
-    public void setOnClickListener(@Nullable OnClickListener l) {
-        super.setOnClickListener(l);
-        if (l != null) {
-            videoContainer.setOnClickListener(v -> l.onClick(ConferenceParticipantItemView.this));
-        } else {
-            videoContainer.setOnClickListener(null);
-        }
-    }
-
-    /**
-     * 是否开启视频缩放
-     */
-    public void setEnableVideoZoom(boolean enable) {
-        this.enableVideoZoom = enable;
-        videoContainer.setEnableZoom(enable);
-    }
-
     public void setup(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile profile) {
         String participantKey = VoipBaseActivity.participantKey(profile.getUserId(), profile.isScreenSharing());
         UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
         this.setTag(participantKey);
 
         GlideApp.with(this).load(userInfo.portrait).apply(new RequestOptions().circleCrop()).placeholder(R.mipmap.avatar_def).into(portraitImageView);
-//        if (!profile.isVideoMuted()) {
-        videoContainer.setVisibility(VISIBLE);
-        if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
-            session.setupLocalVideoView(videoContainer, scalingType);
-        } else {
-            session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, scalingType);
-        }
         //statusTextView.setText(R.string.connecting);
 //        } else {
 //            videoContainer.setVisibility(GONE);
@@ -132,11 +98,11 @@ public class ConferenceParticipantItemView extends FrameLayout {
         int padding = 0;
         if (volume > 500) {
             padding = 2;
-            videoContainer.setBackgroundResource(R.drawable.av_conference_participant_highlight_boarder);
+            this.setBackgroundResource(R.drawable.av_conference_participant_highlight_boarder);
         } else {
-            videoContainer.setBackground(null);
+            this.setBackground(null);
         }
-        videoContainer.setPadding(padding, padding, padding, padding);
+        this.setPadding(padding, padding, padding, padding);
         micImageView.setVolume(volume);
     }
 }

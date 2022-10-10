@@ -592,9 +592,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             View view = videoConferencePages.get(currentPosition % 3);
             if (view instanceof VideoConferenceMainView) {
                 AVEngineKit.ParticipantProfile focusProfile = findFocusProfile();
-                if (participants.contains(ChatManager.Instance().getUserId()) || focusProfile == null || participants.contains(focusProfile.getUserId())) {
-                    ((VideoConferenceMainView) view).setup(this.callSession, callSession.getMyProfile(), focusProfile);
-                }
+                ((VideoConferenceMainView) view).setup(this.callSession, callSession.getMyProfile(), focusProfile);
             } else if (view instanceof VideoConferenceParticipantGridView) {
                 List<AVEngineKit.ParticipantProfile> currentPageParticipantProfiles = getGridPageParticipantProfiles(currentPosition);
                 boolean updateCurrentPage = false;

@@ -55,17 +55,27 @@ class VideoConferenceParticipantGridView extends RelativeLayout {
         this.callSession = session;
         this.profiles = profiles;
 
+        // TODO diff，全删，然后重新添加，UI 会稍微闪一下
         this.participantGridView.removeAllViews();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int size = Math.min(dm.widthPixels, dm.heightPixels);
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         for (AVEngineKit.ParticipantProfile profile : profiles) {
-            ConferenceParticipantItemView conferenceItem = new ConferenceParticipantItemView(getContext());
-            conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 2, height / 2));
-            this.participantGridView.addView(conferenceItem);
-            conferenceItem.setup(session, profile);
-            session.setParticipantVideoType(profile.getUserId(), profile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_SMALL_STREAM);
+            if (profile.isAudience() || profile.isVideoMuted()) {
+                ConferenceParticipantItemView conferenceItem = new ConferenceParticipantItemView(getContext());
+                conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 2, height / 2));
+                this.participantGridView.addView(conferenceItem);
+                conferenceItem.setup(session, profile);
+            } else {
+                ConferenceParticipantItemVideoView conferenceVideoItem = new ConferenceParticipantItemVideoView(getContext());
+                conferenceVideoItem.setLayoutParams(new ViewGroup.LayoutParams(width / 2, height / 2));
+                this.participantGridView.addView(conferenceVideoItem);
+                conferenceVideoItem.setup(session, profile);
+                if (!profile.isAudience() && !profile.isVideoMuted()) {
+                    session.setParticipantVideoType(profile.getUserId(), profile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_SMALL_STREAM);
+                }
+            }
         }
     }
 
