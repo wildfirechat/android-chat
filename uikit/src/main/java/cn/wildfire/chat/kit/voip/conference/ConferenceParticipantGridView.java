@@ -16,6 +16,7 @@ import androidx.gridlayout.widget.GridLayout;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
@@ -26,7 +27,7 @@ class ConferenceParticipantGridView extends RelativeLayout {
     private GridLayout participantGridView;
     private static final String TAG = "ParticipantGridView";
 
-    private boolean audioOnly;
+    private boolean isAudioConference = false;
 
     public ConferenceParticipantGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -43,16 +44,16 @@ class ConferenceParticipantGridView extends RelativeLayout {
         initView(context);
     }
 
-    public ConferenceParticipantGridView(Context context, boolean audioOnly) {
+    public ConferenceParticipantGridView(Context context, boolean isAudioConference) {
         super(context);
-        this.audioOnly = audioOnly;
+        this.isAudioConference = isAudioConference;
         initView(context);
     }
 
     private void initView(Context context) {
         View view = inflate(context, R.layout.av_conference_video_participant_grid, this);
         participantGridView = view.findViewById(R.id.participantGridView);
-        if (this.audioOnly) {
+        if (this.isAudioConference) {
             participantGridView.setColumnCount(3);
             participantGridView.setRowCount(4);
         }
@@ -74,9 +75,9 @@ class ConferenceParticipantGridView extends RelativeLayout {
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         int itemWidth, itemHeight;
-        if (audioOnly) {
+        if (isAudioConference) {
             itemWidth = width / 3;
-            itemHeight = height / 4;
+            itemHeight = (height - UIUtils.dip2Px(120)) / 4;
         } else {
             itemWidth = width / 2;
             itemHeight = height / 2;
@@ -87,8 +88,8 @@ class ConferenceParticipantGridView extends RelativeLayout {
                 conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(itemWidth, itemHeight));
                 this.participantGridView.addView(conferenceItem);
                 conferenceItem.setup(session, profile);
-                if (this.audioOnly) {
-                    conferenceItem.setBackgroundResource(R.color.black);
+                if (!this.isAudioConference) {
+                    conferenceItem.setBackgroundResource(R.color.gray0);
                 }
             } else {
                 ConferenceParticipantItemVideoView conferenceVideoItem = new ConferenceParticipantItemVideoView(getContext());

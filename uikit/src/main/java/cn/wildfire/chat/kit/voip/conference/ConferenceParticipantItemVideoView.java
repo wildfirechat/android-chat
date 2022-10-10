@@ -94,15 +94,16 @@ public class ConferenceParticipantItemVideoView extends ConferenceParticipantIte
 //
 //    }
 
-//    public void updateVolume(int volume) {
-//        int padding = 0;
-//        if (volume > 500) {
-//            padding = 2;
-//            videoContainer.setBackgroundResource(R.drawable.av_conference_participant_highlight_boarder);
-//        } else {
-//            videoContainer.setBackground(null);
-//        }
-//        videoContainer.setPadding(padding, padding, padding, padding);
-//        micImageView.setVolume(volume);
-//    }
+    @Override
+    public void updateVolume(int volume) {
+        int padding = 0;
+        if (volume > 500) {
+            padding = 2;
+            this.setBackgroundResource(R.drawable.av_conference_participant_item_video_highlight_boarder);
+        } else {
+            this.setBackground(null);
+        }
+        this.setPadding(padding, padding, padding, padding);
+        micImageView.setVolume(volume);
+    }
 }

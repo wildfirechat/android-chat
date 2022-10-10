@@ -8,8 +8,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,7 +25,7 @@ import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class ConferenceParticipantItemView extends FrameLayout {
+public class ConferenceParticipantItemView extends RelativeLayout {
     public ImageView portraitImageView;
     public TextView statusTextView;
     protected MicImageView micImageView;
@@ -98,11 +98,11 @@ public class ConferenceParticipantItemView extends FrameLayout {
         int padding = 0;
         if (volume > 500) {
             padding = 2;
-            this.setBackgroundResource(R.drawable.av_conference_participant_highlight_boarder);
+            this.portraitImageView.setBackgroundResource(R.drawable.av_conference_participant_item_highlight_boarder);
         } else {
-            this.setBackground(null);
+            this.portraitImageView.setBackground(null);
         }
-        this.setPadding(padding, padding, padding, padding);
+        this.portraitImageView.setPadding(padding, padding, padding, padding);
         micImageView.setVolume(volume);
     }
 }

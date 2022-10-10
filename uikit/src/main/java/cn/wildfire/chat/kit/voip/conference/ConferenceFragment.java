@@ -141,7 +141,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         pagerAdapter = videoConferenceAdapter;
         viewPager.setAdapter(videoConferenceAdapter);
         viewPager.setOffscreenPageLimit(1);
-        viewPager.addOnPageChangeListener(videoConferencePageChangeListener);
+        viewPager.addOnPageChangeListener(conferencePageChangeListener);
         viewPager.setOnClickListener(clickListener);
         ((ClickableViewPager) viewPager).setOnViewPagerClickListener(new ClickableViewPager.OnClickListener() {
             @Override
@@ -535,7 +535,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
     }
 
-    final ViewPager.OnPageChangeListener videoConferencePageChangeListener = new ViewPager.OnPageChangeListener() {
+    final ViewPager.OnPageChangeListener conferencePageChangeListener = new ViewPager.OnPageChangeListener() {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -624,47 +624,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
     }
 
-    private void onParticipantProfileUpdate(List<String> participants) {
-        // 比如有人离开后
-        if (pagerAdapter.getCount() <= currentPosition) {
-            viewPager.setCurrentItem(currentPosition - 1);
-        } else {
-            View view = conferencePages.get(currentPosition % 3);
-            if (view instanceof VideoConferenceMainView) {
-                AVEngineKit.ParticipantProfile focusProfile = findFocusProfile();
-                ((VideoConferenceMainView) view).setup(this.callSession, callSession.getMyProfile(), focusProfile);
-            } else if (view instanceof ConferenceParticipantGridView) {
-                List<AVEngineKit.ParticipantProfile> currentPageParticipantProfiles = getGridPageParticipantProfiles(currentPosition);
-                boolean updateCurrentPage = false;
-                for (String userId : participants) {
-                    for (AVEngineKit.ParticipantProfile p : currentPageParticipantProfiles) {
-                        if (userId.equals(p.getUserId())) {
-                            updateCurrentPage = true;
-                            break;
-                        }
-                    }
-                }
-                if (updateCurrentPage) {
-                    ((ConferenceParticipantGridView) view).setParticipantProfiles(this.callSession, currentPageParticipantProfiles);
-                }
-            }
-        }
-    }
-
-    private List<AVEngineKit.ParticipantProfile> getGridPageParticipantProfiles(int position) {
-        int countPerPage;
-        int fromIndex;
-        if (this.isVideoConference()) {
-            countPerPage = VIDEO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE;
-            fromIndex = (position - 1) * countPerPage;
-        } else {
-            countPerPage = AUDIO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE;
-            fromIndex = position * countPerPage;
-        }
-        int endIndex = Math.min(fromIndex + countPerPage, profiles.size());
-        return profiles.subList(fromIndex, endIndex);
-    }
-
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason reason) {
 
@@ -676,24 +635,26 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     @Override
-    public void didParticipantJoined(String userId, boolean screenSharing) {
-        this.profiles = getAllProfiles();
-        this.pagerAdapter.notifyDataSetChanged();
-        onParticipantProfileUpdate(Collections.singletonList(userId));
-        Log.d(TAG, "didParticipantJoined " + userId);
-        LiveDataBus.setValue("kConferenceMemberChanged", new Object());
-    }
-
-    @Override
     public void didParticipantConnected(String userId, boolean screenSharing) {
 
     }
 
     @Override
+    public void didParticipantJoined(String userId, boolean screenSharing) {
+        if (!resetConferencePageAdapter()) {
+            this.pagerAdapter.notifyDataSetChanged();
+            onParticipantProfileUpdate(Collections.singletonList(userId));
+        }
+        Log.d(TAG, "didParticipantJoined " + userId);
+        LiveDataBus.setValue("kConferenceMemberChanged", new Object());
+    }
+
+    @Override
     public void didParticipantLeft(String userId, AVEngineKit.CallEndReason reason, boolean screenSharing) {
-        this.profiles = getAllProfiles();
-        this.pagerAdapter.notifyDataSetChanged();
-        onParticipantProfileUpdate(Collections.singletonList(userId));
+        if (!resetConferencePageAdapter()) {
+            this.pagerAdapter.notifyDataSetChanged();
+            onParticipantProfileUpdate(Collections.singletonList(userId));
+        }
         Log.d(TAG, "didParticipantLeft " + userId);
         LiveDataBus.setValue("kConferenceMemberChanged", new Object());
     }
@@ -701,18 +662,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     @Override
     public void didChangeType(String userId, boolean audience, boolean screenSharing) {
         Log.d(TAG, "didChangeType " + userId + " " + audience);
-        boolean lastIsVideoConference = this.isVideoConference();
-        this.profiles = getAllProfiles();
-        boolean isVideoConference = this.isVideoConference();
-        if (lastIsVideoConference != isVideoConference) {
-            if (isVideoConference) {
-                pagerAdapter = new VideoConferencePageAdapter();
-            } else {
-                pagerAdapter = new AudioConferencePageAdapter();
-            }
-            conferencePages.clear();
-            viewPager.setAdapter(pagerAdapter);
-        } else {
+        if (!resetConferencePageAdapter()) {
             this.pagerAdapter.notifyDataSetChanged();
             onParticipantProfileUpdate(Collections.singletonList(userId));
         }
@@ -721,21 +671,24 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     @Override
     public void didMuteStateChanged(List<String> participants) {
-        boolean lastIsVideoConference = this.isVideoConference();
-        this.profiles = getAllProfiles();
-        boolean isVideoConference = this.isVideoConference();
-        if (lastIsVideoConference != isVideoConference) {
-            if (isVideoConference) {
-                pagerAdapter = new VideoConferencePageAdapter();
-            } else {
-                pagerAdapter = new AudioConferencePageAdapter();
-            }
-            viewPager.setAdapter(pagerAdapter);
-            selectFirstPage = true;
-        } else {
+        if (!resetConferencePageAdapter()) {
             onParticipantProfileUpdate(participants);
         }
         LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
+    }
+
+    @Override
+    public void didReportAudioVolume(String userId, int volume) {
+//        Log.d(TAG, "didReportAudioVolume " + userId + " " + volume);
+        if (currentPosition == -1) {
+            return;
+        }
+        View view = conferencePages.get(currentPosition % 3);
+        if (view instanceof VideoConferenceMainView) {
+            ((VideoConferenceMainView) view).updateParticipantVolume(userId, volume);
+        } else if (view instanceof ConferenceParticipantGridView) {
+            ((ConferenceParticipantGridView) view).updateParticipantVolume(userId, volume);
+        }
     }
 
     @Override
@@ -780,21 +733,74 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     public void didMediaLostPacket(String userId, String media, int lostPacket, boolean uplink, boolean screenSharing) {
     }
 
-    @Override
-    public void didReportAudioVolume(String userId, int volume) {
-//        Log.d(TAG, "didReportAudioVolume " + userId + " " + volume);
-        View view = conferencePages.get(currentPosition % 3);
-        if (view instanceof VideoConferenceMainView) {
-            ((VideoConferenceMainView) view).updateParticipantVolume(userId, volume);
-        } else if (view instanceof ConferenceParticipantGridView) {
-            ((ConferenceParticipantGridView) view).updateParticipantVolume(userId, volume);
-        }
-    }
 
     @Override
     public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
 
     }
+
+    private boolean resetConferencePageAdapter() {
+        boolean lastIsVideoConference = this.isVideoConference();
+        this.profiles = getAllProfiles();
+        boolean isVideoConference = this.isVideoConference();
+        if (lastIsVideoConference != isVideoConference) {
+            if (isVideoConference) {
+                pagerAdapter = new VideoConferencePageAdapter();
+            } else {
+                pagerAdapter = new AudioConferencePageAdapter();
+            }
+            viewPager.setAdapter(pagerAdapter);
+            selectFirstPage = true;
+            currentPosition = -1;
+            return true;
+        }
+        return false;
+    }
+
+    private void onParticipantProfileUpdate(List<String> participants) {
+        // 比如有人离开后
+        if (currentPosition == -1) {
+            return;
+        }
+        if (pagerAdapter.getCount() <= currentPosition) {
+            viewPager.setCurrentItem(currentPosition - 1);
+        } else {
+            View view = conferencePages.get(currentPosition % 3);
+            if (view instanceof VideoConferenceMainView) {
+                AVEngineKit.ParticipantProfile focusProfile = findFocusProfile();
+                ((VideoConferenceMainView) view).setup(this.callSession, callSession.getMyProfile(), focusProfile);
+            } else if (view instanceof ConferenceParticipantGridView) {
+                List<AVEngineKit.ParticipantProfile> currentPageParticipantProfiles = getGridPageParticipantProfiles(currentPosition);
+                boolean currentPageUpdated = false;
+                for (String userId : participants) {
+                    for (AVEngineKit.ParticipantProfile p : currentPageParticipantProfiles) {
+                        if (userId.equals(p.getUserId())) {
+                            currentPageUpdated = true;
+                            break;
+                        }
+                    }
+                }
+                if (currentPageUpdated) {
+                    ((ConferenceParticipantGridView) view).setParticipantProfiles(this.callSession, currentPageParticipantProfiles);
+                }
+            }
+        }
+    }
+
+    private List<AVEngineKit.ParticipantProfile> getGridPageParticipantProfiles(int position) {
+        int countPerPage;
+        int fromIndex;
+        if (this.isVideoConference()) {
+            countPerPage = VIDEO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE;
+            fromIndex = (position - 1) * countPerPage;
+        } else {
+            countPerPage = AUDIO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE;
+            fromIndex = position * countPerPage;
+        }
+        int endIndex = Math.min(fromIndex + countPerPage, profiles.size());
+        return profiles.subList(fromIndex, endIndex);
+    }
+
 
     private List<AVEngineKit.ParticipantProfile> getAllProfiles() {
         List<AVEngineKit.ParticipantProfile> profiles = callSession.getParticipantProfiles();
