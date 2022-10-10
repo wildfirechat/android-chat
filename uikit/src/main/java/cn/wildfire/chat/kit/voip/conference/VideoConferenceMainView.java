@@ -123,9 +123,9 @@ class VideoConferenceMainView extends RelativeLayout {
         focusVideoUserId = myProfile.getUserId();
 
         List<AVEngineKit.ParticipantProfile> mainProfiles = new ArrayList<>();
-        if (!myProfile.isAudience()) {
+//        if (!myProfile.isAudience()) {
             mainProfiles.add(myProfile);
-        }
+//        }
         if (focusProfile != null && !focusProfile.getUserId().equals(myProfile.getUserId())) {
             mainProfiles.add(focusProfile);
             focusVideoUserId = focusProfile.getUserId();
