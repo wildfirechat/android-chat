@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/participantGridView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top|center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         app:alignmentMode="alignBounds"
         app:columnCount="2"

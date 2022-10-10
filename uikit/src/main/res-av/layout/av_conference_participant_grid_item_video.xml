@@ -34,8 +34,8 @@
 
         <cn.wildfire.chat.kit.voip.conference.MicImageView
             android:id="@+id/micImageView"
-            android:layout_width="12dp"
-            android:layout_height="12dp" />
+            android:layout_width="16dp"
+            android:layout_height="16dp" />
 
         <ImageView
             android:id="@+id/videoStateImageView"
