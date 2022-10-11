@@ -426,6 +426,8 @@ public class ConversationFragment extends Fragment implements
                 || this.conversation.type == Conversation.ConversationType.Group) {
                 userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
             }
+            this.adapter = new ConversationMessageAdapter(this);
+            this.recyclerView.setAdapter(this.adapter);
         }
 
         if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
