@@ -48,6 +48,7 @@
         android:allowBackup="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
 

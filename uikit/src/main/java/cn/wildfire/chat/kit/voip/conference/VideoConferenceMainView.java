@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -70,7 +71,10 @@ class VideoConferenceMainView extends RelativeLayout {
         this.callSession = session;
         this.myProfile = myProfile;
         this.focusProfile = focusProfile;
-        setupConferenceMainView();
+        // 不 post 一下，可能视频流界面黑屏，原因未知
+        ChatManager.Instance().getMainHandler().post(() -> {
+            setupConferenceMainView();
+        });
     }
 
     public void updateMyProfile(AVEngineKit.ParticipantProfile myProfile) {
@@ -90,10 +94,11 @@ class VideoConferenceMainView extends RelativeLayout {
     }
 
     public void updateParticipantVolume(String userId, int volume) {
-        if (userId.equals(ChatManager.Instance().getUserId())) {
+        // setup 的时候，post 了一下，故这儿可能为空，需要判空
+        if (userId.equals(ChatManager.Instance().getUserId()) && myParticipantItemView != null) {
             myParticipantItemView.updateVolume(volume);
         } else {
-            if (focusProfile != null && focusProfile.getUserId().equals(userId)) {
+            if (focusProfile != null && focusProfile.getUserId().equals(userId) && focusParticipantItemView != null) {
                 focusParticipantItemView.updateVolume(volume);
             }
         }
@@ -155,6 +160,10 @@ class VideoConferenceMainView extends RelativeLayout {
                     conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 3, height / 4));
                     previewContainerFrameLayout.addView(conferenceItem);
                     conferenceItem.setBackgroundResource(R.color.gray0);
+                    SurfaceView focusSurfaceView = conferenceItem.findViewWithTag("sv_" + profile.getUserId());
+                    if (focusSurfaceView != null) {
+                        focusSurfaceView.setZOrderMediaOverlay(true);
+                    }
                 } else {
                     focusContainerFrameLayout.removeAllViews();
                     conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
