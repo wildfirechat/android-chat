@@ -169,9 +169,20 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             muteAudioImageView.setSelected(myProfile.isAudience() || myProfile.isAudioMuted());
             micImageView.setMuted(myProfile.isAudience() || myProfile.isAudioMuted());
         });
-        handler.post(updateCallDurationRunnable);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        handler.post(updateCallDurationRunnable);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        handler.removeCallbacks(updateCallDurationRunnable);
     }
 
     @OnClick(R2.id.speakerImageView)
@@ -435,6 +446,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     private final Runnable hideBarCallback = new Runnable() {
         @Override
         public void run() {
+            Activity activity = getActivity();
+            if (activity == null || activity.isFinishing()) {
+                return;
+            }
             AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
             if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
                 setPanelVisibility(GONE);
