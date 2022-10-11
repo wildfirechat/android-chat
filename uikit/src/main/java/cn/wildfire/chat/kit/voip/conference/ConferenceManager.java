@@ -102,6 +102,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                 } else if (msg.content instanceof ConferenceCommandContent) {
                     // TODO
                     ConferenceCommandContent commandContent = (ConferenceCommandContent) msg.content;
+                    String senderName;
                     if (session.getCallId().equals(commandContent.getConferenceId())) {
                         switch (commandContent.getCommandType()) {
                             case ConferenceCommandContent.ConferenceCommandType.MUTE_ALL:
@@ -118,8 +119,11 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                 }
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST:
+                                Toast.makeText(context, "主持人拒绝了你的发言请求", Toast.LENGTH_SHORT).show();
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE:
+                                senderName = ChatManager.Instance().getUserDisplayName(msg.sender);
+                                Toast.makeText(context, senderName + " 请求发言", Toast.LENGTH_SHORT).show();
                                 if (commandContent.getBoolValue()) {
                                     this.applyingUnmuteMembers.remove(msg.sender);
                                 } else {
@@ -136,13 +140,25 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                     this.isApplyingUnmute = false;
                                     if (commandContent.getBoolValue()) {
                                         this.muteAudio(false);
+                                        Toast.makeText(context, "主持人同意了你的发言请求", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.HANDUP:
-                                if (!this.handUpMembers.contains(msg.sender)) {
-                                    this.handUpMembers.add(msg.sender);
+                                if (commandContent.getBoolValue()) {
+                                    if (!this.handUpMembers.contains(msg.sender)) {
+                                        this.handUpMembers.add(msg.sender);
+                                    }
+                                } else {
+                                    this.handUpMembers.remove(msg.sender);
                                 }
+                                senderName = ChatManager.Instance().getUserDisplayName(msg.sender);
+                                if (commandContent.getBoolValue()) {
+                                    Toast.makeText(context, senderName + " 举手", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(context, senderName + " 放下举手", Toast.LENGTH_SHORT).show();
+                                }
+
                                 // TODO 通知上层申请列表变化
 
                                 break;
@@ -150,10 +166,12 @@ public class ConferenceManager implements OnReceiveMessageListener {
                             case ConferenceCommandContent.ConferenceCommandType.PUT_ALL_HAND_DOWN:
                                 if (this.isHandUp) {
                                     this.isHandUp = false;
+                                    Toast.makeText(context, "主持人放下你的举手", Toast.LENGTH_SHORT).show();
                                 }
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.RECORDING:
                                 this.reloadConferenceInfo();
+                                Toast.makeText(context, commandContent.getBoolValue() ? "主持人开始录制" : "主持人结束录制", Toast.LENGTH_SHORT).show();
                                 break;
 
                             default:
@@ -304,6 +322,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
     public void handUp(boolean isHandUp) {
         this.isHandUp = isHandUp;
         this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.HANDUP, null, isHandUp);
+        Toast.makeText(context, isHandUp ? "已举手，等待管理员处理" : "已放下举手", Toast.LENGTH_SHORT).show();
     }
 
     public void putMemberHandDown(String memberId) {
@@ -337,6 +356,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                     muteAudioVideo(false);
                 });
         } else {
+            Toast.makeText(context, "主持人关闭了你的发言", Toast.LENGTH_SHORT).show();
             muteAudioVideo(true);
         }
     }
@@ -350,6 +370,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                     muteAudio(false);
                 });
         }
+        Toast.makeText(context, "主持人关闭了全员静音", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -361,6 +382,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
             session.muteAudio(true);
             session.muteVideo(true);
         }
+        Toast.makeText(context, "主持人开启了全员静音", Toast.LENGTH_SHORT).show();
     }
 
     private void reloadConferenceInfo() {
