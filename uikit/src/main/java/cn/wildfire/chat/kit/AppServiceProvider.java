@@ -75,6 +75,8 @@ public interface AppServiceProvider {
 
     void updateConference(ConferenceInfo conferenceInfo, GeneralCallback callback);
 
+    void recordConference(String conferenceId, boolean record, GeneralCallback callback);
+
 
     interface QueryConferenceInfoCallback {
         void onSuccess(ConferenceInfo info);
