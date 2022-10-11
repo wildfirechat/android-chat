@@ -72,7 +72,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         ChatManager.Instance().addOnReceiveMessageListener(this);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null){
+        if (session != null) {
             initialized = true;
             startForeground(NOTIFICATION_ID, buildNotification(session));
         }
@@ -141,7 +141,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null && session.isConference()){
+        if (session != null && session.isConference()) {
             session.leaveConference(false);
         }
     }
@@ -410,7 +410,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         remoteVideoFrameLayout.setVisibility(View.VISIBLE);
         LinearLayout videoContainer = remoteVideoFrameLayout.findViewById(R.id.videoContainer);
 
-        Log.e("wfc", "nextFocusUserId " + nextFocusUserId);
+//        Log.e("wfc", "nextFocusUserId " + nextFocusUserId);
         if (!rendererInitialized || lastState != session.getState() || !TextUtils.equals(lastFocusUserId, nextFocusUserId)) {
             rendererInitialized = true;
             lastState = session.getState();
@@ -421,8 +421,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
 
             if (TextUtils.equals(ChatManager.Instance().getUserId(), nextFocusUserId)) {
                 session.setupLocalVideoView(videoContainer, SCALE_ASPECT_BALANCED);
+                // 因为remoteVideoViewContainer 和 localVideoViewContainer 是同一个，所以切换的时候，需要清一下
+                session.setupRemoteVideoView(lastFocusUserId, null, SCALE_ASPECT_BALANCED);
             } else {
                 session.setupRemoteVideoView(nextFocusUserId, videoContainer, SCALE_ASPECT_BALANCED);
+                session.setupLocalVideoView(null, SCALE_ASPECT_BALANCED);
             }
             lastFocusUserId = nextFocusUserId;
         }

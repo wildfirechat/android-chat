@@ -94,6 +94,7 @@
         android:layout_marginBottom="35dp"
         app:dotsColor="@color/white"
         app:dotsCornerRadius="6dp"
+        android:clickable="false"
         app:dotsSize="12dp"
         app:dotsSpacing="4dp"
         app:dotsWidthFactor="2.5" />
