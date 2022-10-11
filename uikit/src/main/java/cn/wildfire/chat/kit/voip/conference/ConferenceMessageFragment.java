@@ -64,8 +64,10 @@ public class ConferenceMessageFragment extends Fragment {
                 Conversation conversation = uiMessage.message.conversation;
                 ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
                 if (conferenceInfo != null && conversation.type == Conversation.ConversationType.ChatRoom && conversation.line == 0 && conversation.target.equals(conferenceInfo.getConferenceId())) {
-                    messages.add(uiMessage);
-                    messageAdapter.notifyItemInserted(messages.size() - 1);
+                    if (!contains(uiMessage)) {
+                        messages.add(uiMessage);
+                        messageAdapter.notifyItemInserted(messages.size() - 1);
+                    }
                 }
             }
         });
@@ -75,6 +77,15 @@ public class ConferenceMessageFragment extends Fragment {
 
         handler = new Handler();
         handler.postDelayed(this::checkMessageTimeout, TIMEOUT);
+    }
+
+    private boolean contains(UiMessage uiMessage) {
+        for (UiMessage message : messages) {
+            if (message.message.messageId == uiMessage.message.messageId || message.message.messageUid == uiMessage.message.messageUid) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void checkMessageTimeout() {

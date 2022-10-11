@@ -55,7 +55,6 @@ import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.widget.ClickableViewPager;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 
 // main view
@@ -393,9 +392,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             dialog.dismiss();
         });
         view.findViewById(R.id.chatLinearLayout).setOnClickListener(v -> {
-            Conversation conversation = new Conversation(Conversation.ConversationType.ChatRoom, callSession.getCallId(), 0);
-            Intent intent = new Intent(getContext(), ConversationActivity.class);
-            intent.putExtra("conversation", conversation);
+            Intent intent = ConversationActivity.buildChatRoomConversationIntent(getContext(), callSession.getCallId(), 0, callSession.getTitle(), true);
             getContext().startActivity(intent);
             dialog.dismiss();
         });
