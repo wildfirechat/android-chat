@@ -355,10 +355,16 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     void showMoreActionDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(getContext());
         View view = LayoutInflater.from(getContext()).inflate(R.layout.av_conference_action_more, null);
+        ConferenceManager conferenceManager = ConferenceManager.getManager();
+        ConferenceInfo conferenceInfo = conferenceManager.getCurrentConferenceInfo();
+
+        ImageView recordImageView = view.findViewById(R.id.recordImageView);
+        recordImageView.setSelected(conferenceInfo.isRecording());
+
         ImageView handUpImageView = view.findViewById(R.id.handUpImageView);
         TextView handUpTextView = view.findViewById(R.id.handUpTextView);
-        handUpImageView.setSelected(ConferenceManager.getManager().isHandUp());
-        handUpTextView.setText(ConferenceManager.getManager().isHandUp() ? "放下" : "举手");
+        handUpImageView.setSelected(conferenceManager.isHandUp());
+        handUpTextView.setText(conferenceManager.isHandUp() ? "放下" : "举手");
 
         view.findViewById(R.id.inviteLinearLayout).setOnClickListener(v -> {
             ConferenceActivity activity = (ConferenceActivity) getContext();
@@ -371,7 +377,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             dialog.dismiss();
         });
         view.findViewById(R.id.handupLinearLayout).setOnClickListener(v -> {
-            ConferenceManager.getManager().handUp(!handUpImageView.isSelected());
+            conferenceManager.handUp(!handUpImageView.isSelected());
             handUpImageView.setSelected(!handUpImageView.isSelected());
             dialog.dismiss();
         });
@@ -381,7 +387,11 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             dialog.dismiss();
         });
         view.findViewById(R.id.recordLinearLayout).setOnClickListener(v -> {
-            // TODO
+            if (ChatManager.Instance().getUserId().equals(conferenceInfo.getOwner())) {
+                conferenceManager.requestRecord(!conferenceInfo.isRecording());
+            } else {
+                Toast.makeText(getActivity(), conferenceInfo.isRecording() ? "请联系主持人关闭录制" : "请联系主持人开启录制", Toast.LENGTH_SHORT).show();
+            }
             dialog.dismiss();
         });
         view.findViewById(R.id.settingLinearLayout).setOnClickListener(v -> {

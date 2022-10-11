@@ -343,6 +343,26 @@ public class ConferenceManager implements OnReceiveMessageListener {
         LiveDataBus.setValue("kConferenceCommandStateChanged", this.handUpMembers);
     }
 
+    public void requestRecord(boolean record) {
+        if (!isOwner()) {
+            return;
+        }
+
+        WfcUIKit.getWfcUIKit().getAppServiceProvider().recordConference(currentConferenceInfo.getConferenceId(), record, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                currentConferenceInfo.setRecording(record);
+                Toast.makeText(context, record ? "开始录制" : "结束录制", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
+
+    }
+
     private boolean isOwner() {
         return currentConferenceInfo.getOwner().equals(ChatManager.Instance().getUserId());
     }

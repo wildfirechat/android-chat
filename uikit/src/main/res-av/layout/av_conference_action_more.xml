@@ -96,9 +96,10 @@
             style="@style/ConferenceActionItem">
 
             <ImageView
+                android:id="@+id/recordImageView"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/av_conference_record" />
+                android:src="@drawable/av_conference_record_selector" />
 
             <TextView
                 android:layout_width="wrap_content"

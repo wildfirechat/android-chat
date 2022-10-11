@@ -140,8 +140,8 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     void joinConference() {
         ConferenceInfo info = conferenceInfo;
         boolean audience = info.isAudience() || (!audioSwitch.isChecked() && !videoSwitch.isChecked());
-        boolean muteVideo = !videoSwitch.isChecked();
-        boolean muteAudio = !audioSwitch.isChecked();
+        boolean muteVideo = !videoSwitch.isEnabled() || !videoSwitch.isChecked();
+        boolean muteAudio = !audioSwitch.isEnabled() || !audioSwitch.isChecked();
         AVEngineKit.CallSession session = AVEngineKit.Instance().joinConference(info.getConferenceId(), false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", audience, info.isAdvance(), muteAudio, muteVideo, null);
         if (session != null) {
             Intent intent = new Intent(this, ConferenceActivity.class);
@@ -167,6 +167,8 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         endDateTimeView.setText(new Date(info.getEndTime() * 1000).toString());
 
         if (info.isAudience() && !owner.equals(ChatManager.Instance().getUserId())) {
+            audioSwitch.setChecked(false);
+            videoSwitch.setChecked(false);
             audioSwitch.setEnabled(false);
             videoSwitch.setEnabled(false);
         }
