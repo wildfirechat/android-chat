@@ -140,9 +140,12 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
         conferencePages = new SparseArray<>(3);
         viewPager = view.findViewById(R.id.viewPager);
-        VideoConferencePageAdapter videoConferenceAdapter = new VideoConferencePageAdapter();
-        pagerAdapter = videoConferenceAdapter;
-        viewPager.setAdapter(videoConferenceAdapter);
+        if (isVideoConference()) {
+            pagerAdapter = new VideoConferencePageAdapter();
+        } else {
+            pagerAdapter = new AudioConferencePageAdapter();
+        }
+        viewPager.setAdapter(pagerAdapter);
         viewPager.setOffscreenPageLimit(1);
         viewPager.addOnPageChangeListener(conferencePageChangeListener);
         viewPager.setOnClickListener(clickListener);
