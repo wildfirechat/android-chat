@@ -32,8 +32,6 @@ public class ConferenceActivity extends VoipBaseActivity {
     private static final int REQUEST_CODE_ADD_PARTICIPANT = 102;
     private AVEngineKit.CallSessionCallback currentCallSessionCallback;
 
-    private KeyboardDialogFragment commentFragment;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -247,7 +245,7 @@ public class ConferenceActivity extends VoipBaseActivity {
         startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
     }
 
-    public void inviteNewParticipant(){
+    public void inviteNewParticipant() {
         isInvitingNewParticipant = true;
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
