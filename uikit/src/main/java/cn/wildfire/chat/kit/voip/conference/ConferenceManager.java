@@ -110,6 +110,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL:
                                 reloadConferenceInfo();
+                                onCancelMuteAll(commandContent.getBoolValue());
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.REQUEST_MUTE:
                                 if (commandContent.getTargetUserId().equals(ChatManager.Instance().getUserId())) {
@@ -235,7 +236,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
             return;
         }
         if (mute) {
-            if (session.isAudience()) {
+            if (!session.isAudience()) {
                 session.switchAudience(true);
             }
             session.muteVideo(true);
@@ -339,6 +340,18 @@ public class ConferenceManager implements OnReceiveMessageListener {
             muteAudioVideo(true);
         }
     }
+
+    private void onCancelMuteAll(boolean requestUnmute) {
+        if (requestUnmute) {
+            AlertDialogActivity.showAlterDialog(context, "主持人关闭了全员静音，是否要打开麦克风", false, "忽略", "打开",
+                () -> {
+                },
+                () -> {
+                    muteAudio(false);
+                });
+        }
+    }
+
 
     private void onMuteAll() {
         reloadConferenceInfo();

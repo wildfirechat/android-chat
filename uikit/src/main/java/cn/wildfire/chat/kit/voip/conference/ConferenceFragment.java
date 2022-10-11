@@ -32,7 +32,6 @@ import androidx.annotation.Nullable;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
@@ -231,60 +230,31 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                 ConferenceManager.getManager().muteAudio(toMute);
                 startHideBarTimer();
             } else {
-                if (ConferenceManager.getManager().isApplyingUnmute()) {
-                    new MaterialDialog.Builder(getContext())
-                        .content("主持人不允许解除静音，您已经申请解除静音，正在等待主持人操作")
-                        .negativeText("取消申请")
-                        .onNegative(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                Toast.makeText(getContext(), "已取消申请", Toast.LENGTH_SHORT).show();
-                                ConferenceManager.getManager().applyUnmute(true);
-                            }
-
-                        })
-                        .positiveText("继续申请")
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
-                                ConferenceManager.getManager().applyUnmute(false);
-                            }
-
-                        })
-                        .cancelable(false)
-                        .build()
-                        .show();
-                } else {
-                    new MaterialDialog.Builder(getContext())
-                        .content("主持人不允许解除静音，您可以向主持人申请解除静音")
-                        .negativeText("取消")
-                        .onNegative((dialog, which) -> {
-
-                        })
-                        .positiveText("申请解除静音")
-                        .onPositive((dialog, which) -> {
-                            Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
-                            ConferenceManager.getManager().applyUnmute(false);
-                        })
-                        .cancelable(false)
-                        .build()
-                        .show();
-
-                }
+                requestUnmute(true);
             }
         }
     }
 
     @OnClick(R2.id.videoView)
     void muteVideo() {
-        // TODO 参考 muteAudio 处理
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            boolean toMute = !session.videoMuted;
-            muteVideoImageView.setSelected(toMute);
-            ConferenceManager.getManager().muteVideo(toMute);
+        AVEngineKit.CallSession session = callSession;
+        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            return;
+        }
+
+        if (!session.isAudience() && !session.videoMuted) {
+            muteVideoImageView.setSelected(true);
+            ConferenceManager.getManager().muteVideo(true);
             startHideBarTimer();
+        } else {
+            ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
+            if (!session.isAudience() || conferenceInfo.isAllowTurnOnMic() || conferenceInfo.getOwner().equals(ChatManager.Instance().getUserId())) {
+                muteVideoImageView.setSelected(false);
+                ConferenceManager.getManager().muteVideo(false);
+                startHideBarTimer();
+            } else {
+                requestUnmute(false);
+            }
         }
     }
 
@@ -457,6 +427,41 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             }
         }
     };
+
+    private void requestUnmute(boolean audio) {
+        if (ConferenceManager.getManager().isApplyingUnmute()) {
+            new MaterialDialog.Builder(getContext())
+                .content("主持人不允许解除静音，您已经申请解除静音，正在等待主持人操作")
+                .negativeText("取消申请")
+                .onNegative((dialog, which) -> {
+                    Toast.makeText(getContext(), "已取消申请", Toast.LENGTH_SHORT).show();
+                    ConferenceManager.getManager().applyUnmute(true);
+                })
+                .positiveText("继续申请")
+                .onPositive((dialog, which) -> {
+                    Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                    ConferenceManager.getManager().applyUnmute(false);
+                })
+                .cancelable(false)
+                .build()
+                .show();
+        } else {
+            new MaterialDialog.Builder(getContext())
+                .content("主持人不允许解除静音，您可以向主持人申请解除静音")
+                .negativeText("取消")
+                .onNegative((dialog, which) -> {
+
+                })
+                .positiveText("申请解除静音")
+                .onPositive((dialog, which) -> {
+                    Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                    ConferenceManager.getManager().applyUnmute(false);
+                })
+                .cancelable(false)
+                .build()
+                .show();
+        }
+    }
 
     private void setPanelVisibility(int visibility) {
         bottomPanel.setVisibility(visibility);
