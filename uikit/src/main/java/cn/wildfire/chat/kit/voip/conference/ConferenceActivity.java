@@ -57,11 +57,7 @@ public class ConferenceActivity extends VoipBaseActivity {
         }
 
         Fragment fragment;
-        if (session.isAudioOnly()) {
-            fragment = new ConferenceAudioFragment();
-        } else {
-            fragment = new ConferenceFragment();
-        }
+        fragment = new ConferenceFragment();
 
         currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -167,18 +163,6 @@ public class ConferenceActivity extends VoipBaseActivity {
 
     @Override
     public void didChangeMode(boolean audioOnly) {
-        postAction(() -> {
-            if (audioOnly) {
-                Fragment fragment = new ConferenceAudioFragment();
-                currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, fragment)
-                    .commit();
-            } else {
-                // never called
-            }
-        });
     }
 
     //@Override
