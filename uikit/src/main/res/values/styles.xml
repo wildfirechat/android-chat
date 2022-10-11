@@ -75,6 +75,10 @@
         <item name="cornerSizeTopLeft">5dp</item>
         <item name="cornerSizeTopRight">5dp</item>
     </style>
+    <style name="roundedImageView_8dp" parent="">
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
 
     <style name="Dialog.FullScreen.Transparent" parent="Theme.AppCompat.Dialog">
         <item name="android:padding">0dp</item>

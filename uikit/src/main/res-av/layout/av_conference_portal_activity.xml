@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,14 +23,16 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/av_join_conference" />
+                android:src="@drawable/av_join_conference"
+                app:shapeAppearanceOverlay="@style/roundedImageView_8dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="5dp"
                 android:text="加入会议" />
 
         </LinearLayout>
@@ -42,14 +45,16 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/av_start_conference" />
+                android:src="@drawable/av_start_conference"
+                app:shapeAppearanceOverlay="@style/roundedImageView_8dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="5dp"
                 android:text="发起会议" />
 
         </LinearLayout>
@@ -62,14 +67,17 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/av_book_conference" />
+                android:src="@drawable/av_book_conference"
+                app:shapeAppearanceOverlay="@style/roundedImageView_8dp" />
+
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="5dp"
                 android:text="预定会议" />
 
         </LinearLayout>
@@ -79,7 +87,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/black0" />
+        android:background="@color/gray0" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/conferenceListRecyclerView"

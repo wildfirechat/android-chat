@@ -222,7 +222,7 @@
 
         <activity
             android:name=".voip.conference.ConferencePortalActivity"
-            android:label="野火会议" />
+            android:label="会议" />
         <activity
             android:name=".voip.conference.OrderConferenceActivity"
             android:label="预定会议" />

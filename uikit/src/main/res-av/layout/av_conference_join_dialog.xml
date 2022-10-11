@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="会议密码，如果没有，请忽略"
-            android:inputType="number"
+            android:inputType="text"
             android:textSize="14sp"
             android:theme="@style/AppThemeCorrectPrimaryColor" />
     </com.google.android.material.textfield.TextInputLayout>
