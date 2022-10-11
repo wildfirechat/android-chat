@@ -111,11 +111,11 @@
 
     <LinearLayout
         android:id="@+id/micLinearLayout"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="center|bottom"
         android:layout_marginBottom="100dp"
-        android:background="@drawable/round_bg_40_half_transparent"
+        android:background="@drawable/round_bg_30_half_transparent"
         android:clickable="true"
         android:gravity="center"
         android:visibility="gone">
