@@ -113,6 +113,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     private ViewPager viewPager;
     // 包含自己
     private List<AVEngineKit.ParticipantProfile> profiles;
+    private AVEngineKit.ParticipantProfile myProfile;
     private PagerAdapter pagerAdapter;
     private AVEngineKit.CallSession callSession;
     private int currentPosition = -1;
@@ -275,15 +276,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
     }
 
-    @OnClick(R2.id.switchCameraImageView)
-    void switchCamera() {
-        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
-        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            session.switchCamera();
-            startHideBarTimer();
-        }
-    }
-
     @OnClick(R2.id.videoView)
     void muteVideo() {
         // TODO 参考 muteAudio 处理
@@ -292,6 +284,15 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             boolean toMute = !session.videoMuted;
             muteVideoImageView.setSelected(toMute);
             ConferenceManager.getManager().muteVideo(toMute);
+            startHideBarTimer();
+        }
+    }
+
+    @OnClick(R2.id.switchCameraImageView)
+    void switchCamera() {
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
+            session.switchCamera();
             startHideBarTimer();
         }
     }
@@ -694,6 +695,9 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             this.pagerAdapter.notifyDataSetChanged();
             onParticipantProfileUpdate(Collections.singletonList(userId));
         }
+        if (userId.equals(ChatManager.Instance().getUserId())) {
+            updateMuteState();
+        }
         LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
     }
 
@@ -701,6 +705,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     public void didMuteStateChanged(List<String> participants) {
         if (!resetConferencePageAdapter()) {
             onParticipantProfileUpdate(participants);
+        }
+
+        if (participants.contains(ChatManager.Instance().getUserId())) {
+            updateMuteState();
         }
         LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
     }
@@ -765,6 +773,12 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     @Override
     public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
 
+    }
+
+    private void updateMuteState() {
+        muteVideoImageView.setSelected(myProfile.isAudience() || myProfile.isVideoMuted());
+        muteAudioImageView.setSelected(myProfile.isAudience() || myProfile.isAudioMuted());
+        micImageView.setMuted(myProfile.isAudience() || myProfile.isAudioMuted());
     }
 
     private boolean resetConferencePageAdapter() {
@@ -833,7 +847,8 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     private List<AVEngineKit.ParticipantProfile> getAllProfiles() {
         List<AVEngineKit.ParticipantProfile> profiles = callSession.getParticipantProfiles();
-        profiles.add(0, callSession.getMyProfile());
+        myProfile = callSession.getMyProfile();
+        profiles.add(0, myProfile);
         return profiles;
     }
 

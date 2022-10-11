@@ -209,6 +209,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                 }
             }
         }
+        LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
     }
 
     public void muteVideo(boolean mute) {
@@ -344,6 +345,8 @@ public class ConferenceManager implements OnReceiveMessageListener {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (!session.isAudience()) {
             session.switchAudience(true);
+            session.muteAudio(true);
+            session.muteVideo(true);
         }
     }
 

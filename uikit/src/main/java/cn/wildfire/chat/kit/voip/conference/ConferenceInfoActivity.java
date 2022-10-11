@@ -140,7 +140,9 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     void joinConference() {
         ConferenceInfo info = conferenceInfo;
         boolean audience = info.isAudience() || (!audioSwitch.isChecked() && !videoSwitch.isChecked());
-        AVEngineKit.CallSession session = AVEngineKit.Instance().joinConference(info.getConferenceId(), false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", audience, info.isAdvance(), !audioSwitch.isChecked(), !videoSwitch.isChecked(), null);
+        boolean muteVideo = audience || !videoSwitch.isChecked();
+        boolean muteAudio = audience || !audioSwitch.isChecked();
+        AVEngineKit.CallSession session = AVEngineKit.Instance().joinConference(info.getConferenceId(), false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", audience, info.isAdvance(), muteAudio, muteVideo, null);
         if (session != null) {
             Intent intent = new Intent(this, ConferenceActivity.class);
             startActivity(intent);
@@ -164,6 +166,10 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         startDateTimeView.setText(info.getStartTime() == 0 ? "现在" : new Date(info.getStartTime() * 1000).toString());
         endDateTimeView.setText(new Date(info.getEndTime() * 1000).toString());
 
+        if (info.isAudience()){
+            audioSwitch.setEnabled(false);
+            videoSwitch.setEnabled(false);
+        }
         long now = System.currentTimeMillis() / 1000;
         if (now > info.getEndTime()) {
             joinConferenceButton.setEnabled(false);
