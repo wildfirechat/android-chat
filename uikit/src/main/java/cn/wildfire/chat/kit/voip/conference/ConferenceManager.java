@@ -159,7 +159,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                     Toast.makeText(context, senderName + " 放下举手", Toast.LENGTH_SHORT).show();
                                 }
 
-                                // TODO 通知上层申请列表变化
+                                LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
 
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.PUT_HAND_DOWN:
