@@ -130,10 +130,8 @@ public class WfcWebViewActivity extends WfcBaseActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.equals(WfcWebViewActivity.this.url)) {
                     jsApi.setCurrentUrl(url);
-                    return false;
                 }
-                WfcWebViewActivity.loadUrl(WfcWebViewActivity.this, "loading", url);
-                return true;
+                return false;
             }
         });
         if (!TextUtils.isEmpty(htmlContent)) {
