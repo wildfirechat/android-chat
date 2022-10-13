@@ -160,6 +160,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         // 禁用自动设置 surfaceView 层级关系
         AVEngineKit.DISABLE_SURFACE_VIEW_AUTO_OVERLAY = true;
         callSession.autoSwitchVideoType = false;
+        callSession.defaultVideoType = AVEngineKit.VideoType.VIDEO_TYPE_NONE;
 
         speakerImageView.setSelected(true);
         titleTextView.setText(this.callSession.getTitle());
@@ -197,13 +198,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         speakerImageView.setSelected(selectedAudioDevice == AVAudioManager.AudioDevice.EARPIECE);
         audioManager.setDefaultAudioDevice(selectedAudioDevice == AVAudioManager.AudioDevice.EARPIECE ? AVAudioManager.AudioDevice.SPEAKER_PHONE : AVAudioManager.AudioDevice.EARPIECE);
     }
-
-//    @OnClick(R2.id.minimizeImageView)
-//    void minimize() {
-////        ((ConferenceActivity) getActivity()).showFloatingView(focusVideoUserId);
-//        // VoipBaseActivity#onStop会处理，这儿仅仅finish
-//        ((Activity) getContext()).finish();
-//    }
 
     @OnClick(R2.id.manageParticipantView)
     void addParticipant() {
@@ -876,6 +870,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         return false;
     }
 
+    // TODO 目前算法不是幂等的，没有考虑时间
     private AVEngineKit.ParticipantProfile findFocusProfile() {
         AVEngineKit.ParticipantProfile focusProfile = null;
         for (AVEngineKit.ParticipantProfile profile : profiles) {
@@ -894,6 +889,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             // 第 0 个是自己
             focusProfile = profiles.get(1);
         }
+        Log.d(TAG, "findFocusProfile " + (focusProfile != null ? focusProfile.getUserId() : "null"));
         return focusProfile;
     }
 }

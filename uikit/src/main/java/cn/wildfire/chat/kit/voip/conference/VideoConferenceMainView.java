@@ -70,6 +70,9 @@ class VideoConferenceMainView extends RelativeLayout {
     public void setup(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile myProfile, AVEngineKit.ParticipantProfile focusProfile) {
         this.callSession = session;
         this.myProfile = myProfile;
+        if (this.focusProfile != null && !this.focusProfile.isVideoMuted()) {
+            session.setParticipantVideoType(this.focusProfile.getUserId(), this.focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
+        }
         this.focusProfile = focusProfile;
         // 不 post 一下，可能视频流界面黑屏，原因未知
         ChatManager.Instance().getMainHandler().post(() -> {
