@@ -125,7 +125,7 @@ public class ConferenceParticipantListFragment extends Fragment {
     }
 
     private void loadAndShowConferenceParticipants() {
-        if (ChatManager.Instance().getUserId().equals(callSession.getHost())) {
+        if (ChatManager.Instance().getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
             List<String> applyingUnmuteMembers = conferenceManager.getApplyingUnmuteMembers();
             if (applyingUnmuteMembers.isEmpty()) {
                 applyingUnmuteTextView.setVisibility(View.GONE);
@@ -198,7 +198,7 @@ public class ConferenceParticipantListFragment extends Fragment {
         Map<String, Callable<Void>> items = new HashMap<>();
         String selfUid = ChatManager.Instance().getUserId();
         items.put("查看用户信息", userInfoCall);
-        if (selfUid.equals(callSession.getHost())) {
+        if (selfUid.equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
             if (selfUid.equals(profile.getUserId())) {
                 // 主持人自己
                 if (profile.isAudioMuted()) {
@@ -300,12 +300,15 @@ public class ConferenceParticipantListFragment extends Fragment {
                 .into(portraitImageView);
 
             String desc = "";
-            AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
             if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
-                if (profile.getUserId().equals(session.getHost())) {
+                if (profile.getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
                     desc = "主持人，我";
                 } else {
                     desc = "我";
+                }
+            } else {
+                if (profile.getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
+                    desc = "主持人";
                 }
             }
             if (TextUtils.isEmpty(desc)) {

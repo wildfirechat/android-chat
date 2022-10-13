@@ -83,7 +83,7 @@ public class ConferenceActivity extends VoipBaseActivity {
         String title = session.getTitle();
         String desc = session.getDesc();
         boolean audience = session.isAudience();
-        String host = session.getHost();
+        String host = ConferenceManager.getManager().getCurrentConferenceInfo().getOwner();
         boolean advanced = session.isAdvanced();
 
         postAction(() -> {
@@ -232,7 +232,7 @@ public class ConferenceActivity extends VoipBaseActivity {
     public void inviteNewParticipant() {
         isInvitingNewParticipant = true;
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
+        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), ConferenceManager.getManager().getCurrentConferenceInfo().getOwner(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
         Intent intent = new Intent(this, ConferenceInviteActivity.class);
         intent.putExtra("inviteMessage", invite);
         startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);

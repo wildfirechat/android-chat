@@ -271,7 +271,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     void hangup() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            if (ChatManager.Instance().getUserId().equals(session.getHost())) {
+            if (ChatManager.Instance().getUserId().equals(ConferenceManager.getManager().getCurrentConferenceInfo().getOwner())) {
                 new AlertDialog.Builder(getContext())
                     .setMessage("请选择是否结束会议")
                     .setIcon(R.mipmap.ic_launcher)
@@ -321,7 +321,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
         titleTextView.setText(callSession.getTitle());
         conferenceIdTextView.setText(callSession.getCallId());
-        conferenceHostTextView.setText(callSession.getHost());
+        conferenceHostTextView.setText(ConferenceManager.getManager().getCurrentConferenceInfo().getOwner());
         String conferenceLink = WfcScheme.buildConferenceScheme(callSession.getCallId(), callSession.getPin());
         conferenceLinkTextView.setText(conferenceLink);
 
