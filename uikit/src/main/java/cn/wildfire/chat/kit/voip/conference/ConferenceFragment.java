@@ -588,14 +588,33 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                 return;
             }
 
+            boolean keepSubscribeFocusVideo = false;
+            String keepSubscribeUserId = null;
+            if ((currentPosition == 0 && position == 1)
+                || (currentPosition == 1 && position == 0)) {
+                List<AVEngineKit.ParticipantProfile> pageParticipantProfiles = getGridPageParticipantProfiles(1);
+                AVEngineKit.ParticipantProfile focusProfile = findFocusProfile();
+                for (AVEngineKit.ParticipantProfile p : pageParticipantProfiles) {
+                    if (p.getUserId().equals(focusProfile.getUserId())) {
+                        if (position == 1) {
+                            keepSubscribeFocusVideo = true;
+                        } else {
+                            keepSubscribeUserId = focusProfile.getUserId();
+                        }
+                        break;
+                    }
+                }
+                // 1 -> 0
+            }
+
             // TODO 优化从第 0-> 1 或者 1-> 0时，在两页都会显示的视频流，不用取消订阅
             // 比如第 0 页显示的大流，刚好也需要显示在第 1 页时，就不用取消订阅
             if (isVideoConference() && currentPosition != -1) {
                 view = conferencePages.get(currentPosition % 3);
                 if (view instanceof ConferenceParticipantGridView) {
-                    ((ConferenceParticipantGridView) view).onPageUnselected();
+                    ((ConferenceParticipantGridView) view).onPageUnselected(keepSubscribeUserId);
                 } else if (view instanceof VideoConferenceMainView) {
-                    ((VideoConferenceMainView) view).onPageUnselected();
+                    ((VideoConferenceMainView) view).onPageUnselected(keepSubscribeFocusVideo);
                 }
             }
 
@@ -604,7 +623,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                 ((ConferenceParticipantGridView) view).setParticipantProfiles(callSession, getGridPageParticipantProfiles(position));
             } else if (view instanceof VideoConferenceMainView) {
                 AVEngineKit.ParticipantProfile myProfile = callSession.getMyProfile();
-                ((VideoConferenceMainView) view).setup(callSession, myProfile, findFocusProfile());
+                ((VideoConferenceMainView) view).setupProfiles(callSession, myProfile, findFocusProfile());
             }
 
             currentPosition = position;
@@ -820,7 +839,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             View view = conferencePages.get(currentPosition % 3);
             if (view instanceof VideoConferenceMainView) {
                 AVEngineKit.ParticipantProfile focusProfile = findFocusProfile();
-                ((VideoConferenceMainView) view).setup(this.callSession, callSession.getMyProfile(), focusProfile);
+                ((VideoConferenceMainView) view).setupProfiles(this.callSession, callSession.getMyProfile(), focusProfile);
             } else if (view instanceof ConferenceParticipantGridView) {
                 List<AVEngineKit.ParticipantProfile> currentPageParticipantProfiles = getGridPageParticipantProfiles(currentPosition);
                 boolean currentPageUpdated = false;
