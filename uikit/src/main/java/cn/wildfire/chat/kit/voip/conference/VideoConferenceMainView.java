@@ -67,10 +67,11 @@ class VideoConferenceMainView extends RelativeLayout {
         ButterKnife.bind(this, view);
     }
 
-    public void setup(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile myProfile, AVEngineKit.ParticipantProfile focusProfile) {
+    public void setupProfiles(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile myProfile, AVEngineKit.ParticipantProfile focusProfile) {
         this.callSession = session;
         this.myProfile = myProfile;
-        if (this.focusProfile != null && !this.focusProfile.isVideoMuted()) {
+
+        if (this.focusProfile != null && !this.focusProfile.isVideoMuted() && !this.focusProfile.getUserId().equals(focusProfile.getUserId())) {
             session.setParticipantVideoType(this.focusProfile.getUserId(), this.focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
         }
         this.focusProfile = focusProfile;
@@ -184,18 +185,10 @@ class VideoConferenceMainView extends RelativeLayout {
         }
     }
 
-    public void onPageUnselected() {
-        if (focusProfile != null) {
+    public void onPageUnselected(boolean keepSubscribeFocusVideo) {
+        if (focusProfile != null && !keepSubscribeFocusVideo) {
             callSession.setParticipantVideoType(focusProfile.getUserId(), focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
         }
     }
-
-
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        handler.removeCallbacks(hideBarCallback);
-//        handler.removeCallbacks(updateCallDurationRunnable);
-//    }
 
 }

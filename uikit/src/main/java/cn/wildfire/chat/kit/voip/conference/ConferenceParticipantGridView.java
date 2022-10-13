@@ -60,11 +60,6 @@ class ConferenceParticipantGridView extends RelativeLayout {
     }
 
     public void setParticipantProfiles(AVEngineKit.CallSession session, List<AVEngineKit.ParticipantProfile> profiles) {
-//        if (profiles == null || profiles.isEmpty()) {
-//            Log.d(TAG, "setParticipantProfiles profiles is empty, page has been removed");
-//            ((ViewGroup) getParent()).removeView(this);
-//            return;
-//        }
         this.callSession = session;
         this.profiles = profiles;
 
@@ -136,11 +131,14 @@ class ConferenceParticipantGridView extends RelativeLayout {
         }
     }
 
-    public void onPageUnselected() {
+    public void onPageUnselected(String keepSubscribeUserId) {
         if (profiles == null) {
             return;
         }
         for (AVEngineKit.ParticipantProfile p : profiles) {
+            if (p.getUserId().equals(keepSubscribeUserId)) {
+                continue;
+            }
             if (!p.isAudience() && !p.isVideoMuted() && !p.getUserId().equals(ChatManager.Instance().getUserId())) {
                 callSession.setParticipantVideoType(p.getUserId(), p.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
             }
