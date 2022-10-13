@@ -22,6 +22,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
@@ -76,6 +77,12 @@ public class ConferenceActivity extends VoipBaseActivity {
     // hangup 也会触发
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason callEndReason) {
+        // 主动挂断
+        ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();;
+        if (conferenceInfo == null){
+            finish();
+            return;
+        }
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         String callId = session.getCallId();
         boolean audioOnly = session.isAudioOnly();
@@ -83,7 +90,7 @@ public class ConferenceActivity extends VoipBaseActivity {
         String title = session.getTitle();
         String desc = session.getDesc();
         boolean audience = session.isAudience();
-        String host = ConferenceManager.getManager().getCurrentConferenceInfo().getOwner();
+        String host = conferenceInfo.getOwner();
         boolean advanced = session.isAdvanced();
 
         postAction(() -> {
