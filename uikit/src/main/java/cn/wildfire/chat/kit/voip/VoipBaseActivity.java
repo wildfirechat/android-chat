@@ -376,6 +376,15 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
+    @Override
+    public void finish() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            super.finishAndRemoveTask();
+        } else {
+            super.finish();
+        }
+    }
+
     public void setFocusVideoUserId(String focusVideoUserId) {
         this.focusVideoUserId = focusVideoUserId;
     }

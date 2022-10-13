@@ -217,6 +217,9 @@
             android:label="发起会议" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity"
+            android:launchMode="singleTask"
+            android:taskAffinity=".conference"
+            android:excludeFromRecents="true"
             android:label="会议"
             android:windowSoftInputMode="adjustPan" />
 

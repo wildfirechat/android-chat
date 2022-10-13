@@ -140,9 +140,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null && session.isConference()) {
-            session.leaveConference(false);
+        if (Intent.ACTION_MAIN.equals(rootIntent.getAction())) {
+            AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+            if (session != null && session.isConference()) {
+                session.leaveConference(false);
+            }
         }
     }
 
@@ -422,7 +424,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             if (TextUtils.equals(ChatManager.Instance().getUserId(), nextFocusUserId)) {
                 session.setupLocalVideoView(videoContainer, SCALE_ASPECT_BALANCED);
                 // 因为remoteVideoViewContainer 和 localVideoViewContainer 是同一个，所以切换的时候，需要清一下
-                if (!TextUtils.isEmpty(lastFocusUserId)){
+                if (!TextUtils.isEmpty(lastFocusUserId)) {
                     session.setupRemoteVideoView(lastFocusUserId, null, SCALE_ASPECT_BALANCED);
                 }
             } else {
