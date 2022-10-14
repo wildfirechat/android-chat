@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -19,9 +20,12 @@ import org.webrtc.StatsReport;
 
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceActivity extends VoipBaseActivity {
@@ -32,6 +36,7 @@ public class ConferenceActivity extends VoipBaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.av_conference_activity);
         init();
     }
 
@@ -53,23 +58,31 @@ public class ConferenceActivity extends VoipBaseActivity {
         }
 
         Fragment fragment;
-        if (session.isAudioOnly()) {
-            fragment = new ConferenceAudioFragment();
-        } else {
-            fragment = new ConferenceVideoFragment();
-        }
+        fragment = new ConferenceFragment();
 
         currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-            .add(android.R.id.content, fragment)
+            .add(R.id.mainLayoutContainer, fragment)
+            .add(R.id.messageLayoutContainer, new ConferenceMessageFragment())
             .commit();
     }
 
+    public void showKeyboardDialogFragment() {
+        KeyboardDialogFragment keyboardDialogFragment = new ConferenceMessageInputDialogFragment();
+        keyboardDialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.Dialog_FullScreen_Transparent);
+        keyboardDialogFragment.show(getSupportFragmentManager(), "keyboardDialog");
+    }
 
     // hangup 也会触发
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason callEndReason) {
+        // 主动挂断
+        ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();;
+        if (conferenceInfo == null){
+            finish();
+            return;
+        }
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         String callId = session.getCallId();
         boolean audioOnly = session.isAudioOnly();
@@ -77,7 +90,7 @@ public class ConferenceActivity extends VoipBaseActivity {
         String title = session.getTitle();
         String desc = session.getDesc();
         boolean audience = session.isAudience();
-        String host = session.getHost();
+        String host = conferenceInfo.getOwner();
         boolean advanced = session.isAdvanced();
 
         postAction(() -> {
@@ -157,18 +170,6 @@ public class ConferenceActivity extends VoipBaseActivity {
 
     @Override
     public void didChangeMode(boolean audioOnly) {
-        postAction(() -> {
-            if (audioOnly) {
-                Fragment fragment = new ConferenceAudioFragment();
-                currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                    .replace(android.R.id.content, fragment)
-                    .commit();
-            } else {
-                // never called
-            }
-        });
     }
 
     //@Override
@@ -232,6 +233,15 @@ public class ConferenceActivity extends VoipBaseActivity {
     void showParticipantList() {
         isInvitingNewParticipant = true;
         Intent intent = new Intent(this, ConferenceParticipantListActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
+    }
+
+    public void inviteNewParticipant() {
+        isInvitingNewParticipant = true;
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), ConferenceManager.getManager().getCurrentConferenceInfo().getOwner(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
+        Intent intent = new Intent(this, ConferenceInviteActivity.class);
+        intent.putExtra("inviteMessage", invite);
         startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
     }
 

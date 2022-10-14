@@ -19,6 +19,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.media.projection.MediaProjectionManager;
@@ -43,6 +44,7 @@ import org.webrtc.StatsReport;
 
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.model.UserInfo;
@@ -88,17 +90,16 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             wakeLock.acquire();
         }
 
-        //Todo 把标题栏改成黑色
-//        getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN | LayoutParams.FLAG_KEEP_SCREEN_ON
-//            | LayoutParams.FLAG_SHOW_WHEN_LOCKED | LayoutParams.FLAG_TURN_SCREEN_ON);
-//        getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility());
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            SharedPreferences sp = getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
+            boolean darkTheme = sp.getBoolean("darkTheme", true);
+
+            int toolbarBackgroundColorResId = darkTheme ? R.color.colorPrimary : R.color.gray5;
             Window window = getWindow();
             //设置修改状态栏
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             //设置状态栏的颜色，和你的app主题或者标题栏颜色设置一致就ok了
-            window.setStatusBarColor(getResources().getColor(android.R.color.black));
+            window.setStatusBarColor(getResources().getColor(toolbarBackgroundColorResId));
         }
 
         try {
@@ -373,6 +374,15 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     protected void finishFadeout() {
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    @Override
+    public void finish() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            super.finishAndRemoveTask();
+        } else {
+            super.finish();
+        }
     }
 
     public void setFocusVideoUserId(String focusVideoUserId) {

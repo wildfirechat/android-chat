@@ -106,6 +106,7 @@ public interface MessageContentType {
     int ContentType_Conference_Invite = 408;
     int ContentType_Conference_Change_Model = 410;
     int ContentType_Conference_Kickoff_Member = 411;
+    int ContentType_Conference_Command = 412;
 
     int ContentType_Call_Multi_Call_Ongoing = 416;
     int ContentType_Call_Join_Call_Request = 417;

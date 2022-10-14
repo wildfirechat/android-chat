@@ -43,7 +43,9 @@ import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.MultiCallActivity;
 import cn.wildfire.chat.kit.voip.SingleCallActivity;
 import cn.wildfire.chat.kit.voip.VoipCallService;
+import cn.wildfire.chat.kit.voip.conference.ConferenceManager;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
+import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.VideoProfile;
 import cn.wildfirechat.client.NotInitializedExecption;
@@ -111,6 +113,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         ViewModelProvider.Factory factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application);
         viewModelProvider = new ViewModelProvider(viewModelStore, factory);
         OKHttpHelper.init(application.getApplicationContext());
+        ConferenceManager.init(application);
 
         Log.d("WfcUIKit", "init end");
     }
@@ -150,6 +153,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP360P, false);
 
             ChatManager.Instance().registerMessageContent(ConferenceChangeModeContent.class);
+            ChatManager.Instance().registerMessageContent(ConferenceCommandContent.class);
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
             for (String[] server : Config.ICE_SERVERS) {
                 ChatManagerHolder.gAVEngine.addIceServer(server[0], server[1], server[2]);
@@ -187,7 +191,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         // 对讲机
         SharedPreferences sp = application.getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
-        if (pttEnabled){
+        if (pttEnabled) {
             PTTClient.getInstance().init(application);
         }
     }
@@ -213,7 +217,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             }
 
             Conversation conversation = session.getConversation();
-            if (conversation == null){
+            if (conversation == null) {
                 return;
             }
             if (conversation.type == Conversation.ConversationType.Single) {
@@ -301,7 +305,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             PendingIntent pendingIntent = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 pendingIntent = PendingIntent.getActivities(context, 100, new Intent[]{main, intent}, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-            }else {
+            } else {
                 pendingIntent = PendingIntent.getActivities(context, 100, new Intent[]{main, intent}, PendingIntent.FLAG_UPDATE_CURRENT);
             }
             try {
@@ -318,6 +322,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         long now = System.currentTimeMillis();
         long delta = ChatManager.Instance().getServerDeltaTime();
         if (messages != null) {
+            ConferenceManager.getManager().onReceiveMessage(messages, hasMore);
             for (Message msg : messages) {
                 if (msg.content instanceof PCLoginRequestMessageContent && (now - (msg.serverTime - delta)) < 60 * 1000) {
                     PCLoginRequestMessageContent content = ((PCLoginRequestMessageContent) msg.content);
