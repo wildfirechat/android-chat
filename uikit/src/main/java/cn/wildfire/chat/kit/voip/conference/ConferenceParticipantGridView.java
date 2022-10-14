@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 
 import androidx.gridlayout.widget.GridLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
@@ -61,6 +62,28 @@ class ConferenceParticipantGridView extends RelativeLayout {
 
     public void setParticipantProfiles(AVEngineKit.CallSession session, List<AVEngineKit.ParticipantProfile> profiles) {
         this.callSession = session;
+        List<AVEngineKit.ParticipantProfile> removedProfiles = new ArrayList<>();
+        if (this.profiles != null) {
+            for (AVEngineKit.ParticipantProfile op : this.profiles) {
+                boolean removed = true;
+                for (AVEngineKit.ParticipantProfile profile : profiles) {
+                    if (profile.getUserId().equals(op.getUserId())) {
+                        removed = false;
+                        break;
+                    }
+                }
+                if (removed) {
+                    removedProfiles.add(op);
+                }
+            }
+        }
+
+        for (AVEngineKit.ParticipantProfile rp : removedProfiles) {
+            if (!rp.getUserId().equals(ChatManager.Instance().getUserId()) && !rp.isAudience() && !rp.isVideoMuted()) {
+                callSession.setParticipantVideoType(rp.getUserId(), rp.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
+            }
+        }
+
         this.profiles = profiles;
 
         // TODO diff，全删，然后重新添加，UI 会稍微闪一下
