@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -116,6 +117,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     private PagerAdapter pagerAdapter;
     private AVEngineKit.CallSession callSession;
     private int currentPosition = -1;
+    private boolean fixPreviewSurfaceViewZOrder = false;
     private boolean selectFirstPage = true;
     private static final String TAG = "conferenceFragment";
 
@@ -765,7 +767,17 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     @Override
     public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
-
+        // 预览视频流可能会被焦点视频流覆盖，采用下面的方法修复
+        if (currentPosition == 0 && !fixPreviewSurfaceViewZOrder) {
+            VideoConferenceMainView mainView = (VideoConferenceMainView) conferencePages.get(0);
+            SurfaceView previewSurfaceView = mainView.findViewWithTag("sv_" + ChatManager.Instance().getUserId());
+            if (previewSurfaceView != null) {
+                previewSurfaceView.setZOrderMediaOverlay(true);
+                // 触发一次界面重绘，不然不生效
+                clickListener.onClick(mainView);
+                fixPreviewSurfaceViewZOrder = true;
+            }
+        }
     }
 
     @Override
