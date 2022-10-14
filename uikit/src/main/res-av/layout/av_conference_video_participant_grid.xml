@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/participantGridView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        app:alignmentMode="alignBounds"
+        app:columnCount="2"
+        app:orientation="horizontal"
+        app:rowCount="2"
+        app:useDefaultMargins="false" />
+</RelativeLayout>

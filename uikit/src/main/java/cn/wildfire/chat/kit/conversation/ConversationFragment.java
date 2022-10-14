@@ -109,6 +109,7 @@ public class ConversationFragment extends Fragment implements
     private Conversation conversation;
     private boolean loadingNewMessage;
     private boolean shouldContinueLoadNewMessage = false;
+    private boolean isPreJoinedChatRoom = true;
 
     private static final int MESSAGE_LOAD_COUNT_PER_TIME = 20;
     private static final int MESSAGE_LOAD_AROUND = 10;
@@ -416,11 +417,17 @@ public class ConversationFragment extends Fragment implements
     }
 
     public void setupConversation(Conversation conversation, String title, long focusMessageId, String target) {
+        setupConversation(conversation, title, focusMessageId, target, false);
+    }
+
+    public void setupConversation(Conversation conversation, String title, long focusMessageId, String target, boolean isJoinedChatRoom) {
         if (this.conversation != null) {
             if ((this.conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(this.conversation.target))
                 || this.conversation.type == Conversation.ConversationType.Group) {
                 userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
             }
+            this.adapter = new ConversationMessageAdapter(this);
+            this.recyclerView.setAdapter(this.adapter);
         }
 
         if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
@@ -432,6 +439,7 @@ public class ConversationFragment extends Fragment implements
         this.conversationTitle = title;
         this.initialFocusedMessageId = focusMessageId;
         this.channelPrivateChatUser = target;
+        this.isPreJoinedChatRoom = isJoinedChatRoom;
         setupConversation(conversation);
     }
 
@@ -558,7 +566,12 @@ public class ConversationFragment extends Fragment implements
             loadMessage(initialFocusedMessageId);
         }
         if (conversation.type == Conversation.ConversationType.ChatRoom) {
-            joinChatRoom();
+            chatRoomViewModel = ViewModelProviders.of(this).get(ChatRoomViewModel.class);
+            if (!isPreJoinedChatRoom) {
+                joinChatRoom();
+            } else {
+                loadMoreOldMessages(true);
+            }
         } else if (conversation.type == Conversation.ConversationType.Channel) {
             EnterChannelChatMessageContent content = new EnterChannelChatMessageContent();
             messageViewModel.sendMessage(conversation, content);
@@ -654,7 +667,6 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void joinChatRoom() {
-        chatRoomViewModel = ViewModelProviders.of(this).get(ChatRoomViewModel.class);
         chatRoomViewModel.joinChatRoom(conversation.target)
             .observe(this, new Observer<OperateResult<Boolean>>() {
                 @Override
@@ -881,7 +893,9 @@ public class ConversationFragment extends Fragment implements
         }
 
         if (conversation.type == Conversation.ConversationType.ChatRoom) {
-            quitChatRoom();
+            if (!isPreJoinedChatRoom) {
+                quitChatRoom();
+            }
         } else if (conversation.type == Conversation.ConversationType.Channel) {
             LeaveChannelChatMessageContent content = new LeaveChannelChatMessageContent();
             messageViewModel.sendMessage(conversation, content);
@@ -943,12 +957,19 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void loadMoreOldMessages() {
+        loadMoreOldMessages(false);
+    }
+
+    private void loadMoreOldMessages(boolean scrollToBottom) {
 
         conversationViewModel.loadOldMessages(conversation, channelPrivateChatUser, adapter.oldestMessageId, adapter.oldestMessageUid, MESSAGE_LOAD_COUNT_PER_TIME)
             .observe(this, uiMessages -> {
                 adapter.addMessagesAtHead(uiMessages);
 
                 swipeRefreshLayout.setRefreshing(false);
+                if (scrollToBottom) {
+                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                }
             });
     }
 

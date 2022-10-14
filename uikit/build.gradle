@@ -9,12 +9,12 @@ android {
             storePassword 'wildfirechat'
         }
     }
-    compileSdkVersion 29
+    compileSdkVersion 31
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
     defaultConfig {
-        minSdkVersion 17
-        targetSdkVersion 29 //当targetversion大于23时，需要使用fileprovider
+        minSdkVersion 18
+        targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
         versionCode 27
         versionName "0.8.0.rc3"
         multiDexEnabled true
@@ -70,7 +70,7 @@ dependencies {
 
     api 'q.rorbin:badgeview:1.1.3'
     api 'androidx.appcompat:appcompat:1.3.0-alpha01'
-    api 'com.google.android.material:material:1.3.0-alpha01'
+    api 'com.google.android.material:material:1.6.1'
     implementation 'cjt.library.wheel:camera:1.1.9'
     implementation 'com.jakewharton:butterknife:10.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
@@ -82,12 +82,14 @@ dependencies {
 
     api "androidx.lifecycle:lifecycle-extensions:2.2.0"
     api 'com.king.zxing:zxing-lite:1.1.1'
+    api 'cn.aigestudio.wheelpicker:WheelPicker:1.1.3'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'com.google.android:flexbox:2.0.1'
 
     implementation 'com.tencent.map.geolocation:TencentLocationSdk-openplatform:7.2.6'
     implementation 'io.kvh:amr:1.1.1'
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
 
     // moment start
 //    implementation project(':momentclient')

@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/categoryTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/gray10"
-        android:padding="5dp"
-        tool:text="互动成员">
-
-    </TextView>
+    android:orientation="horizontal">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="60dp"
+        android:layout_weight="1"
         android:orientation="horizontal"
         android:padding="5dp">
 
@@ -59,6 +51,29 @@
                 android:textSize="12sp"
                 tool:text="desc" />
         </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingRight="10dp">
+
+        <ImageView
+            android:id="@+id/audioImageView"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/av_conference_audio_selector"
+            app:tint="@color/black" />
+
+        <ImageView
+            android:id="@+id/videoImageView"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/av_conference_video_selector"
+            app:tint="@color/black" />
 
     </LinearLayout>
 </LinearLayout>

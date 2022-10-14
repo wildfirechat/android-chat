@@ -109,7 +109,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/hangupView"
+            android:id="@+id/moreActionLinearLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -120,13 +120,13 @@
                 android:id="@+id/hangupImageView"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/av_conference_end_call" />
+                android:src="@drawable/av_conference_more" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:text="结束"
+                android:text="更多"
                 android:textColor="@color/white" />
 
         </LinearLayout>
