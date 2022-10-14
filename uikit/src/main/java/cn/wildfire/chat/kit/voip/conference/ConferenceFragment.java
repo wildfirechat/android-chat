@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
@@ -30,6 +31,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.transition.Slide;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
+import androidx.transition.TransitionSet;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -76,6 +81,9 @@ import cn.wildfirechat.remote.ChatManager;
 // 离开时，先更新 view，在删除
 
 public class ConferenceFragment extends BaseConferenceFragment implements AVEngineKit.CallSessionCallback {
+
+    @BindView(R2.id.rootFrameLayout)
+    FrameLayout rootFrameLayout;
 
     @BindView(R2.id.topBarView)
     LinearLayout topBarView;
@@ -470,21 +478,56 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     private void setPanelVisibility(int visibility) {
+        TransitionSet transitionSet = new TransitionSet();
+        Transition transitionToBottom = new Slide(Gravity.BOTTOM);
+        transitionToBottom.setDuration(500);
+        transitionSet.addTransition(transitionToBottom);
+
+        Transition transitionToTop = new Slide(Gravity.TOP);
+        transitionToTop.setDuration(500);
+        transitionSet.addTransition(transitionToTop);
+
+        transitionToBottom.addTarget(bottomPanel);
+        transitionToBottom.addTarget(micLinearLayout);
+        transitionToTop.addTarget(topBarView);
+
+        transitionSet.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(@NonNull Transition transition) {
+                Activity activity = ((Activity) getContext());
+                if (visibility == VISIBLE) {
+                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                } else {
+                    activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                }
+            }
+
+            @Override
+            public void onTransitionEnd(@NonNull Transition transition) {
+            }
+
+            @Override
+            public void onTransitionCancel(@NonNull Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionPause(@NonNull Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(@NonNull Transition transition) {
+
+            }
+        });
+
+        TransitionManager.beginDelayedTransition(rootFrameLayout, transitionSet);
+
         bottomPanel.setVisibility(visibility);
         topBarView.setVisibility(visibility);
-        // TODO status bar
-        Activity activity = ((Activity) getContext());
-        if (visibility == VISIBLE) {
-//            activity.requestWindowFeature(Window.FEATURE_ACTION_BAR);
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            micLinearLayout.setVisibility(GONE);
-        } else {
-//            activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            micLinearLayout.setVisibility(VISIBLE);
-
-        }
+        micLinearLayout.setVisibility(visibility == VISIBLE ? GONE : VISIBLE);
     }
 
     private final Handler handler = new Handler();
