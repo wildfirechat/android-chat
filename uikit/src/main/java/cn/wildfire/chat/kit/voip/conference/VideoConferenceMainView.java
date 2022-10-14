@@ -24,7 +24,6 @@ import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 class VideoConferenceMainView extends RelativeLayout {
@@ -109,14 +108,9 @@ class VideoConferenceMainView extends RelativeLayout {
     }
 
     public void onDestroyView() {
-        // TODO
         // do nothing
+        // 要在页面取消选择之后，才会走到这儿，取消选择的时候，已经做了相关处理
     }
-
-    private UserInfo me;
-
-    // TODO 移除，并将VoipBaseActivity.focusVideoUserId 修改为static
-    private String focusVideoUserId;
 
 
     public static final String TAG = "ConferenceVideoFragment";
@@ -131,15 +125,12 @@ class VideoConferenceMainView extends RelativeLayout {
 
         previewContainerFrameLayout.removeAllViews();
 
-        focusVideoUserId = myProfile.getUserId();
-
         List<AVEngineKit.ParticipantProfile> mainProfiles = new ArrayList<>();
 //        if (!myProfile.isAudience()) {
         mainProfiles.add(myProfile);
 //        }
         if (focusProfile != null && !focusProfile.getUserId().equals(myProfile.getUserId())) {
             mainProfiles.add(focusProfile);
-            focusVideoUserId = focusProfile.getUserId();
         }
 
         for (AVEngineKit.ParticipantProfile profile : mainProfiles) {

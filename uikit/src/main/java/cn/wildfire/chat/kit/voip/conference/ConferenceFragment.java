@@ -541,8 +541,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             Log.d(TAG, "destroyItem " + position);
             View view = (View) object;
             if (view instanceof VideoConferenceMainView) {
-                // TODO onDestroyView
-
+                ((VideoConferenceMainView) view).onDestroyView();
             } else if (view instanceof ConferenceParticipantGridView) {
                 ((ConferenceParticipantGridView) view).onDestroyView();
             }
@@ -607,7 +606,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                 // 1 -> 0
             }
 
-            // TODO 优化从第 0-> 1 或者 1-> 0时，在两页都会显示的视频流，不用取消订阅
             // 比如第 0 页显示的大流，刚好也需要显示在第 1 页时，就不用取消订阅
             if (isVideoConference() && currentPosition != -1) {
                 view = conferencePages.get(currentPosition % 3);
@@ -829,7 +827,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     private void onParticipantProfileUpdate(List<String> participants) {
-        // 比如有人离开后
         if (currentPosition == -1) {
             return;
         }
@@ -890,6 +887,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     // TODO 目前算法不是幂等的，没有考虑时间
+    // TODO VoipCallService 里面也要用一样的算法，可以实现放到 callSession 里面
     private AVEngineKit.ParticipantProfile findFocusProfile() {
         AVEngineKit.ParticipantProfile focusProfile = null;
         for (AVEngineKit.ParticipantProfile profile : profiles) {
