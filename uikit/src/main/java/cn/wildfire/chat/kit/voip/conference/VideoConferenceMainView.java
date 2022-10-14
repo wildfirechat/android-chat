@@ -70,7 +70,7 @@ class VideoConferenceMainView extends RelativeLayout {
         this.callSession = session;
         this.myProfile = myProfile;
 
-        if (this.focusProfile != null && !this.focusProfile.isVideoMuted() && !this.focusProfile.getUserId().equals(focusProfile.getUserId())) {
+        if (this.focusProfile != null && focusProfile != null && !this.focusProfile.isVideoMuted() && !this.focusProfile.getUserId().equals(focusProfile.getUserId())) {
             session.setParticipantVideoType(this.focusProfile.getUserId(), this.focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
         }
         this.focusProfile = focusProfile;
