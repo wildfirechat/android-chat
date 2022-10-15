@@ -12,6 +12,7 @@ import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -20,6 +21,7 @@ import androidx.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -336,6 +338,11 @@ public class ImageUtils {
      * 图片入系统相册
      */
     public static void saveMedia2Album(Context context, File mediaFile) {
+        try {
+            MediaStore.Images.Media.insertImage(context.getContentResolver(), mediaFile.getAbsolutePath(), mediaFile.getName(), "");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         Uri uri = Uri.fromFile(mediaFile);
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
     }
