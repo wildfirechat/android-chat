@@ -8,7 +8,6 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -276,20 +275,22 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
             if (ChatManager.Instance().getUserId().equals(ConferenceManager.getManager().getCurrentConferenceInfo().getOwner())) {
-                new AlertDialog.Builder(getContext())
-                    .setMessage("请选择是否结束会议")
-                    .setIcon(R.mipmap.ic_launcher)
-                    .setNeutralButton("退出会议", (dialogInterface, i) -> {
+                new MaterialDialog.Builder(getContext())
+                    .content("如果你想让与会人员继续开会，请选择退出会议")
+                    .negativeText("退出会议")
+                    .onNegative((dialogInterface, i) -> {
                         ConferenceManager.getManager().setCurrentConferenceInfo(null);
                         if (session.getState() != AVEngineKit.CallState.Idle)
                             session.leaveConference(false);
                     })
-                    .setPositiveButton("结束会议", (dialogInterface, i) -> {
+                    .positiveText("结束会议")
+                    .onPositive((dialogInterface, i) -> {
+                        ConferenceManager.getManager().destroyConference(session.getCallId(), null);
                         ConferenceManager.getManager().setCurrentConferenceInfo(null);
                         if (session.getState() != AVEngineKit.CallState.Idle)
                             session.leaveConference(true);
                     })
-                    .create()
+                    .build()
                     .show();
             } else {
                 session.leaveConference(false);

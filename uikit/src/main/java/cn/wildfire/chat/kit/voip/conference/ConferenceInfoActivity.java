@@ -108,7 +108,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.destroy) {
-            WfcUIKit.getWfcUIKit().getAppServiceProvider().destroyConference(conferenceId, new GeneralCallback() {
+            ConferenceManager.getManager().destroyConference(conferenceId, new GeneralCallback() {
                 @Override
                 public void onSuccess() {
                     Toast.makeText(ConferenceInfoActivity.this, "销毁会议成功", Toast.LENGTH_SHORT).show();

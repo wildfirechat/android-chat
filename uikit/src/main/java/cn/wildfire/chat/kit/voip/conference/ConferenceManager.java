@@ -58,6 +58,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
         return currentConferenceInfo;
     }
 
+
     public void setCurrentConferenceInfo(ConferenceInfo currentConferenceInfo) {
         this.currentConferenceInfo = currentConferenceInfo;
         if (currentConferenceInfo == null) {
@@ -360,7 +361,24 @@ public class ConferenceManager implements OnReceiveMessageListener {
 
             }
         });
+    }
 
+    public void destroyConference(String conferenceId, GeneralCallback callback) {
+        WfcUIKit.getWfcUIKit().getAppServiceProvider().destroyConference(conferenceId, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onFail(int i) {
+                if (callback != null) {
+                    callback.onFail(i);
+                }
+            }
+        });
     }
 
     private boolean isOwner() {
