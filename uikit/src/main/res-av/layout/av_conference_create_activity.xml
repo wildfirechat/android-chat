@@ -237,7 +237,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:enabled="false"
-            android:text="进入会议室"
+            android:text="进入会议"
             android:textColor="@color/av_conference_button_text_color_selector" />
 
     </LinearLayout>

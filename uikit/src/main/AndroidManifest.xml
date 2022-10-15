@@ -46,9 +46,9 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:hardwareAccelerated="true"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
 
@@ -217,10 +217,10 @@
             android:label="发起会议" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity"
-            android:launchMode="singleTask"
-            android:taskAffinity=".conference"
             android:excludeFromRecents="true"
             android:label="会议"
+            android:launchMode="singleTask"
+            android:taskAffinity=".conference"
             android:windowSoftInputMode="adjustPan" />
 
         <activity
@@ -238,6 +238,9 @@
         <activity
             android:name=".voip.conference.ConferenceParticipantListActivity"
             android:label="参会人员" />
+        <activity
+            android:name=".voip.conference.ConferenceHistoryListActivity"
+            android:label="会议记录" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
             android:exported="false"
