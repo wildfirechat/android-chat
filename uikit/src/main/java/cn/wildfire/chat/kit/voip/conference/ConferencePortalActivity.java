@@ -95,6 +95,12 @@ public class ConferencePortalActivity extends WfcBaseActivity {
         startActivity(intent);
     }
 
+    @OnClick(R2.id.conferenceHistoryButton)
+    void showConferenceHistory(){
+        Intent intent = new Intent(this, ConferenceHistoryListActivity.class);
+        startActivity(intent);
+    }
+
 
     private void loadAndShowFavConference() {
         WfcUIKit.getWfcUIKit().getAppServiceProvider().getFavConferences(new AppServiceProvider.FavConferenceCallback() {

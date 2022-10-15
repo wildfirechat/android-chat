@@ -273,20 +273,25 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     @OnClick(R2.id.hangupImageView)
     void hangup() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        ConferenceManager conferenceManager = ConferenceManager.getManager();
+        ConferenceInfo conferenceInfo = conferenceManager.getCurrentConferenceInfo();
         if (session != null) {
-            if (ChatManager.Instance().getUserId().equals(ConferenceManager.getManager().getCurrentConferenceInfo().getOwner())) {
+            if (ChatManager.Instance().getUserId().equals(conferenceInfo.getOwner())) {
                 new MaterialDialog.Builder(getContext())
                     .content("如果你想让与会人员继续开会，请选择退出会议")
                     .negativeText("退出会议")
                     .onNegative((dialogInterface, i) -> {
-                        ConferenceManager.getManager().setCurrentConferenceInfo(null);
+
+                        conferenceManager.addHistory(conferenceInfo, System.currentTimeMillis() - session.getStartTime());
+                        conferenceManager.setCurrentConferenceInfo(null);
                         if (session.getState() != AVEngineKit.CallState.Idle)
                             session.leaveConference(false);
                     })
                     .positiveText("结束会议")
                     .onPositive((dialogInterface, i) -> {
-                        ConferenceManager.getManager().destroyConference(session.getCallId(), null);
-                        ConferenceManager.getManager().setCurrentConferenceInfo(null);
+                        conferenceManager.addHistory(conferenceInfo, System.currentTimeMillis() - session.getStartTime());
+                        conferenceManager.destroyConference(session.getCallId(), null);
+                        conferenceManager.setCurrentConferenceInfo(null);
                         if (session.getState() != AVEngineKit.CallState.Idle)
                             session.leaveConference(true);
                     })

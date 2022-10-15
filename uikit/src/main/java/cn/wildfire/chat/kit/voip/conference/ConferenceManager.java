@@ -5,9 +5,15 @@
 package cn.wildfire.chat.kit.voip.conference;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.AppServiceProvider;
@@ -379,6 +385,37 @@ public class ConferenceManager implements OnReceiveMessageListener {
                 }
             }
         });
+    }
+
+    public void addHistory(ConferenceInfo conferenceInfo, long durationMS) {
+        Gson gson = new Gson();
+        conferenceInfo.setEndTime(conferenceInfo.getStartTime() * 1000 + durationMS);
+        SharedPreferences sp = context.getSharedPreferences("conf_history", Context.MODE_PRIVATE);
+        String historyConfListStr = sp.getString("historyConfList", null);
+        ArrayList<ConferenceInfo> historyConfList = new ArrayList<>();
+        if (historyConfListStr != null) {
+            historyConfList = gson.fromJson(historyConfListStr, new TypeToken<List<ConferenceInfo>>() {
+            }.getType());
+        }
+        historyConfList.add(conferenceInfo);
+        if (historyConfList.size() > 50) {
+            historyConfList.remove(0);
+        }
+        historyConfListStr = gson.toJson(historyConfList);
+        sp.edit().putString("historyConfList", historyConfListStr).commit();
+    }
+
+    public List<ConferenceInfo> getHistoryConference() {
+        Gson gson = new Gson();
+        SharedPreferences sp = context.getSharedPreferences("conf_history", Context.MODE_PRIVATE);
+        String historyConfListStr = sp.getString("historyConfList", null);
+        ArrayList<ConferenceInfo> historyConfList = new ArrayList<>();
+        if (historyConfListStr != null) {
+            historyConfList = gson.fromJson(historyConfListStr, new TypeToken<List<ConferenceInfo>>() {
+            }.getType());
+        }
+        Collections.reverse(historyConfList);
+        return historyConfList;
     }
 
     private boolean isOwner() {

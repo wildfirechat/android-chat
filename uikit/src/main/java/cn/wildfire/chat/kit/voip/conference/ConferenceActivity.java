@@ -78,8 +78,8 @@ public class ConferenceActivity extends VoipBaseActivity {
     @Override
     public void didCallEndWithReason(AVEngineKit.CallEndReason callEndReason) {
         // 主动挂断
-        ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();;
-        if (conferenceInfo == null){
+        ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
+        if (conferenceInfo == null) {
             finish();
             return;
         }
@@ -129,6 +129,7 @@ public class ConferenceActivity extends VoipBaseActivity {
                     newSession.setCallback(ConferenceActivity.this);
                 }
             } else if (!isFinishing()) {
+                ConferenceManager.getManager().addHistory(conferenceInfo, System.currentTimeMillis() - session.getStartTime());
                 finish();
             }
         });
