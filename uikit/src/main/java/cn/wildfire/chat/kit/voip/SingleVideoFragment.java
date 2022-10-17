@@ -145,6 +145,9 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
+        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        session.setupLocalVideoView(pipVideoContainer, scalingType);
+        session.setupRemoteVideoView(targetId, fullscreenVideoContainer, scalingType);
     }
 
     @Override
