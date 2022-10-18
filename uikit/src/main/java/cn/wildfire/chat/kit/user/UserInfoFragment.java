@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -97,7 +98,7 @@ public class UserInfoFragment extends Fragment {
         UserInfoFragment fragment = new UserInfoFragment();
         Bundle args = new Bundle();
         args.putParcelable("userInfo", userInfo);
-        if(!TextUtils.isEmpty(groupId)) {
+        if (!TextUtils.isEmpty(groupId)) {
             args.putString("groupId", groupId);
         }
         fragment.setArguments(args);
@@ -171,7 +172,7 @@ public class UserInfoFragment extends Fragment {
             momentButton.setVisibility(View.GONE);
         }
 
-        if(!TextUtils.isEmpty(groupId)) {
+        if (!TextUtils.isEmpty(groupId)) {
             messagesOptionItemView.setVisibility(View.VISIBLE);
         } else {
             messagesOptionItemView.setVisibility(View.GONE);
@@ -187,14 +188,14 @@ public class UserInfoFragment extends Fragment {
             .load(userInfo.portrait)
             .apply(requestOptions)
             .into(portraitImageView);
-        if(!TextUtils.isEmpty(userInfo.friendAlias)) {
+        if (!TextUtils.isEmpty(userInfo.friendAlias)) {
             titleTextView.setText(userInfo.friendAlias);
             displayNameTextView.setText("昵称:" + userInfo.displayName);
         } else {
             titleTextView.setText(userInfo.displayName);
             displayNameTextView.setVisibility(View.GONE);
         }
-        if(!TextUtils.isEmpty(userInfo.groupAlias)) {
+        if (!TextUtils.isEmpty(userInfo.groupAlias)) {
             groupAliasTextView.setText("群昵称:" + userInfo.groupAlias);
             groupAliasTextView.setVisibility(View.VISIBLE);
         } else {
@@ -221,7 +222,16 @@ public class UserInfoFragment extends Fragment {
 
     @OnClick(R2.id.voipChatButton)
     void voipChat() {
-        WfcUIKit.singleCall(getActivity(), userInfo.uid, false);
+        new MaterialDialog.Builder(getActivity())
+            .items("音频聊天", "视频聊天")
+            .itemsCallback(new MaterialDialog.ListCallback() {
+                @Override
+                public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                    WfcUIKit.singleCall(getActivity(), userInfo.uid, position == 0);
+                }
+            })
+            .build()
+            .show();
     }
 
     @OnClick(R2.id.aliasOptionItemView)
@@ -236,6 +246,7 @@ public class UserInfoFragment extends Fragment {
             startActivity(intent);
         }
     }
+
     @OnClick(R2.id.messagesOptionItemView)
     void showUserMessages() {
         Intent intent = new Intent(getActivity(), GroupMemberMessageHistoryActivity.class);
