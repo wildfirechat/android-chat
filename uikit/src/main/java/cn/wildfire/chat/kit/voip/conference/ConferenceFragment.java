@@ -7,6 +7,8 @@ package cn.wildfire.chat.kit.voip.conference;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -189,12 +191,14 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     public void onResume() {
         super.onResume();
         handler.post(updateCallDurationRunnable);
+        startHideBarTimer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         handler.removeCallbacks(updateCallDurationRunnable);
+        handler.removeCallbacks(hideBarCallback);
     }
 
     @OnClick(R2.id.speakerImageView)
@@ -410,6 +414,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         });
         view.findViewById(R.id.cancelButton).setOnClickListener(v -> dialog.dismiss());
         dialog.setContentView(view);
+        dialog.getBehavior().setState(STATE_EXPANDED);
         dialog.show();
     }
 
