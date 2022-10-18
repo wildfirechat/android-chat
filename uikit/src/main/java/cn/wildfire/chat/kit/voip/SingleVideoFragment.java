@@ -51,6 +51,8 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     ViewGroup inviteeInfoContainer;
     @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
+    @BindView(R2.id.muteAudioImageView)
+    ImageView muteAudioImageView;
     @BindView(R2.id.nameTextView)
     TextView nameTextView;
     @BindView(R2.id.descTextView)
@@ -200,6 +202,14 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         ((SingleCallActivity) getActivity()).audioCall();
     }
 
+    @OnClick(R2.id.muteAudioImageView)
+    public void muteAudio() {
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        boolean toMute = !session.isAudioMuted();
+        session.muteAudio(toMute);
+        muteAudioImageView.setSelected(toMute);
+    }
+
     // callFragment.OnCallEvents interface implementation.
     @OnClick({R2.id.connectedHangupImageView,
         R2.id.outgoingHangupImageView,
@@ -321,6 +331,8 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
             session.setupLocalVideoView(pipVideoContainer, scalingType);
             session.setupRemoteVideoView(targetId, fullscreenVideoContainer, scalingType);
+
+            muteAudioImageView.setSelected(session.isAudioMuted());
         } else {
             targetId = session.getParticipantIds().get(0);
             focusUserId = ChatManager.Instance().getUserId();
