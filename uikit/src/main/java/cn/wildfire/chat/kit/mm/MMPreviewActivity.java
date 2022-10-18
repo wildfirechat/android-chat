@@ -182,6 +182,9 @@ public class MMPreviewActivity extends Activity {
                 btn.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
                     File videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    if (videoFile == null) {
+                        return;
+                    }
                     if (!videoFile.exists() || secret) {
                         String tag = entry.getMessage().messageUid + "";
                         view.setTag(tag);
@@ -263,23 +266,31 @@ public class MMPreviewActivity extends Activity {
 
         String mediaUrl = entry.getMediaUrl();
         if (TextUtils.isEmpty(entry.getMediaLocalPath()) && !TextUtils.isEmpty(mediaUrl)) {
-            File file = DownloadManager.mediaMessageContentFile(entry.getMessage());
-            if (file.exists() || secret) {
+            if (secret) {
                 saveImageView.setVisibility(View.GONE);
             } else {
                 saveImageView.setVisibility(View.VISIBLE);
                 saveImageView.setOnClickListener(v -> {
-                    saveImageView.setVisibility(View.GONE);
-                    DownloadManager.download(entry.getMediaUrl(), file.getParent(), file.getName(), new DownloadManager.SimpleOnDownloadListener() {
-                        @Override
-                        public void onUiSuccess(File file1) {
-                            if (isFinishing()) {
-                                return;
+                    Toast.makeText(this, "图片保存中", Toast.LENGTH_SHORT).show();
+                    File file = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    if (file == null) {
+                        return;
+                    }
+                    if (file.exists()) {
+                        ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
+                        Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+                    } else {
+                        DownloadManager.download(entry.getMediaUrl(), file.getParent(), file.getName(), new DownloadManager.SimpleOnDownloadListener() {
+                            @Override
+                            public void onUiSuccess(File file1) {
+                                if (isFinishing()) {
+                                    return;
+                                }
+                                ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
+                                Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
                             }
-                            ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
-                            Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
-                        }
-                    });
+                        });
+                    }
                 });
             }
         } else {
