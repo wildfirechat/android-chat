@@ -119,9 +119,8 @@ class VideoConferenceMainView extends RelativeLayout {
     private void setupConferenceMainView() {
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        int size = Math.min(dm.widthPixels, dm.heightPixels);
-        int height = dm.heightPixels;
-        int width = dm.widthPixels;
+        int height = Math.max(dm.heightPixels, dm.widthPixels);
+        int width = Math.min(dm.widthPixels, dm.heightPixels);
 
         previewContainerFrameLayout.removeAllViews();
 
@@ -154,7 +153,7 @@ class VideoConferenceMainView extends RelativeLayout {
                     previewContainerFrameLayout.removeAllViews();
                     conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 3, height / 4));
                     previewContainerFrameLayout.addView(conferenceItem);
-                    conferenceItem.setBackgroundResource(R.color.gray0);
+                    conferenceItem.setBackgroundResource(R.color.gray0_half_transparent);
                     SurfaceView focusSurfaceView = conferenceItem.findViewWithTag("sv_" + profile.getUserId());
                     if (focusSurfaceView != null) {
                         focusSurfaceView.setZOrderMediaOverlay(true);
