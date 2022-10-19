@@ -27,6 +27,7 @@
                 android:id="@+id/topActions"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="40dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -71,11 +72,11 @@
         android:id="@+id/fullScreenDurationTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
-        android:gravity="center"
         android:layout_alignParentBottom="true"
-        android:visibility="visible"
-        android:textColor="@color/white" />
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:textColor="@color/white"
+        android:visibility="visible" />
 
     <include
         android:id="@+id/callControlActions"
