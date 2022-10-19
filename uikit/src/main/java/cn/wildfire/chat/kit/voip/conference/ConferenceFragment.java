@@ -6,7 +6,6 @@ package cn.wildfire.chat.kit.voip.conference;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
 import android.app.Activity;
@@ -23,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -491,7 +489,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     private void setPanelVisibility(int visibility) {
         TransitionSet transitionSet = new TransitionSet();
         Transition transitionToBottom = new Slide(Gravity.BOTTOM);
-        transitionToBottom.setDuration(500);
+        transitionToBottom.setDuration(300);
         transitionSet.addTransition(transitionToBottom);
 
         Transition transitionToTop = new Slide(Gravity.TOP);
@@ -505,13 +503,12 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         transitionSet.addListener(new Transition.TransitionListener() {
             @Override
             public void onTransitionStart(@NonNull Transition transition) {
-                Activity activity = ((Activity) getContext());
-                if (visibility == VISIBLE) {
-                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                } else {
-                    activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                }
+//                Activity activity = ((Activity) getContext());
+//                if (visibility == VISIBLE) {
+//                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                } else {
+//                    activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//                }
             }
 
             @Override
@@ -534,6 +531,8 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             }
         });
 
+        transitionSet.setOrdering(TransitionSet.ORDERING_TOGETHER);
+//        transitionSet.setInterpolator(new AccelerateDecelerateInterpolator());
         TransitionManager.beginDelayedTransition(rootFrameLayout, transitionSet);
 
         bottomPanel.setVisibility(visibility);
