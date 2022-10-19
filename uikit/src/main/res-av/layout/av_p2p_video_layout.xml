@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
+    android:fitsSystemWindows="true"
     tools:ignore="MergeRootFrame">
 
     <FrameLayout
@@ -17,8 +18,7 @@
         android:layout_width="100dp"
         android:layout_height="140dp"
         android:layout_gravity="top|end"
-        android:layout_margin="10dp"
-        />
+        android:layout_marginTop="40dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="80dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:visibility="visible">
@@ -54,15 +54,15 @@
                     android:id="@+id/nameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:text="voip" />
+                    android:text="voip"
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:id="@+id/descTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:text="等待对方接受邀请..." />
+                    android:text="等待对方接受邀请..."
+                    android:textColor="@color/white" />
             </LinearLayout>
         </LinearLayout>
 
@@ -70,6 +70,7 @@
             android:id="@+id/minimizeImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:padding="20dp"
             android:src="@drawable/av_minimize"
             android:visibility="visible" />
@@ -81,6 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
             android:visibility="visible" />
 
         <include
@@ -89,6 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
             android:visibility="gone" />
 
         <include
@@ -97,6 +100,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
             android:visibility="gone" />
 
     </RelativeLayout>
