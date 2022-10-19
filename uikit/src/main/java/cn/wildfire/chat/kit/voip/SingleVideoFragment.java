@@ -66,7 +66,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     private String targetId;
     private AVEngineKit gEngineKit;
 
-    private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
+    private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FILL;
 
     private boolean callControlVisible = true;
 
