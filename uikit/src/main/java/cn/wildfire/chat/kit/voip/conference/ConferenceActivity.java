@@ -5,8 +5,12 @@
 package cn.wildfire.chat.kit.voip.conference;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -59,6 +63,13 @@ public class ConferenceActivity extends VoipBaseActivity {
 
         Fragment fragment;
         fragment = new ConferenceFragment();
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        decorView.setSystemUiVisibility(uiOptions);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
 
         currentCallSessionCallback = (AVEngineKit.CallSessionCallback) fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
