@@ -77,17 +77,21 @@ public class ConferenceParticipantItemVideoView extends ConferenceParticipantIte
     @Override
     public void setup(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile profile) {
         super.setup(session, profile);
-//        if (!profile.isVideoMuted()) {
+        if (!profile.isVideoMuted()) {
         videoContainer.setVisibility(VISIBLE);
+            portraitImageView.setVisibility(GONE);
+            nameTextView.setVisibility(GONE);
         if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
             session.setupLocalVideoView(videoContainer, scalingType);
         } else {
             session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, scalingType);
         }
         //statusTextView.setText(R.string.connecting);
-//        } else {
-//            videoContainer.setVisibility(GONE);
-//        }
+        } else {
+            videoContainer.setVisibility(GONE);
+            portraitImageView.setVisibility(VISIBLE);
+            nameTextView.setVisibility(VISIBLE);
+        }
     }
 
 //    public void updateParticipantProfile(AVEngineKit.ParticipantProfile profile) {
