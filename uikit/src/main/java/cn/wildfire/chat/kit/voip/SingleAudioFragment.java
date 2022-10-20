@@ -18,6 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
+
 import org.webrtc.StatsReport;
 
 import butterknife.BindView;
@@ -26,6 +29,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.glide.BlurTransformation;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -34,6 +38,9 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     private AVEngineKit gEngineKit;
+
+    @BindView(R2.id.backgroundImageView)
+    ImageView backgroundImageView;
 
     @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
@@ -152,7 +159,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didAudioDeviceChanged(AVAudioManager.AudioDevice device) {
-        if(device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.EARPIECE || device == AVAudioManager.AudioDevice.BLUETOOTH) {
+        if (device == AVAudioManager.AudioDevice.WIRED_HEADSET || device == AVAudioManager.AudioDevice.EARPIECE || device == AVAudioManager.AudioDevice.BLUETOOTH) {
             spearImageView.setSelected(false);
         } else {
             spearImageView.setSelected(true);
@@ -209,13 +216,13 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
 
         AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
         AVAudioManager.AudioDevice currentAudioDevice = audioManager.getSelectedAudioDevice();
-        if(currentAudioDevice == AVAudioManager.AudioDevice.WIRED_HEADSET ||currentAudioDevice == AVAudioManager.AudioDevice.BLUETOOTH){
+        if (currentAudioDevice == AVAudioManager.AudioDevice.WIRED_HEADSET || currentAudioDevice == AVAudioManager.AudioDevice.BLUETOOTH) {
             return;
         }
-        if(currentAudioDevice == AVAudioManager.AudioDevice.SPEAKER_PHONE){
+        if (currentAudioDevice == AVAudioManager.AudioDevice.SPEAKER_PHONE) {
             audioManager.selectAudioDevice(AVAudioManager.AudioDevice.EARPIECE);
             spearImageView.setSelected(false);
-        }else {
+        } else {
             audioManager.selectAudioDevice(AVAudioManager.AudioDevice.SPEAKER_PHONE);
             spearImageView.setSelected(true);
         }
@@ -246,7 +253,15 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
         String targetId = session.getParticipantIds().get(0);
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
-        GlideApp.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+        GlideApp.with(this)
+            .load(userInfo.portrait)
+            .placeholder(R.mipmap.avatar_def)
+            .apply(RequestOptions.bitmapTransform(new RoundedCorners(10)))
+            .into(portraitImageView);
+        GlideApp.with(this)
+            .load(userInfo.portrait)
+            .apply(RequestOptions.bitmapTransform(new BlurTransformation(10)))
+            .into(backgroundImageView);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
         muteImageView.setSelected(session.isAudioMuted());
