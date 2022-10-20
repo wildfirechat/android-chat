@@ -1,6 +1,8 @@
 package cn.wildfire.chat.kit.voip.conference;
 
+import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -138,6 +140,14 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
 
     @OnClick(R2.id.joinConferenceBtn)
     void joinConference() {
+        String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!checkPermission(permissions)) {
+                requestPermissions(permissions, 100);
+                return;
+            }
+        }
+
         ConferenceInfo info = conferenceInfo;
         boolean audience = info.isAudience() || (!audioSwitch.isChecked() && !videoSwitch.isChecked());
         boolean muteVideo = !videoSwitch.isEnabled() || !videoSwitch.isChecked();

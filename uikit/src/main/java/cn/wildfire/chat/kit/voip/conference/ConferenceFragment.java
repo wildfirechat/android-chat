@@ -13,8 +13,11 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -394,6 +397,13 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             dialog.dismiss();
         });
         view.findViewById(R.id.minimizeLinearLayout).setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (!Settings.canDrawOverlays(getActivity())) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getActivity().getPackageName()));
+                    startActivity(intent);
+                }
+            }
             Activity activity = (Activity) getContext();
             activity.finish();
             dialog.dismiss();
