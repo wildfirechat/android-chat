@@ -167,6 +167,9 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     }
 
     private void setupConferenceInfo(ConferenceInfo info) {
+        if (isFinishing()){
+            return;
+        }
         conferenceInfo = info;
         titleTextView.setText(info.getConferenceTitle());
         String owner = info.getOwner();
