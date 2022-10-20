@@ -4,7 +4,9 @@
 
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +22,7 @@ import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -65,6 +68,13 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
         if (!AVEngineKit.isSupportConference()) {
             Toast.makeText(fragment.getActivity(), "本版本不支持会议功能", Toast.LENGTH_SHORT).show();
             return;
+        }
+        String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!((WfcBaseActivity) fragment.getActivity()).checkPermission(permissions)) {
+                fragment.getActivity().requestPermissions(permissions, 100);
+                return;
+            }
         }
 //        AVEngineKit.Instance().joinConference(inviteMessageContent.getCallId(), inviteMessageContent.isAudioOnly(), inviteMessageContent.getPin(), inviteMessageContent.getHost(), inviteMessageContent.getTitle(), inviteMessageContent.getDesc(), inviteMessageContent.isAudience(), inviteMessageContent.isAdvanced(), false, false, null);
         Intent intent = new Intent(fragment.getActivity(), ConferenceInfoActivity.class);
