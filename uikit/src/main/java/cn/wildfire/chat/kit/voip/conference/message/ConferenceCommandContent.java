@@ -46,6 +46,11 @@ public class ConferenceCommandContent extends MessageContent {
         //录制，有参数是录制还是取消录制
         int RECORDING = 10;
 
+        // 设置焦点用户
+        int FOCUS = 11;
+        // 取消设置焦点用户
+        int CANCEL_FOCUS = 12;
+
     }
 
     private String conferenceId;

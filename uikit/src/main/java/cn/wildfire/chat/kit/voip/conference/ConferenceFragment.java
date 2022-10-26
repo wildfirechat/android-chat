@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
@@ -47,6 +48,7 @@ import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
 import org.webrtc.StatsReport;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -58,6 +60,7 @@ import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
+import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.widget.ClickableViewPager;
 import cn.wildfirechat.avenginekit.AVAudioManager;
@@ -178,6 +181,20 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         speakerImageView.setSelected(true);
         titleTextView.setText(this.callSession.getTitle());
 
+        LiveDataBus.subscribe("kConferenceCommandStateChanged", this, new Observer<Object>() {
+            @Override
+            public void onChanged(Object o) {
+                if (o instanceof ConferenceCommandContent) {
+                    ConferenceCommandContent commandContent = ((ConferenceCommandContent) o);
+                    if ((commandContent.getCommandType() == ConferenceCommandContent.ConferenceCommandType.FOCUS || commandContent.getCommandType() == ConferenceCommandContent.ConferenceCommandType.CANCEL_FOCUS)
+                        && !commandContent.getTargetUserId().equals(ChatManager.Instance().getUserId())) {
+                        profiles = getAllProfiles();
+                        AVEngineKit.ParticipantProfile focusProfile = findFocusProfile();
+                        onParticipantProfileUpdate(Collections.singletonList(focusProfile.getUserId()));
+                    }
+                }
+            }
+        });
 
         handler.post(() -> {
             AVEngineKit.ParticipantProfile myProfile = callSession.getMyProfile();
@@ -951,6 +968,38 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         List<AVEngineKit.ParticipantProfile> profiles = callSession.getParticipantProfiles();
         myProfile = callSession.getMyProfile();
         profiles.add(0, myProfile);
+        String focusUserId = ConferenceManager.getManager().getCurrentConferenceInfo().getFocus();
+        AVEngineKit.ParticipantProfile focusUserProfile = focusUserId == null ? null : callSession.getParticipantProfile(focusUserId);
+
+        Collections.sort(profiles, new Comparator<AVEngineKit.ParticipantProfile>() {
+            @Override
+            public int compare(AVEngineKit.ParticipantProfile o1, AVEngineKit.ParticipantProfile o2) {
+                if (focusUserProfile != null) {
+                    if (o1.getUserId().equals(focusUserId) && o1.isScreenSharing() == focusUserProfile.isScreenSharing()) {
+                        return -1;
+                    }
+                    if (o2.getUserId().equals(focusUserId) && o2.isScreenSharing() == focusUserProfile.isScreenSharing()) {
+                        return 1;
+                    }
+                }
+
+                if (o1.isAudience() && !o2.isAudience()) {
+                    return 1;
+                } else if (!o1.isAudience() && o2.isAudience()) {
+                    return -1;
+                } else if (o1.isAudience() && o2.isAudience()) {
+                    return o1.getUserId().compareTo(o2.getUserId());
+                } else {
+                    if (o1.isVideoMuted() && o2.isVideoMuted()) {
+                        return o1.getUserId().compareTo(o2.getUserId());
+                    }
+                    if (o1.isVideoMuted() && !o2.isVideoMuted()) {
+                        return 1;
+                    }
+                    return -1;
+                }
+            }
+        });
         return profiles;
     }
 
@@ -963,24 +1012,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         return false;
     }
 
-    // TODO 目前算法不是幂等的，没有考虑时间
-    // TODO VoipCallService 里面也要用一样的算法，可以实现放到 callSession 里面
     private AVEngineKit.ParticipantProfile findFocusProfile() {
-        AVEngineKit.ParticipantProfile focusProfile = null;
-        for (AVEngineKit.ParticipantProfile profile : profiles) {
-            if (!profile.isAudience() && !profile.getUserId().equals(ChatManager.Instance().getUserId())) {
-                if (profile.isScreenSharing()) {
-                    focusProfile = profile;
-                    break;
-                } else if (!profile.isVideoMuted() && (focusProfile == null || focusProfile.isVideoMuted())) {
-                    focusProfile = profile;
-                } else if (!profile.isAudioMuted() && focusProfile == null) {
-                    focusProfile = profile;
-                }
-            }
-        }
-        if (focusProfile == null && profiles.size() > 1) {
-            // 第 0 个是自己
+        // 已经排序了
+        AVEngineKit.ParticipantProfile focusProfile = profiles.get(0);
+        if (focusProfile.getUserId().equals(ChatManager.Instance().getUserId()) && profiles.size() > 1) {
             focusProfile = profiles.get(1);
         }
         Log.d(TAG, "findFocusProfile " + (focusProfile != null ? focusProfile.getUserId() : "null"));

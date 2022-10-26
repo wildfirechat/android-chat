@@ -77,6 +77,7 @@ public interface AppServiceProvider {
 
     void recordConference(String conferenceId, boolean record, GeneralCallback callback);
 
+    void setConferenceFocusUserId(String conferenceId, String userId, GeneralCallback callback);
 
     interface QueryConferenceInfoCallback {
         void onSuccess(ConferenceInfo info);
