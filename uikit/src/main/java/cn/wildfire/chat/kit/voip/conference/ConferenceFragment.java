@@ -62,6 +62,7 @@ import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.widget.ClickableViewPager;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 // main view
@@ -336,7 +337,8 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
         titleTextView.setText(callSession.getTitle());
         conferenceIdTextView.setText(callSession.getCallId());
-        conferenceHostTextView.setText(ConferenceManager.getManager().getCurrentConferenceInfo().getOwner());
+        UserInfo userInfo = ChatManager.Instance().getUserInfo(ConferenceManager.getManager().getCurrentConferenceInfo().getOwner(), false);
+        conferenceHostTextView.setText(userInfo.displayName);
         String conferenceLink = WfcScheme.buildConferenceScheme(callSession.getCallId(), callSession.getPin());
         conferenceLinkTextView.setText(conferenceLink);
 
