@@ -11,6 +11,7 @@ public class ConferenceInfo {
     private String pin;
     private String owner;
     private List<String> managers;
+    private String focus;
     // 秒
     long startTime;
     long endTime;
@@ -67,6 +68,14 @@ public class ConferenceInfo {
 
     public void setManagers(List<String> managers) {
         this.managers = managers;
+    }
+
+    public String getFocus() {
+        return focus;
+    }
+
+    public void setFocus(String focus) {
+        this.focus = focus;
     }
 
     public long getStartTime() {

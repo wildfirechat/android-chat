@@ -38,6 +38,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -187,6 +188,14 @@ public class ConferenceParticipantListFragment extends Fragment {
             conferenceManager.muteAudio(true);
             return null;
         };
+        Callable<Void> requestFocus = () -> {
+            conferenceManager.requestFocus(profile.getUserId(), null);
+            return null;
+        };
+        Callable<Void> cancelFocus = () -> {
+            conferenceManager.requestCancelFocus(null);
+            return null;
+        };
         Callable<Void> userInfoCall = () -> {
             Intent intent = new Intent(getActivity(), UserInfoActivity.class);
             UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
@@ -198,7 +207,8 @@ public class ConferenceParticipantListFragment extends Fragment {
         Map<String, Callable<Void>> items = new HashMap<>();
         String selfUid = ChatManager.Instance().getUserId();
         items.put("查看用户信息", userInfoCall);
-        if (selfUid.equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
+        ConferenceInfo conferenceInfo = conferenceManager.getCurrentConferenceInfo();
+        if (selfUid.equals(conferenceInfo.getOwner())) {
             if (selfUid.equals(profile.getUserId())) {
                 // 主持人自己
                 if (profile.isAudioMuted()) {
@@ -231,6 +241,11 @@ public class ConferenceParticipantListFragment extends Fragment {
                     callSession.kickoffParticipant(profile.getUserId(), null);
                     return null;
                 });
+            }
+            if (profile.getUserId().equals(conferenceInfo.getFocus())) {
+                items.put("取消焦点用户", cancelFocus);
+            } else {
+                items.put("设置为焦点用户", requestFocus);
             }
         } else {
             if (selfUid.equals(profile.getUserId())) {

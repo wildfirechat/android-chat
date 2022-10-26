@@ -139,7 +139,6 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                     }
                                 }
                                 LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
-                                // TODO 通知上层申请列表变化
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.APPROVE_UNMUTE:
                             case ConferenceCommandContent.ConferenceCommandType.APPROVE_ALL_UNMUTE:
@@ -179,6 +178,19 @@ public class ConferenceManager implements OnReceiveMessageListener {
                             case ConferenceCommandContent.ConferenceCommandType.RECORDING:
                                 this.reloadConferenceInfo();
                                 Toast.makeText(context, commandContent.getBoolValue() ? "主持人开始录制" : "主持人结束录制", Toast.LENGTH_SHORT).show();
+                                break;
+
+                            case ConferenceCommandContent.ConferenceCommandType.FOCUS:
+                                this.currentConferenceInfo.setFocus(commandContent.getTargetUserId());
+                                this.reloadConferenceInfo();
+                                Toast.makeText(context, "主持人锁定焦点用户", Toast.LENGTH_SHORT).show();
+                                LiveDataBus.setValue("kConferenceCommandStateChanged", commandContent);
+                                break;
+                            case ConferenceCommandContent.ConferenceCommandType.CANCEL_FOCUS:
+                                this.currentConferenceInfo.setFocus(null);
+                                this.reloadConferenceInfo();
+                                Toast.makeText(context, "主持人取消锁定焦点用户", Toast.LENGTH_SHORT).show();
+                                LiveDataBus.setValue("kConferenceCommandStateChanged", commandContent);
                                 break;
 
                             default:
@@ -370,9 +382,58 @@ public class ConferenceManager implements OnReceiveMessageListener {
     }
 
     public void destroyConference(String conferenceId, GeneralCallback callback) {
+        if (!isOwner()) {
+            return;
+        }
         WfcUIKit.getWfcUIKit().getAppServiceProvider().destroyConference(conferenceId, new GeneralCallback() {
             @Override
             public void onSuccess() {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onFail(int i) {
+                if (callback != null) {
+                    callback.onFail(i);
+                }
+            }
+        });
+    }
+
+    public void requestFocus(String userId, GeneralCallback callback) {
+        if (!isOwner()) {
+            return;
+        }
+        WfcUIKit.getWfcUIKit().getAppServiceProvider().setConferenceFocusUserId(currentConferenceInfo.getConferenceId(), userId, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                currentConferenceInfo.setFocus(userId);
+                sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.FOCUS, userId, false);
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onFail(int i) {
+                if (callback != null) {
+                    callback.onFail(i);
+                }
+            }
+        });
+    }
+
+    public void requestCancelFocus(GeneralCallback callback) {
+        if (!isOwner()) {
+            return;
+        }
+        WfcUIKit.getWfcUIKit().getAppServiceProvider().setConferenceFocusUserId(currentConferenceInfo.getConferenceId(), null, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                currentConferenceInfo.setFocus(null);
+                sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.CANCEL_FOCUS, null, false);
                 if (callback != null) {
                     callback.onSuccess();
                 }

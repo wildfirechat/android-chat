@@ -777,4 +777,26 @@ public class AppService implements AppServiceProvider {
             }
         });
     }
+
+    @Override
+    public void setConferenceFocusUserId(String conferenceId, String userId, GeneralCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/focus/" + conferenceId;
+        Map<String, String> params = new HashMap<>();
+        params.put("userId", TextUtils.isEmpty(userId) ? "" : userId);
+        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (callback != null) {
+                    callback.onFail(code);
+                }
+            }
+        });
+    }
 }
