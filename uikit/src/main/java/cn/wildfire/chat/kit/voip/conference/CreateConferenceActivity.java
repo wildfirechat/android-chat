@@ -257,6 +257,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
 
             @Override
             public void onFail(int i) {
+                Toast.makeText(CreateConferenceActivity.this, "创建会议失败: " + i, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "createConference fail" + i);
                 joinConferenceButton.setEnabled(true);
             }

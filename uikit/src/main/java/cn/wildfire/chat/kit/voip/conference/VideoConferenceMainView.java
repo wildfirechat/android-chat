@@ -148,7 +148,7 @@ class VideoConferenceMainView extends RelativeLayout {
                 focusParticipantItemView = conferenceItem;
             }
 
-            if (focusProfile != null) {
+            if (focusProfile != null && !focusProfile.getUserId().equals(myProfile.getUserId())) {
                 if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
                     previewContainerFrameLayout.removeAllViews();
                     conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(width / 3, height / 4));
