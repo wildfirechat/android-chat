@@ -25,6 +25,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -208,7 +209,9 @@ public class ConferenceParticipantListFragment extends Fragment {
         String selfUid = ChatManager.Instance().getUserId();
         items.put("查看用户信息", userInfoCall);
         ConferenceInfo conferenceInfo = conferenceManager.getCurrentConferenceInfo();
-        if (selfUid.equals(conferenceInfo.getOwner())) {
+        List<String> managers = conferenceInfo.getManagers();
+        managers = managers != null ? managers : new ArrayList<>();
+        if (selfUid.equals(conferenceInfo.getOwner()) || managers.contains(selfUid)) {
             if (selfUid.equals(profile.getUserId())) {
                 // 主持人自己
                 if (profile.isAudioMuted()) {

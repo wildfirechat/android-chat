@@ -411,6 +411,9 @@ public class ConferenceManager implements OnReceiveMessageListener {
             public void onSuccess() {
                 currentConferenceInfo.setFocus(userId);
                 sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.FOCUS, userId, false);
+                ConferenceCommandContent content = new ConferenceCommandContent(currentConferenceInfo.getConferenceId(), ConferenceCommandContent.ConferenceCommandType.FOCUS);
+                content.setTargetUserId(userId);
+                LiveDataBus.setValue("kConferenceCommandStateChanged", content);
                 if (callback != null) {
                     callback.onSuccess();
                 }
@@ -434,6 +437,9 @@ public class ConferenceManager implements OnReceiveMessageListener {
             public void onSuccess() {
                 currentConferenceInfo.setFocus(null);
                 sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.CANCEL_FOCUS, null, false);
+                ConferenceCommandContent content = new ConferenceCommandContent(currentConferenceInfo.getConferenceId(), ConferenceCommandContent.ConferenceCommandType.FOCUS);
+                content.setTargetUserId(null);
+                LiveDataBus.setValue("kConferenceCommandStateChanged", content);
                 if (callback != null) {
                     callback.onSuccess();
                 }
