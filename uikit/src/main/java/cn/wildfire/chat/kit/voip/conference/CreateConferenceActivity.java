@@ -240,6 +240,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new GeneralCallback2() {
             @Override
             public void onSuccess(String conferenceId) {
+                info.setConferenceId(conferenceId);
                 if (join) {
                     AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(conferenceId, false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", info.isAudience(), info.isAdvance(), false, !enableAudio, !enableVideo, null);
                     if (session != null) {
