@@ -61,6 +61,7 @@ import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
 import cn.wildfirechat.client.IGeneralCallback2;
+import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
@@ -6434,6 +6435,79 @@ public class ChatManager {
                     onGroupInfoUpdated(Collections.singletonList(groupInfo));
                     if (callback != null) {
                         mainHandler.post(() -> callback.onSuccess());
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
+        }
+    }
+
+    /**
+     * 获取当前用户所有群组ID，此方法消耗资源较大，不建议高频使用。
+     *
+     * @param callback
+     */
+    public void getMyGroups(final StringListCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getMyGroups(new cn.wildfirechat.client.IGeneralCallback3.Stub() {
+                @Override
+                public void onSuccess(List<String> results) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(results));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
+        }
+    }
+
+    /**
+     * 获取与指定用户同属群组的ID，此方法消耗资源较大，不建议高频使用。
+     *
+     * @param userId
+     * @param callback
+     */
+    public void getCommonGroups(String userId, final StringListCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getCommonGroups(userId, new cn.wildfirechat.client.IGeneralCallback3.Stub() {
+                @Override
+                public void onSuccess(List<String> results) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(results));
                     }
                 }
 
