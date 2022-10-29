@@ -241,6 +241,8 @@ interface IRemoteClient {
     oneway void muteOrAllowGroupMember(in String groupId, in boolean isSet, in List<String> memberIds, in boolean isAllow, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     String getGroupRemark(in String groupId);
     oneway void setGroupRemark(in String groupId, in String remark, in IGeneralCallback callback);
+    oneway void getMyGroups(in IGeneralCallback3 callback);
+    oneway void getCommonGroups(in String userId, in IGeneralCallback3 callback);
 
     byte[] encodeData(in byte[] data);
     byte[] decodeData(in byte[] data);
