@@ -112,7 +112,7 @@
             android:id="@+id/audienceSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"
+            android:checked="false"
             android:padding="20dp"
             android:text="参与者开启摄像头、麦克风入会" />
 
@@ -127,7 +127,7 @@
             android:id="@+id/modeSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="false"
+            android:checked="true"
             android:padding="20dp"
             android:text="允许参与者自主开启摄像头、麦克风" />
 
