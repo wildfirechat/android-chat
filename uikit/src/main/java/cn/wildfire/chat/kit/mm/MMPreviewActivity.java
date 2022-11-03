@@ -138,7 +138,10 @@ public class MMPreviewActivity extends Activity {
         } else {
             previewVideo(view, message);
         }
-        ChatManager.Instance().setMediaMessagePlayed(message.getMessage().messageId);
+        // 朋友圈
+        if (message.getMessage() != null) {
+            ChatManager.Instance().setMediaMessagePlayed(message.getMessage().messageId);
+        }
     }
 
     private void resetVideoView(View view) {
