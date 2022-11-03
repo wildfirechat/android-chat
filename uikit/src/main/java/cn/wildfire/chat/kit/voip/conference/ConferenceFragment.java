@@ -152,7 +152,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             getActivity().finish();
             return null;
         }
-        profiles = getAllProfiles();
+        profiles = loadAllProfiles();
 
         conferencePages = new SparseArray<>(3);
         viewPager = view.findViewById(R.id.viewPager);
@@ -188,7 +188,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                     ConferenceCommandContent commandContent = ((ConferenceCommandContent) o);
                     if ((commandContent.getCommandType() == ConferenceCommandContent.ConferenceCommandType.FOCUS || commandContent.getCommandType() == ConferenceCommandContent.ConferenceCommandType.CANCEL_FOCUS)
                         && !commandContent.getTargetUserId().equals(ChatManager.Instance().getUserId())) {
-                        profiles = getAllProfiles();
+                        profiles = loadAllProfiles();
                         AVEngineKit.ParticipantProfile focusProfile = findFocusProfile();
                         onParticipantProfileUpdate(Collections.singletonList(focusProfile.getUserId()));
                     }
@@ -903,7 +903,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
     private boolean resetConferencePageAdapter() {
         boolean lastIsVideoConference = this.isVideoConference();
-        this.profiles = getAllProfiles();
+        this.profiles = loadAllProfiles();
         boolean isVideoConference = this.isVideoConference();
         if (lastIsVideoConference != isVideoConference) {
             if (isVideoConference) {
@@ -964,21 +964,25 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
 
-    private List<AVEngineKit.ParticipantProfile> getAllProfiles() {
+    private List<AVEngineKit.ParticipantProfile> loadAllProfiles() {
         List<AVEngineKit.ParticipantProfile> profiles = callSession.getParticipantProfiles();
         myProfile = callSession.getMyProfile();
         profiles.add(0, myProfile);
         String focusUserId = ConferenceManager.getManager().getCurrentConferenceInfo().getFocus();
-        AVEngineKit.ParticipantProfile focusUserProfile = focusUserId == null ? null : callSession.getParticipantProfile(focusUserId);
+        AVEngineKit.ParticipantProfile focusUserProfile = focusUserId == null ? null : callSession.getParticipantProfile(focusUserId, true);
+        if (focusUserProfile == null){
+            focusUserProfile = focusUserId == null ? null : callSession.getParticipantProfile(focusUserId, false);
+        }
 
+        AVEngineKit.ParticipantProfile finalFocusUserProfile = focusUserProfile;
         Collections.sort(profiles, new Comparator<AVEngineKit.ParticipantProfile>() {
             @Override
             public int compare(AVEngineKit.ParticipantProfile o1, AVEngineKit.ParticipantProfile o2) {
-                if (focusUserProfile != null) {
-                    if (o1.getUserId().equals(focusUserId) && o1.isScreenSharing() == focusUserProfile.isScreenSharing()) {
+                if (finalFocusUserProfile != null) {
+                    if (o1.getUserId().equals(focusUserId) && o1.isScreenSharing() == finalFocusUserProfile.isScreenSharing()) {
                         return -1;
                     }
-                    if (o2.getUserId().equals(focusUserId) && o2.isScreenSharing() == focusUserProfile.isScreenSharing()) {
+                    if (o2.getUserId().equals(focusUserId) && o2.isScreenSharing() == finalFocusUserProfile.isScreenSharing()) {
                         return 1;
                     }
                 }
@@ -990,13 +994,19 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                 } else if (o1.isAudience() && o2.isAudience()) {
                     return o1.getUserId().compareTo(o2.getUserId());
                 } else {
-                    if (o1.isVideoMuted() && o2.isVideoMuted()) {
-                        return o1.getUserId().compareTo(o2.getUserId());
+                    if (o1.isScreenSharing() && !o2.isScreenSharing()) {
+                        return -1;
+                    }
+                    if (!o1.isScreenSharing() && o2.isScreenSharing()) {
+                        return 1;
                     }
                     if (o1.isVideoMuted() && !o2.isVideoMuted()) {
                         return 1;
                     }
-                    return -1;
+                    if (!o1.isVideoMuted() && o2.isVideoMuted()) {
+                        return -1;
+                    }
+                    return o1.getUserId().compareTo(o2.getUserId());
                 }
             }
         });
