@@ -327,6 +327,13 @@ public class ConferenceParticipantListFragment extends Fragment {
             } else {
                 if (profile.getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
                     desc = "主持人";
+                    if (profile.isScreenSharing()) {
+                        desc += "，屏幕共享";
+                    }
+                } else {
+                    if (profile.isScreenSharing()){
+                        desc +="屏幕共享";
+                    }
                 }
             }
             if (TextUtils.isEmpty(desc)) {
