@@ -268,59 +268,57 @@ public class ImageUtils {
                 ChatManager.Instance().getGroupInfo(groupId, false, new GetGroupInfoCallback() {
                     @Override
                     public void onSuccess(GroupInfo groupInfo) {
-                        ChatManager.Instance().getWorkHandler().post(() -> {
-                            //分析文件名，获取更新时间，hash值
-                            //Path 格式为 groupId-updatetime-width-hash
-                            String name = file.getName();
-                            if (!name.startsWith(groupId) || name.length() <= groupId.length()) {
-                                return;
-                            }
-                            name = name.substring(groupId.length() + 1);
-                            String[] arr = name.split("-");
-                            if (arr.length != 3) {
-                                return;
-                            }
-                            long timestamp;
-                            try {
-                                timestamp = Long.parseLong(arr[0]);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                return;
-                            }
+                        //分析文件名，获取更新时间，hash值
+                        //Path 格式为 groupId-updatetime-width-hash
+                        String name = file.getName();
+                        if (!name.startsWith(groupId) || name.length() <= groupId.length()) {
+                            return;
+                        }
+                        name = name.substring(groupId.length() + 1);
+                        String[] arr = name.split("-");
+                        if (arr.length != 3) {
+                            return;
+                        }
+                        long timestamp;
+                        try {
+                            timestamp = Long.parseLong(arr[0]);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return;
+                        }
 
-                            long now = System.currentTimeMillis();
-                            if (now - timestamp > 7 * 24 * 3600 * 1000 || timestamp < groupInfo.updateDt) {
-                                ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
-                                    @Override
-                                    public void onSuccess(List<GroupMember> groupMembers) {
-                                        if (groupMembers == null || groupMembers.size() == 0) {
-                                            return;
-                                        }
-
-                                        StringBuilder fullPathBuilder = new StringBuilder();
-                                        List<String> memberIds = new ArrayList<>();
-                                        for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
-                                            memberIds.add(groupMembers.get(i).memberId);
-                                        }
-                                        List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
-                                        for (UserInfo info : userInfos) {
-                                            fullPathBuilder.append(info.portrait);
-                                        }
-
-                                        String fullPath = fullPathBuilder.toString();
-
-                                        if (!arr[2].equals(getDigest(fullPath))) {
-                                            generateNewGroupPortrait(context, groupId, width);
-                                        }
+                        long now = System.currentTimeMillis();
+                        if (now - timestamp > 7 * 24 * 3600 * 1000 || timestamp < groupInfo.updateDt) {
+                            ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
+                                @Override
+                                public void onSuccess(List<GroupMember> groupMembers) {
+                                    if (groupMembers == null || groupMembers.size() == 0) {
+                                        return;
                                     }
 
-                                    @Override
-                                    public void onFail(int errorCode) {
-
+                                    StringBuilder fullPathBuilder = new StringBuilder();
+                                    List<String> memberIds = new ArrayList<>();
+                                    for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
+                                        memberIds.add(groupMembers.get(i).memberId);
                                     }
-                                });
-                            }
-                        });
+                                    List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
+                                    for (UserInfo info : userInfos) {
+                                        fullPathBuilder.append(info.portrait);
+                                    }
+
+                                    String fullPath = fullPathBuilder.toString();
+
+                                    if (!arr[2].equals(getDigest(fullPath))) {
+                                        generateNewGroupPortrait(context, groupId, width);
+                                    }
+                                }
+
+                                @Override
+                                public void onFail(int errorCode) {
+
+                                }
+                            });
+                        }
                     }
 
                     @Override
