@@ -77,7 +77,7 @@ public class ConversationListFragment extends ProgressFragment {
     @Override
     public void onResume() {
         super.onResume();
-        reloadConversations();
+//        reloadConversations();
     }
 
     private void init() {
