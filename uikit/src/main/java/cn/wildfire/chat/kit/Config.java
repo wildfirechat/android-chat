@@ -74,6 +74,15 @@ public class Config {
      */
     public static final String SP_CONFIG_FILE_NAME = "config";
 
+    /**
+     * 会话列表最多展示的会话数
+     * <p>
+     * 大量会话时，会导致，快速进出会话界面，会话消息加载缓慢，故再次控制会话数，只展示最新的{@link MAX_CONVERSATION_LIST_SIZE}条
+     * <p>
+     * 直接修改此字段不会生效，请修改{@link cn.wildfirechat.client.ClientService#MAX_CONVERSATION_LIST_SIZE }字段
+     */
+    public static final int MAX_CONVERSATION_LIST_SIZE = 1000;
+
     public static String VIDEO_SAVE_DIR;
     public static String AUDIO_SAVE_DIR;
     public static String PHOTO_SAVE_DIR;

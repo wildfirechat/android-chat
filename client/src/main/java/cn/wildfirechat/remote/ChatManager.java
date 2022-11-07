@@ -2569,6 +2569,18 @@ public class ChatManager {
      */
     @NonNull
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
+        return getConversationList(conversationTypes, lines, true);
+    }
+
+    /**
+     * 获取比 timestamp 更新的会话列表
+     *
+     * @param conversationTypes
+     * @param lines
+     * @param lastMessage       是否包含 lastMessage信息
+     * @return
+     */
+    public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, boolean lastMessage) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
             return new ArrayList<>();
@@ -2591,7 +2603,7 @@ public class ChatManager {
         }
 
         try {
-            return mClient.getConversationList(intypes, inlines);
+            return mClient.getConversationList(intypes, inlines, lastMessage);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -3580,7 +3592,7 @@ public class ChatManager {
         try {
             boolean result = mClient.clearUnreadStatusEx(inTypes, inLines);
             if (result) {
-                List<ConversationInfo> conversationInfos = mClient.getConversationList(inTypes, inLines);
+                List<ConversationInfo> conversationInfos = mClient.getConversationList(inTypes, inLines, false);
                 for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                     for (ConversationInfo info : conversationInfos) {
                         listener.onConversationUnreadStatusClear(info);
