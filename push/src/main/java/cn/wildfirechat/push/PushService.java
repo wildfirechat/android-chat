@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.push;
 
+import static com.google.firebase.messaging.Constants.MessageNotificationKeys.TAG;
+
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
@@ -15,7 +17,6 @@ import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
@@ -27,6 +28,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.heytap.mcssdk.PushManager;
 import com.heytap.mcssdk.callback.PushCallback;
@@ -52,8 +54,6 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 import cn.wildfirechat.remote.ChatManager;
-
-import static com.google.firebase.messaging.Constants.MessageNotificationKeys.TAG;
 
 /**
  * Created by heavyrain.lee on 2018/2/26.
@@ -370,6 +370,7 @@ public class PushService {
     }
 
     private void initFCM(Context context) {
+        FirebaseApp.initializeApp(context);
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {

@@ -22,11 +22,6 @@ android {
         versionCode 44
         versionName '0.9.6'
         multiDexEnabled true
-        javaCompileOptions {
-            annotationProcessorOptions {
-                includeCompileClasspath true
-            }
-        }
 
         ndk {
             abiFilters 'armeabi-v7a', 'x86', 'x86_64', 'arm64-v8a' // ，'armeabi', 'arm64-v8a', 'x86', 'x86_64'

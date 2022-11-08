@@ -15,14 +15,7 @@ android {
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
-        versionCode 27
-        versionName "0.8.0.rc3"
         multiDexEnabled true
-        javaCompileOptions {
-            annotationProcessorOptions {
-                includeCompileClasspath true
-            }
-        }
 
         ndk {
             abiFilters "armeabi-v7a", 'x86', 'x86_64' // ，'armeabi', 'arm64-v8a', 'x86', 'x86_64'
