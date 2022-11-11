@@ -523,9 +523,9 @@ public class AppService implements AppServiceProvider {
             || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && APP_SERVER_ADDRESS.contains("wildfirechat.net"))
             || (Config.IM_SERVER_HOST.contains("wildfirechat.net") && !APP_SERVER_ADDRESS.contains("wildfirechat.net"))
         ) {
-            Toast.makeText(context, "配置错误，请检查配置，应用即将关闭...", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "配置错误，请检查Config.java，应用即将关闭...", Toast.LENGTH_LONG).show();
             new Handler().postDelayed(() -> {
-                throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查配置!\n");
+                throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查 Config.java 和 AppService.java !\n");
             }, 5 * 1000);
         }
 
