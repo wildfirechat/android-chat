@@ -243,13 +243,13 @@ public class ConferenceActivity extends VoipBaseActivity {
     }
 
     void showParticipantList() {
-        isInvitingNewParticipant = true;
+        DISABLE_VOIP_MINIMIZE = true;
         Intent intent = new Intent(this, ConferenceParticipantListActivity.class);
         startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
     }
 
     public void inviteNewParticipant() {
-        isInvitingNewParticipant = true;
+        DISABLE_VOIP_MINIMIZE = true;
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), ConferenceManager.getManager().getCurrentConferenceInfo().getOwner(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
         Intent intent = new Intent(this, ConferenceInviteActivity.class);
@@ -261,7 +261,7 @@ public class ConferenceActivity extends VoipBaseActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_ADD_PARTICIPANT) {
-            isInvitingNewParticipant = false;
+            DISABLE_VOIP_MINIMIZE = false;
         }
     }
 }

@@ -222,6 +222,10 @@
             android:launchMode="singleTask"
             android:taskAffinity=".conference"
             android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".voip.conference.ConferenceAlertDialogActivity"
+            android:taskAffinity=".conference"
+            android:theme="@style/AppThemeDialog" />
 
         <activity
             android:name=".voip.conference.ConferencePortalActivity"

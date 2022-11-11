@@ -491,7 +491,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
 
     private void onRequestMute(boolean mute) {
         if (!mute) {
-            AlertDialogActivity.showAlterDialog(context, "主持人邀请你发言", false, "拒绝", "接受",
+            ConferenceAlertDialogActivity.showAlterDialog(context, "主持人邀请你发言", false, "拒绝", "接受",
                 () -> Toast.makeText(context, "你拒绝了发言邀请", Toast.LENGTH_SHORT).show(),
                 () -> {
                     Toast.makeText(context, "你接受了发言邀请", Toast.LENGTH_SHORT).show();
@@ -505,7 +505,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
 
     private void onCancelMuteAll(boolean requestUnmute) {
         if (requestUnmute) {
-            AlertDialogActivity.showAlterDialog(context, "主持人关闭了全员静音，是否要打开麦克风", false, "忽略", "打开",
+            ConferenceAlertDialogActivity.showAlterDialog(context, "主持人关闭了全员静音，是否要打开麦克风", false, "忽略", "打开",
                 () -> {
                 },
                 () -> {

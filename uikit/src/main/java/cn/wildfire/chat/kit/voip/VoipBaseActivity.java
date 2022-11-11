@@ -70,7 +70,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     protected PowerManager.WakeLock wakeLock;
     private Handler handler = new Handler();
 
-    protected boolean isInvitingNewParticipant;
+    public static boolean DISABLE_VOIP_MINIMIZE;
     private String focusVideoUserId;
     private static final String TAG = "voip";
 
@@ -154,7 +154,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     protected void onResume() {
         super.onResume();
-        if (isInvitingNewParticipant) {
+        if (DISABLE_VOIP_MINIMIZE) {
             return;
         }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
@@ -169,7 +169,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     protected void onStop() {
         super.onStop();
-        if (isInvitingNewParticipant) {
+        if (DISABLE_VOIP_MINIMIZE) {
             return;
         }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
