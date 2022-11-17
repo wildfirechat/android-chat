@@ -66,12 +66,11 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
 
         if (file.exists()) {
             Intent intent = FileUtils.getViewIntent(fragment.getContext(), file);
-            ComponentName cn = intent.resolveActivity(fragment.getContext().getPackageManager());
-            if (cn == null) {
+            try {
+                fragment.startActivity(intent);
+            } catch (Exception e) {
                 Toast.makeText(fragment.getContext(), "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
-                return;
             }
-            fragment.startActivity(intent);
         } else {
             String fileUrl;
             if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
