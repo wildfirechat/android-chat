@@ -274,7 +274,7 @@ public class DownloadManager {
 
         @Override
         final public void onProgress(int progress) {
-            ChatManager.Instance().getMainHandler().post(() -> onProgress(progress));
+            ChatManager.Instance().getMainHandler().post(() -> onUiProgress(progress));
         }
 
         @Override
