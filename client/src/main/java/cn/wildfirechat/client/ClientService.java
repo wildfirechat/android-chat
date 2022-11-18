@@ -3033,6 +3033,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void checkSignature() throws RemoteException {
+            ProtoLogic.checkSignature();
+        }
+
+        @Override
         public String getProtoRevision() throws RemoteException {
             return ProtoLogic.getProtoRevision();
         }
