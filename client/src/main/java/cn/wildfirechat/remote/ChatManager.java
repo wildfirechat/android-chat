@@ -12,6 +12,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -27,11 +31,13 @@ import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -43,7 +49,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -219,6 +231,7 @@ public class ChatManager {
     private Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
+    private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
 
     private Socks5ProxyInfo proxyInfo;
@@ -1063,6 +1076,22 @@ public class ChatManager {
 
         try {
             mClient.useSM4();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 启用签名验证，需要在connect之前调用，需要服务开启对应功能，详情请参考：https://docs.wildfirechat.cn/blogs/签名验证.html
+     */
+    public void checkSignature() {
+        checkSignature = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.checkSignature();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -5383,6 +5412,26 @@ public class ChatManager {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getSignature() throws PackageManager.NameNotFoundException, CertificateException, NoSuchAlgorithmException {
+        String packageName = gContext.getPackageName();
+        PackageInfo packageInfo = gContext.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
+        if(packageInfo.signatures != null && packageInfo.signatures.length > 0) {
+            Signature signature = packageInfo.signatures[0];
+            byte[] signBytes = signature.toByteArray();
+
+            CertificateFactory fact = CertificateFactory.getInstance("X.509");
+            X509Certificate certificate = (X509Certificate) fact.generateCertificate(new ByteArrayInputStream(signBytes));
+            signBytes = certificate.getEncoded();
+
+            signBytes = MessageDigest.getInstance("SHA1").digest(signBytes);
+            String sign = Base64.getEncoder().encodeToString(signBytes);
+            Log.d(TAG, "The app sign is " + sign);
+            return sign;
+        }
+        return null;
+    }
+
     /**
      * 搜索群组
      *
@@ -8168,6 +8217,9 @@ public class ChatManager {
                 try {
                     if (useSM4) {
                         mClient.useSM4();
+                    }
+                    if(checkSignature) {
+                        mClient.checkSignature();
                     }
 
                     mClient.setBackupAddressStrategy(backupAddressStrategy);
