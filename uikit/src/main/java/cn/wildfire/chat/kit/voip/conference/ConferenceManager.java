@@ -40,6 +40,8 @@ public class ConferenceManager implements OnReceiveMessageListener {
     private boolean isHandUp;
     private boolean isMuteAll;
 
+    private String localFocusUserId;
+
     private ConferenceManager(Application application) {
         this.context = application;
         this.applyingUnmuteMembers = new ArrayList<>();
@@ -73,6 +75,14 @@ public class ConferenceManager implements OnReceiveMessageListener {
             isHandUp = false;
             isApplyingUnmute = false;
         }
+    }
+
+    public String getLocalFocusUserId() {
+        return localFocusUserId;
+    }
+
+    public void setLocalFocusUserId(String localFocusUserId) {
+        this.localFocusUserId = localFocusUserId;
     }
 
     public List<String> getApplyingUnmuteMembers() {
@@ -485,7 +495,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
         return historyConfList;
     }
 
-    private boolean isOwner() {
+    public boolean isOwner() {
         return currentConferenceInfo.getOwner().equals(ChatManager.Instance().getUserId());
     }
 
