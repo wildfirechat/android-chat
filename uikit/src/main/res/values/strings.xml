@@ -50,6 +50,7 @@
 
     <!--群信息-->
     <string name="group_name">群聊名称</string>
+    <string name="group_portrait">群头像</string>
     <string name="untitled">未命名</string>
     <string name="group_announcement">群公告</string>
     <string name="message_free">消息免打扰</string>
