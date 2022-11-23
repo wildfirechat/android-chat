@@ -71,6 +71,9 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (child() == null){
+                    return false;
+                }
                 int y = (int) motionEvent.getY();
                 int x = (int) motionEvent.getX();
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
