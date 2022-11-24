@@ -341,7 +341,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setBackupAddressStrategy(int strategy) throws RemoteException {
-            ProtoLogic.setBackupAddressStrategy(strategy);
+            try {
+                ProtoLogic.setBackupAddressStrategy(strategy);
+            } catch (Throwable e) {
+                ProtoLogic.setBackupAddressStrategy(strategy);
+            }
         }
 
         @Override
@@ -656,7 +660,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             info.timestamp = protoInfo.getTimestamp();
             info.draft = protoInfo.getDraft();
             info.unreadCount = new UnreadCount(protoInfo.getUnreadCount());
-            info.isTop = protoInfo.isTop();
+            info.isTop = protoInfo.getIsTop() > 0;
             info.isSilent = protoInfo.isSilent();
             return info;
         }
