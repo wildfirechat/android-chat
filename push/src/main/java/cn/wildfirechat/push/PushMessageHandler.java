@@ -16,8 +16,6 @@ public abstract class PushMessageHandler {
      */
     public static final String CUSTOM_PUSH_MSG_HANDLER = "cn.wildfirechat.push.CustomPushMessageHandler";
 
-    public static final int DEFAULT_NOTIFICATION_ID = 1883;
-    public static final int DEFAULT_NOTIFICATION_CALL_ID = 1884;
     private static PushMessageHandler customHandler;
     private static PushMessageHandler defaultHandler;
 
