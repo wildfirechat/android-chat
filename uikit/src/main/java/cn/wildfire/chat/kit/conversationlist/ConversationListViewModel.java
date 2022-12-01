@@ -7,6 +7,8 @@ package cn.wildfire.chat.kit.conversationlist;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -100,16 +102,16 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         loadingCount.incrementAndGet();
 
         ChatManager.Instance().getWorkHandler().post(() -> {
-            loadingCount.decrementAndGet();
             ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
                 @Override
                 public void onSuccess(List<ConversationInfo> conversationInfos) {
                     conversationListLiveData.postValue(conversationInfos);
+                    loadingCount.decrementAndGet();
                 }
 
                 @Override
                 public void onFail(int errorCode) {
-
+                    loadingCount.decrementAndGet();
                 }
             });
         });
@@ -150,30 +152,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     public void reloadConversationUnreadStatus() {
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
-                @Override
-                public void onSuccess(List<ConversationInfo> conversationInfos) {
-                    UnreadCount unreadCount = new UnreadCount();
-                    for (ConversationInfo info : conversationInfos) {
-                        if (!info.isSilent) {
-                            unreadCount.unread += info.unreadCount.unread;
-                        }
-                        unreadCount.unreadMention += info.unreadCount.unreadMention;
-                        unreadCount.unreadMentionAll += info.unreadCount.unreadMentionAll;
-                    }
-                    postUnreadCount(unreadCount);
-                }
-
-                @Override
-                public void onFail(int errorCode) {
-
-                }
-            });
-        });
-    }
-
-    private void postUnreadCount(UnreadCount unreadCount) {
+        UnreadCount unreadCount = ChatManager.Instance().getUnreadCountEx(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Collections.singletonList(0));
         if (unreadCountLiveData == null) {
             return;
         }
@@ -237,7 +216,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         });
     }
 
-    public void setConversationTop(ConversationInfo conversationInfo, boolean top) {
+    public void setConversationTop(ConversationInfo conversationInfo, int top) {
         ChatManager.Instance().setConversationTop(conversationInfo.conversation, top);
     }
 
@@ -261,7 +240,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     @Override
-    public void onConversationTopUpdate(ConversationInfo conversationInfo, boolean top) {
+    public void onConversationTopUpdate(ConversationInfo conversationInfo, int top) {
         reloadConversationList();
     }
 

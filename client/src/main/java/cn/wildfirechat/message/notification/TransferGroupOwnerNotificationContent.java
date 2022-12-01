@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message.notification;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_TRANSFER_GROUP_OWNER;
+
 import android.os.Parcel;
 
 import org.json.JSONException;
@@ -14,8 +16,6 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.remote.ChatManager;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_TRANSFER_GROUP_OWNER;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
@@ -62,7 +62,7 @@ public class TransferGroupOwnerNotificationContent extends GroupNotificationMess
             e.printStackTrace();
         }
 
-        return null;
+        return payload;
     }
 
     @Override

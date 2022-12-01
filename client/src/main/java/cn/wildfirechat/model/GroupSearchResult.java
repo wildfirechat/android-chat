@@ -15,8 +15,19 @@ import java.util.List;
  */
 
 public class GroupSearchResult implements Parcelable {
+    public interface GroupSearchMarchTypeMask {
+        //march group name
+        int Group_Name_Mask = 0x01;
+        //march member user name
+        int Member_Name_Mask = 0x02;
+        //march group member alias
+        int Member_Alias_Mask = 0x04;
+        //march group remark
+        int Group_Remark_Mask = 0x08;
+    }
+
     public GroupInfo groupInfo;
-    //0 march group name, 1 march group member name, 2 both
+    //GroupSearchMarchTypeMask
     public int marchedType;
     public List<String> marchedMembers;
 

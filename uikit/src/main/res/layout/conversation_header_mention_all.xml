@@ -22,7 +22,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:scaleType="fitCenter"
-            android:src="@mipmap/ic_group_cheat" />
+            android:src="@mipmap/ic_group_chat" />
 
         <TextView
             android:layout_width="wrap_content"

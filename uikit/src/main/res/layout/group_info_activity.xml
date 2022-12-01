@@ -15,7 +15,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginTop="50dp"
         android:scaleType="centerCrop"
-        android:src="@mipmap/ic_group_cheat" />
+        android:src="@mipmap/ic_group_chat" />
 
     <TextView
         android:id="@+id/groupNameTextView"

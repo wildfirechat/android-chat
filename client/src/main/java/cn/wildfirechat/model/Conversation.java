@@ -72,6 +72,8 @@ public class Conversation implements Parcelable {
     // 可以用来做自定义会话，区分不同业务线
     public int line;
 
+    public Conversation() {
+    }
 
     public Conversation(ConversationType type, String target, int line) {
         this.type = type;

@@ -13,15 +13,16 @@
         android:id="@+id/durationTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:text="00:00" />
+        android:text="00:00"
+        android:textColor="@color/white" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginTop="5dp"
-        android:orientation="vertical">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/shareScreenImageView"
@@ -34,11 +35,42 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:textColor="@color/white"
-            android:text="开始屏幕共享" />
+            android:text="开始屏幕共享"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/connectedAudioOnlyImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/av_phone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="切到语音通话"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,17 +86,17 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/connectedAudioOnlyImageView"
+                android:id="@+id/muteAudioImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/av_phone" />
+                android:src="@drawable/av_mute_selector" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:textColor="@color/white"
-                android:text="切到语音通话" />
+                android:text="静音"
+                android:textColor="@color/white" />
 
         </LinearLayout>
 
@@ -85,8 +117,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:textColor="@color/white"
-                android:text="挂断" />
+                android:text="挂断"
+                android:textColor="@color/white" />
 
         </LinearLayout>
 
@@ -107,8 +139,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:textColor="@color/white"
-                android:text="旋转摄像头" />
+                android:text="旋转摄像头"
+                android:textColor="@color/white" />
 
         </LinearLayout>
     </LinearLayout>

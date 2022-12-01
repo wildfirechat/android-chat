@@ -29,7 +29,7 @@ import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.chatroom.ChatRoomListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity;
+import cn.wildfire.chat.kit.voip.conference.ConferencePortalActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
@@ -107,12 +107,14 @@ public class DiscoveryFragment extends Fragment {
     @OnClick(R.id.momentOptionItemView)
     void moment() {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
+        // 具体项目中，如果不能隐式启动，可改为下面这种显示启动朋友圈页面
+//        Intent intent = new Intent(getActivity(), FeedListActivity.class);
         startActivity(intent);
     }
 
     @OnClick(R.id.conferenceOptionItemView)
     void conference() {
-        Intent intent = new Intent(getActivity(), CreateConferenceActivity.class);
+        Intent intent = new Intent(getActivity(), ConferencePortalActivity.class);
         startActivity(intent);
     }
 

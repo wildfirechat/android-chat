@@ -8,14 +8,24 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
+import cn.wildfire.chat.kit.Config;
+import cn.wildfirechat.message.FileMessageContent;
+import cn.wildfirechat.message.MediaMessageContent;
+import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GeneralCallbackBytes;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -45,6 +55,11 @@ public class DownloadManager {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                URL _url = call.request().url().url();
+                String query = _url.getQuery();
+                String target = getQueryMap(query).get("target");
+                boolean isSecret = Boolean.parseBoolean(getQueryMap(query).get("secret"));
+
                 InputStream is = null;
                 byte[] buf = new byte[2048];
                 int len = 0;
@@ -54,20 +69,59 @@ public class DownloadManager {
                 String fileName = TextUtils.isEmpty(name) ? getNameFromUrl(url) : name;
                 try {
                     is = response.body().byteStream();
+
                     long total = response.body().contentLength();
                     File file = new File(savePath, fileName);
                     fos = new FileOutputStream(file);
+                    ByteArrayOutputStream bos = null;
+                    if (isSecret) {
+                        bos = new ByteArrayOutputStream();
+                    }
                     long sum = 0;
                     while ((len = is.read(buf)) != -1) {
-                        fos.write(buf, 0, len);
+                        if (bos != null) {
+                            bos.write(buf, 0, len);
+                        } else {
+                            fos.write(buf, 0, len);
+                        }
+
                         sum += len;
                         int progress = (int) (sum * 1.0f / total * 100);
                         // 下载中
                         listener.onProgress(progress);
                     }
-                    fos.flush();
-                    // 下载完成
-                    listener.onSuccess(file);
+                    if (isSecret) {
+                        CountDownLatch latch = new CountDownLatch(1);
+                        FileOutputStream finalFos = fos;
+                        ChatManager.Instance().decodeSecretDataAsync(target, bos.toByteArray(), new GeneralCallbackBytes() {
+                            @Override
+                            public void onSuccess(byte[] data) {
+                                try {
+                                    finalFos.write(data);
+                                    finalFos.flush();
+                                    listener.onSuccess(file);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onFail(int errorCode) {
+                                File file = new File(savePath, fileName);
+                                if (file.exists()) {
+                                    file.delete();
+                                }
+                                listener.onFail();
+                                latch.countDown();
+                            }
+                        });
+                        latch.await();
+                    } else {
+                        fos.flush();
+                        // 下载完成
+                        listener.onSuccess(file);
+                    }
                 } catch (Exception e) {
                     File file = new File(savePath, fileName);
                     if (file.exists()) {
@@ -92,44 +146,66 @@ public class DownloadManager {
         });
     }
 
-    public static void download(final String url, final OnDownloadListenerEx listener) {
-        Request request = new Request.Builder().url(url).build();
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                // 下载失败
-                listener.onFail();
-            }
+    /**
+     * 密聊时，媒体文件都是经过加密的，这个函数构造一个带特定参数的url，然后通过 {@link #download(String, String, String, OnDownloadListener)
+     * 或者{@link #download(String, String, OnDownloadListener)}} 下载时，回调返回的文件是解密之后的
+     *
+     * @param mediaMessage
+     * @return
+     */
+    public static String buildSecretChatMediaUrl(Message mediaMessage) {
+        if (!(mediaMessage.content instanceof MediaMessageContent) || mediaMessage.conversation.type != Conversation.ConversationType.SecretChat) {
+            return null;
+        }
+        String remoteUrl = ((MediaMessageContent) mediaMessage.content).remoteUrl;
+        if (TextUtils.isEmpty(remoteUrl)) {
+            return null;
+        }
+        if (remoteUrl.contains("?")) {
+            return remoteUrl + "&target=" + mediaMessage.conversation.target + "&secret=true";
+        } else {
+            return remoteUrl + "?target=" + mediaMessage.conversation.target + "&secret=true";
+        }
+    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                InputStream is = null;
-                int len;
-                try {
-                    is = response.body().byteStream();
-                    long total = response.body().contentLength();
-                    byte[] buf = new byte[(int) total];
-                    long sum = 0;
-                    while ((len = is.read(buf, (int) sum, total - sum >= 1024 ? 1024 : (int) (total - sum))) != -1) {
-                        sum += len;
-                        int progress = (int) (sum * 1.0f / total * 100);
-                        // 下载中
-                        listener.onProgress(progress);
-                    }
-                    // 下载完成
-                    listener.onSuccess(buf);
-                } catch (Exception e) {
-                    listener.onFail();
-                } finally {
-                    try {
-                        if (is != null) {
-                            is.close();
-                        }
-                    } catch (IOException e) {
-                    }
-                }
+    public static File mediaMessageContentFile(Message message) {
+
+        String dir = null;
+        String name = null;
+        MessageContent content = message.content;
+        if (!(content instanceof MediaMessageContent)) {
+            return null;
+        }
+        if (!TextUtils.isEmpty(((MediaMessageContent) content).localPath)) {
+            File file = new File(((MediaMessageContent) content).localPath);
+            if (file.exists()) {
+                return file;
             }
-        });
+        }
+
+        switch (((MediaMessageContent) content).mediaType) {
+            case VOICE:
+                name = message.messageUid + ".mp3";
+                dir = Config.AUDIO_SAVE_DIR;
+                break;
+            case IMAGE:
+                name = message.messageUid + ".jpg";
+                dir = Config.PHOTO_SAVE_DIR;
+                break;
+            case VIDEO:
+                name = message.messageUid + ".mp4";
+                dir = Config.VIDEO_SAVE_DIR;
+                break;
+            case FILE:
+                name = message.messageUid + "-" + ((FileMessageContent) message.content).getName();
+                dir = Config.FILE_SAVE_DIR;
+                break;
+            default:
+                dir = Config.FILE_SAVE_DIR;
+                name = message.messageUid + "-" + ".data";
+                break;
+        }
+        return new File(dir, name);
     }
 
     /**
@@ -198,7 +274,7 @@ public class DownloadManager {
 
         @Override
         final public void onProgress(int progress) {
-            ChatManager.Instance().getMainHandler().post(() -> onProgress(progress));
+            ChatManager.Instance().getMainHandler().post(() -> onUiProgress(progress));
         }
 
         @Override
@@ -220,27 +296,18 @@ public class DownloadManager {
         }
     }
 
-    public static String urlToMd5(String url) {
-        return md5(url);
-    }
-
-    public static String md5(String s) {
-        try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes());
-            byte[] messageDigest = digest.digest();
-
-            // Create Hex String
-            StringBuilder hexString = new StringBuilder();
-            for (int i = 0; i < messageDigest.length; i++) {
-                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
-            }
-
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+    private static Map<String, String> getQueryMap(String query) {
+        Map<String, String> map = new HashMap<String, String>();
+        if (TextUtils.isEmpty(query)) {
+            return map;
         }
-        return null;
+
+        String[] params = query.split("&");
+        for (String param : params) {
+            String name = param.split("=")[0];
+            String value = param.split("=")[1];
+            map.put(name, value);
+        }
+        return map;
     }
 }

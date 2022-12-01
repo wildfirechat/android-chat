@@ -22,6 +22,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.widget.SimpleLabelView;
 import cn.wildfirechat.message.notification.RichNotificationMessageContent;
 import cn.wildfirechat.model.Conversation;
@@ -57,7 +58,7 @@ public class RichNotificationMessageContentViewHolder extends NotificationMessag
             exPortraitImageView.setVisibility(View.VISIBLE);
             String imagePath = rich.exPortrait;
             if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
-                imagePath += "?target=" + message.message.conversation.target + "&secret=true";
+                imagePath = DownloadManager.buildSecretChatMediaUrl(message.message);
             }
             CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);

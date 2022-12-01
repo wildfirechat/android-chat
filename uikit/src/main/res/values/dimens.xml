@@ -17,6 +17,8 @@
     <dimen name="default_custom_keyboard_size">250dp</dimen>
     <dimen name="min_custom_keyboard_size">110dp</dimen>
     <dimen name="min_custom_keyboard_top_margin">170dp</dimen>
+    <dimen name="min_custom_keyboard_top_margin_portrait">170dp</dimen>
+    <dimen name="min_custom_keyboard_top_margin_landscape_bubble">56dp</dimen>
 
     <dimen name="dimen_30dp">30dp</dimen>
     <dimen name="dp_2">2dp</dimen>

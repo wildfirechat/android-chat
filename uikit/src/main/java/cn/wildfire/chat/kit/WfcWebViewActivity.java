@@ -6,8 +6,10 @@ package cn.wildfire.chat.kit;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.webkit.DownloadListener;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -15,7 +17,10 @@ import android.webkit.WebViewClient;
 import androidx.annotation.Nullable;
 
 import butterknife.BindView;
+import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.workspace.JsApi;
+import cn.wildfirechat.message.LinkMessageContent;
+import cn.wildfirechat.message.Message;
 import wendu.dsbridge.DWebView;
 
 public class WfcWebViewActivity extends WfcBaseActivity {
@@ -51,12 +56,22 @@ public class WfcWebViewActivity extends WfcBaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.close) {
-            finish();
-            return true;
+        if (item.getItemId() == R.id.forward) {
+            LinkMessageContent content = new LinkMessageContent(webView.getTitle(), webView.getUrl());
+            Message message = new Message();
+            message.content = content;
+            Intent intent = new Intent(this, ForwardActivity.class);
+            intent.putExtra("message", message);
+            startActivity(intent);
+        } else if (item.getItemId() == R.id.openWithDefaultBrowser) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(webView.getUrl()));
+            startActivity(intent);
+        } else if (item.getItemId() == R.id.close) {
         } else {
             return super.onOptionsItemSelected(item);
         }
+        finish();
+        return true;
     }
 
     @Override
@@ -90,6 +105,15 @@ public class WfcWebViewActivity extends WfcBaseActivity {
         settings.setJavaScriptEnabled(true);
         jsApi = new JsApi(this, webView, url);
         webView.addJavascriptObject(jsApi, null);
+        webView.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+                finish();
+            }
+        });
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -106,10 +130,8 @@ public class WfcWebViewActivity extends WfcBaseActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.equals(WfcWebViewActivity.this.url)) {
                     jsApi.setCurrentUrl(url);
-                    return false;
                 }
-                WfcWebViewActivity.loadUrl(WfcWebViewActivity.this, "loading", url);
-                return true;
+                return false;
             }
         });
         if (!TextUtils.isEmpty(htmlContent)) {

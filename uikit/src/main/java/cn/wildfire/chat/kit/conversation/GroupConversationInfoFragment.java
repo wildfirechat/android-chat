@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.conversation;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,13 +22,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.kyleduo.switchbutton.SwitchButton;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.lqr.imagepicker.ImagePicker;
+import com.lqr.imagepicker.bean.ImageItem;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,10 +44,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -56,6 +64,7 @@ import cn.wildfire.chat.kit.group.SetGroupRemarkActivity;
 import cn.wildfire.chat.kit.group.manage.GroupManageActivity;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
+import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
@@ -69,6 +78,8 @@ import cn.wildfirechat.remote.UserSettingScope;
 
 public class GroupConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
+    private static final int REQUEST_CODE_PICK_IMAGE = 100;
+
     @BindView(R2.id.progressBar)
     ProgressBar progressBar;
 
@@ -80,6 +91,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     LinearLayout groupLinearLayout_0;
     @BindView(R2.id.groupNameOptionItemView)
     OptionItemView groupNameOptionItemView;
+    @BindView(R2.id.groupPortraitOptionItemView)
+    OptionItemView groupPortraitOptionItemView;
     @BindView(R2.id.groupRemarkOptionItemView)
     OptionItemView groupRemarkOptionItemView;
     @BindView(R2.id.groupQRCodeOptionItemView)
@@ -100,7 +113,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @BindView(R2.id.myGroupNickNameOptionItemView)
     OptionItemView myGroupNickNameOptionItemView;
     @BindView(R2.id.showGroupMemberAliasSwitchButton)
-    SwitchButton showGroupMemberNickNameSwitchButton;
+    SwitchMaterial showGroupMemberNickNameSwitchButton;
 
     @BindView(R2.id.quitButton)
     TextView quitGroupButton;
@@ -108,15 +121,15 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @BindView(R2.id.markGroupLinearLayout)
     LinearLayout markGroupLinearLayout;
     @BindView(R2.id.markGroupSwitchButton)
-    SwitchButton markGroupSwitchButton;
+    SwitchMaterial markGroupSwitchButton;
 
     // common
     @BindView(R2.id.memberRecyclerView)
     RecyclerView memberReclerView;
     @BindView(R2.id.stickTopSwitchButton)
-    SwitchButton stickTopSwitchButton;
+    SwitchMaterial stickTopSwitchButton;
     @BindView(R2.id.silentSwitchButton)
-    SwitchButton silentSwitchButton;
+    SwitchMaterial silentSwitchButton;
 
     @BindView(R2.id.fileRecordOptionItemView)
     OptionItemView fileRecordOptionItem;
@@ -225,6 +238,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     this.groupInfo = groupInfo;
                     groupNameOptionItemView.setDesc(groupInfo.name);
                     groupRemarkOptionItemView.setDesc(groupInfo.remark);
+                    GlideApp.with(this).load(groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
                     loadAndShowGroupMembers(false);
                     break;
                 }
@@ -278,9 +292,10 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
         myGroupNickNameOptionItemView.setDesc(groupMember.alias);
         groupNameOptionItemView.setDesc(groupInfo.name);
+        GlideApp.with(this).load(groupInfo.portrait).transform(new RoundedCorners(5)).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
         groupRemarkOptionItemView.setDesc(groupInfo.remark);
 
-        stickTopSwitchButton.setChecked(conversationInfo.isTop);
+        stickTopSwitchButton.setChecked(conversationInfo.top > 0);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
@@ -348,6 +363,11 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             intent.putExtra("groupInfo", groupInfo);
             startActivity(intent);
         }
+    }
+
+    @OnClick(R2.id.groupPortraitOptionItemView)
+    void updateGroupPortrait() {
+        ImagePicker.picker().pick(this, REQUEST_CODE_PICK_IMAGE);
     }
 
     @OnClick(R2.id.groupRemarkOptionItemView)
@@ -501,12 +521,39 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
+            ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+            if (images == null || images.isEmpty()) {
+                Toast.makeText(getActivity(), "更新头像失败: 选取文件失败 ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            File thumbImgFile = ImageUtils.genThumbImgFile(images.get(0).path);
+            if (thumbImgFile == null) {
+                Toast.makeText(getActivity(), "更新头像失败: 生成缩略图失败", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String imagePath = thumbImgFile.getAbsolutePath();
+            MutableLiveData<OperateResult<Boolean>> result = groupViewModel.updateGroupPortrait(groupInfo.target, imagePath);
+            result.observe(this, booleanOperateResult -> {
+                if (booleanOperateResult.isSuccess()) {
+                    Toast.makeText(getActivity(), "更新头像成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "更新头像失败: " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     private void stickTop(boolean top) {
         ConversationListViewModel conversationListViewModel = ViewModelProviders
             .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
-        conversationListViewModel.setConversationTop(conversationInfo, top);
-        conversationInfo.isTop = top;
+        conversationListViewModel.setConversationTop(conversationInfo, top ? 1 : 0);
+        conversationInfo.top = top ? 1 : 0;
     }
 
     private void markGroup(boolean mark) {

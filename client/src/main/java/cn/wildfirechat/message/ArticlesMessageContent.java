@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageContentType;
@@ -65,13 +66,25 @@ public class ArticlesMessageContent extends MessageContent {
 
     @Override
     public String digest(Message message) {
-        return null;
+        return this.topArticle.title;
+    }
+
+    public List<LinkMessageContent> toLinkMessageContent() {
+        List<LinkMessageContent> contents = new ArrayList<>();
+        contents.add(this.topArticle.toLinkMessageContent());
+        if (this.subArticles != null) {
+            for (Article article : subArticles) {
+                contents.add(article.toLinkMessageContent());
+            }
+        }
+        return contents;
     }
 
     public static class Article implements Parcelable {
         public String articleId;
         public String cover;
         public String title;
+        public String digest;
         public String url;
         boolean readReport;
 
@@ -81,6 +94,7 @@ public class ArticlesMessageContent extends MessageContent {
                 obj.put("id", articleId);
                 obj.put("cover", cover);
                 obj.put("title", title);
+                obj.put("digest", digest);
                 obj.put("url", url);
                 obj.put("rr", readReport);
             } catch (JSONException e) {
@@ -95,11 +109,18 @@ public class ArticlesMessageContent extends MessageContent {
             article.articleId = obj.optString("id");
             article.cover = obj.optString("cover");
             article.title = obj.optString("title");
+            article.digest = obj.optString("digest");
             article.url = obj.optString("url");
             article.readReport = obj.optBoolean("rr");
             return article;
         }
 
+        public LinkMessageContent toLinkMessageContent() {
+            LinkMessageContent content = new LinkMessageContent(this.title, this.url);
+            content.setContentDigest(this.digest);
+            content.setThumbnailUrl(this.cover);
+            return content;
+        }
 
         @Override
         public int describeContents() {

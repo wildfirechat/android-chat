@@ -25,6 +25,7 @@ import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.net.SimpleCallback;
 
 public class FavoriteListFragment extends Fragment {
     private FavoriteListAdapter favoriteListAdapter;
@@ -106,4 +107,21 @@ public class FavoriteListFragment extends Fragment {
             }
         });
     }
+
+    public void delFav(FavoriteItem item) {
+        AppServiceProvider appServiceProvider = WfcUIKit.getWfcUIKit().getAppServiceProvider();
+        appServiceProvider.removeFavoriteItem(item.getFavId(), new SimpleCallback<Void>() {
+            @Override
+            public void onUiSuccess(Void aVoid) {
+                favoriteListAdapter.removeFavoriteItem(item.getFavId());
+                Toast.makeText(getContext(), "删除收藏成功", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                Toast.makeText(getContext(), "删除收藏失败: " + code, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

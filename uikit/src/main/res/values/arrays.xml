@@ -6,6 +6,11 @@
         <item>只能群管理拉人</item>
     </string-array>
 
+    <string-array name="group_history_message">
+        <item>不允许新成员查看历史消息</item>
+        <item>允许新成员查看历史消息</item>
+    </string-array>
+
     <string-array name="group_search_type">
         <item>允许查找</item>
         <item>不允许查找</item>
@@ -14,6 +19,11 @@
     <string-array name="themes">
         <item>浅色主题</item>
         <item>深色主题</item>
+    </string-array>
+
+    <string-array name="change_password">
+        <item>短信验证码验证</item>
+        <item>密码验证</item>
     </string-array>
 
     <string-array name="secret_chat_message_burn_time_desc">

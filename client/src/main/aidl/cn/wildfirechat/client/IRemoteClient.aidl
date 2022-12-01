@@ -99,13 +99,14 @@ interface IRemoteClient {
     oneway void setOnTrafficDataListener(in IOnTrafficDataListener listener);
 
     oneway void registerMessageContent(in String msgContentCls);
+    oneway void registerMessageFlag(in int type, in int flag);
 
     oneway void send(in Message msg, in ISendMessageCallback callback, in int expireDuration);
     oneway void sendSavedMessage(in Message msg, in int expireDuration, in ISendMessageCallback callback);
     boolean cancelSendingMessage(in long messageId);
     oneway void recall(in long messageUid, IGeneralCallback callback);
     long getServerDeltaTime();
-    List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines);
+    List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines, in boolean lastMessage);
     oneway void getConversationListAsync(in int[] conversationTypes, in int[] lines, in IGetConversationListCallback callback);
     ConversationInfo getConversation(in int conversationType, in String target, in int line);
     long getFirstUnreadMessageId(in int conversationType, in String target, in int line);
@@ -154,7 +155,7 @@ interface IRemoteClient {
     void setMediaMessagePlayed(in long messageId);
     boolean setMessageLocalExtra(in long messageId, in String extra);
     void removeConversation(in int conversationType, in String target, in int line, in boolean clearMsg);
-    oneway void setConversationTop(in int conversationType, in String target, in int line, in boolean top, in IGeneralCallback callback);
+    oneway void setConversationTop(in int conversationType, in String target, in int line, in int top, in IGeneralCallback callback);
     void setConversationDraft(in int conversationType, in String target, in int line, in String draft);
     oneway void setConversationSilent(in int conversationType, in String target, in int line, in boolean silent,  in IGeneralCallback callback);
     void setConversationTimestamp(in int conversationType, in String target, in int line, in long timestamp);
@@ -206,6 +207,8 @@ interface IRemoteClient {
     oneway void uploadMediaFile(in String mediaPath, int mediaType, in IUploadMediaCallback callback);
     oneway void modifyMyInfo(in List<ModifyMyInfoEntry> values, in IGeneralCallback callback);
     boolean deleteMessage(in long messageId);
+    boolean batchDeleteMessages(in long[] messageUids);
+    boolean clearUserMessage(in String userId, in long start, in long end);
     void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
     void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
@@ -230,6 +233,7 @@ interface IRemoteClient {
     oneway void modifyGroupMemberExtra(in String groupId, in String memberId, in String extra, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     List<GroupMember> getGroupMembers(in String groupId, in boolean forceUpdate);
     List<GroupMember> getGroupMembersByType(in String groupId, in int type);
+    List<GroupMember> getGroupMembersByCount(in String groupId, in int count);
     GroupMember getGroupMember(in String groupId, in String memberId);
     oneway void getGroupMemberEx(in String groupId, in boolean forceUpdate, in IGetGroupMemberCallback callback);
     oneway void transferGroup(in String groupId, in String newOwner, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
@@ -237,6 +241,8 @@ interface IRemoteClient {
     oneway void muteOrAllowGroupMember(in String groupId, in boolean isSet, in List<String> memberIds, in boolean isAllow, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     String getGroupRemark(in String groupId);
     oneway void setGroupRemark(in String groupId, in String remark, in IGeneralCallback callback);
+    oneway void getMyGroups(in IGeneralCallback3 callback);
+    oneway void getCommonGroups(in String userId, in IGeneralCallback3 callback);
 
     byte[] encodeData(in byte[] data);
     byte[] decodeData(in byte[] data);
@@ -284,6 +290,7 @@ interface IRemoteClient {
     boolean isEnableSecretChat();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
+    void checkSignature();
 
     String getProtoRevision();
 

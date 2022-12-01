@@ -29,7 +29,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
 import butterknife.ButterKnife;
-import cn.wildfire.chat.app.login.SMSLoginActivity;
+import cn.wildfire.chat.app.login.LoginActivity;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfirechat.chat.R;
 
@@ -147,7 +147,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void showLogin() {
         Intent intent;
-        intent = new Intent(this, SMSLoginActivity.class);
+        intent = new Intent(this, LoginActivity.class);
         intent.putExtra("isKickedOff", getIntent().getBooleanExtra("isKickedOff", false));
         Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
             android.R.anim.fade_in, android.R.anim.fade_out).toBundle();

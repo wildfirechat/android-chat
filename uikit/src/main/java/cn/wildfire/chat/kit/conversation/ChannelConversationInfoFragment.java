@@ -11,15 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
-import com.kyleduo.switchbutton.SwitchButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Arrays;
 
@@ -31,6 +33,7 @@ import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
+import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -48,9 +51,9 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
     @BindView(R2.id.stickTopSwitchButton)
-    SwitchButton stickTopSwitchButton;
+    SwitchMaterial stickTopSwitchButton;
     @BindView(R2.id.silentSwitchButton)
-    SwitchButton silentSwitchButton;
+    SwitchMaterial silentSwitchButton;
 
     @BindView(R2.id.channelNameOptionItemView)
     OptionItemView channelNameOptionItemView;
@@ -80,6 +83,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         assert args != null;
         conversationInfo = args.getParcelable("conversationInfo");
         assert conversationInfo != null;
+        getActivity().setTitle("频道详情");
     }
 
     @Nullable
@@ -111,7 +115,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
 
         });
 
-        stickTopSwitchButton.setChecked(conversationInfo.isTop);
+        stickTopSwitchButton.setChecked(conversationInfo.top>0);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
@@ -167,6 +171,22 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         startActivity(intent);
     }
 
+    @OnClick(R2.id.unsubscribeButton)
+    void unsubscribe() {
+        channelViewModel.listenChannel(this.conversationInfo.conversation.target, false).observe(this, new Observer<OperateResult<Boolean>>() {
+            @Override
+            public void onChanged(OperateResult<Boolean> booleanOperateResult) {
+                if (booleanOperateResult.isSuccess()) {
+                    Intent intent = new Intent(getContext().getPackageName() + ".main");
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getActivity(), "取消订阅失败 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -180,8 +200,8 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         ConversationListViewModel conversationListViewModel = ViewModelProviders
             .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
-        conversationListViewModel.setConversationTop(conversationInfo, top);
-        conversationInfo.isTop = top;
+        conversationListViewModel.setConversationTop(conversationInfo, top?1:0);
+        conversationInfo.top = top?1:0;
     }
 
     private void silent(boolean silent) {

@@ -8,7 +8,7 @@
 
     <!--联系人-->
     <string name="new_friend">新的朋友</string>
-    <string name="group_cheat">群聊</string>
+    <string name="group_chat">群聊</string>
 
     <!--新的朋友-->
     <string name="add_friend">添加朋友</string>
@@ -50,6 +50,7 @@
 
     <!--群信息-->
     <string name="group_name">群聊名称</string>
+    <string name="group_portrait">群头像</string>
     <string name="untitled">未命名</string>
     <string name="group_announcement">群公告</string>
     <string name="message_free">消息免打扰</string>
@@ -63,4 +64,8 @@
     <string name="del_member_success">删除群成员成功</string>
     <string name="del_member_fail">删除群成员失败</string>
 
+    <string name="unsubscribe">取消订阅</string>
+
+    <string name="close">关闭</string>
+    <string name="confirm">确认</string>
 </resources>

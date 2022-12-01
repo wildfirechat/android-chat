@@ -10,6 +10,7 @@
         <!-- Customize color of navigation drawer icon and back arrow -->
         <item name="colorBackgroundFloating">@color/white</item>
         <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.LightAppbar">
@@ -28,7 +29,7 @@
         <item name="overlapAnchor">false</item>
         <item name="titleTextColor">@color/white</item>
         <item name="iconTint">@color/white</item>
-        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlNormal">@color/gray</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
@@ -37,6 +38,12 @@
     <style name="AppTheme.FullScreen">
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppThemeDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/black</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>
 
     <!--圆角Dialog-->
@@ -59,25 +66,39 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="Switch">
-        <item name="android:thumb">@drawable/switch_thumb</item>
-        <item name="android:track">@drawable/switch_track</item>
-    </style>
-
-    <style name="IosSwitch">
+    <style name="defaultSwitch">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="kswBackDrawable">@drawable/ios_back_drawable</item>
-        <item name="kswBackMeasureRatio">1.5</item>
-        <item name="kswThumbDrawable">@drawable/ios_thumb_selector</item>
-        <item name="kswThumbMarginBottom">-8dp</item>
-        <item name="kswThumbMarginLeft">-5dp</item>
-        <item name="kswThumbMarginRight">-5dp</item>
-        <item name="kswThumbMarginTop">-2dp</item>
     </style>
 
-    <style name="deliveryProgress" parent="Widget.MaterialProgressBar.ProgressBar.Small">
+    <style name="topRoundedImageView_5dp" parent="">
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerSizeTopLeft">5dp</item>
+        <item name="cornerSizeTopRight">5dp</item>
+    </style>
+    <style name="roundedImageView_8dp" parent="">
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
 
+    <style name="Dialog.FullScreen.Transparent" parent="Theme.AppCompat.Dialog">
+        <item name="android:padding">0dp</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="AppThemeCorrectPrimaryColor" parent="AppTheme">
+        <item name="colorPrimary">@color/gray5</item>
+    </style>
+
+    <style name="Option">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">20dp</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:background">@color/white</item>
     </style>
 
 </resources>

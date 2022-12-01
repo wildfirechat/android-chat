@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="122dp"
-            android:text="手机号登录"
+            android:text="验证码登录"
             android:textColor="@color/black2"
             android:textSize="26sp" />
 
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="手机号"
-                android:textColor="@color/gray1"
+                android:textColor="@color/black3"
                 android:textSize="17sp" />
 
         </FrameLayout>
@@ -95,6 +95,15 @@
                 android:textColor="@color/request_auth_code_text_color"
                 android:textSize="12sp" />
         </FrameLayout>
+
+        <TextView
+            android:id="@+id/passwordLoginTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="使用密码登录"
+            android:textColor="@color/colorPrimary"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/loginButton"

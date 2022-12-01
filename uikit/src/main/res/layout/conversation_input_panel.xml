@@ -26,13 +26,28 @@
             android:paddingBottom="6dp">
 
             <ImageView
+                android:id="@+id/menuImageView"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="5dp"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_chat_menu" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="match_parent"
+                android:background="@color/gray" />
+
+
+            <ImageView
                 android:id="@+id/audioImageView"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_gravity="bottom"
                 android:layout_margin="5dp"
                 android:scaleType="centerInside"
-                android:src="@mipmap/ic_cheat_voice" />
+                android:src="@mipmap/ic_chat_voice" />
 
             <ImageView
                 android:id="@+id/pttImageView"
@@ -113,6 +128,18 @@
                     android:visibility="gone"
                     tools:visibility="gone" />
 
+                <LinearLayout
+                    android:id="@+id/channelMenuContainerLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/gray"
+                    android:gravity="center_vertical"
+                    android:minHeight="42dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                </LinearLayout>
+
             </FrameLayout>
 
             <ImageView
@@ -122,7 +149,7 @@
                 android:layout_gravity="bottom"
                 android:layout_margin="5dp"
                 android:scaleType="centerInside"
-                android:src="@mipmap/ic_cheat_emo" />
+                android:src="@mipmap/ic_chat_emo" />
 
             <ImageView
                 android:id="@+id/extImageView"
@@ -132,7 +159,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginBottom="5dp"
                 android:scaleType="centerInside"
-                android:src="@mipmap/ic_cheat_add" />
+                android:src="@mipmap/ic_chat_add" />
 
             <Button
                 android:id="@+id/sendButton"

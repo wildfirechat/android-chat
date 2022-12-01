@@ -53,6 +53,7 @@ import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.message.ArticlesMessageContent;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
@@ -67,6 +68,7 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
+import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -194,7 +196,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         items.add("删除本地消息");
         if (message.message.conversation.type == Conversation.ConversationType.Group || message.message.conversation.type == Conversation.ConversationType.Single) {
             items.add("删除远程消息");
-        }else if (message.message.conversation.type == Conversation.ConversationType.SecretChat){
+        } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
             items.add("删除自己及对方消息");
         }
 
@@ -244,12 +246,12 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         appServiceProvider.addFavoriteItem(favoriteItem, new SimpleCallback<Void>() {
             @Override
             public void onUiSuccess(Void aVoid) {
-                Toast.makeText(fragment.getContext(), "fav ok", Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getContext(), "收藏成功", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                Toast.makeText(fragment.getContext(), "fav error: " + code, Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getContext(), "收藏失败: " + code, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -303,10 +305,10 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         Message message = uiMessage.message;
 
         if (message.conversation.type == Conversation.ConversationType.SecretChat) {
-            if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)){
+            if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
                 return true;
             }
-            if (MessageContextMenuItemTags.TAG_FAV.equals(tag)){
+            if (MessageContextMenuItemTags.TAG_FAV.equals(tag)) {
                 return true;
             }
             return false;
@@ -368,6 +370,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 || messageContent instanceof CompositeMessageContent
                 || messageContent instanceof VideoMessageContent
                 || messageContent instanceof SoundMessageContent
+                || messageContent instanceof ArticlesMessageContent
                 || messageContent instanceof ImageMessageContent) {
                 return false;
             }
@@ -379,11 +382,22 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     private void setSenderAvatar(Message item) {
         // TODO get user info from viewModel
-        UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(item.sender, false);
-        if (portraitImageView != null) {
+        String portraitUrl = null;
+        if (item.conversation.type == Conversation.ConversationType.Channel && item.direction == MessageDirection.Receive) {
+            ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(item.conversation.target, false);
+            if (channelInfo != null) {
+                portraitUrl = channelInfo.portrait;
+            }
+        } else {
+            UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(item.sender, false);
+            if (userInfo != null) {
+                portraitUrl = userInfo.portrait;
+            }
+        }
+        if (portraitImageView != null && portraitUrl != null) {
             GlideApp
                 .with(fragment)
-                .load(userInfo.portrait)
+                .load(portraitUrl)
                 .transforms(new CenterCrop(), new RoundedCorners(10))
                 .placeholder(R.mipmap.avatar_def)
                 .into(portraitImageView);

@@ -10,7 +10,11 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
+import cn.wildfire.chat.kit.net.BooleanCallback;
 import cn.wildfire.chat.kit.net.SimpleCallback;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
+import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.GeneralCallback2;
 
 
 public interface AppServiceProvider {
@@ -52,5 +56,40 @@ public interface AppServiceProvider {
     void addFavoriteItem(FavoriteItem item, SimpleCallback<Void> callback);
 
     void removeFavoriteItem(int favId, SimpleCallback<Void> callback);
+
+    void getMyPrivateConferenceId(GeneralCallback2 callback);
+
+    void createConference(ConferenceInfo info, GeneralCallback2 callback);
+
+    void queryConferenceInfo(String conferenceId, String password, QueryConferenceInfoCallback callback);
+
+    void destroyConference(String conferenceId, GeneralCallback callback);
+
+    void favConference(String conferenceId, GeneralCallback callback);
+
+    void unfavConference(String conferenceId, GeneralCallback callback);
+
+    void isFavConference(String conferenceId, BooleanCallback callback);
+
+    void getFavConferences(FavConferenceCallback callback);
+
+    void updateConference(ConferenceInfo conferenceInfo, GeneralCallback callback);
+
+    void recordConference(String conferenceId, boolean record, GeneralCallback callback);
+
+    void setConferenceFocusUserId(String conferenceId, String userId, GeneralCallback callback);
+
+    interface QueryConferenceInfoCallback {
+        void onSuccess(ConferenceInfo info);
+
+        void onFail(int code, String msg);
+    }
+
+    interface FavConferenceCallback {
+        void onSuccess(List<ConferenceInfo> infos);
+
+        void onFail(int code, String msg);
+    }
+
 
 }

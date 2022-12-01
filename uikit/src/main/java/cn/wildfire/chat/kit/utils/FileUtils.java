@@ -878,5 +878,11 @@ public class FileUtils {
             return R.mipmap.ic_file_type_unknown;
         }
     }
+
+    public static boolean isFileExists(String path){
+        File file = new File(path);
+        return file.exists();
+    }
+
 }
 

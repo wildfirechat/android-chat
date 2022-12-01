@@ -106,7 +106,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         silentImageView.setVisibility(conversationInfo.isSilent ? View.VISIBLE : View.GONE);
         statusImageView.setVisibility(View.GONE);
 
-        itemView.setBackgroundResource(conversationInfo.isTop ? R.drawable.selector_stick_top_item : R.drawable.selector_common_item);
+        itemView.setBackgroundResource(conversationInfo.top > 0 ? R.drawable.selector_stick_top_item : R.drawable.selector_common_item);
         redDotView.setVisibility(View.GONE);
         if (conversationInfo.isSilent) {
             if (conversationInfo.unreadCount.unread > 0) { // 显示红点
@@ -196,12 +196,12 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_TOP, priority = 1)
     public void stickConversationTop(View itemView, ConversationInfo conversationInfo) {
-        conversationListViewModel.setConversationTop(conversationInfo, true);
+        conversationListViewModel.setConversationTop(conversationInfo, 1);
     }
 
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_CANCEL_TOP, priority = 2)
     public void cancelStickConversationTop(View itemView, ConversationInfo conversationInfo) {
-        conversationListViewModel.setConversationTop(conversationInfo, false);
+        conversationListViewModel.setConversationTop(conversationInfo, 0);
     }
 
     @ConversationContextMenuItem(tag = ConversationContextMenuItemTags.TAG_MarkAsRead, priority = 3)
@@ -267,11 +267,11 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
      */
     public boolean contextMenuItemFilter(ConversationInfo conversationInfo, String itemTag) {
         if (ConversationContextMenuItemTags.TAG_TOP.equals(itemTag)) {
-            return conversationInfo.isTop;
+            return conversationInfo.top > 0;
         }
 
         if (ConversationContextMenuItemTags.TAG_CANCEL_TOP.equals(itemTag)) {
-            return !conversationInfo.isTop;
+            return conversationInfo.top == 0;
         }
 
         if (ConversationContextMenuItemTags.TAG_MarkAsRead.equals(itemTag)) {

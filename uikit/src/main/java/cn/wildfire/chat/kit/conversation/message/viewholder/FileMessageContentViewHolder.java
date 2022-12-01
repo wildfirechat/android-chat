@@ -22,8 +22,11 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.FileMessageContent;
+import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.remote.ChatManager;
 
 @MessageContentType(FileMessageContent.class)
 @EnableContextMenu
@@ -55,21 +58,50 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         if (message.isDownloading) {
             return;
         }
-        File file = messageViewModel.mediaMessageContentFile(message.message);
+        File file = DownloadManager.mediaMessageContentFile(message.message);
         if (file == null) {
             return;
         }
+        ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
 
         if (file.exists()) {
             Intent intent = FileUtils.getViewIntent(fragment.getContext(), file);
-            ComponentName cn = intent.resolveActivity(fragment.getContext().getPackageManager());
-            if (cn == null) {
+            try {
+                fragment.startActivity(intent);
+            } catch (Exception e) {
                 Toast.makeText(fragment.getContext(), "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
-                return;
             }
-            fragment.startActivity(intent);
         } else {
-            messageViewModel.downloadMedia(message, file);
+            String fileUrl;
+            if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
+                fileUrl = DownloadManager.buildSecretChatMediaUrl(message.message);
+            } else {
+                fileUrl = ((FileMessageContent) message.message.content).remoteUrl;
+            }
+            DownloadManager.download(fileUrl, file.getParent(), file.getName(), new DownloadManager.OnDownloadListener() {
+                @Override
+                public void onSuccess(File file) {
+                    if (fragment.getActivity() != null && !fragment.getActivity().isFinishing()) {
+                        Intent intent = FileUtils.getViewIntent(fragment.getContext(), file);
+                        ComponentName cn = intent.resolveActivity(fragment.getContext().getPackageManager());
+                        if (cn == null) {
+                            Toast.makeText(fragment.getContext(), "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        fragment.startActivity(intent);
+                    }
+                }
+
+                @Override
+                public void onProgress(int progress) {
+
+                }
+
+                @Override
+                public void onFail() {
+
+                }
+            });
         }
     }
 }

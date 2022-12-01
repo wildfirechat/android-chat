@@ -27,9 +27,9 @@
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
-            <com.kyleduo.switchbutton.SwitchButton
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchMsgNotification"
-                style="@style/IosSwitch"
+                style="@style/defaultSwitch"
                 android:layout_gravity="center_vertical|right" />
 
         </FrameLayout>
@@ -48,9 +48,9 @@
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
-            <com.kyleduo.switchbutton.SwitchButton
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchVoipNotification"
-                style="@style/IosSwitch"
+                style="@style/defaultSwitch"
                 android:layout_gravity="center_vertical|right" />
 
         </FrameLayout>
@@ -74,9 +74,9 @@
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
-            <com.kyleduo.switchbutton.SwitchButton
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchShowMsgDetail"
-                style="@style/IosSwitch"
+                style="@style/defaultSwitch"
                 android:layout_gravity="center_vertical|right" />
 
         </FrameLayout>
@@ -95,9 +95,9 @@
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
-            <com.kyleduo.switchbutton.SwitchButton
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchUserReceipt"
-                style="@style/IosSwitch"
+                style="@style/defaultSwitch"
                 android:layout_gravity="center_vertical|right" />
 
         </FrameLayout>
@@ -121,9 +121,9 @@
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
-            <com.kyleduo.switchbutton.SwitchButton
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchSyncDraft"
-                style="@style/IosSwitch"
+                style="@style/defaultSwitch"
                 android:layout_gravity="center_vertical|right" />
 
         </FrameLayout>
@@ -147,9 +147,9 @@
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
-            <com.kyleduo.switchbutton.SwitchButton
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchPtt"
-                style="@style/IosSwitch"
+                style="@style/defaultSwitch"
                 android:layout_gravity="center_vertical|right" />
 
         </FrameLayout>

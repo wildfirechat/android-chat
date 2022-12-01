@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
@@ -25,10 +26,12 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -40,6 +43,7 @@ import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetGroupsCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
+import cn.wildfirechat.remote.UploadMediaCallback;
 
 public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;
@@ -293,6 +297,22 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return result;
     }
 
+    public MutableLiveData<OperateResult<Boolean>> setGroupHistoryMessage(String groupId, int searchType, MessageContent notifyMsg, List<Integer> notifyLines) {
+        MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
+        ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_History_Message, searchType + "", notifyLines, notifyMsg, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new OperateResult<>(0));
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return result;
+    }
+
     public @Nullable
     GroupInfo getGroupInfo(String groupId, boolean refresh) {
         return ChatManager.Instance().getGroupInfo(groupId, refresh);
@@ -513,6 +533,42 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         });
         return result;
     }
+
+    public MutableLiveData<OperateResult<Boolean>> updateGroupPortrait(String groupId, String localImagePath) {
+        MutableLiveData<OperateResult<Boolean>> resultLiveData = new MutableLiveData<>();
+        byte[] content = FileUtils.readFile(localImagePath);
+        if (content != null) {
+            ChatManager.Instance().uploadMediaFile(localImagePath, MessageContentMediaType.PORTRAIT.getValue(), new UploadMediaCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    ChatManager.Instance().modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_Portrait, result, Collections.singletonList(0), null, new GeneralCallback() {
+                        @Override
+                        public void onSuccess() {
+                            resultLiveData.setValue(new OperateResult<>(true, 0));
+                        }
+
+                        @Override
+                        public void onFail(int errorCode) {
+                            resultLiveData.setValue(new OperateResult<>(false, errorCode));
+                        }
+                    });
+                }
+
+                @Override
+                public void onProgress(long uploaded, long total) {
+
+                }
+
+
+                @Override
+                public void onFail(int errorCode) {
+                    resultLiveData.setValue(new OperateResult<>(errorCode));
+                }
+            });
+        }
+        return resultLiveData;
+    }
+
     public MutableLiveData<OperateResult<Boolean>> setGroupRemark(String groupId, String remark) {
         MutableLiveData<OperateResult<Boolean>> result = new MutableLiveData<>();
         ChatManager.Instance().setGroupRemark(groupId, remark, new GeneralCallback() {

@@ -31,8 +31,9 @@ public class LinkMessageContent extends MessageContent {
     public LinkMessageContent() {
     }
 
-    public LinkMessageContent(String contentDigest) {
-        this.contentDigest = contentDigest;
+    public LinkMessageContent(String title, String url) {
+        this.title = title;
+        this.url = url;
     }
 
     public String getContentDigest() {
@@ -107,7 +108,7 @@ public class LinkMessageContent extends MessageContent {
 
     @Override
     public String digest(Message message) {
-        return !TextUtils.isEmpty(contentDigest) ? contentDigest : url;
+        return !TextUtils.isEmpty(title) ? title : (!TextUtils.isEmpty(contentDigest) ? contentDigest : url);
     }
 
     @Override

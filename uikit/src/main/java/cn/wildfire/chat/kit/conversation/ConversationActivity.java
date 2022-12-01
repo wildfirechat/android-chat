@@ -44,8 +44,8 @@ public class ConversationActivity extends WfcBaseActivity {
         });
         conversationFragment = new ConversationFragment();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.containerFrameLayout, conversationFragment, "content")
-                .commit();
+            .add(R.id.containerFrameLayout, conversationFragment, "content")
+            .commit();
 
         setConversationBackground();
     }
@@ -96,7 +96,9 @@ public class ConversationActivity extends WfcBaseActivity {
         }
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
         String channelPrivateChatUser = intent.getStringExtra("channelPrivateChatUser");
-        conversationFragment.setupConversation(conversation, null, initialFocusedMessageId, channelPrivateChatUser);
+        String conversationTitle = intent.getStringExtra("conversationTitle");
+        boolean isPreJoinedChatRoom = intent.getBooleanExtra("isPreJoinedChatRoom", false);
+        conversationFragment.setupConversation(conversation, conversationTitle, initialFocusedMessageId, channelPrivateChatUser, isPreJoinedChatRoom);
     }
 
 
@@ -104,12 +106,13 @@ public class ConversationActivity extends WfcBaseActivity {
         Intent intent = getIntent();
         conversation = intent.getParcelableExtra("conversation");
         String conversationTitle = intent.getStringExtra("conversationTitle");
+        boolean isPreJoinedChatRoom = intent.getBooleanExtra("isPreJoinedChatRoom", false);
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
         if (conversation == null) {
             finish();
             return;
         }
-        conversationFragment.setupConversation(conversation, conversationTitle, initialFocusedMessageId, null);
+        conversationFragment.setupConversation(conversation, conversationTitle, initialFocusedMessageId, null, isPreJoinedChatRoom);
     }
 
     public static Intent buildConversationIntent(Context context, Conversation.ConversationType type, String target, int line) {
@@ -124,6 +127,15 @@ public class ConversationActivity extends WfcBaseActivity {
     public static Intent buildConversationIntent(Context context, Conversation.ConversationType type, String target, int line, String channelPrivateChatUser) {
         Conversation conversation = new Conversation(type, target, line);
         return buildConversationIntent(context, conversation, null, -1);
+    }
+
+    public static Intent buildChatRoomConversationIntent(Context context, String chatRoomId, int line, String title, boolean joined) {
+        Conversation conversation = new Conversation(Conversation.ConversationType.ChatRoom, chatRoomId, line);
+        Intent intent = new Intent(context, ConversationActivity.class);
+        intent.putExtra("conversation", conversation);
+        intent.putExtra("conversationTitle", title);
+        intent.putExtra("isPreJoinedChatRoom", joined);
+        return intent;
     }
 
     public static Intent buildConversationIntent(Context context, Conversation conversation, String channelPrivateChatUser, long toFocusMessageId) {

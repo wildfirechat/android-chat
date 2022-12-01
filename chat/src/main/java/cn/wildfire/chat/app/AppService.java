@@ -30,12 +30,16 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
+import cn.wildfire.chat.kit.net.BooleanCallback;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.GeneralCallback2;
 import okhttp3.MediaType;
 
 public class AppService implements AppServiceProvider {
@@ -66,13 +70,18 @@ public class AppService implements AppServiceProvider {
         void onUiFailure(int code, String msg);
     }
 
-    @Deprecated //"已经废弃，请使用smsLogin"
-    public void namePwdLogin(String account, String password, LoginCallback callback) {
+    public void passwordLogin(String mobile, String password, LoginCallback callback) {
 
-        String url = APP_SERVER_ADDRESS + "/api/login";
+        String url = APP_SERVER_ADDRESS + "/login_pwd";
         Map<String, Object> params = new HashMap<>();
-        params.put("name", account);
+        params.put("mobile", mobile);
         params.put("password", password);
+
+        //如果是android pad设备，需要改这里，另外需要在ClientService对象中修改设备类型，请在ClientService代码中搜索"android pad"
+        //if（当前设备是android pad)
+        //  params.put("platform", new Integer(9));
+        //else
+        params.put("platform", new Integer(2));
 
         try {
             params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
@@ -141,6 +150,28 @@ public class AppService implements AppServiceProvider {
     }
 
 
+    public void resetPassword(String mobile, String code, String password, SimpleCallback<StatusResult> callback) {
+        String url = APP_SERVER_ADDRESS + "/reset_pwd";
+        Map<String, Object> params = new HashMap<>();
+        if (!TextUtils.isEmpty(mobile)) {
+            params.put("mobile", mobile);
+        }
+        params.put("resetCode", code);
+        params.put("newPassword", password);
+
+        OKHttpHelper.post(url, params, callback);
+    }
+
+    public void changePassword(String oldPassword, String newPassword, SimpleCallback<StatusResult> callback) {
+        String url = APP_SERVER_ADDRESS + "/change_pwd";
+        Map<String, Object> params = new HashMap<>();
+        params.put("oldPassword", oldPassword);
+        params.put("newPassword", newPassword);
+
+        OKHttpHelper.post(url, params, callback);
+
+    }
+
     public interface SendCodeCallback {
         void onUiSuccess();
 
@@ -152,6 +183,31 @@ public class AppService implements AppServiceProvider {
         String url = APP_SERVER_ADDRESS + "/send_code";
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", phoneNumber);
+        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (statusResult.getCode() == 0) {
+                    callback.onUiSuccess();
+                } else {
+                    callback.onUiFailure(statusResult.getCode(), "");
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
+
+    }
+
+    public void requestResetAuthCode(String phoneNumber, SendCodeCallback callback) {
+
+        String url = APP_SERVER_ADDRESS + "/send_reset_code";
+        Map<String, Object> params = new HashMap<>();
+        if (!TextUtils.isEmpty(phoneNumber)) {
+            params.put("mobile", phoneNumber);
+        }
         OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
             @Override
             public void onUiSuccess(StatusResult statusResult) {
@@ -481,5 +537,266 @@ public class AppService implements AppServiceProvider {
                 }, 5 * 1000);
             }
         }
+    }
+
+    @Override
+    public void getMyPrivateConferenceId(GeneralCallback2 callback) {
+        if (callback == null) {
+            return;
+        }
+        String url = APP_SERVER_ADDRESS + "/conference/get_my_id";
+        OKHttpHelper.post(url, null, new SimpleCallback<String>() {
+
+            @Override
+            public void onUiSuccess(String response) {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    if (object.optInt("code", -1) == 0) {
+                        String conferenceId = object.getString("result");
+                        callback.onSuccess(conferenceId);
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                callback.onFail(-1);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onFail(code);
+            }
+        });
+    }
+
+    @Override
+    public void createConference(ConferenceInfo info, GeneralCallback2 callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/create";
+        OKHttpHelper.post(url, info, new SimpleCallback<String>() {
+            @Override
+            public void onUiSuccess(String response) {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    if (object.optInt("code", -1) == 0) {
+                        String conferenceId = object.getString("result");
+                        callback.onSuccess(conferenceId);
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                callback.onFail(-1);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onFail(code);
+            }
+        });
+    }
+
+    @Override
+    public void queryConferenceInfo(String conferenceId, String password, QueryConferenceInfoCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        String url = APP_SERVER_ADDRESS + "/conference/info";
+        Map<String, String> map = new HashMap<>();
+        map.put("conferenceId", conferenceId);
+        if (!TextUtils.isEmpty(password)) {
+            map.put("password", password);
+        }
+        OKHttpHelper.post(url, map, new SimpleCallback<ConferenceInfo>() {
+
+            @Override
+            public void onUiSuccess(ConferenceInfo info) {
+                callback.onSuccess(info);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onFail(code, msg);
+            }
+        });
+    }
+
+    @Override
+    public void destroyConference(String conferenceId, GeneralCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/destroy/" + conferenceId;
+        OKHttpHelper.post(url, null, new SimpleCallback<StatusResult>() {
+
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (statusResult.isSuccess()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFail(statusResult.getCode());
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onFail(code);
+            }
+        });
+    }
+
+    @Override
+    public void favConference(String conferenceId, GeneralCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/fav/" + conferenceId;
+        OKHttpHelper.post(url, null, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (callback != null) {
+                    if (statusResult.isSuccess()) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onFail(statusResult.getCode());
+                    }
+                }
+
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (callback != null) {
+                    callback.onFail(code);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void unfavConference(String conferenceId, GeneralCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/unfav/" + conferenceId;
+        OKHttpHelper.post(url, null, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (callback != null) {
+                    if (statusResult.isSuccess()) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onFail(statusResult.getCode());
+                    }
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (callback != null) {
+                    callback.onFail(code);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void isFavConference(String conferenceId, BooleanCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/is_fav/" + conferenceId;
+        OKHttpHelper.post(url, null, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (callback != null) {
+                    if (statusResult.getCode() == 0) {
+                        callback.onSuccess(true);
+                    } else if (statusResult.getCode() == 16) {
+                        callback.onSuccess(false);
+                    } else {
+                        callback.onFail(-1, "");
+                    }
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (callback != null) {
+                    callback.onFail(code, msg);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void getFavConferences(FavConferenceCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/fav_conferences";
+        OKHttpHelper.post(url, null, new SimpleCallback<List<ConferenceInfo>>() {
+            @Override
+            public void onUiSuccess(List<ConferenceInfo> favConferences) {
+                if (callback != null) {
+                    callback.onSuccess(favConferences);
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (callback != null) {
+                    callback.onFail(code, msg);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void updateConference(ConferenceInfo conferenceInfo, GeneralCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/put_info";
+        OKHttpHelper.post(url, conferenceInfo, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (callback != null) {
+                    callback.onFail(code);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void recordConference(String conferenceId, boolean record, GeneralCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/recording/" + conferenceId;
+        Map<String, Boolean> params = new HashMap<>();
+        params.put("recording", record);
+        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (callback != null) {
+                    callback.onFail(code);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void setConferenceFocusUserId(String conferenceId, String userId, GeneralCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/conference/focus/" + conferenceId;
+        Map<String, String> params = new HashMap<>();
+        params.put("userId", TextUtils.isEmpty(userId) ? "" : userId);
+        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
+            @Override
+            public void onUiSuccess(StatusResult statusResult) {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                if (callback != null) {
+                    callback.onFail(code);
+                }
+            }
+        });
     }
 }

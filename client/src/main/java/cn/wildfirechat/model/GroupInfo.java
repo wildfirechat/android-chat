@@ -19,7 +19,9 @@ public class GroupInfo implements Parcelable {
         //every member can add quit change group name and portrait, no one can kickoff others
         Free(1),
         //member can only quit, owner can do all the operations
-        Restricted(2);
+        Restricted(2),
+        //member can do nothing, server api manage the group.
+        Organization(3);
 
         private int value;
 
@@ -60,10 +62,10 @@ public class GroupInfo implements Parcelable {
     //是否运行群中普通成员私聊。0 允许，1不允许
     public int privateChat;
 
-    //是否可以搜索到该群，功能暂未实现
+    //是否可以搜索到该群，0 群可以被搜索到；1 群不会被搜索到
     public int searchable;
 
-    //是否可以查看群历史消息, 0 不允许，1允许。仅专业版有效
+    //群成员是否可以加载加入之前的历史消息，0 不可以；1可以。仅专业版有效
     public int historyMessage;
 
     //群最大成员数。仅专业版有效

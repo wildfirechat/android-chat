@@ -78,7 +78,12 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
 
     @Override
     public int getItemCount() {
-        return 1 + compositeMessageContent.getMessages().size();
+        List<Message> messages = compositeMessageContent.getMessages();
+        if (messages == null || messages.isEmpty()) {
+            return 0;
+        } else {
+            return 1 + compositeMessageContent.getMessages().size();
+        }
     }
 
     @Override
@@ -138,8 +143,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
 
         @OnClick(R2.id.videoContentLayout)
         void playVideo() {
-            VideoMessageContent videoMessageContent = (VideoMessageContent) ((CompositeMessageContent) message.content).getMessages().get(position).content;
-            MMPreviewActivity.previewVideo(itemView.getContext(), videoMessageContent);
+            MMPreviewActivity.previewVideo(itemView.getContext(), message);
         }
 
         private Message message;

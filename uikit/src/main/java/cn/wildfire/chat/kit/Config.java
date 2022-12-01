@@ -54,10 +54,15 @@ public class Config {
 
     /**
      * 工作台页面地址
-     *
+     * <p>
      * 如果不想显示工作台，置为 null 即可
      */
     public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
+
+    /**
+     * 发送日志命令，当发送此文本消息时，会把协议栈日志发送到当前会话中，为空时关闭此功能。
+     */
+    public static String SEND_LOG_COMMAND = "*#marslog#";
 
     /**
      * 语音消息最长时长，单位是秒
@@ -68,6 +73,15 @@ public class Config {
      * 应用层用于存储配置信息(userId，token等)的SP文件的名字
      */
     public static final String SP_CONFIG_FILE_NAME = "config";
+
+    /**
+     * 会话列表最多展示的会话数
+     * <p>
+     * 大量会话时，会导致，快速进出会话界面，会话消息加载缓慢，故再次控制会话数，只展示最新的{@link MAX_CONVERSATION_LIST_SIZE}条
+     * <p>
+     * 直接修改此字段不会生效，请修改{@link cn.wildfirechat.client.ClientService#MAX_CONVERSATION_LIST_SIZE }字段
+     */
+    public static final int MAX_CONVERSATION_LIST_SIZE = 1000;
 
     public static String VIDEO_SAVE_DIR;
     public static String AUDIO_SAVE_DIR;
