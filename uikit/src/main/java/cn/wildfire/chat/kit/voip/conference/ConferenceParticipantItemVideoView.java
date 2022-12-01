@@ -24,7 +24,7 @@ public class ConferenceParticipantItemVideoView extends ConferenceParticipantIte
     public ZoomableFrameLayout videoContainer;
     private boolean enableVideoZoom = false;
 
-    private static final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+    private static final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
 
     public ConferenceParticipantItemVideoView(@NonNull Context context) {
         super(context);

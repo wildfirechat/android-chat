@@ -160,7 +160,7 @@ class VideoConferenceMainView extends RelativeLayout {
                     }
                 } else {
                     focusContainerFrameLayout.removeAllViews();
-                    conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                     focusContainerFrameLayout.addView(conferenceItem);
                     if (!profile.isAudience() && !profile.isVideoMuted()) {
                         this.callSession.setParticipantVideoType(focusProfile.getUserId(), focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_BIG_STREAM);
@@ -169,7 +169,7 @@ class VideoConferenceMainView extends RelativeLayout {
             } else {
                 previewContainerFrameLayout.removeAllViews();
                 focusContainerFrameLayout.removeAllViews();
-                conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 focusContainerFrameLayout.addView(conferenceItem);
             }
         }
