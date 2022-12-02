@@ -947,6 +947,12 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                         }
                     }
                 }
+
+                // 当前页的用户离开会议时
+                if (!currentPageUpdated && currentPageParticipantProfiles.size() < AUDIO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE) {
+                    currentPageUpdated = true;
+                }
+
                 if (currentPageUpdated) {
                     ((ConferenceParticipantGridView) view).setParticipantProfiles(this.callSession, currentPageParticipantProfiles);
                 }
