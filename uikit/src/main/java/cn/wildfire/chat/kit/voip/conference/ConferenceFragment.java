@@ -852,6 +852,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
         // 预览视频流可能会被焦点视频流覆盖，采用下面的方法修复
         if (currentPosition == 0 && !fixPreviewSurfaceViewZOrder) {
+            Object obj = conferencePages.get(0);
+            if (!(obj instanceof VideoConferenceMainView)) {
+                return;
+            }
             VideoConferenceMainView mainView = (VideoConferenceMainView) conferencePages.get(0);
             SurfaceView previewSurfaceView = mainView.findViewWithTag("sv_" + ChatManager.Instance().getUserId());
             if (previewSurfaceView != null) {
@@ -971,7 +975,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         profiles.add(0, myProfile);
         String focusUserId = ConferenceManager.getManager().getCurrentConferenceInfo().getFocus();
         AVEngineKit.ParticipantProfile focusUserProfile = focusUserId == null ? null : callSession.getParticipantProfile(focusUserId, true);
-        if (focusUserProfile == null){
+        if (focusUserProfile == null) {
             focusUserProfile = focusUserId == null ? null : callSession.getParticipantProfile(focusUserId, false);
         }
 
