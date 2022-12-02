@@ -179,9 +179,6 @@ public class MMPreviewActivity extends Activity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(entry.getMediaUrl())) {
-                    return;
-                }
                 btn.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
                     File videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
