@@ -126,23 +126,16 @@ public class PCOnlineInfo implements Parcelable {
 
         PCOnlineInfo that = (PCOnlineInfo) o;
 
-        if (isOnline != that.isOnline) return false;
-        if (timestamp != that.timestamp) return false;
         if (type != that.type) return false;
         if (platform != that.platform) return false;
-        if (clientId != null ? !clientId.equals(that.clientId) : that.clientId != null)
-            return false;
-        return clientName != null ? clientName.equals(that.clientName) : that.clientName == null;
+        return clientId != null ? clientId.equals(that.clientId) : that.clientId == null;
     }
 
     @Override
     public int hashCode() {
         int result = type != null ? type.hashCode() : 0;
         result = 31 * result + (platform != null ? platform.hashCode() : 0);
-        result = 31 * result + (isOnline ? 1 : 0);
         result = 31 * result + (clientId != null ? clientId.hashCode() : 0);
-        result = 31 * result + (clientName != null ? clientName.hashCode() : 0);
-        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
         return result;
     }
 }
