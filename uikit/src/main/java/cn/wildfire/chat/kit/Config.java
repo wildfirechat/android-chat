@@ -25,6 +25,8 @@ public class Config {
      * <br>
      * <br>
      * 单人版和多人版音视频必须部署turn服务。高级版不需要部署stun/turn服务。
+     *
+     * !!! 我们提供的服务仅供用户测试和体验，为了保证测试可用，我们会不定期的更改密码. !!!
      * <br>
      * <strong>上线商用时，请更换为自己部署的turn 服务</strong>
      * <br>
@@ -33,7 +35,7 @@ public class Config {
         // 如果是高级版，请删除掉下面的配置项目，保持ICE_SERVERS为空数组就行。
         // 数组元素定义
         /*{"turn server uri", "userName", "password"}*/
-        {"turn:turn.wildfirechat.net:3478", "wfchat", "wfchat"}
+        {"turn:turn.wildfirechat.net:3478", "wfchat", "wfchat1"}
     };
 
     //文件传输助手用户ID，服务器有个默认文件助手的机器人，如果修改它的ID，需要客户端和服务器数据库同步修改
@@ -73,6 +75,15 @@ public class Config {
      * 应用层用于存储配置信息(userId，token等)的SP文件的名字
      */
     public static final String SP_CONFIG_FILE_NAME = "config";
+
+    /**
+     * 会话列表最多展示的会话数
+     * <p>
+     * 大量会话时，会导致，快速进出会话界面，会话消息加载缓慢，故再次控制会话数，只展示最新的{@link MAX_CONVERSATION_LIST_SIZE}条
+     * <p>
+     * 直接修改此字段不会生效，请修改{@link cn.wildfirechat.client.ClientService#MAX_CONVERSATION_LIST_SIZE }字段
+     */
+    public static final int MAX_CONVERSATION_LIST_SIZE = 1000;
 
     public static String VIDEO_SAVE_DIR;
     public static String AUDIO_SAVE_DIR;

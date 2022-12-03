@@ -4,7 +4,6 @@
 
 package cn.wildfire.chat.kit.group;
 
-import android.content.Intent;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +17,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import butterknife.BindView;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -61,11 +59,6 @@ public class SetGroupRemarkActivity extends WfcBaseActivity {
     @Override
     protected void afterMenus(Menu menu) {
         confirmMenuItem = menu.findItem(R.id.confirm);
-        if (remarkEditText.getText().toString().trim().length() > 0) {
-            confirmMenuItem.setEnabled(true);
-        } else {
-            confirmMenuItem.setEnabled(false);
-        }
     }
 
     @Override
@@ -77,15 +70,13 @@ public class SetGroupRemarkActivity extends WfcBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnTextChanged(R2.id.remarkEditText)
-    void onTextChanged() {
-        if (confirmMenuItem != null) {
-            confirmMenuItem.setEnabled(remarkEditText.getText().toString().trim().length() > 0);
-        }
-    }
-
     private void setGroupRemark() {
-        groupInfo.remark = remarkEditText.getText().toString().trim();
+        String remark = remarkEditText.getText().toString().trim();
+        if (remark.equals(groupInfo.remark)) {
+            finish();
+            return;
+        }
+        groupInfo.remark = remark;
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .content("请稍后...")
             .progress(true, 100)

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/mainLayoutContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/messageLayoutContainer"
+        android:layout_width="250dp"
+        android:layout_height="350dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="80dp">
+
+    </FrameLayout>
+
+</FrameLayout>

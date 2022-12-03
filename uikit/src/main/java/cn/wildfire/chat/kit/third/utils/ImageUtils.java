@@ -1,5 +1,7 @@
 package cn.wildfire.chat.kit.third.utils;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +13,10 @@ import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -20,6 +25,7 @@ import androidx.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -262,59 +268,57 @@ public class ImageUtils {
                 ChatManager.Instance().getGroupInfo(groupId, false, new GetGroupInfoCallback() {
                     @Override
                     public void onSuccess(GroupInfo groupInfo) {
-                        ChatManager.Instance().getWorkHandler().post(() -> {
-                            //分析文件名，获取更新时间，hash值
-                            //Path 格式为 groupId-updatetime-width-hash
-                            String name = file.getName();
-                            if (!name.startsWith(groupId) || name.length() <= groupId.length()) {
-                                return;
-                            }
-                            name = name.substring(groupId.length() + 1);
-                            String[] arr = name.split("-");
-                            if (arr.length != 3) {
-                                return;
-                            }
-                            long timestamp;
-                            try {
-                                timestamp = Long.parseLong(arr[0]);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                return;
-                            }
+                        //分析文件名，获取更新时间，hash值
+                        //Path 格式为 groupId-updatetime-width-hash
+                        String name = file.getName();
+                        if (!name.startsWith(groupId) || name.length() <= groupId.length()) {
+                            return;
+                        }
+                        name = name.substring(groupId.length() + 1);
+                        String[] arr = name.split("-");
+                        if (arr.length != 3) {
+                            return;
+                        }
+                        long timestamp;
+                        try {
+                            timestamp = Long.parseLong(arr[0]);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return;
+                        }
 
-                            long now = System.currentTimeMillis();
-                            if (now - timestamp > 7 * 24 * 3600 * 1000 || timestamp < groupInfo.updateDt) {
-                                ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
-                                    @Override
-                                    public void onSuccess(List<GroupMember> groupMembers) {
-                                        if (groupMembers == null || groupMembers.size() == 0) {
-                                            return;
-                                        }
-
-                                        StringBuilder fullPathBuilder = new StringBuilder();
-                                        List<String> memberIds = new ArrayList<>();
-                                        for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
-                                            memberIds.add(groupMembers.get(i).memberId);
-                                        }
-                                        List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
-                                        for (UserInfo info : userInfos) {
-                                            fullPathBuilder.append(info.portrait);
-                                        }
-
-                                        String fullPath = fullPathBuilder.toString();
-
-                                        if (!arr[2].equals(getDigest(fullPath))) {
-                                            generateNewGroupPortrait(context, groupId, width);
-                                        }
+                        long now = System.currentTimeMillis();
+                        if (now - timestamp > 7 * 24 * 3600 * 1000 || timestamp < groupInfo.updateDt) {
+                            ChatManager.Instance().getGroupMembers(groupId, false, new GetGroupMembersCallback() {
+                                @Override
+                                public void onSuccess(List<GroupMember> groupMembers) {
+                                    if (groupMembers == null || groupMembers.size() == 0) {
+                                        return;
                                     }
 
-                                    @Override
-                                    public void onFail(int errorCode) {
-
+                                    StringBuilder fullPathBuilder = new StringBuilder();
+                                    List<String> memberIds = new ArrayList<>();
+                                    for (int i = 0; i < Math.min(groupMembers.size(), 9); i++) {
+                                        memberIds.add(groupMembers.get(i).memberId);
                                     }
-                                });
-                            }
-                        });
+                                    List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
+                                    for (UserInfo info : userInfos) {
+                                        fullPathBuilder.append(info.portrait);
+                                    }
+
+                                    String fullPath = fullPathBuilder.toString();
+
+                                    if (!arr[2].equals(getDigest(fullPath))) {
+                                        generateNewGroupPortrait(context, groupId, width);
+                                    }
+                                }
+
+                                @Override
+                                public void onFail(int errorCode) {
+
+                                }
+                            });
+                        }
                     }
 
                     @Override
@@ -336,8 +340,35 @@ public class ImageUtils {
      * 图片入系统相册
      */
     public static void saveMedia2Album(Context context, File mediaFile) {
-        Uri uri = Uri.fromFile(mediaFile);
-        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContentResolver contentResolver = context.getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, System.currentTimeMillis() + "-" + mediaFile.getName());
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
+            contentValues.put(MediaStore.MediaColumns.IS_PENDING, 1);
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+            Uri uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
+            try (FileOutputStream fos = (FileOutputStream) contentResolver.openOutputStream(uri);
+            ) {
+                fos.getChannel().transferFrom(new FileInputStream(mediaFile).getChannel(), 0, mediaFile.length());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            contentValues.clear();
+            contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0);
+            contentResolver.update(uri, contentValues, null, null);
+        } else {
+            try {
+                MediaStore.Images.Media.insertImage(context.getContentResolver(), mediaFile.getAbsolutePath(), mediaFile.getName(), "");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            Uri uri = Uri.fromFile(mediaFile);
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+        }
     }
 
 }

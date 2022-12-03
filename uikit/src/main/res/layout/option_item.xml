@@ -64,8 +64,9 @@
 
         <ImageView
             android:id="@+id/rightImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="center"
             android:layout_marginRight="13dp"
             android:src="@mipmap/ic_right_arrow"
             android:visibility="gone" />

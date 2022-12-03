@@ -40,10 +40,13 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     private List<String> filterUserList;
     private static final int REQUEST_CODE_PICK_CHANNEL = 100;
 
+    private boolean isVisibleToUser = false;
+
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (userListAdapter != null && isVisibleToUser) {
+    public void setMenuVisibility(boolean isvisible) {
+        super.setMenuVisibility(isvisible);
+        this.isVisibleToUser = isvisible;
+        if (isvisible) {
             contactViewModel.reloadContact();
             contactViewModel.reloadFriendRequestStatus();
         }
@@ -63,11 +66,12 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     @Override
     public void onResume() {
         super.onResume();
-        contactViewModel.reloadContact();
-        contactViewModel.reloadFriendRequestStatus();
-        contactViewModel.reloadFavContact();
+        if (isVisibleToUser) {
+            contactViewModel.reloadContact();
+            contactViewModel.reloadFriendRequestStatus();
+            contactViewModel.reloadFavContact();
+        }
     }
-
 
     @Override
     protected void afterViews(View view) {

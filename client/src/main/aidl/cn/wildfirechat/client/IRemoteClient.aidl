@@ -106,7 +106,7 @@ interface IRemoteClient {
     boolean cancelSendingMessage(in long messageId);
     oneway void recall(in long messageUid, IGeneralCallback callback);
     long getServerDeltaTime();
-    List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines);
+    List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines, in boolean lastMessage);
     oneway void getConversationListAsync(in int[] conversationTypes, in int[] lines, in IGetConversationListCallback callback);
     ConversationInfo getConversation(in int conversationType, in String target, in int line);
     long getFirstUnreadMessageId(in int conversationType, in String target, in int line);
@@ -241,6 +241,8 @@ interface IRemoteClient {
     oneway void muteOrAllowGroupMember(in String groupId, in boolean isSet, in List<String> memberIds, in boolean isAllow, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     String getGroupRemark(in String groupId);
     oneway void setGroupRemark(in String groupId, in String remark, in IGeneralCallback callback);
+    oneway void getMyGroups(in IGeneralCallback3 callback);
+    oneway void getCommonGroups(in String userId, in IGeneralCallback3 callback);
 
     byte[] encodeData(in byte[] data);
     byte[] decodeData(in byte[] data);
@@ -288,6 +290,7 @@ interface IRemoteClient {
     boolean isEnableSecretChat();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
+    void checkSignature();
 
     String getProtoRevision();
 

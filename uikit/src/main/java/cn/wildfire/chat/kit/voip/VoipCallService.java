@@ -72,7 +72,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         ChatManager.Instance().addOnReceiveMessageListener(this);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null){
+        if (session != null) {
             initialized = true;
             startForeground(NOTIFICATION_ID, buildNotification(session));
         }
@@ -140,9 +140,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null && session.isConference()){
-            session.leaveConference(false);
+        if (Intent.ACTION_MAIN.equals(rootIntent.getAction())) {
+            AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+            if (session != null && session.isConference()) {
+                session.leaveConference(false);
+            }
         }
     }
 
@@ -236,6 +238,9 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             wm.removeView(view);
         }
         ChatManager.Instance().removeOnReceiveMessageListener(this);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
     }
 
     private void showFloatingWindow(AVEngineKit.CallSession session) {
@@ -349,7 +354,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         ImageView mediaIconV = view.findViewById(R.id.av_media_type);
         mediaIconV.setImageResource(R.drawable.av_float_audio);
 
-        long duration = (System.currentTimeMillis() - session.getStartTime()) / 1000;
+        long duration = (System.currentTimeMillis() - session.getConnectedTime()) / 1000;
         if (duration >= 3600) {
             timeView.setText(String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60)));
         } else {
@@ -410,7 +415,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         remoteVideoFrameLayout.setVisibility(View.VISIBLE);
         LinearLayout videoContainer = remoteVideoFrameLayout.findViewById(R.id.videoContainer);
 
-        Log.e("wfc", "nextFocusUserId " + nextFocusUserId);
+//        Log.e("wfc", "nextFocusUserId " + nextFocusUserId);
         if (!rendererInitialized || lastState != session.getState() || !TextUtils.equals(lastFocusUserId, nextFocusUserId)) {
             rendererInitialized = true;
             lastState = session.getState();
@@ -421,8 +426,13 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
 
             if (TextUtils.equals(ChatManager.Instance().getUserId(), nextFocusUserId)) {
                 session.setupLocalVideoView(videoContainer, SCALE_ASPECT_BALANCED);
+                // 因为remoteVideoViewContainer 和 localVideoViewContainer 是同一个，所以切换的时候，需要清一下
+                if (!TextUtils.isEmpty(lastFocusUserId)) {
+                    session.setupRemoteVideoView(lastFocusUserId, null, SCALE_ASPECT_BALANCED);
+                }
             } else {
                 session.setupRemoteVideoView(nextFocusUserId, videoContainer, SCALE_ASPECT_BALANCED);
+                session.setupLocalVideoView(null, SCALE_ASPECT_BALANCED);
             }
             lastFocusUserId = nextFocusUserId;
         }

@@ -31,7 +31,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     private static final float MIN_ZOOM = 1.0f;
     private static final float MAX_ZOOM = 4.0f;
 
-    private boolean enableZoom = true;
+    private boolean enableZoom = false;
     private Mode mode = Mode.NONE;
     private float scale = 1.0f;
     private float lastScaleFactor = 0f;
@@ -64,10 +64,16 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     }
 
     private void init(Context context) {
+        if (!enableZoom) {
+            return;
+        }
         final ScaleGestureDetector scaleDetector = new ScaleGestureDetector(context, this);
         setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (child() == null){
+                    return false;
+                }
                 int y = (int) motionEvent.getY();
                 int x = (int) motionEvent.getX();
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
@@ -200,5 +206,6 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
      */
     public void setEnableZoom(boolean enable) {
         this.enableZoom = enable;
+        this.init(getContext());
     }
 }

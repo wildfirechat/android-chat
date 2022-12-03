@@ -4,201 +4,376 @@
 
 package cn.wildfire.chat.kit.voip.conference;
 
-import android.app.Activity;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Toast;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
-import cn.wildfire.chat.kit.contact.BaseUserListFragment;
-import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
-import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class ConferenceParticipantListFragment extends BaseUserListFragment {
-    private AVEngineKit.CallSession session;
-    private String selfUid;
+public class ConferenceParticipantListFragment extends Fragment {
+    @BindView(R2.id.recyclerView)
+    RecyclerView recyclerView;
+    @BindView(R2.id.handupTextView)
+    TextView handupTextView;
+    @BindView(R2.id.applyingUnmuteTextView)
+    TextView applyingUnmuteTextView;
 
+    @BindView(R2.id.muteAllButton)
+    Button muteAllButton;
+    @BindView(R2.id.unmuteAllButton)
+    Button unmuteAllButton;
+    private AVEngineKit.CallSession callSession;
+
+    private List<AVEngineKit.ParticipantProfile> participantProfiles;
+    private ParticipantListAdapter adapter;
+
+    private ConferenceManager conferenceManager;
+
+    @Nullable
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        showQuickIndexBar(false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.av_conference_participant_list, container, false);
+        ButterKnife.bind(this, view);
+        init();
+        return view;
     }
 
-    @Override
-    protected void afterViews(View view) {
-        super.afterViews(view);
-        session = AVEngineKit.Instance().getCurrentSession();
-        if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
-            Activity activity = getActivity();
-            if (activity != null && !activity.isFinishing()) {
-                activity.finish();
+    private void init() {
+        callSession = AVEngineKit.Instance().getCurrentSession();
+        if (adapter == null) {
+            adapter = new ParticipantListAdapter();
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        }
+        conferenceManager = ConferenceManager.getManager();
+
+        LiveDataBus.subscribe("kConferenceMemberChanged", this, o -> loadAndShowConferenceParticipants());
+        LiveDataBus.subscribe("kConferenceEnded", this, o -> loadAndShowConferenceParticipants());
+        LiveDataBus.subscribe("kConferenceMutedStateChanged", this, o -> loadAndShowConferenceParticipants());
+        LiveDataBus.subscribe("kConferenceCommandStateChanged", this, o -> loadAndShowConferenceParticipants());
+
+        this.loadAndShowConferenceParticipants();
+    }
+
+    @OnClick(R2.id.applyingUnmuteTextView)
+    void showApplyingUnmuteDialog() {
+        ConferenceApplyUnmuteListFragment fragment = new ConferenceApplyUnmuteListFragment();
+        fragment.show(getChildFragmentManager(), "applyUnmuteFragment");
+    }
+
+    @OnClick(R2.id.handupTextView)
+    void showHandupDialog() {
+        ConferenceHandUpListFragment fragment = new ConferenceHandUpListFragment();
+        fragment.show(getChildFragmentManager(), "handUpFragment");
+    }
+
+    @OnClick(R2.id.muteAllButton)
+    void muteAll() {
+        new MaterialDialog.Builder(getActivity())
+            .title("所有成员将被静音")
+            .checkBoxPrompt("允许成员自主解除静音", false, null)
+            .negativeText("取消")
+            .positiveText("全体静音")
+            .positiveColor(getResources().getColor(R.color.red0))
+            .onPositive((dialog, which) -> conferenceManager.requestMuteAll(dialog.isPromptCheckBoxChecked()))
+            .show();
+
+    }
+
+    @OnClick(R2.id.unmuteAllButton)
+    void unmuteAll() {
+        new MaterialDialog.Builder(getActivity())
+            .title("允许全体成员开麦")
+            .checkBoxPrompt("是否要求成员开麦", false, null)
+            .negativeText("取消")
+            .positiveText("取消全体静音")
+            .positiveColor(getResources().getColor(R.color.red0))
+            .onPositive((dialog, which) -> conferenceManager.requestUnmuteAll(dialog.isPromptCheckBoxChecked()))
+            .show();
+    }
+
+    private void loadAndShowConferenceParticipants() {
+        if (ChatManager.Instance().getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
+            List<String> applyingUnmuteMembers = conferenceManager.getApplyingUnmuteMembers();
+            if (applyingUnmuteMembers.isEmpty()) {
+                applyingUnmuteTextView.setVisibility(View.GONE);
+            } else {
+                applyingUnmuteTextView.setVisibility(View.VISIBLE);
+                String text = ChatManager.Instance().getUserDisplayName(applyingUnmuteMembers.get(0));
+                if (applyingUnmuteMembers.size() > 1) {
+                    text += " 等";
+                }
+                text += "正在申请解除静音";
+                applyingUnmuteTextView.setText(text);
             }
-            return;
+            List<String> handupMembers = conferenceManager.getHandUpMembers();
+            if (handupMembers.isEmpty()) {
+                handupTextView.setVisibility(View.GONE);
+            } else {
+                handupTextView.setVisibility(View.VISIBLE);
+                String text = ChatManager.Instance().getUserDisplayName(handupMembers.get(0));
+                if (handupMembers.size() > 1) {
+                    text += " 等";
+                }
+                text += "正在举手";
+                handupTextView.setText(text);
+            }
+
+            if (conferenceManager.isMuteAll()) {
+                muteAllButton.setEnabled(false);
+                unmuteAllButton.setEnabled(true);
+            } else {
+                muteAllButton.setEnabled(true);
+                unmuteAllButton.setEnabled(false);
+            }
+        } else {
+            handupTextView.setVisibility(View.GONE);
+            applyingUnmuteTextView.setVisibility(View.GONE);
+            muteAllButton.setVisibility(View.GONE);
+            unmuteAllButton.setVisibility(View.GONE);
         }
 
-        selfUid = ChatManager.Instance().getUserId();
-        loadAndShowConferenceParticipants();
+        this.participantProfiles = callSession.getParticipantProfiles();
+        this.participantProfiles.add(callSession.getMyProfile());
+        adapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void onUserClick(UIUserInfo userInfo) {
-        List<String> items = new ArrayList<>();
-        items.add("查看用户信息");
-        if (selfUid.equals(session.getHost()) && !selfUid.equals(userInfo.getUserInfo().uid)) {
-            if ("audience".equals(userInfo.getExtra())) {
-                items.add("邀请参与互动");
+    private void onClickParticipant(AVEngineKit.ParticipantProfile profile) {
+        Callable<Void> unmuteVideoCall = () -> {
+            conferenceManager.muteVideo(false);
+            return null;
+        };
+        Callable<Void> muteVideoCall = () -> {
+            conferenceManager.muteVideo(true);
+            return null;
+        };
+        Callable<Void> unmuteAudioCall = () -> {
+            conferenceManager.muteAudio(false);
+            return null;
+        };
+        Callable<Void> muteAudioCall = () -> {
+            conferenceManager.muteAudio(true);
+            return null;
+        };
+        Callable<Void> requestFocus = () -> {
+            conferenceManager.requestFocus(profile.getUserId(), null);
+            return null;
+        };
+        Callable<Void> cancelFocus = () -> {
+            conferenceManager.requestCancelFocus(null);
+            return null;
+        };
+        Callable<Void> userInfoCall = () -> {
+            Intent intent = new Intent(getActivity(), UserInfoActivity.class);
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
+            intent.putExtra("userInfo", userInfo);
+            startActivity(intent);
+            return null;
+        };
+
+        Map<String, Callable<Void>> items = new HashMap<>();
+        String selfUid = ChatManager.Instance().getUserId();
+        items.put("查看用户信息", userInfoCall);
+        ConferenceInfo conferenceInfo = conferenceManager.getCurrentConferenceInfo();
+        List<String> managers = conferenceInfo.getManagers();
+        managers = managers != null ? managers : new ArrayList<>();
+        if (selfUid.equals(conferenceInfo.getOwner()) || managers.contains(selfUid)) {
+            if (selfUid.equals(profile.getUserId())) {
+                // 主持人自己
+                if (profile.isAudioMuted()) {
+                    items.put("开启音频", unmuteAudioCall);
+                } else {
+                    items.put("关闭音频", muteAudioCall);
+                }
+                if (profile.isVideoMuted()) {
+                    items.put("开启视频", unmuteVideoCall);
+                } else {
+                    items.put("关闭视频", muteVideoCall);
+                }
+                if (profile.isAudioMuted() && profile.isVideoMuted()) {
+                    items.put("开启音视频", unmuteAudioCall);
+                }
             } else {
-                items.add("取消互动");
+                // 他人
+                if (profile.isAudience()) {
+                    items.put("邀请发言", () -> {
+                        conferenceManager.requestMemberMute(profile.getUserId(), false);
+                        return null;
+                    });
+                } else {
+                    items.put("取消发言", () -> {
+                        conferenceManager.requestMemberMute(profile.getUserId(), true);
+                        return null;
+                    });
+                }
+                items.put("移除成员", () -> {
+                    callSession.kickoffParticipant(profile.getUserId(), null);
+                    return null;
+                });
             }
-            items.add("移除成员");
-        } else if (selfUid.equals(userInfo.getUserInfo().uid)) {
-            AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
-            if (!profile.isAudience()) {
-                items.add("结束互动");
+            if (profile.getUserId().equals(conferenceInfo.getFocus())) {
+                items.put("取消焦点用户", cancelFocus);
             } else {
-                items.add("参与互动");
+                items.put("设置为焦点用户", requestFocus);
             }
+        } else {
+            if (selfUid.equals(profile.getUserId())) {
+                // 自己
+                if (profile.isAudience()) {
+                    items.put("举手", () -> {
+                        conferenceManager.handUp(true);
+                        return null;
+                    });
+                } else {
+                    if (profile.isAudioMuted()) {
+                        items.put("开启音频", unmuteAudioCall);
+                    } else {
+                        items.put("关闭音频", muteAudioCall);
+                    }
+                    if (profile.isVideoMuted()) {
+                        items.put("开启视频", unmuteVideoCall);
+                    } else {
+                        items.put("关闭视频", muteVideoCall);
+                    }
+                }
+            } else {
+                // do nothing
+            }
+
         }
 
         new MaterialDialog.Builder(getActivity())
             .cancelable(true)
-            .items(items)
+            .items(items.keySet())
             .itemsCallback((dialog, itemView, position, text) -> {
-                switch (position) {
-                    case 0:
-                        Intent intent = new Intent(getActivity(), UserInfoActivity.class);
-                        intent.putExtra("userInfo", userInfo.getUserInfo());
-                        startActivity(intent);
-                        break;
-                    case 1:
-                        AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-                        AVEngineKit.ParticipantProfile profile = session.getParticipantProfile(userInfo.getUserInfo().uid);
-                        if (selfUid.equals(session.getHost()) && !selfUid.equals(userInfo.getUserInfo().uid)) {
-                            requestChangeMode(session.getCallId(), userInfo.getUserInfo().uid, !profile.isAudience());
-                            if (profile.isAudience()) {
-                                Toast.makeText(getActivity(), "已经请求用户，等待用户同意...", Toast.LENGTH_SHORT).show();
-                            } else {
-                                new Handler().postDelayed(this::loadAndShowConferenceParticipants, 1500);
-                            }
-                        } else if (selfUid.equals(userInfo.getUserInfo().uid)) {
-                            session.switchAudience(!profile.isAudience());
-                            new Handler().postDelayed(this::loadAndShowConferenceParticipants, 1500);
-                        }
-                        break;
-                    case 2:
-                        AVEngineKit.CallSession session2 = AVEngineKit.Instance().getCurrentSession();
-                        session2.kickoffParticipant(userInfo.getUserInfo().uid, new AVEngineKit.GeneralCallback() {
-                            @Override
-                            public void onSuccess() {
-                                new Handler().postDelayed(ConferenceParticipantListFragment.this::loadAndShowConferenceParticipants, 1500);
-                            }
-
-                            @Override
-                            public void onFailure(int error_code) {
-
-                            }
-                        });
-                        break;
-                    default:
-                        break;
+                try {
+                    items.get(text).call();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             })
             .show();
     }
 
-    private void loadAndShowConferenceParticipants() {
-        List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
-        List<UIUserInfo> uiUserInfos = new ArrayList<>();
-        if (profiles != null && profiles.size() > 0) {
-            for (AVEngineKit.ParticipantProfile p : profiles) {
-                UserInfo userInfo = ChatManager.Instance().getUserInfo(p.getUserId(), false);
-                UIUserInfo uiUserInfo = new UIUserInfo(userInfo);
-                uiUserInfo.setCategory(p.isAudience() ? "听众" : "互动成员");
-                uiUserInfo.setExtra(p.isAudience() ? "audience" : "");
+    class ParticipantViewHolder extends RecyclerView.ViewHolder {
+        private View itemView;
 
-                String desc = "";
-                if (session.getHost().equals(userInfo.uid)) {
-                    desc = "主持人";
-                    uiUserInfos.add(0, uiUserInfo);
+        @BindView(R2.id.portraitImageView)
+        ImageView portraitImageView;
+        @BindView(R2.id.nameTextView)
+        TextView nameTextView;
+        @BindView(R2.id.descTextView)
+        TextView descTextView;
+        @BindView(R2.id.audioImageView)
+        ImageView audioImageView;
+        @BindView(R2.id.videoImageView)
+        ImageView videoImageView;
+
+        public ParticipantViewHolder(@NonNull View itemView) {
+            super(itemView);
+            this.itemView = itemView;
+            ButterKnife.bind(this, itemView);
+        }
+
+        public void onBind(AVEngineKit.ParticipantProfile profile) {
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
+            String displayName = ChatManager.Instance().getUserDisplayName(userInfo);
+            nameTextView.setText(displayName);
+            GlideApp.with(this.itemView).load(userInfo.portrait).placeholder(R.mipmap.avatar_def)
+                .apply(RequestOptions.bitmapTransform(new RoundedCorners(10)))
+                .into(portraitImageView);
+
+            String desc = "";
+            if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
+                if (profile.getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
+                    desc = "主持人，我";
                 } else {
-                    uiUserInfos.add(uiUserInfo);
+                    desc = "我";
                 }
-                if (p.isScreenSharing()) {
-                    desc += " 屏幕共享";
-                }
-                if (p.isVideoMuted()){
-                    desc += " 关闭摄像头";
-                }
-                if (p.isAudioMuted()){
-                    desc += " 静音";
-                }
-                uiUserInfo.setDesc(desc);
-            }
-        }
-        UIUserInfo selfUiUserInfo = new UIUserInfo(ChatManager.Instance().getUserInfo(selfUid, false));
-        AVEngineKit.ParticipantProfile mp = session.getMyProfile();
-        String desc = "";
-        if (session.getHost().equals(selfUid)) {
-            desc = "我、主持人";
-        } else {
-            desc = "我";
-        }
-        if (mp.isScreenSharing()) {
-            desc += " 屏幕共享";
-        }
-        if (mp.isVideoMuted()){
-            desc += " 关闭摄像头";
-        }
-        if (mp.isAudioMuted()){
-            desc += " 静音";
-        }
-        selfUiUserInfo.setDesc(desc);
-        selfUiUserInfo.setCategory(session.isAudience() ? "听众" : "互动成员");
-        uiUserInfos.add(selfUiUserInfo);
-
-        Collections.sort(uiUserInfos, (o1, o2) -> {
-            if (o1.getCategory().equals("听众")) {
-                return 1;
             } else {
-                return -1;
+                if (profile.getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
+                    desc = "主持人";
+                    if (profile.isScreenSharing()) {
+                        desc += "，屏幕共享";
+                    }
+                } else {
+                    if (profile.isScreenSharing()){
+                        desc +="屏幕共享";
+                    }
+                }
             }
-        });
-
-        String lastCategory = null;
-        for (UIUserInfo uiUserInfo : uiUserInfos) {
-            if (lastCategory == null) {
-                uiUserInfo.setShowCategory(true);
-                lastCategory = uiUserInfo.getCategory();
-            } else if (!lastCategory.equals(uiUserInfo.getCategory())) {
-                uiUserInfo.setShowCategory(true);
-                lastCategory = uiUserInfo.getCategory();
+            if (TextUtils.isEmpty(desc)) {
+                descTextView.setVisibility(View.GONE);
             } else {
-                uiUserInfo.setShowCategory(false);
+                descTextView.setVisibility(View.VISIBLE);
+                descTextView.setText(desc);
             }
-        }
 
-        showContent();
-        userListAdapter.setUsers(uiUserInfos);
+            audioImageView.setSelected(profile.isAudience() || profile.isAudioMuted());
+            videoImageView.setSelected(profile.isAudience() || profile.isVideoMuted());
+            this.itemView.setOnClickListener(v -> {
+                onClickParticipant(profile);
+            });
+        }
     }
 
-    private void requestChangeMode(String conferenceId, String userId, boolean audience) {
-        ConferenceChangeModeContent content = new ConferenceChangeModeContent(conferenceId, audience);
-        Conversation conversation = new Conversation(Conversation.ConversationType.Single, userId);
-        ChatManager.Instance().sendMessage(conversation, content, null, 0, null);
+    class ParticipantListAdapter extends RecyclerView.Adapter<ParticipantViewHolder> {
+
+        @NonNull
+        @Override
+        public ParticipantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.av_conference_participant_list_item, parent, false);
+            return new ParticipantViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ParticipantViewHolder holder, int position) {
+            holder.onBind(participantProfiles.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return participantProfiles == null ? 0 : participantProfiles.size();
+        }
+    }
+
+    class Action {
+        String name;
+
     }
 
 }

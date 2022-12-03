@@ -19,7 +19,9 @@ public class GroupInfo implements Parcelable {
         //every member can add quit change group name and portrait, no one can kickoff others
         Free(1),
         //member can only quit, owner can do all the operations
-        Restricted(2);
+        Restricted(2),
+        //member can do nothing, server api manage the group.
+        Organization(3);
 
         private int value;
 

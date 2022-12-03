@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/portraitImageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:scaleType="fitXY"
+        android:src="@mipmap/avatar_def" />
+
+    <cn.wildfire.chat.kit.voip.ZoomableFrameLayout
+        android:id="@+id/videoContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_gravity="center">
+
+    </cn.wildfire.chat.kit.voip.ZoomableFrameLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center_vertical"
+        android:padding="5dp">
+
+        <cn.wildfire.chat.kit.voip.conference.MicImageView
+            android:id="@+id/micImageView"
+            android:layout_width="16dp"
+            android:layout_height="16dp" />
+
+        <ImageView
+            android:id="@+id/videoStateImageView"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginLeft="5dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/av_conference_video_selector"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/userNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxEms="5"
+            android:maxLines="1"
+            android:textColor="@color/gray3"
+            android:visibility="visible"
+            tools:text="UserName" />
+    </LinearLayout>
+</FrameLayout>

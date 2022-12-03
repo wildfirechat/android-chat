@@ -154,8 +154,9 @@ public class OKHttpHelper {
 
     }
 
-    public static <T> void post(final String url, Map<String, Object> param, final Callback<T> callback) {
-        RequestBody body = RequestBody.create(JSON, gson.toJson(param));
+    public static <T> void post(final String url, Object param, final Callback<T> callback) {
+        //RequestBody body = RequestBody.create(JSON, gson.toJson(param));
+        RequestBody body = RequestBody.create(JSON, param == null ? "" : gson.toJson(param));
         final Request request = new Request.Builder()
             .url(url)
             .post(body)

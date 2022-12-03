@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
 
@@ -41,7 +42,9 @@ public class ConferenceParticipantListActivity extends WfcBaseActivity {
 
     private void addParticipant() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), session.getHost(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
+        ConferenceManager conferenceManager = ConferenceManager.getManager();
+        ConferenceInfo conferenceInfo = conferenceManager.getCurrentConferenceInfo();
+        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), conferenceInfo.getOwner(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
 
         Intent intent = new Intent(this, ConferenceInviteActivity.class);
         intent.putExtra("inviteMessage", invite);

@@ -12,6 +12,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -27,11 +31,13 @@ import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -43,7 +49,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,6 +73,7 @@ import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
 import cn.wildfirechat.client.IGeneralCallback2;
+import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
@@ -218,6 +231,7 @@ public class ChatManager {
     private Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
+    private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
 
     private Socks5ProxyInfo proxyInfo;
@@ -1062,6 +1076,22 @@ public class ChatManager {
 
         try {
             mClient.useSM4();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 启用签名验证，需要在connect之前调用，需要服务开启对应功能，详情请参考：https://docs.wildfirechat.cn/blogs/签名验证.html
+     */
+    public void checkSignature() {
+        checkSignature = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.checkSignature();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -2568,6 +2598,18 @@ public class ChatManager {
      */
     @NonNull
     public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
+        return getConversationList(conversationTypes, lines, true);
+    }
+
+    /**
+     * 获取比 timestamp 更新的会话列表
+     *
+     * @param conversationTypes
+     * @param lines
+     * @param lastMessage       是否包含 lastMessage信息
+     * @return
+     */
+    public List<ConversationInfo> getConversationList(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, boolean lastMessage) {
         if (!checkRemoteService()) {
             Log.e(TAG, "Remote service not available");
             return new ArrayList<>();
@@ -2590,7 +2632,7 @@ public class ChatManager {
         }
 
         try {
-            return mClient.getConversationList(intypes, inlines);
+            return mClient.getConversationList(intypes, inlines, lastMessage);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -3579,7 +3621,7 @@ public class ChatManager {
         try {
             boolean result = mClient.clearUnreadStatusEx(inTypes, inLines);
             if (result) {
-                List<ConversationInfo> conversationInfos = mClient.getConversationList(inTypes, inLines);
+                List<ConversationInfo> conversationInfos = mClient.getConversationList(inTypes, inLines, false);
                 for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                     for (ConversationInfo info : conversationInfos) {
                         listener.onConversationUnreadStatusClear(info);
@@ -4633,12 +4675,20 @@ public class ChatManager {
             mClient.joinChatRoom(chatRoomId, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    mainHandler.post(() -> callback.onSuccess());
+                    mainHandler.post(() -> {
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
+                    });
                 }
 
                 @Override
                 public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> callback.onFail(errorCode));
+                    mainHandler.post(() -> {
+                        if (callback != null) {
+                            callback.onFail(errorCode);
+                        }
+                    });
                 }
             });
         } catch (RemoteException e) {
@@ -5360,6 +5410,26 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getSignature() throws PackageManager.NameNotFoundException, CertificateException, NoSuchAlgorithmException {
+        String packageName = gContext.getPackageName();
+        PackageInfo packageInfo = gContext.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
+        if(packageInfo.signatures != null && packageInfo.signatures.length > 0) {
+            Signature signature = packageInfo.signatures[0];
+            byte[] signBytes = signature.toByteArray();
+
+            CertificateFactory fact = CertificateFactory.getInstance("X.509");
+            X509Certificate certificate = (X509Certificate) fact.generateCertificate(new ByteArrayInputStream(signBytes));
+            signBytes = certificate.getEncoded();
+
+            signBytes = MessageDigest.getInstance("SHA1").digest(signBytes);
+            String sign = Base64.getEncoder().encodeToString(signBytes);
+            Log.d(TAG, "The app sign is " + sign);
+            return sign;
+        }
+        return null;
     }
 
     /**
@@ -6426,6 +6496,79 @@ public class ChatManager {
                     onGroupInfoUpdated(Collections.singletonList(groupInfo));
                     if (callback != null) {
                         mainHandler.post(() -> callback.onSuccess());
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
+        }
+    }
+
+    /**
+     * 获取当前用户所有群组ID，此方法消耗资源较大，不建议高频使用。
+     *
+     * @param callback
+     */
+    public void getMyGroups(final StringListCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getMyGroups(new cn.wildfirechat.client.IGeneralCallback3.Stub() {
+                @Override
+                public void onSuccess(List<String> results) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(results));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+            }
+        }
+    }
+
+    /**
+     * 获取与指定用户同属群组的ID，此方法消耗资源较大，不建议高频使用。
+     *
+     * @param userId
+     * @param callback
+     */
+    public void getCommonGroups(String userId, final StringListCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.getCommonGroups(userId, new cn.wildfirechat.client.IGeneralCallback3.Stub() {
+                @Override
+                public void onSuccess(List<String> results) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(results));
                     }
                 }
 
@@ -8074,6 +8217,9 @@ public class ChatManager {
                 try {
                     if (useSM4) {
                         mClient.useSM4();
+                    }
+                    if(checkSignature) {
+                        mClient.checkSignature();
                     }
 
                     mClient.setBackupAddressStrategy(backupAddressStrategy);

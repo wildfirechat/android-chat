@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -37,7 +38,10 @@ import com.king.zxing.Intents;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 import cn.wildfire.chat.kit.Config;
@@ -66,6 +70,7 @@ import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
+import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfire.chat.kit.workspace.WebViewFragment;
 import cn.wildfirechat.chat.R;
@@ -133,7 +138,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     @Override
     protected void afterViews() {
         bottomNavigationView.setItemIconTintList(null);
-        if (TextUtils.isEmpty(Config.WORKSPACE_URL)){
+        if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
             bottomNavigationView.getMenu().removeItem(R.id.workspace);
         }
         IMServiceStatusViewModel imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
@@ -531,6 +536,12 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void onScanPcQrCode(String qrcode) {
         String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);
         String value = qrcode.substring(qrcode.lastIndexOf("/") + 1);
+        Uri uri = Uri.parse(qrcode);
+        Set<String> queryNames = uri.getQueryParameterNames();
+        Map<String, Object> params = new HashMap<>();
+        for (String query : queryNames) {
+            params.put(query, uri.getQueryParameter(query));
+        }
         switch (prefix) {
             case WfcScheme.QR_CODE_PREFIX_PC_SESSION:
                 pcLogin(value);
@@ -543,6 +554,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 break;
             case WfcScheme.QR_CODE_PREFIX_CHANNEL:
                 subscribeChannel(value);
+                break;
+            case WfcScheme.QR_CODE_PREFIX_CONFERENCE:
+                joinConference(value, params);
                 break;
             default:
                 Toast.makeText(this, "qrcode: " + qrcode, Toast.LENGTH_SHORT).show();
@@ -577,6 +591,13 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void subscribeChannel(String channelId) {
         Intent intent = new Intent(this, ChannelInfoActivity.class);
         intent.putExtra("channelId", channelId);
+        startActivity(intent);
+    }
+
+    private void joinConference(String conferenceId, Map<String, Object> params) {
+        Intent intent = new Intent(this, ConferenceInfoActivity.class);
+        intent.putExtra("conferenceId", conferenceId);
+        intent.putExtra("password", (String) params.get("pwd"));
         startActivity(intent);
     }
 

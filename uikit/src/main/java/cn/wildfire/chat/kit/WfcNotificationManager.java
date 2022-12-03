@@ -30,6 +30,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.notification.RecallMessageContent;
+import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -152,6 +153,9 @@ public class WfcNotificationManager {
             } else if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.conversation.target, false);
                 title = groupInfo == null ? "群聊" : (!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
+            } else if(message.conversation.type == Conversation.ConversationType.Channel) {
+                ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(message.conversation.target, false);
+                title = channelInfo == null ? "公众号新消息" : channelInfo.name;
             } else {
                 title = "新消息";
             }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
+
+    <cn.wildfire.chat.kit.widget.InputAwareLayout
+        android:id="@+id/rootInputAwareLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:fitsSystemWindows="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+        <cn.wildfire.chat.kit.voip.conference.InputPanel
+            android:id="@+id/inputPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </cn.wildfire.chat.kit.widget.InputAwareLayout>
+
+</RelativeLayout>

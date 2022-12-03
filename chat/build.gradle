@@ -11,7 +11,7 @@ android {
             storePassword 'wfc95955'
         }
     }
-    compileSdkVersion 30
+    compileSdkVersion 31
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
     ndkVersion '18.1.5063045'

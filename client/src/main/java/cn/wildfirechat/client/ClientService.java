@@ -190,6 +190,14 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private int clientVersion = 200;
     private static final String TAG = "ClientService";
 
+    /**
+     * 会话列表最多展示的会话数
+     * <p>
+     * 大量会话时，会导致，快速进出会话界面，会话消息加载缓慢，故再次控制会话数，只展示最新的{@link MAX_CONVERSATION_LIST_SIZE}条
+     * <p>
+     */
+    private static final int MAX_CONVERSATION_LIST_SIZE = 1000;
+
     private BaseEvent.ConnectionReceiver mConnectionReceiver;
 
     private String mHost;
@@ -666,14 +674,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public List<ConversationInfo> getConversationList(int[] conversationTypes, int[] lines) throws RemoteException {
+        public List<ConversationInfo> getConversationList(int[] conversationTypes, int[] lines, boolean lastMessage) throws RemoteException {
             ProtoConversationInfo[] protoConversationInfos = ProtoLogic.getConversations(conversationTypes, lines);
             List<ConversationInfo> out = new ArrayList<>();
             for (ProtoConversationInfo protoConversationInfo : protoConversationInfos) {
                 ConversationInfo info = convertProtoConversationInfo(protoConversationInfo);
                 if (info != null) {
+                    if (!lastMessage) {
+                        info.lastMessage = null;
+                    }
                     out.add(info);
                 }
+            }
+            if (out.size() > MAX_CONVERSATION_LIST_SIZE) {
+                out = out.subList(0, MAX_CONVERSATION_LIST_SIZE);
             }
             return out;
         }
@@ -688,6 +702,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     out.add(info);
                 }
             }
+            if (out.size() > MAX_CONVERSATION_LIST_SIZE) {
+                out = out.subList(0, MAX_CONVERSATION_LIST_SIZE);
+            }
             ConversationInfo[] convs = out.toArray(new ConversationInfo[0]);
             try {
                 SafeIPCEntry<ConversationInfo> entry;
@@ -699,6 +716,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 } while (entry.index > 0 && entry.index < convs.length - 1);
             } catch (RemoteException e) {
                 e.printStackTrace();
+                callback.onFailure(-1);
             }
         }
 
@@ -1148,7 +1166,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setConversationTop(int conversationType, String target, int line, int top, IGeneralCallback callback) throws RemoteException {
-            setUserSetting(ConversationTop, conversationType + "-" + line + "-" + target, top+"", callback);
+            setUserSetting(ConversationTop, conversationType + "-" + line + "-" + target, top + "", callback);
         }
 
         @Override
@@ -2387,6 +2405,52 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void getMyGroups(IGeneralCallback3 callback) throws RemoteException {
+            ProtoLogic.getMyGroups(new ProtoLogic.IGeneralCallback3() {
+                @Override
+                public void onSuccess(String[] strings) {
+                    try {
+                        callback.onSuccess(Arrays.asList(strings));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void getCommonGroups(String userId, IGeneralCallback3 callback) throws RemoteException {
+            ProtoLogic.getCommonGroups(userId, new ProtoLogic.IGeneralCallback3() {
+                @Override
+                public void onSuccess(String[] strings) {
+                    try {
+                        callback.onSuccess(Arrays.asList(strings));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public byte[] encodeData(byte[] data) throws RemoteException {
             return StnLogic.encodeData(data);
         }
@@ -2966,6 +3030,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void useSM4() throws RemoteException {
             useSM4 = true;
             ProtoLogic.useEncryptSM4();
+        }
+
+        @Override
+        public void checkSignature() throws RemoteException {
+            ProtoLogic.checkSignature();
         }
 
         @Override
