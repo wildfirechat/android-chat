@@ -51,7 +51,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
         hideSystemUI();
-        setStatusBarColor(R.color.white);
+        setStatusBarColor(R.color.gray5);
 
         sharedPreferences = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         id = sharedPreferences.getString("id", null);
