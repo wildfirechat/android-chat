@@ -610,6 +610,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             View view = null;
             if (position == 0) {
                 view = new VideoConferenceMainView(container.getContext());
+                view.setOnClickListener(clickListener);
             } else {
                 view = new ConferenceParticipantGridView(container.getContext());
             }
