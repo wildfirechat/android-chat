@@ -139,6 +139,7 @@ class VideoConferenceMainView extends RelativeLayout {
 //                conferenceItem.setBackgroundResource(R.color.gray0);
             } else {
                 conferenceItem = new ConferenceParticipantItemVideoView(getContext());
+                ((ConferenceParticipantItemVideoView) conferenceItem).setEnableVideoZoom(true);
             }
 //            conferenceItem.setOnClickListener(clickListener);
             conferenceItem.setup(this.callSession, profile);
