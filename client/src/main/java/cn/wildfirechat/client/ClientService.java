@@ -2979,8 +2979,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void commitTransaction() throws RemoteException {
-            ProtoLogic.commitTransaction();
+        public boolean commitTransaction() throws RemoteException {
+            return ProtoLogic.commitTransaction();
+        }
+
+        @Override
+        public boolean rollbackTransaction() throws RemoteException {
+            return ProtoLogic.rollbackTransaction();
         }
 
         @Override

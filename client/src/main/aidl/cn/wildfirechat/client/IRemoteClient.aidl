@@ -282,7 +282,8 @@ interface IRemoteClient {
 
     int getMessageCount(in Conversation conversation);
     boolean begainTransaction();
-    void commitTransaction();
+    boolean commitTransaction();
+    boolean rollbackTransaction();
 
     boolean isCommercialServer();
     boolean isReceiptEnabled();
