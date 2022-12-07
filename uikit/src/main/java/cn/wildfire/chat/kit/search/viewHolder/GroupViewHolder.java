@@ -54,18 +54,14 @@ public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
             .into(portraitImageView);
 
         String desc = "";
-        switch (groupSearchResult.marchedType) {
-            case 0:
-                desc = "群名称包含: " + keyword;
-                break;
-            case 1:
-                desc = "群成员包含: " + keyword;
-                break;
-            case 2:
-                desc = "群名称和群成员都包含: " + keyword;
-                break;
-            default:
-                break;
+        if ((groupSearchResult.marchedType & GroupSearchResult.GroupSearchMarchTypeMask.Group_Name_Mask) > 0) {
+            desc = "群名称包含: " + keyword;
+        } else if ((groupSearchResult.marchedType & GroupSearchResult.GroupSearchMarchTypeMask.Group_Remark_Mask) > 0) {
+            desc = "群备注包含: " + keyword;
+        } else if ((groupSearchResult.marchedType & GroupSearchResult.GroupSearchMarchTypeMask.Member_Name_Mask) > 0) {
+            desc = "群成员名包含: " + keyword;
+        } else if ((groupSearchResult.marchedType & GroupSearchResult.GroupSearchMarchTypeMask.Member_Alias_Mask) > 0) {
+            desc = "群成员备注包含: " + keyword;
         }
         descTextView.setText(desc);
     }
