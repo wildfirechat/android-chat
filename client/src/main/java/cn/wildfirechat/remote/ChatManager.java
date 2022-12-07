@@ -7080,16 +7080,33 @@ public class ChatManager {
     /**
      * 提交事务
      */
-    public void commitTransaction() {
+    public boolean commitTransaction() {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
 
         try {
-            mClient.commitTransaction();
+            return mClient.commitTransaction();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
+    }
+
+    /**
+     * 回滚事务
+     */
+    public boolean rollbackTransaction() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.rollbackTransaction();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public boolean isCommercialServer() {
