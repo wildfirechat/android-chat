@@ -56,6 +56,11 @@
   *;
 }
 
+-keep class  cn.wildfire.chat.kit.voip.conference.model.** {*;}
+-keepclassmembers class  cn.wildfire.chat.kit.voip.conference.model.** {
+  *;
+}
+
 -keep class cn.wildfire.chat.kit.group.GroupAnnouncement {*;}
 -keepclassmembers class cn.wildfire.chat.kit.group.GroupAnnouncement {
   *;
