@@ -70,6 +70,13 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         destroyItem = menu.findItem(R.id.destroy);
         favItem = menu.findItem(R.id.fav);
         unFavItem = menu.findItem(R.id.unfav);
+        if (conferenceInfo != null) {
+            if (Objects.equals(conferenceInfo.getOwner(), ChatManager.Instance().getUserId())) {
+                destroyItem.setVisible(true);
+            } else {
+                destroyItem.setVisible(false);
+            }
+        }
     }
 
     @Override
@@ -149,9 +156,9 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         }
 
         ConferenceInfo info = conferenceInfo;
-        boolean audience = info.isAudience() || (!audioSwitch.isChecked() && !videoSwitch.isChecked());
-        boolean muteVideo = !videoSwitch.isEnabled() || !videoSwitch.isChecked();
-        boolean muteAudio = !audioSwitch.isEnabled() || !audioSwitch.isChecked();
+        boolean audience = !audioSwitch.isChecked() && !videoSwitch.isChecked();
+        boolean muteVideo = audience || !videoSwitch.isChecked();
+        boolean muteAudio = audience || !audioSwitch.isChecked();
         AVEngineKit.CallSession session = AVEngineKit.Instance().joinConference(info.getConferenceId(), false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", audience, info.isAdvance(), muteAudio, muteVideo, null);
         if (session != null) {
             Intent intent = new Intent(this, ConferenceActivity.class);
@@ -167,7 +174,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     }
 
     private void setupConferenceInfo(ConferenceInfo info) {
-        if (isFinishing()){
+        if (isFinishing()) {
             return;
         }
         conferenceInfo = info;
@@ -179,7 +186,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         startDateTimeView.setText(info.getStartTime() == 0 ? "现在" : new Date(info.getStartTime() * 1000).toString());
         endDateTimeView.setText(new Date(info.getEndTime() * 1000).toString());
 
-        if (info.isAudience() && !owner.equals(ChatManager.Instance().getUserId())) {
+        if (info.isAudience() && !info.isAllowTurnOnMic() && !owner.equals(ChatManager.Instance().getUserId())) {
             audioSwitch.setChecked(false);
             videoSwitch.setChecked(false);
             audioSwitch.setEnabled(false);
@@ -197,10 +204,12 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
             joinConferenceButton.setText("加入会议");
         }
 
-        if (Objects.equals(owner, ChatManager.Instance().getUserId())) {
-            destroyItem.setVisible(true);
-        } else {
-            destroyItem.setVisible(false);
+        if (destroyItem != null) {
+            if (Objects.equals(owner, ChatManager.Instance().getUserId())) {
+                destroyItem.setVisible(true);
+            } else {
+                destroyItem.setVisible(false);
+            }
         }
     }
 

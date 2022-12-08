@@ -42,11 +42,13 @@ public class PCSessionActivity extends WfcBaseActivity {
         if (pcOnlineInfo == null) {
             finish();
         }
-
     }
 
     @Override
     protected void afterViews() {
+        if (pcOnlineInfo == null){
+            return;
+        }
         Platform platform = pcOnlineInfo.getPlatform();
         setTitle(platform.getPlatFormName() + " 已登录");
         kickOffPCButton.setText("退出 " + platform.getPlatFormName() + " 登录");

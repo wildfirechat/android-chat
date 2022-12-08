@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ class VideoConferenceMainView extends RelativeLayout {
 
     private ConferenceParticipantItemView focusParticipantItemView;
     private ConferenceParticipantItemView myParticipantItemView;
+
+    private OnClickListener clickListener;
 
     public VideoConferenceMainView(Context context) {
         super(context);
@@ -112,6 +115,11 @@ class VideoConferenceMainView extends RelativeLayout {
         // 要在页面取消选择之后，才会走到这儿，取消选择的时候，已经做了相关处理
     }
 
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
+        this.clickListener = l;
+    }
 
     public static final String TAG = "ConferenceVideoFragment";
 
@@ -139,8 +147,9 @@ class VideoConferenceMainView extends RelativeLayout {
 //                conferenceItem.setBackgroundResource(R.color.gray0);
             } else {
                 conferenceItem = new ConferenceParticipantItemVideoView(getContext());
+                ((ConferenceParticipantItemVideoView) conferenceItem).setEnableVideoZoom(true);
             }
-//            conferenceItem.setOnClickListener(clickListener);
+            conferenceItem.setOnClickListener(clickListener);
             conferenceItem.setup(this.callSession, profile);
             if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
                 myParticipantItemView = conferenceItem;

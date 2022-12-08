@@ -57,7 +57,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +72,6 @@ import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ICreateSecretChatCallback;
 import cn.wildfirechat.client.IGeneralCallback;
 import cn.wildfirechat.client.IGeneralCallback2;
-import cn.wildfirechat.client.IGeneralCallback3;
 import cn.wildfirechat.client.IGeneralCallbackInt;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
@@ -213,7 +211,7 @@ public class ChatManager {
     private String deviceToken;
     private String clientId;
     private int pushType;
-    private Map<Integer, Class<? extends MessageContent>> messageContentMap = new HashMap<>();
+    private final Map<Integer, Class<? extends MessageContent>> messageContentMap = new ConcurrentHashMap<>();
     private boolean isLiteMode = false;
     private boolean isLowBPSMode = false;
     private UserSource userSource;
@@ -228,7 +226,7 @@ public class ChatManager {
     private String backupAddressHost = null;
     private int backupAddressPort = 80;
     private String protoUserAgent = null;
-    private Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
+    private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
     private boolean checkSignature = false;
@@ -402,7 +400,7 @@ public class ChatManager {
         INST.mainHandler = new Handler();
         INST.userInfoCache = new LruCache<>(1024);
         INST.groupMemberCache = new LruCache<>(1024);
-        INST.userOnlineStateMap = new HashMap<>();
+        INST.userOnlineStateMap = new ConcurrentHashMap<>();
         HandlerThread thread = new HandlerThread("workHandler");
         thread.start();
         INST.workHandler = new Handler(thread.getLooper());
@@ -7080,16 +7078,33 @@ public class ChatManager {
     /**
      * 提交事务
      */
-    public void commitTransaction() {
+    public boolean commitTransaction() {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
 
         try {
-            mClient.commitTransaction();
+            return mClient.commitTransaction();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
+    }
+
+    /**
+     * 回滚事务
+     */
+    public boolean rollbackTransaction() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.rollbackTransaction();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public boolean isCommercialServer() {

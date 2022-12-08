@@ -310,6 +310,20 @@ public class FileUtils {
         return size;
     }
 
+    public static boolean copyFile(File srcFile, File dstFile) {
+        try (
+            FileInputStream inputStream = new FileInputStream(srcFile);
+            FileChannel src = inputStream.getChannel();
+            FileChannel dst = new FileOutputStream(dstFile).getChannel();
+        ) {
+            dst.transferFrom(src, 0, src.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 
     private static boolean copyFile(Context context, Uri srcUri, File dstFile) {
         try {
@@ -879,7 +893,7 @@ public class FileUtils {
         }
     }
 
-    public static boolean isFileExists(String path){
+    public static boolean isFileExists(String path) {
         File file = new File(path);
         return file.exists();
     }
