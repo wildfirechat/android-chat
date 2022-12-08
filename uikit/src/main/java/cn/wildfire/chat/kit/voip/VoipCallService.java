@@ -369,7 +369,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     private String nextFocusUserId(AVEngineKit.CallSession session) {
         if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId))) {
             PeerConnectionClient client = session.getClient(focusTargetId);
-            if (client != null && client.state == AVEngineKit.CallState.Connected && !client.videoMuted) {
+            if (client != null && client.state == AVEngineKit.CallState.Connected && !client.videoMuted && !client.audience) {
                 return focusTargetId;
             }
         }
