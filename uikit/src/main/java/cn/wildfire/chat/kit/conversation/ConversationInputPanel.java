@@ -186,6 +186,13 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         } else {
             menuImageView.setVisibility(GONE);
         }
+
+        SharedPreferences sp = fragment.getContext().getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
+        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost()) && conversation.type != Conversation.ConversationType.Channel) {
+            pttImageView.setVisibility(View.VISIBLE);
+            pttPanel = new PttPanel(getContext());
+        }
     }
 
     private QuoteInfo quoteInfo;
@@ -268,12 +275,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 }
             }
         });
-        SharedPreferences sp = fragment.getContext().getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
-        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
-        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost()) && conversation != null && conversation.type != Conversation.ConversationType.Channel) {
-            pttImageView.setVisibility(View.VISIBLE);
-            pttPanel = new PttPanel(getContext());
-        }
 
         // emotion
         emotionLayout.setEmotionSelectedListener(this);
