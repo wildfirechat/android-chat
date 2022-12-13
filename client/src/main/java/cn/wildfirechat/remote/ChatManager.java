@@ -8416,7 +8416,8 @@ public class ChatManager {
                             listener.onServiceConnected();
                         }
                     });
-                } catch (RemoteException e) {
+                } catch (Throwable e) {
+                    // 抓住所有异常，发生异常之后，im将不能正常工作，需要重新启动ClientService服务，故这儿抓住所以异常，防止应用crash并没有什么问题
                     e.printStackTrace();
                 }
             });
