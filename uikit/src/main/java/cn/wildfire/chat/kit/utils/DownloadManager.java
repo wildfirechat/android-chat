@@ -227,7 +227,7 @@ public class DownloadManager {
      * @return 从下载连接中解析出文件名
      */
     @NonNull
-    private static String getNameFromUrl(String url) {
+    public static String getNameFromUrl(String url) {
         return url.substring(url.lastIndexOf("/") + 1);
     }
 

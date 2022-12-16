@@ -32,6 +32,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
@@ -272,21 +273,31 @@ public class MMPreviewActivity extends Activity {
                 saveImageView.setVisibility(View.VISIBLE);
                 saveImageView.setOnClickListener(v -> {
                     Toast.makeText(this, "图片保存中", Toast.LENGTH_SHORT).show();
-                    File file = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    File file = null;
+                    if (entry.getMessage() != null) {
+                        file = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    } else {
+                        String name = DownloadManager.getNameFromUrl(entry.getMediaUrl());
+                        name = TextUtils.isEmpty(name) ? System.currentTimeMillis() + "" : name;
+                        file = new File(Config.FILE_SAVE_DIR, name);
+                    }
                     if (file == null) {
+                        Toast.makeText(MMPreviewActivity.this, "图片保存失败 file == null", Toast.LENGTH_LONG).show();
                         return;
                     }
+
                     if (file.exists()) {
                         ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
                         Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
                     } else {
+                        File finalFile = file;
                         DownloadManager.download(entry.getMediaUrl(), file.getParent(), file.getName(), new DownloadManager.SimpleOnDownloadListener() {
                             @Override
                             public void onUiSuccess(File file1) {
                                 if (isFinishing()) {
                                     return;
                                 }
-                                ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
+                                ImageUtils.saveMedia2Album(MMPreviewActivity.this, finalFile);
                                 Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
                             }
                         });
