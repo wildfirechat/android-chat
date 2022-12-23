@@ -176,6 +176,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         // 禁用自动设置 surfaceView 层级关系
         AVEngineKit.DISABLE_SURFACE_VIEW_AUTO_OVERLAY = true;
         AVEngineKit.ENABLE_PROXIMITY_SENSOR_ADJUST_AUDIO_OUTPUT_DEVICE = false;
+        AVEngineKit.SCREEN_SHARING_REPLACE_MODE = true;
         callSession.autoSwitchVideoType = false;
         callSession.defaultVideoType = AVEngineKit.VideoType.VIDEO_TYPE_NONE;
 
@@ -331,13 +332,15 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     void shareScreen() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            if (session.isAudience()) {
-                return;
-            }
-
-//            shareScreenImageView.setSelected(!session.isScreenSharing());
             if (!session.isScreenSharing()) {
+                Toast.makeText(getContext(), "开启屏幕共享时，将关闭摄像头，并打开麦克风", Toast.LENGTH_LONG).show();
+                session.muteAudio(false);
+                session.muteVideo(true);
+
                 ((VoipBaseActivity) getContext()).startScreenShare();
+                if (session.isAudience()) {
+                    session.switchAudience(false);
+                }
             } else {
                 ((VoipBaseActivity) getContext()).stopScreenShare();
             }
