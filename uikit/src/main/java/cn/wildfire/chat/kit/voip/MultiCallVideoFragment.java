@@ -228,16 +228,19 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
             return;
         }
-        if (session.videoMuted) {
-            // TODO 目前关闭摄像头之后，不支持屏幕共享
-            return;
-        }
         if (!AVEngineKit.isSupportConference()) {
             Toast.makeText(getActivity(), "当前版本不支持屏幕共享", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!session.isScreenSharing()) {
+            Toast.makeText(getContext(), "开启屏幕共享时，将关闭摄像头，并打开麦克风", Toast.LENGTH_LONG).show();
+            session.muteAudio(false);
+            session.muteVideo(true);
+
             ((VoipBaseActivity) getActivity()).startScreenShare();
+            if (session.isAudience()) {
+                session.switchAudience(false);
+            }
         } else {
             ((VoipBaseActivity) getActivity()).stopScreenShare();
         }
