@@ -38,7 +38,7 @@ public class AsyncPlayer {
         }
     }
 
-    private LinkedList mCmdQueue = new LinkedList();
+    private final LinkedList<Command> mCmdQueue = new LinkedList<Command>();
 
     private void startSound(Command cmd) {
 
@@ -54,6 +54,10 @@ public class AsyncPlayer {
                     .build()
                 );
             }
+            player.setOnErrorListener((mediaPlayer, i, i1) -> {
+                Log.e(mTag, "play ring error " + i + " " + i1);
+                return false;
+            });
             player.prepare();
             player.start();
             if (mPlayer != null) {
