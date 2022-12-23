@@ -1989,11 +1989,11 @@ public class ChatManager {
 
         try {
             Message message = mClient.getMessage(messageId);
-            message.status = status;
             if (message == null) {
                 Log.e(TAG, "update message failure, message not exist");
                 return false;
             }
+            message.status = status;
 
 //            if ((message.direction == MessageDirection.Send && status.value() >= MessageStatus.Mentioned.value()) ||
 //                    message.direction == MessageDirection.Receive && status.value() < MessageStatus.Mentioned.value()) {
