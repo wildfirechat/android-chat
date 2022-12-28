@@ -1886,12 +1886,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public List<cn.wildfirechat.message.Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset) throws RemoteException {
+        public List<cn.wildfirechat.message.Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             if (conversation == null) {
-                protoMessages = ProtoLogic.searchMessageEx(0, "", 0, keyword, desc, limit, offset);
+                protoMessages = ProtoLogic.searchMessageEx(0, "", 0, keyword, desc, limit, offset, withUser);
             } else {
-                protoMessages = ProtoLogic.searchMessageEx(conversation.type.getValue(), conversation.target, conversation.line, keyword, desc, limit, offset);
+                protoMessages = ProtoLogic.searchMessageEx(conversation.type.getValue(), conversation.target, conversation.line, keyword, desc, limit, offset, withUser);
             }
             List<cn.wildfirechat.message.Message> out = new ArrayList<>();
 
@@ -1908,12 +1908,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public List<Message> searchMessageByTypes(Conversation conversation, String keyword, int[] contentTypes, boolean desc, int limit, int offset) throws RemoteException {
+        public List<Message> searchMessageByTypes(Conversation conversation, String keyword, int[] contentTypes, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             if (conversation == null) {
-                protoMessages = ProtoLogic.searchMessageByTypes(0, "", 0, keyword, contentTypes, desc, limit, offset);
+                protoMessages = ProtoLogic.searchMessageByTypes(0, "", 0, keyword, contentTypes, desc, limit, offset, withUser);
             } else {
-                protoMessages = ProtoLogic.searchMessageByTypes(conversation.type.getValue(), conversation.target, conversation.line, keyword, contentTypes, desc, limit, offset);
+                protoMessages = ProtoLogic.searchMessageByTypes(conversation.type.getValue(), conversation.target, conversation.line, keyword, contentTypes, desc, limit, offset, withUser);
             }
             List<cn.wildfirechat.message.Message> out = new ArrayList<>();
 
@@ -1930,7 +1930,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public List<Message> searchMessageByTypesAndTimes(Conversation conversation, String keyword, int[] contentTypes, long startTime, long endTime, boolean desc, int limit, int offset) throws RemoteException {
+        public List<Message> searchMessageByTypesAndTimes(Conversation conversation, String keyword, int[] contentTypes, long startTime, long endTime, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             int convType = 0;
             String target = "";
@@ -1942,7 +1942,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 line = conversation.line;
             }
 
-            protoMessages = ProtoLogic.searchMessageByTypesAndTimes(convType, target, line, keyword, contentTypes, startTime, endTime, desc, limit, offset);
+            protoMessages = ProtoLogic.searchMessageByTypesAndTimes(convType, target, line, keyword, contentTypes, startTime, endTime, desc, limit, offset, withUser);
             List<cn.wildfirechat.message.Message> out = new ArrayList<>();
 
             if (protoMessages != null) {
@@ -1958,8 +1958,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void searchMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, String keyword, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, before, count);
+        public void searchMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, String keyword, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, before, count, withUser);
             safeMessagesCallback(protoMessages, before, callback);
         }
 
