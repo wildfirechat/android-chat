@@ -5301,15 +5301,16 @@ public class ChatManager {
      * @param desc
      * @param limit
      * @param offset
+     * @param withUser
      * @return
      */
-    public List<Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset) {
+    public List<Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset, String withUser) {
         if (!checkRemoteService()) {
             return null;
         }
 
         try {
-            return mClient.searchMessage(conversation, keyword, desc, limit, offset);
+            return mClient.searchMessage(conversation, keyword, desc, limit, offset, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -5327,13 +5328,13 @@ public class ChatManager {
      * @param offset
      * @return
      */
-    public List<Message> searchMessageByTypes(Conversation conversation, String keyword, List<Integer> contentTypes, boolean desc, int limit, int offset) {
+    public List<Message> searchMessageByTypes(Conversation conversation, String keyword, List<Integer> contentTypes, boolean desc, int limit, int offset, String withUser) {
         if (!checkRemoteService()) {
             return null;
         }
 
         try {
-            return mClient.searchMessageByTypes(conversation, keyword, convertIntegers(contentTypes), desc, limit, offset);
+            return mClient.searchMessageByTypes(conversation, keyword, convertIntegers(contentTypes), desc, limit, offset, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -5353,13 +5354,13 @@ public class ChatManager {
      * @param offset
      * @return
      */
-    public List<Message> searchMessageByTypesAndTimes(Conversation conversation, String keyword, List<Integer> contentTypes, long startTime, long endTime, boolean desc, int limit, int offset) {
+    public List<Message> searchMessageByTypesAndTimes(Conversation conversation, String keyword, List<Integer> contentTypes, long startTime, long endTime, boolean desc, int limit, int offset, String withUser) {
         if (!checkRemoteService()) {
             return null;
         }
 
         try {
-            return mClient.searchMessageByTypesAndTimes(conversation, keyword, convertIntegers(contentTypes), startTime, endTime, desc, limit, offset);
+            return mClient.searchMessageByTypesAndTimes(conversation, keyword, convertIntegers(contentTypes), startTime, endTime, desc, limit, offset, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -5378,7 +5379,7 @@ public class ChatManager {
      * @param count             获取消息条数
      * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
-    public void searchMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, String keyword, long fromIndex, boolean before, int count, GetMessageCallback callback) {
+    public void searchMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, String keyword, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
@@ -5394,7 +5395,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.searchMessagesEx(intypes, convertIntegers(lines), convertIntegers(contentTypes), keyword, fromIndex, before, count, new IGetMessageCallback.Stub() {
+            mClient.searchMessagesEx(intypes, convertIntegers(lines), convertIntegers(contentTypes), keyword, fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
                     mainHandler.post(() -> callback.onSuccess(messages, hasMore));
