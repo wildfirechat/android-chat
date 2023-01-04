@@ -339,12 +339,12 @@ public class ImageUtils {
     /**
      * 图片入系统相册
      */
-    public static void saveMedia2Album(Context context, File mediaFile) {
+    public static void saveMedia2Album(Context context, File mediaFile, boolean isImage) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ContentResolver contentResolver = context.getContentResolver();
             ContentValues contentValues = new ContentValues();
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, System.currentTimeMillis() + "-" + mediaFile.getName());
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, isImage ? "image/jpg" : "video/mp4");
             contentValues.put(MediaStore.MediaColumns.IS_PENDING, 1);
             contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
             Uri uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
