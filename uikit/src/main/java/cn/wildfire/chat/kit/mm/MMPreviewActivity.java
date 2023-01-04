@@ -201,7 +201,7 @@ public class MMPreviewActivity extends Activity {
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
                                         playVideo(targetView, file.getAbsolutePath());
                                     }
-                                    ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
+                                    ImageUtils.saveMedia2Album(MMPreviewActivity.this, file, false);
                                 });
                             }
 
@@ -287,7 +287,7 @@ public class MMPreviewActivity extends Activity {
                     }
 
                     if (file.exists()) {
-                        ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
+                        ImageUtils.saveMedia2Album(MMPreviewActivity.this, file, true);
                         Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
                     } else {
                         File finalFile = file;
@@ -297,7 +297,7 @@ public class MMPreviewActivity extends Activity {
                                 if (isFinishing()) {
                                     return;
                                 }
-                                ImageUtils.saveMedia2Album(MMPreviewActivity.this, finalFile);
+                                ImageUtils.saveMedia2Album(MMPreviewActivity.this, finalFile, true);
                                 Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
                             }
                         });
