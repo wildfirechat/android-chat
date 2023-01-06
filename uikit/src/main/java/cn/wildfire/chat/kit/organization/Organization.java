@@ -5,7 +5,7 @@
 package cn.wildfire.chat.kit.organization;
 
 public class Organization {
-    public String organizationId;
+    public int id;
     public int parentId;
     public String managerId;
     public String name;

@@ -11,13 +11,13 @@ import cn.wildfire.chat.kit.net.SimpleCallback;
 public interface OrganizationServiceProvider {
     void getRelationship(String employeeId, SimpleCallback<OrganizationRelationship> callback);
 
-    void getRootOrganization(SimpleCallback<OrganizationRelationship> callback);
+    void getRootOrganization(SimpleCallback<List<Organization>> callback);
 
     void getOrganizationEx(int orgId, SimpleCallback<OrganizationEx> callback);
 
     void getOrganizations(List<Integer> orgIds, SimpleCallback<List<Organization>> callback);
 
-    void batchGetOrgEmployees(List<Integer> orgIds, SimpleCallback<List<String>> callback);
+    void getOrgEmployees(List<Integer> orgIds, SimpleCallback<List<String>> callback);
 
     void getOrgEmployees(int orgId, SimpleCallback<List<String>> callback);
 
