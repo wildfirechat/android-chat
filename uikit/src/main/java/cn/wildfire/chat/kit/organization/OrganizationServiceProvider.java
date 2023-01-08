@@ -7,9 +7,19 @@ package cn.wildfire.chat.kit.organization;
 import java.util.List;
 
 import cn.wildfire.chat.kit.net.SimpleCallback;
+import cn.wildfire.chat.kit.organization.model.Employee;
+import cn.wildfire.chat.kit.organization.model.EmployeeEx;
+import cn.wildfire.chat.kit.organization.model.Organization;
+import cn.wildfire.chat.kit.organization.model.OrganizationEx;
+import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
+import cn.wildfirechat.remote.GeneralCallback;
 
 public interface OrganizationServiceProvider {
-    void getRelationship(String employeeId, SimpleCallback<OrganizationRelationship> callback);
+    void login(GeneralCallback callback);
+
+    boolean isServiceAvailable();
+
+    void getRelationship(String employeeId, SimpleCallback<List<OrganizationRelationship>> callback);
 
     void getRootOrganization(SimpleCallback<List<Organization>> callback);
 

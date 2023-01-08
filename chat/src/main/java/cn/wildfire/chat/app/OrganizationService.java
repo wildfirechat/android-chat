@@ -13,37 +13,41 @@ import java.util.Map;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
-import cn.wildfire.chat.kit.organization.Employee;
-import cn.wildfire.chat.kit.organization.EmployeeEx;
-import cn.wildfire.chat.kit.organization.Organization;
-import cn.wildfire.chat.kit.organization.OrganizationEx;
-import cn.wildfire.chat.kit.organization.OrganizationRelationship;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
+import cn.wildfire.chat.kit.organization.model.Employee;
+import cn.wildfire.chat.kit.organization.model.EmployeeEx;
+import cn.wildfire.chat.kit.organization.model.Organization;
+import cn.wildfire.chat.kit.organization.model.OrganizationEx;
+import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
 
-public class OrgService implements OrganizationServiceProvider {
+public class OrganizationService implements OrganizationServiceProvider {
 
     private boolean isServiceAvailable;
 
-    private static final OrgService Instance = new OrgService();
+    private static final OrganizationService Instance = new OrganizationService();
 
     //组织通讯录服务地址，如果没有部署，可以设置为null
     public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://org.wildfirechat.cn";
 
-    private OrgService() {
+    private OrganizationService() {
 
     }
 
-    public static OrgService Instance() {
+    public static OrganizationService Instance() {
         return Instance;
     }
 
+    @Override
     public void login(GeneralCallback callback) {
 //        int ApplicationType_Robot = 0;
 //        int ApplicationType_Channel = 1;
 //        int ApplicationType_Admin = 2;
+        if (isServiceAvailable) {
+            return;
+        }
         ChatManager.Instance().getAuthCode("admin", 2, Config.IM_SERVER_HOST, new GeneralCallback2() {
             @Override
             public void onSuccess(String result) {
@@ -83,12 +87,13 @@ public class OrgService implements OrganizationServiceProvider {
 
     }
 
+    @Override
     public boolean isServiceAvailable() {
         return isServiceAvailable;
     }
 
     @Override
-    public void getRelationship(String employeeId, SimpleCallback<OrganizationRelationship> callback) {
+    public void getRelationship(String employeeId, SimpleCallback<List<OrganizationRelationship>> callback) {
         if (!isServiceAvailable) {
             callback.onUiFailure(-1, "未登录，或服务不可用");
             return;
