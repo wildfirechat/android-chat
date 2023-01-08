@@ -17,6 +17,7 @@ import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -68,7 +69,7 @@ public class MentionGroupMemberFragment extends BaseUserListFragment {
     }
 
     @Override
-    public void onHeaderClick(int index) {
+    public void onHeaderClick(HeaderViewHolder holder) {
         Intent intent = new Intent();
         intent.putExtra("mentionAll", true);
         getActivity().setResult(Activity.RESULT_OK, intent);

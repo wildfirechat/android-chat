@@ -38,6 +38,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
+import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.MultiCallActivity;
@@ -68,6 +69,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private static ViewModelProvider viewModelProvider;
     private ViewModelStore viewModelStore;
     private AppServiceProvider appServiceProvider;
+    private OrganizationServiceProvider organizationServiceProvider;
     private static WfcUIKit wfcUIKit;
     private boolean isSupportMoment = false;
 
@@ -388,5 +390,13 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     public void setAppServiceProvider(AppServiceProvider appServiceProvider) {
         this.appServiceProvider = appServiceProvider;
+    }
+
+    public OrganizationServiceProvider getOrganizationServiceProvider() {
+        return organizationServiceProvider;
+    }
+
+    public void setOrganizationServiceProvider(OrganizationServiceProvider organizationServiceProvider) {
+        this.organizationServiceProvider = organizationServiceProvider;
     }
 }

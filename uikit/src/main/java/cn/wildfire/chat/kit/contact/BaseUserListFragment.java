@@ -179,7 +179,7 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
     }
 
     @Override
-    public void onHeaderClick(int index) {
+    public void onHeaderClick(HeaderViewHolder holder) {
 
     }
 

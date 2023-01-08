@@ -296,6 +296,7 @@
         <activity
             android:name=".widget.AlertDialogActivity"
             android:theme="@style/AppThemeDialog" />
+        <activity android:name=".organization.OrganizationMemberListActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
