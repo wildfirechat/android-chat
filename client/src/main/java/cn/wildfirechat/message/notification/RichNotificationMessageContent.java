@@ -26,7 +26,7 @@ public class RichNotificationMessageContent extends NotificationMessageContent{
     public String desc;
     public String remark;
 
-    // @[@{@"key":@"登陆账户", @"value":@"野火IM", @"color":@"#173155"}, @{@"key":@"登陆地点", @"value":@"北京", @"color":@"#173155"}]
+    // @[@{@"key":@"登录账户", @"value":@"野火IM", @"color":@"#173155"}, @{@"key":@"登录地点", @"value":@"北京", @"color":@"#173155"}]
     public ArrayList<Data> datas;
 
     // 附加信息
