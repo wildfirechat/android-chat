@@ -199,8 +199,16 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     public void quoteMessage(Message message) {
         this.quoteInfo = QuoteInfo.initWithMessage(message);
+        if (audioButton.getVisibility() == VISIBLE) {
+            hideAudioButton();
+        }
         refRelativeLayout.setVisibility(VISIBLE);
         refEditText.setText(quoteInfo.getUserDisplayName() + ": " + quoteInfo.getMessageDigest());
+        editText.requestFocus();
+        // FYI: https://stackoverflow.com/questions/5520085/android-show-softkeyboard-with-showsoftinput-is-not-working
+        rootLinearLayout.postDelayed(() -> {
+            rootLinearLayout.showSoftkey(editText);
+        }, 100);
     }
 
     private void clearQuoteMessage() {
