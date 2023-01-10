@@ -10,12 +10,15 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
 import cn.wildfire.chat.kit.organization.model.Organization;
+import cn.wildfire.chat.kit.organization.model.OrganizationEx;
 import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.remote.ChatManager;
@@ -74,6 +77,72 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
         }
 
         return myOrganizationLiveData;
+    }
+
+    public MutableLiveData<OrganizationEx> getOrganizationEx(int organizationId) {
+        MutableLiveData<OrganizationEx> liveData = new MutableLiveData<>();
+        OrganizationServiceProvider organizationServiceProvider = WfcUIKit.getWfcUIKit().getOrganizationServiceProvider();
+        organizationServiceProvider.getOrganizationEx(organizationId, new SimpleCallback<OrganizationEx>() {
+            @Override
+            public void onUiSuccess(OrganizationEx organizationEx) {
+                liveData.setValue(organizationEx);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+
+            }
+        });
+        return liveData;
+    }
+
+    public MutableLiveData<List<Organization>> getOrganizationPath(int organizationId) {
+        MutableLiveData<List<Organization>> liveData = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                List<Organization> pathList = new ArrayList<>();
+                getOrganizationPathSync(organizationId, pathList);
+                liveData.postValue(pathList);
+            }
+        });
+
+        return liveData;
+    }
+
+    private void getOrganizationPathSync(int orgId, List<Organization> outPathList) {
+        Organization org = getOrganizationSync(orgId);
+        if (org != null) {
+            outPathList.add(0, org);
+            if (org.parentId != 0) {
+                getOrganizationPathSync(org.parentId, outPathList);
+            }
+        }
+    }
+
+    private Organization getOrganizationSync(int orgId) {
+        CountDownLatch latch = new CountDownLatch(1);
+        final Organization[] orgArr = new Organization[1];
+        organizationServiceProvider.getOrganizations(Collections.singletonList(orgId), new SimpleCallback<List<Organization>>() {
+            @Override
+            public void onUiSuccess(List<Organization> organizations) {
+                latch.countDown();
+                if (!organizations.isEmpty()) {
+                    orgArr[0] = organizations.get(0);
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return orgArr[0];
     }
 
     private void login() {

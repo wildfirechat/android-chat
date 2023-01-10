@@ -148,10 +148,21 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
                             addHeaderViewHolder(OrganizationViewHolder.class, R.layout.contact_header_organization, value);
                         }
                     }
-                    // TODO department
                 }
             });
-//            addHeaderViewHolder(DepartViewHolder.class, R.layout.contact_header_department, new HeaderValue());
+            organizationServiceViewModel.myOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
+                @Override
+                public void onChanged(List<Organization> organizations) {
+                    if (!organizations.isEmpty()) {
+                        for (Organization org : organizations) {
+                            OrganizationValue value = new OrganizationValue();
+                            value.setValue(org);
+                            addHeaderViewHolder(DepartViewHolder.class, R.layout.contact_header_department, value);
+                        }
+                    }
+
+                }
+            });
         }
     }
 
@@ -189,7 +200,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         } else if (holder instanceof OrganizationViewHolder) {
             showOrganizationMemberList(((OrganizationViewHolder) holder).getOrganization());
         } else if (holder instanceof DepartViewHolder) {
-
+            showOrganizationMemberList(((DepartViewHolder) holder).getOrganization());
         }
     }
 
