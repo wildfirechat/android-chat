@@ -25,7 +25,7 @@ public class Config {
      * <br>
      * <br>
      * 单人版和多人版音视频必须部署turn服务。高级版不需要部署stun/turn服务。
-     *
+     * <p>
      * !!! 我们提供的服务仅供用户测试和体验，为了保证测试可用，我们会不定期的更改密码. !!!
      * <br>
      * <strong>上线商用时，请更换为自己部署的turn 服务</strong>
@@ -60,6 +60,11 @@ public class Config {
      * 如果不想显示工作台，置为 null 即可
      */
     public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
+
+    /**
+     * 组织通讯录服务地址，如果没有部署，可以设置为null
+     */
+    public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://org.wildfirechat.cn";
 
     /**
      * 发送日志命令，当发送此文本消息时，会把协议栈日志发送到当前会话中，为空时关闭此功能。

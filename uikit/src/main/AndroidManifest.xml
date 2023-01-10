@@ -296,6 +296,12 @@
         <activity
             android:name=".widget.AlertDialogActivity"
             android:theme="@style/AppThemeDialog" />
+        <activity
+            android:name=".organization.OrganizationMemberListActivity"
+            android:label="组织通讯录" />
+        <activity
+            android:name=".organization.EmployeeInfoActivity"
+            android:label="员工信息" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
