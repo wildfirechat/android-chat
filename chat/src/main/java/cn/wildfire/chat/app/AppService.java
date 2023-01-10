@@ -43,7 +43,7 @@ import cn.wildfirechat.remote.GeneralCallback2;
 import okhttp3.MediaType;
 
 public class AppService implements AppServiceProvider {
-    private static AppService Instance = new AppService();
+    private static final AppService Instance = new AppService();
 
     /**
      * App Server默认使用的是8888端口，替换为自己部署的服务时需要注意端口别填错了

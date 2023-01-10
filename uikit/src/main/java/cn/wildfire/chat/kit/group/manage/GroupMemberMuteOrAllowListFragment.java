@@ -21,6 +21,7 @@ import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -95,7 +96,7 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment {
     }
 
     @Override
-    public void onHeaderClick(int index) {
+    public void onHeaderClick(HeaderViewHolder holder) {
         Intent intent = new Intent(getActivity(), MuteGroupMemberActivity.class);
         intent.putExtra(BasePickGroupMemberActivity.GROUP_INFO, groupInfo);
         intent.putExtra("groupMuted", groupMuted);
