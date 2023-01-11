@@ -184,13 +184,16 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         groupLinearLayout_1.setVisibility(View.VISIBLE);
         markGroupLinearLayout.setVisibility(View.VISIBLE);
         markGroupSwitchButton.setOnCheckedChangeListener(this);
-        quitGroupButton.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.VISIBLE);
-
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         groupInfo = groupViewModel.getGroupInfo(conversationInfo.conversation.target, true);
         if (groupInfo != null) {
             groupMember = ChatManager.Instance().getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
+
+            if (groupInfo.type != GroupInfo.GroupType.Organization) {
+                quitGroupButton.setVisibility(View.VISIBLE);
+            }
+
         }
 
         if (groupMember == null || groupMember.type == GroupMember.GroupMemberType.Removed) {
@@ -319,23 +322,25 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
         boolean enableRemoveMember = false;
         boolean enableAddMember = false;
-        if (groupInfo.joinType == 2) {
-            if (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager) {
-                enableAddMember = true;
-                enableRemoveMember = true;
-            }
-        } else {
-            enableAddMember = true;
-            if (groupMember.type != GroupMember.GroupMemberType.Normal || userId.equals(groupInfo.owner)) {
-                enableRemoveMember = true;
-            }
-        }
         int maxShowMemberCount = 45;
-        if (enableAddMember) {
-            maxShowMemberCount--;
-        }
-        if (enableRemoveMember) {
-            maxShowMemberCount--;
+        if (groupInfo.type != GroupInfo.GroupType.Organization) {
+            if (groupInfo.joinType == 2) {
+                if (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager) {
+                    enableAddMember = true;
+                    enableRemoveMember = true;
+                }
+            } else {
+                enableAddMember = true;
+                if (groupMember.type != GroupMember.GroupMemberType.Normal || userId.equals(groupInfo.owner)) {
+                    enableRemoveMember = true;
+                }
+            }
+            if (enableAddMember) {
+                maxShowMemberCount--;
+            }
+            if (enableRemoveMember) {
+                maxShowMemberCount--;
+            }
         }
         if (memberIds.size() > maxShowMemberCount) {
             showAllGroupMemberButton.setVisibility(View.VISIBLE);
@@ -357,7 +362,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @OnClick(R2.id.groupNameOptionItemView)
     void updateGroupName() {
-        if (groupInfo.type != GroupInfo.GroupType.Restricted
+        if ((groupInfo.type != GroupInfo.GroupType.Restricted && groupInfo.type != GroupInfo.GroupType.Organization)
             || (groupMember.type == GroupMember.GroupMemberType.Manager || groupMember.type == GroupMember.GroupMemberType.Owner)) {
             Intent intent = new Intent(getActivity(), SetGroupNameActivity.class);
             intent.putExtra("groupInfo", groupInfo);
@@ -379,7 +384,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @OnClick(R2.id.groupNoticeLinearLayout)
     void updateGroupNotice() {
-        if (groupInfo.type != GroupInfo.GroupType.Restricted
+        if ((groupInfo.type != GroupInfo.GroupType.Restricted && groupInfo.type != GroupInfo.GroupType.Organization)
             || (groupMember.type == GroupMember.GroupMemberType.Manager || groupMember.type == GroupMember.GroupMemberType.Owner)) {
             Intent intent = new Intent(getActivity(), SetGroupAnnouncementActivity.class);
             intent.putExtra("groupInfo", groupInfo);
