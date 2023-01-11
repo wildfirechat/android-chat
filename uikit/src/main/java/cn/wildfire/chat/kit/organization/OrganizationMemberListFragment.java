@@ -27,11 +27,11 @@ import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class OrganizationMemberListFragment extends ProgressFragment implements OrganizationMemberAdapter.OnOrganizationMemberClickListener, BreadCrumbsView.OnTabListener {
+public class OrganizationMemberListFragment extends ProgressFragment implements OrganizationMemberListAdapter.OnOrganizationMemberClickListener, BreadCrumbsView.OnTabListener {
     private int orgId;
     private RecyclerView recyclerView;
     private BreadCrumbsView breadCrumbsView;
-    private OrganizationMemberAdapter adapter;
+    private OrganizationMemberListAdapter adapter;
 
     private OrganizationServiceViewModel organizationServiceViewModel;
 
@@ -48,7 +48,7 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
             orgId = bundle.getInt("organizationId");
         }
         recyclerView = view.findViewById(R.id.recyclerView);
-        adapter = new OrganizationMemberAdapter(this);
+        adapter = new OrganizationMemberListAdapter(this);
         adapter.setOnOrganizationMemberClickListener(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);

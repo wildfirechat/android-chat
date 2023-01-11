@@ -20,12 +20,12 @@ import cn.wildfire.chat.kit.organization.viewholder.EmployeeViewHolder;
 import cn.wildfire.chat.kit.organization.viewholder.OrganizationEntityViewHolder;
 import cn.wildfire.chat.kit.organization.viewholder.OrganizationViewHolder;
 
-public class OrganizationMemberAdapter extends RecyclerView.Adapter<OrganizationEntityViewHolder> {
+public class OrganizationMemberListAdapter extends RecyclerView.Adapter<OrganizationEntityViewHolder> {
     private Fragment fragment;
     private OrganizationEx organizationEx;
     private OnOrganizationMemberClickListener onOrganizationMemberClickListener;
 
-    public OrganizationMemberAdapter(Fragment fragment) {
+    public OrganizationMemberListAdapter(Fragment fragment) {
         this.fragment = fragment;
     }
 
