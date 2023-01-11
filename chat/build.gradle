@@ -102,7 +102,6 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation 'com.king.zxing:zxing-lite:1.1.1'
-    implementation 'com.github.wendux:DSBridge-Android:3.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'com.google.android:flexbox:2.0.1'
@@ -111,6 +110,8 @@ dependencies {
     implementation 'io.kvh:amr:1.1.1'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okio:okio:1.14.0'
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
+    implementation 'cn.aigestudio.wheelpicker:WheelPicker:1.1.3'
 
     // moment start
 //    implementation project(':momentclient')
