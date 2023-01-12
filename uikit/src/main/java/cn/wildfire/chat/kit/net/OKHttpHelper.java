@@ -65,7 +65,7 @@ public class OKHttpHelper {
             Response response = chain.proceed(request);
             String responseAuthToken = response.header(AUTHORIZATION_HEADER, null);
             if (!TextUtils.isEmpty(responseAuthToken)) {
-                sp.edit().clear().putString(AUTHORIZATION_HEADER + ":" + host, responseAuthToken).apply();
+                sp.edit().putString(AUTHORIZATION_HEADER + ":" + host, responseAuthToken).apply();
             }
             return response;
         });
