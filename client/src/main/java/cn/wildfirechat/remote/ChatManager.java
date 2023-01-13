@@ -4196,6 +4196,26 @@ public class ChatManager {
     }
 
     /**
+     * 获取好友附加信息
+     *
+     * @param userId
+     * @return
+     */
+    public String getFriendExtra(String userId) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        String extra;
+        try {
+            extra = mClient.getFriendExtra(userId);
+            return extra;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 获取好友列表
      *
      * @param refresh
