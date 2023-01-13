@@ -382,8 +382,20 @@ public class ChatManager {
      * @param imServerHost im server的域名或ip
      * @return
      */
-
     public static void init(Application context, String imServerHost) {
+        init(context.getApplicationContext(), imServerHost);
+    }
+
+    /**
+     * 初始化，只能在主进程调用，否则会导致重复收到消息
+     * serverHost可以是IP，可以是域名，如果是域名的话只支持主域名或www域名，二级域名不支持！
+     * 例如：example.com或www.example.com是支持的；xx.example.com或xx.yy.example.com是不支持的。
+     *
+     * @param context
+     * @param imServerHost im server的域名或ip
+     * @return
+     */
+    public static void init(Context context, String imServerHost) {
         Log.d(TAG, "init " + imServerHost);
         if (imServerHost != null) {
             checkSDKHost(imServerHost);
@@ -395,7 +407,7 @@ public class ChatManager {
 //        if (TextUtils.isEmpty(imServerHost)) {
 //            throw new IllegalArgumentException("imServerHost must be empty");
 //        }
-        gContext = context.getApplicationContext();
+        gContext = context;
         INST = new ChatManager(imServerHost);
         INST.mainHandler = new Handler();
         INST.userInfoCache = new LruCache<>(1024);
