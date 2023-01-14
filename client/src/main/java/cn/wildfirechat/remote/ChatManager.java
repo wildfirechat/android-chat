@@ -7720,6 +7720,22 @@ public class ChatManager {
         }
     }
 
+    public boolean isHiddenGroupMemberName(String groupId) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return  "1".equals(mClient.getUserSetting(UserSettingScope.GroupHideNickname, ""));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void setHiddenGroupMemberName(String groupId, boolean hidden, GeneralCallback callback) {
+        setUserSetting(UserSettingScope.GroupHideNickname, groupId, hidden?"1":"0", callback);
+    }
+
     /**
      * 判断当前用户是否开启消息回执
      *
