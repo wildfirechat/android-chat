@@ -4,5 +4,5 @@
 
 package cn.wildfire.chat.kit.organization.pick;
 
-public class PickOrganizationMemberFrament {
+public class PickOrganizationMemberFragment {
 }
