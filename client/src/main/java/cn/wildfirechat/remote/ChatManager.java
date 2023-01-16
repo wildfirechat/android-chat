@@ -5447,7 +5447,7 @@ public class ChatManager {
     public String getSignature() throws PackageManager.NameNotFoundException, CertificateException, NoSuchAlgorithmException {
         String packageName = gContext.getPackageName();
         PackageInfo packageInfo = gContext.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
-        if(packageInfo.signatures != null && packageInfo.signatures.length > 0) {
+        if (packageInfo.signatures != null && packageInfo.signatures.length > 0) {
             Signature signature = packageInfo.signatures[0];
             byte[] signBytes = signature.toByteArray();
 
@@ -7725,7 +7725,7 @@ public class ChatManager {
             return false;
         }
         try {
-            return  "1".equals(mClient.getUserSetting(UserSettingScope.GroupHideNickname, ""));
+            return "1".equals(mClient.getUserSetting(UserSettingScope.GroupHideNickname, ""));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -7733,7 +7733,7 @@ public class ChatManager {
     }
 
     public void setHiddenGroupMemberName(String groupId, boolean hidden, GeneralCallback callback) {
-        setUserSetting(UserSettingScope.GroupHideNickname, groupId, hidden?"1":"0", callback);
+        setUserSetting(UserSettingScope.GroupHideNickname, groupId, hidden ? "1" : "0", callback);
     }
 
     /**
@@ -8282,7 +8282,7 @@ public class ChatManager {
                     if (useSM4) {
                         mClient.useSM4();
                     }
-                    if(checkSignature) {
+                    if (checkSignature) {
                         mClient.checkSignature();
                     }
 

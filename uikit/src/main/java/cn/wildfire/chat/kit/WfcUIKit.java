@@ -157,8 +157,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             ChatManager.Instance().registerMessageContent(ConferenceChangeModeContent.class);
             ChatManager.Instance().registerMessageContent(ConferenceCommandContent.class);
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
-            for (String[] server : Config.ICE_SERVERS) {
-                ChatManagerHolder.gAVEngine.addIceServer(server[0], server[1], server[2]);
+            if (Config.ICE_SERVERS != null) {
+                for (String[] server : Config.ICE_SERVERS) {
+                    ChatManagerHolder.gAVEngine.addIceServer(server[0], server[1], server[2]);
+                }
             }
         } catch (NotInitializedExecption notInitializedExecption) {
             notInitializedExecption.printStackTrace();
