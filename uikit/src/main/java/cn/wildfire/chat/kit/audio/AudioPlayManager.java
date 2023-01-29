@@ -161,7 +161,7 @@ public class AudioPlayManager implements SensorEventListener {
         //   低于 Android 6.0 的版本，不支持
         if (data != null && data.length > 0) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                startPlay(context, audioUri, new ByteArrayMediaDataSource(data), playListener);
+                _startPlay(context, audioUri, new ByteArrayMediaDataSource(data), playListener);
             } else {
                 Log.d(TAG, "not support mediaDataSource");
             }
@@ -171,10 +171,10 @@ public class AudioPlayManager implements SensorEventListener {
     }
 
     public void startPlay(Context context, Uri audioUri, IAudioPlayListener playListener) {
-        startPlay(context, audioUri, (MediaDataSource) null, playListener);
+        _startPlay(context, audioUri, null, playListener);
     }
 
-    private void startPlay(Context context, Uri audioUri, MediaDataSource mediaDataSource, IAudioPlayListener playListener) {
+    private void _startPlay(Context context, Uri audioUri, Object mediaDataSource, IAudioPlayListener playListener) {
         if (context != null && audioUri != null) {
             this.context = context;
             if (this._playListener != null && this._playingUri != null) {
@@ -234,7 +234,7 @@ public class AudioPlayManager implements SensorEventListener {
                 this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 if (mediaDataSource != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        this._mediaPlayer.setDataSource(mediaDataSource);
+                        this._mediaPlayer.setDataSource((MediaDataSource) mediaDataSource);
                     }
                 } else {
                     this._mediaPlayer.setDataSource(context, audioUri);
@@ -349,7 +349,7 @@ public class AudioPlayManager implements SensorEventListener {
             if (position + size > length) {
                 size -= (position + size) - length;
             }
-            System.arraycopy(data, (int)position, buffer, offset, size);
+            System.arraycopy(data, (int) position, buffer, offset, size);
             return size;
         }
 
