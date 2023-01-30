@@ -10,6 +10,7 @@ package cn.wildfire.chat.kit.voip;
 
 import android.content.Context;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -19,6 +20,8 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.LinkedList;
+
+import cn.wildfire.chat.kit.WfcUIKit;
 
 public class AsyncPlayer {
     private static final int PLAY = 1;
@@ -86,8 +89,11 @@ public class AsyncPlayer {
                     cmd = (Command) mCmdQueue.removeFirst();
                 }
 
+                AudioManager audioManager = ((AudioManager) WfcUIKit.getWfcUIKit().getApplication().getSystemService(Context.AUDIO_SERVICE));
                 switch (cmd.code) {
                     case PLAY:
+                        savedAudioMode = audioManager.getMode();
+                        audioManager.setMode(AudioManager.MODE_NORMAL);
                         startSound(cmd);
                         break;
                     case STOP:
@@ -98,6 +104,7 @@ public class AsyncPlayer {
                             mPlayer.stop();
                             mPlayer.release();
                             mPlayer = null;
+                            audioManager.setMode(savedAudioMode);
                         } else {
                             Log.w(mTag, "STOP command without a player");
                         }
@@ -120,6 +127,8 @@ public class AsyncPlayer {
     private Thread mThread;
     private MediaPlayer mPlayer;
     private PowerManager.WakeLock mWakeLock;
+
+    private int savedAudioMode = AudioManager.MODE_NORMAL;
 
     private int mState = STOP;
 
