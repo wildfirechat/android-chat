@@ -132,7 +132,7 @@ public class AppService implements AppServiceProvider {
             params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
         } catch (Exception e) {
             e.printStackTrace();
-            callback.onUiFailure(-1, "网络出来问题了。。。");
+            callback.onUiFailure(-1, "获取clientId失败");
             return;
         }
 
