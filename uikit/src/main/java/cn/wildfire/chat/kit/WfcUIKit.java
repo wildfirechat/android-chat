@@ -143,7 +143,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             //另外需要IM服务配置server.mobile_default_silent_when_pc_online为false。必须保持与服务器同步。
             //ChatManagerHolder.gChatManager.setDefaultSilentWhenPcOnline(false);
 
-            ringPlayer = new AsyncPlayer(null);
+            ringPlayer = new AsyncPlayer("voip-ring-player");
 
             // 仅高级版支持，是否禁用双流模式
             //AVEngineKit.DISABLE_DUAL_STREAM_MODE = true;
