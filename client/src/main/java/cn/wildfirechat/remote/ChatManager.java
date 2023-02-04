@@ -8200,10 +8200,14 @@ public class ChatManager {
     }
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
-
         MessageContent content = null;
         try {
-            content = messageContentMap.get(payload.type).newInstance();
+            Class cls = messageContentMap.get(payload.type);
+            if(cls != null) {
+                content = (MessageContent)cls.newInstance();
+            } else {
+                content = new UnknownMessageContent();
+            }
             if (content instanceof CompositeMessageContent) {
                 ((CompositeMessageContent) content).decode(payload, this);
             } else {
