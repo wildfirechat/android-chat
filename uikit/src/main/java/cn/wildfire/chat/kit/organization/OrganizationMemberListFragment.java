@@ -80,6 +80,7 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
         organizationServiceViewModel.getOrganizationEx(orgId).observe(this, new Observer<OrganizationEx>() {
             @Override
             public void onChanged(OrganizationEx organizationEx) {
+                getActivity().setTitle(organizationEx.organization.name);
                 adapter.setOrganizationEx(organizationEx);
                 adapter.notifyDataSetChanged();
                 showContent();

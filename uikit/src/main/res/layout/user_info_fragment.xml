@@ -65,6 +65,7 @@
                 android:text="@string/nickname_colon"
                 android:textColor="@color/black1"
                 android:textSize="14sp" />
+
             <TextView
                 android:id="@+id/groupAliasTextView"
                 android:layout_width="wrap_content"
@@ -73,6 +74,7 @@
                 android:text="@string/nickname_colon"
                 android:textColor="@color/black1"
                 android:textSize="14sp" />
+
             <TextView
                 android:id="@+id/accountTextView"
                 android:layout_width="wrap_content"
@@ -89,14 +91,15 @@
             android:id="@+id/favContactTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
             android:layout_marginTop="10dp"
             android:text="☆"
-            android:textColor="#FDBE2D" />
+            android:textColor="#FDBE2D"
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <View style="@style/Line" />
+
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/aliasOptionItemView"
         style="@style/OptionItem"
@@ -104,15 +107,30 @@
         app:show_arrow_indicator="true"
         app:title="设置昵称或别名" />
 
-    <View style="@style/Line" />
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/messagesOptionItemView"
-        style="@style/OptionItem"
-        android:background="@drawable/selector_common_item"
-        app:show_arrow_indicator="true"
-        android:layout_marginTop="8dp"
-        app:title="查看他（她）的消息" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/red0"
+        android:orientation="vertical">
 
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/orgOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            app:desc="前端研发组"
+            android:visibility="gone"
+            app:show_arrow_indicator="true"
+            app:title="部门" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/messagesOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            app:show_arrow_indicator="true"
+            app:title="查看他（她）的消息" />
+
+    </LinearLayout>
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/qrCodeOptionItemView"
