@@ -17,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
+import cn.wildfire.chat.kit.organization.model.EmployeeEx;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.model.OrganizationEx;
 import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
@@ -79,6 +80,22 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
         return myOrganizationLiveData;
     }
 
+    public MutableLiveData<List<Organization>> getOrganizations(List<Integer> ids) {
+        MutableLiveData<List<Organization>> liveData = new MutableLiveData<>();
+        organizationServiceProvider.getOrganizations(ids, new SimpleCallback<List<Organization>>() {
+            @Override
+            public void onUiSuccess(List<Organization> organizations) {
+                liveData.postValue(organizations);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+
+            }
+        });
+        return liveData;
+    }
+
     public MutableLiveData<OrganizationEx> getOrganizationEx(int organizationId) {
         MutableLiveData<OrganizationEx> liveData = new MutableLiveData<>();
         OrganizationServiceProvider organizationServiceProvider = WfcUIKit.getWfcUIKit().getOrganizationServiceProvider();
@@ -107,6 +124,23 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
             }
         });
 
+        return liveData;
+    }
+
+    public MutableLiveData<EmployeeEx> getEmployeeEx(String userId) {
+        MutableLiveData<EmployeeEx> liveData = new MutableLiveData<>();
+        organizationServiceProvider.getEmployeeEx(userId, new SimpleCallback<EmployeeEx>() {
+            @Override
+            public void onUiSuccess(EmployeeEx employeeEx) {
+                liveData.postValue(employeeEx);
+
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+
+            }
+        });
         return liveData;
     }
 
