@@ -197,7 +197,11 @@ public class DownloadManager {
                 dir = Config.VIDEO_SAVE_DIR;
                 break;
             case FILE:
-                name = message.messageUid + "-" + ((FileMessageContent) message.content).getName();
+                if (message.content instanceof FileMessageContent) {
+                    name = message.messageUid + "-" + ((FileMessageContent) message.content).getName();
+                } else {
+                    name = message.messageUid + ".data";
+                }
                 dir = Config.FILE_SAVE_DIR;
                 break;
             default:
