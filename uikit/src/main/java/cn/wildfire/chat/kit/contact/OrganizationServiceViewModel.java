@@ -120,6 +120,7 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
             public void run() {
                 List<Organization> pathList = new ArrayList<>();
                 getOrganizationPathSync(organizationId, pathList);
+                Log.d("PickOrgMemberFragment", "pathList " + organizationId + " " + pathList.size());
                 liveData.postValue(pathList);
             }
         });
@@ -160,15 +161,16 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
         organizationServiceProvider.getOrganizations(Collections.singletonList(orgId), new SimpleCallback<List<Organization>>() {
             @Override
             public void onUiSuccess(List<Organization> organizations) {
-                latch.countDown();
                 if (!organizations.isEmpty()) {
                     orgArr[0] = organizations.get(0);
                 }
+                latch.countDown();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
                 latch.countDown();
+                Log.e(TAG, "getOrganizations error " + code + " " + msg);
             }
         });
         try {

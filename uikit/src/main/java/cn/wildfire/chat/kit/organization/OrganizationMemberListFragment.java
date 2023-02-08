@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.organization;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.lifecycle.Observer;
@@ -34,6 +35,8 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
     private OrganizationMemberListAdapter adapter;
 
     private OrganizationServiceViewModel organizationServiceViewModel;
+
+    private static final String TAG = "OrgMemberListFragment";
 
     @Override
     protected int contentLayout() {
@@ -93,11 +96,13 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
             @Override
             public void onChanged(List<Organization> organizations) {
                 breadCrumbsView.clearAllTab();
+                Log.d(TAG, "breadCrumbsView clear all tab");
                 if (!organizations.isEmpty()) {
                     for (Organization org : organizations) {
                         Map<String, Object> param = new HashMap<>();
                         param.put("org", org);
                         breadCrumbsView.addTab(org.name, param);
+                        Log.d(TAG, "breadCrumbsView add tab" + org.name);
                     }
                 }
             }
