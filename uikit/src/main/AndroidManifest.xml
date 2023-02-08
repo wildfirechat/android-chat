@@ -298,6 +298,7 @@
         <activity
             android:name=".organization.EmployeeInfoActivity"
             android:label="员工信息" />
+        <activity android:name=".organization.pick.PickOrganizationMemberActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
