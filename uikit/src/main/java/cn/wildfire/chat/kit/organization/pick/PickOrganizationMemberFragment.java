@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class PickOrganizationMemberFragment extends ProgressFragment implements 
     private RecyclerView recyclerView;
     private BreadCrumbsView breadCrumbsView;
     private CheckableOrganizationMemberListAdapter adapter;
+    private CheckableOrganizationMemberListAdapter.OnOrganizationMemberClickListener onOrganizationMemberClickListener;
 
     private OrganizationServiceViewModel organizationServiceViewModel;
 
@@ -67,23 +69,43 @@ public class PickOrganizationMemberFragment extends ProgressFragment implements 
     public void onOrganizationClick(Organization organization) {
         loadAndShowOrganizationMemberList(organization.id);
         loadAndShowOrganizationPath(organization.id);
+
+        if (this.onOrganizationMemberClickListener != null) {
+            this.onOrganizationMemberClickListener.onOrganizationClick(organization);
+        }
     }
 
     @Override
     public void onOrganizationCheck(Organization organization, boolean checked) {
-
+        if (this.onOrganizationMemberClickListener != null) {
+            this.onOrganizationMemberClickListener.onOrganizationCheck(organization, checked);
+        }
     }
 
     @Override
     public void onEmployeeCheck(Employee employee, boolean checked) {
+        if (this.onOrganizationMemberClickListener != null) {
+            this.onOrganizationMemberClickListener.onEmployeeCheck(employee, checked);
+        }
 
+    }
+
+    public void setOnOrganizationMemberClickListener(CheckableOrganizationMemberListAdapter.OnOrganizationMemberClickListener onOrganizationMemberClickListener) {
+        this.onOrganizationMemberClickListener = onOrganizationMemberClickListener;
+    }
+
+    public Collection<Organization> getCheckedOrganizations() {
+        return adapter.getCheckedOrganizations();
+    }
+
+    public Collection<Employee> getCheckedMembers() {
+        return adapter.getCheckedMembers();
     }
 
     private void loadAndShowOrganizationMemberList(int orgId) {
         organizationServiceViewModel.getOrganizationEx(orgId).observe(this, new Observer<OrganizationEx>() {
             @Override
             public void onChanged(OrganizationEx organizationEx) {
-                getActivity().setTitle(organizationEx.organization.name);
                 adapter.setOrganizationEx(organizationEx);
                 adapter.notifyDataSetChanged();
                 showContent();

@@ -7,26 +7,39 @@ package cn.wildfire.chat.kit.contact.pick;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.model.GroupValue;
+import cn.wildfire.chat.kit.contact.model.OrganizationValue;
 import cn.wildfire.chat.kit.contact.pick.viewholder.PickGroupViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.DepartViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
+import cn.wildfire.chat.kit.organization.model.Organization;
+import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberActivity;
 import cn.wildfirechat.model.GroupInfo;
 
 public class PickConversationTargetFragment extends PickUserFragment {
     private final static int REQUEST_CODE_PICK_GROUP = 100;
+    private final static int REQUEST_CODE_PICK_ORGANIZATION_MEMBER = 101;
     private boolean pickGroupForResult;
     private boolean multiGroupMode;
     private OnGroupPickListener groupPickListener;
+
+    private OrganizationServiceViewModel organizationServiceViewModel;
 
     /**
      * @param pickGroupForResult 为true时，点击group item不直接启动群会话；否则直接启动群会话
@@ -50,6 +63,7 @@ public class PickConversationTargetFragment extends PickUserFragment {
             pickGroupForResult = args.getBoolean("pickGroupForResult", false);
             multiGroupMode = args.getBoolean("multiGroupMode", false);
         }
+        organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
     }
 
     @Override
@@ -70,16 +84,56 @@ public class PickConversationTargetFragment extends PickUserFragment {
     public void initHeaderViewHolders() {
         // 选择一个群
         addHeaderViewHolder(PickGroupViewHolder.class, R.layout.contact_header_group, new GroupValue());
+        // 选取组织成员
+        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
+            organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
+                @Override
+                public void onChanged(List<Organization> organizations) {
+                    if (!organizations.isEmpty()) {
+                        for (Organization org : organizations) {
+                            OrganizationValue value = new OrganizationValue();
+                            value.setValue(org);
+                            addHeaderViewHolder(OrganizationViewHolder.class, R.layout.contact_header_organization, value);
+                        }
+                    }
+                }
+            });
+            organizationServiceViewModel.myOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
+                @Override
+                public void onChanged(List<Organization> organizations) {
+                    if (!organizations.isEmpty()) {
+                        for (Organization org : organizations) {
+                            OrganizationValue value = new OrganizationValue();
+                            value.setValue(org);
+                            addHeaderViewHolder(DepartViewHolder.class, R.layout.contact_header_department, value);
+                        }
+                    }
+
+                }
+            });
+        }
     }
 
     @Override
     public void onHeaderClick(HeaderViewHolder holder) {
         // 选择一个群
-        Intent intent = new Intent(getActivity(), GroupListActivity.class);
-        if (pickGroupForResult) {
-            intent.putExtra(GroupListActivity.INTENT_FOR_RESULT, true);
+        if (holder instanceof PickGroupViewHolder) {
+            Intent intent = new Intent(getActivity(), GroupListActivity.class);
+            if (pickGroupForResult) {
+                intent.putExtra(GroupListActivity.INTENT_FOR_RESULT, true);
+            }
+            startActivityForResult(intent, REQUEST_CODE_PICK_GROUP);
+        } else if (holder instanceof OrganizationViewHolder) {
+            Organization organization = ((OrganizationViewHolder) holder).getOrganization();
+            Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
+            intent.putExtra("organizationId", organization.id);
+            startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
+        } else if (holder instanceof DepartViewHolder) {
+            Organization organization = ((OrganizationViewHolder) holder).getOrganization();
+            Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
+            intent.putExtra("organizationId", organization.id);
+            startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         }
-        startActivityForResult(intent, REQUEST_CODE_PICK_GROUP);
     }
 
     @Override
