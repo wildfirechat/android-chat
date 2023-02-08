@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.conversation.message;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -199,6 +200,8 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                 ImageMessageContent imageMessageContent = (ImageMessageContent) content;
                 GlideApp.with(itemView)
                     .load(imageMessageContent.remoteUrl)
+                    .placeholder(new BitmapDrawable(imageMessageContent.getThumbnail()))
+                    .error(R.mipmap.img_error)
                     .into(contentImageView);
             } else if (content instanceof VideoMessageContent) {
                 textContentLayout.setVisibility(View.GONE);
