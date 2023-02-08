@@ -39,7 +39,6 @@
             android:id="@+id/contentImageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/red0"
             tools:src="@drawable/back_drawable" />
 
         <View
