@@ -14,8 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.organization.model.Employee;
@@ -30,13 +31,13 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
     private OrganizationEx organizationEx;
     private OnOrganizationMemberClickListener onOrganizationMemberClickListener;
 
-    private Set<String> checkedMembers;
-    private Set<Integer> checkedOrganizations;
+    private Map<String, Employee> checkedMembers;
+    private Map<Integer, Organization> checkedOrganizations;
 
     public CheckableOrganizationMemberListAdapter(Fragment fragment) {
         this.fragment = fragment;
-        this.checkedMembers = new HashSet<>();
-        this.checkedOrganizations = new HashSet<>();
+        this.checkedMembers = new HashMap<>();
+        this.checkedOrganizations = new HashMap<>();
     }
 
     public void setOrganizationEx(OrganizationEx organizationEx) {
@@ -48,12 +49,12 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
     }
 
 
-    public Set<String> getCheckedMembers() {
-        return checkedMembers;
+    public Collection<Employee> getCheckedMembers() {
+        return checkedMembers.values();
     }
 
-    public Set<Integer> getCheckedOrganizations() {
-        return checkedOrganizations;
+    public Collection<Organization> getCheckedOrganizations() {
+        return checkedOrganizations.values();
     }
 
     @NonNull
@@ -84,25 +85,28 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
         view.setOnClickListener(v -> {
             boolean toCheck = !checkBox.isChecked();
             checkBox.setChecked(toCheck);
-            if (onOrganizationMemberClickListener != null) {
-                int position = holder.getAdapterPosition();
-                if (position < subOrganizationCount()) {
-                    Organization organization = organizationEx.subOrganizations.get(position);
-                    onOrganizationMemberClickListener.onOrganizationCheck(organization, toCheck);
-                    if (toCheck) {
-                        checkedOrganizations.add(organization.id);
-                    } else {
-                        checkedOrganizations.remove(organization.id);
-                    }
+            int position = holder.getAdapterPosition();
+            if (position < subOrganizationCount()) {
+                Organization organization = organizationEx.subOrganizations.get(position);
+                if (toCheck) {
+                    checkedOrganizations.put(organization.id, organization);
                 } else {
-                    Employee employee = organizationEx.employees.get(position - subOrganizationCount());
-                    onOrganizationMemberClickListener.onEmployeeCheck(employee, toCheck);
+                    checkedOrganizations.remove(organization.id);
+                }
+                if (onOrganizationMemberClickListener != null) {
+                    onOrganizationMemberClickListener.onOrganizationCheck(organization, toCheck);
+                }
 
-                    if (toCheck) {
-                        checkedMembers.add(employee.employeeId);
-                    } else {
-                        checkedMembers.remove(employee.employeeId);
-                    }
+            } else {
+                Employee employee = organizationEx.employees.get(position - subOrganizationCount());
+
+                if (toCheck) {
+                    checkedMembers.put(employee.employeeId, employee);
+                } else {
+                    checkedMembers.remove(employee.employeeId);
+                }
+                if (onOrganizationMemberClickListener != null) {
+                    onOrganizationMemberClickListener.onEmployeeCheck(employee, toCheck);
                 }
             }
         });
@@ -116,11 +120,11 @@ public class CheckableOrganizationMemberListAdapter extends RecyclerView.Adapter
         if (position < subOrganizationCount()) {
             value = organizationEx.subOrganizations.get(position);
             Organization org = (Organization) value;
-            checkBox.setChecked(checkedOrganizations.contains(org.id));
+            checkBox.setChecked(checkedOrganizations.containsKey(org.id));
         } else {
             value = organizationEx.employees.get(position - subOrganizationCount());
             Employee employee = (Employee) value;
-            checkBox.setChecked(checkedMembers.contains(employee.employeeId));
+            checkBox.setChecked(checkedMembers.containsKey(employee.employeeId));
         }
 
         holder.onBind(value);
