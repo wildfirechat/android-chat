@@ -52,7 +52,7 @@ public class PickGroupMemberBlackFragment extends PickGroupMemberFragment {
 
     @Override
     protected PickedUserAdapter getPickedUserAdapter() {
-        return new PickedUserBlackAdapter();
+        return new PickedUserBlackAdapter(pickUserViewModel);
     }
 
     @Override

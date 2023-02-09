@@ -23,11 +23,13 @@ import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.model.GroupValue;
 import cn.wildfire.chat.kit.contact.model.OrganizationValue;
+import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.viewholder.PickGroupViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.DepartViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
+import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberActivity;
 import cn.wildfirechat.model.GroupInfo;
@@ -138,15 +140,38 @@ public class PickConversationTargetFragment extends PickUserFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_PICK_GROUP && resultCode == Activity.RESULT_OK) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_CODE_PICK_GROUP) {
             // TODO 多选
             ArrayList<GroupInfo> groupInfos = data.getParcelableArrayListExtra("groupInfos");
             if (groupPickListener != null) {
                 groupPickListener.onGroupPicked(groupInfos);
             }
+        } else if (requestCode == REQUEST_CODE_PICK_ORGANIZATION_MEMBER) {
+            ArrayList<Organization> organizations = data.getParcelableArrayListExtra("organizations");
+            ArrayList<Employee> employees = data.getParcelableArrayListExtra("employees");
+            if (employees != null) {
+                for (Employee employee : employees) {
+                    UIUserInfo uiUserInfo = new UIUserInfo(employee.toUserInfo());
+                    pickUserViewModel.checkUser(uiUserInfo, true);
+                }
+            }
+            if (organizations != null) {
+                pickedUserAdapter.setOrganizations(organizations);
+
+                // 没有的话，搜索提示框布局会错乱
+                handleHintView(false);
+                handleEditText();
+            }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    public List<Organization> getCheckedOrganizations() {
+        return pickedUserAdapter.organizations;
     }
 
     public interface OnGroupPickListener {

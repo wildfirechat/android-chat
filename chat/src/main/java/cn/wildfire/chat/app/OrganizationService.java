@@ -4,8 +4,6 @@
 
 package cn.wildfire.chat.app;
 
-import android.util.Log;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -203,42 +201,4 @@ public class OrganizationService implements OrganizationServiceProvider {
 
     private static final String TAG = "OrgService";
 
-    public void test() {
-        Instance.login(new GeneralCallback() {
-            @Override
-            public void onSuccess() {
-                Log.d(TAG, "login success");
-
-                Instance().getRootOrganization(new SimpleCallback<List<Organization>>() {
-
-                    @Override
-                    public void onUiSuccess(List<Organization> organizations) {
-                        Log.e(TAG, "getRootOrganization ");
-
-                        Instance().getOrganizationEx(1, new SimpleCallback<OrganizationEx>() {
-                            @Override
-                            public void onUiSuccess(OrganizationEx organizationEx) {
-
-                            }
-
-                            @Override
-                            public void onUiFailure(int code, String msg) {
-
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onUiFailure(int code, String msg) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-
-            }
-        });
-    }
 }

@@ -21,6 +21,7 @@ import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
+import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 
@@ -31,7 +32,7 @@ public class PickOrCreateConversationTargetActivity extends PickConversationTarg
     private boolean singleMode = true;
 
     @Override
-    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos) {
+    protected void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations) {
         if (singleMode && newlyCheckedUserInfos.size() > 1) {
             // 先创建群组
             MaterialDialog dialog = new MaterialDialog.Builder(this)

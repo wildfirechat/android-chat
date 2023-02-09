@@ -17,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
+import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.EmployeeEx;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.model.OrganizationEx;
@@ -28,14 +29,13 @@ import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
 
 public class OrganizationServiceViewModel extends ViewModel implements OnConnectionStatusChangeListener {
     private static final String TAG = OrganizationServiceViewModel.class.getSimpleName();
-    private MutableLiveData<Object> organizationServiceAvailableLiveData;
     private MutableLiveData<List<Organization>> rootOrganizationLiveData;
     private MutableLiveData<List<Organization>> myOrganizationLiveData;
+    private MutableLiveData<List<Employee>> organizationEmployeeLiveData;
     private final OrganizationServiceProvider organizationServiceProvider;
 
     public OrganizationServiceViewModel() {
         ChatManager.Instance().addConnectionChangeListener(this);
-        organizationServiceAvailableLiveData = new MutableLiveData<>();
 
         organizationServiceProvider = WfcUIKit.getWfcUIKit().getOrganizationServiceProvider();
 
@@ -80,6 +80,22 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
         return myOrganizationLiveData;
     }
 
+    public MutableLiveData<List<String>> getOrganizationEmployees(int orgId) {
+        MutableLiveData<List<String>> liveData = new MutableLiveData<>();
+        organizationServiceProvider.getOrgEmployees(orgId, new SimpleCallback<List<String>>() {
+            @Override
+            public void onUiSuccess(List<String> strings) {
+                liveData.postValue(strings);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+
+            }
+        });
+        return liveData;
+    }
+
     public MutableLiveData<List<Organization>> getOrganizations(List<Integer> ids) {
         MutableLiveData<List<Organization>> liveData = new MutableLiveData<>();
         organizationServiceProvider.getOrganizations(ids, new SimpleCallback<List<Organization>>() {
@@ -108,6 +124,41 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
             @Override
             public void onUiFailure(int code, String msg) {
 
+            }
+        });
+        return liveData;
+    }
+
+    public MutableLiveData<List<Employee>> getOrganizationEmployees(List<Integer> organizationIds, boolean includeSubOrganization) {
+        MutableLiveData<List<Employee>> liveData = new MutableLiveData<>();
+
+        List<Employee> employees = new ArrayList<>();
+        ChatManager.Instance().getWorkHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                CountDownLatch latch = new CountDownLatch(organizationIds.size());
+                for (Integer orgId : organizationIds) {
+                    organizationServiceProvider.getOrganizationEx(orgId, new SimpleCallback<OrganizationEx>() {
+                        @Override
+                        public void onUiSuccess(OrganizationEx organizationEx) {
+                            if (organizationEx != null && organizationEx.employees != null) {
+                                employees.addAll(organizationEx.employees);
+                            }
+                            latch.countDown();
+                        }
+
+                        @Override
+                        public void onUiFailure(int code, String msg) {
+                            latch.countDown();
+                        }
+                    });
+                }
+                try {
+                    latch.await();
+                    liveData.postValue(employees);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         return liveData;
