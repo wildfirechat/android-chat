@@ -37,6 +37,9 @@ public class PickOrganizationMemberFragment extends ProgressFragment implements 
 
     private static final String TAG = "PickOrgMemberFragment";
 
+    private List<Integer> initialCheckedOrganizationIds;
+    private List<String> initialCheckedEmployeeIds;
+
     @Override
     protected int contentLayout() {
         return R.layout.organization_member_list_fragment;

@@ -7,6 +7,8 @@ package cn.wildfire.chat.kit.organization.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import cn.wildfirechat.model.UserInfo;
+
 public class Employee implements Parcelable {
     public String employeeId;
     public int organizationId;
@@ -26,6 +28,32 @@ public class Employee implements Parcelable {
     public int sort;
     public long createDt;
     public long updateDt;
+
+
+    public UserInfo toUserInfo(){
+        UserInfo userInfo = new UserInfo();
+        userInfo.uid = this.employeeId;
+        userInfo.name = this.name;
+        userInfo.displayName = this.name;
+        // 我为好友设置的备注
+        //public String friendAlias;
+        userInfo.portrait = this.portraitUrl;
+        userInfo.gender = this.gender;
+        userInfo.mobile = this.mobile;
+        userInfo.email = this.email;
+//      public  String address;
+//        public String company;
+//        public String social;
+//        public String extra;
+        userInfo.updateDt = this.updateDt;
+        //0 normal; 1 robot; 2 thing;
+        userInfo.type = 1;
+        //0 normal; 1 deleted;
+        userInfo.deleted = 0;
+
+
+        return userInfo;
+    }
 
     @Override
     public int describeContents() {

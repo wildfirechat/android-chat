@@ -46,9 +46,9 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
     protected View hintView;
 
     private boolean isSearchFragmentShowing = false;
-    private PickedUserAdapter pickedUserAdapter;
+    protected PickedUserAdapter pickedUserAdapter;
 
-    private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = userInfo -> {
+    private final Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = userInfo -> {
         ((CheckableUserListAdapter) userListAdapter).updateUserStatus(userInfo);
         hideSearchContactFragment();
         updatePickedUserView(userInfo);
@@ -87,7 +87,7 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
     }
 
     protected PickedUserAdapter getPickedUserAdapter() {
-        return new PickedUserAdapter();
+        return new PickedUserAdapter(pickUserViewModel);
     }
 
     @OnFocusChange(R2.id.searchEditText)
@@ -144,8 +144,8 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         }
         searchUserFrameLayout.setVisibility(View.VISIBLE);
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.searchFrameLayout, searchAndPickUserFragment)
-                .commit();
+            .replace(R.id.searchFrameLayout, searchAndPickUserFragment)
+            .commit();
         isSearchFragmentShowing = true;
     }
 

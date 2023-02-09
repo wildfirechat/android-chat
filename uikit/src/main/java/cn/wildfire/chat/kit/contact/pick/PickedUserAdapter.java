@@ -22,60 +22,119 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.organization.model.Organization;
 
 public class PickedUserAdapter extends RecyclerView.Adapter {
 
-    List<UIUserInfo> mData;
+    private PickUserViewModel pickUserViewModel;
+
+    List<UIUserInfo> users;
+    List<Organization> organizations;
     RequestOptions mOptions;
 
-    public PickedUserAdapter() {
-        this.mData = new ArrayList<>();
+    public PickedUserAdapter(PickUserViewModel pickUserViewModel) {
+        this.pickUserViewModel = pickUserViewModel;
+        this.users = new ArrayList<>();
         mOptions = new RequestOptions()
-                .placeholder(R.mipmap.avatar_def)
-                .transforms(new CenterCrop(), new RoundedCorners(4));
+            .placeholder(R.mipmap.avatar_def)
+            .transforms(new CenterCrop(), new RoundedCorners(4));
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picked_user, parent, false);
-        return new Holder(view);
+        if (viewType == R.layout.picked_user) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picked_user, parent, false);
+            return new UserViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picked_organization, parent, false);
+            return new OrganizationViewHolder(view);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((Holder) holder).bind(mData.get(position));
+        if (position < getOrganizationCount()) {
+            ((OrganizationViewHolder) holder).bind(organizations.get(position));
+        } else {
+            ((UserViewHolder) holder).bind(users.get(position - getOrganizationCount()));
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position < getOrganizationCount()) {
+            return R.layout.picked_organization;
+        } else {
+            return R.layout.picked_user;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return getOrganizationCount() + users.size();
+    }
+
+    public void setOrganizations(List<Organization> organizations) {
+        this.organizations = organizations;
+        notifyDataSetChanged();
     }
 
     public void addUser(UIUserInfo uiUserInfo) {
-        mData.add(uiUserInfo);
+        users.add(uiUserInfo);
         notifyDataSetChanged();
     }
 
     public void removeUser(UIUserInfo uiUserInfo) {
-        mData.remove(uiUserInfo);
+        users.remove(uiUserInfo);
         notifyDataSetChanged();
     }
 
-    private class Holder extends RecyclerView.ViewHolder {
+    private int getOrganizationCount() {
+        return organizations == null ? 0 : organizations.size();
+    }
+
+    private class UserViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView imageView;
+        private UIUserInfo uiUserInfo;
 
-        Holder(@NonNull View itemView) {
+        UserViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.avatar);
+            itemView.setOnClickListener(v -> pickUserViewModel.checkUser(uiUserInfo, false));
         }
 
         void bind(UIUserInfo uiUserInfo) {
+            this.uiUserInfo = uiUserInfo;
             Glide.with(imageView)
-                    .load(uiUserInfo.getUserInfo().portrait)
-                    .apply(mOptions)
-                    .into(imageView);
+                .load(uiUserInfo.getUserInfo().portrait)
+                .apply(mOptions)
+                .into(imageView);
+        }
+    }
+
+    private class OrganizationViewHolder extends RecyclerView.ViewHolder {
+
+        private ImageView imageView;
+        private Organization organization;
+
+        OrganizationViewHolder(@NonNull View itemView) {
+            super(itemView);
+            imageView = itemView.findViewById(R.id.avatar);
+            itemView.setOnClickListener(v -> {
+                organizations.remove(getAdapterPosition());
+                notifyDataSetChanged();
+            });
+        }
+
+        void bind(Organization organization) {
+            this.organization = organization;
+            Glide.with(imageView)
+                .load(organization.portraitUrl)
+                .error(R.mipmap.ic_deparment)
+                .apply(mOptions)
+                .into(imageView);
         }
     }
 }
