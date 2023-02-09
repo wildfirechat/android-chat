@@ -52,6 +52,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     private OrganizationServiceViewModel organizationServiceViewModel;
 
     private boolean isVisibleToUser = false;
+    private ContactViewModel contactViewModel;
+
 
     @Override
     public void setMenuVisibility(boolean isvisible) {
@@ -73,6 +75,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             filterUserList = bundle.getStringArrayList("filterUserList");
         }
         organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
+        contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
     }
 
     @Override
