@@ -104,6 +104,10 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
+        if (!initialized) {
+            initialized = true;
+            startForeground(NOTIFICATION_ID, buildNotification(session));
+        }
         if (session == null || session.state == AVEngineKit.CallState.Idle) {
             stopSelf();
             return START_NOT_STICKY;
@@ -117,10 +121,6 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
 
         focusTargetId = intent.getStringExtra("focusTargetId");
         Log.e("wfc", "on startCommand " + focusTargetId);
-        if (!initialized) {
-            initialized = true;
-            startForeground(NOTIFICATION_ID, buildNotification(session));
-        }
         checkCallState();
         showFloatingWindow = intent.getBooleanExtra("showFloatingView", false);
         if (showFloatingWindow) {
