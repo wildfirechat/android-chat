@@ -213,6 +213,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean connect(String userName, String userPwd) throws RemoteException {
             Log.d(TAG, "client connect:" + userName);
+            if (mConnectionReceiver == null) {
+                mConnectionReceiver = new BaseEvent.ConnectionReceiver();
+                IntentFilter filter = new IntentFilter();
+                filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+                registerReceiver(mConnectionReceiver, filter);
+            }
+
             if (logined) {
                 if (!accountInfo.userName.equals(userName)) {
                     Log.e(TAG, "Error, 错误，切换户用户时一定要先disconnect，再connect");
@@ -3461,12 +3468,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         // Initialize the Mars PlatformComm
         handler = new Handler(Looper.getMainLooper());
         Mars.init(getApplicationContext(), handler);
-        if (mConnectionReceiver == null) {
-            mConnectionReceiver = new BaseEvent.ConnectionReceiver();
-            IntentFilter filter = new IntentFilter();
-            filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-            registerReceiver(mConnectionReceiver, filter);
-        }
 
         android.util.Log.d(TAG, "onnCreate");
         uploadingMap = new ConcurrentHashMap<>();
