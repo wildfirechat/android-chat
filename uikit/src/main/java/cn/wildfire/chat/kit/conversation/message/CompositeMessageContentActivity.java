@@ -43,35 +43,37 @@ public class CompositeMessageContentActivity extends WfcBaseActivity {
         }
         CompositeMessageContent content = (CompositeMessageContent) message.content;
         setTitle(content.getTitle());
-        File file = DownloadManager.mediaMessageContentFile(message);
-        if (!TextUtils.isEmpty(content.remoteUrl) && !file.exists()) {
-            String fileUrl = content.remoteUrl;
-            if (message.conversation.type == Conversation.ConversationType.SecretChat) {
-                fileUrl = DownloadManager.buildSecretChatMediaUrl(message);
+        if (((CompositeMessageContent) message.content).getMessages() == null) {
+            File file = DownloadManager.mediaMessageContentFile(message);
+            if (!TextUtils.isEmpty(content.remoteUrl) && !file.exists()) {
+                String fileUrl = content.remoteUrl;
+                if (message.conversation.type == Conversation.ConversationType.SecretChat) {
+                    fileUrl = DownloadManager.buildSecretChatMediaUrl(message);
+                }
+                Toast.makeText(this, "消息加载中，请稍后", Toast.LENGTH_SHORT).show();
+                DownloadManager.download(fileUrl, Config.FILE_SAVE_DIR, new DownloadManager.OnDownloadListener() {
+                    @Override
+                    public void onSuccess(File file) {
+                        content.localPath = file.getAbsolutePath();
+                        ChatManager.Instance().updateMessage(message.messageId, content);
+                        UIUtils.postTaskSafely(() -> {
+                            adapter.notifyDataSetChanged();
+                        });
+                    }
+
+                    @Override
+                    public void onProgress(int progress) {
+
+                    }
+
+                    @Override
+                    public void onFail() {
+                        UIUtils.postTaskSafely(() -> {
+                            Toast.makeText(CompositeMessageContentActivity.this, "加载消息失败", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
             }
-            Toast.makeText(this, "消息加载中，请稍后", Toast.LENGTH_SHORT).show();
-            DownloadManager.download(fileUrl, Config.FILE_SAVE_DIR, new DownloadManager.OnDownloadListener() {
-                @Override
-                public void onSuccess(File file) {
-                    content.localPath = file.getAbsolutePath();
-                    ChatManager.Instance().updateMessage(message.messageId, content);
-                    UIUtils.postTaskSafely(() -> {
-                        adapter.notifyDataSetChanged();
-                    });
-                }
-
-                @Override
-                public void onProgress(int progress) {
-
-                }
-
-                @Override
-                public void onFail() {
-                    UIUtils.postTaskSafely(() -> {
-                        Toast.makeText(CompositeMessageContentActivity.this, "加载消息失败", Toast.LENGTH_SHORT).show();
-                    });
-                }
-            });
         }
         adapter = new CompositeMessageContentAdapter(message);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
