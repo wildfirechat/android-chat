@@ -1669,6 +1669,25 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<GroupInfo> getGroupInfos(List<String> groupIds, boolean refresh) throws RemoteException {
+            if (groupIds == null || groupIds.isEmpty()) {
+                android.util.Log.d(TAG, "get groupInfos error, groupIds is empty");
+                return null;
+            }
+
+            String[] groupIdsArray = new String[groupIds.size()];
+            ProtoGroupInfo[] protoGroupInfos = ProtoLogic.getGroupInfos(groupIds.toArray(groupIdsArray), refresh);
+            List<GroupInfo> groupInfos = new ArrayList<>();
+            if (protoGroupInfos != null) {
+                for (ProtoGroupInfo pgi : protoGroupInfos) {
+                    groupInfos.add(convertProtoGroupInfo(pgi));
+                }
+            }
+
+            return groupInfos;
+        }
+
+        @Override
         public void getGroupInfoEx(String groupId, boolean refresh, IGetGroupCallback callback) throws RemoteException {
             ProtoLogic.getGroupInfoEx(groupId, refresh, new ProtoLogic.IGetGroupInfoCallback() {
                 @Override
