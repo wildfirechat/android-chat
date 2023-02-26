@@ -4683,6 +4683,33 @@ public class ChatManager {
     }
 
     /**
+     * 批量获取群信息
+     *
+     * @param groupIds
+     * @param refresh
+     * @return
+     * @discussion refresh 为true会导致一次网络同步，代价特别大，应该尽量避免使用true，仅当在进入此群会话中时使用一次true。
+     */
+    public @Nullable
+    List<GroupInfo> getGroupInfo(List<String> groupIds, boolean refresh) {
+        List<GroupInfo> groupInfos = new ArrayList<>();
+        if (!checkRemoteService()) {
+            return groupInfos;
+        }
+
+        try {
+            groupInfos = mClient.getGroupInfos(groupIds, refresh);
+            if (groupInfos == null) {
+                groupInfos = new ArrayList<>();
+            }
+            return groupInfos;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return groupInfos;
+        }
+    }
+
+    /**
      * 加入聊天室
      *
      * @param chatRoomId

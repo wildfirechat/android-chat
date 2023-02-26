@@ -198,6 +198,7 @@ interface IRemoteClient {
     oneway void getChatRoomInfo(in String chatRoomId, in long updateDt, in IGetChatRoomInfoCallback callback);
     oneway void getChatRoomMembersInfo(in String chatRoomId, in int maxCount, in IGetChatRoomMembersInfoCallback callback);
     GroupInfo getGroupInfo(in String groupId, in boolean refresh);
+    List<GroupInfo> getGroupInfos(in List<String> groupIds, in boolean refresh);
     oneway void getGroupInfoEx(in String groupId, in boolean refresh, in IGetGroupCallback callback);
     UserInfo getUserInfo(in String userId, in String groupId, in boolean refresh);
     List<UserInfo> getUserInfos(in List<String> userIds, in String groupId);
