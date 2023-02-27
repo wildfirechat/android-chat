@@ -4691,7 +4691,7 @@ public class ChatManager {
      * @discussion refresh 为true会导致一次网络同步，代价特别大，应该尽量避免使用true，仅当在进入此群会话中时使用一次true。
      */
     public @Nullable
-    List<GroupInfo> getGroupInfo(List<String> groupIds, boolean refresh) {
+    List<GroupInfo> getGroupInfos(List<String> groupIds, boolean refresh) {
         List<GroupInfo> groupInfos = new ArrayList<>();
         if (!checkRemoteService()) {
             return groupInfos;
