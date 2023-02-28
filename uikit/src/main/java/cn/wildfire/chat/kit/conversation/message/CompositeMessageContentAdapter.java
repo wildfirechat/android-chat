@@ -25,11 +25,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
-import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.third.utils.TimeConvertUtils;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
@@ -45,11 +43,11 @@ import cn.wildfirechat.remote.ChatManager;
 public class CompositeMessageContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Message message;
-    private CompositeMessageContent compositeMessageContent;
+    private OnMessageClickListener onMessageClickListener;
 
-    public CompositeMessageContentAdapter(Message message) {
+    public CompositeMessageContentAdapter(Message message, OnMessageClickListener onMessageClickListener) {
         this.message = message;
-        this.compositeMessageContent = (CompositeMessageContent) message.content;
+        this.onMessageClickListener = onMessageClickListener;
     }
 
     @NonNull
@@ -80,11 +78,11 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
 
     @Override
     public int getItemCount() {
-        List<Message> messages = compositeMessageContent.getMessages();
+        List<Message> messages = ((CompositeMessageContent) message.content).getMessages();
         if (messages == null || messages.isEmpty()) {
             return 0;
         } else {
-            return 1 + compositeMessageContent.getMessages().size();
+            return 1 + messages.size();
         }
     }
 
@@ -97,7 +95,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
         }
     }
 
-    static class MessageContentViewHolder extends RecyclerView.ViewHolder {
+    class MessageContentViewHolder extends RecyclerView.ViewHolder {
         @BindView(R2.id.portraitImageView)
         ImageView portraitImageView;
         @BindView(R2.id.nameTextView)
@@ -143,25 +141,24 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
         @BindView(R2.id.compositeContentTextView)
         TextView compositeContentTextView;
 
-        @OnClick(R2.id.videoContentLayout)
-        void playVideo() {
-            MMPreviewActivity.previewVideo(itemView.getContext(), message);
-        }
-
         private Message message;
-        private int position;
 
         public MessageContentViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CompositeMessageContentAdapter.this.onMessageClickListener.onClickMessage(message);
+                }
+            });
         }
 
         void bind(Message message, int position) {
-            this.message = message;
-            this.position = position;
 
             CompositeMessageContent compositeMessageContent = (CompositeMessageContent) message.content;
             Message msg = compositeMessageContent.getMessages().get(position);
+            this.message = msg;
             MessageContent content = msg.content;
 
             UserInfo userInfo = ChatManager.Instance().getUserInfo(msg.sender, false);
@@ -278,6 +275,10 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
             String pattern = "yyyy年MM月dd日";
             compositeDurationTextView.setText(startDate.toString(pattern) + " 至 " + endDate.toString(pattern));
         }
+    }
+
+    interface OnMessageClickListener {
+        void onClickMessage(Message message);
     }
 
 }

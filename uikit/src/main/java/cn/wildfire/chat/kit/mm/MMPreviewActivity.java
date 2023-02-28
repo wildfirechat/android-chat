@@ -40,6 +40,7 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
@@ -382,12 +383,12 @@ public class MMPreviewActivity extends Activity {
     }
 
     public static void previewImage(Context context, Message message) {
-        List<MediaEntry> entries = new ArrayList<>();
-
         if (!(message.content instanceof ImageMessageContent)) {
             Log.e(TAG, "previewImage without imageMessageContent");
             return;
         }
+
+        List<MediaEntry> entries = new ArrayList<>();
         MediaEntry entry = new MediaEntry(message);
         entries.add(entry);
         previewMedia(context, entries, 0, false);
@@ -404,7 +405,7 @@ public class MMPreviewActivity extends Activity {
     }
 
     public static void previewVideo(Context context, Message message) {
-        if (!(message.content instanceof ImageMessageContent)) {
+        if (!(message.content instanceof VideoMessageContent)) {
             Log.e(TAG, "previewVideo without videoMessageContent");
             return;
         }
