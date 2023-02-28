@@ -265,7 +265,7 @@ public class CompositeMessageContent extends MediaMessageContent {
                 message.serverTime = object.optLong("serverTime");
                 message.localExtra = object.optString("le");
 
-                MessagePayload messagePayload = super.encode();
+                MessagePayload messagePayload = new MessagePayload();
                 messagePayload.type = object.optInt("ctype");
                 messagePayload.searchableContent = object.optString("csc");
                 messagePayload.pushContent = object.optString("cpc");
