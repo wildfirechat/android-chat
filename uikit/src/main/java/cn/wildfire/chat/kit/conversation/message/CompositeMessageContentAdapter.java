@@ -30,6 +30,7 @@ import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
+import cn.wildfire.chat.kit.third.utils.TimeConvertUtils;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.CompositeMessageContent;
@@ -200,8 +201,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                 ImageMessageContent imageMessageContent = (ImageMessageContent) content;
                 GlideApp.with(itemView)
                     .load(imageMessageContent.remoteUrl)
-                    .placeholder(new BitmapDrawable(imageMessageContent.getThumbnail()))
-                    .error(R.mipmap.img_error)
+                    .error(new BitmapDrawable(imageMessageContent.getThumbnail()))
                     .into(contentImageView);
             } else if (content instanceof VideoMessageContent) {
                 textContentLayout.setVisibility(View.GONE);
@@ -210,7 +210,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                 imageContentLayout.setVisibility(View.GONE);
                 videoContentLayout.setVisibility(View.VISIBLE);
                 VideoMessageContent videoMessageContent = (VideoMessageContent) content;
-                videoDurationTextView.setText("未知时长");
+                videoDurationTextView.setText(TimeConvertUtils.formatLongTime(videoMessageContent.getDuration() / 1000));
 
                 GlideApp.with(itemView)
                     .load(videoMessageContent.getThumbnail())
