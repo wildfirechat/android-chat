@@ -38,6 +38,7 @@
         <ImageView
             android:id="@+id/contentImageView"
             android:layout_width="match_parent"
+            android:scaleType="centerInside"
             android:layout_height="wrap_content"
             tools:src="@drawable/back_drawable" />
 
