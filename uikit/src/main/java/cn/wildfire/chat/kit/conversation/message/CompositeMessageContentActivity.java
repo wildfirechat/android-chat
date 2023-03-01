@@ -50,7 +50,7 @@ public class CompositeMessageContentActivity extends WfcBaseActivity implements 
         }
         CompositeMessageContent content = (CompositeMessageContent) message.content;
         setTitle(content.getTitle());
-        if (((CompositeMessageContent) message.content).getMessages() == null) {
+        if (!((CompositeMessageContent) message.content).isLoaded()) {
             File file = DownloadManager.mediaMessageContentFile(message);
             if (!TextUtils.isEmpty(content.remoteUrl) && !file.exists()) {
                 String fileUrl = content.remoteUrl;
