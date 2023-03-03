@@ -148,7 +148,7 @@ public class CompositeMessageContent extends MediaMessageContent {
                 msgObj.put("from", message.sender);
                 msgObj.put("tos", message.toUsers);
                 msgObj.put("direction", message.direction.value());
-                msgObj.put("status", message.status);
+                msgObj.put("status", message.status.value());
                 msgObj.put("serverTime", message.serverTime);
                 if (!TextUtils.isEmpty(message.localExtra)) {
                     msgObj.put("le", message.localExtra);
