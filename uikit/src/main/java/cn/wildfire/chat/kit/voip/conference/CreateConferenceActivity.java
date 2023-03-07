@@ -236,13 +236,15 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         info.setAudience(!audienceSwitch.isChecked());
         info.setAllowTurnOnMic(modeSwitch.isChecked());
         info.setAdvance(advancedSwitch.isChecked());
+        // 可根据实际情况调整
+        info.setMaxParticipants(20);
 
         WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new GeneralCallback2() {
             @Override
             public void onSuccess(String conferenceId) {
                 info.setConferenceId(conferenceId);
                 if (join) {
-                    AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(conferenceId, false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", info.isAudience(), info.isAdvance(), false, !enableAudio, !enableVideo, null);
+                    AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(conferenceId, false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", info.isAudience(), info.isAdvance(), false, !enableAudio, !enableVideo, info.getMaxParticipants(), null);
                     if (session != null) {
                         Intent intent = new Intent(CreateConferenceActivity.this, ConferenceActivity.class);
                         startActivity(intent);
