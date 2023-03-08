@@ -37,4 +37,8 @@ public class CheckableUserViewHolder extends UserViewHolder {
         }
         checkBox.setEnabled(userInfo.isCheckable());
     }
+
+    public void setChecked(boolean checked){
+        checkBox.setChecked(checked);
+    }
 }

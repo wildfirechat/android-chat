@@ -66,7 +66,7 @@ public class ConversationMessageSearchModule extends SearchableModule<Message, M
 
     @Override
     public List<Message> search(String keyword) {
-        return ChatManager.Instance().searchMessage(conversation, keyword, true, 100, 0);
+        return ChatManager.Instance().searchMessage(conversation, keyword, true, 100, 0, null);
     }
 
     @Override

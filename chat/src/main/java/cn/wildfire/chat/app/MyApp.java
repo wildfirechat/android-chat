@@ -55,8 +55,13 @@ public class MyApp extends BaseApp {
                 ChatManagerHolder.gChatManager.connect(id, token);
             }
 
+            if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
+                OrganizationService organizationService = OrganizationService.Instance();
+                wfcUIKit.setOrganizationServiceProvider(organizationService);
+            }
         }
     }
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);

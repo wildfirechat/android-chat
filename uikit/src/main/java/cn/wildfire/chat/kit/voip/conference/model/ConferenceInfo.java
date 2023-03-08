@@ -13,14 +13,15 @@ public class ConferenceInfo {
     private List<String> managers;
     private String focus;
     // 秒
-    long startTime;
-    long endTime;
-    boolean audience;
-    boolean advance;
+    private long startTime;
+    private long endTime;
+    private boolean audience;
+    private boolean advance;
     @SerializedName("allowSwitchMode")
-    boolean allowTurnOnMic;
-    boolean noJoinBeforeStart;
-    boolean recording;
+    private boolean allowTurnOnMic;
+    private boolean noJoinBeforeStart;
+    private boolean recording;
+    private int maxParticipants;
 
     public String getConferenceId() {
         return conferenceId;
@@ -132,6 +133,14 @@ public class ConferenceInfo {
 
     public void setRecording(boolean recording) {
         this.recording = recording;
+    }
+
+    public int getMaxParticipants() {
+        return maxParticipants;
+    }
+
+    public void setMaxParticipants(int maxParticipants) {
+        this.maxParticipants = maxParticipants;
     }
 
     //    public Map<String, Object> toMap() {

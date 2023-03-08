@@ -186,14 +186,29 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         } else {
             menuImageView.setVisibility(GONE);
         }
+
+        SharedPreferences sp = fragment.getContext().getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
+        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost()) && conversation.type != Conversation.ConversationType.Channel) {
+            pttImageView.setVisibility(View.VISIBLE);
+            pttPanel = new PttPanel(getContext());
+        }
     }
 
     private QuoteInfo quoteInfo;
 
     public void quoteMessage(Message message) {
         this.quoteInfo = QuoteInfo.initWithMessage(message);
+        if (audioButton.getVisibility() == VISIBLE) {
+            hideAudioButton();
+        }
         refRelativeLayout.setVisibility(VISIBLE);
         refEditText.setText(quoteInfo.getUserDisplayName() + ": " + quoteInfo.getMessageDigest());
+        editText.requestFocus();
+        // FYI: https://stackoverflow.com/questions/5520085/android-show-softkeyboard-with-showsoftinput-is-not-working
+        rootLinearLayout.postDelayed(() -> {
+            rootLinearLayout.showSoftkey(editText);
+        }, 100);
     }
 
     private void clearQuoteMessage() {
@@ -268,12 +283,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 }
             }
         });
-        SharedPreferences sp = fragment.getContext().getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
-        boolean pttEnabled = sp.getBoolean("pttEnabled", true);
-        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost()) && conversation != null && conversation.type != Conversation.ConversationType.Channel) {
-            pttImageView.setVisibility(View.VISIBLE);
-            pttPanel = new PttPanel(getContext());
-        }
 
         // emotion
         emotionLayout.setEmotionSelectedListener(this);

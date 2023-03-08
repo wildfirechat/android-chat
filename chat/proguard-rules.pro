@@ -29,6 +29,7 @@
 
 -dontshrink
 -keep class org.webrtc.**  { *; }
+-keep class com.serenegiant.**  { *; }
 -keepclasseswithmembernames class * { native <methods>; }
 
 -keep class okhttp3.** {*;}

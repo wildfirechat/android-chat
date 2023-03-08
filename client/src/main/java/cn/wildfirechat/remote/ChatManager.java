@@ -382,8 +382,20 @@ public class ChatManager {
      * @param imServerHost im server的域名或ip
      * @return
      */
-
     public static void init(Application context, String imServerHost) {
+        init(context.getApplicationContext(), imServerHost);
+    }
+
+    /**
+     * 初始化，只能在主进程调用，否则会导致重复收到消息
+     * serverHost可以是IP，可以是域名，如果是域名的话只支持主域名或www域名，二级域名不支持！
+     * 例如：example.com或www.example.com是支持的；xx.example.com或xx.yy.example.com是不支持的。
+     *
+     * @param context
+     * @param imServerHost im server的域名或ip
+     * @return
+     */
+    public static void init(Context context, String imServerHost) {
         Log.d(TAG, "init " + imServerHost);
         if (imServerHost != null) {
             checkSDKHost(imServerHost);
@@ -395,7 +407,7 @@ public class ChatManager {
 //        if (TextUtils.isEmpty(imServerHost)) {
 //            throw new IllegalArgumentException("imServerHost must be empty");
 //        }
-        gContext = context.getApplicationContext();
+        gContext = context;
         INST = new ChatManager(imServerHost);
         INST.mainHandler = new Handler();
         INST.userInfoCache = new LruCache<>(1024);
@@ -1989,11 +2001,11 @@ public class ChatManager {
 
         try {
             Message message = mClient.getMessage(messageId);
-            message.status = status;
             if (message == null) {
                 Log.e(TAG, "update message failure, message not exist");
                 return false;
             }
+            message.status = status;
 
 //            if ((message.direction == MessageDirection.Send && status.value() >= MessageStatus.Mentioned.value()) ||
 //                    message.direction == MessageDirection.Receive && status.value() < MessageStatus.Mentioned.value()) {
@@ -2035,7 +2047,7 @@ public class ChatManager {
     /**
      * 设置低速模式。
      * <p>
-     * 低速模式首次登陆不同步历史消息，不同步设置，一般用户极窄带宽设备下。
+     * 低速模式首次登录不同步历史消息，不同步设置，一般用户极窄带宽设备下。
      * 此函数只能在connect之前调用。
      *
      * @param isLowBPSMode 是否是低速模式
@@ -4184,6 +4196,26 @@ public class ChatManager {
     }
 
     /**
+     * 获取好友附加信息
+     *
+     * @param userId
+     * @return
+     */
+    public String getFriendExtra(String userId) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        String extra;
+        try {
+            extra = mClient.getFriendExtra(userId);
+            return extra;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 获取好友列表
      *
      * @param refresh
@@ -4647,6 +4679,33 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
 
+        }
+    }
+
+    /**
+     * 批量获取群信息
+     *
+     * @param groupIds
+     * @param refresh
+     * @return
+     * @discussion refresh 为true会导致一次网络同步，代价特别大，应该尽量避免使用true，仅当在进入此群会话中时使用一次true。
+     */
+    public @Nullable
+    List<GroupInfo> getGroupInfos(List<String> groupIds, boolean refresh) {
+        List<GroupInfo> groupInfos = new ArrayList<>();
+        if (!checkRemoteService()) {
+            return groupInfos;
+        }
+
+        try {
+            groupInfos = mClient.getGroupInfos(groupIds, refresh);
+            if (groupInfos == null) {
+                groupInfos = new ArrayList<>();
+            }
+            return groupInfos;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return groupInfos;
         }
     }
 
@@ -5301,15 +5360,16 @@ public class ChatManager {
      * @param desc
      * @param limit
      * @param offset
+     * @param withUser
      * @return
      */
-    public List<Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset) {
+    public List<Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset, String withUser) {
         if (!checkRemoteService()) {
             return null;
         }
 
         try {
-            return mClient.searchMessage(conversation, keyword, desc, limit, offset);
+            return mClient.searchMessage(conversation, keyword, desc, limit, offset, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -5327,13 +5387,13 @@ public class ChatManager {
      * @param offset
      * @return
      */
-    public List<Message> searchMessageByTypes(Conversation conversation, String keyword, List<Integer> contentTypes, boolean desc, int limit, int offset) {
+    public List<Message> searchMessageByTypes(Conversation conversation, String keyword, List<Integer> contentTypes, boolean desc, int limit, int offset, String withUser) {
         if (!checkRemoteService()) {
             return null;
         }
 
         try {
-            return mClient.searchMessageByTypes(conversation, keyword, convertIntegers(contentTypes), desc, limit, offset);
+            return mClient.searchMessageByTypes(conversation, keyword, convertIntegers(contentTypes), desc, limit, offset, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -5353,13 +5413,13 @@ public class ChatManager {
      * @param offset
      * @return
      */
-    public List<Message> searchMessageByTypesAndTimes(Conversation conversation, String keyword, List<Integer> contentTypes, long startTime, long endTime, boolean desc, int limit, int offset) {
+    public List<Message> searchMessageByTypesAndTimes(Conversation conversation, String keyword, List<Integer> contentTypes, long startTime, long endTime, boolean desc, int limit, int offset, String withUser) {
         if (!checkRemoteService()) {
             return null;
         }
 
         try {
-            return mClient.searchMessageByTypesAndTimes(conversation, keyword, convertIntegers(contentTypes), startTime, endTime, desc, limit, offset);
+            return mClient.searchMessageByTypesAndTimes(conversation, keyword, convertIntegers(contentTypes), startTime, endTime, desc, limit, offset, withUser);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -5378,7 +5438,7 @@ public class ChatManager {
      * @param count             获取消息条数
      * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
-    public void searchMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, String keyword, long fromIndex, boolean before, int count, GetMessageCallback callback) {
+    public void searchMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, String keyword, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
         if (!checkRemoteService()) {
             return;
         }
@@ -5394,7 +5454,7 @@ public class ChatManager {
         }
 
         try {
-            mClient.searchMessagesEx(intypes, convertIntegers(lines), convertIntegers(contentTypes), keyword, fromIndex, before, count, new IGetMessageCallback.Stub() {
+            mClient.searchMessagesEx(intypes, convertIntegers(lines), convertIntegers(contentTypes), keyword, fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
                     mainHandler.post(() -> callback.onSuccess(messages, hasMore));
@@ -5414,7 +5474,7 @@ public class ChatManager {
     public String getSignature() throws PackageManager.NameNotFoundException, CertificateException, NoSuchAlgorithmException {
         String packageName = gContext.getPackageName();
         PackageInfo packageInfo = gContext.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
-        if(packageInfo.signatures != null && packageInfo.signatures.length > 0) {
+        if (packageInfo.signatures != null && packageInfo.signatures.length > 0) {
             Signature signature = packageInfo.signatures[0];
             byte[] signBytes = signature.toByteArray();
 
@@ -7687,6 +7747,22 @@ public class ChatManager {
         }
     }
 
+    public boolean isHiddenGroupMemberName(String groupId) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return "1".equals(mClient.getUserSetting(UserSettingScope.GroupHideNickname, ""));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void setHiddenGroupMemberName(String groupId, boolean hidden, GeneralCallback callback) {
+        setUserSetting(UserSettingScope.GroupHideNickname, groupId, hidden ? "1" : "0", callback);
+    }
+
     /**
      * 判断当前用户是否开启消息回执
      *
@@ -8151,10 +8227,14 @@ public class ChatManager {
     }
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
-
         MessageContent content = null;
         try {
-            content = messageContentMap.get(payload.type).newInstance();
+            Class cls = messageContentMap.get(payload.type);
+            if(cls != null) {
+                content = (MessageContent)cls.newInstance();
+            } else {
+                content = new UnknownMessageContent();
+            }
             if (content instanceof CompositeMessageContent) {
                 ((CompositeMessageContent) content).decode(payload, this);
             } else {
@@ -8233,7 +8313,7 @@ public class ChatManager {
                     if (useSM4) {
                         mClient.useSM4();
                     }
-                    if(checkSignature) {
+                    if (checkSignature) {
                         mClient.checkSignature();
                     }
 
@@ -8416,8 +8496,9 @@ public class ChatManager {
                             listener.onServiceConnected();
                         }
                     });
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+                } catch (Throwable e) {
+                    // 抓住所有异常，发生异常之后，im将不能正常工作，需要重新启动ClientService服务，故这儿抓住所以异常，防止应用crash并没有什么问题
+                    Log.e(TAG, "onServiceConnected worker exception" +  e.toString());
                 }
             });
         }

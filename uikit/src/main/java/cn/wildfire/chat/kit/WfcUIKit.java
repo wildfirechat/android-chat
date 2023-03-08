@@ -38,6 +38,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
+import cn.wildfire.chat.kit.organization.OrganizationServiceProvider;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.voip.AsyncPlayer;
 import cn.wildfire.chat.kit.voip.MultiCallActivity;
@@ -68,6 +69,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private static ViewModelProvider viewModelProvider;
     private ViewModelStore viewModelStore;
     private AppServiceProvider appServiceProvider;
+    private OrganizationServiceProvider organizationServiceProvider;
     private static WfcUIKit wfcUIKit;
     private boolean isSupportMoment = false;
 
@@ -141,7 +143,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             //另外需要IM服务配置server.mobile_default_silent_when_pc_online为false。必须保持与服务器同步。
             //ChatManagerHolder.gChatManager.setDefaultSilentWhenPcOnline(false);
 
-            ringPlayer = new AsyncPlayer(null);
+            ringPlayer = new AsyncPlayer("voip-ring-player");
 
             // 仅高级版支持，是否禁用双流模式
             //AVEngineKit.DISABLE_DUAL_STREAM_MODE = true;
@@ -155,8 +157,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             ChatManager.Instance().registerMessageContent(ConferenceChangeModeContent.class);
             ChatManager.Instance().registerMessageContent(ConferenceCommandContent.class);
             ChatManagerHolder.gAVEngine = AVEngineKit.Instance();
-            for (String[] server : Config.ICE_SERVERS) {
-                ChatManagerHolder.gAVEngine.addIceServer(server[0], server[1], server[2]);
+            if (Config.ICE_SERVERS != null) {
+                for (String[] server : Config.ICE_SERVERS) {
+                    ChatManagerHolder.gAVEngine.addIceServer(server[0], server[1], server[2]);
+                }
             }
         } catch (NotInitializedExecption notInitializedExecption) {
             notInitializedExecption.printStackTrace();
@@ -210,6 +214,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void onReceiveCall(AVEngineKit.CallSession session) {
         ChatManager.Instance().getMainHandler().postDelayed(() -> {
             AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
+//            callSession.setVideoCapturer(new UVCCameraCapturer());
 
             List<String> participants = session.getParticipantIds();
             if (participants == null || participants.isEmpty()) {
@@ -266,7 +271,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     // pls refer to https://stackoverflow.com/questions/11124119/android-starting-new-activity-from-application-class
     public static void singleCall(Context context, String targetId, boolean isAudioOnly) {
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetId);
-        AVEngineKit.Instance().startCall(conversation, Collections.singletonList(targetId), isAudioOnly, null);
+        AVEngineKit.CallSession session = AVEngineKit.Instance().startCall(conversation, Collections.singletonList(targetId), isAudioOnly, null);
+//        session.setVideoCapturer(new UVCCameraCapturer());
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setMode(isAudioOnly ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
@@ -386,5 +392,13 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     public void setAppServiceProvider(AppServiceProvider appServiceProvider) {
         this.appServiceProvider = appServiceProvider;
+    }
+
+    public OrganizationServiceProvider getOrganizationServiceProvider() {
+        return organizationServiceProvider;
+    }
+
+    public void setOrganizationServiceProvider(OrganizationServiceProvider organizationServiceProvider) {
+        this.organizationServiceProvider = organizationServiceProvider;
     }
 }

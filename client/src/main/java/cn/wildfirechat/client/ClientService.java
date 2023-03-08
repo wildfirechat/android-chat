@@ -213,6 +213,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean connect(String userName, String userPwd) throws RemoteException {
             Log.d(TAG, "client connect:" + userName);
+            if (mConnectionReceiver == null) {
+                mConnectionReceiver = new BaseEvent.ConnectionReceiver();
+                IntentFilter filter = new IntentFilter();
+                filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+                registerReceiver(mConnectionReceiver, filter);
+            }
+
             if (logined) {
                 if (!accountInfo.userName.equals(userName)) {
                     Log.e(TAG, "Error, 错误，切换户用户时一定要先disconnect，再connect");
@@ -1662,6 +1669,25 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<GroupInfo> getGroupInfos(List<String> groupIds, boolean refresh) throws RemoteException {
+            if (groupIds == null || groupIds.isEmpty()) {
+                android.util.Log.d(TAG, "get groupInfos error, groupIds is empty");
+                return null;
+            }
+
+            String[] groupIdsArray = new String[groupIds.size()];
+            ProtoGroupInfo[] protoGroupInfos = ProtoLogic.getGroupInfos(groupIds.toArray(groupIdsArray), refresh);
+            List<GroupInfo> groupInfos = new ArrayList<>();
+            if (protoGroupInfos != null) {
+                for (ProtoGroupInfo pgi : protoGroupInfos) {
+                    groupInfos.add(convertProtoGroupInfo(pgi));
+                }
+            }
+
+            return groupInfos;
+        }
+
+        @Override
         public void getGroupInfoEx(String groupId, boolean refresh, IGetGroupCallback callback) throws RemoteException {
             ProtoLogic.getGroupInfoEx(groupId, refresh, new ProtoLogic.IGetGroupInfoCallback() {
                 @Override
@@ -1886,12 +1912,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public List<cn.wildfirechat.message.Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset) throws RemoteException {
+        public List<cn.wildfirechat.message.Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             if (conversation == null) {
-                protoMessages = ProtoLogic.searchMessageEx(0, "", 0, keyword, desc, limit, offset);
+                protoMessages = ProtoLogic.searchMessageEx(0, "", 0, keyword, desc, limit, offset, withUser);
             } else {
-                protoMessages = ProtoLogic.searchMessageEx(conversation.type.getValue(), conversation.target, conversation.line, keyword, desc, limit, offset);
+                protoMessages = ProtoLogic.searchMessageEx(conversation.type.getValue(), conversation.target, conversation.line, keyword, desc, limit, offset, withUser);
             }
             List<cn.wildfirechat.message.Message> out = new ArrayList<>();
 
@@ -1908,12 +1934,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public List<Message> searchMessageByTypes(Conversation conversation, String keyword, int[] contentTypes, boolean desc, int limit, int offset) throws RemoteException {
+        public List<Message> searchMessageByTypes(Conversation conversation, String keyword, int[] contentTypes, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             if (conversation == null) {
-                protoMessages = ProtoLogic.searchMessageByTypes(0, "", 0, keyword, contentTypes, desc, limit, offset);
+                protoMessages = ProtoLogic.searchMessageByTypes(0, "", 0, keyword, contentTypes, desc, limit, offset, withUser);
             } else {
-                protoMessages = ProtoLogic.searchMessageByTypes(conversation.type.getValue(), conversation.target, conversation.line, keyword, contentTypes, desc, limit, offset);
+                protoMessages = ProtoLogic.searchMessageByTypes(conversation.type.getValue(), conversation.target, conversation.line, keyword, contentTypes, desc, limit, offset, withUser);
             }
             List<cn.wildfirechat.message.Message> out = new ArrayList<>();
 
@@ -1930,7 +1956,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public List<Message> searchMessageByTypesAndTimes(Conversation conversation, String keyword, int[] contentTypes, long startTime, long endTime, boolean desc, int limit, int offset) throws RemoteException {
+        public List<Message> searchMessageByTypesAndTimes(Conversation conversation, String keyword, int[] contentTypes, long startTime, long endTime, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             int convType = 0;
             String target = "";
@@ -1942,7 +1968,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 line = conversation.line;
             }
 
-            protoMessages = ProtoLogic.searchMessageByTypesAndTimes(convType, target, line, keyword, contentTypes, startTime, endTime, desc, limit, offset);
+            protoMessages = ProtoLogic.searchMessageByTypesAndTimes(convType, target, line, keyword, contentTypes, startTime, endTime, desc, limit, offset, withUser);
             List<cn.wildfirechat.message.Message> out = new ArrayList<>();
 
             if (protoMessages != null) {
@@ -1958,8 +1984,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void searchMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, String keyword, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, before, count);
+        public void searchMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, String keyword, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, before, count, withUser);
             safeMessagesCallback(protoMessages, before, callback);
         }
 
@@ -3461,12 +3487,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         // Initialize the Mars PlatformComm
         handler = new Handler(Looper.getMainLooper());
         Mars.init(getApplicationContext(), handler);
-        if (mConnectionReceiver == null) {
-            mConnectionReceiver = new BaseEvent.ConnectionReceiver();
-            IntentFilter filter = new IntentFilter();
-            filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-            registerReceiver(mConnectionReceiver, filter);
-        }
 
         android.util.Log.d(TAG, "onnCreate");
         uploadingMap = new ConcurrentHashMap<>();

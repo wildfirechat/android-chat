@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.conversation.message;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +25,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.R2;
-import cn.wildfire.chat.kit.mm.MMPreviewActivity;
+import cn.wildfire.chat.kit.third.utils.TimeConvertUtils;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.CompositeMessageContent;
@@ -43,11 +43,11 @@ import cn.wildfirechat.remote.ChatManager;
 public class CompositeMessageContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Message message;
-    private CompositeMessageContent compositeMessageContent;
+    private OnMessageClickListener onMessageClickListener;
 
-    public CompositeMessageContentAdapter(Message message) {
+    public CompositeMessageContentAdapter(Message message, OnMessageClickListener onMessageClickListener) {
         this.message = message;
-        this.compositeMessageContent = (CompositeMessageContent) message.content;
+        this.onMessageClickListener = onMessageClickListener;
     }
 
     @NonNull
@@ -78,11 +78,11 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
 
     @Override
     public int getItemCount() {
-        List<Message> messages = compositeMessageContent.getMessages();
+        List<Message> messages = ((CompositeMessageContent) message.content).getMessages();
         if (messages == null || messages.isEmpty()) {
             return 0;
         } else {
-            return 1 + compositeMessageContent.getMessages().size();
+            return 1 + messages.size();
         }
     }
 
@@ -95,7 +95,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
         }
     }
 
-    static class MessageContentViewHolder extends RecyclerView.ViewHolder {
+    class MessageContentViewHolder extends RecyclerView.ViewHolder {
         @BindView(R2.id.portraitImageView)
         ImageView portraitImageView;
         @BindView(R2.id.nameTextView)
@@ -141,25 +141,24 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
         @BindView(R2.id.compositeContentTextView)
         TextView compositeContentTextView;
 
-        @OnClick(R2.id.videoContentLayout)
-        void playVideo() {
-            MMPreviewActivity.previewVideo(itemView.getContext(), message);
-        }
-
         private Message message;
-        private int position;
 
         public MessageContentViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CompositeMessageContentAdapter.this.onMessageClickListener.onClickMessage(message);
+                }
+            });
         }
 
         void bind(Message message, int position) {
-            this.message = message;
-            this.position = position;
 
             CompositeMessageContent compositeMessageContent = (CompositeMessageContent) message.content;
             Message msg = compositeMessageContent.getMessages().get(position);
+            this.message = msg;
             MessageContent content = msg.content;
 
             UserInfo userInfo = ChatManager.Instance().getUserInfo(msg.sender, false);
@@ -199,6 +198,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                 ImageMessageContent imageMessageContent = (ImageMessageContent) content;
                 GlideApp.with(itemView)
                     .load(imageMessageContent.remoteUrl)
+                    .error(new BitmapDrawable(imageMessageContent.getThumbnail()))
                     .into(contentImageView);
             } else if (content instanceof VideoMessageContent) {
                 textContentLayout.setVisibility(View.GONE);
@@ -207,7 +207,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                 imageContentLayout.setVisibility(View.GONE);
                 videoContentLayout.setVisibility(View.VISIBLE);
                 VideoMessageContent videoMessageContent = (VideoMessageContent) content;
-                videoDurationTextView.setText("未知时长");
+                videoDurationTextView.setText(TimeConvertUtils.formatLongTime(videoMessageContent.getDuration() / 1000));
 
                 GlideApp.with(itemView)
                     .load(videoMessageContent.getThumbnail())
@@ -275,6 +275,10 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
             String pattern = "yyyy年MM月dd日";
             compositeDurationTextView.setText(startDate.toString(pattern) + " 至 " + endDate.toString(pattern));
         }
+    }
+
+    interface OnMessageClickListener {
+        void onClickMessage(Message message);
     }
 
 }

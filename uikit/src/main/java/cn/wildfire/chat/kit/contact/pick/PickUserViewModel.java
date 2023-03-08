@@ -122,8 +122,7 @@ public class PickUserViewModel extends ViewModel {
      *
      * @return
      */
-    public @NonNull
-    List<UIUserInfo> getCheckedUsers() {
+    public @NonNull List<UIUserInfo> getCheckedUsers() {
         List<UIUserInfo> checkedUsers = new ArrayList<>();
         if (users == null) {
             return checkedUsers;

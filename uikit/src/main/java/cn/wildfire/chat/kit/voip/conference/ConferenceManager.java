@@ -251,6 +251,11 @@ public class ConferenceManager implements OnReceiveMessageListener {
                 }
                 session.muteAudio(true);
             } else {
+                if (session.isAudience() && isParticipantFull(session)) {
+                    Toast.makeText(context, "发言人数已满，无法切换到发言人！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 session.muteAudio(false);
                 if (session.videoMuted || session.isAudience()) {
                     session.switchAudience(false);
@@ -269,6 +274,10 @@ public class ConferenceManager implements OnReceiveMessageListener {
                 }
                 session.muteVideo(true);
             } else {
+                if (session.isAudience() && isParticipantFull(session)) {
+                    Toast.makeText(context, "发言人数已满，无法切换到发言人！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 session.muteVideo(false);
                 if (session.audioMuted || session.isAudience()) {
                     session.switchAudience(false);
@@ -559,5 +568,19 @@ public class ConferenceManager implements OnReceiveMessageListener {
         Conversation conversation = new Conversation(Conversation.ConversationType.ChatRoom, this.currentConferenceInfo.getConferenceId(), 0);
         ChatManager.Instance().sendMessage(conversation, content, null, 0, null);
 
+    }
+
+    private boolean isParticipantFull(AVEngineKit.CallSession session) {
+        if (currentConferenceInfo.getMaxParticipants() > 0) {
+            int participantCount = 0;
+            List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
+            for (AVEngineKit.ParticipantProfile p : profiles) {
+                if (!p.isAudience()) {
+                    participantCount++;
+                }
+            }
+            return participantCount >= currentConferenceInfo.getMaxParticipants();
+        }
+        return false;
     }
 }

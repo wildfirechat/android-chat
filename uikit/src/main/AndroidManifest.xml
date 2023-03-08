@@ -27,10 +27,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 访问网络. 某些位置信息需要从网络服务器获取 -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 访问WiFi状态. 需要WiFi信息用于网络定位 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- 修改WiFi状态. 发起WiFi扫描, 需要WiFi信息用于网络定位 -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <!-- 访问网络状态, 检测网络的可用性. 需要网络运营商相关信息用于网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 访问网络的变化, 需要某些信息用于网络定位 -->
@@ -296,6 +292,15 @@
         <activity
             android:name=".widget.AlertDialogActivity"
             android:theme="@style/AppThemeDialog" />
+        <activity
+            android:name=".organization.OrganizationMemberListActivity"
+            android:label="组织通讯录" />
+        <activity
+            android:name=".organization.EmployeeInfoActivity"
+            android:label="员工信息" />
+        <activity
+            android:name=".organization.pick.PickOrganizationMemberActivity"
+            android:label="选取组织成员" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

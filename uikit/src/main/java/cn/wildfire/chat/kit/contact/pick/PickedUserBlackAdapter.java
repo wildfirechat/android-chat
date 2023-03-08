@@ -19,6 +19,10 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 
 public class PickedUserBlackAdapter extends PickedUserAdapter {
 
+    public PickedUserBlackAdapter(PickUserViewModel pickUserViewModel) {
+        super(pickUserViewModel);
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -28,7 +32,7 @@ public class PickedUserBlackAdapter extends PickedUserAdapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((Holder) holder).bind(mData.get(position));
+        ((Holder) holder).bind(users.get(position));
     }
 
     private class Holder extends RecyclerView.ViewHolder {

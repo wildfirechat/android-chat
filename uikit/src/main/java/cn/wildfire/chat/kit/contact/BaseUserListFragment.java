@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,13 +42,11 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
     protected UserListAdapter userListAdapter;
 
     private LinearLayoutManager linearLayoutManager;
-    protected ContactViewModel contactViewModel;
     private boolean showQuickIndexBar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
     }
 
     @Override
@@ -179,7 +176,7 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
     }
 
     @Override
-    public void onHeaderClick(int index) {
+    public void onHeaderClick(HeaderViewHolder holder) {
 
     }
 

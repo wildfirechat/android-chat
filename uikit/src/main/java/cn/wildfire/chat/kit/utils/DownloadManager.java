@@ -197,7 +197,11 @@ public class DownloadManager {
                 dir = Config.VIDEO_SAVE_DIR;
                 break;
             case FILE:
-                name = message.messageUid + "-" + ((FileMessageContent) message.content).getName();
+                if (message.content instanceof FileMessageContent) {
+                    name = message.messageUid + "-" + ((FileMessageContent) message.content).getName();
+                } else {
+                    name = message.messageUid + ".data";
+                }
                 dir = Config.FILE_SAVE_DIR;
                 break;
             default:
@@ -227,7 +231,7 @@ public class DownloadManager {
      * @return 从下载连接中解析出文件名
      */
     @NonNull
-    private static String getNameFromUrl(String url) {
+    public static String getNameFromUrl(String url) {
         return url.substring(url.lastIndexOf("/") + 1);
     }
 

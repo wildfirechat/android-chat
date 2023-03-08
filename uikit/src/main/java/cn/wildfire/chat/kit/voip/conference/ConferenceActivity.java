@@ -65,7 +65,11 @@ public class ConferenceActivity extends VoipBaseActivity {
         fragment = new ConferenceFragment();
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            uiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE;
+        }
         decorView.setSystemUiVisibility(uiOptions);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
@@ -132,13 +136,25 @@ public class ConferenceActivity extends VoipBaseActivity {
                     finish();
                 }
             } else if (callEndReason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
-                AVEngineKit.CallSession newSession = AVEngineKit.Instance().joinConference(callId, audioOnly, pin, host, title, desc, audience, advanced, false, false, this);
-                if (newSession == null) {
-                    Toast.makeText(this, "加入会议失败", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    newSession.setCallback(ConferenceActivity.this);
-                }
+                new MaterialDialog.Builder(this)
+                    .content("互动者已满，是否已观众模式加入会议")
+                    .negativeText("否")
+                    .positiveText("是")
+                    .onPositive((dialog, which) -> {
+                        finish();
+                        new Handler().postDelayed(() -> {
+                            AVEngineKit.CallSession newSession = AVEngineKit.Instance().joinConference(callId, audioOnly, pin, host, title, desc, true, advanced, false, false, this);
+                            if (newSession == null) {
+                                Toast.makeText(this, "加入会议失败", Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                Intent intent = new Intent(getApplicationContext(), ConferenceActivity.class);
+                                startActivity(intent);
+                            }
+                        }, 800);
+                    })
+                    .onNegative((dialog, which) -> finish())
+                    .show();
             } else if (!isFinishing()) {
                 ConferenceManager.getManager().addHistory(conferenceInfo, System.currentTimeMillis() - session.getStartTime());
                 finish();

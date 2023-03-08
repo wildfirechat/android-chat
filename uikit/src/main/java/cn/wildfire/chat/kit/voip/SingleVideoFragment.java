@@ -244,11 +244,16 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             return;
         }
         if (!session.isScreenSharing()) {
-            shareScreenTextView.setText("结束屏幕共享");
+            Toast.makeText(getContext(), "开启屏幕共享时，将关闭摄像头，并打开麦克风", Toast.LENGTH_LONG).show();
+            session.muteAudio(false);
+            session.muteVideo(true);
+
             ((VoipBaseActivity) getActivity()).startScreenShare();
+            if (session.isAudience()) {
+                session.switchAudience(false);
+            }
         } else {
             ((VoipBaseActivity) getActivity()).stopScreenShare();
-            shareScreenTextView.setText("开始屏幕共享");
         }
     }
 
