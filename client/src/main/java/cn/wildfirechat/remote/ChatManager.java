@@ -3119,7 +3119,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取会话消息
+     * 获取用户在会话中的消息，比如获取某个用户在里面发送的消息列表
      *
      * @param userId       userId
      * @param conversation 会话
