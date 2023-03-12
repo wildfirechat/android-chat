@@ -161,6 +161,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                         reLogin(true);
                     }
                 }
+            } else if(status == ConnectionStatus.ConnectionStatusNotLicensed) {
+                Toast.makeText(MainActivity.this, "专业版IM服务没有授权或者授权过期！！！", Toast.LENGTH_LONG).show();
+            } else if(status == ConnectionStatus.ConnectionStatusTimeInconsistent) {
+                Toast.makeText(MainActivity.this, "服务器和客户端时间相差太大！！！", Toast.LENGTH_LONG).show();
             }
         });
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
