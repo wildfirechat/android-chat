@@ -176,7 +176,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         // 禁用自动设置 surfaceView 层级关系
         AVEngineKit.DISABLE_SURFACE_VIEW_AUTO_OVERLAY = true;
         AVEngineKit.ENABLE_PROXIMITY_SENSOR_ADJUST_AUDIO_OUTPUT_DEVICE = false;
-//        AVEngineKit.SCREEN_SHARING_REPLACE_MODE = true;
         callSession.autoSwitchVideoType = false;
         callSession.defaultVideoType = AVEngineKit.VideoType.VIDEO_TYPE_NONE;
 
