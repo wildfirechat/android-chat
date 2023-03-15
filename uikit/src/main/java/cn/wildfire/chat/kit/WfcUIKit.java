@@ -153,6 +153,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             //AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT= 16;
             AVEngineKit.init(application, this);
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP360P, false);
+            // 屏幕共享，使用替换模式
+            AVEngineKit.SCREEN_SHARING_REPLACE_MODE = true;
 
             ChatManager.Instance().registerMessageContent(ConferenceChangeModeContent.class);
             ChatManager.Instance().registerMessageContent(ConferenceCommandContent.class);
