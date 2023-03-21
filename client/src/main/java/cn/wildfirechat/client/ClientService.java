@@ -783,154 +783,50 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void getMessagesInTypesAsync(Conversation conversation, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoLogic.getMessagesInTypesV2(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
-                @Override
-                public void onSuccess(ProtoMessage[] protoMessages) {
-                    safeMessagesCallback(protoMessages, before, callback);
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesInTypes(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, fromIndex, before, count, withUser);
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
         public void getMessagesInStatusAsync(Conversation conversation, int[] messageStatus, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoLogic.getMessagesInStatusV2(conversation.type.ordinal(), conversation.target, conversation.line, messageStatus, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
-                @Override
-                public void onSuccess(ProtoMessage[] protoMessages) {
-                    safeMessagesCallback(protoMessages, before, callback);
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesInStatus(conversation.type.ordinal(), conversation.target, conversation.line, messageStatus, fromIndex, before, count, withUser);
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
         public void getMessagesAsync(Conversation conversation, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoLogic.getMessagesV2(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
-                @Override
-                public void onSuccess(ProtoMessage[] protoMessages) {
-                    safeMessagesCallback(protoMessages, before, callback);
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            ProtoMessage[] protoMessages = ProtoLogic.getMessages(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser);
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
         public void getMessagesExAsync(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoLogic.getMessagesExV2(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
-                @Override
-                public void onSuccess(ProtoMessage[] protoMessages) {
-                    safeMessagesCallback(protoMessages, before, callback);
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser);
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
         public void getMessagesEx2Async(int[] conversationTypes, int[] lines, int[] messageStatus, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoLogic.getMessagesEx2V2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
-                @Override
-                public void onSuccess(ProtoMessage[] protoMessages) {
-                    safeMessagesCallback(protoMessages, before, callback);
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser);
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
         public void getMessagesInTypesAndTimestampAsync(Conversation conversation, int[] contentTypes, long timestamp, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoLogic.getMessagesInTypesAndTimestampV2(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, timestamp, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
-                @Override
-                public void onSuccess(ProtoMessage[] protoMessages) {
-                    safeMessagesCallback(protoMessages, before, callback);
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            ProtoMessage[] protoMessages = ProtoLogic.getMessagesInTypesAndTimestamp(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, timestamp, before, count, withUser);
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
         public void getUserMessages(String userId, Conversation conversation, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
-            ProtoLogic.getUserMessagesV2(userId, conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
-                @Override
-                public void onSuccess(ProtoMessage[] protoMessages) {
-                    safeMessagesCallback(protoMessages, before, callback);
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            ProtoMessage[] protoMessages = ProtoLogic.getUserMessages(userId, conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count);
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
         public void getUserMessagesEx(String userId, int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
-            ProtoLogic.getUserMessagesExV2(userId, conversationTypes, lines, contentTypes, fromIndex, before, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
-                @Override
-                public void onSuccess(ProtoMessage[] protoMessages) {
-                    safeMessagesCallback(protoMessages, before, callback);
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            ProtoMessage[] protoMessages = ProtoLogic.getUserMessagesEx(userId, conversationTypes, lines, contentTypes, fromIndex, before, count);
+            safeMessagesCallback(protoMessages, before, callback);
         }
 
         @Override
@@ -1216,11 +1112,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean clearMessageUnreadStatus(long messageId) throws RemoteException {
             return ProtoLogic.clearMessageUnreadStatus((int) messageId);
-        }
-
-        @Override
-        public boolean clearUnreadStatusBeforeMessage(long messageId, Conversation conversation) throws RemoteException {
-            return ProtoLogic.clearMessageUnreadStatusBefore((int)messageId, conversation==null?0:conversation.type.getValue(), conversation==null?null:conversation.target, conversation==null?0:conversation.line);
         }
 
         @Override
