@@ -262,7 +262,6 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didError(String s) {
-        Toast.makeText(getActivity(), "发生错误" + s, Toast.LENGTH_SHORT).show();
     }
 
     @Override
