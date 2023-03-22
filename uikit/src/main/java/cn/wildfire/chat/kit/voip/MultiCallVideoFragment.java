@@ -342,7 +342,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didError(String reason) {
-        Toast.makeText(getActivity(), "发生错误" + reason, Toast.LENGTH_SHORT).show();
     }
 
     @Override
