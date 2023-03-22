@@ -78,7 +78,7 @@ public class VideoMessageContent extends MediaMessageContent {
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.searchableContent = "[视频]";
-        if (thumbnailBytes == null && !TextUtils.isEmpty(localPath)) {
+        if ((thumbnailBytes == null || thumbnailBytes.length == 0 || duration == 0) && !TextUtils.isEmpty(localPath)) {
             try {
                 VideoParam videoParam = WeChatImageUtils.getVideoParam(localPath);
                 duration = videoParam.getDuration();
