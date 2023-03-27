@@ -1785,16 +1785,74 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void uploadMediaFile(String mediaPath, int mediaType, IUploadMediaCallback callback) throws RemoteException {
             try {
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(mediaPath));
-                int length = bufferedInputStream.available();
-                byte[] data = new byte[length];
-                bufferedInputStream.read(data);
-
-                String fileName = "";
-                if (mediaPath.contains("/")) {
-                    fileName = mediaPath.substring(mediaPath.lastIndexOf("/") + 1, mediaPath.length());
+                File file = new File(mediaPath);
+                if (!file.exists()) {
+                    android.util.Log.e(TAG, "file not exist");
+                    callback.onFailure(-1);
+                    return;
                 }
-                uploadMedia(fileName, data, mediaType, callback);
+                if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload()) {
+                    String filePath = file.getAbsolutePath();
+                    ProtoLogic.getUploadMediaUrl(file.getName(), mediaType, null, new ProtoLogic.IGetUploadMediaUrlCallback() {
+                        @Override
+                        public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
+                            UploadMediaCallback uploadMediaCallback = new UploadMediaCallback() {
+                                @Override
+                                public void onSuccess(String result) {
+                                    if (callback != null) {
+                                        try {
+                                            callback.onSuccess(result);
+                                        } catch (RemoteException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onProgress(long uploaded, long total) {
+                                    try {
+                                        if (callback != null)
+                                            callback.onProgress(uploaded, total);
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onFail(int errorCode) {
+                                    try {
+                                        if (callback != null)
+                                            callback.onFailure(errorCode);
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            };
+                            if (serverType == 1) {
+                                String[] ss = uploadUrl.split("\\?");
+                                uploadQiniu(0, ss[0], remoteUrl, ss[1], ss[2], filePath, uploadMediaCallback);
+                            } else {
+                                uploadFile(0, filePath, uploadUrl, remoteUrl, uploadMediaCallback);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(int i) {
+
+                        }
+                    });
+                } else {
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(mediaPath));
+                    int length = bufferedInputStream.available();
+                    byte[] data = new byte[length];
+                    bufferedInputStream.read(data);
+
+                    String fileName = "";
+                    if (mediaPath.contains("/")) {
+                        fileName = mediaPath.substring(mediaPath.lastIndexOf("/") + 1, mediaPath.length());
+                    }
+                    uploadMedia(fileName, data, mediaType, callback);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 e.printStackTrace();
@@ -4225,7 +4283,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 uploadingMap.remove(messageId);
             }
         });
-        uploadingMap.put(messageId, call);
+        if (messageId > 0) {
+            uploadingMap.put(messageId, call);
+        }
     }
 
     private void uploadQiniu(long messageId, String uploadUrl, String remoteUrl, String token, String key, String filePath, UploadMediaCallback callback) {
@@ -4268,7 +4328,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 uploadingMap.remove(messageId);
             }
         });
-        uploadingMap.put(messageId, call);
+        if (messageId > 0) {
+            uploadingMap.put(messageId, call);
+        }
     }
 
 }
