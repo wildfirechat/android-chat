@@ -164,7 +164,6 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
             Intent intent = new Intent(this, ConferenceActivity.class);
             startActivity(intent);
 
-            ConferenceManager.getManager().setCurrentConferenceInfo(conferenceInfo);
             ConferenceManager.getManager().joinChatRoom();
 
             finish();
@@ -178,6 +177,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
             return;
         }
         conferenceInfo = info;
+        ConferenceManager.getManager().setCurrentConferenceInfo(info);
         titleTextView.setText(info.getConferenceTitle());
         String owner = info.getOwner();
         String ownerName = ChatManager.Instance().getUserDisplayName(owner);
