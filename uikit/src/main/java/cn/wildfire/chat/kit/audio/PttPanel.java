@@ -99,9 +99,7 @@ public class PttPanel implements View.OnTouchListener {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_normal);
-                if (isTalking) {
                 stopTalk();
-                }
                 break;
             default:
                 break;
@@ -164,6 +162,7 @@ public class PttPanel implements View.OnTouchListener {
 
     private void stopTalk() {
         PTTClient.getInstance().releaseTalking(conversation);
+        this.isTalking = false;
         hideTalking();
     }
 
