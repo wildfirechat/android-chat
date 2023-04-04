@@ -194,7 +194,15 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
         List<String> items = new ArrayList();
         items.add("删除本地消息");
-        if (message.message.conversation.type == Conversation.ConversationType.Group || message.message.conversation.type == Conversation.ConversationType.Single) {
+        boolean isSuperGroup = false;
+        if (message.message.conversation.type == Conversation.ConversationType.Group) {
+            GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.message.conversation.target, false);
+            if (groupInfo != null && groupInfo.superGroup == 1) {
+                isSuperGroup = true;
+            }
+        }
+        // 超级群组不支持远端删除
+        if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup) || message.message.conversation.type == Conversation.ConversationType.Single) {
             items.add("删除远程消息");
         } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
             items.add("删除自己及对方消息");
@@ -488,14 +496,14 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 } else {
                     groupReceiptFrameLayout.setVisibility(View.VISIBLE);
                 }
-                int deliveryCount = 0;
-                if (deliveries != null) {
-                    for (Map.Entry<String, Long> delivery : deliveries.entrySet()) {
-                        if (delivery.getValue() >= item.serverTime) {
-                            deliveryCount++;
-                        }
-                    }
-                }
+//                int deliveryCount = 0;
+//                if (deliveries != null) {
+//                    for (Map.Entry<String, Long> delivery : deliveries.entrySet()) {
+//                        if (delivery.getValue() >= item.serverTime) {
+//                            deliveryCount++;
+//                        }
+//                    }
+//                }
                 int readCount = 0;
                 if (readEntries != null) {
                     for (Map.Entry<String, Long> readEntry : readEntries.entrySet()) {
@@ -509,8 +517,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 if (groupInfo == null) {
                     return;
                 }
-                deliveryProgressBar.setMax(groupInfo.memberCount - 1);
-                deliveryProgressBar.setProgress(deliveryCount);
+//                deliveryProgressBar.setMax(groupInfo.memberCount - 1);
+//                deliveryProgressBar.setProgress(deliveryCount);
                 readProgressBar.setMax(groupInfo.memberCount - 1);
                 readProgressBar.setProgress(readCount);
             } else {

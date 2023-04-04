@@ -704,7 +704,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     }
 
     private void notifyTyping(int type) {
-        if (conversation.type == Conversation.ConversationType.Single) {
+        if (conversation.type == Conversation.ConversationType.Single || conversation.type == Conversation.ConversationType.Group) {
             long now = System.currentTimeMillis();
             if (now - lastTypingTime > TYPING_INTERVAL_IN_SECOND * 1000) {
                 lastTypingTime = now;
