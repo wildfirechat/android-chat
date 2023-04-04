@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -340,17 +341,19 @@ public class ImageUtils {
      * 图片入系统相册
      */
     public static void saveMedia2Album(Context context, File mediaFile, boolean isImage) {
+        ContentResolver contentResolver = context.getContentResolver();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, System.currentTimeMillis() + "-" + mediaFile.getName());
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, isImage ? "image/jpg" : "video/mp4");
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ContentResolver contentResolver = context.getContentResolver();
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, System.currentTimeMillis() + "-" + mediaFile.getName());
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, isImage ? "image/jpg" : "video/mp4");
             contentValues.put(MediaStore.MediaColumns.IS_PENDING, 1);
             contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
             Uri uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
             try (FileOutputStream fos = (FileOutputStream) contentResolver.openOutputStream(uri);
+                 FileInputStream fis = new FileInputStream(mediaFile)
             ) {
-                fos.getChannel().transferFrom(new FileInputStream(mediaFile).getChannel(), 0, mediaFile.length());
+                fos.getChannel().transferFrom(fis.getChannel(), 0, mediaFile.length());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -360,13 +363,21 @@ public class ImageUtils {
             contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0);
             contentResolver.update(uri, contentValues, null, null);
         } else {
-            try {
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), mediaFile.getAbsolutePath(), mediaFile.getName(), "");
+            Uri uri = contentResolver.insert(isImage ? MediaStore.Images.Media.EXTERNAL_CONTENT_URI : MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
+            try (OutputStream os = contentResolver.openOutputStream(uri);
+                 FileInputStream fis = new FileInputStream(mediaFile)
+            ) {
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) > 0) {
+                    os.write(buffer, 0, length);
+                }
             } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            Uri uri = Uri.fromFile(mediaFile);
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
         }
     }
