@@ -71,6 +71,9 @@ public class GroupInfo implements Parcelable {
     //群最大成员数。仅专业版有效
     public int maxMemberCount;
 
+    //群成员私聊状态，0 普通群组；1 超级群组。超级群组不支持服务器端删除。
+    public int superGroup;
+
     public GroupInfo() {
     }
 
@@ -97,6 +100,7 @@ public class GroupInfo implements Parcelable {
         dest.writeInt(this.searchable);
         dest.writeInt(this.historyMessage);
         dest.writeInt(this.maxMemberCount);
+        dest.writeInt(this.superGroup);
     }
 
     protected GroupInfo(Parcel in) {
@@ -116,6 +120,7 @@ public class GroupInfo implements Parcelable {
         this.searchable = in.readInt();
         this.historyMessage = in.readInt();
         this.maxMemberCount = in.readInt();
+        this.superGroup = in.readInt();
     }
 
     public static final Creator<GroupInfo> CREATOR = new Creator<GroupInfo>() {

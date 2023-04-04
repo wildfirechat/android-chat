@@ -151,6 +151,9 @@
             android:name="cn.wildfire.chat.kit.conversation.pick.PickConversationActivity"
             android:label="选择会话" />
         <activity
+            android:name=".conversation.receipt.GroupMessageReceiptActivity"
+            android:label="消息阅读状态" />
+        <activity
             android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"
             android:label="频道列表" />
 

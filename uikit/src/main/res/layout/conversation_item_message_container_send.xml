@@ -97,7 +97,7 @@
                 android:max="100"
                 android:progress="50"
                 android:progressDrawable="@drawable/message_receipt_progressbar"
-                android:visibility="visible"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <ProgressBar
