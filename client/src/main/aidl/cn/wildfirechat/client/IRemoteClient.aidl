@@ -294,6 +294,7 @@ interface IRemoteClient {
     boolean isEnableSecretChat();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
+    void useTcpShortLink();
     void checkSignature();
 
     String getProtoRevision();
