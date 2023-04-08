@@ -229,6 +229,7 @@ public class ChatManager {
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
+    private boolean tcpShortLink = false;
     private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
 
@@ -1089,6 +1090,23 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public void useTcpShortLink() {
+        tcpShortLink = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.useTcpShortLink();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isTcpShortLink() {
+        return tcpShortLink;
     }
 
     /**
@@ -8374,6 +8392,9 @@ public class ChatManager {
                 try {
                     if (useSM4) {
                         mClient.useSM4();
+                    }
+                    if (tcpShortLink) {
+                        mClient.useTcpShortLink();
                     }
                     if (checkSignature) {
                         mClient.checkSignature();

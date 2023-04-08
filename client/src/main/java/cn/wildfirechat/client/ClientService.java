@@ -203,6 +203,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private String mHost;
 
     private boolean useSM4 = false;
+    private boolean tcpShortLink = false;
 
     private OkHttpClient okHttpClient;
     private ConcurrentHashMap<Long, Call> uploadingMap;
@@ -235,6 +236,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             if (useSM4) {
                 ProtoLogic.useEncryptSM4();
+            }
+
+            if (tcpShortLink) {
+                ProtoLogic.setTcpShortLink();
             }
 
             logined = true;
@@ -3249,6 +3254,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             useSM4 = true;
             ProtoLogic.useEncryptSM4();
         }
+
+        @Override
+        public void useTcpShortLink() throws RemoteException {
+            tcpShortLink = true;
+            ProtoLogic.setTcpShortLink();
+        }
+
 
         @Override
         public void checkSignature() throws RemoteException {
