@@ -192,7 +192,9 @@ public class UserInfoFragment extends Fragment {
         } else {
             messagesOptionItemView.setVisibility(View.GONE);
         }
-        loadOrganizationData();
+        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)){
+            loadOrganizationData();
+        }
     }
 
     private void setUserInfo(UserInfo userInfo) {
