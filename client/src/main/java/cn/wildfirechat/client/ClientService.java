@@ -558,6 +558,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         callback.onFailure(-1);
                         return;
                     }
+                    if (tcpShortLink) {
+                        if (!isSupportBigFilesUpload()) {
+                            android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                            callback.onFailure(-1);
+                            return;
+                        }
+                    }
                     if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
                         uploadThenSend = true;
                     }
@@ -583,50 +590,30 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
 
                 String filePath = file.getAbsolutePath();
-                ProtoLogic.getUploadMediaUrl(file.getName(), MessageContentMediaType.FILE.getValue(), null, new ProtoLogic.IGetUploadMediaUrlCallback() {
+
+                uploadBigFile(messageId, filePath, MessageContentMediaType.FILE.getValue(), null, new UploadMediaCallback() {
                     @Override
-                    public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
-                        UploadMediaCallback uploadMediaCallback = new UploadMediaCallback() {
-                            @Override
-                            public void onSuccess(String result) {
-                                protoMessage.getContent().setRemoteMediaUrl(remoteUrl);
-                                ProtoLogic.updateMessageContent(protoMessage);
-                                ProtoLogic.sendMessageEx(messageId, expireDuration, new SendMessageCallback(callback));
-                            }
+                    public void onSuccess(String result) {
+                        protoMessage.getContent().setRemoteMediaUrl(result);
+                        ProtoLogic.updateMessageContent(protoMessage);
+                        ProtoLogic.sendMessageEx(messageId, expireDuration, new SendMessageCallback(callback));
+                    }
 
-                            @Override
-                            public void onProgress(long uploaded, long total) {
-                                try {
-                                    if (callback != null)
-                                        callback.onProgress(uploaded, total);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void onFail(int errorCode) {
-                                try {
-                                    if (callback != null)
-                                        callback.onFailure(errorCode);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        };
-                        if (serverType == 1) {
-                            String[] ss = uploadUrl.split("\\?");
-                            uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, uploadMediaCallback);
-                        } else {
-                            uploadFile(messageId, filePath, uploadUrl, remoteUrl, uploadMediaCallback);
+                    @Override
+                    public void onProgress(long uploaded, long total) {
+                        try {
+                            if (callback != null)
+                                callback.onProgress(uploaded, total);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
                         }
                     }
 
                     @Override
-                    public void onFailure(int i) {
+                    public void onFail(int errorCode) {
                         try {
                             if (callback != null)
-                                callback.onFailure(i);
+                                callback.onFailure(errorCode);
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -1225,7 +1212,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public boolean clearUnreadStatusBeforeMessage(long messageId, Conversation conversation) throws RemoteException {
-            return ProtoLogic.clearMessageUnreadStatusBefore((int)messageId, conversation==null?0:conversation.type.getValue(), conversation==null?null:conversation.target, conversation==null?0:conversation.line);
+            return ProtoLogic.clearMessageUnreadStatusBefore((int) messageId, conversation == null ? 0 : conversation.type.getValue(), conversation == null ? null : conversation.target, conversation == null ? 0 : conversation.line);
         }
 
         @Override
@@ -1870,6 +1857,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void uploadMedia(String fileName, byte[] data, int mediaType, final IUploadMediaCallback callback) throws RemoteException {
+            if (tcpShortLink) {
+                if (callback != null) {
+                    android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                    callback.onFailure(-1);
+                }
+                return;
+            }
             ProtoLogic.uploadMedia(fileName, data, mediaType, new ProtoLogic.IUploadMediaCallback() {
                 @Override
                 public void onSuccess(String s) {
@@ -1905,54 +1899,46 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     callback.onFailure(-1);
                     return;
                 }
-                if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload()) {
-                    String filePath = file.getAbsolutePath();
-                    ProtoLogic.getUploadMediaUrl(file.getName(), mediaType, null, new ProtoLogic.IGetUploadMediaUrlCallback() {
+
+                if (tcpShortLink) {
+                    if (!isSupportBigFilesUpload()) {
+                        android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                        callback.onFailure(-1);
+                        return;
+                    }
+                }
+
+                if (tcpShortLink || (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload())) {
+                    uploadBigFile(-1, mediaPath, mediaType, null, new UploadMediaCallback() {
                         @Override
-                        public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
-                            UploadMediaCallback uploadMediaCallback = new UploadMediaCallback() {
-                                @Override
-                                public void onSuccess(String result) {
-                                    if (callback != null) {
-                                        try {
-                                            callback.onSuccess(result);
-                                        } catch (RemoteException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    }
+                        public void onSuccess(String result) {
+                            if (callback != null) {
+                                try {
+                                    callback.onSuccess(result);
+                                } catch (RemoteException e) {
+                                    throw new RuntimeException(e);
                                 }
-
-                                @Override
-                                public void onProgress(long uploaded, long total) {
-                                    try {
-                                        if (callback != null)
-                                            callback.onProgress(uploaded, total);
-                                    } catch (RemoteException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                @Override
-                                public void onFail(int errorCode) {
-                                    try {
-                                        if (callback != null)
-                                            callback.onFailure(errorCode);
-                                    } catch (RemoteException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            };
-                            if (serverType == 1) {
-                                String[] ss = uploadUrl.split("\\?");
-                                uploadQiniu(0, ss[0], remoteUrl, ss[1], ss[2], filePath, uploadMediaCallback);
-                            } else {
-                                uploadFile(0, filePath, uploadUrl, remoteUrl, uploadMediaCallback);
                             }
                         }
 
                         @Override
-                        public void onFailure(int i) {
+                        public void onProgress(long uploaded, long total) {
+                            try {
+                                if (callback != null)
+                                    callback.onProgress(uploaded, total);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
 
+                        @Override
+                        public void onFail(int errorCode) {
+                            try {
+                                if (callback != null)
+                                    callback.onFailure(errorCode);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 } else {
@@ -4367,6 +4353,28 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         List<T> entries;
         int index;
+    }
+
+    private void uploadBigFile(long messageId, String filePath, int mediaType, String contentType, UploadMediaCallback callback) {
+        File file = new File(filePath);
+        ProtoLogic.getUploadMediaUrl(file.getName(), mediaType, contentType, new ProtoLogic.IGetUploadMediaUrlCallback() {
+            @Override
+            public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
+                if (serverType == 1) {
+                    String[] ss = uploadUrl.split("\\?");
+                    uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, callback);
+                } else {
+                    uploadFile(messageId, filePath, uploadUrl, remoteUrl, callback);
+                }
+            }
+
+            @Override
+            public void onFailure(int i) {
+                if (callback != null) {
+                    callback.onFail(i);
+                }
+            }
+        });
     }
 
     // progress, error, success

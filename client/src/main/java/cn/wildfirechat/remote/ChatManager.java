@@ -3703,6 +3703,7 @@ public class ChatManager {
 
     /**
      * 清除messageId之前（包含）的消息未读状态
+     *
      * @param messageId
      * @param conversation
      */
@@ -5111,6 +5112,9 @@ public class ChatManager {
 
 
     /**
+     * 上传媒体数据
+     * 开始 TCP 短链接之后，该方法不可用，请使用{@link ChatManager#uploadMediaFile}
+     *
      * @param data      不能超过1M，为了安全，实际只有900K
      * @param mediaType 媒体类型，可选值参考{@link cn.wildfirechat.message.MessageContentMediaType}
      * @param callback
@@ -5407,7 +5411,6 @@ public class ChatManager {
      * @param desc
      * @param limit
      * @param offset
-     *
      * @return
      */
     public List<ConversationSearchResult> searchConversationEx(String keyword, List<Conversation.ConversationType> conversationTypes, List<Integer> lines, long startTime, long endTime, boolean desc, int limit, int offset) {
@@ -8310,8 +8313,8 @@ public class ChatManager {
         MessageContent content = null;
         try {
             Class cls = messageContentMap.get(payload.type);
-            if(cls != null) {
-                content = (MessageContent)cls.newInstance();
+            if (cls != null) {
+                content = (MessageContent) cls.newInstance();
             } else {
                 content = new UnknownMessageContent();
             }
@@ -8581,7 +8584,7 @@ public class ChatManager {
                     });
                 } catch (Throwable e) {
                     // 抓住所有异常，发生异常之后，im将不能正常工作，需要重新启动ClientService服务，故这儿抓住所以异常，防止应用crash并没有什么问题
-                    Log.e(TAG, "onServiceConnected worker exception" +  e.toString());
+                    Log.e(TAG, "onServiceConnected worker exception" + e.toString());
                 }
             });
         }
