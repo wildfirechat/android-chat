@@ -14,11 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -34,17 +31,26 @@ import cn.wildfirechat.remote.ChatManager;
 })
 @EnableContextMenu
 public class UserCardMessageContentViewHolder extends NormalMessageContentViewHolder {
-    @BindView(R2.id.userCardPortraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.userCardNameTextView)
     TextView nameTextView;
-    @BindView(R2.id.userIdTextView)
     TextView userIdTextView;
 
     CardMessageContent userCardMessageContent;
 
     public UserCardMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViewImpl(itemView);
+        bindClickImpl(itemView);
+    }
+
+    private void bindClickImpl(View itemView) {
+       itemView.findViewById(R.id.contentLayout).setOnClickListener(_v -> onUserCardClick());
+    }
+
+    private void bindViewImpl(View itemView) {
+        portraitImageView =itemView.findViewById(R.id.userCardPortraitImageView);
+        nameTextView =itemView.findViewById(R.id.userCardNameTextView);
+        userIdTextView =itemView.findViewById(R.id.userIdTextView);
     }
 
     @Override
@@ -60,7 +66,6 @@ public class UserCardMessageContentViewHolder extends NormalMessageContentViewHo
             .into(portraitImageView);
     }
 
-    @OnClick(R2.id.contentLayout)
     void onUserCardClick() {
         Intent intent = new Intent(fragment.getContext(), UserInfoActivity.class);
         UserInfo userInfo = ChatManager.Instance().getUserInfo(userCardMessageContent.getTarget(), false);

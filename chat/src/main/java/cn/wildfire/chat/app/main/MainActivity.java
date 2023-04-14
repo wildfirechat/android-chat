@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
@@ -90,13 +89,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private List<Fragment> mFragmentList = new ArrayList<>(4);
 
-    @BindView(R.id.bottomNavigationView)
     BottomNavigationView bottomNavigationView;
-    @BindView(R.id.contentViewPager)
     ViewPagerFixed contentViewPager;
-    @BindView(R.id.startingTextView)
     TextView startingTextView;
-    @BindView(R.id.contentLinearLayout)
     LinearLayout contentLinearLayout;
 
     private QBadgeView unreadMessageUnreadBadgeView;
@@ -112,6 +107,13 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private ContactViewModel contactViewModel;
     private ConversationListViewModel conversationListViewModel;
+
+    private void bindViewImpl() {
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        contentViewPager = findViewById(R.id.contentViewPager);
+        startingTextView = findViewById(R.id.startingTextView);
+        contentLinearLayout = findViewById(R.id.contentLinearLayout);
+    }
 
     private Observer<Boolean> imStatusLiveDataObserver = status -> {
         if (status && !isInitialized) {
@@ -137,6 +139,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     @Override
     protected void afterViews() {
+        bindViewImpl();
         bottomNavigationView.setItemIconTintList(null);
         if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
             bottomNavigationView.getMenu().removeItem(R.id.workspace);

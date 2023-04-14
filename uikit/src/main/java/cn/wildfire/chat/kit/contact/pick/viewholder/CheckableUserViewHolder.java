@@ -9,18 +9,21 @@ import android.widget.CheckBox;
 
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.CheckableUserListAdapter;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 
 public class CheckableUserViewHolder extends UserViewHolder {
-    @BindView(R2.id.checkbox)
     CheckBox checkBox;
 
     public CheckableUserViewHolder(Fragment fragment, CheckableUserListAdapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViewImpl(itemView);
+    }
+
+    private void bindViewImpl(View itemView) {
+        checkBox = itemView.findViewById(R.id.checkbox);
     }
 
     @Override

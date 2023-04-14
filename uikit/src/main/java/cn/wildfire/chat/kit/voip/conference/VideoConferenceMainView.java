@@ -20,18 +20,13 @@ import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
 
 class VideoConferenceMainView extends RelativeLayout {
 
-    @BindView(R2.id.previewContainerFrameLayout)
     FrameLayout previewContainerFrameLayout;
-    @BindView(R2.id.focusContainerFrameLayout)
     FrameLayout focusContainerFrameLayout;
 
     private AVEngineKit.CallSession callSession;
@@ -66,7 +61,12 @@ class VideoConferenceMainView extends RelativeLayout {
 
     private void initView(Context context, AttributeSet attrs) {
         View view = inflate(context, R.layout.av_conference_video_main, this);
-        ButterKnife.bind(this, view);
+        bindViewImpl(view);
+    }
+
+    private void bindViewImpl(View view) {
+        previewContainerFrameLayout = view.findViewById(R.id.previewContainerFrameLayout);
+        focusContainerFrameLayout = view.findViewById(R.id.focusContainerFrameLayout);
     }
 
     public void setupProfiles(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile myProfile, AVEngineKit.ParticipantProfile focusProfile) {

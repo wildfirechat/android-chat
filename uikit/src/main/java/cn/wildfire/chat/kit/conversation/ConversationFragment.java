@@ -44,13 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnTouch;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
@@ -117,27 +112,18 @@ public class ConversationFragment extends Fragment implements
     private static final int MESSAGE_LOAD_AROUND = 10;
     private static final long TYPING_INTERNAL = 10 * 1000;
 
-    @BindView(R2.id.rootLinearLayout)
     InputAwareLayout rootLinearLayout;
-    @BindView(R2.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R2.id.msgRecyclerView)
     RecyclerView recyclerView;
 
-    @BindView(R2.id.ongoingCallRecyclerView)
     RecyclerView ongoingCallRecyclerView;
 
-    @BindView(R2.id.inputPanelFrameLayout)
     ConversationInputPanel inputPanel;
 
-    @BindView(R2.id.multiMessageActionContainerLinearLayout)
     LinearLayout multiMessageActionContainerLinearLayout;
 
-    @BindView(R2.id.unreadCountLinearLayout)
     LinearLayout unreadCountLinearLayout;
-    @BindView(R2.id.unreadCountTextView)
     TextView unreadCountTextView;
-    @BindView(R2.id.unreadMentionCountTextView)
     TextView unreadMentionCountTextView;
 
     private ConversationMessageAdapter adapter;
@@ -418,9 +404,30 @@ public class ConversationFragment extends Fragment implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conversation_activity, container, false);
-        ButterKnife.bind(this, view);
+        bindViewImpl(view);
+        bindClickImpl(view);
         initView();
         return view;
+    }
+
+    private void bindClickImpl(View view) {
+        view.findViewById(R.id.unreadCountTextView).setOnClickListener(_v -> onUnreadCountTextViewClick());
+    }
+
+    private void bindViewImpl(View view) {
+        rootLinearLayout = view.findViewById(R.id.rootLinearLayout);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        recyclerView = view.findViewById(R.id.msgRecyclerView);
+        ongoingCallRecyclerView = view.findViewById(R.id.ongoingCallRecyclerView);
+        inputPanel = view.findViewById(R.id.inputPanelFrameLayout);
+        multiMessageActionContainerLinearLayout = view.findViewById(R.id.multiMessageActionContainerLinearLayout);
+        unreadCountLinearLayout = view.findViewById(R.id.unreadCountLinearLayout);
+        unreadCountTextView = view.findViewById(R.id.unreadCountTextView);
+        unreadMentionCountTextView = view.findViewById(R.id.unreadMentionCountTextView);
+
+        view.findViewById(R.id.contentLayout).setOnTouchListener((v, event) -> ConversationFragment.this.onTouch(v, event));
+        recyclerView.setOnTouchListener((v, event) -> ConversationFragment.this.onTouch(v, event));
+
     }
 
     @Override
@@ -654,7 +661,6 @@ public class ConversationFragment extends Fragment implements
         }
     }
 
-    @OnClick(R2.id.unreadCountTextView)
     void onUnreadCountTextViewClick() {
         hideUnreadMessageCountLabel();
         shouldContinueLoadNewMessage = true;
@@ -787,7 +793,6 @@ public class ConversationFragment extends Fragment implements
         }
     }
 
-    @OnTouch({R2.id.contentLayout, R2.id.msgRecyclerView})
     boolean onTouch(View view, MotionEvent event) {
 //        if (event.getAction() == MotionEvent.ACTION_DOWN && inputPanel.extension.canHideOnScroll()) {
 //            inputPanel.collapse();

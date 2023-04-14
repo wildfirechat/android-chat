@@ -13,10 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -32,9 +30,12 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 
 public class CompositeMessageContentActivity extends WfcBaseActivity implements CompositeMessageContentAdapter.OnMessageClickListener {
-    @BindView(R2.id.recyclerView)
     RecyclerView recyclerView;
     private CompositeMessageContentAdapter adapter;
+
+    private void bindViewImpl() {
+        recyclerView = findViewById(R.id.recyclerView);
+    }
 
     @Override
     protected int contentLayout() {
@@ -43,6 +44,7 @@ public class CompositeMessageContentActivity extends WfcBaseActivity implements 
 
     @Override
     protected void afterViews() {
+        bindViewImpl();
         Message message = getIntent().getParcelableExtra("message");
         if (message == null || !(message.content instanceof CompositeMessageContent)) {
             finish();

@@ -14,11 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
@@ -31,11 +29,15 @@ import cn.wildfirechat.model.GroupInfo;
 @EnableContextMenu
 public class GroupConversationViewHolder extends ConversationViewHolder {
 
-    @BindView(R2.id.organizationGroupIndicator)
     TextView organizationGroupIndicator;
 
     public GroupConversationViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViewImpl(itemView);
+    }
+
+    private void bindViewImpl(View itemView) {
+        organizationGroupIndicator =itemView.findViewById(R.id.organizationGroupIndicator);
     }
 
     @Override

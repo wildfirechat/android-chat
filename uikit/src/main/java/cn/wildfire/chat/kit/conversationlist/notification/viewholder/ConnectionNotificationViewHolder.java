@@ -10,9 +10,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.StatusNotificationType;
 import cn.wildfire.chat.kit.conversationlist.notification.ConnectionStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
@@ -23,17 +21,17 @@ public class ConnectionNotificationViewHolder extends StatusNotificationViewHold
         super(fragment);
     }
 
-    @BindView(R2.id.statusTextView)
     TextView statusTextView;
 
     @Override
     public void onBind(View view, StatusNotification notification) {
         String status = ((ConnectionStatusNotification) notification).getValue();
+        statusTextView = view.findViewById(R.id.statusTextView);
         statusTextView.setText(status);
+        statusTextView.setOnClickListener(this::onClick);
     }
 
-    @OnClick(R2.id.statusTextView)
-    public void onClick() {
+    public void onClick(View view) {
         Toast.makeText(fragment.getContext(), "status on Click", Toast.LENGTH_SHORT).show();
     }
 }

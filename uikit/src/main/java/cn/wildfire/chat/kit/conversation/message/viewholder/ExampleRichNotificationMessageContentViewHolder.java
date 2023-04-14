@@ -13,10 +13,8 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import butterknife.BindView;
-import butterknife.OnClick;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
@@ -30,11 +28,20 @@ import cn.wildfirechat.message.StickerMessageContent;
 @EnableContextMenu
 public class ExampleRichNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder {
     private String path;
-    @BindView(R2.id.stickerImageView)
     ImageView imageView;
 
     public ExampleRichNotificationMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViewImpl(itemView);
+        bindClickImpl(itemView);
+    }
+
+    private void bindClickImpl(View itemView) {
+       itemView.findViewById(R.id.stickerImageView).setOnClickListener(this::onClick);
+    }
+
+    private void bindViewImpl(View itemView) {
+        imageView =itemView.findViewById(R.id.stickerImageView);
     }
 
     @Override
@@ -61,7 +68,6 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
         }
     }
 
-    @OnClick(R2.id.stickerImageView)
     public void onClick(View view) {
         Toast.makeText(fragment.getContext(), "TODO", Toast.LENGTH_SHORT).show();
     }

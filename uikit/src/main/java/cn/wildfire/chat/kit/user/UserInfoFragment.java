@@ -36,12 +36,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -64,40 +60,26 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class UserInfoFragment extends Fragment {
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
 
-    @BindView(R2.id.titleTextView)
     TextView titleTextView;
-    @BindView(R2.id.displayNameTextView)
     TextView displayNameTextView;
-    @BindView(R2.id.groupAliasTextView)
     TextView groupAliasTextView;
-    @BindView(R2.id.accountTextView)
     TextView accountTextView;
 
-    @BindView(R2.id.chatButton)
     View chatButton;
-    @BindView(R2.id.voipChatButton)
     View voipChatButton;
-    @BindView(R2.id.inviteButton)
     Button inviteButton;
-    @BindView(R2.id.aliasOptionItemView)
     OptionItemView aliasOptionItemView;
 
 
-    @BindView(R2.id.orgOptionItemView)
     OptionItemView orgOptionItemView;
-    @BindView(R2.id.messagesOptionItemView)
     OptionItemView messagesOptionItemView;
 
-    @BindView(R2.id.qrCodeOptionItemView)
     OptionItemView qrCodeOptionItemView;
 
-    @BindView(R2.id.momentButton)
     View momentButton;
 
-    @BindView(R2.id.favContactTextView)
     TextView favContactTextView;
 
     private UserInfo userInfo;
@@ -132,9 +114,39 @@ public class UserInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_info_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViewImpl(view);
+        bindClickImpl(view);
         init();
         return view;
+    }
+
+    private void bindClickImpl(View view) {
+        view.findViewById(R.id.chatButton).setOnClickListener(_v -> chat());
+        view.findViewById(R.id.momentButton).setOnClickListener(_v -> moment());
+        view.findViewById(R.id.voipChatButton).setOnClickListener(_v -> voipChat());
+        view.findViewById(R.id.aliasOptionItemView).setOnClickListener(_v -> alias());
+        view.findViewById(R.id.messagesOptionItemView).setOnClickListener(_v -> showUserMessages());
+        view.findViewById(R.id.portraitImageView).setOnClickListener(_v -> portrait());
+        view.findViewById(R.id.orgOptionItemView).setOnClickListener(_v -> showOrg());
+        view.findViewById(R.id.inviteButton).setOnClickListener(_v -> invite());
+        view.findViewById(R.id.qrCodeOptionItemView).setOnClickListener(_v -> showMyQRCode());
+    }
+
+    private void bindViewImpl(View view) {
+        portraitImageView = view.findViewById(R.id.portraitImageView);
+        titleTextView = view.findViewById(R.id.titleTextView);
+        displayNameTextView = view.findViewById(R.id.displayNameTextView);
+        groupAliasTextView = view.findViewById(R.id.groupAliasTextView);
+        accountTextView = view.findViewById(R.id.accountTextView);
+        chatButton = view.findViewById(R.id.chatButton);
+        voipChatButton = view.findViewById(R.id.voipChatButton);
+        inviteButton = view.findViewById(R.id.inviteButton);
+        aliasOptionItemView = view.findViewById(R.id.aliasOptionItemView);
+        orgOptionItemView = view.findViewById(R.id.orgOptionItemView);
+        messagesOptionItemView = view.findViewById(R.id.messagesOptionItemView);
+        qrCodeOptionItemView = view.findViewById(R.id.qrCodeOptionItemView);
+        momentButton = view.findViewById(R.id.momentButton);
+        favContactTextView = view.findViewById(R.id.favContactTextView);
     }
 
     private void init() {
@@ -192,7 +204,7 @@ public class UserInfoFragment extends Fragment {
         } else {
             messagesOptionItemView.setVisibility(View.GONE);
         }
-        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)){
+        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
             loadOrganizationData();
         }
     }
@@ -222,7 +234,6 @@ public class UserInfoFragment extends Fragment {
         accountTextView.setText("野火ID:" + userInfo.name);
     }
 
-    @OnClick(R2.id.chatButton)
     void chat() {
         Intent intent = new Intent(getActivity(), ConversationActivity.class);
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, 0);
@@ -231,14 +242,12 @@ public class UserInfoFragment extends Fragment {
         getActivity().finish();
     }
 
-    @OnClick(R2.id.momentButton)
     void moment() {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
         intent.putExtra("userInfo", userInfo);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.voipChatButton)
     void voipChat() {
         new MaterialDialog.Builder(getActivity())
             .items("音频聊天", "视频聊天")
@@ -252,7 +261,6 @@ public class UserInfoFragment extends Fragment {
             .show();
     }
 
-    @OnClick(R2.id.aliasOptionItemView)
     void alias() {
         String selfUid = userViewModel.getUserId();
         if (selfUid.equals(userInfo.uid)) {
@@ -265,7 +273,6 @@ public class UserInfoFragment extends Fragment {
         }
     }
 
-    @OnClick(R2.id.messagesOptionItemView)
     void showUserMessages() {
         Intent intent = new Intent(getActivity(), GroupMemberMessageHistoryActivity.class);
         intent.putExtra("groupId", groupId);
@@ -275,7 +282,6 @@ public class UserInfoFragment extends Fragment {
 
     private static final int REQUEST_CODE_PICK_IMAGE = 100;
 
-    @OnClick(R2.id.portraitImageView)
     void portrait() {
         if (userInfo.uid.equals(userViewModel.getUserId())) {
             updatePortrait();
@@ -284,7 +290,6 @@ public class UserInfoFragment extends Fragment {
         }
     }
 
-    @OnClick(R2.id.orgOptionItemView)
     void showOrg() {
         if (organizations.size() > 1) {
             String[] names = new String[organizations.size()];
@@ -342,7 +347,6 @@ public class UserInfoFragment extends Fragment {
         }
     }
 
-    @OnClick(R2.id.inviteButton)
     void invite() {
         Intent intent = new Intent(getActivity(), InviteFriendActivity.class);
         intent.putExtra("userInfo", userInfo);
@@ -350,7 +354,6 @@ public class UserInfoFragment extends Fragment {
         getActivity().finish();
     }
 
-    @OnClick(R2.id.qrCodeOptionItemView)
     void showMyQRCode() {
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_USER + userInfo.uid;

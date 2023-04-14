@@ -21,28 +21,21 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.OnFocusChange;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 
 public abstract class PickUserFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private SearchAndPickUserFragment searchAndPickUserFragment;
     protected PickUserViewModel pickUserViewModel;
 
-    @BindView(R2.id.pickedUserRecyclerView)
     protected RecyclerView pickedUserRecyclerView;
-    @BindView(R2.id.searchEditText)
     EditText searchEditText;
-    @BindView(R2.id.searchFrameLayout)
     FrameLayout searchUserFrameLayout;
-    @BindView(R2.id.hint_view)
     protected View hintView;
 
     private boolean isSearchFragmentShowing = false;
@@ -61,9 +54,25 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
     }
 
+    private void bindViewImpl(View view) {
+        pickedUserRecyclerView = view.findViewById(R.id.pickedUserRecyclerView);
+        searchEditText = view.findViewById(R.id.searchEditText);
+        searchUserFrameLayout = view.findViewById(R.id.searchFrameLayout);
+        hintView = view.findViewById(R.id.hint_view);
+
+        searchEditText.setOnFocusChangeListener(this::onSearchEditTextFocusChange);
+        searchEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                search(s);
+            }
+        });
+    }
+
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
+        bindViewImpl(view);
         initView();
         setupPickFromUsers();
     }
@@ -90,7 +99,6 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         return new PickedUserAdapter(pickUserViewModel);
     }
 
-    @OnFocusChange(R2.id.searchEditText)
     void onSearchEditTextFocusChange(View view, boolean focus) {
         if (getActivity() == null || getActivity().isFinishing()) {
             return;
@@ -111,7 +119,6 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         }
     }
 
-    @OnTextChanged(value = R2.id.searchEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void search(Editable editable) {
         // restore view state
         if (searchAndPickUserFragment == null) {

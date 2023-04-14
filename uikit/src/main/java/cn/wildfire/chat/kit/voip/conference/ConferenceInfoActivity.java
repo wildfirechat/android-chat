@@ -14,11 +14,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.util.Date;
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -33,26 +30,34 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     private String conferenceId;
     private String password;
     private ConferenceInfo conferenceInfo;
-    @BindView(R2.id.titleTextView)
     TextView titleTextView;
-    @BindView(R2.id.ownerTextView)
     TextView ownerTextView;
-    @BindView(R2.id.callIdTextView)
     TextView callIdTextView;
-    @BindView(R2.id.startDateTimeTextView)
     TextView startDateTimeView;
-    @BindView(R2.id.endDateTimeTextView)
     TextView endDateTimeView;
-    @BindView(R2.id.audioSwitch)
     SwitchMaterial audioSwitch;
-    @BindView(R2.id.videoSwitch)
     SwitchMaterial videoSwitch;
-    @BindView(R2.id.joinConferenceBtn)
     Button joinConferenceButton;
 
     private MenuItem destroyItem;
     private MenuItem favItem;
     private MenuItem unFavItem;
+
+    private void bindClickImpl() {
+        findViewById(R.id.conferenceQRCodeLinearLayout).setOnClickListener(v -> showConferenceQRCode());
+        findViewById(R.id.joinConferenceBtn).setOnClickListener(v -> joinConference());
+    }
+
+    private void bindViewImpl() {
+        titleTextView = findViewById(R.id.titleTextView);
+        ownerTextView = findViewById(R.id.ownerTextView);
+        callIdTextView = findViewById(R.id.callIdTextView);
+        startDateTimeView = findViewById(R.id.startDateTimeTextView);
+        endDateTimeView = findViewById(R.id.endDateTimeTextView);
+        audioSwitch = findViewById(R.id.audioSwitch);
+        videoSwitch = findViewById(R.id.videoSwitch);
+        joinConferenceButton = findViewById(R.id.joinConferenceBtn);
+    }
 
     @Override
     protected int contentLayout() {
@@ -81,7 +86,8 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        super.afterViews();
+        bindViewImpl();
+        bindClickImpl();
         Intent intent = getIntent();
         conferenceId = intent.getStringExtra("conferenceId");
         password = intent.getStringExtra("password");
@@ -138,14 +144,12 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R2.id.conferenceQRCodeLinearLayout)
     void showConferenceQRCode() {
         String qrcodeValue = WfcScheme.buildConferenceScheme(conferenceId, password);
         Intent intent = QRCodeActivity.buildQRCodeIntent(this, "会议二维码", null, qrcodeValue);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.joinConferenceBtn)
     void joinConference() {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

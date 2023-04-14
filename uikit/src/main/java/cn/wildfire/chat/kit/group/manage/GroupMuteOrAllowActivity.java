@@ -14,9 +14,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfirechat.model.GroupInfo;
@@ -25,8 +23,11 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
     private GroupInfo groupInfo;
     private GroupViewModel groupViewModel;
 
-    @BindView(R2.id.muteSwitchButton)
     SwitchMaterial switchButton;
+
+    private void bindViewImpl() {
+        switchButton = findViewById(R.id.muteSwitchButton);
+    }
 
     @Override
     protected int contentLayout() {
@@ -35,7 +36,7 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        super.afterViews();
+        bindViewImpl();
         groupInfo = getIntent().getParcelableExtra("groupInfo");
         init();
     }
