@@ -16,22 +16,23 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.GroupInfo;
 
 public class GroupMessageReceiptActivity extends WfcBaseActivity {
 
-    @BindView(R2.id.viewPager)
     ViewPager viewPager;
-    @BindView(R2.id.tabLayout)
     TabLayout tabLayout;
 
     private Message message;
     private GroupInfo groupInfo;
+
+    private void bindViewImpl() {
+        viewPager = findViewById(R.id.viewPager);
+        tabLayout = findViewById(R.id.tabLayout);
+    }
 
     @Override
     protected int contentLayout() {
@@ -40,7 +41,7 @@ public class GroupMessageReceiptActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        super.afterViews();
+        bindViewImpl();
         viewPager.setAdapter(new ReceiptFragmentPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
 

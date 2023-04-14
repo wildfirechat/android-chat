@@ -21,24 +21,31 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 
 public class ConferencePortalActivity extends WfcBaseActivity {
 
-    @BindView(R2.id.conferenceListRecyclerView)
     RecyclerView recyclerView;
-    @BindView(R2.id.emptyLinearLayout)
     LinearLayout emptyLinearLayout;
 
     private FavConferenceAdapter adapter;
     private List<ConferenceInfo> favConferenceList;
+
+    private void bindClickImpl() {
+        findViewById(R.id.startConferenceLinearLayout).setOnClickListener(v -> startConference());
+        findViewById(R.id.joinConferenceLinearLayout).setOnClickListener(v -> joinConference());
+        findViewById(R.id.orderConferenceLinearLayout).setOnClickListener(v -> orderConference());
+        findViewById(R.id.conferenceHistoryButton).setOnClickListener(v -> showConferenceHistory());
+    }
+
+    private void bindViewImpl() {
+        recyclerView = findViewById(R.id.conferenceListRecyclerView);
+        emptyLinearLayout = findViewById(R.id.emptyLinearLayout);
+    }
 
     @Override
     protected int contentLayout() {
@@ -47,7 +54,8 @@ public class ConferencePortalActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        super.afterViews();
+        bindViewImpl();
+        bindClickImpl();
         adapter = new FavConferenceAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -60,13 +68,11 @@ public class ConferencePortalActivity extends WfcBaseActivity {
         loadAndShowFavConference();
     }
 
-    @OnClick(R2.id.startConferenceLinearLayout)
     void startConference() {
         Intent intent = new Intent(this, CreateConferenceActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.joinConferenceLinearLayout)
     void joinConference() {
         View view = LayoutInflater.from(this).inflate(R.layout.av_conference_join_dialog, null);
         new MaterialDialog.Builder(this)
@@ -89,14 +95,12 @@ public class ConferencePortalActivity extends WfcBaseActivity {
             .show();
     }
 
-    @OnClick(R2.id.orderConferenceLinearLayout)
     void orderConference() {
         Intent intent = new Intent(this, OrderConferenceActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.conferenceHistoryButton)
-    void showConferenceHistory(){
+    void showConferenceHistory() {
         Intent intent = new Intent(this, ConferenceHistoryListActivity.class);
         startActivity(intent);
     }

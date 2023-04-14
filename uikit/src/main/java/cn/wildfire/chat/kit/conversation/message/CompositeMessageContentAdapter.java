@@ -23,11 +23,8 @@ import org.joda.time.DateTime;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.third.utils.TimeConvertUtils;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
@@ -96,62 +93,65 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
     }
 
     class MessageContentViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R2.id.portraitImageView)
         ImageView portraitImageView;
-        @BindView(R2.id.nameTextView)
         TextView nameTextView;
-        @BindView(R2.id.timeTextView)
         TextView timeTextView;
 
         // image message
-        @BindView(R2.id.imageContentLayout)
         LinearLayout imageContentLayout;
-        @BindView(R2.id.contentImageView)
         ImageView contentImageView;
 
         // text message and etc.
-        @BindView(R2.id.textContentLayout)
         LinearLayout textContentLayout;
-        @BindView(R2.id.contentTextView)
         TextView contentTextView;
 
         // file message
-        @BindView(R2.id.fileContentLayout)
         LinearLayout fileContentLayout;
-        @BindView(R2.id.fileIconImageView)
         ImageView fileIconImageView;
-        @BindView(R2.id.fileNameTextView)
         TextView fileNameTextView;
-        @BindView(R2.id.fileSizeTextView)
         TextView fileSizeTextView;
 
         // video message
-        @BindView(R2.id.videoContentLayout)
         LinearLayout videoContentLayout;
-        @BindView(R2.id.videoDurationTextView)
         TextView videoDurationTextView;
-        @BindView(R2.id.videoThumbnailImageView)
         ImageView videoThumbnailImageView;
 
         // composite message
-        @BindView(R2.id.compositeContentLayout)
         LinearLayout compositeContentLayout;
-        @BindView(R2.id.compositeTitleTextView)
         TextView compositeTitleTextView;
-        @BindView(R2.id.compositeContentTextView)
         TextView compositeContentTextView;
 
         private Message message;
 
         public MessageContentViewHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            bindViewImpl(itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CompositeMessageContentAdapter.this.onMessageClickListener.onClickMessage(message);
                 }
             });
+        }
+
+        private void bindViewImpl(View itemView) {
+            portraitImageView = itemView.findViewById(R.id.portraitImageView);
+            nameTextView = itemView.findViewById(R.id.nameTextView);
+            timeTextView = itemView.findViewById(R.id.timeTextView);
+            imageContentLayout = itemView.findViewById(R.id.imageContentLayout);
+            contentImageView = itemView.findViewById(R.id.contentImageView);
+            textContentLayout = itemView.findViewById(R.id.textContentLayout);
+            contentTextView = itemView.findViewById(R.id.contentTextView);
+            fileContentLayout = itemView.findViewById(R.id.fileContentLayout);
+            fileIconImageView = itemView.findViewById(R.id.fileIconImageView);
+            fileNameTextView = itemView.findViewById(R.id.fileNameTextView);
+            fileSizeTextView = itemView.findViewById(R.id.fileSizeTextView);
+            videoContentLayout = itemView.findViewById(R.id.videoContentLayout);
+            videoDurationTextView = itemView.findViewById(R.id.videoDurationTextView);
+            videoThumbnailImageView = itemView.findViewById(R.id.videoThumbnailImageView);
+            compositeContentLayout = itemView.findViewById(R.id.compositeContentLayout);
+            compositeTitleTextView = itemView.findViewById(R.id.compositeTitleTextView);
+            compositeContentTextView = itemView.findViewById(R.id.compositeContentTextView);
         }
 
         void bind(Message message, int position) {
@@ -256,12 +256,15 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
     }
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R2.id.compositeDurationTextView)
         TextView compositeDurationTextView;
 
         public HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            bindViewImpl(itemView);
+        }
+
+        private void bindViewImpl(View itemView) {
+            compositeDurationTextView = itemView.findViewById(R.id.compositeDurationTextView);
         }
 
         void bind(Message message) {

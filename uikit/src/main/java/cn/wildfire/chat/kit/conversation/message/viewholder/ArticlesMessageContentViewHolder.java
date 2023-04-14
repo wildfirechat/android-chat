@@ -14,11 +14,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -28,22 +25,15 @@ import cn.wildfirechat.message.ArticlesMessageContent;
 
 @MessageContentType(ArticlesMessageContent.class)
 @EnableContextMenu
-public class ArticlesMessageContentViewHolder extends ContextableNotificationMessageContentViewHolder{
-    @BindView(R2.id.singleArticleContainerLinearLayout)
+public class ArticlesMessageContentViewHolder extends ContextableNotificationMessageContentViewHolder {
     LinearLayout singleArticleContainerLinearLayout;
-    @BindView(R2.id.singleCoverImageView)
     ImageView singleCoverImageView;
-    @BindView(R2.id.singleTitleTextView)
     TextView singleTitleTextView;
 
-    @BindView(R2.id.topArticleContainerLinearLayout)
     RelativeLayout topArticleContainerRelativeLayout;
-    @BindView(R2.id.topCoverImageView)
     ImageView topCoverImageView;
-    @BindView(R2.id.topTitleTextView)
     TextView topTitleTextView;
 
-    @BindView(R2.id.subArticlesContainerLinearLayout)
     LinearLayout subArticlesContainerRelativeLayout;
 
 
@@ -51,6 +41,23 @@ public class ArticlesMessageContentViewHolder extends ContextableNotificationMes
 
     public ArticlesMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViewImpl(itemView);
+        bindClickImpl(itemView);
+    }
+
+    private void bindClickImpl(View itemView) {
+        itemView.findViewById(R.id.singleArticleContainerLinearLayout).setOnClickListener(this::onClick);
+        itemView.findViewById(R.id.topArticleContainerLinearLayout).setOnClickListener(this::onClick);
+    }
+
+    private void bindViewImpl(View itemView) {
+        singleArticleContainerLinearLayout =itemView.findViewById(R.id.singleArticleContainerLinearLayout);
+        singleCoverImageView =itemView.findViewById(R.id.singleCoverImageView);
+        singleTitleTextView =itemView.findViewById(R.id.singleTitleTextView);
+        topArticleContainerRelativeLayout =itemView.findViewById(R.id.topArticleContainerLinearLayout);
+        topCoverImageView =itemView.findViewById(R.id.topCoverImageView);
+        topTitleTextView =itemView.findViewById(R.id.topTitleTextView);
+        subArticlesContainerRelativeLayout =itemView.findViewById(R.id.subArticlesContainerLinearLayout);
     }
 
     @Override
@@ -94,7 +101,6 @@ public class ArticlesMessageContentViewHolder extends ContextableNotificationMes
         }
     }
 
-    @OnClick({R2.id.singleArticleContainerLinearLayout, R2.id.topArticleContainerLinearLayout})
     public void onClick(View view) {
         openArticle(content.topArticle);
     }

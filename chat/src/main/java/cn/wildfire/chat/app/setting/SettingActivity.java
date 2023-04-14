@@ -18,8 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.main.SplashActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
@@ -33,12 +31,31 @@ import cn.wildfirechat.chat.R;
 
 public class SettingActivity extends WfcBaseActivity {
     private final int REQUEST_IGNORE_BATTERY_CODE = 100;
-    @BindView(R.id.diagnoseOptionItemView)
     OptionItemView diagnoseOptionItemView;
+
+
+    private void bindClickImpl() {
+        findViewById(R.id.exitOptionItemView).setOnClickListener(v -> exit());
+        findViewById(R.id.privacySettingOptionItemView).setOnClickListener(v -> privacySetting());
+        findViewById(R.id.diagnoseOptionItemView).setOnClickListener(v -> diagnose());
+        findViewById(R.id.uploadLogOptionItemView).setOnClickListener(v -> uploadLog());
+        findViewById(R.id.batteryOptionItemView).setOnClickListener(v -> batteryOptimize());
+        findViewById(R.id.aboutOptionItemView).setOnClickListener(v -> about());
+    }
+
+    private void bindViewImpl() {
+        diagnoseOptionItemView = findViewById(R.id.diagnoseOptionItemView);
+    }
 
     @Override
     protected int contentLayout() {
         return R.layout.setting_activity;
+    }
+
+    @Override
+    protected void afterViews() {
+        bindViewImpl();
+        bindClickImpl();
     }
 
     @Override
@@ -55,7 +72,6 @@ public class SettingActivity extends WfcBaseActivity {
         }
     }
 
-    @OnClick(R.id.exitOptionItemView)
     void exit() {
         //不要清除session，这样再次登录时能够保留历史记录。如果需要清除掉本地历史记录和服务器信息这里使用true
         ChatManagerHolder.gChatManager.disconnect(true, false);
@@ -77,13 +93,11 @@ public class SettingActivity extends WfcBaseActivity {
         finish();
     }
 
-    @OnClick(R.id.privacySettingOptionItemView)
     void privacySetting() {
         Intent intent = new Intent(this, PrivacySettingActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R.id.diagnoseOptionItemView)
     void diagnose() {
         long start = System.currentTimeMillis();
         OKHttpHelper.get("http://" + Config.IM_SERVER_HOST + "/api/version", null, new SimpleCallback<String>() {
@@ -103,7 +117,6 @@ public class SettingActivity extends WfcBaseActivity {
 
     }
 
-    @OnClick(R.id.uploadLogOptionItemView)
     void uploadLog() {
         AppService.Instance().uploadLog(new SimpleCallback<String>() {
             @Override
@@ -123,7 +136,6 @@ public class SettingActivity extends WfcBaseActivity {
     }
 
     @SuppressLint("BatteryLife")
-    @OnClick(R.id.batteryOptionItemView)
     void batteryOptimize() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
@@ -134,7 +146,7 @@ public class SettingActivity extends WfcBaseActivity {
                     intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                     intent.setData(Uri.parse("package:" + packageName));
                     startActivityForResult(intent, REQUEST_IGNORE_BATTERY_CODE);
-                }else {
+                } else {
                     Toast.makeText(this, "已忽略电池优化，允许野火IM后台运行，更能保证消息的实时性", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
@@ -145,7 +157,6 @@ public class SettingActivity extends WfcBaseActivity {
         }
     }
 
-    @OnClick(R.id.aboutOptionItemView)
     void about() {
         Intent intent = new Intent(this, AboutActivity.class);
         startActivity(intent);

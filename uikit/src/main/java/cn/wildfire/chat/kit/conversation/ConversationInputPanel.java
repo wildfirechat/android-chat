@@ -53,13 +53,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.audio.AudioRecorderPanel;
 import cn.wildfire.chat.kit.audio.PttPanel;
@@ -71,6 +66,7 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.message.ChannelMenuEventMessageContent;
 import cn.wildfirechat.message.Message;
@@ -87,44 +83,27 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class ConversationInputPanel extends FrameLayout implements IEmotionSelectedListener {
 
-    @BindView(R2.id.inputContainerLinearLayout)
     LinearLayout inputContainerLinearLayout;
-    @BindView(R2.id.disableInputTipTextView)
     TextView disableInputTipTextView;
 
-    @BindView(R2.id.menuImageView)
     ImageView menuImageView;
-    @BindView(R2.id.audioImageView)
     ImageView audioImageView;
-    @BindView(R2.id.pttImageView)
     ImageView pttImageView;
-    @BindView(R2.id.audioButton)
     Button audioButton;
-    @BindView(R2.id.editText)
     EditText editText;
-    @BindView(R2.id.emotionImageView)
     ImageView emotionImageView;
-    @BindView(R2.id.extImageView)
     ImageView extImageView;
-    @BindView(R2.id.sendButton)
     Button sendButton;
 
-    @BindView(R2.id.channelMenuContainerLinearLayout)
     LinearLayout channelMenuContainerLinearLayout;
 
-    @BindView(R2.id.emotionContainerFrameLayout)
     KeyboardHeightFrameLayout emotionContainerFrameLayout;
-    @BindView(R2.id.emotionLayout)
     EmotionLayout emotionLayout;
-    @BindView(R2.id.extContainerContainerLayout)
     KeyboardHeightFrameLayout extContainerFrameLayout;
 
-    @BindView(R2.id.conversationExtViewPager)
     ViewPagerFixed extViewPager;
 
-    @BindView(R2.id.refRelativeLayout)
     RelativeLayout refRelativeLayout;
-    @BindView(R2.id.refEditText)
     EditText refEditText;
 
     ConversationExtension extension;
@@ -243,7 +222,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     public void init(Fragment fragment, InputAwareLayout rootInputAwareLayout) {
         LayoutInflater.from(getContext()).inflate(R.layout.conversation_input_panel, this, true);
-        ButterKnife.bind(this, this);
+        bindViewImpl();
 
         this.activity = fragment.getActivity();
         this.fragment = fragment;
@@ -310,7 +289,47 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-    @OnClick(R2.id.extImageView)
+    private void bindViewImpl() {
+        inputContainerLinearLayout = findViewById(R.id.inputContainerLinearLayout);
+        disableInputTipTextView = findViewById(R.id.disableInputTipTextView);
+        menuImageView = findViewById(R.id.menuImageView);
+        audioImageView = findViewById(R.id.audioImageView);
+        pttImageView = findViewById(R.id.pttImageView);
+        audioButton = findViewById(R.id.audioButton);
+        editText = findViewById(R.id.editText);
+        emotionImageView = findViewById(R.id.emotionImageView);
+        extImageView = findViewById(R.id.extImageView);
+        sendButton = findViewById(R.id.sendButton);
+        channelMenuContainerLinearLayout = findViewById(R.id.channelMenuContainerLinearLayout);
+        emotionContainerFrameLayout = findViewById(R.id.emotionContainerFrameLayout);
+        emotionLayout = findViewById(R.id.emotionLayout);
+        extContainerFrameLayout = findViewById(R.id.extContainerContainerLayout);
+        extViewPager = findViewById(R.id.conversationExtViewPager);
+        refRelativeLayout = findViewById(R.id.refRelativeLayout);
+        refEditText = findViewById(R.id.refEditText);
+
+        extImageView.setOnClickListener(v -> onExtImageViewClick());
+        emotionImageView.setOnClickListener(v -> onEmotionImageViewClick());
+        findViewById(R.id.clearRefImageButton).setOnClickListener(v -> onClearRefImageButtonClick());
+        menuImageView.setOnClickListener(v -> showChannelMenu());
+        audioImageView.setOnClickListener(this::showRecordPanel);
+        pttImageView.setOnClickListener(this::showRecordPanel);
+        sendButton.setOnClickListener(v -> sendMessage());
+
+        editText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                onInputTextChanged(s, start, before, count);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                afterInputTextChanged(s);
+            }
+        });
+
+    }
+
     void onExtImageViewClick() {
         if (audioButton.getTag() != null) {
             return;
@@ -324,7 +343,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-    @OnClick(R2.id.emotionImageView)
     void onEmotionImageViewClick() {
 
         if (audioRecorderPanel.isShowingRecorder() || (pttPanel != null && pttPanel.isShowingTalking())) {
@@ -339,13 +357,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-    @OnClick(R2.id.clearRefImageButton)
     void onClearRefImageButtonClick() {
         clearQuoteMessage();
         updateConversationDraft();
     }
 
-    @OnTextChanged(value = R2.id.editText, callback = OnTextChanged.Callback.TEXT_CHANGED)
     void onInputTextChanged(CharSequence s, int start, int before, int count) {
         if (activity.getCurrentFocus() == editText) {
             if (conversation.type == Conversation.ConversationType.Group) {
@@ -397,7 +413,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         fragment.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
     }
 
-    @OnTextChanged(value = R2.id.editText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void afterInputTextChanged(Editable editable) {
         if (editText.getText().toString().trim().length() > 0) {
             if (activity.getCurrentFocus() == editText) {
@@ -411,7 +426,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-    @OnClick(R2.id.menuImageView)
     public void showChannelMenu() {
         ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversation.target, false);
         if (channelInfo.menus == null || channelInfo.menus.isEmpty()) {
@@ -476,7 +490,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-    @OnClick({R2.id.audioImageView, R2.id.pttImageView})
     public void showRecordPanel(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -520,8 +533,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-
-    @OnClick(R2.id.sendButton)
     void sendMessage() {
         messageEmojiCount = 0;
         Editable content = editText.getText();

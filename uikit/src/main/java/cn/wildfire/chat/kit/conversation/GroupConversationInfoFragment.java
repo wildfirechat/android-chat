@@ -39,14 +39,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -80,58 +76,36 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     private static final int REQUEST_CODE_PICK_IMAGE = 100;
 
-    @BindView(R2.id.progressBar)
     ProgressBar progressBar;
 
-    @BindView(R2.id.contentNestedScrollView)
     NestedScrollView contentNestedScrollView;
 
     // group
-    @BindView(R2.id.groupLinearLayout_0)
     LinearLayout groupLinearLayout_0;
-    @BindView(R2.id.groupNameOptionItemView)
     OptionItemView groupNameOptionItemView;
-    @BindView(R2.id.groupPortraitOptionItemView)
     OptionItemView groupPortraitOptionItemView;
-    @BindView(R2.id.groupRemarkOptionItemView)
     OptionItemView groupRemarkOptionItemView;
-    @BindView(R2.id.groupQRCodeOptionItemView)
     OptionItemView groupQRCodeOptionItemView;
-    @BindView(R2.id.groupNoticeLinearLayout)
     LinearLayout noticeLinearLayout;
-    @BindView(R2.id.groupNoticeTextView)
     TextView noticeTextView;
-    @BindView(R2.id.groupManageOptionItemView)
     OptionItemView groupManageOptionItemView;
-    @BindView(R2.id.groupManageDividerLine)
     View groupManageDividerLine;
-    @BindView(R2.id.showAllMemberButton)
     Button showAllGroupMemberButton;
 
-    @BindView(R2.id.groupLinearLayout_1)
     LinearLayout groupLinearLayout_1;
-    @BindView(R2.id.myGroupNickNameOptionItemView)
     OptionItemView myGroupNickNameOptionItemView;
-    @BindView(R2.id.showGroupMemberAliasSwitchButton)
     SwitchMaterial showGroupMemberNickNameSwitchButton;
 
-    @BindView(R2.id.quitButton)
     TextView quitGroupButton;
 
-    @BindView(R2.id.markGroupLinearLayout)
     LinearLayout markGroupLinearLayout;
-    @BindView(R2.id.markGroupSwitchButton)
     SwitchMaterial markGroupSwitchButton;
 
     // common
-    @BindView(R2.id.memberRecyclerView)
     RecyclerView memberReclerView;
-    @BindView(R2.id.stickTopSwitchButton)
     SwitchMaterial stickTopSwitchButton;
-    @BindView(R2.id.silentSwitchButton)
     SwitchMaterial silentSwitchButton;
 
-    @BindView(R2.id.fileRecordOptionItemView)
     OptionItemView fileRecordOptionItem;
 
     private ConversationInfo conversationInfo;
@@ -166,9 +140,50 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conversation_info_group_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViewImpl(view);
+        bindClickImpl(view);
         init();
         return view;
+    }
+
+    private void bindClickImpl(View view) {
+        view.findViewById(R.id.groupNameOptionItemView).setOnClickListener(_v -> updateGroupName());
+        view.findViewById(R.id.groupPortraitOptionItemView).setOnClickListener(_v -> updateGroupPortrait());
+        view.findViewById(R.id.groupRemarkOptionItemView).setOnClickListener(_v -> updateGroupRemark());
+        view.findViewById(R.id.groupNoticeLinearLayout).setOnClickListener(_v -> updateGroupNotice());
+        view.findViewById(R.id.groupManageOptionItemView).setOnClickListener(_v -> manageGroup());
+        view.findViewById(R.id.showAllMemberButton).setOnClickListener(_v -> showAllGroupMember());
+        view.findViewById(R.id.myGroupNickNameOptionItemView).setOnClickListener(_v -> updateMyGroupAlias());
+        view.findViewById(R.id.quitButton).setOnClickListener(_v -> quitGroup());
+        view.findViewById(R.id.clearMessagesOptionItemView).setOnClickListener(_v -> clearMessage());
+        view.findViewById(R.id.groupQRCodeOptionItemView).setOnClickListener(_v -> showGroupQRCode());
+        view.findViewById(R.id.searchMessageOptionItemView).setOnClickListener(_v -> searchGroupMessage());
+        view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(_v -> fileRecord());
+    }
+
+    private void bindViewImpl(View view) {
+        progressBar = view.findViewById(R.id.progressBar);
+        contentNestedScrollView = view.findViewById(R.id.contentNestedScrollView);
+        groupLinearLayout_0 = view.findViewById(R.id.groupLinearLayout_0);
+        groupNameOptionItemView = view.findViewById(R.id.groupNameOptionItemView);
+        groupPortraitOptionItemView = view.findViewById(R.id.groupPortraitOptionItemView);
+        groupRemarkOptionItemView = view.findViewById(R.id.groupRemarkOptionItemView);
+        groupQRCodeOptionItemView = view.findViewById(R.id.groupQRCodeOptionItemView);
+        noticeLinearLayout = view.findViewById(R.id.groupNoticeLinearLayout);
+        noticeTextView = view.findViewById(R.id.groupNoticeTextView);
+        groupManageOptionItemView = view.findViewById(R.id.groupManageOptionItemView);
+        groupManageDividerLine = view.findViewById(R.id.groupManageDividerLine);
+        showAllGroupMemberButton = view.findViewById(R.id.showAllMemberButton);
+        groupLinearLayout_1 = view.findViewById(R.id.groupLinearLayout_1);
+        myGroupNickNameOptionItemView = view.findViewById(R.id.myGroupNickNameOptionItemView);
+        showGroupMemberNickNameSwitchButton = view.findViewById(R.id.showGroupMemberAliasSwitchButton);
+        quitGroupButton = view.findViewById(R.id.quitButton);
+        markGroupLinearLayout = view.findViewById(R.id.markGroupLinearLayout);
+        markGroupSwitchButton = view.findViewById(R.id.markGroupSwitchButton);
+        memberReclerView = view.findViewById(R.id.memberRecyclerView);
+        stickTopSwitchButton = view.findViewById(R.id.stickTopSwitchButton);
+        silentSwitchButton = view.findViewById(R.id.silentSwitchButton);
+        fileRecordOptionItem = view.findViewById(R.id.fileRecordOptionItemView);
     }
 
     @Override
@@ -360,7 +375,6 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     }
 
-    @OnClick(R2.id.groupNameOptionItemView)
     void updateGroupName() {
         if ((groupInfo.type != GroupInfo.GroupType.Restricted && groupInfo.type != GroupInfo.GroupType.Organization)
             || (groupMember.type == GroupMember.GroupMemberType.Manager || groupMember.type == GroupMember.GroupMemberType.Owner)) {
@@ -370,19 +384,16 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         }
     }
 
-    @OnClick(R2.id.groupPortraitOptionItemView)
     void updateGroupPortrait() {
         ImagePicker.picker().pick(this, REQUEST_CODE_PICK_IMAGE);
     }
 
-    @OnClick(R2.id.groupRemarkOptionItemView)
     void updateGroupRemark() {
         Intent intent = new Intent(getActivity(), SetGroupRemarkActivity.class);
         intent.putExtra("groupInfo", groupInfo);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.groupNoticeLinearLayout)
     void updateGroupNotice() {
         if ((groupInfo.type != GroupInfo.GroupType.Restricted && groupInfo.type != GroupInfo.GroupType.Organization)
             || (groupMember.type == GroupMember.GroupMemberType.Manager || groupMember.type == GroupMember.GroupMemberType.Owner)) {
@@ -392,21 +403,18 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         }
     }
 
-    @OnClick(R2.id.groupManageOptionItemView)
     void manageGroup() {
         Intent intent = new Intent(getActivity(), GroupManageActivity.class);
         intent.putExtra("groupInfo", groupInfo);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.showAllMemberButton)
     void showAllGroupMember() {
         Intent intent = new Intent(getActivity(), GroupMemberListActivity.class);
         intent.putExtra("groupInfo", groupInfo);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.myGroupNickNameOptionItemView)
     void updateMyGroupAlias() {
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
             .input("请输入你的群昵称", groupMember.alias, true, (dialog1, input) -> {
@@ -437,7 +445,6 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         dialog.show();
     }
 
-    @OnClick(R2.id.quitButton)
     void quitGroup() {
         if (groupInfo != null && userViewModel.getUserId().equals(groupInfo.owner)) {
             groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
@@ -460,7 +467,6 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         }
     }
 
-    @OnClick(R2.id.clearMessagesOptionItemView)
     void clearMessage() {
         new MaterialDialog.Builder(getActivity())
             .items("清空本地会话", "清空远程会话")
@@ -477,21 +483,18 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             .show();
     }
 
-    @OnClick(R2.id.groupQRCodeOptionItemView)
     void showGroupQRCode() {
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_GROUP + groupInfo.target;
         Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "群二维码", groupInfo.portrait, qrCodeValue);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.searchMessageOptionItemView)
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.fileRecordOptionItemView)
     void fileRecord() {
         Intent intent = new Intent(getActivity(), FileRecordActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);

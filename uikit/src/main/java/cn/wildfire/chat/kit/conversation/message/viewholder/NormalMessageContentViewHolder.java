@@ -33,15 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.Optional;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
@@ -80,34 +76,48 @@ import cn.wildfirechat.remote.UserSettingScope;
  * 普通消息
  */
 public abstract class NormalMessageContentViewHolder extends MessageContentViewHolder {
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.errorLinearLayout)
     LinearLayout errorLinearLayout;
-    @BindView(R2.id.nameTextView)
     TextView nameTextView;
-    @BindView(R2.id.progressBar)
     ProgressBar progressBar;
-    @BindView(R2.id.checkbox)
     CheckBox checkBox;
 
-    @BindView(R2.id.singleReceiptImageView)
     @Nullable
     ImageView singleReceiptImageView;
 
-    @BindView(R2.id.groupReceiptFrameLayout)
     @Nullable
     FrameLayout groupReceiptFrameLayout;
 
-    @BindView(R2.id.deliveryProgressBar)
     @Nullable
     ProgressBar deliveryProgressBar;
-    @BindView(R2.id.readProgressBar)
     @Nullable
     ProgressBar readProgressBar;
 
     public NormalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViewImpl(itemView);
+        bindClickImpl(itemView);
+    }
+
+    private void bindClickImpl(View itemView) {
+        if (errorLinearLayout != null) {
+            errorLinearLayout.setOnClickListener(this::onRetryClick);
+        }
+        if (groupReceiptFrameLayout != null) {
+            groupReceiptFrameLayout.setOnClickListener(this::OnGroupMessageReceiptClick);
+        }
+    }
+
+    private void bindViewImpl(View itemView) {
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        errorLinearLayout = itemView.findViewById(R.id.errorLinearLayout);
+        nameTextView = itemView.findViewById(R.id.nameTextView);
+        progressBar = itemView.findViewById(R.id.progressBar);
+        checkBox = itemView.findViewById(R.id.checkbox);
+        singleReceiptImageView = itemView.findViewById(R.id.singleReceiptImageView);
+        groupReceiptFrameLayout = itemView.findViewById(R.id.groupReceiptFrameLayout);
+        deliveryProgressBar = itemView.findViewById(R.id.deliveryProgressBar);
+        readProgressBar = itemView.findViewById(R.id.readProgressBar);
     }
 
     @Override
@@ -166,8 +176,6 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         return true;
     }
 
-    @Optional
-    @OnClick(R2.id.errorLinearLayout)
     public void onRetryClick(View itemView) {
         new MaterialDialog.Builder(fragment.getContext())
             .content("重新发送?")
@@ -178,8 +186,6 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             .show();
     }
 
-    @Optional
-    @OnClick(R2.id.groupReceiptFrameLayout)
     public void OnGroupMessageReceiptClick(View itemView) {
         ((ConversationMessageAdapter) adapter).onGroupMessageReceiptClick(message.message);
     }

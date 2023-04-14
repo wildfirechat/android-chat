@@ -17,10 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -38,7 +35,6 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
     private boolean unread;
     private Message message;
 
-    @BindView(R2.id.recyclerView)
     RecyclerView recyclerView;
 
     public static GroupMessageReceiptListFragment newInstance(GroupInfo groupInfo, Message message, boolean unread) {
@@ -67,7 +63,7 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
-        ButterKnife.bind(this, view);
+        bindViewImpl(view);
         groupMemberListAdapter = new GroupMessageReceiptAdapter(groupInfo);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(groupMemberListAdapter);
@@ -75,6 +71,10 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, userInfos -> loadAndShowGroupMembers());
         loadAndShowGroupMembers();
+    }
+
+    private void bindViewImpl(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
     }
 
     private void loadAndShowGroupMembers() {

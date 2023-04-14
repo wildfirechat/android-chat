@@ -19,11 +19,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -80,13 +76,10 @@ public class GroupMessageReceiptAdapter extends RecyclerView.Adapter<GroupMessag
     }
 
     class MemberViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R2.id.portraitImageView)
         ImageView portraitImageView;
-        @BindView(R2.id.nameTextView)
         TextView nameTextView;
         private UserInfo userInfo;
 
-        @OnClick(R2.id.receiptItem)
         void onClick() {
             if (onMemberClickListener == null) {
                 return;
@@ -98,7 +91,17 @@ public class GroupMessageReceiptAdapter extends RecyclerView.Adapter<GroupMessag
 
         public MemberViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            bindViewImpl(itemView);
+            bindClickImpl(itemView);
+        }
+
+        private void bindViewImpl(View itemView) {
+            portraitImageView = itemView.findViewById(R.id.portraitImageView);
+            nameTextView = itemView.findViewById(R.id.nameTextView);
+        }
+
+        private void bindClickImpl(View itemView) {
+            itemView.findViewById(R.id.receiptItem).setOnClickListener(_v -> onClick());
         }
 
         public void bindUserInfo(UserInfo userInfo) {

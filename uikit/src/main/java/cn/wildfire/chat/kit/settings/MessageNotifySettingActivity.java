@@ -9,27 +9,28 @@ import android.widget.Toast;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 
 public class MessageNotifySettingActivity extends WfcBaseActivity {
-    @BindView(R2.id.switchMsgNotification)
     SwitchMaterial switchMsgNotification;
-    @BindView(R2.id.switchVoipNotification)
     SwitchMaterial switchVoipNotification;
-    @BindView(R2.id.switchShowMsgDetail)
     SwitchMaterial switchShowMsgDetail;
-    @BindView(R2.id.switchUserReceipt)
     SwitchMaterial switchUserReceipt;
-    @BindView(R2.id.switchSyncDraft)
     SwitchMaterial switchSyncDraft;
-    @BindView(R2.id.switchPtt)
     SwitchMaterial switchPtt;
+
+    private void bindViewImpl() {
+        switchMsgNotification = findViewById(R.id.switchMsgNotification);
+        switchVoipNotification = findViewById(R.id.switchVoipNotification);
+        switchShowMsgDetail = findViewById(R.id.switchShowMsgDetail);
+        switchUserReceipt = findViewById(R.id.switchUserReceipt);
+        switchSyncDraft = findViewById(R.id.switchSyncDraft);
+        switchPtt = findViewById(R.id.switchPtt);
+    }
 
     @Override
     protected int contentLayout() {
@@ -38,7 +39,7 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        super.afterViews();
+        bindViewImpl();
 
         switchMsgNotification.setChecked(!ChatManager.Instance().isGlobalSilent());
         switchShowMsgDetail.setChecked(!ChatManager.Instance().isHiddenNotificationDetail());

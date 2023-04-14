@@ -9,7 +9,6 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.chat.R;
 
@@ -20,8 +19,15 @@ public class AccountActivity extends WfcBaseActivity {
         return R.layout.account_activity;
     }
 
+    private void bindClickImpl() {
+        findViewById(R.id.changePasswordOptionItemView).setOnClickListener(v -> changePassword());
+    }
 
-    @OnClick(R.id.changePasswordOptionItemView)
+    @Override
+    protected void afterViews() {
+        bindClickImpl();
+    }
+
     void changePassword() {
         new MaterialDialog.Builder(this).items(R.array.change_password).itemsCallback(new MaterialDialog.ListCallback() {
             @Override

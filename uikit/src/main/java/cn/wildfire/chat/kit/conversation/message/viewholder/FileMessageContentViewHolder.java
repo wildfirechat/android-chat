@@ -16,9 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
@@ -31,17 +29,26 @@ import cn.wildfirechat.message.FileMessageContent;
 @MessageContentType(FileMessageContent.class)
 @EnableContextMenu
 public class FileMessageContentViewHolder extends MediaMessageContentViewHolder {
-    @BindView(R2.id.fileIconImageView)
     ImageView fileIconImageView;
-    @BindView(R2.id.fileNameTextView)
     TextView nameTextView;
-    @BindView(R2.id.fileSizeTextView)
     TextView sizeTextView;
 
     private FileMessageContent fileMessageContent;
 
     public FileMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViewImpl(itemView);
+        bindClickImpl(itemView);
+    }
+
+    private void bindClickImpl(View itemView) {
+       itemView.findViewById(R.id.fileMessageContentItemView).setOnClickListener(this::onClick);
+    }
+
+    private void bindViewImpl(View itemView) {
+        fileIconImageView =itemView.findViewById(R.id.fileIconImageView);
+        nameTextView =itemView.findViewById(R.id.fileNameTextView);
+        sizeTextView =itemView.findViewById(R.id.fileSizeTextView);
     }
 
     @Override
@@ -53,7 +60,6 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
         fileIconImageView.setImageResource(FileUtils.getFileTypeImageResId(fileMessageContent.getName()));
     }
 
-    @OnClick(R2.id.fileMessageContentItemView)
     public void onClick(View view) {
         if (message.isDownloading) {
             return;

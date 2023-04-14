@@ -16,33 +16,57 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.chat.R;
 
 public class ResetPasswordActivity extends WfcBaseActivity {
-    @BindView(R.id.confirmButton)
     Button confirmButton;
 
-    @BindView(R.id.authCodeEditText)
     EditText authCodeEditText;
-    @BindView(R.id.newPasswordEditText)
     EditText newPasswordEditText;
-    @BindView(R.id.confirmPasswordEditText)
     EditText confirmPasswordEditText;
 
-    @BindView(R.id.requestAuthCodeButton)
     TextView requestAuthCodeButton;
 
-    @BindView(R.id.authCodeFrameLayout)
     FrameLayout authCodeFrameLayout;
 
     private String resetCode;
+
+    private void bindClickImpl() {
+        findViewById(R.id.requestAuthCodeButton).setOnClickListener(v -> requestAuthCode());
+        findViewById(R.id.confirmButton).setOnClickListener(v -> resetPassword());
+        authCodeEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                authCode(s);
+            }
+        });
+        newPasswordEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                newPassword(s);
+            }
+        });
+        confirmPasswordEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                confirmPassword(s);
+            }
+        });
+    }
+
+    private void bindViewImpl() {
+        confirmButton = findViewById(R.id.confirmButton);
+        authCodeEditText = findViewById(R.id.authCodeEditText);
+        newPasswordEditText = findViewById(R.id.newPasswordEditText);
+        confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText);
+        requestAuthCodeButton = findViewById(R.id.requestAuthCodeButton);
+        authCodeFrameLayout = findViewById(R.id.authCodeFrameLayout);
+    }
 
     @Override
     protected int contentLayout() {
@@ -51,13 +75,14 @@ public class ResetPasswordActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
+        bindViewImpl();
+        bindClickImpl();
         resetCode = getIntent().getStringExtra("resetCode");
         if (!TextUtils.isEmpty(resetCode)) {
             authCodeFrameLayout.setVisibility(View.GONE);
         }
     }
 
-    @OnTextChanged(value = R.id.authCodeEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void authCode(Editable editable) {
         if (!TextUtils.isEmpty(newPasswordEditText.getText()) && !TextUtils.isEmpty(confirmPasswordEditText.getText()) && !TextUtils.isEmpty(editable)) {
             confirmButton.setEnabled(true);
@@ -66,7 +91,6 @@ public class ResetPasswordActivity extends WfcBaseActivity {
         }
     }
 
-    @OnTextChanged(value = R.id.newPasswordEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void newPassword(Editable editable) {
         if ((!TextUtils.isEmpty(authCodeEditText.getText()) || !TextUtils.isEmpty(resetCode)) && !TextUtils.isEmpty(confirmPasswordEditText.getText()) && !TextUtils.isEmpty(editable)) {
             confirmButton.setEnabled(true);
@@ -75,7 +99,6 @@ public class ResetPasswordActivity extends WfcBaseActivity {
         }
     }
 
-    @OnTextChanged(value = R.id.confirmPasswordEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void confirmPassword(Editable editable) {
         if ((!TextUtils.isEmpty(authCodeEditText.getText()) || !TextUtils.isEmpty(resetCode)) && !TextUtils.isEmpty(newPasswordEditText.getText()) && !TextUtils.isEmpty(editable)) {
             confirmButton.setEnabled(true);
@@ -86,7 +109,6 @@ public class ResetPasswordActivity extends WfcBaseActivity {
 
     private Handler handler = new Handler();
 
-    @OnClick(R.id.requestAuthCodeButton)
     void requestAuthCode() {
         requestAuthCodeButton.setEnabled(false);
         handler.postDelayed(new Runnable() {
@@ -113,7 +135,6 @@ public class ResetPasswordActivity extends WfcBaseActivity {
         });
     }
 
-    @OnClick(R.id.confirmButton)
     void resetPassword() {
 
         String newPassword = newPasswordEditText.getText().toString().trim();

@@ -12,23 +12,16 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.GroupInfo;
 
 public class GroupViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;
     private GroupListAdapter adapter;
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.nameTextView)
     TextView nameTextView;
-    @BindView(R2.id.categoryTextView)
     TextView categoryTextView;
-    @BindView(R2.id.dividerLine)
     View dividerLine;
 
     protected GroupInfo groupInfo;
@@ -37,7 +30,14 @@ public class GroupViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.fragment = fragment;
         this.adapter = adapter;
-        ButterKnife.bind(this, itemView);
+        bindViewImpl(itemView);
+    }
+
+    private void bindViewImpl(View itemView) {
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        nameTextView = itemView.findViewById(R.id.nameTextView);
+        categoryTextView = itemView.findViewById(R.id.categoryTextView);
+        dividerLine = itemView.findViewById(R.id.dividerLine);
     }
 
     // TODO hide the last diver line

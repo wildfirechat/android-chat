@@ -23,20 +23,21 @@ import com.lqr.imagepicker.bean.ImageItem;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 
 public class ScanQRCodeActivity extends WfcBaseActivity {
 
     private CaptureHelper mCaptureHelper;
-    @BindView(R2.id.surfaceView)
     SurfaceView surfaceView;
-    @BindView(R2.id.viewfinderView)
     ViewfinderView viewfinderView;
 
     private static final int REQUEST_CODE_IMAGE = 100;
+
+    private void bindViewImpl() {
+        surfaceView = findViewById(R.id.surfaceView);
+        viewfinderView = findViewById(R.id.viewfinderView);
+    }
 
     @Override
     protected int contentLayout() {
@@ -45,13 +46,13 @@ public class ScanQRCodeActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        super.afterViews();
+        bindViewImpl();
         mCaptureHelper = new CaptureHelper(this, surfaceView, viewfinderView);
         mCaptureHelper.onCreate();
         mCaptureHelper.vibrate(true)
-                .fullScreenScan(true)//全屏扫码
-                .supportVerticalCode(false)//支持扫垂直条码，建议有此需求时才使用。
-                .continuousScan(false);
+            .fullScreenScan(true)//全屏扫码
+            .supportVerticalCode(false)//支持扫垂直条码，建议有此需求时才使用。
+            .continuousScan(false);
     }
 
     @Override
