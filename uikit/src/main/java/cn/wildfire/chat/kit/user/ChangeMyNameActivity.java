@@ -41,7 +41,8 @@ public class ChangeMyNameActivity extends WfcBaseActivity {
         super.onCreate(savedInstanceState);
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         nameEditText = findViewById(R.id.nameEditText);
         nameEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
@@ -53,7 +54,6 @@ public class ChangeMyNameActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
         userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);

@@ -21,7 +21,8 @@ public class FileRecordListActivity extends WfcBaseActivity {
         return R.layout.activity_file_record_list;
     }
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.allFilesItemView).setOnClickListener(v -> allFiles());
         findViewById(R.id.myFilesItemView).setOnClickListener(v -> myFiles());
         findViewById(R.id.conversationFilesItemView).setOnClickListener(v -> convFiles());
@@ -30,7 +31,6 @@ public class FileRecordListActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindClickImpl();
         if (!isDarkTheme()) {
             setTitleBackgroundResource(R.color.white, false);
         }

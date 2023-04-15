@@ -36,7 +36,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     TextView requestAuthCodeButton;
 
 
-    private void bindClickImpl() {
+    private void bindEvents() {
         findViewById(R.id.passwordLoginTextView).setOnClickListener(v -> authCodeLogin());
         findViewById(R.id.loginButton).setOnClickListener(v -> login());
         findViewById(R.id.requestAuthCodeButton).setOnClickListener(v -> requestAuthCode());
@@ -55,7 +55,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         });
     }
 
-    private void bindViewImpl() {
+    private void bindViews() {
         loginButton = findViewById(R.id.loginButton);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
         authCodeEditText = findViewById(R.id.authCodeEditText);
@@ -69,8 +69,8 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
+        bindViews();
+        bindEvents();
         setStatusBarTheme(this, false);
         setStatusBarColor(R.color.gray14);
     }

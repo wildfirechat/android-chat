@@ -29,7 +29,8 @@ public class QRCodeActivity extends WfcBaseActivity {
 
     ImageView qrCodeImageView;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         qrCodeImageView = findViewById(R.id.qrCodeImageView);
     }
 
@@ -43,7 +44,6 @@ public class QRCodeActivity extends WfcBaseActivity {
 
     @Override
     protected void beforeViews() {
-        super.beforeViews();
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
         qrCodeValue = intent.getStringExtra("qrCodeValue");
@@ -57,7 +57,7 @@ public class QRCodeActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
+        bindViews();
         setTitle(title);
 
         genQRCode();

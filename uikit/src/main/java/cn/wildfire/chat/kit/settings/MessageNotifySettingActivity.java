@@ -23,7 +23,8 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
     SwitchMaterial switchSyncDraft;
     SwitchMaterial switchPtt;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         switchMsgNotification = findViewById(R.id.switchMsgNotification);
         switchVoipNotification = findViewById(R.id.switchVoipNotification);
         switchShowMsgDetail = findViewById(R.id.switchShowMsgDetail);
@@ -39,8 +40,6 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-
         switchMsgNotification.setChecked(!ChatManager.Instance().isGlobalSilent());
         switchShowMsgDetail.setChecked(!ChatManager.Instance().isHiddenNotificationDetail());
 

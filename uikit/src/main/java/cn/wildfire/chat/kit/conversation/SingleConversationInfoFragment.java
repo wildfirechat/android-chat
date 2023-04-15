@@ -77,19 +77,19 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conversation_info_single_fragment, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.clearMessagesOptionItemView).setOnClickListener(_v -> clearMessage());
         view.findViewById(R.id.searchMessageOptionItemView).setOnClickListener(_v -> searchGroupMessage());
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(_v -> fileRecord());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         memberReclerView = view.findViewById(R.id.memberRecyclerView);
         stickTopSwitchButton = view.findViewById(R.id.stickTopSwitchButton);
         silentSwitchButton = view.findViewById(R.id.silentSwitchButton);

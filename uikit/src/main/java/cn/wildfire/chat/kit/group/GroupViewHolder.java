@@ -30,10 +30,10 @@ public class GroupViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.fragment = fragment;
         this.adapter = adapter;
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
         nameTextView = itemView.findViewById(R.id.nameTextView);
         categoryTextView = itemView.findViewById(R.id.categoryTextView);

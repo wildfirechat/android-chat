@@ -22,10 +22,10 @@ public class BlacklistViewHolder extends RecyclerView.ViewHolder {
 
     public BlacklistViewHolder(View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
         userNameTextView = itemView.findViewById(R.id.userNameTextView);
     }

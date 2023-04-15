@@ -34,7 +34,7 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
     EditText accountEditText;
     EditText passwordEditText;
 
-    private void bindClickImpl() {
+    private void bindEvents() {
         findViewById(R.id.authCodeLoginTextView).setOnClickListener(v -> authCodeLogin());
         findViewById(R.id.registerTextView).setOnClickListener(v -> register());
         findViewById(R.id.loginButton).setOnClickListener(v -> login());
@@ -52,7 +52,7 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         });
     }
 
-    private void bindViewImpl() {
+    private void bindViews() {
         loginButton = findViewById(R.id.loginButton);
         accountEditText = findViewById(R.id.phoneNumberEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
@@ -65,8 +65,8 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
+        bindViews();
+        bindEvents();
         setStatusBarTheme(this, false);
         setStatusBarColor(R.color.gray14);
         if (getIntent().getBooleanExtra("isKickedOff", false)) {

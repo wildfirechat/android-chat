@@ -63,13 +63,13 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_multi_video_outgoing_connected, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.minimizeImageView).setOnClickListener(_v -> minimize());
         view.findViewById(R.id.addParticipantImageView).setOnClickListener(_v -> addParticipant());
         view.findViewById(R.id.muteImageView).setOnClickListener(_v -> mute());
@@ -79,7 +79,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         view.findViewById(R.id.shareScreenImageView).setOnClickListener(_v -> shareScreen());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         rootLinearLayout = view.findViewById(R.id.rootView);
         durationTextView = view.findViewById(R.id.durationTextView);
         fullScreenDurationTextView = view.findViewById(R.id.fullScreenDurationTextView);

@@ -39,15 +39,15 @@ public class UserCardMessageContentViewHolder extends NormalMessageContentViewHo
 
     public UserCardMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.contentLayout).setOnClickListener(_v -> onUserCardClick());
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         portraitImageView =itemView.findViewById(R.id.userCardPortraitImageView);
         nameTextView =itemView.findViewById(R.id.userCardNameTextView);
         userIdTextView =itemView.findViewById(R.id.userIdTextView);

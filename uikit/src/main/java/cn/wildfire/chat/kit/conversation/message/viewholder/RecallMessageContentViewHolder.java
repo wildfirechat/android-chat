@@ -29,15 +29,15 @@ public class RecallMessageContentViewHolder extends NotificationMessageContentVi
 
     public RecallMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.reeditTextView).setOnClickListener(this::onClick);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         notificationTextView =itemView.findViewById(R.id.notificationTextView);
         reeditTextView =itemView.findViewById(R.id.reeditTextView);
     }

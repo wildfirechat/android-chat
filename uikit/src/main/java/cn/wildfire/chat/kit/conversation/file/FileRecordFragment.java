@@ -78,12 +78,12 @@ public class FileRecordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.file_record_fragment, container, false);
-        bindViewImpl(view);
+        bindViews(view);
         init();
         return view;
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         fileRecordLinearLayout = view.findViewById(R.id.fileRecordLinearLayout);
         fileRecordRecyclerView = view.findViewById(R.id.fileRecordRecyclerView);
         tipTextView = view.findViewById(R.id.tipTextView);

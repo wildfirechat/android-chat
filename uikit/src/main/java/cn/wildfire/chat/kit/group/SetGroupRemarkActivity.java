@@ -28,7 +28,8 @@ public class SetGroupRemarkActivity extends WfcBaseActivity {
     private GroupInfo groupInfo;
     private GroupViewModel groupViewModel;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         remarkEditText = findViewById(R.id.remarkEditText);
     }
 
@@ -39,7 +40,6 @@ public class SetGroupRemarkActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         groupInfo = getIntent().getParcelableExtra("groupInfo");
         if (groupInfo == null) {
             finish();

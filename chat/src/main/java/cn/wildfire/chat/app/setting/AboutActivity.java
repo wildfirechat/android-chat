@@ -19,13 +19,15 @@ public class AboutActivity extends WfcBaseActivity {
 
     TextView infoTextView;
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.introOptionItemView).setOnClickListener(v -> intro());
         findViewById(R.id.agreementOptionItemView).setOnClickListener(v -> agreement());
         findViewById(R.id.privacyOptionItemView).setOnClickListener(v -> privacy());
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         infoTextView = findViewById(R.id.infoTextView);
     }
 
@@ -36,8 +38,6 @@ public class AboutActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
         PackageManager packageManager = getPackageManager();
         try {
             PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), PackageManager.GET_CONFIGURATIONS);

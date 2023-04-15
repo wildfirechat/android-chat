@@ -19,13 +19,9 @@ public class AccountActivity extends WfcBaseActivity {
         return R.layout.account_activity;
     }
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.changePasswordOptionItemView).setOnClickListener(v -> changePassword());
-    }
-
-    @Override
-    protected void afterViews() {
-        bindClickImpl();
     }
 
     void changePassword() {

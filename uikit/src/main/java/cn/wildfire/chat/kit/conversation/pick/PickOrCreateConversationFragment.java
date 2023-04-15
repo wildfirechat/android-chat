@@ -45,12 +45,12 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.pick_or_create_conversation_fragmentn, container, false);
-        bindViewImpl(view);
+        bindViews(view);
         init();
         return view;
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
     }
 

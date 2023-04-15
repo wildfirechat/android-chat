@@ -23,11 +23,11 @@ public class ChatRoomListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chatroom_list_fragment, container, false);
-        bindClickImpl(view);
+        bindEvents(view);
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.chatRoomTextView_0).setOnClickListener(this::joinChatRoom);
         view.findViewById(R.id.chatRoomTextView_1).setOnClickListener(this::joinChatRoom);
         view.findViewById(R.id.chatRoomTextView_2).setOnClickListener(this::joinChatRoom);

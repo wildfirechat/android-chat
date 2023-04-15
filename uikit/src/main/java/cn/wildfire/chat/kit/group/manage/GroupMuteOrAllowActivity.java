@@ -25,7 +25,8 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
 
     SwitchMaterial switchButton;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         switchButton = findViewById(R.id.muteSwitchButton);
     }
 
@@ -36,7 +37,6 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         groupInfo = getIntent().getParcelableExtra("groupInfo");
         init();
     }

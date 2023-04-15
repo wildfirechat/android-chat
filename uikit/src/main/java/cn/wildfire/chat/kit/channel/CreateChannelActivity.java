@@ -43,11 +43,13 @@ public class CreateChannelActivity extends WfcBaseActivity {
     private String portraitPath;
 
 
-    private void bindClickImpl() {
-        findViewById(R.id.portraitImageView).setOnClickListener(v -> portraitClick());
+    protected void bindEvents() {
+        super.bindEvents();
+        portraitImageView.setOnClickListener(v -> portraitClick());
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         portraitImageView = findViewById(R.id.portraitImageView);
         nameInputEditText = findViewById(R.id.channelNameTextInputEditText);
         descInputEditText = findViewById(R.id.channelDescTextInputEditText);
@@ -56,12 +58,6 @@ public class CreateChannelActivity extends WfcBaseActivity {
     @Override
     protected int contentLayout() {
         return R.layout.channel_create_fragment;
-    }
-
-    @Override
-    protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
     }
 
     void inputChannelName(Editable editable) {

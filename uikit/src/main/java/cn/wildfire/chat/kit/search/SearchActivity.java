@@ -28,11 +28,11 @@ public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
         finish();
     }
 
-    private void bindClickImpl() {
+    private void bindEvents() {
         findViewById(R.id.cancel).setOnClickListener(v -> onCancelClick());
     }
 
-    private void bindViewImpl() {
+    private void bindViews() {
         searchView = findViewById(R.id.search_view);
     }
 
@@ -54,8 +54,8 @@ public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
     }
 
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
+        bindViews();
+        bindEvents();
         initSearchView();
         initSearchFragment();
         String initialKeyword = getIntent().getStringExtra("keyword");

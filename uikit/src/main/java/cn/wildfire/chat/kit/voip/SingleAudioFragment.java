@@ -57,13 +57,13 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_p2p_audio_layout, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.muteImageView).setOnClickListener(_v -> mute());
         view.findViewById(R.id.incomingHangupImageView).setOnClickListener(_v -> hangup());
         view.findViewById(R.id.outgoingHangupImageView).setOnClickListener(_v -> hangup());
@@ -72,7 +72,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         view.findViewById(R.id.speakerImageView).setOnClickListener(_v -> speakerClick());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         backgroundImageView = view.findViewById(R.id.backgroundImageView);
         portraitImageView = view.findViewById(R.id.portraitImageView);
         nameTextView = view.findViewById(R.id.nameTextView);

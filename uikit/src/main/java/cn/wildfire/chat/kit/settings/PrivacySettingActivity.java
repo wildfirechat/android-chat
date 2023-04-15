@@ -12,7 +12,8 @@ import cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity;
 
 public class PrivacySettingActivity extends WfcBaseActivity {
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.blacklistOptionItemView).setOnClickListener(v -> blacklistSettings());
         findViewById(R.id.momentsPrivacyOptionItemView).setOnClickListener(v -> mementsSettings());
     }
@@ -20,11 +21,6 @@ public class PrivacySettingActivity extends WfcBaseActivity {
     @Override
     protected int contentLayout() {
         return R.layout.privacy_setting_activity;
-    }
-
-    @Override
-    protected void afterViews() {
-        bindClickImpl();
     }
 
     void blacklistSettings() {

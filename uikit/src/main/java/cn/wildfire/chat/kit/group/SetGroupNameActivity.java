@@ -35,7 +35,8 @@ public class SetGroupNameActivity extends WfcBaseActivity {
 
     public static final int RESULT_SET_GROUP_NAME_SUCCESS = 100;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         nameEditText = findViewById(R.id.nameEditText);
         nameEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
@@ -52,7 +53,6 @@ public class SetGroupNameActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         groupInfo = getIntent().getParcelableExtra("groupInfo");
         if (groupInfo == null) {
             finish();

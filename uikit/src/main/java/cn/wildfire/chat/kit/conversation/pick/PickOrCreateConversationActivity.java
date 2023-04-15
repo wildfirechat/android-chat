@@ -34,7 +34,8 @@ abstract public class PickOrCreateConversationActivity extends WfcBaseActivity {
 
     EditText editText;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         editText = findViewById(R.id.searchEditText);
         editText.addTextChangedListener(new SimpleTextWatcher(){
             @Override
@@ -46,7 +47,6 @@ abstract public class PickOrCreateConversationActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         PickOrCreateConversationFragment pickOrCreateConversationFragment = new PickOrCreateConversationFragment();
         pickOrCreateConversationFragment.setListener(this::onPickOrCreateConversation);
         getSupportFragmentManager()

@@ -80,10 +80,10 @@ public class GroupMemberMessageHistoryAdapter extends RecyclerView.Adapter<Group
 
         public MessageViewHolder(View itemView) {
             super(itemView);
-            bindViewImpl(itemView);
+            bindViews(itemView);
         }
 
-        private void bindViewImpl(View itemView) {
+        private void bindViews(View itemView) {
             portraitImageView = itemView.findViewById(R.id.portraitImageView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             contentTextView = itemView.findViewById(R.id.contentTextView);

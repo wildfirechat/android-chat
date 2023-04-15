@@ -35,14 +35,16 @@ public class ConferencePortalActivity extends WfcBaseActivity {
     private FavConferenceAdapter adapter;
     private List<ConferenceInfo> favConferenceList;
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.startConferenceLinearLayout).setOnClickListener(v -> startConference());
         findViewById(R.id.joinConferenceLinearLayout).setOnClickListener(v -> joinConference());
         findViewById(R.id.orderConferenceLinearLayout).setOnClickListener(v -> orderConference());
         findViewById(R.id.conferenceHistoryButton).setOnClickListener(v -> showConferenceHistory());
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         recyclerView = findViewById(R.id.conferenceListRecyclerView);
         emptyLinearLayout = findViewById(R.id.emptyLinearLayout);
     }
@@ -54,8 +56,6 @@ public class ConferencePortalActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
         adapter = new FavConferenceAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

@@ -40,11 +40,13 @@ public class GroupInfoActivity extends WfcBaseActivity {
 
     private MaterialDialog dialog;
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.actionButton).setOnClickListener(v -> action());
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         groupNameTextView = findViewById(R.id.groupNameTextView);
         groupPortraitImageView = findViewById(R.id.portraitImageView);
         actionButton = findViewById(R.id.actionButton);
@@ -52,8 +54,6 @@ public class GroupInfoActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
         Intent intent = getIntent();
         groupId = intent.getStringExtra("groupId");
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);

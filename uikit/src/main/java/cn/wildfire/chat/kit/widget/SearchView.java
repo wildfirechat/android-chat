@@ -44,7 +44,7 @@ public class SearchView extends FrameLayout {
 
     private void init() {
         inflate(getContext(), R.layout.search_view, this);
-        bindViewImpl();
+        bindViews();
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -64,7 +64,7 @@ public class SearchView extends FrameLayout {
         });
     }
 
-    private void bindViewImpl() {
+    private void bindViews() {
         mEditText = findViewById(R.id.editText);
         mCancelView = findViewById(R.id.search_cancel);
         mCancelView.setOnClickListener(_v -> onCancelClick());

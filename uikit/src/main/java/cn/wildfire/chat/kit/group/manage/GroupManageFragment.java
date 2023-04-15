@@ -54,13 +54,13 @@ public class GroupManageFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.group_manage_fragment, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.managerOptionItemView).setOnClickListener(_v -> showGroupManagerSetting());
         view.findViewById(R.id.muteOptionItemView).setOnClickListener(_v -> showGroupMuteSetting());
         view.findViewById(R.id.permissionOptionItemView).setOnClickListener(_v -> showMemberPermissionSetting());
@@ -69,7 +69,7 @@ public class GroupManageFragment extends Fragment {
         view.findViewById(R.id.historyMessageOptionItemView).setOnClickListener(_v -> showHistoryMessageSetting());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         joinOptionItemView = view.findViewById(R.id.joinOptionItemView);
         searchOptionItemView = view.findViewById(R.id.searchOptionItemView);
         historyOptionItemView = view.findViewById(R.id.historyMessageOptionItemView);

@@ -50,7 +50,7 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.search_fragment, container, false);
         searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
         searchViewModel.getResultLiveData().observeForever(searchResultObserver);
-        bindViewImpl(view);
+        bindViews(view);
         inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -62,7 +62,7 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
         emptyLinearLayout = view.findViewById(R.id.emptyLinearLayout);
         descLinearLayout = view.findViewById(R.id.descLinearLayout);

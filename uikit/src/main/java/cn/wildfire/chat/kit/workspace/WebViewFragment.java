@@ -40,12 +40,12 @@ public class WebViewFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_webview, container, false);
-        bindViewImpl(view);
+        bindViews(view);
         init();
         return view;
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         webView = view.findViewById(R.id.webview);
     }
 

@@ -20,10 +20,10 @@ public class ContactCountViewHolder extends FooterViewHolder<ContactCountFooterV
     public ContactCountViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         this.adapter = adapter;
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         countTextView = itemView.findViewById(R.id.countTextView);
     }
 

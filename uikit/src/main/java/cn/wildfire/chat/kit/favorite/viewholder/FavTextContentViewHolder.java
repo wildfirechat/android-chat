@@ -19,15 +19,15 @@ public class FavTextContentViewHolder extends FavContentViewHolder {
 
     public FavTextContentViewHolder(@NonNull View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
         itemView.findViewById(R.id.favTextContentTextView).setOnClickListener(_v -> showFavText());
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         favTextContentTextView = itemView.findViewById(R.id.favTextContentTextView);
     }
 

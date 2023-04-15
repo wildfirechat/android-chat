@@ -33,10 +33,10 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
 
     public GroupConversationViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         organizationGroupIndicator =itemView.findViewById(R.id.organizationGroupIndicator);
     }
 

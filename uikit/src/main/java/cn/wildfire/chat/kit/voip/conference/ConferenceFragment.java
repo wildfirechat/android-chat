@@ -128,8 +128,8 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_conference, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
 
         callSession = AVEngineKit.Instance().getCurrentSession();
         if (callSession == null || callSession.getState() == AVEngineKit.CallState.Idle) {
@@ -191,7 +191,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.speakerImageView).setOnClickListener(_v -> switchSpeaker());
         view.findViewById(R.id.manageParticipantView).setOnClickListener(_v -> addParticipant());
         view.findViewById(R.id.muteView).setOnClickListener(_v -> muteAudio());
@@ -204,7 +204,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         view.findViewById(R.id.moreActionLinearLayout).setOnClickListener(_v -> showMoreActionDialog());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         rootFrameLayout = view.findViewById(R.id.rootFrameLayout);
         topBarView = view.findViewById(R.id.topBarView);
         bottomPanel = view.findViewById(R.id.bottomPanel);

@@ -31,15 +31,15 @@ public class LinkMessageContentViewHolder extends NormalMessageContentViewHolder
 
     public LinkMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.linkMessageContentItemView).setOnClickListener(this::onClick);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         thumbnailImageView =itemView.findViewById(R.id.thumbnailImageView);
         titleTextView =itemView.findViewById(R.id.titleTextView);
         descTextView =itemView.findViewById(R.id.descTextView);

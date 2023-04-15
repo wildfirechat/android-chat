@@ -222,7 +222,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     public void init(Fragment fragment, InputAwareLayout rootInputAwareLayout) {
         LayoutInflater.from(getContext()).inflate(R.layout.conversation_input_panel, this, true);
-        bindViewImpl();
+        bindViews();
 
         this.activity = fragment.getActivity();
         this.fragment = fragment;
@@ -289,7 +289,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
     }
 
-    private void bindViewImpl() {
+    private void bindViews() {
         inputContainerLinearLayout = findViewById(R.id.inputContainerLinearLayout);
         disableInputTipTextView = findViewById(R.id.disableInputTipTextView);
         menuImageView = findViewById(R.id.menuImageView);

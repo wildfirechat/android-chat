@@ -63,7 +63,7 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
-        bindViewImpl(view);
+        bindViews(view);
         groupMemberListAdapter = new GroupMessageReceiptAdapter(groupInfo);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(groupMemberListAdapter);
@@ -73,7 +73,7 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         loadAndShowGroupMembers();
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
     }
 

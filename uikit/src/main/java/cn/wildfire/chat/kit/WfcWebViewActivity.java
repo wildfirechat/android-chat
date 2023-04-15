@@ -28,7 +28,8 @@ public class WfcWebViewActivity extends WfcBaseActivity {
     DWebView webView;
     private JsApi jsApi;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         webView = findViewById(R.id.webview);
     }
 
@@ -95,7 +96,6 @@ public class WfcWebViewActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         url = getIntent().getStringExtra("url");
         String htmlContent = getIntent().getStringExtra("content");
 

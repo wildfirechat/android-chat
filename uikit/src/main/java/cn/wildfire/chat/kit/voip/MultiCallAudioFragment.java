@@ -50,13 +50,13 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_multi_audio_outgoing_connected, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.minimizeImageView).setOnClickListener(_v -> minimize());
         view.findViewById(R.id.addParticipantImageView).setOnClickListener(_v -> addParticipant());
         view.findViewById(R.id.muteImageView).setOnClickListener(_v -> mute());
@@ -64,7 +64,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
         view.findViewById(R.id.hangupImageView).setOnClickListener(_v -> hangup());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         durationTextView = view.findViewById(R.id.durationTextView);
         audioContainerGridLayout = view.findViewById(R.id.audioContainerGridLayout);
         speakerImageView = view.findViewById(R.id.speakerImageView);

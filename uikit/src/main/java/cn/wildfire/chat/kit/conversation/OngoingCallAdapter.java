@@ -65,10 +65,10 @@ public class OngoingCallAdapter extends RecyclerView.Adapter<OngoingCallAdapter.
 
         public OngoingCallViewHolder(@NonNull View itemView) {
             super(itemView);
-            bindViewImpl(itemView);
+            bindViews(itemView);
         }
 
-        private void bindViewImpl(View itemView) {
+        private void bindViews(View itemView) {
             descTextView = itemView.findViewById(R.id.descTextView);
             joinButton = itemView.findViewById(R.id.joinButton);
         }

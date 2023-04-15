@@ -36,17 +36,17 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_search_fragment, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.tipTextView).setOnClickListener(_v -> onTipTextViewClick());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         contactRecyclerView = view.findViewById(R.id.usersRecyclerView);
         tipTextView = view.findViewById(R.id.tipTextView);
     }

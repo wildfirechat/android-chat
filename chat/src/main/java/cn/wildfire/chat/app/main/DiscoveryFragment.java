@@ -43,8 +43,8 @@ public class DiscoveryFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_fragment_discovery, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         initMoment();
         if (!AVEngineKit.isSupportConference()) {
             conferenceOptionItemView.setVisibility(View.GONE);
@@ -52,7 +52,7 @@ public class DiscoveryFragment extends Fragment {
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.chatRoomOptionItemView).setOnClickListener(v -> chatRoom());
         view.findViewById(R.id.robotOptionItemView).setOnClickListener(v -> robot());
         view.findViewById(R.id.channelOptionItemView).setOnClickListener(v -> channel());
@@ -61,7 +61,7 @@ public class DiscoveryFragment extends Fragment {
         view.findViewById(R.id.conferenceOptionItemView).setOnClickListener(v -> conference());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         momentOptionItemView = view.findViewById(R.id.momentOptionItemView);
         conferenceOptionItemView = view.findViewById(R.id.conferenceOptionItemView);
     }

@@ -31,7 +31,8 @@ public class SetAliasActivity extends WfcBaseActivity {
     private MenuItem menuItem;
     private ContactViewModel contactViewModel;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         aliasEditText = findViewById(R.id.aliasEditText);
         aliasEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
@@ -48,7 +49,6 @@ public class SetAliasActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         userId = getIntent().getStringExtra("userId");
         if (TextUtils.isEmpty(userId)) {
             finish();

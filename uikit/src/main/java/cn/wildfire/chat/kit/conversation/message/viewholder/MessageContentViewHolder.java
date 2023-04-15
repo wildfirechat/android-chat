@@ -38,10 +38,10 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
         this.itemView = itemView;
         this.adapter = adapter;
         messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         timeTextView = itemView.findViewById(R.id.timeTextView);
     }
 

@@ -33,7 +33,8 @@ public class CompositeMessageContentActivity extends WfcBaseActivity implements 
     RecyclerView recyclerView;
     private CompositeMessageContentAdapter adapter;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         recyclerView = findViewById(R.id.recyclerView);
     }
 
@@ -44,7 +45,6 @@ public class CompositeMessageContentActivity extends WfcBaseActivity implements 
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         Message message = getIntent().getParcelableExtra("message");
         if (message == null || !(message.content instanceof CompositeMessageContent)) {
             finish();

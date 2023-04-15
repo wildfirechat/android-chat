@@ -50,16 +50,16 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
 
     public TextMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.contentTextView).setOnClickListener(this::onClick);
        itemView.findViewById(R.id.refTextView).setOnClickListener(this::onRefClick);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         contentTextView =itemView.findViewById(R.id.contentTextView);
         refTextView =itemView.findViewById(R.id.refTextView);
     }

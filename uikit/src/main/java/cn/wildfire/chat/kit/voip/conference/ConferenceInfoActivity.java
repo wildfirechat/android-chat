@@ -43,12 +43,14 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     private MenuItem favItem;
     private MenuItem unFavItem;
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.conferenceQRCodeLinearLayout).setOnClickListener(v -> showConferenceQRCode());
         findViewById(R.id.joinConferenceBtn).setOnClickListener(v -> joinConference());
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         titleTextView = findViewById(R.id.titleTextView);
         ownerTextView = findViewById(R.id.ownerTextView);
         callIdTextView = findViewById(R.id.callIdTextView);
@@ -86,8 +88,6 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
         Intent intent = getIntent();
         conferenceId = intent.getStringExtra("conferenceId");
         password = intent.getStringExtra("password");

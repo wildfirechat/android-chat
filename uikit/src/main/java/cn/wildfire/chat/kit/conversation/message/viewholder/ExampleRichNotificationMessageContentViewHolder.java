@@ -32,15 +32,15 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
 
     public ExampleRichNotificationMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.stickerImageView).setOnClickListener(this::onClick);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         imageView =itemView.findViewById(R.id.stickerImageView);
     }
 

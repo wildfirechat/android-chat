@@ -28,10 +28,10 @@ public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
 
     public GroupViewHolder(Fragment fragment, View itemView) {
         super(fragment, itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
         nameTextView = itemView.findViewById(R.id.nameTextView);
         descTextView = itemView.findViewById(R.id.descTextView);

@@ -27,10 +27,10 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
 
     public FavContentViewHolder(@NonNull View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         senderTextView = itemView.findViewById(R.id.senderTextView);
         timeTextView = itemView.findViewById(R.id.timeTextView);
         itemView.findViewById(R.id.favContentContainerLinearLayout).setOnLongClickListener(v -> this.onLongClick());

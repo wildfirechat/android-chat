@@ -16,10 +16,10 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder {
 
     public CategoryViewHolder(View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         categoryTextView = itemView.findViewById(R.id.categoryTextView);
     }
 

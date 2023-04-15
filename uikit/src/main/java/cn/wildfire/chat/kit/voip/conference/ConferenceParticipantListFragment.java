@@ -58,20 +58,20 @@ public class ConferenceParticipantListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_conference_participant_list, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.applyingUnmuteTextView).setOnClickListener(_v -> showApplyingUnmuteDialog());
         view.findViewById(R.id.handupTextView).setOnClickListener(_v -> showHandupDialog());
         view.findViewById(R.id.muteAllButton).setOnClickListener(_v -> muteAll());
         view.findViewById(R.id.unmuteAllButton).setOnClickListener(_v -> unmuteAll());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
         handupTextView = view.findViewById(R.id.handupTextView);
         applyingUnmuteTextView = view.findViewById(R.id.applyingUnmuteTextView);
@@ -304,10 +304,10 @@ public class ConferenceParticipantListFragment extends Fragment {
         public ParticipantViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
-            bindViewImpl(itemView);
+            bindViews(itemView);
         }
 
-        private void bindViewImpl(View itemView) {
+        private void bindViews(View itemView) {
             portraitImageView = itemView.findViewById(R.id.portraitImageView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             descTextView = itemView.findViewById(R.id.descTextView);

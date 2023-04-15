@@ -46,12 +46,12 @@ public class GroupMemberPermissionFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.group_manage_member_permission_fragment, container, false);
-        bindViewImpl(view);
+        bindViews(view);
         init();
         return view;
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         privateChatSwitchButton = view.findViewById(R.id.privateChatSwitchButton);
     }
 

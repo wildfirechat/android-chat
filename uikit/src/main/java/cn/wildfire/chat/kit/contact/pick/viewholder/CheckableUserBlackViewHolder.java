@@ -18,10 +18,10 @@ public class CheckableUserBlackViewHolder extends CheckableUserViewHolder {
 
     public CheckableUserBlackViewHolder(Fragment fragment, CheckableUserListAdapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         checkBox = itemView.findViewById(R.id.checkbox);
     }
 

@@ -30,15 +30,15 @@ public class CompositeMessageContentViewHolder extends NormalMessageContentViewH
 
     public CompositeMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.compositeContentLayout).setOnClickListener(this::onClick);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         titleTextView =itemView.findViewById(R.id.titleTextView);
         contentTextView =itemView.findViewById(R.id.contentTextView);
     }

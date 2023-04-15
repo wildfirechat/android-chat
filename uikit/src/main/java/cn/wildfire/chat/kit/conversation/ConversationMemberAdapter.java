@@ -154,16 +154,16 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
 
         public MemberViewHolder(View itemView) {
             super(itemView);
-            bindViewImpl(itemView);
-            bindClickImpl(itemView);
+            bindViews(itemView);
+            bindEvents(itemView);
         }
 
-        private void bindViewImpl(View itemView) {
+        private void bindViews(View itemView) {
             portraitImageView = itemView.findViewById(R.id.portraitImageView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
         }
 
-        private void bindClickImpl(View itemView) {
+        private void bindEvents(View itemView) {
             itemView.findViewById(R.id.portraitImageView).setOnClickListener(_v -> onClick());
         }
 

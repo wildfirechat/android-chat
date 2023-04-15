@@ -95,11 +95,11 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     public NormalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
         if (errorLinearLayout != null) {
             errorLinearLayout.setOnClickListener(this::onRetryClick);
         }
@@ -108,7 +108,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         }
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
         errorLinearLayout = itemView.findViewById(R.id.errorLinearLayout);
         nameTextView = itemView.findViewById(R.id.nameTextView);

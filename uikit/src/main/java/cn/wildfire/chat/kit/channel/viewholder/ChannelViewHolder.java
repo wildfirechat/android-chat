@@ -21,10 +21,10 @@ public class ChannelViewHolder extends RecyclerView.ViewHolder {
 
     public ChannelViewHolder(View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
         channelNameTextView = itemView.findViewById(R.id.channelNameTextView);
     }

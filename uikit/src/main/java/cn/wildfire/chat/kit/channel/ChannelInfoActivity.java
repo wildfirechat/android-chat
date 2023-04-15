@@ -44,13 +44,13 @@ public class ChannelInfoActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.channel_info_activity);
-        bindViewImpl();
+        bindViews();
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         init();
     }
 
-    private void bindViewImpl() {
+    private void bindViews() {
         portraitImageView = findViewById(R.id.portraitImageView);
         channelTextView = findViewById(R.id.channelNameTextView);
         channelDescTextView = findViewById(R.id.channelDescTextView);
