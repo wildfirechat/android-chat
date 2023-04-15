@@ -83,6 +83,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         super.bindViews();
         titleEditText = findViewById(R.id.conferenceTitleTextInputEditText);
         audienceSwitch = findViewById((R.id.audienceSwitch));
+        passwordSwitch  = findViewById(R.id.passwordSwitch);
         modeSwitch = findViewById((R.id.modeSwitch));
         advancedSwitch = findViewById((R.id.advanceSwitch));
         userCallIdSwitch = findViewById(R.id.userCallIdSwitch);
