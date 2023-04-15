@@ -66,13 +66,13 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_p2p_video_layout, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.acceptImageView).setOnClickListener(_v -> accept());
         view.findViewById(R.id.incomingAudioOnlyImageView).setOnClickListener(_v -> audioAccept());
         view.findViewById(R.id.outgoingAudioOnlyImageView).setOnClickListener(_v -> audioCall());
@@ -88,7 +88,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         view.findViewById(R.id.pip_video_view).setOnClickListener(_v -> setSwappedFeeds());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         pipVideoContainer = view.findViewById(R.id.pip_video_view);
         fullscreenVideoContainer = view.findViewById(R.id.fullscreen_video_view);
         outgoingActionContainer = view.findViewById(R.id.outgoingActionContainer);

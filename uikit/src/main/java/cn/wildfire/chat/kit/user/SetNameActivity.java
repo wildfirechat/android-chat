@@ -31,7 +31,8 @@ public class SetNameActivity extends WfcBaseActivity {
         return R.layout.contact_set_name_activity;
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         nameEditText = findViewById(R.id.nameEditText);
         nameEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
@@ -43,7 +44,6 @@ public class SetNameActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         userInfo = getIntent().getParcelableExtra("userInfo");
         if (userInfo == null) {
             finish();

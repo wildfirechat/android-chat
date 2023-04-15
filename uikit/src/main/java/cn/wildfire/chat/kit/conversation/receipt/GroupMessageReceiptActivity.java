@@ -29,7 +29,8 @@ public class GroupMessageReceiptActivity extends WfcBaseActivity {
     private Message message;
     private GroupInfo groupInfo;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
     }
@@ -41,7 +42,6 @@ public class GroupMessageReceiptActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         viewPager.setAdapter(new ReceiptFragmentPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
 

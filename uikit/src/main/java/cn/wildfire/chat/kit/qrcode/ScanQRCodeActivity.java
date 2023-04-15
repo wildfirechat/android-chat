@@ -34,7 +34,8 @@ public class ScanQRCodeActivity extends WfcBaseActivity {
 
     private static final int REQUEST_CODE_IMAGE = 100;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         surfaceView = findViewById(R.id.surfaceView);
         viewfinderView = findViewById(R.id.viewfinderView);
     }
@@ -46,7 +47,6 @@ public class ScanQRCodeActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         mCaptureHelper = new CaptureHelper(this, surfaceView, viewfinderView);
         mCaptureHelper.onCreate();
         mCaptureHelper.vibrate(true)

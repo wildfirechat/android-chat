@@ -16,10 +16,10 @@ public class ExpandViewHolder extends RecyclerView.ViewHolder {
 
     public ExpandViewHolder(View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         expandTextView = itemView.findViewById(R.id.expandTextView);
     }
 

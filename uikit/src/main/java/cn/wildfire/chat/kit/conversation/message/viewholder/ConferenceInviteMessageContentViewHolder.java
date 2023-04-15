@@ -41,15 +41,15 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
 
     public ConferenceInviteMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.contentLayout).setOnClickListener(_v -> joinConference());
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         hostPortraitImageView =itemView.findViewById(R.id.hostPortraitImageView);
         titleTextView =itemView.findViewById(R.id.titleTextView);
         descTextView =itemView.findViewById(R.id.descTextView);

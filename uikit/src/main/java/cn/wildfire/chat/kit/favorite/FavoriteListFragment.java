@@ -36,12 +36,12 @@ public class FavoriteListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fav_list_frament, container, false);
-        bindViewImpl(view);
+        bindViews(view);
         init();
         return view;
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
     }
 

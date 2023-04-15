@@ -140,13 +140,13 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conversation_info_group_fragment, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.groupNameOptionItemView).setOnClickListener(_v -> updateGroupName());
         view.findViewById(R.id.groupPortraitOptionItemView).setOnClickListener(_v -> updateGroupPortrait());
         view.findViewById(R.id.groupRemarkOptionItemView).setOnClickListener(_v -> updateGroupRemark());
@@ -161,7 +161,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(_v -> fileRecord());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         progressBar = view.findViewById(R.id.progressBar);
         contentNestedScrollView = view.findViewById(R.id.contentNestedScrollView);
         groupLinearLayout_0 = view.findViewById(R.id.groupLinearLayout_0);

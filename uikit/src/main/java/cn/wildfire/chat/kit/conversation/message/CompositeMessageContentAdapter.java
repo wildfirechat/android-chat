@@ -125,7 +125,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
 
         public MessageContentViewHolder(@NonNull View itemView) {
             super(itemView);
-            bindViewImpl(itemView);
+            bindViews(itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -134,7 +134,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
             });
         }
 
-        private void bindViewImpl(View itemView) {
+        private void bindViews(View itemView) {
             portraitImageView = itemView.findViewById(R.id.portraitImageView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             timeTextView = itemView.findViewById(R.id.timeTextView);
@@ -260,10 +260,10 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
 
         public HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
-            bindViewImpl(itemView);
+            bindViews(itemView);
         }
 
-        private void bindViewImpl(View itemView) {
+        private void bindViews(View itemView) {
             compositeDurationTextView = itemView.findViewById(R.id.compositeDurationTextView);
         }
 

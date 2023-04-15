@@ -56,7 +56,8 @@ public class OrderConferenceActivity extends WfcBaseActivity {
 
     private static final String TAG = "orderConference";
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.endDateTimeRelativeLayout).setOnClickListener(v -> pickEndDateTime());
         findViewById(R.id.startDateTimeRelativeLayout).setOnClickListener(v -> pickStartDateTime());
 
@@ -70,7 +71,8 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         });
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         titleEditText = findViewById(R.id.conferenceTitleTextInputEditText);
         audienceSwitch = findViewById((R.id.audienceSwitch));
         modeSwitch = findViewById((R.id.modeSwitch));
@@ -111,8 +113,6 @@ public class OrderConferenceActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
         UserInfo userInfo = ChatManager.Instance().getUserInfo(ChatManager.Instance().getUserId(), false);
         if (userInfo != null) {
             titleEditText.setText(userInfo.displayName + "的会议");

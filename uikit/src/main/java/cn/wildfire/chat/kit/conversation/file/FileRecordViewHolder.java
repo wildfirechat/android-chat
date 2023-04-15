@@ -32,10 +32,10 @@ class FileRecordViewHolder extends RecyclerView.ViewHolder {
 
     public FileRecordViewHolder(@NonNull View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         fileNameTextView = itemView.findViewById(R.id.fileNameTextView);
         fileSizeTextView = itemView.findViewById(R.id.fileSizeTextView);
         fileIconImageView = itemView.findViewById(R.id.fileIconImageView);

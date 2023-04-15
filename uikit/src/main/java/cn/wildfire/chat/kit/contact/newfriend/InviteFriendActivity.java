@@ -23,18 +23,18 @@ public class InviteFriendActivity extends WfcBaseActivity {
 
     private UserInfo userInfo;
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.clearImageButton).setOnClickListener(v -> clear());
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         introTextView = findViewById(R.id.introTextView);
     }
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
         userInfo = getIntent().getParcelableExtra("userInfo");
         if (userInfo == null) {
             finish();

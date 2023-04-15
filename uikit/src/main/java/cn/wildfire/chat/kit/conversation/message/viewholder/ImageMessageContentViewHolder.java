@@ -41,15 +41,15 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
 
     public ImageMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.imageView).setOnClickListener(_v -> preview());
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         imageView =itemView.findViewById(R.id.imageView);
     }
 

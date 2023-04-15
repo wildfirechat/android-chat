@@ -61,10 +61,10 @@ class VideoConferenceMainView extends RelativeLayout {
 
     private void initView(Context context, AttributeSet attrs) {
         View view = inflate(context, R.layout.av_conference_video_main, this);
-        bindViewImpl(view);
+        bindViews(view);
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         previewContainerFrameLayout = view.findViewById(R.id.previewContainerFrameLayout);
         focusContainerFrameLayout = view.findViewById(R.id.focusContainerFrameLayout);
     }

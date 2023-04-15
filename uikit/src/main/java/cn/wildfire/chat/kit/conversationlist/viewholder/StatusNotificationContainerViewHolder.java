@@ -26,10 +26,10 @@ public class StatusNotificationContainerViewHolder extends RecyclerView.ViewHold
 
     public StatusNotificationContainerViewHolder(View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         containerLayout = itemView.findViewById(R.id.notificationContainerLayout);
     }
 

@@ -46,7 +46,7 @@ public abstract class BaseActivity<V, T extends BasePresenter<V>> extends AppCom
         }
 
         setContentView(provideContentViewId());
-        bindViewImpl();
+        bindViews();
 
         setupAppBarAndToolbar();
 
@@ -58,7 +58,7 @@ public abstract class BaseActivity<V, T extends BasePresenter<V>> extends AppCom
         initListener();
     }
 
-    private void bindViewImpl() {
+    private void bindViews() {
         mAppBar = findViewById(R.id.appBarLayout);
         mToolbar = findViewById(R.id.toolbarContainerFrameLayout);
         mToolbarNavigation = findViewById(R.id.backImageView);

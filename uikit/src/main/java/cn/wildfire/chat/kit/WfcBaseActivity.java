@@ -34,7 +34,8 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         beforeViews();
         setContentView(contentLayout());
-        bindViewImpl();
+        bindViews();
+        bindEvents();
         setSupportActionBar(toolbar);
         SharedPreferences sp = getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
         if (sp.getBoolean("darkTheme", true)) {
@@ -49,8 +50,12 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         afterViews();
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
         toolbar = findViewById(R.id.toolbar);
+    }
+
+    protected void bindEvents() {
+
     }
 
     /**

@@ -28,12 +28,14 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     private Platform platform;
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.confirmButton).setOnClickListener(v -> confirmPCLogin());
         findViewById(R.id.cancelButton).setOnClickListener(v -> cancelPCLogin());
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         confirmButton = findViewById(R.id.confirmButton);
         descTextView = findViewById(R.id.descTextView);
     }
@@ -56,8 +58,6 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
         descTextView.setText("允许 " + platform.getPlatFormName() + " 登录");
         if (isConfirmPcLogin) {
             confirmButton.setEnabled(true);

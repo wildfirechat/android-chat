@@ -43,12 +43,12 @@ public class GroupListFragment extends Fragment implements OnGroupItemClickListe
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.group_list_fragment, container, false);
-        bindViewImpl(view);
+        bindViews(view);
         init();
         return view;
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         recyclerView = view.findViewById(R.id.groupRecyclerView);
         tipTextView = view.findViewById(R.id.tipTextView);
         groupsLinearLayout = view.findViewById(R.id.groupsLinearLayout);

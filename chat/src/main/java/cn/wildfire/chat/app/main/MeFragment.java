@@ -78,13 +78,13 @@ public class MeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_fragment_me, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.meLinearLayout).setOnClickListener(v -> showMyInfo());
         view.findViewById(R.id.favOptionItemView).setOnClickListener(v -> fav());
         view.findViewById(R.id.accountOptionItemView).setOnClickListener(v -> account());
@@ -94,7 +94,7 @@ public class MeFragment extends Fragment {
         view.findViewById(R.id.notificationOptionItemView).setOnClickListener(v -> msgNotifySetting());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         meLinearLayout = view.findViewById(R.id.meLinearLayout);
         portraitImageView = view.findViewById(R.id.portraitImageView);
         nameTextView = view.findViewById(R.id.nameTextView);

@@ -54,10 +54,10 @@ public class ForwardPromptView extends LinearLayout {
     private void init() {
         View view = LayoutInflater.from(getContext())
             .inflate(R.layout.forward_prompt_dialog, this, true);
-        bindViewImpl(view);
+        bindViews(view);
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         portraitImageView = view.findViewById(R.id.portraitImageView);
         nameTextView = view.findViewById(R.id.nameTextView);
         contentTextView = view.findViewById(R.id.contentTextView);

@@ -22,10 +22,10 @@ public class FriendRequestViewHolder extends HeaderViewHolder<FriendRequestValue
 
     public FriendRequestViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         unreadRequestCountTextView = itemView.findViewById(R.id.unreadFriendRequestCountTextView);
     }
 

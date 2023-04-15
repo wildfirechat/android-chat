@@ -5,7 +5,6 @@
 package cn.wildfire.chat.kit.voip.conference;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -67,7 +65,8 @@ public class CreateConferenceActivity extends WfcBaseActivity {
 
     private static final String TAG = "createConference";
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.endDateTimeRelativeLayout).setOnClickListener(v -> pickEndDateTime());
         findViewById(R.id.joinConferenceBtn).setOnClickListener(v -> onClickJoinBtn());
         audienceSwitch.setOnCheckedChangeListener(this::audienceChecked);
@@ -80,7 +79,8 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         });
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         titleEditText = findViewById(R.id.conferenceTitleTextInputEditText);
         audienceSwitch = findViewById((R.id.audienceSwitch));
         modeSwitch = findViewById((R.id.modeSwitch));
@@ -123,8 +123,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(ChatManager.Instance().getUserId(), false);
         if (userInfo != null) {

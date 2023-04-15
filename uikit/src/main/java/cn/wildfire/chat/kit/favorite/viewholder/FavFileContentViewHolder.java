@@ -23,10 +23,10 @@ public class FavFileContentViewHolder extends FavContentViewHolder {
 
     public FavFileContentViewHolder(@NonNull View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         fileIconImageView = itemView.findViewById(R.id.fileIconImageView);
         fileNameTextView = itemView.findViewById(R.id.fileNameTextView);
         fileSizeTextView = itemView.findViewById(R.id.fileSizeTextView);

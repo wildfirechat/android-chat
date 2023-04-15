@@ -29,13 +29,15 @@ public class PCSessionActivity extends WfcBaseActivity {
     private PCOnlineInfo pcOnlineInfo;
     private boolean isMuteWhenPCOnline = false;
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.kickOffPCButton).setOnClickListener(v -> kickOffPC());
         findViewById(R.id.muteImageView).setOnClickListener(v -> mutePhone());
         findViewById(R.id.fileHelperImageView).setOnClickListener(v -> fileHelper());
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         kickOffPCButton = findViewById(R.id.kickOffPCButton);
         descTextView = findViewById(R.id.descTextView);
         muteImageView = findViewById(R.id.muteImageView);
@@ -43,8 +45,6 @@ public class PCSessionActivity extends WfcBaseActivity {
 
     @Override
     protected void beforeViews() {
-        bindViewImpl();
-        bindClickImpl();
         pcOnlineInfo = getIntent().getParcelableExtra("pcOnlineInfo");
         if (pcOnlineInfo == null) {
             finish();

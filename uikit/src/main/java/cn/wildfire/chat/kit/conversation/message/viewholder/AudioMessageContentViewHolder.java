@@ -41,15 +41,15 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
     public AudioMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.audioContentLayout).setOnClickListener(this::onClick);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         ivAudio =itemView.findViewById(R.id.audioImageView);
         durationTextView =itemView.findViewById(R.id.durationTextView);
         contentLayout =itemView.findViewById(R.id.audioContentLayout);

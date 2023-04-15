@@ -79,13 +79,13 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conversation_info_secret_fragment, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.clearMessagesOptionItemView).setOnClickListener(_v -> clearMessage());
         view.findViewById(R.id.searchMessageOptionItemView).setOnClickListener(_v -> searchGroupMessage());
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(_v -> fileRecord());
@@ -93,7 +93,7 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
         view.findViewById(R.id.burnOptionItemView).setOnClickListener(_v -> setSecretChatBurnTime());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         stickTopSwitchButton = view.findViewById(R.id.stickTopSwitchButton);
         silentSwitchButton = view.findViewById(R.id.silentSwitchButton);
         fileRecordOptionItem = view.findViewById(R.id.fileRecordOptionItemView);

@@ -54,7 +54,7 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         pickedUserRecyclerView = view.findViewById(R.id.pickedUserRecyclerView);
         searchEditText = view.findViewById(R.id.searchEditText);
         searchUserFrameLayout = view.findViewById(R.id.searchFrameLayout);
@@ -72,7 +72,7 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
-        bindViewImpl(view);
+        bindViews(view);
         initView();
         setupPickFromUsers();
     }

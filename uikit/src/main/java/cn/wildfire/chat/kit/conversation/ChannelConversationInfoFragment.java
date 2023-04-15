@@ -80,13 +80,13 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conversation_info_channel_fragment, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.searchMessageOptionItemView).setOnClickListener(_v -> searchGroupMessage());
         view.findViewById(R.id.clearMessagesOptionItemView).setOnClickListener(_v -> clearMessage());
         view.findViewById(R.id.channelQRCodeOptionItemView).setOnClickListener(_v -> showChannelQRCode());
@@ -94,7 +94,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         view.findViewById(R.id.unsubscribeButton).setOnClickListener(_v -> unsubscribe());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         portraitImageView = view.findViewById(R.id.portraitImageView);
         stickTopSwitchButton = view.findViewById(R.id.stickTopSwitchButton);
         silentSwitchButton = view.findViewById(R.id.silentSwitchButton);

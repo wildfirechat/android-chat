@@ -50,11 +50,11 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
 
     @Override
     protected void afterViews(View view) {
-        bindViewImpl(view);
+        bindViews(view);
         initView();
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         usersRecyclerView = view.findViewById(R.id.usersRecyclerView);
         quickIndexBar = view.findViewById(R.id.quickIndexBar);
         indexLetterTextView = view.findViewById(R.id.indexLetterTextView);

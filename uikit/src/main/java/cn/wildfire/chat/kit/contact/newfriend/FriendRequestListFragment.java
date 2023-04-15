@@ -36,12 +36,12 @@ public class FriendRequestListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_new_friend_fragment, container, false);
-        bindViewImpl(view);
+        bindViews(view);
         init();
         return view;
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         noNewFriendLinearLayout = view.findViewById(R.id.noNewFriendLinearLayout);
         newFriendLinearLayout = view.findViewById(R.id.newFriendListLinearLayout);
         recyclerView = view.findViewById(R.id.friendRequestListRecyclerView);

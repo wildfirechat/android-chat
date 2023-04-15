@@ -40,17 +40,17 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.fragment = fragment;
         this.adapter = adapter;
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
         userViewModel =ViewModelProviders.of(fragment).get(UserViewModel.class);
         contactViewModel = ViewModelProviders.of(fragment).get(ContactViewModel.class);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
         itemView.findViewById(R.id.acceptButton).setOnClickListener(_v -> accept());
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
         nameTextView = itemView.findViewById(R.id.nameTextView);
         introTextView = itemView.findViewById(R.id.introTextView);

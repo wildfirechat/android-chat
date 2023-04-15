@@ -18,10 +18,10 @@ public class FavUnknownContentViewHolder extends FavContentViewHolder {
 
     public FavUnknownContentViewHolder(@NonNull View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         textView = itemView.findViewById(R.id.favUnkownContentTextView);
     }
 

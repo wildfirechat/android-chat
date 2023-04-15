@@ -22,15 +22,15 @@ public class FavCompositeContentViewHolder extends FavContentViewHolder {
 
     public FavCompositeContentViewHolder(@NonNull View itemView) {
         super(itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
         itemView.findViewById(R.id.contentTextView).setOnClickListener(_v -> showFavText());
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         titleTextView = itemView.findViewById(R.id.titleTextView);
         contentTextView = itemView.findViewById(R.id.contentTextView);
     }

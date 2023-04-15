@@ -74,10 +74,10 @@ public class SimpleNotificationMessageContentViewHolder extends NotificationMess
 
     public SimpleNotificationMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         notificationTextView =itemView.findViewById(R.id.notificationTextView);
     }
 

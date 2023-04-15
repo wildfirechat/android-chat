@@ -42,15 +42,15 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
 
     public VideoMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.videoContentLayout).setOnClickListener(_v -> play());
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         imageView =itemView.findViewById(R.id.imageView);
         playImageView =itemView.findViewById(R.id.playImageView);
         time_tv =itemView.findViewById(R.id.time_tv);

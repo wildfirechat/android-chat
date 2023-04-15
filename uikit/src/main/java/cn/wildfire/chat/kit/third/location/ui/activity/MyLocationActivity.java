@@ -70,7 +70,7 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
     RecyclerView mRvPOI;
     ProgressBar mPb;
 
-    private void bindViewImpl() {
+    private void bindViews() {
         mBtnToolbarSend = findViewById(R.id.confirmButton);
         mRlMap = findViewById(R.id.rlMap);
         mMap = findViewById(R.id.map);
@@ -81,7 +81,7 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
 
     @Override
     public void initView() {
-        bindViewImpl();
+        bindViews();
         mBtnToolbarSend.setVisibility(View.GONE);
         setRlMapHeight(maxHeight);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);

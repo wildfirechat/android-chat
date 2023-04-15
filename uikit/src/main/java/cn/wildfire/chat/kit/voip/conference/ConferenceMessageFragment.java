@@ -43,18 +43,18 @@ public class ConferenceMessageFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_conference_message, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.inputTextView).setOnClickListener(_v -> showMessageInputFragment());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         messageRecyclerView = view.findViewById(R.id.messageRecyclerView);
     }
 
@@ -131,10 +131,10 @@ public class ConferenceMessageFragment extends Fragment {
 
         public TextMessageViewHolder(@NonNull View itemView) {
             super(itemView);
-            bindViewImpl(itemView);
+            bindViews(itemView);
         }
 
-        private void bindViewImpl(View itemView) {
+        private void bindViews(View itemView) {
             senderTextView = itemView.findViewById(R.id.senderTextView);
             messageContentTextView = itemView.findViewById(R.id.messageContentTextView);
         }

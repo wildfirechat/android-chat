@@ -33,7 +33,8 @@ public class ChangePasswordActivity extends WfcBaseActivity {
         super.onCreate(savedInstanceState);
     }
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.confirmButton).setOnClickListener(v -> resetPassword());
         oldPasswordEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
@@ -55,7 +56,8 @@ public class ChangePasswordActivity extends WfcBaseActivity {
         });
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         confirmButton = findViewById(R.id.confirmButton);
         oldPasswordEditText = findViewById(R.id.oldPasswordEditText);
         newPasswordEditText = findViewById(R.id.newPasswordEditText);
@@ -69,8 +71,6 @@ public class ChangePasswordActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
 //        setStatusBarTheme(this, false);
 //        setStatusBarColor(R.color.gray14);
     }

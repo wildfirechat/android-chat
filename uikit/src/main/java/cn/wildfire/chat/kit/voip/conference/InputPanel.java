@@ -84,7 +84,7 @@ public class InputPanel extends FrameLayout implements IEmotionSelectedListener 
 
     public void init(KeyboardDialogFragment commentFragment, InputAwareLayout rootInputAwareLayout) {
         LayoutInflater.from(getContext()).inflate(R.layout.input_panel, this, true);
-        bindViewImpl();
+        bindViews();
 
         this.keyboardDialogFragment = commentFragment;
         this.rootLinearLayout = rootInputAwareLayout;
@@ -96,7 +96,7 @@ public class InputPanel extends FrameLayout implements IEmotionSelectedListener 
         emotionLayout.setEmotionSelectedListener(this);
     }
 
-    private void bindViewImpl() {
+    private void bindViews() {
         editText = findViewById(R.id.editText);
         emotionImageView = findViewById(R.id.emotionImageView);
         sendButton = findViewById(R.id.sendButton);

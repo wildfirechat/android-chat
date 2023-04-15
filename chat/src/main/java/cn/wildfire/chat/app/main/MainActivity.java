@@ -108,7 +108,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private ContactViewModel contactViewModel;
     private ConversationListViewModel conversationListViewModel;
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         contentViewPager = findViewById(R.id.contentViewPager);
         startingTextView = findViewById(R.id.startingTextView);
@@ -139,7 +140,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         bottomNavigationView.setItemIconTintList(null);
         if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
             bottomNavigationView.getMenu().removeItem(R.id.workspace);

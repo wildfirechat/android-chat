@@ -27,7 +27,8 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
     private GroupInfo groupInfo;
 
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         announcementEditText = findViewById(R.id.announcementEditText);
         announcementEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
@@ -44,7 +45,6 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        bindViewImpl();
         groupInfo = getIntent().getParcelableExtra("groupInfo");
         if (groupInfo == null) {
             finish();

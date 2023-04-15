@@ -67,13 +67,13 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         this.fragment = fragment;
         this.itemView = itemView;
         this.adapter = adapter;
-        bindViewImpl(itemView);
+        bindViews(itemView);
         conversationListViewModel = new ViewModelProvider(fragment.getActivity(), new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.SecretChat), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
         conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         nameTextView = itemView.findViewById(R.id.nameTextView);
         timeTextView = itemView.findViewById(R.id.timeTextView);
         portraitImageView = itemView.findViewById(R.id.portraitImageView);

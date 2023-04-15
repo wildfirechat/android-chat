@@ -35,10 +35,10 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.fragment = fragment;
         this.userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
         nameTextView = itemView.findViewById(R.id.nameTextView);
         contentTextView = itemView.findViewById(R.id.contentTextView);

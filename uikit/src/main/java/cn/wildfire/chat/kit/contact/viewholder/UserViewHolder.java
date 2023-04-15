@@ -36,10 +36,10 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.fragment = fragment;
         this.adapter = adapter;
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
         nameTextView = itemView.findViewById(R.id.nameTextView);
         descTextView = itemView.findViewById(R.id.descTextView);

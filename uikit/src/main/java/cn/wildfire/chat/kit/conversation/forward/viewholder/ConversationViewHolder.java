@@ -34,13 +34,13 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
     public ConversationViewHolder(Fragment fragment, View itemView) {
         super(itemView);
         this.fragment = fragment;
-        bindViewImpl(itemView);
+        bindViews(itemView);
 
         userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         nameTextView = itemView.findViewById(R.id.nameTextView);
         portraitImageView = itemView.findViewById(R.id.portraitImageView);
     }

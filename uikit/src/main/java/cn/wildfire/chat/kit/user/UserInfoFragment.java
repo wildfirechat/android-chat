@@ -114,13 +114,13 @@ public class UserInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_info_fragment, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.chatButton).setOnClickListener(_v -> chat());
         view.findViewById(R.id.momentButton).setOnClickListener(_v -> moment());
         view.findViewById(R.id.voipChatButton).setOnClickListener(_v -> voipChat());
@@ -132,7 +132,7 @@ public class UserInfoFragment extends Fragment {
         view.findViewById(R.id.qrCodeOptionItemView).setOnClickListener(_v -> showMyQRCode());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         portraitImageView = view.findViewById(R.id.portraitImageView);
         titleTextView = view.findViewById(R.id.titleTextView);
         displayNameTextView = view.findViewById(R.id.displayNameTextView);

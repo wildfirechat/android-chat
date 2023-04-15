@@ -34,7 +34,8 @@ public class SettingActivity extends WfcBaseActivity {
     OptionItemView diagnoseOptionItemView;
 
 
-    private void bindClickImpl() {
+    protected void bindEvents() {
+        super.bindEvents();
         findViewById(R.id.exitOptionItemView).setOnClickListener(v -> exit());
         findViewById(R.id.privacySettingOptionItemView).setOnClickListener(v -> privacySetting());
         findViewById(R.id.diagnoseOptionItemView).setOnClickListener(v -> diagnose());
@@ -43,19 +44,14 @@ public class SettingActivity extends WfcBaseActivity {
         findViewById(R.id.aboutOptionItemView).setOnClickListener(v -> about());
     }
 
-    private void bindViewImpl() {
+    protected void bindViews() {
+        super.bindViews();
         diagnoseOptionItemView = findViewById(R.id.diagnoseOptionItemView);
     }
 
     @Override
     protected int contentLayout() {
         return R.layout.setting_activity;
-    }
-
-    @Override
-    protected void afterViews() {
-        bindViewImpl();
-        bindClickImpl();
     }
 
     @Override

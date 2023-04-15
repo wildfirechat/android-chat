@@ -49,13 +49,13 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
 
     @Override
     public void initView() {
-        bindViewImpl();
+        bindViews();
         mBtnToolbarSend.setVisibility(View.VISIBLE);
         mTencentMap = mMap.getMap();
         mBtnToolbarSend.setVisibility(View.INVISIBLE);
     }
 
-    private void bindViewImpl() {
+    private void bindViews() {
         mBtnToolbarSend = findViewById(R.id.confirmButton);
         mRlMap = findViewById(R.id.rlMap);
         mMap = findViewById(R.id.map);

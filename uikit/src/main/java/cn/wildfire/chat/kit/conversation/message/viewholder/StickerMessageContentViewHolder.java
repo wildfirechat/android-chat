@@ -33,10 +33,10 @@ public class StickerMessageContentViewHolder extends NormalMessageContentViewHol
 
     public StickerMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
+        bindViews(itemView);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         imageView =itemView.findViewById(R.id.stickerImageView);
     }
 

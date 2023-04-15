@@ -45,18 +45,18 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_multi_incoming, container, false);
-        bindViewImpl(view);
-        bindClickImpl(view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
     }
 
-    private void bindClickImpl(View view) {
+    private void bindEvents(View view) {
         view.findViewById(R.id.hangupImageView).setOnClickListener(_v -> hangup());
         view.findViewById(R.id.acceptImageView).setOnClickListener(_v -> accept());
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         invitorImageView = view.findViewById(R.id.invitorImageView);
         invitorTextView = view.findViewById(R.id.invitorTextView);
         participantRecyclerView = view.findViewById(R.id.participantGridView);

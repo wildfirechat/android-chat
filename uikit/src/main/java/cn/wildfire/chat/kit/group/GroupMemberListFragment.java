@@ -50,7 +50,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
-        bindViewImpl(view);
+        bindViews(view);
         groupMemberListAdapter = new GroupMemberListAdapter(groupInfo);
         memberRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
         memberRecyclerView.setAdapter(groupMemberListAdapter);
@@ -60,7 +60,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
         loadAndShowGroupMembers();
     }
 
-    private void bindViewImpl(View view) {
+    private void bindViews(View view) {
         memberRecyclerView = view.findViewById(R.id.memberRecyclerView);
     }
 

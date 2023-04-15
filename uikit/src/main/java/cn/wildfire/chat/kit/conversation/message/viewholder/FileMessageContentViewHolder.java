@@ -37,15 +37,15 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
 
     public FileMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        bindViewImpl(itemView);
-        bindClickImpl(itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
     }
 
-    private void bindClickImpl(View itemView) {
+    private void bindEvents(View itemView) {
        itemView.findViewById(R.id.fileMessageContentItemView).setOnClickListener(this::onClick);
     }
 
-    private void bindViewImpl(View itemView) {
+    private void bindViews(View itemView) {
         fileIconImageView =itemView.findViewById(R.id.fileIconImageView);
         nameTextView =itemView.findViewById(R.id.fileNameTextView);
         sizeTextView =itemView.findViewById(R.id.fileSizeTextView);
