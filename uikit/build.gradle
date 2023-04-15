@@ -10,17 +10,13 @@ android {
         }
     }
     compileSdkVersion 31
-    aaptOptions.cruncherEnabled = false
-    aaptOptions.useNewCruncher = false
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
-        versionCode 27
-        versionName "0.8.0.rc3"
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
-                includeCompileClasspath true
+//                includeCompileClasspath true
             }
         }
 
@@ -34,9 +30,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    lintOptions {
-        abortOnError false
-    }
     sourceSets {
         main {
             res.srcDirs += ['src/main/res-av']
@@ -48,6 +41,10 @@ android {
         }
     }
     productFlavors {
+    }
+    namespace 'cn.wildfire.chat.kit'
+    lint {
+        abortOnError false
     }
 }
 

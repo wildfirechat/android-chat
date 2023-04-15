@@ -12,8 +12,6 @@ android {
         }
     }
     compileSdkVersion 31
-    aaptOptions.cruncherEnabled = false
-    aaptOptions.useNewCruncher = false
     ndkVersion '18.1.5063045'
     defaultConfig {
         applicationId "cn.wildfirechat.chat"
@@ -24,7 +22,7 @@ android {
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
-                includeCompileClasspath true
+//                includeCompileClasspath true
             }
         }
 
@@ -47,10 +45,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    lintOptions {
-        abortOnError false
-    }
     productFlavors {
+    }
+    namespace 'cn.wildfirechat.chat'
+    lint {
+        abortOnError false
     }
 }
 
