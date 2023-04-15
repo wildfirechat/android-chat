@@ -74,7 +74,8 @@ public class OrderConferenceActivity extends WfcBaseActivity {
     protected void bindViews() {
         super.bindViews();
         titleEditText = findViewById(R.id.conferenceTitleTextInputEditText);
-        audienceSwitch = findViewById((R.id.audienceSwitch));
+        audienceSwitch = findViewById(R.id.audienceSwitch);
+        passwordSwitch = findViewById(R.id.passwordSwitch);
         modeSwitch = findViewById((R.id.modeSwitch));
         advancedSwitch = findViewById((R.id.advanceSwitch));
         endDateTimeTextView = findViewById(R.id.endDateTimeTextView);
