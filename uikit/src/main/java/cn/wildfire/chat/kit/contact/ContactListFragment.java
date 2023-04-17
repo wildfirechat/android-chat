@@ -46,6 +46,9 @@ import cn.wildfirechat.remote.ChatManager;
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private boolean pick = false;
     private boolean showChannel = true;
+    // 临时方案，如果本地缓存了组织结构信息，应当更新
+    private boolean isRootOrganizationLoaded = false;
+    private boolean isMyOrganizationLoaded = false;
     private List<String> filterUserList;
     private static final int REQUEST_CODE_PICK_CHANNEL = 100;
 
@@ -144,6 +147,10 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
                 public void onChanged(List<Organization> organizations) {
+                    if (isRootOrganizationLoaded) {
+                        return;
+                    }
+                    isRootOrganizationLoaded = true;
                     if (!organizations.isEmpty()) {
                         for (Organization org : organizations) {
                             OrganizationValue value = new OrganizationValue();
@@ -156,6 +163,10 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             organizationServiceViewModel.myOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
                 public void onChanged(List<Organization> organizations) {
+                    if (isMyOrganizationLoaded) {
+                        return;
+                    }
+                    isMyOrganizationLoaded = true;
                     if (!organizations.isEmpty()) {
                         for (Organization org : organizations) {
                             OrganizationValue value = new OrganizationValue();
