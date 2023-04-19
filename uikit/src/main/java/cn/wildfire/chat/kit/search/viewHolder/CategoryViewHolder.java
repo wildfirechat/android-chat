@@ -10,17 +10,18 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 
 public class CategoryViewHolder extends RecyclerView.ViewHolder {
-    @BindView(R2.id.categoryTextView)
     TextView categoryTextView;
 
     public CategoryViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        categoryTextView = itemView.findViewById(R.id.categoryTextView);
     }
 
     public void onBind(String category) {

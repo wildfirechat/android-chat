@@ -12,9 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -31,7 +29,6 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
     protected RecyclerView.Adapter adapter;
     protected MessageViewModel messageViewModel;
 
-    @BindView(R2.id.timeTextView)
     TextView timeTextView;
 
 
@@ -41,7 +38,11 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
         this.itemView = itemView;
         this.adapter = adapter;
         messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        timeTextView = itemView.findViewById(R.id.timeTextView);
     }
 
     public void onBind(UiMessage message, int position) {

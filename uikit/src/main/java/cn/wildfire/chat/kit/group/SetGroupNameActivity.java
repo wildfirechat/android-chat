@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.group;
 
 import android.content.Intent;
+import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -18,17 +19,14 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.Collections;
 
-import butterknife.BindView;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.ModifyGroupInfoType;
 
 public class SetGroupNameActivity extends WfcBaseActivity {
-    @BindView(R2.id.nameEditText)
     EditText nameEditText;
 
     private MenuItem confirmMenuItem;
@@ -36,6 +34,17 @@ public class SetGroupNameActivity extends WfcBaseActivity {
     private GroupViewModel groupViewModel;
 
     public static final int RESULT_SET_GROUP_NAME_SUCCESS = 100;
+
+    protected void bindViews() {
+        super.bindViews();
+        nameEditText = findViewById(R.id.nameEditText);
+        nameEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                SetGroupNameActivity.this.onTextChanged();
+            }
+        });
+    }
 
     @Override
     protected int contentLayout() {
@@ -79,7 +88,6 @@ public class SetGroupNameActivity extends WfcBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnTextChanged(R2.id.nameEditText)
     void onTextChanged() {
         if (confirmMenuItem != null) {
             confirmMenuItem.setEnabled(nameEditText.getText().toString().trim().length() > 0);
@@ -89,10 +97,10 @@ public class SetGroupNameActivity extends WfcBaseActivity {
     private void setGroupName() {
         groupInfo.name = nameEditText.getText().toString().trim();
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("请稍后...")
-                .progress(true, 100)
-                .cancelable(false)
-                .build();
+            .content("请稍后...")
+            .progress(true, 100)
+            .cancelable(false)
+            .build();
         dialog.show();
 
         groupViewModel.modifyGroupInfo(groupInfo.target, ModifyGroupInfoType.Modify_Group_Name, groupInfo.name, null, Collections.singletonList(0)).observe(this, new Observer<OperateResult<Boolean>>() {

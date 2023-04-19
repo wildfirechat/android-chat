@@ -9,9 +9,7 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -37,13 +35,22 @@ import cn.wildfirechat.utils.WeChatImageUtils;
 public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder {
 
     private static final String TAG = "ImageMessageContentView";
-    @BindView(R2.id.imageView)
     BubbleImageView imageView;
 
     private String imagePath;
 
     public ImageMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+       itemView.findViewById(R.id.imageView).setOnClickListener(_v -> preview());
+    }
+
+    private void bindViews(View itemView) {
+        imageView =itemView.findViewById(R.id.imageView);
     }
 
     @Override
@@ -60,14 +67,13 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
         } else {
             imagePath = imageMessage.remoteUrl;
         }
-        if (message.message.conversation.type == Conversation.ConversationType.SecretChat){
+        if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
             imagePath = DownloadManager.buildSecretChatMediaUrl(message.message);
         }
         loadMedia(thumbnail, imagePath, imageView);
 
     }
 
-    @OnClick(R2.id.imageView)
     void preview() {
         if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {
             message.message.status = MessageStatus.Played;

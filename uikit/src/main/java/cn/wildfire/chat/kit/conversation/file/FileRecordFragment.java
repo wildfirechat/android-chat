@@ -21,10 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.FileRecord;
@@ -40,11 +37,8 @@ public class FileRecordFragment extends Fragment {
     private static final String MYFILES = "isMyFiles";
     private static final String FROMUSER = "fromUser";
 
-    @BindView(R2.id.fileRecordLinearLayout)
     LinearLayout fileRecordLinearLayout;
-    @BindView(R2.id.fileRecordRecyclerView)
     RecyclerView fileRecordRecyclerView;
-    @BindView(R2.id.tipTextView)
     TextView tipTextView;
 
     private boolean isLoading = false;
@@ -84,9 +78,15 @@ public class FileRecordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.file_record_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
         init();
         return view;
+    }
+
+    private void bindViews(View view) {
+        fileRecordLinearLayout = view.findViewById(R.id.fileRecordLinearLayout);
+        fileRecordRecyclerView = view.findViewById(R.id.fileRecordRecyclerView);
+        tipTextView = view.findViewById(R.id.tipTextView);
     }
 
     private void init() {

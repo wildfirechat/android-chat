@@ -11,9 +11,8 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import butterknife.BindView;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -30,11 +29,15 @@ import cn.wildfirechat.remote.ChatManager;
 @EnableContextMenu
 public class StickerMessageContentViewHolder extends NormalMessageContentViewHolder {
     private String path;
-    @BindView(R2.id.stickerImageView)
     ImageView imageView;
 
     public StickerMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        imageView =itemView.findViewById(R.id.stickerImageView);
     }
 
     @Override

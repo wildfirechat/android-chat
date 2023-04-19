@@ -28,7 +28,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
-import butterknife.ButterKnife;
 import cn.wildfire.chat.app.login.LoginActivity;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfirechat.chat.R;
@@ -49,7 +48,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_splash);
-        ButterKnife.bind(this);
         hideSystemUI();
         setStatusBarColor(R.color.gray5);
 

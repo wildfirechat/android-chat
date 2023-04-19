@@ -203,6 +203,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private String mHost;
 
     private boolean useSM4 = false;
+    private boolean tcpShortLink = false;
 
     private OkHttpClient okHttpClient;
     private ConcurrentHashMap<Long, Call> uploadingMap;
@@ -235,6 +236,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             if (useSM4) {
                 ProtoLogic.useEncryptSM4();
+            }
+
+            if (tcpShortLink) {
+                ProtoLogic.setTcpShortLink();
             }
 
             logined = true;
@@ -553,6 +558,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         callback.onFailure(-1);
                         return;
                     }
+                    if (tcpShortLink) {
+                        if (!isSupportBigFilesUpload()) {
+                            android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                            callback.onFailure(-1);
+                            return;
+                        }
+                    }
                     if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
                         uploadThenSend = true;
                     }
@@ -578,50 +590,30 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
 
                 String filePath = file.getAbsolutePath();
-                ProtoLogic.getUploadMediaUrl(file.getName(), MessageContentMediaType.FILE.getValue(), null, new ProtoLogic.IGetUploadMediaUrlCallback() {
+
+                uploadBigFile(messageId, filePath, MessageContentMediaType.FILE.getValue(), null, new UploadMediaCallback() {
                     @Override
-                    public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
-                        UploadMediaCallback uploadMediaCallback = new UploadMediaCallback() {
-                            @Override
-                            public void onSuccess(String result) {
-                                protoMessage.getContent().setRemoteMediaUrl(remoteUrl);
-                                ProtoLogic.updateMessageContent(protoMessage);
-                                ProtoLogic.sendMessageEx(messageId, expireDuration, new SendMessageCallback(callback));
-                            }
+                    public void onSuccess(String result) {
+                        protoMessage.getContent().setRemoteMediaUrl(result);
+                        ProtoLogic.updateMessageContent(protoMessage);
+                        ProtoLogic.sendMessageEx(messageId, expireDuration, new SendMessageCallback(callback));
+                    }
 
-                            @Override
-                            public void onProgress(long uploaded, long total) {
-                                try {
-                                    if (callback != null)
-                                        callback.onProgress(uploaded, total);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void onFail(int errorCode) {
-                                try {
-                                    if (callback != null)
-                                        callback.onFailure(errorCode);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        };
-                        if (serverType == 1) {
-                            String[] ss = uploadUrl.split("\\?");
-                            uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, uploadMediaCallback);
-                        } else {
-                            uploadFile(messageId, filePath, uploadUrl, remoteUrl, uploadMediaCallback);
+                    @Override
+                    public void onProgress(long uploaded, long total) {
+                        try {
+                            if (callback != null)
+                                callback.onProgress(uploaded, total);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
                         }
                     }
 
                     @Override
-                    public void onFailure(int i) {
+                    public void onFail(int errorCode) {
                         try {
                             if (callback != null)
-                                callback.onFailure(i);
+                                callback.onFailure(errorCode);
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -783,50 +775,154 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void getMessagesInTypesAsync(Conversation conversation, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.getMessagesInTypes(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, fromIndex, before, count, withUser);
-            safeMessagesCallback(protoMessages, before, callback);
+            ProtoLogic.getMessagesInTypesV2(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
         public void getMessagesInStatusAsync(Conversation conversation, int[] messageStatus, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.getMessagesInStatus(conversation.type.ordinal(), conversation.target, conversation.line, messageStatus, fromIndex, before, count, withUser);
-            safeMessagesCallback(protoMessages, before, callback);
+            ProtoLogic.getMessagesInStatusV2(conversation.type.ordinal(), conversation.target, conversation.line, messageStatus, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
         public void getMessagesAsync(Conversation conversation, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.getMessages(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser);
-            safeMessagesCallback(protoMessages, before, callback);
+            ProtoLogic.getMessagesV2(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
         public void getMessagesExAsync(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser);
-            safeMessagesCallback(protoMessages, before, callback);
+            ProtoLogic.getMessagesExV2(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
         public void getMessagesEx2Async(int[] conversationTypes, int[] lines, int[] messageStatus, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.getMessagesEx2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser);
-            safeMessagesCallback(protoMessages, before, callback);
+            ProtoLogic.getMessagesEx2V2(conversationTypes, lines, messageStatus, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
         public void getMessagesInTypesAndTimestampAsync(Conversation conversation, int[] contentTypes, long timestamp, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.getMessagesInTypesAndTimestamp(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, timestamp, before, count, withUser);
-            safeMessagesCallback(protoMessages, before, callback);
+            ProtoLogic.getMessagesInTypesAndTimestampV2(conversation.type.ordinal(), conversation.target, conversation.line, contentTypes, timestamp, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
         public void getUserMessages(String userId, Conversation conversation, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.getUserMessages(userId, conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count);
-            safeMessagesCallback(protoMessages, before, callback);
+            ProtoLogic.getUserMessagesV2(userId, conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
         public void getUserMessagesEx(String userId, int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
-            ProtoMessage[] protoMessages = ProtoLogic.getUserMessagesEx(userId, conversationTypes, lines, contentTypes, fromIndex, before, count);
-            safeMessagesCallback(protoMessages, before, callback);
+            ProtoLogic.getUserMessagesExV2(userId, conversationTypes, lines, contentTypes, fromIndex, before, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
@@ -1112,6 +1208,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public boolean clearMessageUnreadStatus(long messageId) throws RemoteException {
             return ProtoLogic.clearMessageUnreadStatus((int) messageId);
+        }
+
+        @Override
+        public boolean clearUnreadStatusBeforeMessage(long messageId, Conversation conversation) throws RemoteException {
+            return ProtoLogic.clearMessageUnreadStatusBefore((int) messageId, conversation == null ? 0 : conversation.type.getValue(), conversation == null ? null : conversation.target, conversation == null ? 0 : conversation.line);
         }
 
         @Override
@@ -1756,6 +1857,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void uploadMedia(String fileName, byte[] data, int mediaType, final IUploadMediaCallback callback) throws RemoteException {
+            if (tcpShortLink) {
+                if (callback != null) {
+                    android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                    callback.onFailure(-1);
+                }
+                return;
+            }
             ProtoLogic.uploadMedia(fileName, data, mediaType, new ProtoLogic.IUploadMediaCallback() {
                 @Override
                 public void onSuccess(String s) {
@@ -1785,16 +1893,66 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void uploadMediaFile(String mediaPath, int mediaType, IUploadMediaCallback callback) throws RemoteException {
             try {
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(mediaPath));
-                int length = bufferedInputStream.available();
-                byte[] data = new byte[length];
-                bufferedInputStream.read(data);
-
-                String fileName = "";
-                if (mediaPath.contains("/")) {
-                    fileName = mediaPath.substring(mediaPath.lastIndexOf("/") + 1, mediaPath.length());
+                File file = new File(mediaPath);
+                if (!file.exists()) {
+                    android.util.Log.e(TAG, "file not exist");
+                    callback.onFailure(-1);
+                    return;
                 }
-                uploadMedia(fileName, data, mediaType, callback);
+
+                if (tcpShortLink) {
+                    if (!isSupportBigFilesUpload()) {
+                        android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                        callback.onFailure(-1);
+                        return;
+                    }
+                }
+
+                if (tcpShortLink || (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload())) {
+                    uploadBigFile(-1, mediaPath, mediaType, null, new UploadMediaCallback() {
+                        @Override
+                        public void onSuccess(String result) {
+                            if (callback != null) {
+                                try {
+                                    callback.onSuccess(result);
+                                } catch (RemoteException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onProgress(long uploaded, long total) {
+                            try {
+                                if (callback != null)
+                                    callback.onProgress(uploaded, total);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFail(int errorCode) {
+                            try {
+                                if (callback != null)
+                                    callback.onFailure(errorCode);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(mediaPath));
+                    int length = bufferedInputStream.available();
+                    byte[] data = new byte[length];
+                    bufferedInputStream.read(data);
+
+                    String fileName = "";
+                    if (mediaPath.contains("/")) {
+                        fileName = mediaPath.substring(mediaPath.lastIndexOf("/") + 1, mediaPath.length());
+                    }
+                    uploadMedia(fileName, data, mediaType, callback);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 e.printStackTrace();
@@ -1894,6 +2052,26 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public List<ConversationSearchResult> searchConversation(String keyword, int[] conversationTypes, int[] lines) throws RemoteException {
             ProtoConversationSearchresult[] protoResults = ProtoLogic.searchConversation(keyword, conversationTypes, lines);
+            List<ConversationSearchResult> output = new ArrayList<>();
+            if (protoResults != null) {
+                for (ProtoConversationSearchresult protoResult : protoResults
+                ) {
+                    ConversationSearchResult result = new ConversationSearchResult();
+                    result.conversation = new Conversation(Conversation.ConversationType.type(protoResult.getConversationType()), protoResult.getTarget(), protoResult.getLine());
+                    result.marchedMessage = convertProtoMessage(protoResult.getMarchedMessage());
+                    result.timestamp = protoResult.getTimestamp();
+                    result.marchedCount = protoResult.getMarchedCount();
+                    output.add(result);
+
+                }
+            }
+
+            return output;
+        }
+
+        @Override
+        public List<ConversationSearchResult> searchConversationEx(String keyword, int[] conversationTypes, int[] lines, long startTime, long endTime, boolean desc, int limit, int offset) throws RemoteException {
+            ProtoConversationSearchresult[] protoResults = ProtoLogic.searchConversationEx(keyword, conversationTypes, lines, startTime, endTime, desc, limit, offset);
             List<ConversationSearchResult> output = new ArrayList<>();
             if (protoResults != null) {
                 for (ProtoConversationSearchresult protoResult : protoResults
@@ -3064,6 +3242,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void useTcpShortLink() throws RemoteException {
+            tcpShortLink = true;
+            ProtoLogic.setTcpShortLink();
+        }
+
+
+        @Override
         public void checkSignature() throws RemoteException {
             ProtoLogic.checkSignature();
         }
@@ -4170,6 +4355,28 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         int index;
     }
 
+    private void uploadBigFile(long messageId, String filePath, int mediaType, String contentType, UploadMediaCallback callback) {
+        File file = new File(filePath);
+        ProtoLogic.getUploadMediaUrl(file.getName(), mediaType, contentType, new ProtoLogic.IGetUploadMediaUrlCallback() {
+            @Override
+            public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
+                if (serverType == 1) {
+                    String[] ss = uploadUrl.split("\\?");
+                    uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, callback);
+                } else {
+                    uploadFile(messageId, filePath, uploadUrl, remoteUrl, callback);
+                }
+            }
+
+            @Override
+            public void onFailure(int i) {
+                if (callback != null) {
+                    callback.onFail(i);
+                }
+            }
+        });
+    }
+
     // progress, error, success
     private void uploadFile(long messageId, String filePath, String uploadUrl, String remoteUrl, UploadMediaCallback callback) {
 
@@ -4205,7 +4412,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 uploadingMap.remove(messageId);
             }
         });
-        uploadingMap.put(messageId, call);
+        if (messageId > 0) {
+            uploadingMap.put(messageId, call);
+        }
     }
 
     private void uploadQiniu(long messageId, String uploadUrl, String remoteUrl, String token, String key, String filePath, UploadMediaCallback callback) {
@@ -4248,7 +4457,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 uploadingMap.remove(messageId);
             }
         });
-        uploadingMap.put(messageId, call);
+        if (messageId > 0) {
+            uploadingMap.put(messageId, call);
+        }
     }
 
 }

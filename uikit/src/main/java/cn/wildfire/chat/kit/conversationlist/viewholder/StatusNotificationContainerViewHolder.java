@@ -16,20 +16,21 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotificationManager;
 import cn.wildfire.chat.kit.conversationlist.notification.viewholder.StatusNotificationViewHolder;
 
 public class StatusNotificationContainerViewHolder extends RecyclerView.ViewHolder {
-    @BindView(R2.id.notificationContainerLayout)
     LinearLayout containerLayout;
 
     public StatusNotificationContainerViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        containerLayout = itemView.findViewById(R.id.notificationContainerLayout);
     }
 
     public void onBind(Fragment fragment, View itemView, List<StatusNotification> statusNotifications) {
@@ -44,7 +45,6 @@ public class StatusNotificationContainerViewHolder extends RecyclerView.ViewHold
                 Constructor constructor = holderClass.getConstructor(Fragment.class);
                 statusNotificationViewHolder = (StatusNotificationViewHolder) constructor.newInstance(fragment);
                 view = layoutInflater.inflate(StatusNotificationManager.getInstance().getNotificationViewHolderLayoutResId(notification), (ViewGroup) itemView, false);
-                ButterKnife.bind(statusNotificationViewHolder, view);
 
                 statusNotificationViewHolder.onBind(view, notification);
                 containerLayout.addView(view);

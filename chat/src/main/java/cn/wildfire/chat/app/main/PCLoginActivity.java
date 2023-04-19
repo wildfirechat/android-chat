@@ -13,8 +13,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.PCSession;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -25,12 +23,22 @@ import cn.wildfirechat.client.Platform;
 public class PCLoginActivity extends WfcBaseActivity {
     private String token;
     private boolean isConfirmPcLogin = false;
-    @BindView(R.id.confirmButton)
     Button confirmButton;
-    @BindView(R.id.descTextView)
     TextView descTextView;
 
     private Platform platform;
+
+    protected void bindEvents() {
+        super.bindEvents();
+        findViewById(R.id.confirmButton).setOnClickListener(v -> confirmPCLogin());
+        findViewById(R.id.cancelButton).setOnClickListener(v -> cancelPCLogin());
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        confirmButton = findViewById(R.id.confirmButton);
+        descTextView = findViewById(R.id.descTextView);
+    }
 
     @Override
     protected void beforeViews() {
@@ -58,13 +66,11 @@ public class PCLoginActivity extends WfcBaseActivity {
         }
     }
 
-    @OnClick(R.id.confirmButton)
     void confirmPCLogin() {
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         confirmPCLogin(token, userViewModel.getUserId());
     }
 
-    @OnClick(R.id.cancelButton)
     void cancelPCLogin() {
         AppService.Instance().cancelPCLogin(token, new AppService.PCLoginCallback() {
             @Override

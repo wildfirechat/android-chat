@@ -25,12 +25,8 @@ import org.webrtc.StatsReport;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -39,13 +35,9 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class MultiCallAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback {
-    @BindView(R2.id.durationTextView)
     TextView durationTextView;
-    @BindView(R2.id.audioContainerGridLayout)
     GridLayout audioContainerGridLayout;
-    @BindView(R2.id.speakerImageView)
     ImageView speakerImageView;
-    @BindView(R2.id.muteImageView)
     ImageView muteImageView;
 
     private List<String> participants;
@@ -58,9 +50,25 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_multi_audio_outgoing_connected, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.minimizeImageView).setOnClickListener(_v -> minimize());
+        view.findViewById(R.id.addParticipantImageView).setOnClickListener(_v -> addParticipant());
+        view.findViewById(R.id.muteImageView).setOnClickListener(_v -> mute());
+        view.findViewById(R.id.speakerImageView).setOnClickListener(_v -> speaker());
+        view.findViewById(R.id.hangupImageView).setOnClickListener(_v -> hangup());
+    }
+
+    private void bindViews(View view) {
+        durationTextView = view.findViewById(R.id.durationTextView);
+        audioContainerGridLayout = view.findViewById(R.id.audioContainerGridLayout);
+        speakerImageView = view.findViewById(R.id.speakerImageView);
+        muteImageView = view.findViewById(R.id.muteImageView);
     }
 
     private void init() {
@@ -123,17 +131,14 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
         }
     }
 
-    @OnClick(R2.id.minimizeImageView)
     void minimize() {
         ((MultiCallActivity) getActivity()).showFloatingView(null);
     }
 
-    @OnClick(R2.id.addParticipantImageView)
     void addParticipant() {
         ((MultiCallActivity) getActivity()).addParticipant(AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT - participants.size() - 1);
     }
 
-    @OnClick(R2.id.muteImageView)
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
@@ -143,7 +148,6 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
         }
     }
 
-    @OnClick(R2.id.speakerImageView)
     void speaker() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
@@ -162,7 +166,6 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
         }
     }
 
-    @OnClick(R2.id.hangupImageView)
     void hangup() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null) {
@@ -262,7 +265,6 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didError(String s) {
-        Toast.makeText(getActivity(), "发生错误" + s, Toast.LENGTH_SHORT).show();
     }
 
     @Override

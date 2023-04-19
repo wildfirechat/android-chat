@@ -18,10 +18,8 @@ import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.king.zxing.util.CodeUtils;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 
 public class QRCodeActivity extends WfcBaseActivity {
@@ -29,8 +27,12 @@ public class QRCodeActivity extends WfcBaseActivity {
     private String logoUrl;
     private String qrCodeValue;
 
-    @BindView(R2.id.qrCodeImageView)
     ImageView qrCodeImageView;
+
+    protected void bindViews() {
+        super.bindViews();
+        qrCodeImageView = findViewById(R.id.qrCodeImageView);
+    }
 
     public static Intent buildQRCodeIntent(Context context, String title, String logoUrl, String qrCodeValue) {
         Intent intent = new Intent(context, QRCodeActivity.class);
@@ -42,7 +44,6 @@ public class QRCodeActivity extends WfcBaseActivity {
 
     @Override
     protected void beforeViews() {
-        super.beforeViews();
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
         qrCodeValue = intent.getStringExtra("qrCodeValue");
@@ -56,6 +57,7 @@ public class QRCodeActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
+        bindViews();
         setTitle(title);
 
         genQRCode();
@@ -63,30 +65,30 @@ public class QRCodeActivity extends WfcBaseActivity {
 
     private void genQRCode() {
         GlideApp.with(this)
-                .asBitmap()
-                .load(logoUrl)
-                .placeholder(R.mipmap.ic_launcher)
-                .into(new CustomViewTarget<ImageView, Bitmap>(qrCodeImageView) {
-                    @Override
-                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                        // the errorDrawable will always be bitmapDrawable here
-                        if (errorDrawable instanceof BitmapDrawable) {
-                            Bitmap bitmap = ((BitmapDrawable) errorDrawable).getBitmap();
-                            Bitmap qrBitmap = CodeUtils.createQRCode(qrCodeValue, 400, bitmap);
-                            qrCodeImageView.setImageBitmap(qrBitmap);
-                        }
+            .asBitmap()
+            .load(logoUrl)
+            .placeholder(R.mipmap.ic_launcher)
+            .into(new CustomViewTarget<ImageView, Bitmap>(qrCodeImageView) {
+                @Override
+                public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                    // the errorDrawable will always be bitmapDrawable here
+                    if (errorDrawable instanceof BitmapDrawable) {
+                        Bitmap bitmap = ((BitmapDrawable) errorDrawable).getBitmap();
+                        Bitmap qrBitmap = CodeUtils.createQRCode(qrCodeValue, 400, bitmap);
+                        qrCodeImageView.setImageBitmap(qrBitmap);
                     }
+                }
 
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition transition) {
-                        Bitmap bitmap = CodeUtils.createQRCode(qrCodeValue, 400, resource);
-                        qrCodeImageView.setImageBitmap(bitmap);
-                    }
+                @Override
+                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition transition) {
+                    Bitmap bitmap = CodeUtils.createQRCode(qrCodeValue, 400, resource);
+                    qrCodeImageView.setImageBitmap(bitmap);
+                }
 
-                    @Override
-                    protected void onResourceCleared(@Nullable Drawable placeholder) {
+                @Override
+                protected void onResourceCleared(@Nullable Drawable placeholder) {
 
-                    }
-                });
+                }
+            });
     }
 }

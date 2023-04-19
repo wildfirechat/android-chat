@@ -26,43 +26,31 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import butterknife.BindView;
-import butterknife.OnCheckedChanged;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.widget.DateTimePickerHelper;
 import cn.wildfire.chat.kit.widget.FixedTextInputEditText;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback2;
 
 public class CreateConferenceActivity extends WfcBaseActivity {
-    @BindView(R2.id.conferenceTitleTextInputEditText)
     FixedTextInputEditText titleEditText;
-    @BindView((R2.id.audienceSwitch))
+    SwitchMaterial passwordSwitch;
     SwitchMaterial audienceSwitch;
-    @BindView((R2.id.modeSwitch))
     SwitchMaterial modeSwitch;
-    @BindView((R2.id.advanceSwitch))
     SwitchMaterial advancedSwitch;
-    @BindView(R2.id.userCallIdSwitch)
     SwitchMaterial userCallIdSwitch;
 
-    @BindView(R2.id.joinConferenceBtn)
     Button joinConferenceButton;
 
-    @BindView(R2.id.endDateTimeTextView)
     TextView endDateTimeTextView;
-    @BindView(R2.id.callIdTextView)
     TextView callIdTextView;
-    @BindView(R2.id.passwordTextView)
     TextView passwordTextView;
 
     private Date endDateTime;
@@ -76,6 +64,34 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     private boolean enableAudio = true;
 
     private static final String TAG = "createConference";
+
+    protected void bindEvents() {
+        super.bindEvents();
+        findViewById(R.id.endDateTimeRelativeLayout).setOnClickListener(v -> pickEndDateTime());
+        findViewById(R.id.joinConferenceBtn).setOnClickListener(v -> onClickJoinBtn());
+        audienceSwitch.setOnCheckedChangeListener(this::audienceChecked);
+        passwordSwitch.setOnCheckedChangeListener(this::passwordChecked);
+        titleEditText.addTextChangedListener(new SimpleTextWatcher(){
+            @Override
+            public void afterTextChanged(Editable s) {
+                conferenceTitle(s);
+            }
+        });
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        titleEditText = findViewById(R.id.conferenceTitleTextInputEditText);
+        audienceSwitch = findViewById((R.id.audienceSwitch));
+        passwordSwitch  = findViewById(R.id.passwordSwitch);
+        modeSwitch = findViewById((R.id.modeSwitch));
+        advancedSwitch = findViewById((R.id.advanceSwitch));
+        userCallIdSwitch = findViewById(R.id.userCallIdSwitch);
+        joinConferenceButton = findViewById(R.id.joinConferenceBtn);
+        endDateTimeTextView = findViewById(R.id.endDateTimeTextView);
+        callIdTextView = findViewById(R.id.callIdTextView);
+        passwordTextView = findViewById(R.id.passwordTextView);
+    }
 
     @Override
     protected int contentLayout() {
@@ -108,7 +124,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        super.afterViews();
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(ChatManager.Instance().getUserId(), false);
         if (userInfo != null) {
@@ -136,7 +151,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         });
     }
 
-    @OnCheckedChanged(R2.id.audienceSwitch)
     void audienceChecked(CompoundButton button, boolean checked) {
         if (checked) {
             modeSwitch.setChecked(true);
@@ -147,7 +161,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         }
     }
 
-    @OnCheckedChanged(R2.id.passwordSwitch)
     void passwordChecked(CompoundButton button, boolean checked) {
         if (checked) {
             new MaterialDialog.Builder(this)
@@ -176,7 +189,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         }
     }
 
-    @OnTextChanged(value = R2.id.conferenceTitleTextInputEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void conferenceTitle(Editable editable) {
         this.title = editable.toString();
         if (!TextUtils.isEmpty(title)) {
@@ -192,7 +204,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         }
     }
 
-    @OnClick(R2.id.endDateTimeRelativeLayout)
     void pickEndDateTime() {
         DateTimePickerHelper.pickDateTime(this, new DateTimePickerHelper.PickDateTimeCallBack() {
             @Override
@@ -212,7 +223,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         });
     }
 
-    @OnClick(R2.id.joinConferenceBtn)
     public void onClickJoinBtn() {
         createConference(true);
     }

@@ -9,8 +9,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -71,11 +70,15 @@ import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationConten
  */
 public class SimpleNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder {
 
-    @BindView(R2.id.notificationTextView)
     TextView notificationTextView;
 
     public SimpleNotificationMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        notificationTextView =itemView.findViewById(R.id.notificationTextView);
     }
 
     @Override

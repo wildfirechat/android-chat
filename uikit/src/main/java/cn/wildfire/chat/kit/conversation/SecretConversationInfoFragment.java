@@ -22,12 +22,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import butterknife.BindArray;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
@@ -46,21 +41,15 @@ import cn.wildfirechat.remote.GeneralCallback;
 
 public class SecretConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
-    @BindView(R2.id.stickTopSwitchButton)
     SwitchMaterial stickTopSwitchButton;
-    @BindView(R2.id.silentSwitchButton)
     SwitchMaterial silentSwitchButton;
 
-    @BindView(R2.id.fileRecordOptionItemView)
     OptionItemView fileRecordOptionItem;
 
-    @BindView(R2.id.burnOptionItemView)
     OptionItemView burnOptionItemView;
 
-    @BindArray(R2.array.secret_chat_message_burn_time_desc)
     String[] messageBurnTimeDesc;
 
-    @BindArray(R2.array.secret_chat_message_burn_time)
     int[] messageBurnTime;
 
 
@@ -90,16 +79,36 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conversation_info_secret_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.clearMessagesOptionItemView).setOnClickListener(_v -> clearMessage());
+        view.findViewById(R.id.searchMessageOptionItemView).setOnClickListener(_v -> searchGroupMessage());
+        view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(_v -> fileRecord());
+        view.findViewById(R.id.destroySecretChatButton).setOnClickListener(_v -> destroySecretChat());
+        view.findViewById(R.id.burnOptionItemView).setOnClickListener(_v -> setSecretChatBurnTime());
+    }
+
+    private void bindViews(View view) {
+        stickTopSwitchButton = view.findViewById(R.id.stickTopSwitchButton);
+        silentSwitchButton = view.findViewById(R.id.silentSwitchButton);
+        fileRecordOptionItem = view.findViewById(R.id.fileRecordOptionItemView);
+        burnOptionItemView = view.findViewById(R.id.burnOptionItemView);
+
+        messageBurnTimeDesc = getContext().getResources().getStringArray(R.array.secret_chat_message_burn_time_desc);
+        messageBurnTime = getContext().getResources().getIntArray(R.array.secret_chat_message_burn_time);
+
     }
 
     private void init() {
         conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
-        stickTopSwitchButton.setChecked(conversationInfo.top>0);
+        stickTopSwitchButton.setChecked(conversationInfo.top > 0);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
@@ -127,7 +136,6 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
         }
     }
 
-    @OnClick(R2.id.clearMessagesOptionItemView)
     void clearMessage() {
         new MaterialDialog.Builder(getActivity())
             .items("清空会话")
@@ -142,21 +150,18 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
             .show();
     }
 
-    @OnClick(R2.id.searchMessageOptionItemView)
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.fileRecordOptionItemView)
     void fileRecord() {
         Intent intent = new Intent(getActivity(), FileRecordActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.destroySecretChatButton)
     void destroySecretChat() {
         ChatManager.Instance().destroySecretChat(conversationInfo.conversation.target, new GeneralCallback() {
             @Override
@@ -175,7 +180,6 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
         });
     }
 
-    @OnClick(R2.id.burnOptionItemView)
     void setSecretChatBurnTime() {
         new MaterialDialog.Builder(getActivity())
             .items(messageBurnTimeDesc)
@@ -214,8 +218,8 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
         ConversationListViewModel conversationListViewModel = ViewModelProviders
             .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
-        conversationListViewModel.setConversationTop(conversationInfo, top?1:0);
-        conversationInfo.top = top?1:0;
+        conversationListViewModel.setConversationTop(conversationInfo, top ? 1 : 0);
+        conversationInfo.top = top ? 1 : 0;
     }
 
     private void silent(boolean silent) {

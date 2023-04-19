@@ -24,25 +24,16 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.ChannelInfo;
 
 public class ChannelInfoActivity extends AppCompatActivity {
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.channelNameTextView)
     TextView channelTextView;
-    @BindView(R2.id.channelDescTextView)
     TextView channelDescTextView;
-    @BindView(R2.id.followChannelButton)
     Button followChannelButton;
-    @BindView(R2.id.toolbar)
     Toolbar toolbar;
 
     private boolean isFollowed = false;
@@ -53,10 +44,19 @@ public class ChannelInfoActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.channel_info_activity);
-        ButterKnife.bind(this);
+        bindViews();
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         init();
+    }
+
+    private void bindViews() {
+        portraitImageView = findViewById(R.id.portraitImageView);
+        channelTextView = findViewById(R.id.channelNameTextView);
+        channelDescTextView = findViewById(R.id.channelDescTextView);
+        followChannelButton = findViewById(R.id.followChannelButton);
+        toolbar = findViewById(R.id.toolbar);
+        followChannelButton.setOnClickListener(v -> followChannelButtonClick());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ChannelInfoActivity extends AppCompatActivity {
         channelDescTextView.setText(TextUtils.isEmpty(channelInfo.desc) ? "频道主什么也没写" : channelInfo.desc);
 
 
-        UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         if (channelInfo.owner.equals(userViewModel.getUserId())) {
             followChannelButton.setVisibility(View.GONE);
             return;
@@ -104,13 +104,12 @@ public class ChannelInfoActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick(R2.id.followChannelButton)
     void followChannelButtonClick() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content(isFollowed ? "正在取消收听" : "正在收听")
-                .progress(true, 100)
-                .cancelable(false)
-                .build();
+            .content(isFollowed ? "正在取消收听" : "正在收听")
+            .progress(true, 100)
+            .cancelable(false)
+            .build();
         dialog.show();
         channelViewModel.listenChannel(channelInfo.channelId, !isFollowed).observe(this, new Observer<OperateResult<Boolean>>() {
             @Override

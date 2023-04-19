@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.group;
 
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,21 +13,30 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.BindView;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.GroupInfo;
 
 public class SetGroupAnnouncementActivity extends WfcBaseActivity {
-    @BindView(R2.id.announcementEditText)
     EditText announcementEditText;
 
     private MenuItem confirmMenuItem;
     private GroupInfo groupInfo;
+
+
+    protected void bindViews() {
+        super.bindViews();
+        announcementEditText = findViewById(R.id.announcementEditText);
+        announcementEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                SetGroupAnnouncementActivity.this.onTextChanged();
+            }
+        });
+    }
 
     @Override
     protected int contentLayout() {
@@ -86,7 +96,6 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnTextChanged(R2.id.announcementEditText)
     void onTextChanged() {
         if (confirmMenuItem != null) {
             confirmMenuItem.setEnabled(announcementEditText.getText().toString().trim().length() > 0);
@@ -96,10 +105,10 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
     private void setGroupName() {
         String announcement = announcementEditText.getText().toString().trim();
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("请稍后...")
-                .progress(true, 100)
-                .cancelable(false)
-                .build();
+            .content("请稍后...")
+            .progress(true, 100)
+            .cancelable(false)
+            .build();
         dialog.show();
 
         WfcUIKit.getWfcUIKit().getAppServiceProvider().updateGroupAnnouncement(groupInfo.target, announcement, new AppServiceProvider.UpdateGroupAnnouncementCallback() {

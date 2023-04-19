@@ -83,7 +83,7 @@ public class PttPanel implements View.OnTouchListener {
         this.soundPool.unload(this.startSoundId);
         this.soundPool.unload(this.stopSoundId);
         this.soundPool = null;
-
+        this.handler.removeCallbacks(this::tick);
     }
 
     @Override
@@ -99,9 +99,7 @@ public class PttPanel implements View.OnTouchListener {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_normal);
-                if (isTalking) {
                 stopTalk();
-                }
                 break;
             default:
                 break;
@@ -110,7 +108,7 @@ public class PttPanel implements View.OnTouchListener {
     }
 
     private void requestTalk() {
-        handler.removeCallbacks(this::hideTalking);
+        handler.removeCallbacks(this::tick);
         // TODO 开始、结束、失败，播放对应的声音提示
         PTTClient.getInstance().requestTalk(conversation, new TalkingCallback() {
             @Override
@@ -164,6 +162,7 @@ public class PttPanel implements View.OnTouchListener {
 
     private void stopTalk() {
         PTTClient.getInstance().releaseTalking(conversation);
+        this.isTalking = false;
         hideTalking();
     }
 

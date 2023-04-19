@@ -9,6 +9,8 @@ package cn.wildfirechat.client;
  */
 
 public interface ConnectionStatus {
+    int ConnectionStatusTimeInconsistent = -9;
+    int ConnectionStatusNotLicensed = -8;
     //错误码kConnectionStatusKickedoff是IM服务2021.9.15之后的版本才支持，并且打开服务器端开关server.client_support_kickoff_event
     int ConnectionStatusKickedoff = -7;
     int ConnectionStatusSecretKeyMismatch = -6;

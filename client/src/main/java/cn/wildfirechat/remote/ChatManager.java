@@ -229,6 +229,7 @@ public class ChatManager {
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
+    private boolean tcpShortLink = false;
     private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
 
@@ -1089,6 +1090,23 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public void useTcpShortLink() {
+        tcpShortLink = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.useTcpShortLink();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isTcpShortLink() {
+        return tcpShortLink;
     }
 
     /**
@@ -2921,6 +2939,7 @@ public class ChatManager {
      * @param count         获取消息条数
      * @param withUser      只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      */
+    @Deprecated
     public List<Message> getMessagesByMessageStatus(Conversation conversation, List<Integer> messageStatus, long fromIndex, boolean before, int count, String withUser) {
         try {
             return mClient.getMessagesInStatusSync(conversation, convertIntegers(messageStatus), fromIndex, before, count, withUser);
@@ -3119,7 +3138,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取会话消息
+     * 获取用户在会话中的消息，比如获取某个用户在里面发送的消息列表
      *
      * @param userId       userId
      * @param conversation 会话
@@ -3671,6 +3690,32 @@ public class ChatManager {
             Message msg = getMessage(messageId);
             if (msg != null) {
                 if (mClient.clearMessageUnreadStatus(messageId)) {
+                    ConversationInfo conversationInfo = getConversation(msg.conversation);
+                    for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
+                        listener.onConversationUnreadStatusClear(conversationInfo);
+                    }
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 清除messageId之前（包含）的消息未读状态
+     *
+     * @param messageId
+     * @param conversation
+     */
+    public void clearUnreadStatusBeforeMessage(long messageId, Conversation conversation) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            Message msg = getMessage(messageId);
+            if (msg != null) {
+                if (mClient.clearUnreadStatusBeforeMessage(messageId, conversation)) {
                     ConversationInfo conversationInfo = getConversation(msg.conversation);
                     for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                         listener.onConversationUnreadStatusClear(conversationInfo);
@@ -5067,6 +5112,9 @@ public class ChatManager {
 
 
     /**
+     * 上传媒体数据
+     * 开始 TCP 短链接之后，该方法不可用，请使用{@link ChatManager#uploadMediaFile}
+     *
      * @param data      不能超过1M，为了安全，实际只有900K
      * @param mediaType 媒体类型，可选值参考{@link cn.wildfirechat.message.MessageContentMediaType}
      * @param callback
@@ -5346,6 +5394,41 @@ public class ChatManager {
 
         try {
             return mClient.searchConversation(keyword, intypes, inlines);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 搜索会话
+     *
+     * @param keyword
+     * @param conversationTypes
+     * @param lines
+     * @param startTime
+     * @param endTime
+     * @param desc
+     * @param limit
+     * @param offset
+     * @return
+     */
+    public List<ConversationSearchResult> searchConversationEx(String keyword, List<Conversation.ConversationType> conversationTypes, List<Integer> lines, long startTime, long endTime, boolean desc, int limit, int offset) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        int[] inlines = new int[lines.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+        for (int j = 0; j < lines.size(); j++) {
+            inlines[j] = lines.get(j);
+        }
+
+        try {
+            return mClient.searchConversationEx(keyword, intypes, inlines, startTime, endTime, desc, limit, offset);
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
@@ -8230,8 +8313,8 @@ public class ChatManager {
         MessageContent content = null;
         try {
             Class cls = messageContentMap.get(payload.type);
-            if(cls != null) {
-                content = (MessageContent)cls.newInstance();
+            if (cls != null) {
+                content = (MessageContent) cls.newInstance();
             } else {
                 content = new UnknownMessageContent();
             }
@@ -8312,6 +8395,9 @@ public class ChatManager {
                 try {
                     if (useSM4) {
                         mClient.useSM4();
+                    }
+                    if (tcpShortLink) {
+                        mClient.useTcpShortLink();
                     }
                     if (checkSignature) {
                         mClient.checkSignature();
@@ -8498,7 +8584,7 @@ public class ChatManager {
                     });
                 } catch (Throwable e) {
                     // 抓住所有异常，发生异常之后，im将不能正常工作，需要重新启动ClientService服务，故这儿抓住所以异常，防止应用crash并没有什么问题
-                    Log.e(TAG, "onServiceConnected worker exception" +  e.toString());
+                    Log.e(TAG, "onServiceConnected worker exception" + e.toString());
                 }
             });
         }

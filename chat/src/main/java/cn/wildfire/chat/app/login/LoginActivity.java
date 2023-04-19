@@ -20,24 +20,43 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.chat.R;
 
 public class LoginActivity extends WfcBaseNoToolbarActivity {
-    @BindView(R.id.loginButton)
     Button loginButton;
-    @BindView(R.id.phoneNumberEditText)
     EditText accountEditText;
-    @BindView(R.id.passwordEditText)
     EditText passwordEditText;
+
+    private void bindEvents() {
+        findViewById(R.id.authCodeLoginTextView).setOnClickListener(v -> authCodeLogin());
+        findViewById(R.id.registerTextView).setOnClickListener(v -> register());
+        findViewById(R.id.loginButton).setOnClickListener(v -> login());
+        accountEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                inputAccount(s);
+            }
+        });
+        passwordEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                inputPassword(s);
+            }
+        });
+    }
+
+    private void bindViews() {
+        loginButton = findViewById(R.id.loginButton);
+        accountEditText = findViewById(R.id.phoneNumberEditText);
+        passwordEditText = findViewById(R.id.passwordEditText);
+    }
 
     @Override
     protected int contentLayout() {
@@ -46,6 +65,8 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
 
     @Override
     protected void afterViews() {
+        bindViews();
+        bindEvents();
         setStatusBarTheme(this, false);
         setStatusBarColor(R.color.gray14);
         if (getIntent().getBooleanExtra("isKickedOff", false)) {
@@ -57,7 +78,6 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         }
     }
 
-    @OnTextChanged(value = R.id.phoneNumberEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void inputAccount(Editable editable) {
         if (!TextUtils.isEmpty(passwordEditText.getText()) && !TextUtils.isEmpty(editable)) {
             loginButton.setEnabled(true);
@@ -66,7 +86,6 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         }
     }
 
-    @OnTextChanged(value = R.id.passwordEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void inputPassword(Editable editable) {
         if (!TextUtils.isEmpty(accountEditText.getText()) && !TextUtils.isEmpty(editable)) {
             loginButton.setEnabled(true);
@@ -75,14 +94,12 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         }
     }
 
-    @OnClick(R.id.authCodeLoginTextView)
     void authCodeLogin() {
         Intent intent = new Intent(this, SMSLoginActivity.class);
         startActivity(intent);
         finish();
     }
 
-    @OnClick(R.id.registerTextView)
     void register() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .title("提示")
@@ -101,7 +118,6 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         dialog.show();
     }
 
-    @OnClick(R.id.loginButton)
     void login() {
 
         String account = accountEditText.getText().toString().trim();

@@ -11,9 +11,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -35,18 +33,27 @@ import cn.wildfirechat.utils.WeChatImageUtils;
 @EnableContextMenu
 public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder {
     private static final String TAG = "VideoMessageContentView";
-    @BindView(R2.id.imageView)
     BubbleImageView imageView;
-    @BindView(R2.id.playImageView)
     ImageView playImageView;
 
-    @BindView(R2.id.time_tv)
     TextView time_tv;
 
     private  String imagePath ;
 
     public VideoMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+       itemView.findViewById(R.id.videoContentLayout).setOnClickListener(_v -> play());
+    }
+
+    private void bindViews(View itemView) {
+        imageView =itemView.findViewById(R.id.imageView);
+        playImageView =itemView.findViewById(R.id.playImageView);
+        time_tv =itemView.findViewById(R.id.time_tv);
     }
 
     @Override
@@ -73,7 +80,6 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
 
     }
 
-    @OnClick(R2.id.videoContentLayout)
     void play() {
         previewMM();
         if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {

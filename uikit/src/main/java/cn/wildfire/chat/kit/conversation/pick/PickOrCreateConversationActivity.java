@@ -16,29 +16,34 @@ import androidx.fragment.app.FragmentManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.search.OnResultItemClickListener;
 import cn.wildfire.chat.kit.search.SearchFragment;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.module.ContactSearchModule;
 import cn.wildfire.chat.kit.search.module.GroupSearchViewModule;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.UserInfo;
-
-import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
 abstract public class PickOrCreateConversationActivity extends WfcBaseActivity {
     private SearchFragment searchFragment;
     private List<SearchableModule> searchableModules;
 
-    @BindView(R2.id.searchEditText)
     EditText editText;
 
+    protected void bindViews() {
+        super.bindViews();
+        editText = findViewById(R.id.searchEditText);
+        editText.addTextChangedListener(new SimpleTextWatcher(){
+            @Override
+            public void afterTextChanged(Editable s) {
+                search(s);
+            }
+        });
+    }
 
     @Override
     protected void afterViews() {
@@ -81,7 +86,6 @@ abstract public class PickOrCreateConversationActivity extends WfcBaseActivity {
         editText.clearFocus();
     }
 
-    @OnTextChanged(value = R2.id.searchEditText, callback = AFTER_TEXT_CHANGED)
     void search(Editable editable) {
         String keyword = editable.toString().trim();
         FragmentManager fragmentManager = getSupportFragmentManager();

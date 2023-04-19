@@ -16,9 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.FileRecord;
@@ -26,20 +24,23 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 class FileRecordViewHolder extends RecyclerView.ViewHolder {
-    @BindView(R2.id.fileNameTextView)
     TextView fileNameTextView;
-    @BindView(R2.id.fileSizeTextView)
     TextView fileSizeTextView;
-    @BindView(R2.id.fileIconImageView)
     ImageView fileIconImageView;
-    @BindView(R2.id.fileFromTextView)
     TextView fileFromTextView;
-    @BindView(R2.id.fileTimeTextView)
     TextView fileTimeTextView;
 
     public FileRecordViewHolder(@NonNull View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        fileNameTextView = itemView.findViewById(R.id.fileNameTextView);
+        fileSizeTextView = itemView.findViewById(R.id.fileSizeTextView);
+        fileIconImageView = itemView.findViewById(R.id.fileIconImageView);
+        fileFromTextView = itemView.findViewById(R.id.fileFromTextView);
+        fileTimeTextView = itemView.findViewById(R.id.fileTimeTextView);
     }
 
     public void onBind(FileRecord fileRecord) {

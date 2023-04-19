@@ -147,6 +147,7 @@ interface IRemoteClient {
     boolean clearUnreadStatus(in int conversationType, in String target, in int line);
     boolean clearUnreadStatusEx(in int[] conversationTypes, in int[] lines);
     boolean clearMessageUnreadStatus(long messageId);
+    boolean clearUnreadStatusBeforeMessage(long messageId, in Conversation conversation);
     void clearAllUnreadStatus();
     boolean markAsUnRead(in int conversationType, in String target, in int line, in boolean sync);
     void clearMessages(in int conversationType, in String target, in int line);
@@ -213,6 +214,7 @@ interface IRemoteClient {
     void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
     void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
+    List<ConversationSearchResult> searchConversationEx(in String keyword, in int[] conversationTypes, in int[] lines, in long startTime, in long endTime, in boolean desc, in int limit, in int offset);
     List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset, in String withUser);
     List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset, in String withUser);
     List<Message> searchMessageByTypesAndTimes(in Conversation conversation, in String keyword, in int[] contentTypes, in long startTime, in long endTime, in boolean desc, in int limit, in int offset, in String withUser);
@@ -292,6 +294,7 @@ interface IRemoteClient {
     boolean isEnableSecretChat();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
+    void useTcpShortLink();
     void checkSignature();
 
     String getProtoRevision();

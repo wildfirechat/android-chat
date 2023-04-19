@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="cn.wildfire.chat.kit">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -14,9 +13,6 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
-    <!-- 音视频通话时， 允许普通电话打断音视频通话 -->
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -153,6 +149,9 @@
         <activity
             android:name="cn.wildfire.chat.kit.conversation.pick.PickConversationActivity"
             android:label="选择会话" />
+        <activity
+            android:name=".conversation.receipt.GroupMessageReceiptActivity"
+            android:label="消息阅读状态" />
         <activity
             android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"
             android:label="频道列表" />

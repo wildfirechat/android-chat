@@ -39,9 +39,7 @@ import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
 import java.util.List;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.third.location.ui.base.BaseActivity;
 import cn.wildfire.chat.kit.third.location.ui.presenter.MyLocationAtPresenter;
 import cn.wildfire.chat.kit.third.location.ui.view.IMyLocationAtView;
@@ -65,21 +63,25 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
     private Circle accuracy;
     private TencentSearch mTencentSearch;
 
-    @BindView(R2.id.confirmButton)
     Button mBtnToolbarSend;
-    @BindView(R2.id.rlMap)
     RelativeLayout mRlMap;
-    @BindView(R2.id.map)
     MapView mMap;
-    @BindView(R2.id.ibShowLocation)
     ImageButton mIbShowLocation;
-    @BindView(R2.id.rvPOI)
     RecyclerView mRvPOI;
-    @BindView(R2.id.pb)
     ProgressBar mPb;
+
+    private void bindViews() {
+        mBtnToolbarSend = findViewById(R.id.confirmButton);
+        mRlMap = findViewById(R.id.rlMap);
+        mMap = findViewById(R.id.map);
+        mIbShowLocation = findViewById(R.id.ibShowLocation);
+        mRvPOI = findViewById(R.id.rvPOI);
+        mPb = findViewById(R.id.pb);
+    }
 
     @Override
     public void initView() {
+        bindViews();
         mBtnToolbarSend.setVisibility(View.GONE);
         setRlMapHeight(maxHeight);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);

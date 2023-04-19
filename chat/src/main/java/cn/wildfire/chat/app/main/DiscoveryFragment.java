@@ -19,9 +19,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
@@ -39,21 +36,34 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 
 public class DiscoveryFragment extends Fragment {
-    @BindView(R.id.momentOptionItemView)
     OptionItemView momentOptionItemView;
-    @BindView(R.id.conferenceOptionItemView)
     OptionItemView conferenceOptionItemView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_fragment_discovery, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         initMoment();
         if (!AVEngineKit.isSupportConference()) {
             conferenceOptionItemView.setVisibility(View.GONE);
         }
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.chatRoomOptionItemView).setOnClickListener(v -> chatRoom());
+        view.findViewById(R.id.robotOptionItemView).setOnClickListener(v -> robot());
+        view.findViewById(R.id.channelOptionItemView).setOnClickListener(v -> channel());
+        view.findViewById(R.id.cookbookOptionItemView).setOnClickListener(v -> cookbook());
+        view.findViewById(R.id.momentOptionItemView).setOnClickListener(v -> moment());
+        view.findViewById(R.id.conferenceOptionItemView).setOnClickListener(v -> conference());
+    }
+
+    private void bindViews(View view) {
+        momentOptionItemView = view.findViewById(R.id.momentOptionItemView);
+        conferenceOptionItemView = view.findViewById(R.id.conferenceOptionItemView);
     }
 
     private void updateMomentBadgeView() {
@@ -70,25 +80,21 @@ public class DiscoveryFragment extends Fragment {
         }
     }
 
-    @OnClick(R.id.chatRoomOptionItemView)
     void chatRoom() {
         Intent intent = new Intent(getActivity(), ChatRoomListActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R.id.robotOptionItemView)
     void robot() {
         Intent intent = ConversationActivity.buildConversationIntent(getActivity(), Conversation.ConversationType.Single, "FireRobot", 0);
         startActivity(intent);
     }
 
-    @OnClick(R.id.channelOptionItemView)
     void channel() {
         Intent intent = new Intent(getActivity(), ChannelListActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R.id.cookbookOptionItemView)
     void cookbook() {
         WfcWebViewActivity.loadUrl(getContext(), "野火IM开发文档", "https://docs.wildfirechat.cn");
     }
@@ -104,7 +110,6 @@ public class DiscoveryFragment extends Fragment {
         messageViewModel.clearMessageLiveData().observe(getViewLifecycleOwner(), o -> updateMomentBadgeView());
     }
 
-    @OnClick(R.id.momentOptionItemView)
     void moment() {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
         // 具体项目中，如果不能隐式启动，可改为下面这种显示启动朋友圈页面
@@ -112,7 +117,6 @@ public class DiscoveryFragment extends Fragment {
         startActivity(intent);
     }
 
-    @OnClick(R.id.conferenceOptionItemView)
     void conference() {
         Intent intent = new Intent(getActivity(), ConferencePortalActivity.class);
         startActivity(intent);

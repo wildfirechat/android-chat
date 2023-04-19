@@ -17,11 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.FriendRequest;
@@ -34,27 +30,34 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
     private UserViewModel userViewModel;
     private ContactViewModel contactViewModel;
 
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.nameTextView)
     TextView nameTextView;
-    @BindView(R2.id.introTextView)
     TextView introTextView;
-    @BindView(R2.id.acceptButton)
     Button acceptButton;
-    @BindView(R2.id.acceptStatusTextView)
     TextView acceptStatusTextView;
 
     public FriendRequestViewHolder(FriendRequestListFragment fragment, FriendRequestListAdapter adapter, View itemView) {
         super(itemView);
         this.fragment = fragment;
         this.adapter = adapter;
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
         userViewModel =ViewModelProviders.of(fragment).get(UserViewModel.class);
         contactViewModel = ViewModelProviders.of(fragment).get(ContactViewModel.class);
     }
 
-    @OnClick(R2.id.acceptButton)
+    private void bindEvents(View itemView) {
+        itemView.findViewById(R.id.acceptButton).setOnClickListener(_v -> accept());
+    }
+
+    private void bindViews(View itemView) {
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        nameTextView = itemView.findViewById(R.id.nameTextView);
+        introTextView = itemView.findViewById(R.id.introTextView);
+        acceptButton = itemView.findViewById(R.id.acceptButton);
+        acceptStatusTextView = itemView.findViewById(R.id.acceptStatusTextView);
+    }
+
     void accept() {
         contactViewModel.acceptFriendRequest(friendRequest.target).observe(fragment, aBoolean -> {
             if (aBoolean) {

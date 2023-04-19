@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.user;
 
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,13 +14,11 @@ import android.widget.Toast;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import butterknife.BindView;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 
 
 public class SetAliasActivity extends WfcBaseActivity {
@@ -27,11 +26,21 @@ public class SetAliasActivity extends WfcBaseActivity {
     private String userId;
 //    private Friend mFriend;
 
-    @BindView(R2.id.aliasEditText)
     EditText aliasEditText;
 
     private MenuItem menuItem;
     private ContactViewModel contactViewModel;
+
+    protected void bindViews() {
+        super.bindViews();
+        aliasEditText = findViewById(R.id.aliasEditText);
+        aliasEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                onAliasEditTextChange();
+            }
+        });
+    }
 
     @Override
     protected int contentLayout() {
@@ -72,7 +81,6 @@ public class SetAliasActivity extends WfcBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnTextChanged(R2.id.aliasEditText)
     void onAliasEditTextChange() {
         menuItem.setEnabled(aliasEditText.getText().toString().trim().length() > 0 ? true : false);
     }

@@ -19,17 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 
 public class FavoriteListFragment extends Fragment {
     private FavoriteListAdapter favoriteListAdapter;
-    @BindView(R2.id.recyclerView)
     RecyclerView recyclerView;
 
     private boolean hasMore = true;
@@ -40,9 +36,13 @@ public class FavoriteListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fav_list_frament, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
         init();
         return view;
+    }
+
+    private void bindViews(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
     }
 
     private void init() {

@@ -23,9 +23,7 @@ import com.tencent.mapsdk.raster.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.third.location.ui.base.BaseActivity;
 import cn.wildfire.chat.kit.third.location.ui.presenter.MyLocationAtPresenter;
 import cn.wildfire.chat.kit.third.location.ui.view.IMyLocationAtView;
@@ -40,13 +38,9 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
     private double mLat;
     private double mLong;
 
-    @BindView(R2.id.confirmButton)
     Button mBtnToolbarSend;
-    @BindView(R2.id.rlMap)
     RelativeLayout mRlMap;
-    @BindView(R2.id.map)
     MapView mMap;
-    @BindView(R2.id.ibShowLocation)
     ImageButton mIbShowLocation;
     private Marker myLocation;
     private Circle accuracy;
@@ -55,9 +49,17 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
 
     @Override
     public void initView() {
+        bindViews();
         mBtnToolbarSend.setVisibility(View.VISIBLE);
         mTencentMap = mMap.getMap();
         mBtnToolbarSend.setVisibility(View.INVISIBLE);
+    }
+
+    private void bindViews() {
+        mBtnToolbarSend = findViewById(R.id.confirmButton);
+        mRlMap = findViewById(R.id.rlMap);
+        mMap = findViewById(R.id.map);
+        mIbShowLocation = findViewById(R.id.ibShowLocation);
     }
 
     @Override
@@ -72,12 +74,12 @@ public class ShowLocationActivity extends BaseActivity<IMyLocationAtView, MyLoca
         mLocationRequest = TencentLocationRequest.create();
 
         Marker marker = mTencentMap.addMarker(new MarkerOptions()
-                .position(new LatLng(mLat, mLong))
-                .title(title)
-                .anchor(0.5f, 0.5f)
-                .icon(BitmapDescriptorFactory
-                        .defaultMarker())
-                .draggable(false));
+            .position(new LatLng(mLat, mLong))
+            .title(title)
+            .anchor(0.5f, 0.5f)
+            .icon(BitmapDescriptorFactory
+                .defaultMarker())
+            .draggable(false));
         marker.showInfoWindow();
     }
 

@@ -11,22 +11,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.FileMessageContent;
 
 public class FavFileContentViewHolder extends FavContentViewHolder {
-    @BindView(R2.id.fileIconImageView)
     ImageView fileIconImageView;
-    @BindView(R2.id.fileNameTextView)
     TextView fileNameTextView;
-    @BindView(R2.id.fileSizeTextView)
     TextView fileSizeTextView;
 
     public FavFileContentViewHolder(@NonNull View itemView) {
         super(itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        fileIconImageView = itemView.findViewById(R.id.fileIconImageView);
+        fileNameTextView = itemView.findViewById(R.id.fileNameTextView);
+        fileSizeTextView = itemView.findViewById(R.id.fileSizeTextView);
     }
 
     @Override

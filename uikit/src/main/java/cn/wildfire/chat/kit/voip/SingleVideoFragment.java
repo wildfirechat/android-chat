@@ -23,12 +23,8 @@ import androidx.lifecycle.ViewModelProviders;
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -37,29 +33,17 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
 
-    @BindView(R2.id.pip_video_view)
     FrameLayout pipVideoContainer;
-    @BindView(R2.id.fullscreen_video_view)
     FrameLayout fullscreenVideoContainer;
-    @BindView(R2.id.outgoingActionContainer)
     ViewGroup outgoingActionContainer;
-    @BindView(R2.id.incomingActionContainer)
     ViewGroup incomingActionContainer;
-    @BindView(R2.id.connectedActionContainer)
     ViewGroup connectedActionContainer;
-    @BindView(R2.id.inviteeInfoContainer)
     ViewGroup inviteeInfoContainer;
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.muteAudioImageView)
     ImageView muteAudioImageView;
-    @BindView(R2.id.nameTextView)
     TextView nameTextView;
-    @BindView(R2.id.descTextView)
     TextView descTextView;
-    @BindView(R2.id.durationTextView)
     TextView durationTextView;
-    @BindView(R2.id.shareScreenTextView)
     TextView shareScreenTextView;
 
     private String focusUserId;
@@ -82,9 +66,41 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_p2p_video_layout, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.acceptImageView).setOnClickListener(_v -> accept());
+        view.findViewById(R.id.incomingAudioOnlyImageView).setOnClickListener(_v -> audioAccept());
+        view.findViewById(R.id.outgoingAudioOnlyImageView).setOnClickListener(_v -> audioCall());
+        view.findViewById(R.id.connectedAudioOnlyImageView).setOnClickListener(_v -> audioCall());
+        view.findViewById(R.id.muteAudioImageView).setOnClickListener(_v -> muteAudio());
+        view.findViewById(R.id.connectedHangupImageView).setOnClickListener(_v -> hangUp());
+        view.findViewById(R.id.outgoingHangupImageView).setOnClickListener(_v -> hangUp());
+        view.findViewById(R.id.incomingHangupImageView).setOnClickListener(_v -> hangUp());
+        view.findViewById(R.id.switchCameraImageView).setOnClickListener(_v -> switchCamera());
+        view.findViewById(R.id.shareScreenImageView).setOnClickListener(_v -> shareScreen());
+        view.findViewById(R.id.fullscreen_video_view).setOnClickListener(_v -> toggleCallControlVisibility());
+        view.findViewById(R.id.minimizeImageView).setOnClickListener(_v -> minimize());
+        view.findViewById(R.id.pip_video_view).setOnClickListener(_v -> setSwappedFeeds());
+    }
+
+    private void bindViews(View view) {
+        pipVideoContainer = view.findViewById(R.id.pip_video_view);
+        fullscreenVideoContainer = view.findViewById(R.id.fullscreen_video_view);
+        outgoingActionContainer = view.findViewById(R.id.outgoingActionContainer);
+        incomingActionContainer = view.findViewById(R.id.incomingActionContainer);
+        connectedActionContainer = view.findViewById(R.id.connectedActionContainer);
+        inviteeInfoContainer = view.findViewById(R.id.inviteeInfoContainer);
+        portraitImageView = view.findViewById(R.id.portraitImageView);
+        muteAudioImageView = view.findViewById(R.id.muteAudioImageView);
+        nameTextView = view.findViewById(R.id.nameTextView);
+        descTextView = view.findViewById(R.id.descTextView);
+        durationTextView = view.findViewById(R.id.durationTextView);
+        shareScreenTextView = view.findViewById(R.id.shareScreenTextView);
     }
 
     @Override
@@ -177,7 +193,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     }
 
-    @OnClick(R2.id.acceptImageView)
     public void accept() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null) {
@@ -192,17 +207,14 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         }
     }
 
-    @OnClick({R2.id.incomingAudioOnlyImageView})
     public void audioAccept() {
         ((SingleCallActivity) getActivity()).audioAccept();
     }
 
-    @OnClick({R2.id.outgoingAudioOnlyImageView, R2.id.connectedAudioOnlyImageView})
     public void audioCall() {
         ((SingleCallActivity) getActivity()).audioCall();
     }
 
-    @OnClick(R2.id.muteAudioImageView)
     public void muteAudio() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         boolean toMute = !session.isAudioMuted();
@@ -211,9 +223,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     }
 
     // callFragment.OnCallEvents interface implementation.
-    @OnClick({R2.id.connectedHangupImageView,
-        R2.id.outgoingHangupImageView,
-        R2.id.incomingHangupImageView})
     public void hangUp() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null) {
@@ -224,7 +233,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         }
     }
 
-    @OnClick(R2.id.switchCameraImageView)
     public void switchCamera() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
 
@@ -233,7 +241,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         }
     }
 
-    @OnClick(R2.id.shareScreenImageView)
     void shareScreen() {
         if (!AVEngineKit.isSupportConference()) {
             Toast.makeText(getActivity(), "当前版本不支持屏幕共享", Toast.LENGTH_SHORT).show();
@@ -257,7 +264,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         }
     }
 
-    @OnClick(R2.id.fullscreen_video_view)
     void toggleCallControlVisibility() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
@@ -272,7 +278,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         // TODO animation
     }
 
-    @OnClick(R2.id.minimizeImageView)
     public void minimize() {
 //        gEngineKit.getCurrentSession().stopVideoSource();
         ((SingleCallActivity) getActivity()).showFloatingView(null);
@@ -288,7 +293,6 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         logToast.show();
     }
 
-    @OnClick(R2.id.pip_video_view)
     void setSwappedFeeds() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null) {

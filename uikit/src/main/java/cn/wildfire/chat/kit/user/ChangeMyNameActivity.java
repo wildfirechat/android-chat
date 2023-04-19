@@ -4,6 +4,10 @@
 
 package cn.wildfire.chat.kit.user;
 
+import static cn.wildfirechat.model.ModifyMyInfoType.Modify_DisplayName;
+
+import android.os.Bundle;
+import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -17,25 +21,36 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.Collections;
 
-import butterknife.BindView;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.UserInfo;
-
-import static cn.wildfirechat.model.ModifyMyInfoType.Modify_DisplayName;
 
 public class ChangeMyNameActivity extends WfcBaseActivity {
 
     private MenuItem confirmMenuItem;
-    @BindView(R2.id.nameEditText)
     EditText nameEditText;
 
     private UserViewModel userViewModel;
     private UserInfo userInfo;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        nameEditText = findViewById(R.id.nameEditText);
+        nameEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                inputNewName();
+            }
+        });
+    }
 
     @Override
     protected void afterViews() {
@@ -81,8 +96,7 @@ public class ChangeMyNameActivity extends WfcBaseActivity {
         nameEditText.setSelection(nameEditText.getText().toString().trim().length());
     }
 
-    @OnTextChanged(value = R2.id.nameEditText, callback = OnTextChanged.Callback.TEXT_CHANGED)
-    void inputNewName(CharSequence s, int start, int before, int count) {
+    void inputNewName() {
         if (confirmMenuItem != null) {
             if (nameEditText.getText().toString().trim().length() > 0) {
                 confirmMenuItem.setEnabled(true);
@@ -95,9 +109,9 @@ public class ChangeMyNameActivity extends WfcBaseActivity {
 
     private void changeMyName() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("修改中...")
-                .progress(true, 100)
-                .build();
+            .content("修改中...")
+            .progress(true, 100)
+            .build();
         dialog.show();
         String nickName = nameEditText.getText().toString().trim();
         ModifyMyInfoEntry entry = new ModifyMyInfoEntry(Modify_DisplayName, nickName);

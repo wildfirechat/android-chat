@@ -15,10 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.message.JoinCallRequestMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MultiCallOngoingMessageContent;
@@ -63,14 +60,17 @@ public class OngoingCallAdapter extends RecyclerView.Adapter<OngoingCallAdapter.
     }
 
     static class OngoingCallViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R2.id.descTextView)
         TextView descTextView;
-        @BindView(R2.id.joinButton)
         Button joinButton;
 
         public OngoingCallViewHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            bindViews(itemView);
+        }
+
+        private void bindViews(View itemView) {
+            descTextView = itemView.findViewById(R.id.descTextView);
+            joinButton = itemView.findViewById(R.id.joinButton);
         }
     }
 }

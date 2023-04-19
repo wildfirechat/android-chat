@@ -12,11 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.message.Message;
@@ -26,13 +23,9 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class MessageViewHolder extends RecyclerView.ViewHolder {
-    @BindView(R2.id.portraitImageView)
     protected ImageView portraitImageView;
-    @BindView(R2.id.nameTextView)
     protected TextView nameTextView;
-    @BindView(R2.id.contentTextView)
     protected TextView contentTextView;
-    @BindView(R2.id.timeTextView)
     protected TextView timeTextView;
 
     private Fragment fragment;
@@ -42,7 +35,14 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.fragment = fragment;
         this.userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        nameTextView = itemView.findViewById(R.id.nameTextView);
+        contentTextView = itemView.findViewById(R.id.contentTextView);
+        timeTextView = itemView.findViewById(R.id.timeTextView);
     }
 
     public void onBind(Message message) {

@@ -12,20 +12,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfirechat.model.ChannelInfo;
 
 public class ChannelViewHolder extends RecyclerView.ViewHolder {
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.channelNameTextView)
     TextView channelNameTextView;
 
     public ChannelViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        channelNameTextView = itemView.findViewById(R.id.channelNameTextView);
     }
 
     public void bind(ChannelInfo channelInfo) {

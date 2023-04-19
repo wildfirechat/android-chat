@@ -12,29 +12,34 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.UserInfo;
 
 public class InviteFriendActivity extends WfcBaseActivity {
-    @BindView(R2.id.introTextView)
     TextView introTextView;
 
     private UserInfo userInfo;
 
+    protected void bindEvents() {
+        super.bindEvents();
+        findViewById(R.id.clearImageButton).setOnClickListener(v -> clear());
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        introTextView = findViewById(R.id.introTextView);
+    }
+
     @Override
     protected void afterViews() {
-        super.afterViews();
         userInfo = getIntent().getParcelableExtra("userInfo");
         if (userInfo == null) {
             finish();
         }
-        UserViewModel userViewModel =ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         introTextView.setText("我是 " + (me == null ? "" : me.displayName));
     }
@@ -49,7 +54,6 @@ public class InviteFriendActivity extends WfcBaseActivity {
         return R.menu.contact_invite;
     }
 
-    @OnClick(R2.id.clearImageButton)
     void clear() {
         introTextView.setText("");
     }
@@ -66,16 +70,16 @@ public class InviteFriendActivity extends WfcBaseActivity {
     void invite() {
         ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         contactViewModel.invite(userInfo.uid, introTextView.getText().toString())
-                .observe(this, new Observer<Boolean>() {
-                    @Override
-                    public void onChanged(@Nullable Boolean aBoolean) {
-                        if (aBoolean) {
-                            Toast.makeText(InviteFriendActivity.this, "好友邀请已发送", Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            Toast.makeText(InviteFriendActivity.this, "添加好友失败", Toast.LENGTH_SHORT).show();
-                        }
+            .observe(this, new Observer<Boolean>() {
+                @Override
+                public void onChanged(@Nullable Boolean aBoolean) {
+                    if (aBoolean) {
+                        Toast.makeText(InviteFriendActivity.this, "好友邀请已发送", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(InviteFriendActivity.this, "添加好友失败", Toast.LENGTH_SHORT).show();
                     }
-                });
+                }
+            });
     }
 }

@@ -25,11 +25,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Arrays;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
@@ -48,19 +44,13 @@ import cn.wildfirechat.remote.ChatManager;
 public class ChannelConversationInfoFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
     // common
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.stickTopSwitchButton)
     SwitchMaterial stickTopSwitchButton;
-    @BindView(R2.id.silentSwitchButton)
     SwitchMaterial silentSwitchButton;
 
-    @BindView(R2.id.channelNameOptionItemView)
     OptionItemView channelNameOptionItemView;
-    @BindView(R2.id.channelDescOptionItemView)
     OptionItemView channelDescOptionItemView;
 
-    @BindView(R2.id.fileRecordOptionItemView)
     OptionItemView fileRecordOptionItem;
 
     private ConversationInfo conversationInfo;
@@ -90,9 +80,27 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conversation_info_channel_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.searchMessageOptionItemView).setOnClickListener(_v -> searchGroupMessage());
+        view.findViewById(R.id.clearMessagesOptionItemView).setOnClickListener(_v -> clearMessage());
+        view.findViewById(R.id.channelQRCodeOptionItemView).setOnClickListener(_v -> showChannelQRCode());
+        view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(_v -> fileRecord());
+        view.findViewById(R.id.unsubscribeButton).setOnClickListener(_v -> unsubscribe());
+    }
+
+    private void bindViews(View view) {
+        portraitImageView = view.findViewById(R.id.portraitImageView);
+        stickTopSwitchButton = view.findViewById(R.id.stickTopSwitchButton);
+        silentSwitchButton = view.findViewById(R.id.silentSwitchButton);
+        channelNameOptionItemView = view.findViewById(R.id.channelNameOptionItemView);
+        channelDescOptionItemView = view.findViewById(R.id.channelDescOptionItemView);
+        fileRecordOptionItem = view.findViewById(R.id.fileRecordOptionItemView);
     }
 
     private void init() {
@@ -133,14 +141,12 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         Glide.with(this).load(channelInfo.portrait).into(portraitImageView);
     }
 
-    @OnClick(R2.id.searchMessageOptionItemView)
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.clearMessagesOptionItemView)
     void clearMessage() {
         new MaterialDialog.Builder(getActivity())
             .items("清空本地会话", "清空远程会话")
@@ -157,21 +163,18 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
             .show();
     }
 
-    @OnClick(R2.id.channelQRCodeOptionItemView)
     void showChannelQRCode() {
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_CHANNEL + channelInfo.channelId;
         Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "频道二维码", channelInfo.portrait, qrCodeValue);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.fileRecordOptionItemView)
     void fileRecord() {
         Intent intent = new Intent(getActivity(), FileRecordActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.unsubscribeButton)
     void unsubscribe() {
         channelViewModel.listenChannel(this.conversationInfo.conversation.target, false).observe(this, new Observer<OperateResult<Boolean>>() {
             @Override

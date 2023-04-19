@@ -12,9 +12,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
@@ -28,6 +30,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.lqr.emoji.LQREmotionKit;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -62,7 +65,7 @@ import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 
 
-public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnDeleteMessageListener, OnFriendUpdateListener {
+public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnDeleteMessageListener, OnFriendUpdateListener, Application.ActivityLifecycleCallbacks {
 
     private boolean isBackground = true;
     private Application application;
@@ -72,6 +75,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private OrganizationServiceProvider organizationServiceProvider;
     private static WfcUIKit wfcUIKit;
     private boolean isSupportMoment = false;
+    private WeakReference<Activity> currentActivityWrf;
 
     private WfcUIKit() {
     }
@@ -117,6 +121,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         OKHttpHelper.init(application.getApplicationContext());
         ConferenceManager.init(application);
 
+        application.registerActivityLifecycleCallbacks(this);
+
         Log.d("WfcUIKit", "init end");
     }
 
@@ -153,6 +159,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             //AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT= 16;
             AVEngineKit.init(application, this);
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP360P, false);
+            // 屏幕共享，使用替换模式
+            AVEngineKit.SCREEN_SHARING_REPLACE_MODE = true;
 
             ChatManager.Instance().registerMessageContent(ConferenceChangeModeContent.class);
             ChatManager.Instance().registerMessageContent(ConferenceCommandContent.class);
@@ -306,6 +314,15 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             context.startActivity(intent);
             ((Activity) context).overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } else {
+            WeakReference<Activity> wrf = getWfcUIKit().currentActivityWrf;
+            if (wrf != null) {
+                Activity activity = wrf.get();
+                if (activity != null && !activity.isFinishing()) {
+                    activity.startActivity(intent);
+                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    return;
+                }
+            }
             Intent main = new Intent(context.getPackageName() + ".main");
 //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent = null;
@@ -400,5 +417,42 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     public void setOrganizationServiceProvider(OrganizationServiceProvider organizationServiceProvider) {
         this.organizationServiceProvider = organizationServiceProvider;
+    }
+
+    @Override
+    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+
+    }
+
+    @Override
+    public void onActivityStarted(@NonNull Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityResumed(@NonNull Activity activity) {
+        this.currentActivityWrf = new WeakReference<>(activity);
+    }
+
+    @Override
+    public void onActivityPaused(@NonNull Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityStopped(@NonNull Activity activity) {
+        if (this.currentActivityWrf != null && this.currentActivityWrf.get() == activity){
+            this.currentActivityWrf = null;
+        }
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(@NonNull Activity activity) {
+
     }
 }

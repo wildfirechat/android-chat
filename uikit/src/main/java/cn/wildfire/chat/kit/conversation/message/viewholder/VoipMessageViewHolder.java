@@ -10,11 +10,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -27,15 +23,23 @@ import cn.wildfirechat.model.Conversation;
 @MessageContentType(CallStartMessageContent.class)
 @EnableContextMenu
 public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
-    @BindView(R2.id.contentTextView)
     TextView textView;
 
-    @BindView(R2.id.callTypeImageView)
     ImageView callTypeImageView;
 
     public VoipMessageViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+        itemView.findViewById(R.id.contentTextView).setOnClickListener(this::call);
+    }
+
+    private void bindViews(View itemView) {
+        textView = itemView.findViewById(R.id.contentTextView);
+        callTypeImageView = itemView.findViewById(R.id.callTypeImageView);
     }
 
     @Override
@@ -52,54 +56,53 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
             textView.setText(text);
         } else {
             String text = "未接通";
-            if(message.message.content instanceof CallStartMessageContent) {
-                CallStartMessageContent startMessageContent = (CallStartMessageContent)message.message.content;
+            if (message.message.content instanceof CallStartMessageContent) {
+                CallStartMessageContent startMessageContent = (CallStartMessageContent) message.message.content;
                 AVEngineKit.CallEndReason reason = AVEngineKit.CallEndReason.reason(startMessageContent.getStatus());
-                if(reason == AVEngineKit.CallEndReason.UnKnown) {
+                if (reason == AVEngineKit.CallEndReason.UnKnown) {
                     text = "未接通";
-                } else if(reason == AVEngineKit.CallEndReason.Busy) {
+                } else if (reason == AVEngineKit.CallEndReason.Busy) {
                     text = "线路忙";
-                } else if(reason == AVEngineKit.CallEndReason.SignalError) {
+                } else if (reason == AVEngineKit.CallEndReason.SignalError) {
                     text = "网络错误";
-                } else if(reason == AVEngineKit.CallEndReason.Hangup) {
+                } else if (reason == AVEngineKit.CallEndReason.Hangup) {
                     text = "已取消";
-                } else if(reason == AVEngineKit.CallEndReason.MediaError) {
+                } else if (reason == AVEngineKit.CallEndReason.MediaError) {
                     text = "网络错误";
-                } else if(reason == AVEngineKit.CallEndReason.RemoteHangup) {
+                } else if (reason == AVEngineKit.CallEndReason.RemoteHangup) {
                     text = "对方已取消";
-                } else if(reason == AVEngineKit.CallEndReason.OpenCameraFailure) {
+                } else if (reason == AVEngineKit.CallEndReason.OpenCameraFailure) {
                     text = "网络错误";
-                } else if(reason == AVEngineKit.CallEndReason.Timeout) {
+                } else if (reason == AVEngineKit.CallEndReason.Timeout) {
                     text = "未接听";
-                } else if(reason == AVEngineKit.CallEndReason.AcceptByOtherClient) {
+                } else if (reason == AVEngineKit.CallEndReason.AcceptByOtherClient) {
                     text = "已在其他端接听";
-                } else if(reason == AVEngineKit.CallEndReason.AllLeft) {
+                } else if (reason == AVEngineKit.CallEndReason.AllLeft) {
                     text = "通话已结束";
-                } else if(reason == AVEngineKit.CallEndReason.RemoteBusy) {
+                } else if (reason == AVEngineKit.CallEndReason.RemoteBusy) {
                     text = "对方已取消";
-                } else if(reason == AVEngineKit.CallEndReason.RemoteTimeout) {
+                } else if (reason == AVEngineKit.CallEndReason.RemoteTimeout) {
                     text = "对方未接听";
-                } else if(reason == AVEngineKit.CallEndReason.RemoteNetworkError) {
+                } else if (reason == AVEngineKit.CallEndReason.RemoteNetworkError) {
                     text = "对方网络错误";
-                } else if(reason == AVEngineKit.CallEndReason.RoomDestroyed) {
+                } else if (reason == AVEngineKit.CallEndReason.RoomDestroyed) {
                     text = "通话已结束";
-                } else if(reason == AVEngineKit.CallEndReason.RoomNotExist) {
+                } else if (reason == AVEngineKit.CallEndReason.RoomNotExist) {
                     text = "通话已结束";
-                } else if(reason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
+                } else if (reason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
                     text = "已达到最大通话人数";
                 }
             }
             textView.setText(text);
         }
 
-        if(content.isAudioOnly()) {
+        if (content.isAudioOnly()) {
             callTypeImageView.setImageResource(R.mipmap.ic_msg_cell_voice_call);
         } else {
             callTypeImageView.setImageResource(R.mipmap.ic_msg_cell_video_call);
         }
     }
 
-    @OnClick(R2.id.contentTextView)
     public void call(View view) {
         if (((CallStartMessageContent) message.message.content).getStatus() == 1) {
             return;

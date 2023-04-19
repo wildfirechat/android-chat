@@ -26,11 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
@@ -48,14 +44,10 @@ import cn.wildfirechat.remote.ChatManager;
 public class SingleConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 
     // common
-    @BindView(R2.id.memberRecyclerView)
     RecyclerView memberReclerView;
-    @BindView(R2.id.stickTopSwitchButton)
     SwitchMaterial stickTopSwitchButton;
-    @BindView(R2.id.silentSwitchButton)
     SwitchMaterial silentSwitchButton;
 
-    @BindView(R2.id.fileRecordOptionItemView)
     OptionItemView fileRecordOptionItem;
 
     private ConversationInfo conversationInfo;
@@ -85,9 +77,23 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conversation_info_single_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.clearMessagesOptionItemView).setOnClickListener(_v -> clearMessage());
+        view.findViewById(R.id.searchMessageOptionItemView).setOnClickListener(_v -> searchGroupMessage());
+        view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(_v -> fileRecord());
+    }
+
+    private void bindViews(View view) {
+        memberReclerView = view.findViewById(R.id.memberRecyclerView);
+        stickTopSwitchButton = view.findViewById(R.id.stickTopSwitchButton);
+        silentSwitchButton = view.findViewById(R.id.silentSwitchButton);
+        fileRecordOptionItem = view.findViewById(R.id.fileRecordOptionItemView);
     }
 
     private void init() {
@@ -127,7 +133,6 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         });
     }
 
-    @OnClick(R2.id.clearMessagesOptionItemView)
     void clearMessage() {
         new MaterialDialog.Builder(getActivity())
             .items("清空本地会话", "清空远程会话")
@@ -144,14 +149,12 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
             .show();
     }
 
-    @OnClick(R2.id.searchMessageOptionItemView)
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.fileRecordOptionItemView)
     void fileRecord() {
         Intent intent = new Intent(getActivity(), FileRecordActivity.class);
         intent.putExtra("conversation", conversationInfo.conversation);
