@@ -218,7 +218,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
                 Intent intent = new Intent(this, VoipCallService.class);
                 intent.putExtra("screenShare", true);
                 intent.putExtra("data", data);
-                startService(intent);
+                VoipCallService.start(this, intent);
                 // 开始屏幕共享是，voip最小化
                 finish();
             } else {
@@ -361,14 +361,14 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         if (!TextUtils.isEmpty(focusTargetId)) {
             intent.putExtra("focusTargetId", focusTargetId);
         }
-        startService(intent);
+        VoipCallService.start(this, intent);
         finishFadeout();
     }
 
     public void hideFloatingView() {
         Intent intent = new Intent(this, VoipCallService.class);
         intent.putExtra("showFloatingView", false);
-        startService(intent);
+        VoipCallService.start(this, intent);
     }
 
     protected void finishFadeout() {
