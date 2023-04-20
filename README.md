@@ -28,11 +28,9 @@
 开发一套IM系统真的很艰辛，请路过的朋友们给点个star，支持我们坚持下去🙏🙏🙏🙏🙏
 
 ## 开发调试说明
-
 我们采用最新稳定版Android Studio及对应的gradle进行开发，对于旧版本的IDE，我们没有测试，编译之类问题，需自行解决。
 
 ## 二次开发说明
-
 野火IM采用bugly作为日志手机工具，大家二次开发时，务必将```MyApp.java```中的 ```bugly id``` 替换为你们自己的，否则错误日志都跑我们这儿来了，你们收集不到错误日志，我们也会受到干扰。
 
 ## 混淆说明
@@ -46,13 +44,18 @@
 3. 如果支持组织结构的话，为组织结构服务配置`HTTPS`支持，并将`ORG_SERVER_ADDRESS`配置为`HTTPS`地址
 4. 将`AndroidManifest.xml`里面的`usesCleartextTraffic`置为`false`
 
+## 敏感权限说明
+1. `android.permission.PROCESS_OUTGOING_CALLS`，音视频通话时，允许普通电话打断音视频通话
+2. `android.permission.SYSTEM_ALERT_WINDOW`，允许音视频通话窗口最小化，并悬浮在其他窗口之上
+3. `android.permission.BLUETOOTH`、`android.permission.BLUETOOTH_ADMIN`，音视频通话时，允许使用蓝牙耳机
+
 ## 升级注意
 v0.8.0 版本，对代码结构及部分实现机制进行了大量调整，变动如下：
 
 1. 将```chat``` application module 拆分为两部分：```uikit``` library module 和 ```chat``` application module。```uikit```可以library的方式导入项目，里面包含了大量可重用的UI。
 2. 移除```LayoutRes```、```SendLayoutRes```、```ReceiveLayoutRes```等注解，并更新```MessageViewHolder```等的实现机制
 
-v0.9.9 版本，移除了[ButterKnife](https://github.com/JakeWharton/butterknife)，可以使用[RemoveButterKnfie](https://github.com/ccccmmmz/RemoveButterKnife)结合手动进行移除。
+v0.9.9 版本，移除了[ButterKnife](https://github.com/JakeWharton/butterknife)，可以使用[RemoveButterKnife](https://github.com/ccccmmmz/RemoveButterKnife)结合手动进行移除。
 
 ## 特别注意
 1. ```com.android.tools.build:gradle:3.5.0``` 可能存在bug，会导致音视频crash，请勿使用此版本
