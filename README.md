@@ -39,13 +39,12 @@
 1. 确保所依赖的```lifecycle```版本在2.2.0或以上。
 2. 参考```chat/proguard-rules.pro```进行配置。
 
-## Android Support 说明
-
-野火IM Android 客户端，基于```AndroidX```包开发，如果老项目采用的是```Android Support```包，可尝试采用[jetifier](https://developer.android.google.cn/studio/command-line/jetifier?hl=zh_cn)
-转成```Android Support```软件包。
-
-## Android 4.x 说明
-请使用[api-19](https://github.com/wildfirechat/android-chat/tree/api-19)分支，如果编译失败等，可能是4.x版本的协议栈版本没有及时更新所导致，请微信联系 wfchat 进行更新。
+## 安全说明
+为了方便开发者部署、测试，默认允许`HTTP`进行网络请求，为了提高安全性，上线之前，请进行以下操作：
+1. 为`app-server`配置`HTTPS`支持，并将`APP_SERVER_ADDRESS`配置为`HTTPS`地址
+2. 如果支持开放平台的话，为开发平台配置`HTTPS`支持，并将`WORKSPACE_URL`配置为`HTTPS`地址
+3. 如果支持组织结构的话，为组织结构服务配置`HTTPS`支持，并将`ORG_SERVER_ADDRESS`配置为`HTTPS`地址
+4. 将`AndroidManifest.xml`里面的`usesCleartextTraffic`置为`false`
 
 ## 升级注意
 v0.8.0 版本，对代码结构及部分实现机制进行了大量调整，变动如下：
@@ -57,6 +56,14 @@ v0.9.9 版本，移除了[ButterKnife](https://github.com/JakeWharton/butterknif
 
 ## 特别注意
 1. ```com.android.tools.build:gradle:3.5.0``` 可能存在bug，会导致音视频crash，请勿使用此版本
+
+## Android Support 说明
+
+野火IM Android 客户端，基于```AndroidX```包开发，如果老项目采用的是```Android Support```包，可尝试采用[jetifier](https://developer.android.google.cn/studio/command-line/jetifier?hl=zh_cn)
+转成```Android Support```软件包。
+
+## Android 4.x 说明
+请使用[api-19](https://github.com/wildfirechat/android-chat/tree/api-19)分支，如果编译失败等，可能是4.x版本的协议栈版本没有及时更新所导致，请微信联系 `wfchat` 进行更新。
 
 ### 联系我们
 
