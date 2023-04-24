@@ -11,12 +11,12 @@ android {
             storePassword 'wildfirechat'
         }
     }
-    compileSdkVersion 31
+    compileSdkVersion 33
     ndkVersion '18.1.5063045'
     defaultConfig {
         applicationId "cn.wildfirechat.chat"
         minSdkVersion 21
-        targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
+        targetSdkVersion 33 //当targetversion大于23时，需要使用fileprovider
         versionCode 47
         versionName '0.9.9'
         multiDexEnabled true
