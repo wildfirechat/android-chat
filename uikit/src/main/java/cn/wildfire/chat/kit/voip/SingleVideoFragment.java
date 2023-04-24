@@ -18,10 +18,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
+
+import java.util.List;
 
 import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
@@ -369,10 +372,25 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             return;
         }
-        GlideApp.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
-        nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
+        userViewModel.userInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserInfo>>() {
+            @Override
+            public void onChanged(List<UserInfo> userInfos) {
+                for (UserInfo info : userInfos) {
+                    if (info.uid.equals(targetId)) {
+                        updateTargetUserInfoViews(info);
+                        break;
+                    }
+                }
+            }
+        });
+        updateTargetUserInfoViews(userInfo);
 
         updateCallDuration();
+    }
+
+    private void updateTargetUserInfoViews(UserInfo userInfo) {
+        GlideApp.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+        nameTextView.setText(ChatManager.Instance().getUserDisplayName(userInfo));
     }
 
     private Handler handler = new Handler();

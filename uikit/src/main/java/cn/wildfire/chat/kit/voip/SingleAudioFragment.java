@@ -16,7 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -257,6 +257,25 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
         String targetId = session.getParticipantIds().get(0);
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
+        updateUserInfoViews(userInfo);
+
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel.userInfoLiveData().observe(getViewLifecycleOwner(), userInfos -> {
+            for (UserInfo info : userInfos) {
+                if (info.uid.equals(targetId)) {
+                    updateUserInfoViews(info);
+                    break;
+                }
+            }
+        });
+        muteImageView.setSelected(session.isAudioMuted());
+        updateCallDuration();
+
+        AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
+        spearImageView.setSelected(audioManager.getSelectedAudioDevice() == AVAudioManager.AudioDevice.SPEAKER_PHONE);
+    }
+
+    private void updateUserInfoViews(UserInfo userInfo) {
         GlideApp.with(this)
             .load(userInfo.portrait)
             .placeholder(R.mipmap.avatar_def)
@@ -266,13 +285,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
             .load(userInfo.portrait)
             .apply(RequestOptions.bitmapTransform(new BlurTransformation(10)))
             .into(backgroundImageView);
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
-        muteImageView.setSelected(session.isAudioMuted());
-        updateCallDuration();
-
-        AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
-        spearImageView.setSelected(audioManager.getSelectedAudioDevice() == AVAudioManager.AudioDevice.SPEAKER_PHONE);
+        nameTextView.setText(ChatManager.Instance().getUserDisplayName(userInfo));
     }
 
     private void runOnUiThread(Runnable runnable) {
