@@ -6,7 +6,6 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
@@ -477,21 +475,16 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             return;
         }
 
-        Map<String, Long> deliveries = ((ConversationMessageAdapter) adapter).getDeliveries();
         Map<String, Long> readEntries = ((ConversationMessageAdapter) adapter).getReadEntries();
 
         if (item.conversation.type == Conversation.ConversationType.Single) {
             singleReceiptImageView.setVisibility(View.VISIBLE);
             groupReceiptFrameLayout.setVisibility(View.GONE);
             Long readTimestamp = readEntries != null && !readEntries.isEmpty() ? readEntries.get(message.message.conversation.target) : null;
-            Long deliverTimestamp = deliveries != null && !deliveries.isEmpty() ? deliveries.get(message.message.conversation.target) : null;
 
             if (readTimestamp != null && readTimestamp >= message.message.serverTime) {
                 ImageViewCompat.setImageTintList(singleReceiptImageView, null);
                 return;
-            }
-            if (deliverTimestamp == null || deliverTimestamp >= message.message.serverTime) {
-                ImageViewCompat.setImageTintList(singleReceiptImageView, ColorStateList.valueOf(ContextCompat.getColor(fragment.getContext(), R.color.gray)));
             }
         } else if (item.conversation.type == Conversation.ConversationType.Group) {
             singleReceiptImageView.setVisibility(View.GONE);

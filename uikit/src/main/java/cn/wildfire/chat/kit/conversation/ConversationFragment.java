@@ -530,14 +530,6 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.messageStartBurnLiveData().observeForever(messageStartBurnLiveDataObserver);
         messageViewModel.messageBurnedLiveData().observeForever(messageBurnedLiveDataObserver);
 
-        messageViewModel.messageDeliverLiveData().observe(getActivity(), stringLongMap -> {
-            if (conversation == null) {
-                return;
-            }
-            Map<String, Long> deliveries = ChatManager.Instance().getMessageDelivery(conversation);
-            adapter.setDeliveries(deliveries);
-        });
-
         messageViewModel.messageReadLiveData().observe(getActivity(), readEntries -> {
             if (conversation == null) {
                 return;
@@ -624,7 +616,6 @@ public class ConversationFragment extends Fragment implements
 
         // load message
         swipeRefreshLayout.setRefreshing(true);
-        adapter.setDeliveries(ChatManager.Instance().getMessageDelivery(conversation));
         adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
         messages.observe(this, uiMessages -> {
             swipeRefreshLayout.setRefreshing(false);
@@ -1216,7 +1207,6 @@ public class ConversationFragment extends Fragment implements
 
     @Override
     public void onMessageReceiptCLick(Message message) {
-        Map<String, Long> deliveries = adapter.getDeliveries();
         Intent intent = new Intent(getActivity(), GroupMessageReceiptActivity.class);
         intent.putExtra("message", message);
         intent.putExtra("groupInfo", groupInfo);

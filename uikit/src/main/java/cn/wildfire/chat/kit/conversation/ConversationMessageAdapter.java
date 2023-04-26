@@ -54,7 +54,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     // check or normal
     private int mode;
     private List<UiMessage> messages = new ArrayList<>();
-    private Map<String, Long> deliveries;
     private Map<String, Long> readEntries;
     private OnPortraitClickListener onPortraitClickListener;
     private OnMessageCheckListener onMessageCheckListener;
@@ -126,20 +125,10 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
-    public void setDeliveries(Map<String, Long> deliveries) {
-        // TODO diff
-        this.deliveries = deliveries;
-        notifyDataSetChanged();
-    }
-
     public void setReadEntries(Map<String, Long> readEntries) {
         // TODO diff
         this.readEntries = readEntries;
         notifyDataSetChanged();
-    }
-
-    public Map<String, Long> getDeliveries() {
-        return deliveries;
     }
 
     public Map<String, Long> getReadEntries() {
