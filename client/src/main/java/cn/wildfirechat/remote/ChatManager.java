@@ -229,6 +229,8 @@ public class ChatManager {
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
+
+    private boolean useAES256 = false;
     private boolean tcpShortLink = false;
     private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
@@ -1092,6 +1094,25 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 启用AES256加密，需要在connect之前调用，需要IM服务开启AES256才可以使用。
+     */
+    public void useAES256() {
+        useAES256 = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.useAES256();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 使用TCP的短链接。用在禁止HTTP的环境中。
+     */
     public void useTcpShortLink() {
         tcpShortLink = true;
         if (!checkRemoteService()) {
@@ -8395,6 +8416,9 @@ public class ChatManager {
                 try {
                     if (useSM4) {
                         mClient.useSM4();
+                    }
+                    if (useAES256) {
+                        mClient.useAES256();
                     }
                     if (tcpShortLink) {
                         mClient.useTcpShortLink();

@@ -203,6 +203,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private String mHost;
 
     private boolean useSM4 = false;
+    private boolean useAES256 = false;
     private boolean tcpShortLink = false;
 
     private OkHttpClient okHttpClient;
@@ -236,6 +237,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             if (useSM4) {
                 ProtoLogic.useEncryptSM4();
+            }
+
+            if(useAES256) {
+                ProtoLogic.useEncryptAES256();
             }
 
             if (tcpShortLink) {
@@ -3239,6 +3244,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void useSM4() throws RemoteException {
             useSM4 = true;
             ProtoLogic.useEncryptSM4();
+        }
+
+        @Override
+        public void useAES256() throws RemoteException {
+            useAES256 = true;
+            ProtoLogic.useEncryptAES256();
         }
 
         @Override
