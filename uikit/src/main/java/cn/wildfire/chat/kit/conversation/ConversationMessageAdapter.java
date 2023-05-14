@@ -197,7 +197,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                     index = i;
                     break;
                 }
-            } else if (message.message.messageId > 0) {
+            }
+            if (message.message.messageId > 0) {
                 if (messages.get(i).message.messageId == message.message.messageId) {
                     messages.set(i, message);
                     index = i;
@@ -613,8 +614,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 if (msg.message.messageId == message.message.messageId) {
                     return true;
                 }
-                // 聊天室里面，由于消息不存储，messageId都是0
-            } else if (message.message.messageUid > 0) {
+            }
+            // 聊天室里面，由于消息不存储，messageId都是0，被远程更新的消息，也会走这儿
+            if (message.message.messageUid > 0) {
                 if (msg.message.messageUid == message.message.messageUid) {
                     return true;
                 }
