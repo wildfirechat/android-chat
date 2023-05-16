@@ -6275,7 +6275,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取群成员列表
+     * 获取群成员列表，群成员特别多时，建议使用异步回调版本
      *
      * @param groupId
      * @param forceUpdate
@@ -6333,7 +6333,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取群成员列表
+     * 获取群成员列表，支持超大群
      *
      * @param groupId
      * @param forceUpdate
@@ -6354,11 +6354,15 @@ public class ChatManager {
         }
 
         try {
+            List<GroupMember> groupMemberList = new ArrayList<>();
             mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
                 @Override
-                public void onSuccess(List<GroupMember> groupMembers) throws RemoteException {
-                    if (callback != null) {
-                        mainHandler.post(() -> callback.onSuccess(groupMembers));
+                public void onSuccess(List<GroupMember> groupMembers, boolean hasMore) throws RemoteException {
+                    groupMemberList.addAll(groupMembers);
+                    if (!hasMore) {
+                        if (callback != null) {
+                            mainHandler.post(() -> callback.onSuccess(groupMemberList));
+                        }
                     }
                 }
 
