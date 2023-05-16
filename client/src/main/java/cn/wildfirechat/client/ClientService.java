@@ -239,7 +239,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 ProtoLogic.useEncryptSM4();
             }
 
-            if(useAES256) {
+            if (useAES256) {
                 ProtoLogic.useEncryptAES256();
             }
 
@@ -2435,9 +2435,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (ProtoGroupMember protoMember : protoGroupMembers) {
                 if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
                     GroupMember member = covertProtoGroupMember(protoMember);
-                    out.add(member);
+                        out.add(member);
+                    }
                 }
-            }
             return out;
         }
 
@@ -2487,20 +2487,17 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
                             GroupMember member = covertProtoGroupMember(protoMember);
                             out.add(member);
-                            for (int i = 0; i < 10000; i++) {
-                                out.add(member);
                         }
                     }
-                    }
-                    GroupMember[] convs = out.toArray(new GroupMember[0]);
+                    GroupMember[] gpms = out.toArray(new GroupMember[0]);
                     try {
                         SafeIPCEntry<GroupMember> entry;
                         int startIndex = 0;
                         do {
-                            entry = buildSafeIPCEntry(convs, startIndex);
-                            callback.onSuccess(entry.entries, entry.entries.size() > 0 && entry.index > 0 && entry.index < convs.length - 1);
+                            entry = buildSafeIPCEntry(gpms, startIndex);
+                            callback.onSuccess(entry.entries, entry.entries.size() > 0 && entry.index > 0 && entry.index < gpms.length - 1);
                             startIndex = entry.index + 1;
-                        } while (entry.index > 0 && entry.index < convs.length - 1);
+                        } while (entry.index > 0 && entry.index < gpms.length - 1);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                         try {
