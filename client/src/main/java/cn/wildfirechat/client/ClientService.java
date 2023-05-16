@@ -1921,7 +1921,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                                 try {
                                     callback.onSuccess(result);
                                 } catch (RemoteException e) {
-                                    throw new RuntimeException(e);
+                                    e.printStackTrace();
                                 }
                             }
                         }
@@ -2503,7 +2503,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         try {
                             callback.onFailure(-1);
                         } catch (RemoteException ex) {
-                            throw new RuntimeException(ex);
+                            ex.printStackTrace();
                         }
                     }
                 }
