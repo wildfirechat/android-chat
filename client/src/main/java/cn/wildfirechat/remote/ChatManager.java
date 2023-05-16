@@ -6375,6 +6375,9 @@ public class ChatManager {
             });
         } catch (RemoteException e) {
             e.printStackTrace();
+            if (callback != null){
+                callback.onFail(-1);
+            }
         }
     }
 
