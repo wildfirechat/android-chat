@@ -2487,12 +2487,27 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                         if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
                             GroupMember member = covertProtoGroupMember(protoMember);
                             out.add(member);
+                            for (int i = 0; i < 10000; i++) {
+                                out.add(member);
                         }
                     }
+                    }
+                    GroupMember[] convs = out.toArray(new GroupMember[0]);
                     try {
-                        callback.onSuccess(out);
+                        SafeIPCEntry<GroupMember> entry;
+                        int startIndex = 0;
+                        do {
+                            entry = buildSafeIPCEntry(convs, startIndex);
+                            callback.onSuccess(entry.entries, entry.entries.size() > 0 && entry.index > 0 && entry.index < convs.length - 1);
+                            startIndex = entry.index + 1;
+                        } while (entry.index > 0 && entry.index < convs.length - 1);
                     } catch (RemoteException e) {
                         e.printStackTrace();
+                        try {
+                            callback.onFailure(-1);
+                        } catch (RemoteException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
 
