@@ -529,12 +529,14 @@ public class AppService implements AppServiceProvider {
             }, 5 * 1000);
         }
 
-        for (String[] ice : Config.ICE_SERVERS) {
-            if (!ice[0].startsWith("turn")) {
-                Toast.makeText(context, "Turn配置错误，请检查配置，应用即将关闭...", Toast.LENGTH_LONG).show();
-                new Handler().postDelayed(() -> {
-                    throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查配置!\n");
-                }, 5 * 1000);
+        if (Config.ICE_SERVERS != null) {
+            for (String[] ice : Config.ICE_SERVERS) {
+                if (!ice[0].startsWith("turn")) {
+                    Toast.makeText(context, "Turn配置错误，请检查配置，应用即将关闭...", Toast.LENGTH_LONG).show();
+                    new Handler().postDelayed(() -> {
+                        throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查配置!\n");
+                    }, 5 * 1000);
+                }
             }
         }
     }
