@@ -51,13 +51,13 @@ public class ArticlesMessageContentViewHolder extends ContextableNotificationMes
     }
 
     private void bindViews(View itemView) {
-        singleArticleContainerLinearLayout =itemView.findViewById(R.id.singleArticleContainerLinearLayout);
-        singleCoverImageView =itemView.findViewById(R.id.singleCoverImageView);
-        singleTitleTextView =itemView.findViewById(R.id.singleTitleTextView);
-        topArticleContainerRelativeLayout =itemView.findViewById(R.id.topArticleContainerLinearLayout);
-        topCoverImageView =itemView.findViewById(R.id.topCoverImageView);
-        topTitleTextView =itemView.findViewById(R.id.topTitleTextView);
-        subArticlesContainerRelativeLayout =itemView.findViewById(R.id.subArticlesContainerLinearLayout);
+        singleArticleContainerLinearLayout = itemView.findViewById(R.id.singleArticleContainerLinearLayout);
+        singleCoverImageView = itemView.findViewById(R.id.singleCoverImageView);
+        singleTitleTextView = itemView.findViewById(R.id.singleTitleTextView);
+        topArticleContainerRelativeLayout = itemView.findViewById(R.id.topArticleContainerLinearLayout);
+        topCoverImageView = itemView.findViewById(R.id.topCoverImageView);
+        topTitleTextView = itemView.findViewById(R.id.topTitleTextView);
+        subArticlesContainerRelativeLayout = itemView.findViewById(R.id.subArticlesContainerLinearLayout);
     }
 
     @Override
@@ -78,9 +78,12 @@ public class ArticlesMessageContentViewHolder extends ContextableNotificationMes
             singleTitleTextView.setText(content.topArticle.title);
         }
 
-        for (int i = 0; i < content.subArticles.size(); i++) {
-            ArticlesMessageContent.Article article = content.subArticles.get(i);
-            addSubArticle(article, i == content.subArticles.size() - 1);
+        if (content.subArticles != null) {
+
+            for (int i = 0; i < content.subArticles.size(); i++) {
+                ArticlesMessageContent.Article article = content.subArticles.get(i);
+                addSubArticle(article, i == content.subArticles.size() - 1);
+            }
         }
     }
 
