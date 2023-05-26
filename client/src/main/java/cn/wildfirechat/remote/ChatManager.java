@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.channels.FileChannel;
@@ -6375,7 +6374,7 @@ public class ChatManager {
             });
         } catch (RemoteException e) {
             e.printStackTrace();
-            if (callback != null){
+            if (callback != null) {
                 callback.onFail(-1);
             }
         }
@@ -8718,45 +8717,49 @@ public class ChatManager {
         Class clazz;
         Method method;
         boolean result;
+        Log.d(TAG, "*************** SDK检查 *****************");
         try {
-            Log.d(TAG, "*************** SDK检查 *****************");
             clazz = Class.forName("cn.wildfirechat.avenginekit.AVEngineKit");
             method = clazz.getMethod("isSupportMultiCall");
             boolean multiCall = (boolean) method.invoke(null);
             method = clazz.getMethod("isSupportConference");
             boolean conference = (boolean) method.invoke(null);
             if (conference) {
-                Log.d(TAG, "音视频SDK是高级版");
+                Log.e(TAG, "音视频SDK是高级版");
             } else if (multiCall) {
-                Log.d(TAG, "音视频SDK是多人版");
+                Log.e(TAG, "音视频SDK是多人版");
             } else {
-                Log.d(TAG, "音视频SDK是单人版");
+                Log.e(TAG, "音视频SDK是单人版");
             }
+        } catch (Exception e) {
+            // do nothing
+            Log.e(TAG, "检查音视频 SDK 失败: " + e.getMessage());
+        }
 
+        try {
             clazz = Class.forName("cn.wildfirechat.moment.MomentClient");
             method = clazz.getMethod("checkAddress", String.class);
             result = (boolean) method.invoke(null, host);
             if (!result) {
-                Log.d(TAG, "错误，朋友圈SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
+                Log.e(TAG, "错误，朋友圈SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
             }
+        } catch (Exception e) {
+            // do nothing
+            Log.e(TAG, "检查朋友圈 SDK 失败: " + e.getMessage());
+        }
+
+        try {
 
             clazz = Class.forName("cn.wildfirechat.ptt.PTTClient");
             method = clazz.getMethod("checkAddress", String.class);
             result = (boolean) method.invoke(null, host);
             if (!result) {
-                Log.d(TAG, "错误，对讲SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
+                Log.e(TAG, "错误，对讲SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } finally {
-            Log.d(TAG, "*************** SDK检查 *****************");
+        } catch (Exception e) {
+            Log.e(TAG, "检查对讲 SDK 失败: " + e.getMessage());
         }
+        Log.d(TAG, "*************** SDK检查 *****************");
         return true;
     }
 }
