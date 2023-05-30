@@ -211,6 +211,7 @@ public class ChatManager {
     private String clientId;
     private int pushType;
     private final Map<Integer, Class<? extends MessageContent>> messageContentMap = new ConcurrentHashMap<>();
+    private final Map<Integer, PersistFlag> messagePersistFlagMap = new ConcurrentHashMap<>();
     private boolean isLiteMode = false;
     private boolean isLowBPSMode = false;
     private UserSource userSource;
@@ -1887,6 +1888,10 @@ public class ChatManager {
      * @param flag 消息存储类型
      */
     public void registerMessageFlag(int type, PersistFlag flag) {
+        messagePersistFlagMap.put(type, flag);
+        if (!checkRemoteService()) {
+            return;
+        }
         try {
             mClient.registerMessageFlag(type, flag.getValue());
         } catch (RemoteException e) {
@@ -8444,6 +8449,10 @@ public class ChatManager {
                     mClient.setServerAddress(SERVER_HOST);
                     for (Class clazz : messageContentMap.values()) {
                         mClient.registerMessageContent(clazz.getName());
+                    }
+
+                    for (Map.Entry<Integer, PersistFlag> entry : messagePersistFlagMap.entrySet()) {
+                        mClient.registerMessageFlag(entry.getKey(), entry.getValue().getValue());
                     }
 
                     if (startLog) {
