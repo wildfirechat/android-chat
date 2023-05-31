@@ -104,7 +104,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
                 // 处理没有后台弹出界面权限
                 AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-                if (session != null) {
+                if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
                     onReceiveCall(session);
                 }
             }
@@ -222,14 +222,17 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public void onReceiveCall(AVEngineKit.CallSession session) {
         ChatManager.Instance().getMainHandler().postDelayed(() -> {
             AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
+            if (callSession == null || callSession.getState() == AVEngineKit.CallState.Idle) {
+                return;
+            }
 //            callSession.setVideoCapturer(new UVCCameraCapturer());
 
-            List<String> participants = session.getParticipantIds();
+            List<String> participants = callSession.getParticipantIds();
             if (participants == null || participants.isEmpty()) {
                 return;
             }
 
-            Conversation conversation = session.getConversation();
+            Conversation conversation = callSession.getConversation();
             if (conversation == null) {
                 return;
             }
@@ -441,7 +444,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void onActivityStopped(@NonNull Activity activity) {
-        if (this.currentActivityWrf != null && this.currentActivityWrf.get() == activity){
+        if (this.currentActivityWrf != null && this.currentActivityWrf.get() == activity) {
             this.currentActivityWrf = null;
         }
     }
