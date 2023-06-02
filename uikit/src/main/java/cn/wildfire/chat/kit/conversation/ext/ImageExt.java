@@ -4,9 +4,11 @@
 
 package cn.wildfire.chat.kit.conversation.ext;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 
@@ -36,11 +38,32 @@ public class ImageExt extends ConversationExt {
      */
     @ExtContextMenuItem
     public void pickImage(View containerView, Conversation conversation) {
+
+        String[] permissions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions = new String[]{
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+            };
+        } else {
+            permissions = new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+            };
+        }
+        String[] notGrantedPermissions = checkPermissions(permissions);
+        if (notGrantedPermissions.length > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                activity.requestPermissions(notGrantedPermissions, 100);
+            }
+            return;
+        }
+
         Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(activity);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
         messageViewModel.sendMessage(conversation, content);
     }
+
     private boolean isGifFile(String file) {
         try {
             FileInputStream inputStream = new FileInputStream(file);
