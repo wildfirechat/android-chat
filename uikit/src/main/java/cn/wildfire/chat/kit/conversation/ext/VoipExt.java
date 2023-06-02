@@ -10,7 +10,6 @@ import android.os.Build;
 import android.view.View;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -25,11 +24,12 @@ public class VoipExt extends ConversationExt {
     @ExtContextMenuItem(tag = ConversationExtMenuTags.TAG_VOIP_VIDEO)
     public void video(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!((WfcBaseActivity) activity).checkPermission(permissions)) {
-                activity.requestPermissions(permissions, 100);
-                return;
+        String[] notGrantedPermissions = checkPermissions(permissions);
+        if (notGrantedPermissions.length > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                activity.requestPermissions(notGrantedPermissions, 100);
             }
+            return;
         }
         switch (conversation.type) {
             case Single:
@@ -46,9 +46,10 @@ public class VoipExt extends ConversationExt {
     @ExtContextMenuItem(tag = ConversationExtMenuTags.TAG_VOIP_AUDIO)
     public void audio(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!((WfcBaseActivity) activity).checkPermission(permissions)) {
-                activity.requestPermissions(permissions, 100);
+        String[] notGrantedPermissions = checkPermissions(permissions);
+        if (notGrantedPermissions.length > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                activity.requestPermissions(notGrantedPermissions, 100);
                 return;
             }
         }

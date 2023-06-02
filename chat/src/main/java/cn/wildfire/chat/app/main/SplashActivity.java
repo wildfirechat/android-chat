@@ -6,7 +6,6 @@ package cn.wildfire.chat.app.main;
 
 import static cn.wildfire.chat.app.BaseApp.getContext;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -57,14 +56,10 @@ public class SplashActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= 31) {
             mandatoryPermissions = new String[]{
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 "android.permission.BLUETOOTH_CONNECT"
             };
         } else {
             mandatoryPermissions = new String[]{
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
             };
         }
 

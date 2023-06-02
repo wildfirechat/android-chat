@@ -83,15 +83,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
         mImageGridAdapter = new ImageGridAdapter(this, showCamera, multiMode, limit);
         mImageFolderAdapter = new ImageFolderAdapter(this, null);
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-            if (checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                new ImageDataSource(this, null, this);
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_STORAGE);
-                }
-            }
-        }
+        new ImageDataSource(this, null, this);
     }
 
     @Override
@@ -105,13 +97,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_STORAGE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                new ImageDataSource(this, null, this);
-            } else {
-                showToast("权限被禁止，无法选择本地图片");
-            }
-        } else if (requestCode == REQUEST_PERMISSION_CAMERA) {
+        if (requestCode == REQUEST_PERMISSION_CAMERA) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Utils.takePhoto(this, takePhotoOutputPath, ImagePicker.REQUEST_CODE_TAKE);
             } else {
