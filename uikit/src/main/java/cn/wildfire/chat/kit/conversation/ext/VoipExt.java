@@ -23,7 +23,19 @@ public class VoipExt extends ConversationExt {
 
     @ExtContextMenuItem(tag = ConversationExtMenuTags.TAG_VOIP_VIDEO)
     public void video(View containerView, Conversation conversation) {
-        String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
+        String[] permissions;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            permissions = new String[]{
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA,
+                Manifest.permission.BLUETOOTH_CONNECT
+            };
+        } else {
+            permissions = new String[]{
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA
+            };
+        }
         String[] notGrantedPermissions = checkPermissions(permissions);
         if (notGrantedPermissions.length > 0) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -45,7 +57,17 @@ public class VoipExt extends ConversationExt {
 
     @ExtContextMenuItem(tag = ConversationExtMenuTags.TAG_VOIP_AUDIO)
     public void audio(View containerView, Conversation conversation) {
-        String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
+        String[] permissions;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            permissions = new String[]{
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.BLUETOOTH_CONNECT
+            };
+        } else {
+            permissions = new String[]{
+                Manifest.permission.RECORD_AUDIO
+            };
+        }
         String[] notGrantedPermissions = checkPermissions(permissions);
         if (notGrantedPermissions.length > 0) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
