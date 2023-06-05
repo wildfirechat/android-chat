@@ -56,14 +56,6 @@ import cn.wildfirechat.remote.ChatManager;
  */
 public abstract class VoipBaseActivity extends FragmentActivity implements AVEngineKit.CallSessionCallback {
 
-    // List of mandatory application permissions.
-    private static final String[] MANDATORY_PERMISSIONS = {
-        Manifest.permission.MODIFY_AUDIO_SETTINGS,
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.CAMERA,
-        Manifest.permission.INTERNET
-    };
-
     private static final int CAPTURE_PERMISSION_REQUEST_CODE = 101;
 
     protected AVEngineKit gEngineKit;
@@ -110,10 +102,25 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         }
 
         // Check for mandatory permissions.
+        String[] permissions;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            permissions = new String[]{
+                Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA,
+                Manifest.permission.BLUETOOTH_CONNECT,
+            };
+        } else {
+            permissions = new String[]{
+                Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA,
+            };
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : MANDATORY_PERMISSIONS) {
+            for (String permission : permissions) {
                 if (checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(MANDATORY_PERMISSIONS, 100);
+                    requestPermissions(permissions, 100);
                     break;
                 }
             }
@@ -132,7 +139,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int result : grantResults) {
             if (result != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "需要录音和摄像头权限，才能进行语音通话", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "需要录音、摄像头等权限，才能进行音视频通话", Toast.LENGTH_SHORT).show();
                 if (gEngineKit.getCurrentSession() != null || gEngineKit.getCurrentSession().getState() != AVEngineKit.CallState.Idle) {
                     gEngineKit.getCurrentSession().endCall();
                 }
@@ -142,14 +149,6 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         }
     }
 
-    @TargetApi(19)
-    private static int getSystemUiVisibility() {
-        int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            flags |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        }
-        return flags;
-    }
 
     @Override
     protected void onResume() {
