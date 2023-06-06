@@ -2913,6 +2913,47 @@ public class ChatManager {
     }
 
     /**
+     * 获取会话提醒消息
+     *
+     * @param conversation
+     * @param fromIndex    消息起始id(messageId)
+     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count        获取消息条数
+     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getMentionedMessages(Conversation conversation, long fromIndex, boolean before, int count, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            List<Message> outMsgs = new ArrayList<>();
+            mClient.getMentionedMessagesAsync(conversation, fromIndex, before, count, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    outMsgs.addAll(messages);
+                    if (!hasMore) {
+                        mainHandler.post(() -> callback.onSuccess(outMsgs, false));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
      * 获取会话消息
      *
      * @param conversation 会话
@@ -5485,6 +5526,30 @@ public class ChatManager {
     }
 
     /**
+     * 搜索提醒消息
+     *
+     * @param conversation 会话为空时，搜索所有会话消息
+     * @param keyword
+     * @param desc
+     * @param limit
+     * @param offset
+     * @param withUser
+     * @return
+     */
+    public List<Message> searchMentionedMessages(Conversation conversation, String keyword, boolean desc, int limit, int offset) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.searchMentionedMessages(conversation, keyword, desc, limit, offset);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 搜索消息
      *
      * @param conversation 会话为空时，搜索所有会话消息
@@ -5563,6 +5628,49 @@ public class ChatManager {
 
         try {
             mClient.searchMessagesEx(intypes, convertIntegers(lines), convertIntegers(contentTypes), keyword, fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 搜索提醒消息
+     *
+     * @param conversationTypes 会话类型
+     * @param lines             会话线路
+     * @param keyword           搜索关键字
+     * @param desc             true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param limit             获取消息条数
+     * @param offset            偏移数
+     * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void searchMentionedMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, String keyword, boolean desc, int limit, int offset, GetMessageCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        if (conversationTypes == null || conversationTypes.size() == 0 ||
+                lines == null || lines.size() == 0) {
+            Log.e(TAG, "Invalid conversation type or lines");
+            return;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+
+        try {
+            mClient.searchMentionedMessagesEx(intypes, convertIntegers(lines), keyword, desc, limit, offset, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
                     mainHandler.post(() -> callback.onSuccess(messages, hasMore));

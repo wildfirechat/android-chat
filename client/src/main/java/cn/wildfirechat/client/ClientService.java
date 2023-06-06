@@ -836,6 +836,25 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void getMentionedMessagesAsync(Conversation conversation, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
+            ProtoLogic.getMentionedMessages(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public void getMessagesExAsync(int[] conversationTypes, int[] lines, int[] contentTypes, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
             ProtoLogic.getMessagesExV2(conversationTypes, lines, contentTypes, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
                 @Override
@@ -2117,6 +2136,28 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<Message> searchMentionedMessages(Conversation conversation, String keyword, boolean desc, int limit, int offset) throws RemoteException {
+            ProtoMessage[] protoMessages;
+            if (conversation == null) {
+                protoMessages = ProtoLogic.searchMentionedMessages(0, "", 0, keyword, desc, limit, offset);
+            } else {
+                protoMessages = ProtoLogic.searchMentionedMessages(conversation.type.getValue(), conversation.target, conversation.line, keyword, desc, limit, offset);
+            }
+            List<cn.wildfirechat.message.Message> out = new ArrayList<>();
+
+            if (protoMessages != null) {
+                for (ProtoMessage protoMsg : protoMessages) {
+                    Message msg = convertProtoMessage(protoMsg);
+                    if (msg != null) {
+                        out.add(convertProtoMessage(protoMsg));
+                    }
+                }
+            }
+
+            return out;
+        }
+
+        @Override
         public List<Message> searchMessageByTypes(Conversation conversation, String keyword, int[] contentTypes, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             if (conversation == null) {
@@ -2170,6 +2211,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void searchMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, String keyword, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, before, count, withUser);
             safeMessagesCallback(protoMessages, before, callback);
+        }
+
+        @Override
+        public void searchMentionedMessagesEx(int[] conversationTypes, int[] lines, String keyword, boolean desc, int limit, int offset, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.searchMentionedMessagesEx2(conversationTypes, lines, keyword, desc, limit, offset);
+            safeMessagesCallback(protoMessages, desc, callback);
         }
 
 

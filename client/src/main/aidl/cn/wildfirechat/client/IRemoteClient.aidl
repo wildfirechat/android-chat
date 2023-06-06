@@ -116,6 +116,7 @@ interface IRemoteClient {
     List<Message> getMessagesInStatusSync(in Conversation conversation, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser);
 
     oneway void getMessagesAsync(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void getMentionedMessagesAsync(in Conversation conversation, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
     oneway void getMessagesInTypesAsync(in Conversation conversation, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesInStatusAsync(in Conversation conversation, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesExAsync(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
@@ -216,9 +217,11 @@ interface IRemoteClient {
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
     List<ConversationSearchResult> searchConversationEx(in String keyword, in int[] conversationTypes, in int[] lines, in long startTime, in long endTime, in boolean desc, in int limit, in int offset);
     List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset, in String withUser);
+    List<Message> searchMentionedMessages(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
     List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset, in String withUser);
     List<Message> searchMessageByTypesAndTimes(in Conversation conversation, in String keyword, in int[] contentTypes, in long startTime, in long endTime, in boolean desc, in int limit, in int offset, in String withUser);
     oneway void searchMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in String keyword, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void searchMentionedMessagesEx(in int[] conversationTypes, in int[] lines, in String keyword, in boolean desc, in int limit, in int offset, in IGetMessageCallback callback);
 
     List<GroupSearchResult> searchGroups(in String keyword);
     List<UserInfo> searchFriends(in String keyworkd);
