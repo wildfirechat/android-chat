@@ -11,14 +11,14 @@ android {
             storePassword 'wfc95955'
         }
     }
-    compileSdkVersion 31
+    compileSdkVersion 33
     ndkVersion '18.1.5063045'
     defaultConfig {
         applicationId "net.wildfirechat.demo"
         minSdkVersion 21
-        targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
-        versionCode 47
-        versionName '0.9.9'
+        targetSdkVersion 33 //当targetversion大于23时，需要使用fileprovider
+        versionCode 48
+        versionName '1.0.0'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {

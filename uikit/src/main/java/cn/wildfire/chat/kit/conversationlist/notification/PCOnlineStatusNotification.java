@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.conversationlist.notification;
 
+import java.util.Objects;
+
 import cn.wildfirechat.model.PCOnlineInfo;
 
 public class PCOnlineStatusNotification extends StatusNotification {
@@ -25,7 +27,7 @@ public class PCOnlineStatusNotification extends StatusNotification {
 
         PCOnlineStatusNotification that = (PCOnlineStatusNotification) o;
 
-        return pcOnlineInfo != null ? pcOnlineInfo.equals(that.pcOnlineInfo) : that.pcOnlineInfo == null;
+        return Objects.equals(pcOnlineInfo, that.pcOnlineInfo);
     }
 
     @Override

@@ -8,6 +8,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import java.util.Objects;
+
 import cn.wildfirechat.client.Platform;
 
 public class PCOnlineInfo implements Parcelable {
@@ -128,7 +130,7 @@ public class PCOnlineInfo implements Parcelable {
 
         if (type != that.type) return false;
         if (platform != that.platform) return false;
-        return clientId != null ? clientId.equals(that.clientId) : that.clientId == null;
+        return Objects.equals(clientId, that.clientId);
     }
 
     @Override

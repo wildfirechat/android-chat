@@ -9,10 +9,10 @@ android {
             storePassword 'wildfirechat'
         }
     }
-    compileSdkVersion 31
+    compileSdkVersion 33
     defaultConfig {
         minSdkVersion 18
-        targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
+        targetSdkVersion 33 //当targetversion大于23时，需要使用fileprovider
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {

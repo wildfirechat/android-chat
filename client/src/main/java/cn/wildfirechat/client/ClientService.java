@@ -203,6 +203,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private String mHost;
 
     private boolean useSM4 = false;
+    private boolean useAES256 = false;
     private boolean tcpShortLink = false;
 
     private OkHttpClient okHttpClient;
@@ -236,6 +237,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             if (useSM4) {
                 ProtoLogic.useEncryptSM4();
+            }
+
+            if (useAES256) {
+                ProtoLogic.useEncryptAES256();
             }
 
             if (tcpShortLink) {
@@ -814,6 +819,25 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void getMessagesAsync(Conversation conversation, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
             ProtoLogic.getMessagesV2(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, withUser, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] protoMessages) {
+                    safeMessagesCallback(protoMessages, before, callback);
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void getMentionedMessagesAsync(Conversation conversation, long fromIndex, boolean before, int count, IGetMessageCallback callback) throws RemoteException {
+            ProtoLogic.getMentionedMessages(conversation.type.ordinal(), conversation.target, conversation.line, fromIndex, before, count, new ProtoLogic.ILoadRemoteMessagesCallback() {
                 @Override
                 public void onSuccess(ProtoMessage[] protoMessages) {
                     safeMessagesCallback(protoMessages, before, callback);
@@ -1916,7 +1940,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                                 try {
                                     callback.onSuccess(result);
                                 } catch (RemoteException e) {
-                                    throw new RuntimeException(e);
+                                    e.printStackTrace();
                                 }
                             }
                         }
@@ -2112,6 +2136,28 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<Message> searchMentionedMessages(Conversation conversation, String keyword, boolean desc, int limit, int offset) throws RemoteException {
+            ProtoMessage[] protoMessages;
+            if (conversation == null) {
+                protoMessages = ProtoLogic.searchMentionedMessages(0, "", 0, keyword, desc, limit, offset);
+            } else {
+                protoMessages = ProtoLogic.searchMentionedMessages(conversation.type.getValue(), conversation.target, conversation.line, keyword, desc, limit, offset);
+            }
+            List<cn.wildfirechat.message.Message> out = new ArrayList<>();
+
+            if (protoMessages != null) {
+                for (ProtoMessage protoMsg : protoMessages) {
+                    Message msg = convertProtoMessage(protoMsg);
+                    if (msg != null) {
+                        out.add(convertProtoMessage(protoMsg));
+                    }
+                }
+            }
+
+            return out;
+        }
+
+        @Override
         public List<Message> searchMessageByTypes(Conversation conversation, String keyword, int[] contentTypes, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             if (conversation == null) {
@@ -2165,6 +2211,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void searchMessagesEx(int[] conversationTypes, int[] lines, int[] contentTypes, String keyword, long fromIndex, boolean before, int count, String withUser, IGetMessageCallback callback) throws RemoteException {
             ProtoMessage[] protoMessages = ProtoLogic.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, before, count, withUser);
             safeMessagesCallback(protoMessages, before, callback);
+        }
+
+        @Override
+        public void searchMentionedMessagesEx(int[] conversationTypes, int[] lines, String keyword, boolean desc, int limit, int offset, IGetMessageCallback callback) throws RemoteException {
+            ProtoMessage[] protoMessages = ProtoLogic.searchMentionedMessagesEx2(conversationTypes, lines, keyword, desc, limit, offset);
+            safeMessagesCallback(protoMessages, desc, callback);
         }
 
 
@@ -2430,9 +2482,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (ProtoGroupMember protoMember : protoGroupMembers) {
                 if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
                     GroupMember member = covertProtoGroupMember(protoMember);
-                    out.add(member);
+                        out.add(member);
+                    }
                 }
-            }
             return out;
         }
 
@@ -2484,10 +2536,22 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                             out.add(member);
                         }
                     }
+                    GroupMember[] gpms = out.toArray(new GroupMember[0]);
                     try {
-                        callback.onSuccess(out);
+                        SafeIPCEntry<GroupMember> entry;
+                        int startIndex = 0;
+                        do {
+                            entry = buildSafeIPCEntry(gpms, startIndex);
+                            callback.onSuccess(entry.entries, entry.entries.size() > 0 && entry.index > 0 && entry.index < gpms.length - 1);
+                            startIndex = entry.index + 1;
+                        } while (entry.index > 0 && entry.index < gpms.length - 1);
                     } catch (RemoteException e) {
                         e.printStackTrace();
+                        try {
+                            callback.onFailure(-1);
+                        } catch (RemoteException ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
 
@@ -3239,6 +3303,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void useSM4() throws RemoteException {
             useSM4 = true;
             ProtoLogic.useEncryptSM4();
+        }
+
+        @Override
+        public void useAES256() throws RemoteException {
+            useAES256 = true;
+            ProtoLogic.useEncryptAES256();
         }
 
         @Override

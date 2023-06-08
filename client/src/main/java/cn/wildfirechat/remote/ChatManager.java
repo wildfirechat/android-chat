@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.channels.FileChannel;
@@ -212,6 +211,7 @@ public class ChatManager {
     private String clientId;
     private int pushType;
     private final Map<Integer, Class<? extends MessageContent>> messageContentMap = new ConcurrentHashMap<>();
+    private final Map<Integer, PersistFlag> messagePersistFlagMap = new ConcurrentHashMap<>();
     private boolean isLiteMode = false;
     private boolean isLowBPSMode = false;
     private UserSource userSource;
@@ -229,6 +229,8 @@ public class ChatManager {
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
+
+    private boolean useAES256 = false;
     private boolean tcpShortLink = false;
     private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
@@ -1092,6 +1094,25 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 启用AES256加密，需要在connect之前调用，需要IM服务开启AES256才可以使用。
+     */
+    public void useAES256() {
+        useAES256 = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.useAES256();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 使用TCP的短链接。用在禁止HTTP的环境中。
+     */
     public void useTcpShortLink() {
         tcpShortLink = true;
         if (!checkRemoteService()) {
@@ -1867,6 +1888,10 @@ public class ChatManager {
      * @param flag 消息存储类型
      */
     public void registerMessageFlag(int type, PersistFlag flag) {
+        messagePersistFlagMap.put(type, flag);
+        if (!checkRemoteService()) {
+            return;
+        }
         try {
             mClient.registerMessageFlag(type, flag.getValue());
         } catch (RemoteException e) {
@@ -2868,6 +2893,47 @@ public class ChatManager {
         try {
             List<Message> outMsgs = new ArrayList<>();
             mClient.getMessagesAsync(conversation, fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    outMsgs.addAll(messages);
+                    if (!hasMore) {
+                        mainHandler.post(() -> callback.onSuccess(outMsgs, false));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
+     * 获取会话提醒消息
+     *
+     * @param conversation
+     * @param fromIndex    消息起始id(messageId)
+     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count        获取消息条数
+     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void getMentionedMessages(Conversation conversation, long fromIndex, boolean before, int count, GetMessageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (!checkRemoteService()) {
+            callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            List<Message> outMsgs = new ArrayList<>();
+            mClient.getMentionedMessagesAsync(conversation, fromIndex, before, count, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
                     outMsgs.addAll(messages);
@@ -5460,6 +5526,30 @@ public class ChatManager {
     }
 
     /**
+     * 搜索提醒消息
+     *
+     * @param conversation 会话为空时，搜索所有会话消息
+     * @param keyword
+     * @param desc
+     * @param limit
+     * @param offset
+     * @param withUser
+     * @return
+     */
+    public List<Message> searchMentionedMessages(Conversation conversation, String keyword, boolean desc, int limit, int offset) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.searchMentionedMessages(conversation, keyword, desc, limit, offset);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 搜索消息
      *
      * @param conversation 会话为空时，搜索所有会话消息
@@ -5538,6 +5628,49 @@ public class ChatManager {
 
         try {
             mClient.searchMessagesEx(intypes, convertIntegers(lines), convertIntegers(contentTypes), keyword, fromIndex, before, count, withUser, new IGetMessageCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    mainHandler.post(() -> callback.onSuccess(messages, hasMore));
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    mainHandler.post(() -> callback.onFail(errorCode));
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 搜索提醒消息
+     *
+     * @param conversationTypes 会话类型
+     * @param lines             会话线路
+     * @param keyword           搜索关键字
+     * @param desc             true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param limit             获取消息条数
+     * @param offset            偏移数
+     * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
+     */
+    public void searchMentionedMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, String keyword, boolean desc, int limit, int offset, GetMessageCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        if (conversationTypes == null || conversationTypes.size() == 0 ||
+                lines == null || lines.size() == 0) {
+            Log.e(TAG, "Invalid conversation type or lines");
+            return;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+
+        try {
+            mClient.searchMentionedMessagesEx(intypes, convertIntegers(lines), keyword, desc, limit, offset, new IGetMessageCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
                     mainHandler.post(() -> callback.onSuccess(messages, hasMore));
@@ -6254,7 +6387,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取群成员列表
+     * 获取群成员列表，群成员特别多时，建议使用异步回调版本
      *
      * @param groupId
      * @param forceUpdate
@@ -6312,7 +6445,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取群成员列表
+     * 获取群成员列表，支持超大群
      *
      * @param groupId
      * @param forceUpdate
@@ -6333,11 +6466,15 @@ public class ChatManager {
         }
 
         try {
+            List<GroupMember> groupMemberList = new ArrayList<>();
             mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
                 @Override
-                public void onSuccess(List<GroupMember> groupMembers) throws RemoteException {
-                    if (callback != null) {
-                        mainHandler.post(() -> callback.onSuccess(groupMembers));
+                public void onSuccess(List<GroupMember> groupMembers, boolean hasMore) throws RemoteException {
+                    groupMemberList.addAll(groupMembers);
+                    if (!hasMore) {
+                        if (callback != null) {
+                            mainHandler.post(() -> callback.onSuccess(groupMemberList));
+                        }
                     }
                 }
 
@@ -6350,6 +6487,9 @@ public class ChatManager {
             });
         } catch (RemoteException e) {
             e.printStackTrace();
+            if (callback != null) {
+                callback.onFail(-1);
+            }
         }
     }
 
@@ -8396,6 +8536,9 @@ public class ChatManager {
                     if (useSM4) {
                         mClient.useSM4();
                     }
+                    if (useAES256) {
+                        mClient.useAES256();
+                    }
                     if (tcpShortLink) {
                         mClient.useTcpShortLink();
                     }
@@ -8414,6 +8557,10 @@ public class ChatManager {
                     mClient.setServerAddress(SERVER_HOST);
                     for (Class clazz : messageContentMap.values()) {
                         mClient.registerMessageContent(clazz.getName());
+                    }
+
+                    for (Map.Entry<Integer, PersistFlag> entry : messagePersistFlagMap.entrySet()) {
+                        mClient.registerMessageFlag(entry.getKey(), entry.getValue().getValue());
                     }
 
                     if (startLog) {
@@ -8687,45 +8834,49 @@ public class ChatManager {
         Class clazz;
         Method method;
         boolean result;
+        Log.d(TAG, "*************** SDK检查 *****************");
         try {
-            Log.d(TAG, "*************** SDK检查 *****************");
             clazz = Class.forName("cn.wildfirechat.avenginekit.AVEngineKit");
             method = clazz.getMethod("isSupportMultiCall");
             boolean multiCall = (boolean) method.invoke(null);
             method = clazz.getMethod("isSupportConference");
             boolean conference = (boolean) method.invoke(null);
             if (conference) {
-                Log.d(TAG, "音视频SDK是高级版");
+                Log.e(TAG, "音视频SDK是高级版");
             } else if (multiCall) {
-                Log.d(TAG, "音视频SDK是多人版");
+                Log.e(TAG, "音视频SDK是多人版");
             } else {
-                Log.d(TAG, "音视频SDK是单人版");
+                Log.e(TAG, "音视频SDK是单人版");
             }
+        } catch (Exception e) {
+            // do nothing
+            Log.e(TAG, "检查音视频 SDK 失败: " + e.getMessage());
+        }
 
+        try {
             clazz = Class.forName("cn.wildfirechat.moment.MomentClient");
             method = clazz.getMethod("checkAddress", String.class);
             result = (boolean) method.invoke(null, host);
             if (!result) {
-                Log.d(TAG, "错误，朋友圈SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
+                Log.e(TAG, "错误，朋友圈SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
             }
+        } catch (Exception e) {
+            // do nothing
+            Log.e(TAG, "检查朋友圈 SDK 失败: " + e.getMessage());
+        }
+
+        try {
 
             clazz = Class.forName("cn.wildfirechat.ptt.PTTClient");
             method = clazz.getMethod("checkAddress", String.class);
             result = (boolean) method.invoke(null, host);
             if (!result) {
-                Log.d(TAG, "错误，对讲SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
+                Log.e(TAG, "错误，对讲SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } finally {
-            Log.d(TAG, "*************** SDK检查 *****************");
+        } catch (Exception e) {
+            Log.e(TAG, "检查对讲 SDK 失败: " + e.getMessage());
         }
+        Log.d(TAG, "*************** SDK检查 *****************");
         return true;
     }
 }

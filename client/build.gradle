@@ -3,12 +3,12 @@ apply plugin: 'com.android.library'
 group = 'com.github.wildfirechat'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 33
 
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 33
 
         // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {

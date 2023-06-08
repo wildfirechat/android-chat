@@ -9,5 +9,6 @@ public class NullGroupInfo extends GroupInfo {
         this.target = groupId;
         //this.name = "<" + groupId + ">";
         this.name = "群聊";
+        this.type = GroupType.Normal;
     }
 }

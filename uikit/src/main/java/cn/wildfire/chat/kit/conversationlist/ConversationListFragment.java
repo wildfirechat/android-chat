@@ -165,6 +165,7 @@ public class ConversationListFragment extends ProgressFragment {
 
     private void loadAndShowPCOnlineNotification() {
         List<PCOnlineInfo> pcOnlineInfos = ChatManager.Instance().getPCOnlineInfos();
+        statusNotificationViewModel.clearStatusNotificationByType(PCOnlineStatusNotification.class);
         if (pcOnlineInfos != null && !pcOnlineInfos.isEmpty()) {
             for (PCOnlineInfo info : pcOnlineInfos) {
                 PCOnlineStatusNotification notification = new PCOnlineStatusNotification(info);

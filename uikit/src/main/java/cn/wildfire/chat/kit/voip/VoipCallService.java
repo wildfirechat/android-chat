@@ -59,12 +59,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     private View view;
     private WindowManager.LayoutParams params;
     private Intent resumeActivityIntent;
-    private boolean initialized = false;
     private boolean showFloatingWindow = false;
 
     private String focusTargetId;
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     @Override
     public void onCreate() {
@@ -72,10 +71,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         ChatManager.Instance().addOnReceiveMessageListener(this);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null) {
-            initialized = true;
-            startForeground(NOTIFICATION_ID, buildNotification(session));
-        }
+        startForeground(NOTIFICATION_ID, buildNotification(session));
     }
 
     @Nullable
@@ -95,6 +91,14 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         }
     }
 
+    public static void start(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
+
     public static void stop(Context context) {
         Intent intent = new Intent(context, VoipCallService.class);
         context.stopService(intent);
@@ -104,14 +108,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (!initialized) {
-            initialized = true;
-            startForeground(NOTIFICATION_ID, buildNotification(session));
-        }
         if (session == null || session.state == AVEngineKit.CallState.Idle) {
             stopSelf();
             return START_NOT_STICKY;
         }
+        startForeground(NOTIFICATION_ID, buildNotification(session));
         boolean screenShare = intent.getBooleanExtra("screenShare", false);
         if (screenShare) {
             Intent data = intent.getParcelableExtra("data");
@@ -210,19 +211,23 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
 
         String title;
-        switch (session.getState()) {
-            case Outgoing:
-                title = "等待对方接听...";
-                break;
-            case Incoming:
-                title = "邀请您进行通话...";
-                break;
-            case Connecting:
-                title = "接听中...";
-                break;
-            default:
-                title = "通话中...";
-                break;
+        if (session != null) {
+            switch (session.getState()) {
+                case Outgoing:
+                    title = "等待对方接听...";
+                    break;
+                case Incoming:
+                    title = "邀请您进行通话...";
+                    break;
+                case Connecting:
+                    title = "接听中...";
+                    break;
+                default:
+                    title = "通话中...";
+                    break;
+            }
+        } else {
+            title = "VOIP...";
         }
         return builder.setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)

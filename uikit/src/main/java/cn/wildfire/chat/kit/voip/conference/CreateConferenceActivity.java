@@ -136,19 +136,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         calendar.add(Calendar.HOUR_OF_DAY, 1);
         endDateTime = calendar.getTime();
         endDateTimeTextView.setText(endDateTime.toString());
-
-        WfcUIKit.getWfcUIKit().getAppServiceProvider().getMyPrivateConferenceId(new GeneralCallback2() {
-            @Override
-            public void onSuccess(String s) {
-                conferenceId = s;
-                callIdTextView.setText(conferenceId);
-            }
-
-            @Override
-            public void onFail(int i) {
-
-            }
-        });
     }
 
     void audienceChecked(CompoundButton button, boolean checked) {
@@ -230,9 +217,6 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     private void createConference(boolean join) {
         joinConferenceButton.setEnabled(false);
         ConferenceInfo info = new ConferenceInfo();
-        if (userCallIdSwitch.isChecked()) {
-            info.setConferenceId(conferenceId);
-        }
         Toast.makeText(this, "创建会议中...", Toast.LENGTH_SHORT).show();
         info.setPassword(password);
         info.setConferenceTitle(titleEditText.getText().toString());
