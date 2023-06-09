@@ -131,6 +131,15 @@ public class FavoriteItem {
                 CompositeMessageContent compositeMessageContent = (CompositeMessageContent) message.content;
                 item.title = compositeMessageContent.getTitle();
                 MessagePayload payload = compositeMessageContent.encode();
+                if (!TextUtils.isEmpty(compositeMessageContent.remoteUrl)) {
+                    try {
+                        JSONObject obj = new JSONObject(new String(payload.binaryContent));
+                        obj.put("remote_url", compositeMessageContent.remoteUrl);
+                        payload.binaryContent = obj.toString().getBytes();
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 item.data = Base64.encodeToString(payload.binaryContent, Base64.NO_WRAP);
                 break;
             case MessageContentType.ContentType_Voice:
@@ -220,6 +229,12 @@ public class FavoriteItem {
                     MessagePayload payload = new MessagePayload();
                     payload.content = title;
                     payload.binaryContent = payloadBytes;
+                    try {
+                        JSONObject obj = new JSONObject(new String(payloadBytes));
+                        payload.remoteMediaUrl = obj.optString("remote_url");
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
                     compositeMessageContent.decode(payload, ChatManager.Instance());
                 }
 
