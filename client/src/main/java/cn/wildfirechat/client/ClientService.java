@@ -2114,6 +2114,26 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<ConversationSearchResult> searchMentionedConversations(String keyword, int[] conversationTypes, int[] lines, long startTime, long endTime, boolean desc, int limit, int offset) throws RemoteException {
+            ProtoConversationSearchresult[] protoResults = ProtoLogic.searchMentionedConversations(keyword, conversationTypes, lines, startTime, endTime, desc, limit, offset);
+            List<ConversationSearchResult> output = new ArrayList<>();
+            if (protoResults != null) {
+                for (ProtoConversationSearchresult protoResult : protoResults
+                ) {
+                    ConversationSearchResult result = new ConversationSearchResult();
+                    result.conversation = new Conversation(Conversation.ConversationType.type(protoResult.getConversationType()), protoResult.getTarget(), protoResult.getLine());
+                    result.marchedMessage = convertProtoMessage(protoResult.getMarchedMessage());
+                    result.timestamp = protoResult.getTimestamp();
+                    result.marchedCount = protoResult.getMarchedCount();
+                    output.add(result);
+
+                }
+            }
+
+            return output;
+        }
+
+        @Override
         public List<cn.wildfirechat.message.Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             if (conversation == null) {

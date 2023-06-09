@@ -216,6 +216,7 @@ interface IRemoteClient {
     void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
     List<ConversationSearchResult> searchConversationEx(in String keyword, in int[] conversationTypes, in int[] lines, in long startTime, in long endTime, in boolean desc, in int limit, in int offset);
+    List<ConversationSearchResult> searchMentionedConversations(in String keyword, in int[] conversationTypes, in int[] lines, in long startTime, in long endTime, in boolean desc, in int limit, in int offset);
     List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset, in String withUser);
     List<Message> searchMentionedMessages(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
     List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset, in String withUser);

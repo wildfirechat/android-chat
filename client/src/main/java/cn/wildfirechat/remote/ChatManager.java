@@ -5501,6 +5501,28 @@ public class ChatManager {
         }
     }
 
+    public List<ConversationSearchResult> searchMentionedConversations(String keyword, List<Conversation.ConversationType> conversationTypes, List<Integer> lines, long startTime, long endTime, boolean desc, int limit, int offset) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        int[] inlines = new int[lines.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+        for (int j = 0; j < lines.size(); j++) {
+            inlines[j] = lines.get(j);
+        }
+
+        try {
+            return mClient.searchMentionedConversations(keyword, intypes, inlines, startTime, endTime, desc, limit, offset);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * 搜索消息
      *
