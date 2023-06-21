@@ -4400,6 +4400,19 @@ public class ChatManager {
         }
     }
 
+    public List<FriendRequest> getAllFriendRequest() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getAllFriendRequest();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * 获取好友请求
      *
@@ -4450,6 +4463,32 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    public boolean clearFriendRequest(boolean direction, long beforeTime) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.clearFriendRequest(direction, beforeTime);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteFriendRequest(String userId, boolean direction) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.deleteFriendRequest(userId, direction);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

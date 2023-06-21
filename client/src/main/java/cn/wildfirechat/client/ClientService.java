@@ -1520,9 +1520,31 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<FriendRequest> getAllFriendRequest() throws RemoteException {
+            List<FriendRequest> out = new ArrayList<>();
+            ProtoFriendRequest[] requests = ProtoLogic.getAllFriendRequest();
+            if (requests != null) {
+                for (ProtoFriendRequest protoFriendRequest : requests) {
+                    out.add(convertProtoFriendRequest(protoFriendRequest));
+                }
+            }
+            return out;
+        }
+
+        @Override
         public FriendRequest getOneFriendRequest(String userId, boolean incomming) throws RemoteException {
             ProtoFriendRequest request = ProtoLogic.getOneFriendRequest(userId, incomming);
             return convertProtoFriendRequest(request);
+        }
+
+        @Override
+        public boolean clearFriendRequest(boolean direction, long beforeTime) throws RemoteException {
+            return ProtoLogic.clearFriendRequest(direction, beforeTime);
+        }
+
+        @Override
+        public boolean deleteFriendRequest(String userId, boolean direction) throws RemoteException {
+            return ProtoLogic.deleteFriendRequest(userId, direction);
         }
 
         @Override
