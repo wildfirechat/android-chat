@@ -16,6 +16,7 @@ public class PrivacySettingActivity extends WfcBaseActivity {
         super.bindEvents();
         findViewById(R.id.blacklistOptionItemView).setOnClickListener(v -> blacklistSettings());
         findViewById(R.id.momentsPrivacyOptionItemView).setOnClickListener(v -> mementsSettings());
+        findViewById(R.id.findMeOptionItemView).setOnClickListener(v -> findMeSettings());
     }
 
     @Override
@@ -30,5 +31,10 @@ public class PrivacySettingActivity extends WfcBaseActivity {
 
     void mementsSettings() {
 
+    }
+
+    void findMeSettings() {
+        Intent intent = new Intent(this, PrivacyFindMeSettingActivity.class);
+        startActivity(intent);
     }
 }

@@ -1430,6 +1430,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setUserSetting(int scope, String key, String value, final IGeneralCallback callback) throws RemoteException {
+            if (key == null) {
+                key = "";
+            }
+            if (value == null) {
+                value = "";
+            }
             ProtoLogic.setUserSetting(scope, key, value, new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
@@ -2524,9 +2530,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (ProtoGroupMember protoMember : protoGroupMembers) {
                 if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
                     GroupMember member = covertProtoGroupMember(protoMember);
-                        out.add(member);
-                    }
+                    out.add(member);
                 }
+            }
             return out;
         }
 

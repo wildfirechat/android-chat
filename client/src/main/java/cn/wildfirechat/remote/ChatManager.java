@@ -285,38 +285,23 @@ public class ChatManager {
         //精确搜索电话号码
         Mobile(3);
 
-        private int value;
-
         SearchUserType(int value) {
-            this.value = value;
-        }
-
-        public int value() {
-            return this.value;
-        }
-
-        public static SearchUserType type(int type) {
-            SearchUserType searchUserType = null;
-            switch (type) {
-                case 0:
-                    searchUserType = General;
-                    break;
-                case 1:
-                    searchUserType = NameOrMobile;
-                    break;
-                case 2:
-                    searchUserType = Name;
-                    break;
-                case 3:
-                    searchUserType = Mobile;
-                    break;
-                default:
-                    throw new IllegalArgumentException("type " + searchUserType + " is invalid");
-            }
-            return searchUserType;
         }
     }
 
+    /**
+     * 禁止搜索当前用户的掩码。
+     * <p>
+     * - DisplayName: 第1位是否禁止搜索昵称
+     * - Name: 第2位是否禁止搜索账户
+     * - Mobile: 第3位是否禁止搜索电话号码
+     */
+
+    public interface DisableSearchUserMask {
+        int DisplayName = 1;
+        int Name = 2;
+        int Mobile = 4;
+    }
 
     public enum SecretChatState {
         //密聊会话建立中
@@ -331,14 +316,10 @@ public class ChatManager {
         //密聊会话已取消
         Canceled(3);
 
-        private int value;
+        private final int value;
 
         SecretChatState(int value) {
             this.value = value;
-        }
-
-        public int value() {
-            return this.value;
         }
 
         public static SecretChatState fromValue(int value) {
@@ -5565,6 +5546,7 @@ public class ChatManager {
             return null;
         }
     }
+
     /**
      * 搜索消息
      *
@@ -5713,7 +5695,7 @@ public class ChatManager {
      * @param conversationTypes 会话类型
      * @param lines             会话线路
      * @param keyword           搜索关键字
-     * @param desc             true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param desc              true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param limit             获取消息条数
      * @param offset            偏移数
      * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
@@ -5723,7 +5705,7 @@ public class ChatManager {
             return;
         }
         if (conversationTypes == null || conversationTypes.size() == 0 ||
-                lines == null || lines.size() == 0) {
+            lines == null || lines.size() == 0) {
             Log.e(TAG, "Invalid conversation type or lines");
             return;
         }
