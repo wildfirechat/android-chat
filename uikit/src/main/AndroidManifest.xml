@@ -122,6 +122,9 @@
             android:name="cn.wildfire.chat.kit.settings.PrivacySettingActivity"
             android:label="隐私设置" />
         <activity
+            android:name="cn.wildfire.chat.kit.settings.PrivacyFindMeSettingActivity"
+            android:label="隐私设置" />
+        <activity
             android:name="cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity"
             android:label="黑名单" />
         <activity

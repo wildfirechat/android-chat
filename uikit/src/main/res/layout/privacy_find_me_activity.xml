@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray5"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="@dimen/item_margin_left_and_right"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="可以通过一下方式找到我"
+        android:textColor="@color/black6"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/displayNameOptionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="@dimen/item_margin_left_and_right"
+            android:paddingRight="@dimen/item_margin_left_and_right"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="昵称"
+                android:textColor="@color/black1"
+                android:textSize="16sp" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/displayNameSwitch"
+                style="@style/defaultSwitch"
+                android:layout_gravity="center_vertical|right" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="@dimen/item_margin_left_and_right"
+            android:paddingRight="@dimen/item_margin_left_and_right">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="账号"
+                android:textColor="@color/black1"
+                android:textSize="16sp" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/nameSwitch"
+                style="@style/defaultSwitch"
+                android:layout_gravity="center_vertical|right" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="@dimen/item_margin_left_and_right"
+            android:paddingRight="@dimen/item_margin_left_and_right">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="手机号码"
+                android:textColor="@color/black1"
+                android:textSize="16sp" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/mobileSwitch"
+                style="@style/defaultSwitch"
+                android:layout_gravity="center_vertical|right" />
+
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>
