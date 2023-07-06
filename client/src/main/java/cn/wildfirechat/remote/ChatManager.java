@@ -1888,11 +1888,12 @@ public class ChatManager {
      * @param content      消息体
      * @param status       消息状态
      * @param notify       是否通知界面，通知时，会通过{@link #onReceiveMessage(List, boolean)}通知界面
+     * @param toUsers      定向发送给会话中的某些用户；为空，则发给所有人
      * @param serverTime   服务器时间
      * @return
      */
-    public Message insertMessage(Conversation conversation, String sender, MessageContent content, MessageStatus status, boolean notify, long serverTime) {
-        return insertMessage(conversation, sender, 0, content, status, notify, serverTime);
+    public Message insertMessage(Conversation conversation, String sender, MessageContent content, MessageStatus status, boolean notify, String[] toUsers, long serverTime) {
+        return insertMessage(conversation, sender, 0, content, status, notify, toUsers, serverTime);
     }
 
     /**
@@ -1904,10 +1905,11 @@ public class ChatManager {
      * @param content      消息体
      * @param status       消息状态
      * @param notify       是否通知界面，通知时，会通过{@link #onReceiveMessage(List, boolean)}通知界面
+     * @param toUsers      定向发送给会话中的某些用户；为空，则发给所有人
      * @param serverTime   服务器时间
      * @return
      */
-    public Message insertMessage(Conversation conversation, String sender, long messageUid, MessageContent content, MessageStatus status, boolean notify, long serverTime) {
+    public Message insertMessage(Conversation conversation, String sender, long messageUid, MessageContent content, MessageStatus status, boolean notify, String[] toUsers, long serverTime) {
         if (!checkRemoteService()) {
             return null;
         }
@@ -1918,6 +1920,7 @@ public class ChatManager {
         message.status = status;
         message.messageUid = messageUid;
         message.serverTime = serverTime;
+        message.toUsers = toUsers;
 
         message.direction = MessageDirection.Send;
         if (status.value() >= MessageStatus.Mentioned.value()) {
