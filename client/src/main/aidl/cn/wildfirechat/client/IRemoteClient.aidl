@@ -71,7 +71,7 @@ import android.os.ParcelFileDescriptor;
 // Declare any non-default types here with import statements
 
 interface IRemoteClient {
-    boolean connect(in String userId, in String token);
+    long connect(in String userId, in String token);
     void disconnect(in boolean disablePush, in boolean clearSession);
     void setForeground(in int isForeground);
     void onNetworkChange();

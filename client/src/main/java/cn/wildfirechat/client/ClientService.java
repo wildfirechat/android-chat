@@ -213,7 +213,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private class ClientServiceStub extends IRemoteClient.Stub {
 
         @Override
-        public boolean connect(String userName, String userPwd) throws RemoteException {
+        public long connect(String userName, String userPwd) throws RemoteException {
             Log.d(TAG, "client connect:" + userName);
             if (mConnectionReceiver == null) {
                 mConnectionReceiver = new BaseEvent.ConnectionReceiver();
@@ -228,11 +228,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 } else {
                     Log.e(TAG, "Error, 错误，已经connect过了， 不能再次调用connect。必须先调用disconnect之后才能再次调用connect");
                 }
-                return false;
+                return System.currentTimeMillis()/1000;
             }
             if (TextUtils.isEmpty(mHost)) {
                 Log.e(TAG, "未设置IM_SERVER_HOST!");
-                return false;
+                return 0;
             }
 
             if (useSM4) {
@@ -251,7 +251,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             accountInfo.userName = userName;
 
             userId = userName;
-            boolean initialSuccess = initProto(userName, userPwd);
+            long initialSuccess = initProto(userName, userPwd);
             if (mConnectionStatus != ConnectionStatusConnecting
                 && mConnectionStatus != ConnectionStatusConnected
                 && mConnectionStatus != ConnectionStatusReceiveing) {
@@ -3808,7 +3808,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         uploadingMap = null;
     }
 
-    private boolean initProto(String userName, String userPwd) {
+    private long initProto(String userName, String userPwd) {
         AppLogic.setCallBack(this);
         SdtLogic.setCallBack(this);
 

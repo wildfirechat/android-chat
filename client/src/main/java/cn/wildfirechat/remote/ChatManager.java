@@ -2098,9 +2098,9 @@ public class ChatManager {
      *
      * @param userId
      * @param token
-     * @return 是否是新用户。新用户需要同步信息，耗时较长，可以增加等待提示。
+     * @return 返回上一次活动时间。如果间隔时间较长，可以加个第一次登录的等待提示界面，在等待时同步所有的用户信息/群组信息/频道信息等。
      */
-    public boolean connect(String userId, String token) {
+    public long connect(String userId, String token) {
         if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(token) || TextUtils.isEmpty(SERVER_HOST)) {
             throw new IllegalArgumentException("userId, token and im_server_host must not be empty!");
         }
@@ -2117,7 +2117,7 @@ public class ChatManager {
         } else {
             Log.d(TAG, "Mars service not start yet!");
         }
-        return false;
+        return 0;
     }
 
     /**
