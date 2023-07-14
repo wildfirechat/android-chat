@@ -36,7 +36,6 @@
 
     <!--全屏样式-->
     <style name="AppTheme.FullScreen">
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 
@@ -76,6 +75,7 @@
         <item name="cornerSizeTopLeft">5dp</item>
         <item name="cornerSizeTopRight">5dp</item>
     </style>
+
     <style name="roundedImageView_8dp" parent="">
         <item name="cornerFamilyTopRight">rounded</item>
         <item name="cornerSize">8dp</item>
