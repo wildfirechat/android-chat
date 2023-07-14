@@ -415,17 +415,4 @@ public class MMPreviewActivity extends Activity {
         entries.add(entry);
         previewMedia(context, entries, 0, false);
     }
-
-
-    public static void previewVideo(Context context, String videoUrl) {
-        List<MediaEntry> entries = new ArrayList<>();
-
-        MediaEntry entry = new MediaEntry();
-        entry.setType(MediaEntry.TYPE_VIDEO);
-//        entry.setThumbnail(videoMessageContent.getThumbnail());
-        entry.setMediaUrl(videoUrl);
-//        entry.setMediaLocalPath(videoMessageContent.localPath);
-        entries.add(entry);
-        previewMedia(context, entries, 0, false);
-    }
 }

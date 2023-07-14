@@ -25,7 +25,7 @@ public class FavVideoContentViewHolder extends FavContentViewHolder {
     }
 
     private void bindEvents(View itemView) {
-        itemView.findViewById(R.id.favImageContentImageView).setOnClickListener(_v -> showFavImage());
+        itemView.findViewById(R.id.favImageContentImageView).setOnClickListener(_v -> showFavVideo());
     }
 
     private void bindViews(View itemView) {
@@ -39,7 +39,7 @@ public class FavVideoContentViewHolder extends FavContentViewHolder {
             .load(item.getUrl()).into(imageView);
     }
 
-    void showFavImage() {
-        MMPreviewActivity.previewVideo(fragment.getActivity(), favoriteItem.getUrl());
+    void showFavVideo() {
+        MMPreviewActivity.previewVideo(fragment.getActivity(), favoriteItem.toMessage());
     }
 }
