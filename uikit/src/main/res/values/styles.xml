@@ -39,6 +39,14 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="AppTheme.TransparentFullScreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
     <style name="AppThemeDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/black</item>
         <item name="colorPrimary">@color/colorPrimary</item>
