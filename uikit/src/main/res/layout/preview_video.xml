@@ -5,22 +5,27 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent">
 
-    <VideoView
-        android:id="@+id/videoView"
+    <cn.wildfire.chat.kit.voip.ZoomableFrameLayout
+        android:id="@+id/zoomableFrameLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:foregroundGravity="center"
-        android:visibility="gone" />
+        android:layout_height="match_parent">
 
-    <com.github.chrisbanes.photoview.PhotoView
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:foregroundGravity="center"
+            android:visibility="gone" />
+    </cn.wildfire.chat.kit.voip.ZoomableFrameLayout>
+
+    <cn.wildfire.chat.kit.widget.PhotoView
         android:id="@+id/photoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:background="@android:color/transparent"
         android:foregroundGravity="center" />
 
     <ProgressBar
