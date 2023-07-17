@@ -4,7 +4,6 @@
 
 package cn.wildfire.chat.kit.mm;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
@@ -21,11 +20,11 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -38,6 +37,8 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
+import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
+import cn.wildfire.chat.kit.widget.PhotoView;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.VideoMessageContent;
@@ -46,9 +47,13 @@ import cn.wildfirechat.remote.ChatManager;
 /**
  * @author imndx
  */
-public class MMPreviewActivity extends Activity {
+public class MMPreviewActivity extends AppCompatActivity implements PhotoView.OnDragListener, ZoomableFrameLayout.OnDragListener {
     private SparseArray<View> views;
     private View currentVideoView;
+    private ProgressBar videoLoadProgressBar;
+    private ImageView videoPlayButton;
+
+    private PhotoView currentPhotoView;
     private ViewPager viewPager;
     private MMPagerAdapter adapter;
     private boolean secret;
@@ -59,6 +64,30 @@ public class MMPreviewActivity extends Activity {
     private boolean pendingPreviewInitialMedia;
 
     public static final String TAG = "MMPreviewActivity";
+
+
+    @Override
+    public void onDragToFinish() {
+        finish();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            super.finishAfterTransition();
+//        } else {
+//            finish();
+//        }
+    }
+
+    @Override
+    public void onDragOffset(float offset, float maxOffset) {
+        View view = findViewById(R.id.bgMaskView);
+        view.setAlpha(1 - offset / maxOffset);
+
+        if (videoPlayButton != null) {
+            videoPlayButton.setVisibility(offset != 0.0 ? View.GONE : View.VISIBLE);
+        }
+        if (videoLoadProgressBar != null && offset != 0.0) {
+            videoLoadProgressBar.setVisibility(View.GONE);
+        }
+    }
 
     private class MMPagerAdapter extends PagerAdapter {
         private List<MediaEntry> entries;
@@ -123,6 +152,11 @@ public class MMPreviewActivity extends Activity {
             if (currentVideoView != null) {
                 resetVideoView(currentVideoView);
                 currentVideoView = null;
+                videoPlayButton = null;
+                videoLoadProgressBar = null;
+            }
+            if (currentPhotoView != null) {
+                currentPhotoView.resetScale();
             }
             MediaEntry entry = adapter.getEntry(position);
             preview(view, entry);
@@ -162,8 +196,15 @@ public class MMPreviewActivity extends Activity {
     private void previewVideo(View view, MediaEntry entry) {
 
         PhotoView photoView = view.findViewById(R.id.photoView);
+        photoView.setOnDragListener(this);
+        currentPhotoView = photoView;
+
         ImageView saveImageView = view.findViewById(R.id.saveImageView);
+        ZoomableFrameLayout zoomableFrameLayout = view.findViewById(R.id.zoomableFrameLayout);
+        zoomableFrameLayout.setEnableZoom(true);
+        zoomableFrameLayout.setOnDragListener(this);
         saveImageView.setVisibility(View.GONE);
+
         if (entry.getThumbnail() != null) {
             GlideApp.with(photoView).load(entry.getThumbnail()).diskCacheStrategy(diskCacheStrategy).into(photoView);
         } else {
@@ -173,15 +214,17 @@ public class MMPreviewActivity extends Activity {
         VideoView videoView = view.findViewById(R.id.videoView);
         videoView.setVisibility(View.INVISIBLE);
 
-        ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
-        loadingProgressBar.setVisibility(View.GONE);
+        videoLoadProgressBar = view.findViewById(R.id.loading);
+        videoLoadProgressBar.setVisibility(View.GONE);
 
-        ImageView btn = view.findViewById(R.id.btnVideo);
-        btn.setVisibility(View.VISIBLE);
-        btn.setOnClickListener(new View.OnClickListener() {
+        videoPlayButton = view.findViewById(R.id.btnVideo);
+        videoPlayButton.setVisibility(View.VISIBLE);
+
+
+        videoPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn.setVisibility(View.GONE);
+                videoPlayButton.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
                     File videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
                     if (videoFile == null) {
@@ -245,6 +288,7 @@ public class MMPreviewActivity extends Activity {
 
         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
         loadingProgressBar.setVisibility(View.GONE);
+
         view.findViewById(R.id.loading).setVisibility(View.GONE);
         currentVideoView = view;
 
@@ -264,6 +308,8 @@ public class MMPreviewActivity extends Activity {
 
     private void previewImage(View view, MediaEntry entry) {
         PhotoView photoView = view.findViewById(R.id.photoView);
+        photoView.setOnDragListener(this);
+        currentPhotoView = photoView;
         ImageView saveImageView = view.findViewById(R.id.saveImageView);
 
         String mediaUrl = entry.getMediaUrl();
@@ -324,6 +370,8 @@ public class MMPreviewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mm_preview);
+        supportPostponeEnterTransition();
+
         views = new SparseArray<>(3);
         viewPager = findViewById(R.id.viewPager);
         adapter = new MMPagerAdapter(entries);
@@ -412,19 +460,6 @@ public class MMPreviewActivity extends Activity {
         List<MediaEntry> entries = new ArrayList<>();
 
         MediaEntry entry = new MediaEntry(message);
-        entries.add(entry);
-        previewMedia(context, entries, 0, false);
-    }
-
-
-    public static void previewVideo(Context context, String videoUrl) {
-        List<MediaEntry> entries = new ArrayList<>();
-
-        MediaEntry entry = new MediaEntry();
-        entry.setType(MediaEntry.TYPE_VIDEO);
-//        entry.setThumbnail(videoMessageContent.getThumbnail());
-        entry.setMediaUrl(videoUrl);
-//        entry.setMediaLocalPath(videoMessageContent.localPath);
         entries.add(entry);
         previewMedia(context, entries, 0, false);
     }

@@ -79,7 +79,7 @@
 
         <activity
             android:name="cn.wildfire.chat.kit.mm.MMPreviewActivity"
-            android:theme="@style/AppTheme.FullScreen" />
+            android:theme="@style/AppTheme.TransparentFullScreen" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
             android:exported="false"
@@ -120,6 +120,9 @@
             android:label="用户信息" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.PrivacySettingActivity"
+            android:label="隐私设置" />
+        <activity
+            android:name="cn.wildfire.chat.kit.settings.PrivacyFindMeSettingActivity"
             android:label="隐私设置" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity"

@@ -285,38 +285,23 @@ public class ChatManager {
         //精确搜索电话号码
         Mobile(3);
 
-        private int value;
-
         SearchUserType(int value) {
-            this.value = value;
-        }
-
-        public int value() {
-            return this.value;
-        }
-
-        public static SearchUserType type(int type) {
-            SearchUserType searchUserType = null;
-            switch (type) {
-                case 0:
-                    searchUserType = General;
-                    break;
-                case 1:
-                    searchUserType = NameOrMobile;
-                    break;
-                case 2:
-                    searchUserType = Name;
-                    break;
-                case 3:
-                    searchUserType = Mobile;
-                    break;
-                default:
-                    throw new IllegalArgumentException("type " + searchUserType + " is invalid");
-            }
-            return searchUserType;
         }
     }
 
+    /**
+     * 禁止搜索当前用户的掩码。
+     * <p>
+     * - DisplayName: 第1位是否禁止搜索昵称
+     * - Name: 第2位是否禁止搜索账户
+     * - Mobile: 第3位是否禁止搜索电话号码
+     */
+
+    public interface DisableSearchUserMask {
+        int DisplayName = 1;
+        int Name = 2;
+        int Mobile = 4;
+    }
 
     public enum SecretChatState {
         //密聊会话建立中
@@ -331,14 +316,10 @@ public class ChatManager {
         //密聊会话已取消
         Canceled(3);
 
-        private int value;
+        private final int value;
 
         SecretChatState(int value) {
             this.value = value;
-        }
-
-        public int value() {
-            return this.value;
         }
 
         public static SecretChatState fromValue(int value) {
@@ -1907,11 +1888,12 @@ public class ChatManager {
      * @param content      消息体
      * @param status       消息状态
      * @param notify       是否通知界面，通知时，会通过{@link #onReceiveMessage(List, boolean)}通知界面
+     * @param toUsers      定向发送给会话中的某些用户；为空，则发给所有人
      * @param serverTime   服务器时间
      * @return
      */
-    public Message insertMessage(Conversation conversation, String sender, MessageContent content, MessageStatus status, boolean notify, long serverTime) {
-        return insertMessage(conversation, sender, 0, content, status, notify, serverTime);
+    public Message insertMessage(Conversation conversation, String sender, MessageContent content, MessageStatus status, boolean notify, String[] toUsers, long serverTime) {
+        return insertMessage(conversation, sender, 0, content, status, notify, toUsers, serverTime);
     }
 
     /**
@@ -1923,10 +1905,11 @@ public class ChatManager {
      * @param content      消息体
      * @param status       消息状态
      * @param notify       是否通知界面，通知时，会通过{@link #onReceiveMessage(List, boolean)}通知界面
+     * @param toUsers      定向发送给会话中的某些用户；为空，则发给所有人
      * @param serverTime   服务器时间
      * @return
      */
-    public Message insertMessage(Conversation conversation, String sender, long messageUid, MessageContent content, MessageStatus status, boolean notify, long serverTime) {
+    public Message insertMessage(Conversation conversation, String sender, long messageUid, MessageContent content, MessageStatus status, boolean notify, String[] toUsers, long serverTime) {
         if (!checkRemoteService()) {
             return null;
         }
@@ -1937,6 +1920,7 @@ public class ChatManager {
         message.status = status;
         message.messageUid = messageUid;
         message.serverTime = serverTime;
+        message.toUsers = toUsers;
 
         message.direction = MessageDirection.Send;
         if (status.value() >= MessageStatus.Mentioned.value()) {
@@ -2114,9 +2098,9 @@ public class ChatManager {
      *
      * @param userId
      * @param token
-     * @return 是否是新用户。新用户需要同步信息，耗时较长，可以增加等待提示。
+     * @return 返回上一次活动时间。如果间隔时间较长，可以加个第一次登录的等待提示界面，在等待时同步所有的用户信息/群组信息/频道信息等。
      */
-    public boolean connect(String userId, String token) {
+    public long connect(String userId, String token) {
         if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(token) || TextUtils.isEmpty(SERVER_HOST)) {
             throw new IllegalArgumentException("userId, token and im_server_host must not be empty!");
         }
@@ -2133,7 +2117,7 @@ public class ChatManager {
         } else {
             Log.d(TAG, "Mars service not start yet!");
         }
-        return false;
+        return 0;
     }
 
     /**
@@ -4400,6 +4384,19 @@ public class ChatManager {
         }
     }
 
+    public List<FriendRequest> getAllFriendRequest() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getAllFriendRequest();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * 获取好友请求
      *
@@ -4450,6 +4447,32 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    public boolean clearFriendRequest(boolean direction, long beforeTime) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.clearFriendRequest(direction, beforeTime);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteFriendRequest(String userId, boolean direction) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.deleteFriendRequest(userId, direction);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -5501,6 +5524,32 @@ public class ChatManager {
         }
     }
 
+    public List<ConversationSearchResult> searchConversationEx2(String keyword, List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, long startTime, long endTime, boolean desc, int limit, int offset, boolean onlyMentionedMsg) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        int[] intypes = new int[conversationTypes.size()];
+        int[] inlines = new int[lines.size()];
+        int[] incnts = new int[contentTypes.size()];
+        for (int i = 0; i < conversationTypes.size(); i++) {
+            intypes[i] = conversationTypes.get(i).ordinal();
+        }
+        for (int j = 0; j < lines.size(); j++) {
+            inlines[j] = lines.get(j);
+        }
+        for (int k = 0; k < contentTypes.size(); k++) {
+            incnts[k] = contentTypes.get(k);
+        }
+
+        try {
+            return mClient.searchConversationEx2(keyword, intypes, inlines, incnts, startTime, endTime, desc, limit, offset, onlyMentionedMsg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * 搜索消息
      *
@@ -5649,7 +5698,7 @@ public class ChatManager {
      * @param conversationTypes 会话类型
      * @param lines             会话线路
      * @param keyword           搜索关键字
-     * @param desc             true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param desc              true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param limit             获取消息条数
      * @param offset            偏移数
      * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
@@ -5659,7 +5708,7 @@ public class ChatManager {
             return;
         }
         if (conversationTypes == null || conversationTypes.size() == 0 ||
-                lines == null || lines.size() == 0) {
+            lines == null || lines.size() == 0) {
             Log.e(TAG, "Invalid conversation type or lines");
             return;
         }

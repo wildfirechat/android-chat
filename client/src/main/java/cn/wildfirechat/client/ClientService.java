@@ -213,7 +213,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private class ClientServiceStub extends IRemoteClient.Stub {
 
         @Override
-        public boolean connect(String userName, String userPwd) throws RemoteException {
+        public long connect(String userName, String userPwd) throws RemoteException {
             Log.d(TAG, "client connect:" + userName);
             if (mConnectionReceiver == null) {
                 mConnectionReceiver = new BaseEvent.ConnectionReceiver();
@@ -228,11 +228,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 } else {
                     Log.e(TAG, "Error, 错误，已经connect过了， 不能再次调用connect。必须先调用disconnect之后才能再次调用connect");
                 }
-                return false;
+                return System.currentTimeMillis()/1000;
             }
             if (TextUtils.isEmpty(mHost)) {
                 Log.e(TAG, "未设置IM_SERVER_HOST!");
-                return false;
+                return 0;
             }
 
             if (useSM4) {
@@ -251,7 +251,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             accountInfo.userName = userName;
 
             userId = userName;
-            boolean initialSuccess = initProto(userName, userPwd);
+            long initialSuccess = initProto(userName, userPwd);
             if (mConnectionStatus != ConnectionStatusConnecting
                 && mConnectionStatus != ConnectionStatusConnected
                 && mConnectionStatus != ConnectionStatusReceiveing) {
@@ -1430,6 +1430,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setUserSetting(int scope, String key, String value, final IGeneralCallback callback) throws RemoteException {
+            if (key == null) {
+                key = "";
+            }
+            if (value == null) {
+                value = "";
+            }
             ProtoLogic.setUserSetting(scope, key, value, new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
@@ -1520,9 +1526,31 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<FriendRequest> getAllFriendRequest() throws RemoteException {
+            List<FriendRequest> out = new ArrayList<>();
+            ProtoFriendRequest[] requests = ProtoLogic.getAllFriendRequest();
+            if (requests != null) {
+                for (ProtoFriendRequest protoFriendRequest : requests) {
+                    out.add(convertProtoFriendRequest(protoFriendRequest));
+                }
+            }
+            return out;
+        }
+
+        @Override
         public FriendRequest getOneFriendRequest(String userId, boolean incomming) throws RemoteException {
             ProtoFriendRequest request = ProtoLogic.getOneFriendRequest(userId, incomming);
             return convertProtoFriendRequest(request);
+        }
+
+        @Override
+        public boolean clearFriendRequest(boolean direction, long beforeTime) throws RemoteException {
+            return ProtoLogic.clearFriendRequest(direction, beforeTime);
+        }
+
+        @Override
+        public boolean deleteFriendRequest(String userId, boolean direction) throws RemoteException {
+            return ProtoLogic.deleteFriendRequest(userId, direction);
         }
 
         @Override
@@ -2114,6 +2142,26 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<ConversationSearchResult> searchConversationEx2(String keyword, int[] conversationTypes, int[] lines, int[] contentTypes, long startTime, long endTime, boolean desc, int limit, int offset, boolean onlyMentionedMsg) throws RemoteException {
+            ProtoConversationSearchresult[] protoResults = ProtoLogic.searchConversationsEx2(keyword, conversationTypes, lines, contentTypes, startTime, endTime, desc, limit, offset, onlyMentionedMsg);
+            List<ConversationSearchResult> output = new ArrayList<>();
+            if (protoResults != null) {
+                for (ProtoConversationSearchresult protoResult : protoResults
+                ) {
+                    ConversationSearchResult result = new ConversationSearchResult();
+                    result.conversation = new Conversation(Conversation.ConversationType.type(protoResult.getConversationType()), protoResult.getTarget(), protoResult.getLine());
+                    result.marchedMessage = convertProtoMessage(protoResult.getMarchedMessage());
+                    result.timestamp = protoResult.getTimestamp();
+                    result.marchedCount = protoResult.getMarchedCount();
+                    output.add(result);
+
+                }
+            }
+
+            return output;
+        }
+
+        @Override
         public List<cn.wildfirechat.message.Message> searchMessage(Conversation conversation, String keyword, boolean desc, int limit, int offset, String withUser) throws RemoteException {
             ProtoMessage[] protoMessages;
             if (conversation == null) {
@@ -2482,9 +2530,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (ProtoGroupMember protoMember : protoGroupMembers) {
                 if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
                     GroupMember member = covertProtoGroupMember(protoMember);
-                        out.add(member);
-                    }
+                    out.add(member);
                 }
+            }
             return out;
         }
 
@@ -3760,7 +3808,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         uploadingMap = null;
     }
 
-    private boolean initProto(String userName, String userPwd) {
+    private long initProto(String userName, String userPwd) {
         AppLogic.setCallBack(this);
         SdtLogic.setCallBack(this);
 

@@ -130,6 +130,7 @@ public class CompositeMessageContent extends MediaMessageContent {
     private void decode(MessagePayload payload, Converter contentConverter) {
         super.decode(payload);
         title = payload.content;
+        this.mediaType = MessageContentMediaType.FILE;
         this.binaryContent = payload.binaryContent;
     }
 

@@ -71,7 +71,7 @@ import android.os.ParcelFileDescriptor;
 // Declare any non-default types here with import statements
 
 interface IRemoteClient {
-    boolean connect(in String userId, in String token);
+    long connect(in String userId, in String token);
     void disconnect(in boolean disablePush, in boolean clearSession);
     void setForeground(in int isForeground);
     void onNetworkChange();
@@ -179,7 +179,10 @@ interface IRemoteClient {
     oneway void setDeviceToken(in String token, in int pushType);
 
     List<FriendRequest> getFriendRequest(in boolean incomming);
+    List<FriendRequest> getAllFriendRequest();
     FriendRequest getOneFriendRequest(in String userId, in boolean incomming);
+    boolean clearFriendRequest(in boolean direction, in long beforeTime);
+    boolean deleteFriendRequest(in String userId, in boolean direction);
     String getFriendAlias(in String userId);
     oneway void setFriendAlias(in String userId, in String alias, in IGeneralCallback callback);
     String getFriendExtra(in String userId);
@@ -216,6 +219,7 @@ interface IRemoteClient {
     void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
     List<ConversationSearchResult> searchConversationEx(in String keyword, in int[] conversationTypes, in int[] lines, in long startTime, in long endTime, in boolean desc, in int limit, in int offset);
+    List<ConversationSearchResult> searchConversationEx2(in String keyword, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long startTime, in long endTime, in boolean desc, in int limit, in int offset, in boolean onlyMentionedMsg);
     List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset, in String withUser);
     List<Message> searchMentionedMessages(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
     List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset, in String withUser);

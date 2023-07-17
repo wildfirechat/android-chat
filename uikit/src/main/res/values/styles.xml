@@ -36,8 +36,15 @@
 
     <!--全屏样式-->
     <style name="AppTheme.FullScreen">
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.TransparentFullScreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
     </style>
 
     <style name="AppThemeDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -76,6 +83,7 @@
         <item name="cornerSizeTopLeft">5dp</item>
         <item name="cornerSizeTopRight">5dp</item>
     </style>
+
     <style name="roundedImageView_8dp" parent="">
         <item name="cornerFamilyTopRight">rounded</item>
         <item name="cornerSize">8dp</item>

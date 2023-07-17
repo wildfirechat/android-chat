@@ -4,6 +4,9 @@
 
 package cn.wildfire.chat.kit.voip;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -14,6 +17,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
+
 /**
  * 支持缩放的FrameLayout
  * <p>
@@ -23,7 +28,10 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
 
     private enum Mode {
         NONE,
+        // 下拉关闭
         DRAG,
+        // 放大之后，拖拽查看
+        DRAG_ZOOM,
         ZOOM
     }
 
@@ -47,6 +55,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     private float prevDy = 0f;
     private int lastX, lastY;
     private OnClickListener onClickListener;
+    private OnDragListener dragListener;
 
     public ZoomableFrameLayout(Context context) {
         super(context);
@@ -71,7 +80,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (child() == null){
+                if (child() == null) {
                     return false;
                 }
                 int y = (int) motionEvent.getY();
@@ -82,15 +91,23 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                         lastX = x;
                         lastY = y;
                         if (scale > MIN_ZOOM) {
-                            mode = Mode.DRAG;
+                            mode = Mode.DRAG_ZOOM;
                             startX = motionEvent.getX() - prevDx;
                             startY = motionEvent.getY() - prevDy;
+                        } else {
+                            mode = Mode.DRAG;
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if (mode == Mode.DRAG) {
+                        if (mode == Mode.DRAG_ZOOM) {
                             dx = motionEvent.getX() - startX;
                             dy = motionEvent.getY() - startY;
+                        } else if (mode == Mode.DRAG) {
+                            float tmp = y - lastY;
+                            setY(tmp);
+                            if (dragListener != null) {
+                                dragListener.onDragOffset(tmp, getViewHeight() / 6);
+                            }
                         }
                         break;
                     case MotionEvent.ACTION_POINTER_DOWN:
@@ -101,6 +118,22 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                         break;
                     case MotionEvent.ACTION_UP:
                         Log.i(TAG, "UP");
+                        if (mode == Mode.DRAG) {
+                            float tmp = y - lastY;
+                            if (Math.abs(tmp) < getViewHeight() / 6) {
+                                new TranslateUpAnimator(ZoomableFrameLayout.this, tmp, 0);
+                            } else {
+                                new TranslateUpAnimator(ZoomableFrameLayout.this, tmp, tmp > 0 ? getViewHeight() : -getViewHeight())
+                                    .addListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            if (dragListener != null) {
+                                                dragListener.onDragToFinish();
+                                            }
+                                        }
+                                    });
+                            }
+                        }
                         mode = Mode.NONE;
                         prevDx = dx;
                         prevDy = dy;
@@ -114,7 +147,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                 }
                 scaleDetector.onTouchEvent(motionEvent);
 
-                if ((mode == Mode.DRAG && scale >= MIN_ZOOM) || mode == Mode.ZOOM) {
+                if ((mode == Mode.DRAG_ZOOM && scale >= MIN_ZOOM) || mode == Mode.ZOOM) {
                     getParent().requestDisallowInterceptTouchEvent(true);
                     float maxDx = child().getWidth() * (scale - 1);  // adjusted for zero pivot
                     float maxDy = child().getHeight() * (scale - 1);  // adjusted for zero pivot
@@ -199,6 +232,10 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
         this.onClickListener = l;
     }
 
+    public void setOnDragListener(OnDragListener dragListener) {
+        this.dragListener = dragListener;
+    }
+
     /**
      * 是否开启缩放，默认开启
      *
@@ -207,5 +244,47 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     public void setEnableZoom(boolean enable) {
         this.enableZoom = enable;
         this.init(getContext());
+    }
+
+    public void reset() {
+        setTranslationX(0);
+        setTranslationX(0);
+    }
+
+    private float getActiveY(MotionEvent event) {
+        try {
+            return event.getY(event.findPointerIndex(0));
+        } catch (Exception e) {
+            return event.getY();
+        }
+    }
+
+    private int getViewHeight() {
+        return getHeight() - getPaddingTop() - getPaddingBottom();
+    }
+
+    private static class TranslateUpAnimator extends ValueAnimator {
+
+        private final WeakReference<ZoomableFrameLayout> mPhotoViewWeakReference;
+
+        TranslateUpAnimator(ZoomableFrameLayout zoomableFrameLayout, float from, float to) {
+            mPhotoViewWeakReference = new WeakReference<>(zoomableFrameLayout);
+            setFloatValues(from, to);
+            addUpdateListener(new AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    if (mPhotoViewWeakReference.get() != null) {
+                        mPhotoViewWeakReference.get().setTranslationY((Float) animation.getAnimatedValue());
+                    }
+                }
+            });
+            start();
+        }
+    }
+
+    public interface OnDragListener {
+        void onDragToFinish();
+
+        void onDragOffset(float offset, float maxOffset);
     }
 }

@@ -4,8 +4,11 @@
 
 package cn.wildfire.chat.kit.user;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -283,6 +286,28 @@ public class UserInfoFragment extends Fragment {
     private static final int REQUEST_CODE_PICK_IMAGE = 100;
 
     void portrait() {
+        String[] permissions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions = new String[]{
+                Manifest.permission.READ_MEDIA_IMAGES,
+            };
+        } else {
+            permissions = new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+            };
+        }
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (String permission : permissions) {
+                if (activity.checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(permissions, 100);
+                    return;
+                }
+            }
+        }
         if (userInfo.uid.equals(userViewModel.getUserId())) {
             updatePortrait();
         } else {
