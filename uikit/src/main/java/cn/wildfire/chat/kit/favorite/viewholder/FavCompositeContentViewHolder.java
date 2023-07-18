@@ -23,12 +23,8 @@ public class FavCompositeContentViewHolder extends FavContentViewHolder {
     public FavCompositeContentViewHolder(@NonNull View itemView) {
         super(itemView);
         bindViews(itemView);
-        bindEvents(itemView);
     }
 
-    private void bindEvents(View itemView) {
-        itemView.findViewById(R.id.contentTextView).setOnClickListener(_v -> showFavText());
-    }
 
     private void bindViews(View itemView) {
         titleTextView = itemView.findViewById(R.id.titleTextView);
@@ -43,7 +39,8 @@ public class FavCompositeContentViewHolder extends FavContentViewHolder {
         contentTextView.setText(compositeMessageContent.compositeDigest());
     }
 
-    void showFavText() {
+    @Override
+    protected void onClick() {
         Intent intent = new Intent(fragment.getContext(), CompositeMessageContentActivity.class);
         intent.putExtra("message", favoriteItem.toMessage());
         fragment.startActivity(intent);

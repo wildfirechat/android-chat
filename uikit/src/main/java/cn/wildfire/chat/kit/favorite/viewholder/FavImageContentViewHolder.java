@@ -21,11 +21,6 @@ public class FavImageContentViewHolder extends FavContentViewHolder {
     public FavImageContentViewHolder(@NonNull View itemView) {
         super(itemView);
         bindViews(itemView);
-        bindEvents(itemView);
-    }
-
-    private void bindEvents(View itemView) {
-        itemView.findViewById(R.id.favImageContentImageView).setOnClickListener(_v -> showFavImage());
     }
 
     private void bindViews(View itemView) {
@@ -39,7 +34,8 @@ public class FavImageContentViewHolder extends FavContentViewHolder {
             .load(item.getUrl()).into(imageView);
     }
 
-    void showFavImage() {
+    @Override
+    protected void onClick() {
         MMPreviewActivity.previewImage(fragment.getActivity(), favoriteItem.getUrl());
     }
 }
