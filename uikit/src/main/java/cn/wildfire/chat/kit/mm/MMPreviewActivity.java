@@ -79,7 +79,8 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     @Override
     public void onDragOffset(float offset, float maxOffset) {
         View view = findViewById(R.id.bgMaskView);
-        view.setAlpha(1 - offset / maxOffset);
+        float alpha = 1 - offset / maxOffset;
+        view.setAlpha(Math.max(alpha, 0.3f));
 
         if (videoPlayButton != null) {
             videoPlayButton.setVisibility(offset != 0.0 ? View.GONE : View.VISIBLE);
