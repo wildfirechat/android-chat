@@ -319,4 +319,6 @@ interface IRemoteClient {
     byte[] decodeSecretChatData(in String targetid, in byte[] mediaData);
 
     oneway void decodeSecretChatDataAsync(in String targetId, in ParcelFileDescriptor pfd, in int length, in IGeneralCallbackInt callback);
+
+    oneway void setDefaultPortraitProviderClass(in String clazz);
 }
