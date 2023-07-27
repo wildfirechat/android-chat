@@ -272,6 +272,8 @@ public class ChatManager {
 
     private Map<String, UserOnlineState> userOnlineStateMap;
 
+    private Class<? extends DefaultPortraitProvider> defaultPortraitProviderClazz;
+
     public enum SearchUserType {
         //模糊搜索displayName，精确搜索name或电话号码
         General(0),
@@ -8540,6 +8542,17 @@ public class ChatManager {
         return content;
     }
 
+    public void setDefaultPortraitProviderClazz(Class<? extends DefaultPortraitProvider> clazz) {
+        this.defaultPortraitProviderClazz = clazz;
+        if (mClient != null) {
+            try {
+                mClient.setDefaultPortraitProviderClass(defaultPortraitProviderClazz.getName());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private boolean checkRemoteService() {
         if (INST != null) {
             if (mClient != null) {
@@ -8730,6 +8743,9 @@ public class ChatManager {
                         }
                     });
 
+                    if (defaultPortraitProviderClazz != null) {
+                        mClient.setDefaultPortraitProviderClass(defaultPortraitProviderClazz.getName());
+                    }
 
                     mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
                         @Override

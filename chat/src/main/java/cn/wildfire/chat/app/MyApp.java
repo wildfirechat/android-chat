@@ -19,6 +19,7 @@ import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentView
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.push.PushService;
+import cn.wildfirechat.remote.ChatManager;
 
 public class MyApp extends BaseApp {
 
@@ -58,6 +59,8 @@ public class MyApp extends BaseApp {
                 OrganizationService organizationService = OrganizationService.Instance();
                 wfcUIKit.setOrganizationServiceProvider(organizationService);
             }
+
+            ChatManager.Instance().setDefaultPortraitProviderClazz(WfcDefaultPortraitProvider.class);
         }
     }
 
