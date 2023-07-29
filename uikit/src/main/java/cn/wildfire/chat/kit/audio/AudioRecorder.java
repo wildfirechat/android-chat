@@ -43,7 +43,7 @@ public class AudioRecorder implements AudioManager.OnAudioFocusChangeListener {
             this.mediaRecorder = new MediaRecorder();
 
             try {
-                int bps = 7950;
+                int bps = 12200;
                 this.mediaRecorder.setAudioSamplingRate(8000);
                 this.mediaRecorder.setAudioEncodingBitRate(bps);
             } catch (Resources.NotFoundException var3) {
