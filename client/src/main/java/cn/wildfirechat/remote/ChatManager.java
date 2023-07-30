@@ -232,6 +232,7 @@ public class ChatManager {
 
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
+    private boolean noUseFts = false;
     private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
 
@@ -1111,6 +1112,22 @@ public class ChatManager {
 
     public boolean isTcpShortLink() {
         return tcpShortLink;
+    }
+
+    /*
+    关闭消息搜索FTS功能，只能在connect前调用
+     */
+    public void noUseFts() {
+        noUseFts = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.noUseFts();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -8603,6 +8620,9 @@ public class ChatManager {
                     }
                     if (tcpShortLink) {
                         mClient.useTcpShortLink();
+                    }
+                    if (noUseFts) {
+                        mClient.noUseFts();
                     }
                     if (checkSignature) {
                         mClient.checkSignature();

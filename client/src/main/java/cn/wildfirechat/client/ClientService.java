@@ -207,6 +207,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
 
+    private boolean noUseFts = false;
+
     private OkHttpClient okHttpClient;
     private ConcurrentHashMap<Long, Call> uploadingMap;
 
@@ -247,6 +249,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             if (tcpShortLink) {
                 ProtoLogic.setTcpShortLink();
+            }
+
+            if (noUseFts) {
+                ProtoLogic.noUseFts();
             }
 
             logined = true;
@@ -3365,6 +3371,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void useTcpShortLink() throws RemoteException {
             tcpShortLink = true;
             ProtoLogic.setTcpShortLink();
+        }
+
+        @Override
+        public void noUseFts() throws RemoteException {
+            noUseFts = true;
+            ProtoLogic.noUseFts();
         }
 
 
