@@ -303,6 +303,7 @@ interface IRemoteClient {
     void useSM4();
     void useAES256();
     void useTcpShortLink();
+    void noUseFts();
     void checkSignature();
 
     String getProtoRevision();
