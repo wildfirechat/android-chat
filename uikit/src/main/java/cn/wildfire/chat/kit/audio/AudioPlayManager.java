@@ -43,24 +43,23 @@ public class AudioPlayManager implements SensorEventListener {
     }
 
     @Override
-    @TargetApi(11)
     public void onSensorChanged(SensorEvent event) {
         float range = event.values[0];
         if (this._sensor != null && this._mediaPlayer != null) {
             if (this._mediaPlayer.isPlaying()) {
                 if ((double) range > 0.0D) {
-                    if (this._audioManager.getMode() == 0) {
+                    if (this._audioManager.getMode() == AudioManager.MODE_NORMAL) {
                         return;
                     }
 
-                    this._audioManager.setMode(0);
+                    this._audioManager.setMode(AudioManager.MODE_NORMAL);
                     this._audioManager.setSpeakerphoneOn(true);
                     final int positions = this._mediaPlayer.getCurrentPosition();
 
                     try {
                         this._mediaPlayer.reset();
                         this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        this._mediaPlayer.setVolume(1.0F, 1.0F);
+//                        this._mediaPlayer.setVolume(1.0F, 1.0F);
                         this._mediaPlayer.setDataSource(this.context, this._playingUri);
                         this._mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             public void onPrepared(MediaPlayer mp) {
@@ -80,33 +79,24 @@ public class AudioPlayManager implements SensorEventListener {
                     this.setScreenOn();
                 } else {
                     this.setScreenOff();
-                    if (Build.VERSION.SDK_INT >= 11) {
-                        if (this._audioManager.getMode() == 3) {
-                            return;
-                        }
-
-                        this._audioManager.setMode(3);
-                    } else {
-                        if (this._audioManager.getMode() == 2) {
-                            return;
-                        }
-
-                        this._audioManager.setMode(2);
+                    if (this._audioManager.getMode() == AudioManager.MODE_IN_COMMUNICATION) {
+                        return;
                     }
+
+                    this._audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
 
                     this._audioManager.setSpeakerphoneOn(false);
                     this.replay();
                 }
             } else if ((double) range > 0.0D) {
-                if (this._audioManager.getMode() == 0) {
+                if (this._audioManager.getMode() == AudioManager.MODE_NORMAL) {
                     return;
                 }
 
-                this._audioManager.setMode(0);
+                this._audioManager.setMode(AudioManager.MODE_NORMAL);
                 this._audioManager.setSpeakerphoneOn(true);
                 this.setScreenOn();
             }
-
         }
     }
 
@@ -143,7 +133,7 @@ public class AudioPlayManager implements SensorEventListener {
         try {
             this._mediaPlayer.reset();
             this._mediaPlayer.setAudioStreamType(0);
-            this._mediaPlayer.setVolume(1.0F, 1.0F);
+//            this._mediaPlayer.setVolume(1.0F, 1.0F);
             this._mediaPlayer.setDataSource(this.context, this._playingUri);
             this._mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 public void onPrepared(MediaPlayer mp) {
