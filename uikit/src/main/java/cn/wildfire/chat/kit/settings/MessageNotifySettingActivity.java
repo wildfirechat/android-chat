@@ -22,6 +22,7 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
     SwitchMaterial switchUserReceipt;
     SwitchMaterial switchSyncDraft;
     SwitchMaterial switchPtt;
+    SwitchMaterial switchAudioMessageAmplification;
 
     protected void bindViews() {
         super.bindViews();
@@ -31,6 +32,7 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
         switchUserReceipt = findViewById(R.id.switchUserReceipt);
         switchSyncDraft = findViewById(R.id.switchSyncDraft);
         switchPtt = findViewById(R.id.switchPtt);
+        switchAudioMessageAmplification = findViewById(R.id.switchAudioMessageAmplification);
     }
 
     @Override
@@ -118,6 +120,13 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
         switchSyncDraft.setOnCheckedChangeListener((buttonView, isChecked) -> {
             sp.edit().putBoolean("pttEnabled", isChecked).apply();
             Toast.makeText(this, "开关对讲功能，重新启动应用生效", Toast.LENGTH_SHORT).show();
+        });
+
+        boolean audioMessageAmplificationEnabled = sp.getBoolean("audioMessageAmplificationEnabled", false);
+        switchAudioMessageAmplification.setChecked(audioMessageAmplificationEnabled);
+        switchAudioMessageAmplification.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sp.edit().putBoolean("audioMessageAmplificationEnabled", isChecked).apply();
+            Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION = isChecked;
         });
     }
 }
