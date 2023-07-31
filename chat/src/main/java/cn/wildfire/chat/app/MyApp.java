@@ -61,6 +61,8 @@ public class MyApp extends BaseApp {
             }
 
             ChatManager.Instance().setDefaultPortraitProviderClazz(WfcDefaultPortraitProvider.class);
+
+            Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION = sp.getBoolean("audioMessageAmplificationEnabled", false);
         }
     }
 

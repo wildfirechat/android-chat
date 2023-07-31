@@ -129,7 +129,7 @@
             android:label="黑名单" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.MessageNotifySettingActivity"
-            android:label="新消息通知" />
+            android:label="消息与通知" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.ConversationInfoActivity"
             android:label="会话详情" />
