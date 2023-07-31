@@ -33,7 +33,7 @@ public class ShootExt extends ConversationExt {
      */
     @ExtContextMenuItem
     public void shoot(View containerView, Conversation conversation) {
-        String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
+        String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!((WfcBaseActivity) activity).checkPermission(permissions)) {
                 activity.requestPermissions(permissions, 100);
