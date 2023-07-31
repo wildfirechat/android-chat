@@ -67,7 +67,7 @@ import cn.wildfirechat.remote.OnReceiveMessageListener;
 
 public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnDeleteMessageListener, OnFriendUpdateListener, Application.ActivityLifecycleCallbacks {
 
-    private boolean isBackground = true;
+    private boolean isBackground = false;
     private Application application;
     private static ViewModelProvider viewModelProvider;
     private ViewModelStore viewModelStore;
@@ -111,7 +111,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
             public void onBackground() {
-                isBackground = true;
+//                isBackground = true;
             }
         });
 
