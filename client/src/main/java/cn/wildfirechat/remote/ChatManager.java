@@ -290,6 +290,27 @@ public class ChatManager {
 
         SearchUserType(int value) {
         }
+
+        public static SearchUserType type(int type) {
+            SearchUserType searchUserType = null;
+            switch (type) {
+                case 0:
+                    searchUserType = General;
+                    break;
+                case 1:
+                    searchUserType = NameOrMobile;
+                    break;
+                case 2:
+                    searchUserType = Name;
+                    break;
+                case 3:
+                    searchUserType = Mobile;
+                    break;
+                default:
+                    throw new IllegalArgumentException("type " + searchUserType + " is invalid");
+            }
+            return searchUserType;
+        }
     }
 
     /**
