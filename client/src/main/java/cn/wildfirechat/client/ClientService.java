@@ -3333,6 +3333,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean isEnableUserOnlineState() throws RemoteException {
+            return ProtoLogic.isEnableUserOnlineState();
+        }
+
+        @Override
         public void sendConferenceRequest(long sessionId, String roomId, String request, boolean advanced, String data, IGeneralCallback2 callback) throws RemoteException {
             ProtoLogic.sendConferenceRequest(sessionId, roomId, request, advanced, data, new ProtoLogic.IGeneralCallback2() {
                 @Override
