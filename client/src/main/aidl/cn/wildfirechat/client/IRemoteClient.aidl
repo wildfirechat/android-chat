@@ -299,6 +299,7 @@ interface IRemoteClient {
     boolean isReceiptEnabled();
     boolean isGlobalDisableSyncDraft();
     boolean isEnableSecretChat();
+    boolean isEnableUserOnlineState();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
     void useAES256();
