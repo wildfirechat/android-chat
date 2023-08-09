@@ -62,7 +62,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     public void setMenuVisibility(boolean isvisible) {
         super.setMenuVisibility(isvisible);
         this.isVisibleToUser = isvisible;
-        if (isvisible) {
+        if (isvisible && contactViewModel != null) {
             contactViewModel.reloadContact();
             contactViewModel.reloadFriendRequestStatus();
         }
