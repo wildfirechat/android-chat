@@ -48,12 +48,13 @@ public class AppService implements AppServiceProvider {
     /**
      * App Server默认使用的是8888端口，替换为自己部署的服务时需要注意端口别填错了
      * <br>
+     * 这是个 http 地址，http 前缀不能省略，否则会提示配置错误，然后直接退出
      * <br>
      * 正式商用时，建议用https，确保token安全
      * <br>
      * <br>
      */
-    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://wildfirechat.net:8888";
+    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://wildfirechat.net:8888";
 //    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://app.wildfirechat.net";
 
     private AppService() {

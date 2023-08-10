@@ -4,9 +4,12 @@
 
 package cn.wildfire.chat.kit.mm;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -79,7 +82,8 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     @Override
     public void onDragOffset(float offset, float maxOffset) {
         View view = findViewById(R.id.bgMaskView);
-        view.setAlpha(1 - offset / maxOffset);
+        float alpha = 1 - offset / maxOffset;
+        view.setAlpha(Math.max(alpha, 0.2f));
 
         if (videoPlayButton != null) {
             videoPlayButton.setVisibility(offset != 0.0 ? View.GONE : View.VISIBLE);
@@ -245,7 +249,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
                                         playVideo(targetView, file.getAbsolutePath());
                                     }
-                                    ImageUtils.saveMedia2Album(MMPreviewActivity.this, file, false);
+                                    saveMedia2Album(file, false);
                                 });
                             }
 
@@ -334,8 +338,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
                     }
 
                     if (file.exists()) {
-                        ImageUtils.saveMedia2Album(MMPreviewActivity.this, file, true);
-                        Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+                        saveMedia2Album(file, true);
                     } else {
                         File finalFile = file;
                         DownloadManager.download(entry.getMediaUrl(), file.getParent(), file.getName(), new DownloadManager.SimpleOnDownloadListener() {
@@ -344,8 +347,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
                                 if (isFinishing()) {
                                     return;
                                 }
-                                ImageUtils.saveMedia2Album(MMPreviewActivity.this, finalFile, true);
-                                Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+                                saveMedia2Album(finalFile, true);
                             }
                         });
                     }
@@ -357,12 +359,12 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
 
         if (entry.getThumbnail() != null) {
             GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
-                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
-                .into(photoView);
+                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
+                    .into(photoView);
         } else {
             GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
-                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
-                .into(photoView);
+                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
+                    .into(photoView);
         }
     }
 
@@ -412,6 +414,23 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
             }
         }
         entries = null;
+    }
+
+    private void saveMedia2Album(File file, boolean isImage) {
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            boolean granted = checkSelfPermission(permissions[0]) == PackageManager.PERMISSION_GRANTED;
+            if (granted) {
+                ImageUtils.saveMedia2Album(this, file, isImage);
+                Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MMPreviewActivity.this, "请授权访问外部存储设备权限", Toast.LENGTH_LONG).show();
+                requestPermissions(permissions, 100);
+            }
+        } else {
+            ImageUtils.saveMedia2Album(this, file, isImage);
+            Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+        }
     }
 
     public static void previewMedia(Context context, List<MediaEntry> entries, int current) {

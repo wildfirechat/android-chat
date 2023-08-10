@@ -5,7 +5,6 @@
 package cn.wildfire.chat.kit.audio;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
@@ -29,26 +28,21 @@ public class AudioRecorder implements AudioManager.OnAudioFocusChangeListener {
         this.audioManager = (AudioManager) this.context.getSystemService(Context.AUDIO_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                    .setAcceptsDelayedFocusGain(true)
-                    .setWillPauseWhenDucked(true)
-                    .setOnAudioFocusChangeListener(this, new Handler())
-                    .build();
+                .setAcceptsDelayedFocusGain(true)
+                .setWillPauseWhenDucked(true)
+                .setOnAudioFocusChangeListener(this, new Handler())
+                .build();
             audioManager.requestAudioFocus(audioFocusRequest);
         } else {
             audioManager.requestAudioFocus(this, AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN);
         }
 
         try {
-//            this.audioManager.setMode(0);
             this.mediaRecorder = new MediaRecorder();
 
-            try {
-                int bps = 7950;
-                this.mediaRecorder.setAudioSamplingRate(8000);
-                this.mediaRecorder.setAudioEncodingBitRate(bps);
-            } catch (Resources.NotFoundException var3) {
-                var3.printStackTrace();
-            }
+            int bps = 12200;
+            this.mediaRecorder.setAudioSamplingRate(8000);
+            this.mediaRecorder.setAudioEncodingBitRate(bps);
 
             this.mediaRecorder.setAudioChannels(1);
             this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION);

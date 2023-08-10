@@ -15,7 +15,7 @@ public class Config {
      * <br>
      * <br>
      */
-    public static String IM_SERVER_HOST /*请仔细阅读上面的注释*/ = "wildfirechat.net";
+    public static String IM_SERVER_HOST /*请仔细阅读上面的注释，没有 http 前缀，配置错误时，APP 会提示配置错误，然后直接退出*/ = "wildfirechat.net";
 
     // 注意APP_SERVER_ADDRESS已从kit中移除，移动到了AppService.java中
     //public static String APP_SERVER_ADDRESS = "http://wildfirechat.net:8888";
@@ -95,4 +95,9 @@ public class Config {
     public static String PHOTO_SAVE_DIR;
     public static String FILE_SAVE_DIR;
 
+    // 是否启用自动增大语音消息音量，发送语音消息时，默认录制的音频音量比较小
+    public static boolean ENABLE_AUDIO_MESSAGE_AMPLIFICATION = false;
+
+    // 语音消息音量增大倍数
+    public static int AUDIO_MESSAGE_AMPLIFICATION_FACTOR = 3;
 }

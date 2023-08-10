@@ -232,6 +232,7 @@ public class ChatManager {
 
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
+    private boolean noUseFts = false;
     private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
 
@@ -272,6 +273,8 @@ public class ChatManager {
 
     private Map<String, UserOnlineState> userOnlineStateMap;
 
+    private Class<? extends DefaultPortraitProvider> defaultPortraitProviderClazz;
+
     public enum SearchUserType {
         //模糊搜索displayName，精确搜索name或电话号码
         General(0),
@@ -286,6 +289,27 @@ public class ChatManager {
         Mobile(3);
 
         SearchUserType(int value) {
+        }
+
+        public static SearchUserType type(int type) {
+            SearchUserType searchUserType = null;
+            switch (type) {
+                case 0:
+                    searchUserType = General;
+                    break;
+                case 1:
+                    searchUserType = NameOrMobile;
+                    break;
+                case 2:
+                    searchUserType = Name;
+                    break;
+                case 3:
+                    searchUserType = Mobile;
+                    break;
+                default:
+                    throw new IllegalArgumentException("type " + searchUserType + " is invalid");
+            }
+            return searchUserType;
         }
     }
 
@@ -359,8 +383,7 @@ public class ChatManager {
 
     /**
      * 初始化，只能在主进程调用，否则会导致重复收到消息
-     * serverHost可以是IP，可以是域名，如果是域名的话只支持主域名或www域名，二级域名不支持！
-     * 例如：example.com或www.example.com是支持的；xx.example.com或xx.yy.example.com是不支持的。
+     * serverHost可以是IP，可以是域名
      *
      * @param context
      * @param imServerHost im server的域名或ip
@@ -830,6 +853,17 @@ public class ChatManager {
         }
     }
 
+    public boolean isEnableUserOnlineState() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return mClient.isEnableUserOnlineState();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     /**
      * 添加新消息监听, 记得调用{@link #removeOnReceiveMessageListener(OnReceiveMessageListener)}删除监听
@@ -1109,6 +1143,22 @@ public class ChatManager {
 
     public boolean isTcpShortLink() {
         return tcpShortLink;
+    }
+
+    /*
+    关闭消息搜索FTS功能，只能在connect前调用
+     */
+    public void noUseFts() {
+        noUseFts = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.noUseFts();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -8540,6 +8590,17 @@ public class ChatManager {
         return content;
     }
 
+    public void setDefaultPortraitProviderClazz(Class<? extends DefaultPortraitProvider> clazz) {
+        this.defaultPortraitProviderClazz = clazz;
+        if (mClient != null) {
+            try {
+                mClient.setDefaultPortraitProviderClass(defaultPortraitProviderClazz.getName());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private boolean checkRemoteService() {
         if (INST != null) {
             if (mClient != null) {
@@ -8590,6 +8651,9 @@ public class ChatManager {
                     }
                     if (tcpShortLink) {
                         mClient.useTcpShortLink();
+                    }
+                    if (noUseFts) {
+                        mClient.noUseFts();
                     }
                     if (checkSignature) {
                         mClient.checkSignature();
@@ -8730,6 +8794,9 @@ public class ChatManager {
                         }
                     });
 
+                    if (defaultPortraitProviderClazz != null) {
+                        mClient.setDefaultPortraitProviderClass(defaultPortraitProviderClazz.getName());
+                    }
 
                     mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
                         @Override

@@ -299,10 +299,12 @@ interface IRemoteClient {
     boolean isReceiptEnabled();
     boolean isGlobalDisableSyncDraft();
     boolean isEnableSecretChat();
+    boolean isEnableUserOnlineState();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
     void useAES256();
     void useTcpShortLink();
+    void noUseFts();
     void checkSignature();
 
     String getProtoRevision();
@@ -319,4 +321,6 @@ interface IRemoteClient {
     byte[] decodeSecretChatData(in String targetid, in byte[] mediaData);
 
     oneway void decodeSecretChatDataAsync(in String targetId, in ParcelFileDescriptor pfd, in int length, in IGeneralCallbackInt callback);
+
+    oneway void setDefaultPortraitProviderClass(in String clazz);
 }

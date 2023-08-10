@@ -21,11 +21,6 @@ public class FavVideoContentViewHolder extends FavContentViewHolder {
     public FavVideoContentViewHolder(@NonNull View itemView) {
         super(itemView);
         bindViews(itemView);
-        bindEvents(itemView);
-    }
-
-    private void bindEvents(View itemView) {
-        itemView.findViewById(R.id.favImageContentImageView).setOnClickListener(_v -> showFavVideo());
     }
 
     private void bindViews(View itemView) {
@@ -39,7 +34,8 @@ public class FavVideoContentViewHolder extends FavContentViewHolder {
             .load(item.getUrl()).into(imageView);
     }
 
-    void showFavVideo() {
+    @Override
+    protected void onClick() {
         MMPreviewActivity.previewVideo(fragment.getActivity(), favoriteItem.toMessage());
     }
 }

@@ -34,6 +34,7 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
         senderTextView = itemView.findViewById(R.id.senderTextView);
         timeTextView = itemView.findViewById(R.id.timeTextView);
         itemView.findViewById(R.id.favContentContainerLinearLayout).setOnLongClickListener(v -> this.onLongClick());
+        itemView.findViewById(R.id.favContentContainerLinearLayout).setOnClickListener(v -> this.onClick());
     }
 
     public void bind(Fragment fragment, FavoriteItem item) {
@@ -55,4 +56,7 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
         return true;
     }
 
+    protected void onClick() {
+
+    }
 }

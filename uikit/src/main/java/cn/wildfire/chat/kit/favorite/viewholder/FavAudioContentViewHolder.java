@@ -36,11 +36,6 @@ public class FavAudioContentViewHolder extends FavContentViewHolder {
     public FavAudioContentViewHolder(@NonNull View itemView) {
         super(itemView);
         bindViews(itemView);
-        bindEvents(itemView);
-    }
-
-    private void bindEvents(View itemView) {
-        itemView.findViewById(R.id.audioContentLayout).setOnClickListener(_v -> playAudio());
     }
 
     private void bindViews(View itemView) {
@@ -61,9 +56,10 @@ public class FavAudioContentViewHolder extends FavContentViewHolder {
         contentLayout.setLayoutParams(params);
     }
 
-    void playAudio(){
+    @Override
+    protected void onClick() {
         Message message = favoriteItem.toMessage();
-        uiMessage =new UiMessage(message);
+        uiMessage = new UiMessage(message);
 
         MessageViewModel messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
         File file = DownloadManager.mediaMessageContentFile(message);

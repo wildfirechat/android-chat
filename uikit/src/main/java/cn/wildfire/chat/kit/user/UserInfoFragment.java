@@ -50,6 +50,7 @@ import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.group.GroupMemberMessageHistoryActivity;
+import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.model.EmployeeEx;
 import cn.wildfire.chat.kit.organization.model.Organization;
@@ -286,6 +287,14 @@ public class UserInfoFragment extends Fragment {
     private static final int REQUEST_CODE_PICK_IMAGE = 100;
 
     void portrait() {
+        if (!userInfo.uid.equals(userViewModel.getUserId())) {
+            if (!TextUtils.isEmpty(userInfo.portrait)) {
+                MMPreviewActivity.previewImage(getContext(), userInfo.portrait);
+            } else {
+                Toast.makeText(getActivity(), "用户未设置头像", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
         String[] permissions;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions = new String[]{
@@ -308,11 +317,7 @@ public class UserInfoFragment extends Fragment {
                 }
             }
         }
-        if (userInfo.uid.equals(userViewModel.getUserId())) {
-            updatePortrait();
-        } else {
-            // TODO show big portrait
-        }
+        updatePortrait();
     }
 
     void showOrg() {

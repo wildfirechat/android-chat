@@ -123,6 +123,7 @@ import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.DefaultPortraitProvider;
 import cn.wildfirechat.remote.RecoverReceiver;
 import cn.wildfirechat.remote.UploadMediaCallback;
 import cn.wildfirechat.utils.MemoryFileHelper;
@@ -206,9 +207,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
 
+    private boolean noUseFts = false;
+
     private OkHttpClient okHttpClient;
     private ConcurrentHashMap<Long, Call> uploadingMap;
 
+    private DefaultPortraitProvider defaultPortraitProvider;
 
     private class ClientServiceStub extends IRemoteClient.Stub {
 
@@ -228,7 +232,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 } else {
                     Log.e(TAG, "Error, 错误，已经connect过了， 不能再次调用connect。必须先调用disconnect之后才能再次调用connect");
                 }
-                return System.currentTimeMillis()/1000;
+                return System.currentTimeMillis() / 1000;
             }
             if (TextUtils.isEmpty(mHost)) {
                 Log.e(TAG, "未设置IM_SERVER_HOST!");
@@ -245,6 +249,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             if (tcpShortLink) {
                 ProtoLogic.setTcpShortLink();
+            }
+
+            if (noUseFts) {
+                ProtoLogic.noUseFts();
             }
 
             logined = true;
@@ -3325,6 +3333,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean isEnableUserOnlineState() throws RemoteException {
+            return ProtoLogic.isEnableUserOnlineState();
+        }
+
+        @Override
         public void sendConferenceRequest(long sessionId, String roomId, String request, boolean advanced, String data, IGeneralCallback2 callback) throws RemoteException {
             ProtoLogic.sendConferenceRequest(sessionId, roomId, request, advanced, data, new ProtoLogic.IGeneralCallback2() {
                 @Override
@@ -3363,6 +3376,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void useTcpShortLink() throws RemoteException {
             tcpShortLink = true;
             ProtoLogic.setTcpShortLink();
+        }
+
+        @Override
+        public void noUseFts() throws RemoteException {
+            noUseFts = true;
+            ProtoLogic.noUseFts();
         }
 
 
@@ -3497,6 +3516,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
         }
+
+        public void setDefaultPortraitProviderClass(String clazzName) {
+            try {
+                Class cls = Class.forName(clazzName);
+                defaultPortraitProvider = (DefaultPortraitProvider) cls.newInstance();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static UserOnlineState[] convertProtoUserOnlineStates(ProtoUserOnlineState[] protoUserOnlineStates) {
@@ -3579,7 +3607,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         GroupInfo groupInfo = new GroupInfo();
         groupInfo.target = protoGroupInfo.getTarget();
         groupInfo.name = protoGroupInfo.getName();
-        groupInfo.portrait = protoGroupInfo.getPortrait();
         groupInfo.owner = protoGroupInfo.getOwner();
         groupInfo.type = GroupInfo.GroupType.type(protoGroupInfo.getType());
         groupInfo.memberCount = protoGroupInfo.getMemberCount();
@@ -3592,6 +3619,23 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         groupInfo.searchable = protoGroupInfo.getSearchable();
         groupInfo.historyMessage = protoGroupInfo.getHistoryMessage();
         groupInfo.maxMemberCount = protoGroupInfo.getMaxMemberCount();
+
+        groupInfo.portrait = protoGroupInfo.getPortrait();
+        if (TextUtils.isEmpty(groupInfo.portrait) && defaultPortraitProvider != null) {
+            ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembersByCount(protoGroupInfo.getTarget(), 9);
+            String[] memberIds = new String[protoGroupMembers.length];
+            for (int i = 0; i < protoGroupMembers.length; i++) {
+                memberIds[i] = protoGroupMembers[i].getMemberId();
+            }
+
+            ProtoUserInfo[] pus = ProtoLogic.getUserInfos(memberIds, protoGroupInfo.getTarget());
+            List<UserInfo> userInfos = new ArrayList<>();
+            for (ProtoUserInfo protoUserInfo : pus) {
+                userInfos.add(convertProtoUserInfo(protoUserInfo));
+            }
+            groupInfo.portrait = defaultPortraitProvider.groupDefaultPortrait(groupInfo, userInfos);
+        }
+
         return groupInfo;
     }
 
@@ -3649,8 +3693,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         UserInfo userInfo = new UserInfo();
         userInfo.uid = protoUserInfo.getUid();
         userInfo.name = protoUserInfo.getName();
-
-        userInfo.portrait = protoUserInfo.getPortrait();
         userInfo.deleted = protoUserInfo.getDeleted();
         if (protoUserInfo.getDeleted() > 0) {
             userInfo.displayName = "已删除用户";
@@ -3670,6 +3712,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         userInfo.friendAlias = protoUserInfo.getFriendAlias();
         userInfo.groupAlias = protoUserInfo.getGroupAlias();
 
+        userInfo.portrait = protoUserInfo.getPortrait();
+        if (TextUtils.isEmpty(userInfo.portrait) && defaultPortraitProvider != null) {
+            userInfo.portrait = defaultPortraitProvider.userDefaultPortrait(userInfo);
+        }
         return userInfo;
     }
 

@@ -20,11 +20,6 @@ public class FavTextContentViewHolder extends FavContentViewHolder {
     public FavTextContentViewHolder(@NonNull View itemView) {
         super(itemView);
         bindViews(itemView);
-        bindEvents(itemView);
-    }
-
-    private void bindEvents(View itemView) {
-        itemView.findViewById(R.id.favTextContentTextView).setOnClickListener(_v -> showFavText());
     }
 
     private void bindViews(View itemView) {
@@ -37,7 +32,8 @@ public class FavTextContentViewHolder extends FavContentViewHolder {
         favTextContentTextView.setText(item.getTitle());
     }
 
-    void showFavText() {
+    @Override
+    protected void onClick() {
         WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "收藏内容", favoriteItem.getTitle());
     }
 }

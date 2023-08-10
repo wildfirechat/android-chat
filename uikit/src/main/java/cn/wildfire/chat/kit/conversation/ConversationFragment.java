@@ -647,7 +647,9 @@ public class ConversationFragment extends Fragment implements
             && groupMember.type != GroupMember.GroupMemberType.Manager
             && groupMember.type != GroupMember.GroupMemberType.Allowed) {
             inputPanel.disableInput("全员禁言中");
-        } else {
+        } else if (groupMember.type == GroupMember.GroupMemberType.Muted){
+            inputPanel.disableInput("你已被禁言");
+        }else {
             inputPanel.enableInput();
         }
     }

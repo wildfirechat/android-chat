@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.favorite.viewholder;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -40,5 +41,10 @@ public class FavFileContentViewHolder extends FavContentViewHolder {
         fileNameTextView.setText(fileMessageContent.getName());
         fileSizeTextView.setText(FileUtils.getReadableFileSize(fileMessageContent.getSize()));
         fileIconImageView.setImageResource(FileUtils.getFileTypeImageResId(fileMessageContent.getName()));
+    }
+
+    @Override
+    protected void onClick() {
+        Toast.makeText(fragment.getContext(), "暂不支持预览", Toast.LENGTH_SHORT).show();
     }
 }

@@ -19,6 +19,7 @@ import java.io.File;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfirechat.remote.ChatManager;
 
 public class AudioRecorderPanel implements View.OnTouchListener {
     private int maxDuration = Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * 1000;
@@ -160,7 +161,20 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         if (recordListener != null) {
             long duration = System.currentTimeMillis() - startTime;
             if (duration > minDuration) {
-                recordListener.onRecordSuccess(currentAudioFile, (int) duration / 1000);
+                if (Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION) {
+                    ChatManager.Instance().getWorkHandler().post(() -> {
+                        String louderFile = currentAudioFile + "-amf";
+                        boolean result = AmrVolumeLouder.increaseVolume(currentAudioFile, louderFile, Config.AUDIO_MESSAGE_AMPLIFICATION_FACTOR);
+                        if (result) {
+                            new File(currentAudioFile).delete();
+                            recordListener.onRecordSuccess(louderFile, (int) duration / 1000);
+                        } else {
+                            recordListener.onRecordSuccess(currentAudioFile, (int) duration / 1000);
+                        }
+                    });
+                } else {
+                    recordListener.onRecordSuccess(currentAudioFile, (int) duration / 1000);
+                }
                 hideRecording();
             } else {
                 showTooShortTip();
@@ -299,7 +313,12 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             return;
         }
         // refer to https://www.cnblogs.com/lqminn/archive/2012/10/10/2717904.html
-        int db = 8 * recorder.getMaxAmplitude() / 32768;
+        int db;
+        if (Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION) {
+            db = 8 * recorder.getMaxAmplitude() * Config.AUDIO_MESSAGE_AMPLIFICATION_FACTOR / 32768;
+        } else {
+            db = 8 * recorder.getMaxAmplitude() / 32768;
+        }
         switch (db) {
             case 0:
                 this.stateImageView.setImageResource(R.mipmap.ic_volume_1);
