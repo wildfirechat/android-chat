@@ -78,7 +78,7 @@ public class WfcNotificationManager {
 
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.mipmap.ic_launcher_notification)
             .setAutoCancel(true)
             .setCategory(CATEGORY_MESSAGE)
             .setDefaults(DEFAULT_ALL);

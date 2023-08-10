@@ -229,7 +229,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         } else {
             title = "VOIP...";
         }
-        return builder.setSmallIcon(R.mipmap.ic_launcher)
+        return builder.setSmallIcon(R.mipmap.ic_launcher_notification)
             .setContentTitle(title)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
