@@ -327,16 +327,21 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         }
 
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
-            String userId = ChatManager.Instance().getUserId();
             if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
-                GroupInfo groupInfo = groupViewModel.getGroupInfo(message.conversation.target, false);
-                if (groupInfo != null && userId.equals(groupInfo.owner)) {
+                GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
+                GroupMember fromMember = groupViewModel.getGroupMember(message.conversation.target, message.sender);
+                if (groupMember == null || fromMember == null) {
+                    return true;
+                }
+                // 群主允许撤回所有消息
+                if (groupMember.type == GroupMember.GroupMemberType.Owner) {
                     return false;
                 }
-                GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
-                if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Manager
-                    || groupMember.type == GroupMember.GroupMemberType.Owner)) {
+
+                // 管理员可以测试普通成员的消息
+                if (groupMember.type == GroupMember.GroupMemberType.Manager
+                    && (fromMember.type != GroupMember.GroupMemberType.Owner && fromMember.type != GroupMember.GroupMemberType.Manager)) {
                     return false;
                 }
             }
