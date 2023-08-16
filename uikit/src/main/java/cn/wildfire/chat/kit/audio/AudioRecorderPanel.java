@@ -309,7 +309,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     }
 
     private void updateVolume() {
-        if (isToCancel || recorder == null) {
+        if (isToCancel || recorder == null || this.stateImageView == null) {
             return;
         }
         // refer to https://www.cnblogs.com/lqminn/archive/2012/10/10/2717904.html

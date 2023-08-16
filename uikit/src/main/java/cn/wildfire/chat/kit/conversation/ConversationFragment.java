@@ -240,6 +240,9 @@ public class ConversationFragment extends Fragment implements
         @Override
         public void onChanged(@Nullable UiMessage uiMessage) {
             // 聊天室，对方撤回消息
+            if (conversation == null){
+                return;
+            }
             if (conversation.type == Conversation.ConversationType.ChatRoom && uiMessage.message.conversation == null) {
                 List<UiMessage> messages = adapter.getMessages();
                 for (UiMessage uiMsg : messages) {
