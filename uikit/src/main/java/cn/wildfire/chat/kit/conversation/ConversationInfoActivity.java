@@ -24,6 +24,10 @@ public class ConversationInfoActivity extends WfcBaseActivity {
     @Override
     protected void afterViews() {
         conversationInfo = getIntent().getParcelableExtra("conversationInfo");
+        if (conversationInfo == null) {
+            finish();
+            return;
+        }
         Fragment fragment = null;
         switch (conversationInfo.conversation.type) {
             case Single:
@@ -50,8 +54,8 @@ public class ConversationInfoActivity extends WfcBaseActivity {
             return;
         }
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, fragment)
-                .commit();
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 
     @Override

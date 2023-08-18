@@ -38,7 +38,11 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
     @Override
     protected void afterViews() {
         groupInfo = getIntent().getParcelableExtra("groupInfo");
-        init();
+        if (groupInfo != null) {
+            init();
+        } else {
+            finish();
+        }
     }
 
     private void init() {
@@ -87,7 +91,7 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
             fragment2 = GroupMemberMuteOrAllowListFragment.newInstance(groupInfo, false);
         }
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout2, fragment2)
-                .commit();
+            .replace(R.id.containerFrameLayout2, fragment2)
+            .commit();
     }
 }
