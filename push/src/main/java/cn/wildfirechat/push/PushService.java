@@ -370,7 +370,7 @@ public class PushService {
     }
 
     private void initFCM(Context context) {
-        FirebaseApp.initializeApp(context); // 增加这一行
+        FirebaseApp.initializeApp(context);
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {

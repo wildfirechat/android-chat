@@ -130,7 +130,7 @@ public class ConferenceParticipantListFragment extends Fragment {
     }
 
     private void loadAndShowConferenceParticipants() {
-        if (ChatManager.Instance().getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
+        if (conferenceManager.getCurrentConferenceInfo() != null && ChatManager.Instance().getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
             List<String> applyingUnmuteMembers = conferenceManager.getApplyingUnmuteMembers();
             if (applyingUnmuteMembers.isEmpty()) {
                 applyingUnmuteTextView.setVisibility(View.GONE);
@@ -337,8 +337,8 @@ public class ConferenceParticipantListFragment extends Fragment {
                         desc += "，屏幕共享";
                     }
                 } else {
-                    if (profile.isScreenSharing()){
-                        desc +="屏幕共享";
+                    if (profile.isScreenSharing()) {
+                        desc += "屏幕共享";
                     }
                 }
             }

@@ -126,7 +126,7 @@ public class SettingActivity extends WfcBaseActivity {
             @Override
             public void onUiFailure(int code, String msg) {
                 desc.append("im err: ").append(code).append(" ");
-                Toast.makeText(SettingActivity.this, "访问IM Server失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SettingActivity.this, "访问IM Server失败", Toast.LENGTH_LONG).show();
             }
         });
     }

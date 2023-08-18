@@ -53,6 +53,10 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         groupInfo = getArguments().getParcelable("groupInfo");
         this.message = getArguments().getParcelable("message");
         this.unread = getArguments().getBoolean("unread");
+
+        if (groupInfo == null || message == null) {
+            getActivity().finish();
+        }
     }
 
     @Override
@@ -63,6 +67,9 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
+        if (groupInfo == null) {
+            return;
+        }
         bindViews(view);
         groupMemberListAdapter = new GroupMessageReceiptAdapter(groupInfo);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
