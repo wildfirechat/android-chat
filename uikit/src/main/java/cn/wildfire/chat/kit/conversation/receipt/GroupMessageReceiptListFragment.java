@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversation.receipt;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -86,7 +87,7 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
 
     private void loadAndShowGroupMembers() {
         GroupViewModel groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
-        groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, false).observe(this, userInfos -> {
+        groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, false, this.message.serverTime).observe(this, userInfos -> {
             showContent();
             groupMemberListAdapter.setMembers(filterGroupMember(userInfos, unread));
             groupMemberListAdapter.notifyDataSetChanged();
@@ -97,6 +98,9 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         Map<String, Long> readEntries = ChatManager.Instance().getConversationRead(this.message.conversation);
         List<UserInfo> result = new ArrayList<>();
         for (UserInfo info : userInfos) {
+            if (TextUtils.equals(this.message.sender, info.uid)) {
+                continue;
+            }
             Long readDt = readEntries.get(info.uid);
             if (unread) {
                 if (readDt == null || readDt < message.serverTime) {
