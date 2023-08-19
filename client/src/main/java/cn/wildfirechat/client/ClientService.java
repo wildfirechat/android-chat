@@ -1477,9 +1477,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             android.util.Log.d(TAG, "stargLog");
             Xlog.setConsoleLogOpen(true);
             String path = getLogPath();
-            //wflog为ChatSManager中使用判断日志文件，如果修改需要对应修改
+            // FYI: https://github.com/Tencent/mars/issues/363
+            String xlogMMapDir = getFilesDir().getAbsolutePath() + "/xlog";
             try {
-                Xlog.appenderOpen(Xlog.LEVEL_INFO, AppednerModeAsync, path, path, "wflog", null);
+                //wflog为ChatSManager中使用判断日志文件，如果修改需要对应修改
+                Xlog.appenderOpen(Xlog.LEVEL_INFO, AppednerModeAsync, xlogMMapDir, path, "wflog", null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
