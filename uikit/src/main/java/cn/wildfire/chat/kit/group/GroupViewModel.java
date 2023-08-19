@@ -40,6 +40,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
+import cn.wildfirechat.remote.GetGroupMembersCallback;
 import cn.wildfirechat.remote.GetGroupsCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
@@ -91,12 +92,19 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     }
 
     public MutableLiveData<List<UserInfo>> getGroupMemberUserInfosLiveData(String groupId, boolean refresh) {
+
+        return getGroupMemberUserInfosLiveData(groupId, refresh, Long.MAX_VALUE);
+    }
+
+    public MutableLiveData<List<UserInfo>> getGroupMemberUserInfosLiveData(String groupId, boolean refresh, long joinBeforeDt) {
         MutableLiveData<List<UserInfo>> groupMemberLiveData = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
             List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, refresh);
             List<String> memberIds = new ArrayList<>(members.size());
             for (GroupMember member : members) {
-                memberIds.add(member.memberId);
+                if (member.createDt <= joinBeforeDt) {
+                    memberIds.add(member.memberId);
+                }
             }
             List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
             groupMemberLiveData.postValue(userInfos);
@@ -324,9 +332,16 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
 
     public MutableLiveData<List<GroupMember>> getGroupMembersLiveData(String groupId, boolean refresh) {
         MutableLiveData<List<GroupMember>> data = new MutableLiveData<>();
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, refresh);
-            data.postValue(members);
+        ChatManager.Instance().getGroupMembers(groupId, refresh, new GetGroupMembersCallback() {
+            @Override
+            public void onSuccess(List<GroupMember> groupMembers) {
+                data.postValue(groupMembers);
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                data.postValue(new ArrayList<>());
+            }
         });
 
         return data;
