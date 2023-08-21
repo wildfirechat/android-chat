@@ -31,6 +31,7 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
@@ -4553,9 +4554,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 .build();
         }
 
-        MediaType type = MediaType.parse("application/octet-stream");
         File file = new File(filePath);
-        RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(type, file), callback::onProgress);
+        String extension = MimeTypeMap.getFileExtensionFromUrl(filePath);
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        mimeType = mimeType != null ? mimeType : "application/octet-stream";
+        MediaType mediaType = MediaType.parse(mimeType);
+        RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(mediaType, file), callback::onProgress);
 
         Request request = new Request.Builder().url(uploadUrl).put(fileBody).build();
         Call call = okHttpClient.newCall(request);
@@ -4592,8 +4596,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         File file = new File(filePath);
-        MediaType type = MediaType.parse("application/octet-stream");
-        RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(type, file), callback::onProgress);
+        String extension = MimeTypeMap.getFileExtensionFromUrl(filePath);
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        mimeType = mimeType != null ? mimeType : "application/octet-stream";
+        MediaType mediaType = MediaType.parse(mimeType);
+        RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(mediaType, file), callback::onProgress);
 
         final MultipartBody.Builder mb = new MultipartBody.Builder();
         mb.addFormDataPart("key", key);
