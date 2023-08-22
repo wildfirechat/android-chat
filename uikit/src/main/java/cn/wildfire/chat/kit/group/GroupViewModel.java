@@ -19,7 +19,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.GlideApp;
@@ -30,8 +32,10 @@ import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
+import cn.wildfirechat.message.notification.ModifyGroupSettingsNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -44,9 +48,10 @@ import cn.wildfirechat.remote.GetGroupMembersCallback;
 import cn.wildfirechat.remote.GetGroupsCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
+import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.UploadMediaCallback;
 
-public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener {
+public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener, OnReceiveMessageListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;
     private MutableLiveData<List<GroupMember>> groupMembersUpdateLiveData;
 
@@ -54,12 +59,14 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         super();
         ChatManager.Instance().addGroupInfoUpdateListener(this);
         ChatManager.Instance().addGroupMembersUpdateListener(this);
+        ChatManager.Instance().addOnReceiveMessageListener(this);
     }
 
     @Override
     protected void onCleared() {
         ChatManager.Instance().removeGroupInfoUpdateListener(this);
         ChatManager.Instance().removeGroupMembersUpdateListener(this);
+        ChatManager.Instance().removeOnReceiveMessageListener(this);
     }
 
     public MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData() {
@@ -708,4 +715,16 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         }
     }
 
+    @Override
+    public void onReceiveMessage(List<Message> messages, boolean hasMore) {
+        Set<String> groupIds = new HashSet<>();
+        for (Message msg : messages) {
+            if (msg.content instanceof ModifyGroupSettingsNotificationContent) {
+                groupIds.add(((ModifyGroupSettingsNotificationContent) msg.content).groupId);
+            }
+        }
+        if (groupIds.size() > 0) {
+            ChatManager.Instance().getGroupInfos(new ArrayList<>(groupIds), true);
+        }
+    }
 }
