@@ -605,7 +605,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
                 String filePath = file.getAbsolutePath();
 
-                uploadBigFile(messageId, filePath, MessageContentMediaType.FILE.getValue(), null, new UploadMediaCallback() {
+                String extension = MimeTypeMap.getFileExtensionFromUrl(filePath);
+                String contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                contentType = contentType != null ? contentType : "application/octet-stream";
+                uploadBigFile(messageId, filePath, MessageContentMediaType.FILE.getValue(), contentType, new UploadMediaCallback() {
                     @Override
                     public void onSuccess(String result) {
                         protoMessage.getContent().setRemoteMediaUrl(result);
@@ -4529,9 +4532,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
                 if (serverType == 1) {
                     String[] ss = uploadUrl.split("\\?");
-                    uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, callback);
+                    uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, contentType, callback);
                 } else {
-                    uploadFile(messageId, filePath, uploadUrl, remoteUrl, callback);
+                    uploadFile(messageId, filePath, uploadUrl, remoteUrl, contentType, callback);
                 }
             }
 
@@ -4545,7 +4548,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     // progress, error, success
-    private void uploadFile(long messageId, String filePath, String uploadUrl, String remoteUrl, UploadMediaCallback callback) {
+    private void uploadFile(long messageId, String filePath, String uploadUrl, String remoteUrl, String contentType, UploadMediaCallback callback) {
 
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient.Builder()
@@ -4555,10 +4558,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         File file = new File(filePath);
-        String extension = MimeTypeMap.getFileExtensionFromUrl(filePath);
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        mimeType = mimeType != null ? mimeType : "application/octet-stream";
-        MediaType mediaType = MediaType.parse(mimeType);
+        MediaType mediaType = MediaType.parse(contentType);
         RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(mediaType, file), callback::onProgress);
 
         Request request = new Request.Builder().url(uploadUrl).put(fileBody).build();
@@ -4587,7 +4587,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
     }
 
-    private void uploadQiniu(long messageId, String uploadUrl, String remoteUrl, String token, String key, String filePath, UploadMediaCallback callback) {
+    private void uploadQiniu(long messageId, String uploadUrl, String remoteUrl, String token, String key, String filePath, String contentType, UploadMediaCallback callback) {
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -4596,10 +4596,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         File file = new File(filePath);
-        String extension = MimeTypeMap.getFileExtensionFromUrl(filePath);
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        mimeType = mimeType != null ? mimeType : "application/octet-stream";
-        MediaType mediaType = MediaType.parse(mimeType);
+        MediaType mediaType = MediaType.parse(contentType);
         RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(mediaType, file), callback::onProgress);
 
         final MultipartBody.Builder mb = new MultipartBody.Builder();
