@@ -3716,9 +3716,9 @@ public class ChatManager {
      *
      * @param conversation
      */
-    public void clearUnreadStatus(Conversation conversation) {
+    public boolean clearUnreadStatus(Conversation conversation) {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
 
         try {
@@ -3728,16 +3728,18 @@ public class ChatManager {
                 for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                     listener.onConversationUnreadStatusClear(conversationInfo);
                 }
+                return true;
             }
 
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void clearUnreadStatusEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
+    public boolean clearUnreadStatusEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
         int[] inTypes = new int[conversationTypes.size()];
         int[] inLines = new int[lines.size()];
@@ -3757,10 +3759,12 @@ public class ChatManager {
                         listener.onConversationUnreadStatusClear(info);
                     }
                 }
+                return true;
             }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public boolean markAsUnRead(Conversation conversation, boolean syncToOtherClient) {
@@ -3782,9 +3786,9 @@ public class ChatManager {
         return false;
     }
 
-    public void clearMessageUnreadStatus(long messageId) {
+    public boolean clearMessageUnreadStatus(long messageId) {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
 
         try {
@@ -3795,11 +3799,13 @@ public class ChatManager {
                     for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                         listener.onConversationUnreadStatusClear(conversationInfo);
                     }
+                    return true;
                 }
             }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     /**
@@ -3808,9 +3814,9 @@ public class ChatManager {
      * @param messageId
      * @param conversation
      */
-    public void clearUnreadStatusBeforeMessage(long messageId, Conversation conversation) {
+    public boolean clearUnreadStatusBeforeMessage(long messageId, Conversation conversation) {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
 
         try {
@@ -3821,11 +3827,13 @@ public class ChatManager {
                     for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                         listener.onConversationUnreadStatusClear(conversationInfo);
                     }
+                    return true;
                 }
             }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     /**
