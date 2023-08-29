@@ -5260,6 +5260,33 @@ public class ChatManager {
      * @param callback
      */
     public void uploadMedia(String fileName, byte[] data, int mediaType, final GeneralCallback2 callback) {
+        uploadMedia2(fileName, data, mediaType, new UploadMediaCallback() {
+            @Override
+            public void onSuccess(String result) {
+                callback.onSuccess(result);
+            }
+
+            @Override
+            public void onProgress(long uploaded, long total) {
+
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                callback.onFail(errorCode);
+            }
+        });
+    }
+
+    /**
+     * 上传媒体数据
+     * 开始 TCP 短链接之后，该方法不可用，请使用{@link ChatManager#uploadMediaFile}
+     *
+     * @param data      不能超过1M，为了安全，实际只有900K
+     * @param mediaType 媒体类型，可选值参考{@link cn.wildfirechat.message.MessageContentMediaType}
+     * @param callback
+     */
+    public void uploadMedia2(String fileName, byte[] data, int mediaType, final UploadMediaCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -5288,7 +5315,14 @@ public class ChatManager {
 
                 @Override
                 public void onProgress(final long uploaded, final long total) throws RemoteException {
-
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onProgress(uploaded, total);
+                            }
+                        });
+                    }
                 }
 
                 @Override
