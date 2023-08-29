@@ -5,6 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:autoLink="phone|email|map|web"
+    android:forceDarkAllowed="false"
     android:background="@drawable/img_bubble_send"
     android:gravity="left|center_vertical"
     android:linksClickable="true"
@@ -17,4 +18,5 @@
     tools:text="嗯嗯嗯嗯嗯嗯"
     android:textColor="#ffff"
     android:textColorLink="#3655bf"
-    android:textSize="16sp" />
+    android:textSize="16sp"
+    tools:targetApi="q" />
