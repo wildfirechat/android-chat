@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
@@ -10,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
+        android:forceDarkAllowed="false"
         android:autoLink="phone|email|map|web"
         android:background="@drawable/img_bubble_send"
         android:linksClickable="true"
@@ -21,7 +23,8 @@
         android:paddingBottom="12dp"
         android:text="text "
         android:textColorLink="#3655bf"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        tools:targetApi="q" />
 
     <TextView
         android:id="@+id/refTextView"
