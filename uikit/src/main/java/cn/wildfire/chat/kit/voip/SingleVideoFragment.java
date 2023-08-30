@@ -323,10 +323,11 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     private void init() {
         gEngineKit = ((SingleCallActivity) getActivity()).getEngineKit();
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session == null || AVEngineKit.CallState.Idle == session.getState()) {
+        if (session == null || AVEngineKit.CallState.Idle == session.getState() || session.getParticipantIds() == null || session.getParticipantIds().isEmpty()) {
             getActivity().finish();
             getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } else if (AVEngineKit.CallState.Connected == session.getState()) {
+
             incomingActionContainer.setVisibility(View.GONE);
             outgoingActionContainer.setVisibility(View.GONE);
             connectedActionContainer.setVisibility(View.VISIBLE);
