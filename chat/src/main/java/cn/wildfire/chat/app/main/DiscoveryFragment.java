@@ -33,6 +33,7 @@ import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class DiscoveryFragment extends Fragment {
@@ -114,6 +115,8 @@ public class DiscoveryFragment extends Fragment {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
         // 具体项目中，如果不能隐式启动，可改为下面这种显示启动朋友圈页面
 //        Intent intent = new Intent(getActivity(), FeedListActivity.class);
+        UserInfo userInfo = ChatManager.Instance().getUserInfo(ChatManager.Instance().getUserId(), true);
+        intent.putExtra("userInfo", userInfo);
         startActivity(intent);
     }
 
