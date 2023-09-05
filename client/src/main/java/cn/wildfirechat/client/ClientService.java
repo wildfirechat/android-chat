@@ -579,8 +579,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                             return;
                         }
                     }
-                    if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                        uploadThenSend = true;
+                    if(isSupportBigFilesUpload() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
+                        if(ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024) {
+                            uploadThenSend = true;
+                        }
                     }
                 } else {
                     if (!(msg.content instanceof CompositeMessageContent) && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
