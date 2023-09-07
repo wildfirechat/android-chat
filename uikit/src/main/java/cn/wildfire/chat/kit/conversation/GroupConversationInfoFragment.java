@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.conversation;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
@@ -446,25 +448,48 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     void quitGroup() {
-        if (groupInfo != null && userViewModel.getUserId().equals(groupInfo.owner)) {
-            groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
-                if (aBoolean != null && aBoolean) {
-                    Intent intent = new Intent(getContext().getPackageName() + ".main");
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getActivity(), "解散群组失败", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
-                if (aBoolean != null && aBoolean) {
-                    Intent intent = new Intent(getContext().getPackageName() + ".main");
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (groupInfo == null) {
+            return;
         }
+
+        String title;
+        String content;
+        if (userViewModel.getUserId().equals(groupInfo.owner)) {
+            title = "解散群组";
+            content = "确定解散群组？";
+        } else {
+            title = "退出群组";
+            content = "确定退出群组？";
+        }
+        new AlertDialog.Builder(getActivity())
+            .setTitle(title)
+            .setMessage(content)
+            .setPositiveButton("确定", (dialog, which) -> {
+                if (userViewModel.getUserId().equals(groupInfo.owner)) {
+                    groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
+                        if (aBoolean != null && aBoolean) {
+                            Intent intent = new Intent(getContext().getPackageName() + ".main");
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(getActivity(), "解散群组失败", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
+                        if (aBoolean != null && aBoolean) {
+                            Intent intent = new Intent(getContext().getPackageName() + ".main");
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            })
+            .setNegativeButton("取消", (dialog, which) -> {
+                // do nothing
+            })
+            .show();
     }
 
     void clearMessage() {
