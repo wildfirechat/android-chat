@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.bumptech.glide.Glide;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
@@ -677,10 +678,10 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         for (UserInfo userInfo : userInfos) {
             Drawable drawable;
             try {
-                drawable = GlideApp.with(context).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
+                drawable = Glide.with(context).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
             } catch (Exception e) {
                 e.printStackTrace();
-                drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
+                drawable = Glide.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
             }
             if (drawable instanceof BitmapDrawable) {
                 bitmaps.add(((BitmapDrawable) drawable).getBitmap());

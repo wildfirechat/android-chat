@@ -11,7 +11,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import cn.wildfire.chat.kit.GlideApp;
+import com.bumptech.glide.Glide;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -50,7 +51,7 @@ public class LinkMessageContentViewHolder extends NormalMessageContentViewHolder
         linkMessageContent = (LinkMessageContent) message.message.content;
         titleTextView.setText(linkMessageContent.getTitle());
         descTextView.setText(!TextUtils.isEmpty(linkMessageContent.getContentDigest()) ? linkMessageContent.getContentDigest() : linkMessageContent.getUrl());
-        GlideApp.with(fragment)
+        Glide.with(fragment)
             .load(linkMessageContent.getThumbnailUrl())
             .placeholder(R.mipmap.logo)
             .into(thumbnailImageView);

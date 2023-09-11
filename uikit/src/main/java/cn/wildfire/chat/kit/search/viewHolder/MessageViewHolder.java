@@ -12,7 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import cn.wildfire.chat.kit.GlideApp;
+import com.bumptech.glide.Glide;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -55,7 +56,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
                 senderName = ChatManager.Instance().getUserDisplayName(sender);
             }
             nameTextView.setText(senderName);
-            GlideApp.with(portraitImageView).load(sender.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+            Glide.with(portraitImageView).load(sender.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
         }
         if (message.content instanceof NotificationMessageContent) {
             contentTextView.setText(((NotificationMessageContent) message.content).formatNotification(message));

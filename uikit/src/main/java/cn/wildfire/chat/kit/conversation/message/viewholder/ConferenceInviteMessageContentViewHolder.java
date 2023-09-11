@@ -14,10 +14,10 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -61,7 +61,7 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
         titleTextView.setText(inviteMessageContent.getTitle());
         descTextView.setText(inviteMessageContent.getDesc());
         UserInfo userInfo = ChatManager.Instance().getUserInfo(inviteMessageContent.getHost(), false);
-        GlideApp
+        Glide
             .with(fragment)
             .load(userInfo.portrait)
             .transforms(new CenterCrop(), new RoundedCorners(10))

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
@@ -23,7 +24,6 @@ import org.joda.time.DateTime;
 
 import java.util.List;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.TimeConvertUtils;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
@@ -167,7 +167,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
 
             if (position == 0) {
                 portraitImageView.setVisibility(View.VISIBLE);
-                GlideApp
+                Glide
                     .with(itemView)
                     .load(userInfo.portrait)
                     .transforms(new CenterCrop(), new RoundedCorners(10))
@@ -179,7 +179,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                     portraitImageView.setVisibility(View.INVISIBLE);
                 } else {
                     portraitImageView.setVisibility(View.VISIBLE);
-                    GlideApp
+                    Glide
                         .with(itemView)
                         .load(userInfo.portrait)
                         .transforms(new CenterCrop(), new RoundedCorners(10))
@@ -196,7 +196,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                 videoContentLayout.setVisibility(View.GONE);
 
                 ImageMessageContent imageMessageContent = (ImageMessageContent) content;
-                GlideApp.with(itemView)
+                Glide.with(itemView)
                     .load(imageMessageContent.remoteUrl)
                     .error(new BitmapDrawable(imageMessageContent.getThumbnail()))
                     .into(contentImageView);
@@ -209,7 +209,7 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                 VideoMessageContent videoMessageContent = (VideoMessageContent) content;
                 videoDurationTextView.setText(TimeConvertUtils.formatLongTime(videoMessageContent.getDuration() / 1000));
 
-                GlideApp.with(itemView)
+                Glide.with(itemView)
                     .load(videoMessageContent.getThumbnail())
                     .into(videoThumbnailImageView);
             } else if (content instanceof FileMessageContent) {

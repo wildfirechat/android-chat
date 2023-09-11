@@ -21,8 +21,6 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.GlideRequest;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -105,7 +103,7 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
                 .with(fragment)
                 .load(R.drawable.image_chat_placeholder);
         }
-        GlideRequest<Drawable> request = GlideApp.with(fragment)
+        RequestBuilder<Drawable> request = Glide.with(fragment)
             .load(imagePath)
             .thumbnail(thumbnailRequest)
             .apply(placeholderOptions);

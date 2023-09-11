@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
@@ -319,7 +319,7 @@ public class ConferenceParticipantListFragment extends Fragment {
             UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
             String displayName = ChatManager.Instance().getUserDisplayName(userInfo);
             nameTextView.setText(displayName);
-            GlideApp.with(this.itemView).load(userInfo.portrait).placeholder(R.mipmap.avatar_def)
+            Glide.with(this.itemView).load(userInfo.portrait).placeholder(R.mipmap.avatar_def)
                 .apply(RequestOptions.bitmapTransform(new RoundedCorners(10)))
                 .into(portraitImageView);
 

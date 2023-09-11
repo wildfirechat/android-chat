@@ -21,11 +21,12 @@ import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.bumptech.glide.Glide;
+
 import org.webrtc.StatsReport;
 
 import java.util.List;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
@@ -110,7 +111,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
 
             voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(size, size));
             voipCallItem.getStatusTextView().setText(R.string.connecting);
-            GlideApp.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+            Glide.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
             audioContainerGridLayout.addView(voipCallItem);
         }
     }
@@ -215,7 +216,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
                 voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
 
                 voipCallItem.getStatusTextView().setText(R.string.connecting);
-                GlideApp.with(voipCallItem).load(info.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+                Glide.with(voipCallItem).load(info.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
                 audioContainerGridLayout.addView(voipCallItem, i);
                 break;
             }

@@ -15,11 +15,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 
 import java.util.Collections;
 import java.util.List;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
@@ -129,7 +129,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
         if (groupInfo == null) {
             return;
         }
-        GlideApp.with(this)
+        Glide.with(this)
             .load(groupInfo.portrait)
             .placeholder(R.mipmap.ic_group_chat)
             .into(groupPortraitImageView);

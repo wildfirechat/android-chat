@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
@@ -34,7 +35,6 @@ import java.util.Map;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
@@ -412,7 +412,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             }
         }
         if (portraitImageView != null && portraitUrl != null) {
-            GlideApp
+            Glide
                 .with(fragment)
                 .load(portraitUrl)
                 .transforms(new CenterCrop(), new RoundedCorners(10))

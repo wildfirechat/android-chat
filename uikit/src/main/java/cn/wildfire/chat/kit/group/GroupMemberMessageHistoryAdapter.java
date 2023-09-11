@@ -13,9 +13,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfirechat.message.Message;
@@ -100,7 +101,7 @@ public class GroupMemberMessageHistoryAdapter extends RecyclerView.Adapter<Group
                     senderName = ChatManager.Instance().getUserDisplayName(sender);
                 }
                 nameTextView.setText(senderName);
-                GlideApp.with(portraitImageView).load(sender.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+                Glide.with(portraitImageView).load(sender.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
             }
             if (message.content instanceof NotificationMessageContent) {
                 contentTextView.setText(((NotificationMessageContent) message.content).formatNotification(message));

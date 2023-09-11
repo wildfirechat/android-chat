@@ -5,7 +5,6 @@
 package cn.wildfire.chat.kit.conversation;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -30,6 +29,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.lqr.imagepicker.ImagePicker;
@@ -43,7 +43,6 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -258,7 +257,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     this.groupInfo = groupInfo;
                     groupNameOptionItemView.setDesc(groupInfo.name);
                     groupRemarkOptionItemView.setDesc(groupInfo.remark);
-                    GlideApp.with(this).load(groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
+                    Glide.with(this).load(groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
                     loadAndShowGroupMembers(false);
                     break;
                 }
@@ -312,7 +311,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
         myGroupNickNameOptionItemView.setDesc(groupMember.alias);
         groupNameOptionItemView.setDesc(groupInfo.name);
-        GlideApp.with(this).load(groupInfo.portrait).transform(new RoundedCorners(5)).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
+        Glide.with(this).load(groupInfo.portrait).transform(new RoundedCorners(5)).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
         groupRemarkOptionItemView.setDesc(groupInfo.remark);
 
         stickTopSwitchButton.setChecked(conversationInfo.top > 0);
