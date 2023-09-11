@@ -12,7 +12,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
@@ -45,7 +44,11 @@ public class ForwardMessageAction extends MultiMessageAction {
     }
 
     private void forwardOneByOne(List<UiMessage> messages) {
-        ArrayList<Message> msgs = messages.stream().map(uiMessage -> uiMessage.message).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<Message> msgs = new ArrayList<>();
+        for (UiMessage uiMessage : messages) {
+            Message message = uiMessage.message;
+            msgs.add(message);
+        }
         Intent intent = new Intent(fragment.getContext(), ForwardActivity.class);
         intent.putExtra("messages", msgs);
         fragment.startActivity(intent);
@@ -63,7 +66,11 @@ public class ForwardMessageAction extends MultiMessageAction {
             title = "群的聊天记录";
         }
         content.setTitle(title);
-        List<Message> msgs = messages.stream().map(uiMessage -> uiMessage.message).collect(Collectors.toList());
+        List<Message> msgs = new ArrayList<>();
+        for (UiMessage uiMessage : messages) {
+            Message message1 = uiMessage.message;
+            msgs.add(message1);
+        }
         content.setMessages(msgs);
         Message message = new Message();
         message.content = content;

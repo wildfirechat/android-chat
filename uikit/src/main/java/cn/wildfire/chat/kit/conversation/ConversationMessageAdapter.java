@@ -168,7 +168,13 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             return;
         }
         oldestMessageUid = newMessages.get(0).message.messageUid;
-        newMessages = newMessages.stream().filter(m -> m.message.messageId != 0).collect(Collectors.toList());
+        List<UiMessage> filteredMsgs = new ArrayList<>();
+        for (UiMessage m : newMessages) {
+            if (m.message.messageId != 0) {
+                filteredMsgs.add(m);
+            }
+        }
+        newMessages = filteredMsgs;
         if (newMessages.isEmpty()) {
             return;
         } else {
