@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
@@ -35,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -210,9 +210,9 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         saveImageView.setVisibility(View.GONE);
 
         if (entry.getThumbnail() != null) {
-            GlideApp.with(photoView).load(entry.getThumbnail()).diskCacheStrategy(diskCacheStrategy).into(photoView);
+            Glide.with(photoView).load(entry.getThumbnail()).diskCacheStrategy(diskCacheStrategy).into(photoView);
         } else {
-            GlideApp.with(photoView).load(entry.getThumbnailUrl()).diskCacheStrategy(diskCacheStrategy).into(photoView);
+            Glide.with(photoView).load(entry.getThumbnailUrl()).diskCacheStrategy(diskCacheStrategy).into(photoView);
         }
 
         VideoView videoView = view.findViewById(R.id.videoView);
@@ -358,11 +358,11 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         }
 
         if (entry.getThumbnail() != null) {
-            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
+            Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
                     .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
                     .into(photoView);
         } else {
-            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
+            Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
                     .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
                     .into(photoView);
         }

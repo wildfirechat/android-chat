@@ -11,10 +11,10 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -46,7 +46,7 @@ public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
         if (TextUtils.isEmpty(portrait)) {
             portrait = ImageUtils.getGroupGridPortrait(fragment.getContext(), groupSearchResult.groupInfo.target, 60);
         }
-        GlideApp
+        Glide
             .with(fragment)
             .load(portrait)
             .placeholder(R.mipmap.ic_group_chat)

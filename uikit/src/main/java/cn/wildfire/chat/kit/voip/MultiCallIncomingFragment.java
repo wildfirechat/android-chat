@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -25,7 +26,6 @@ import org.webrtc.StatsReport;
 
 import java.util.List;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
@@ -76,7 +76,7 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo invitor = userViewModel.getUserInfo(session.initiator, false);
         invitorTextView.setText(invitor.displayName);
-        GlideApp.with(this).load(invitor.portrait).placeholder(R.mipmap.avatar_def).into(invitorImageView);
+        Glide.with(this).load(invitor.portrait).placeholder(R.mipmap.avatar_def).into(invitorImageView);
 
         List<String> participants = session.getParticipantIds();
         participants.remove(invitor.uid);

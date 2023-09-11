@@ -21,9 +21,9 @@ import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.lifecycle.ViewTreeLifecycleOwner;
 import androidx.lifecycle.ViewTreeViewModelStoreOwner;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
@@ -113,7 +113,7 @@ public class ConferenceParticipantItemView extends RelativeLayout {
     }
 
     private void updateParticipantUserInfoViews(UserInfo userInfo) {
-        GlideApp.with(this).load(userInfo.portrait).apply(new RequestOptions().circleCrop()).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+        Glide.with(this).load(userInfo.portrait).apply(new RequestOptions().circleCrop()).placeholder(R.mipmap.avatar_def).into(portraitImageView);
         nameTextView.setText(ChatManager.Instance().getUserDisplayName(userInfo));
     }
 

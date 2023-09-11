@@ -12,7 +12,8 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import cn.wildfire.chat.kit.GlideApp;
+import com.bumptech.glide.Glide;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.GroupInfo;
 
@@ -45,7 +46,7 @@ public class GroupViewHolder extends RecyclerView.ViewHolder {
         this.groupInfo = groupInfo;
         categoryTextView.setVisibility(View.GONE);
         nameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
-        GlideApp.with(fragment).load(this.groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(portraitImageView);
+        Glide.with(fragment).load(this.groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(portraitImageView);
     }
 
     public GroupInfo getGroupInfo() {

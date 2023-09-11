@@ -10,8 +10,9 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import cn.wildfire.chat.kit.*;
-import cn.wildfire.chat.kit.GlideApp;
+import com.bumptech.glide.Glide;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 
@@ -30,7 +31,7 @@ public class FavVideoContentViewHolder extends FavContentViewHolder {
     @Override
     public void bind(Fragment fragment, FavoriteItem item) {
         super.bind(fragment, item);
-        GlideApp.with(itemView)
+        Glide.with(itemView)
             .load(item.getUrl()).into(imageView);
     }
 

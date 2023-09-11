@@ -13,8 +13,9 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import cn.wildfire.chat.kit.*;
-import cn.wildfire.chat.kit.GlideApp;
+import com.bumptech.glide.Glide;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
@@ -54,14 +55,14 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
             if (stickerMessage.localPath.equals(path)) {
                 return;
             }
-            GlideApp.with(fragment).load(stickerMessage.localPath)
+            Glide.with(fragment).load(stickerMessage.localPath)
                 .into(imageView);
             path = stickerMessage.localPath;
         } else {
             CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
             progressDrawable.start();
-            GlideApp.with(fragment)
+            Glide.with(fragment)
                 .load(stickerMessage.remoteUrl)
                 .placeholder(progressDrawable)
                 .into(imageView);

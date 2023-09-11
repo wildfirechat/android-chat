@@ -11,8 +11,9 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import cn.wildfire.chat.kit.*;
-import cn.wildfire.chat.kit.GlideApp;
+import com.bumptech.glide.Glide;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -50,7 +51,7 @@ public class StickerMessageContentViewHolder extends NormalMessageContentViewHol
             if (stickerMessage.localPath.equals(path)) {
                 return;
             }
-            GlideApp.with(fragment).load(stickerMessage.localPath)
+            Glide.with(fragment).load(stickerMessage.localPath)
                 .into(imageView);
             path = stickerMessage.localPath;
         } else {
@@ -61,7 +62,7 @@ public class StickerMessageContentViewHolder extends NormalMessageContentViewHol
             CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
             progressDrawable.start();
-            GlideApp.with(fragment)
+            Glide.with(fragment)
                 .load(imagePath)
                 .placeholder(progressDrawable)
                 .into(imageView);

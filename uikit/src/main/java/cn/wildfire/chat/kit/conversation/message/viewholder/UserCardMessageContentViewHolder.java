@@ -11,10 +11,10 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -58,7 +58,7 @@ public class UserCardMessageContentViewHolder extends NormalMessageContentViewHo
         userCardMessageContent = (CardMessageContent) message.message.content;
         nameTextView.setText(userCardMessageContent.getDisplayName());
         userIdTextView.setText(userCardMessageContent.getName());
-        GlideApp
+        Glide
             .with(fragment)
             .load(userCardMessageContent.getPortrait())
             .transforms(new CenterCrop(), new RoundedCorners(10))

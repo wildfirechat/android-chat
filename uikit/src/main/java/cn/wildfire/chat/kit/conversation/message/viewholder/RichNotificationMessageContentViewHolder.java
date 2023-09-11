@@ -13,8 +13,9 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import cn.wildfire.chat.kit.*;
-import cn.wildfire.chat.kit.GlideApp;
+import com.bumptech.glide.Glide;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -70,7 +71,7 @@ public class RichNotificationMessageContentViewHolder extends NotificationMessag
             CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
             progressDrawable.start();
-            GlideApp.with(fragment)
+            Glide.with(fragment)
                 .load(imagePath)
                 .placeholder(progressDrawable)
                 .into(exPortraitImageView);

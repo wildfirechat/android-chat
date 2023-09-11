@@ -21,12 +21,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.bumptech.glide.Glide;
+
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
 import java.util.List;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
@@ -390,7 +391,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     }
 
     private void updateTargetUserInfoViews(UserInfo userInfo) {
-        GlideApp.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+        Glide.with(this).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
         nameTextView.setText(ChatManager.Instance().getUserDisplayName(userInfo));
     }
 

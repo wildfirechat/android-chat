@@ -22,6 +22,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.model.GroupInfo;
@@ -200,11 +201,11 @@ public class ImageUtils {
 
                             Drawable drawable = null;
                             try {
-                                drawable = GlideApp.with(context).load(info.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
+                                drawable = Glide.with(context).load(info.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 try {
-                                    drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
+                                    drawable = Glide.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
                                 } catch (ExecutionException ex) {
                                     ex.printStackTrace();
                                 } catch (InterruptedException ex) {
