@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.main.SplashActivity;
+import cn.wildfire.chat.app.misc.DiagnoseActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -95,40 +96,8 @@ public class SettingActivity extends WfcBaseActivity {
     }
 
     void diagnose() {
-        Toast.makeText(this, "开始进行网络诊断，请稍后", Toast.LENGTH_SHORT).show();
-        long start = System.currentTimeMillis();
-        StringBuffer desc = new StringBuffer();
-        OKHttpHelper.get(AppService.APP_SERVER_ADDRESS, null, new SimpleCallback<String>() {
-            @Override
-            public void onUiSuccess(String s) {
-                long duration = (System.currentTimeMillis() - start) / 2;
-                desc.append("app ok: ").append(duration).append("ms ");
-                diagnoseOptionItemView.setDesc(desc.toString());
-                Toast.makeText(SettingActivity.this, "APP-SERVER 服务器延迟为：" + duration + "ms", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onUiFailure(int code, String msg) {
-                desc.append("app err: ").append(code).append(" ");
-                diagnoseOptionItemView.setDesc(desc.toString());
-                Toast.makeText(SettingActivity.this, "访问APP Server失败", Toast.LENGTH_LONG).show();
-            }
-        });
-        OKHttpHelper.get("http://" + Config.IM_SERVER_HOST + "/api/version", null, new SimpleCallback<String>() {
-            @Override
-            public void onUiSuccess(String s) {
-                long duration = (System.currentTimeMillis() - start) / 2;
-                desc.append("im ok: ").append(duration).append("ms ");
-                diagnoseOptionItemView.setDesc(desc.toString());
-                Toast.makeText(SettingActivity.this, "IM-SERVER 服务器延迟为：" + duration + "ms", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onUiFailure(int code, String msg) {
-                desc.append("im err: ").append(code).append(" ");
-                Toast.makeText(SettingActivity.this, "访问IM Server失败", Toast.LENGTH_LONG).show();
-            }
-        });
+        Intent intent = new Intent(this, DiagnoseActivity.class);
+        startActivity(intent);
     }
 
     void uploadLog() {

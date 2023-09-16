@@ -546,7 +546,7 @@ public class ChatManager {
      * @param port 服务器port
      */
     private void onConnectToServer(final String host, final String ip, final int port) {
-        Log.e(TAG, "connectToServer " + host + " " + ip + "" + port);
+        Log.e(TAG, "connectToServer " + host + " " + ip + " " + port + " " + getConnectionStatus());
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -7049,6 +7049,7 @@ public class ChatManager {
         }
     }
 
+    // connect host
     public String getHost() {
         if (!checkRemoteService()) {
             return null;
@@ -7062,6 +7063,7 @@ public class ChatManager {
         }
     }
 
+    // shortlink port
     public int getPort() {
         if (!checkRemoteService()) {
             return 80;
@@ -7075,6 +7077,7 @@ public class ChatManager {
         }
     }
 
+    // route host
     public String getHostEx() {
         if (!checkRemoteService()) {
             return null;
