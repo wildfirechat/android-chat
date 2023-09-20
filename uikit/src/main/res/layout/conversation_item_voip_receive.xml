@@ -4,17 +4,20 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/img_bubble_receive"
+    android:backgroundTint="@color/white"
     android:gravity="left|center_vertical"
     android:maxWidth="240dp"
     android:minHeight="40dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp">
+
     <ImageView
         android:id="@+id/callTypeImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingEnd="8dp"
         android:src="@mipmap/ic_msg_cell_video_call" />
+
     <TextView
         android:id="@+id/contentTextView"
         android:layout_width="wrap_content"

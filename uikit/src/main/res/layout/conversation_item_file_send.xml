@@ -5,6 +5,7 @@
     android:layout_height="100dp"
     android:adjustViewBounds="true"
     android:background="@drawable/img_bubble_send_white"
+    android:backgroundTint="@color/white"
     android:padding="10dp"
     android:scaleType="fitCenter">
 

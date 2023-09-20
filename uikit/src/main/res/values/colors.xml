@@ -67,6 +67,7 @@
     <color name="colorPrimaryDark">#3B62E0</color>
     <color name="colorAccent">#7e7e7e</color>
 
+    <color name="lightColorPrimary">#A8BDFF</color>
 <!--    <color name="gray">#D9D9D9</color>-->
 <!--    <color name="theme_body">#cc22292c</color>-->
 <!--    <color name="black">#000000</color>-->
