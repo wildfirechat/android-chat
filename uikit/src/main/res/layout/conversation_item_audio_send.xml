@@ -19,8 +19,8 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
-        android:forceDarkAllowed="false"
         android:background="@drawable/img_bubble_send"
+        android:backgroundTint="@color/lightColorPrimary"
         tools:targetApi="q">
 
         <ImageView
