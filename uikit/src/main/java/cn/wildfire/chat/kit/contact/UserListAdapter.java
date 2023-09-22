@@ -33,6 +33,7 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<HeaderValueWrapper> headerValues;
     private List<FooterValueWrapper> footerValues;
     protected OnUserClickListener onUserClickListener;
+    protected OnUserLongClickListener onUserLongClickListener;
     protected OnHeaderClickListener onHeaderClickListener;
     protected OnFooterClickListener onFooterClickListener;
 
@@ -65,6 +66,10 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setOnUserClickListener(OnUserClickListener onUserClickListener) {
         this.onUserClickListener = onUserClickListener;
+    }
+
+    public void setOnUserLongClickListener(OnUserLongClickListener onUserLongClickListener) {
+        this.onUserLongClickListener = onUserLongClickListener;
     }
 
     public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener) {
@@ -127,12 +132,24 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         itemView.setOnClickListener(v -> {
             if (onUserClickListener != null) {
                 int position = viewHolder.getAdapterPosition();
-                if(favUserCount() > 0 && position - headerCount() < favUserCount()){
+                if (favUserCount() > 0 && position - headerCount() < favUserCount()) {
                     onUserClickListener.onUserClick(favUsers.get(position - headerCount()));
-                }else {
+                } else {
                     onUserClickListener.onUserClick(users.get(position - headerCount() - favUserCount()));
                 }
             }
+        });
+        itemView.setOnLongClickListener(v -> {
+            if (onUserLongClickListener == null) {
+                return false;
+            }
+            int position = viewHolder.getAdapterPosition();
+            if (favUserCount() > 0 && position - headerCount() < favUserCount()) {
+                onUserLongClickListener.onUserLongClick(favUsers.get(position - headerCount()));
+            } else {
+                onUserLongClickListener.onUserLongClick(users.get(position - headerCount() - favUserCount()));
+            }
+            return true;
         });
         return viewHolder;
     }
@@ -144,9 +161,9 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof UserViewHolder) {
-            if(favUserCount() > 0 && position - headerCount() < favUserCount()){
+            if (favUserCount() > 0 && position - headerCount() < favUserCount()) {
                 ((UserViewHolder) holder).onBind(favUsers.get(position - headerCount()));
-            }else {
+            } else {
                 ((UserViewHolder) holder).onBind(users.get(position - headerCount() - favUserCount()));
             }
         } else if (holder instanceof HeaderViewHolder) {
@@ -186,7 +203,7 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void updateHeader(int index, HeaderValue value) {
-        if (headerValues == null){
+        if (headerValues == null) {
             return;
         }
         HeaderValueWrapper wrapper = headerValues.get(index);
@@ -227,6 +244,10 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public interface OnUserClickListener {
         void onUserClick(UIUserInfo userInfo);
+    }
+
+    public interface OnUserLongClickListener {
+        void onUserLongClick(UIUserInfo userInfo);
     }
 
     public interface OnHeaderClickListener {

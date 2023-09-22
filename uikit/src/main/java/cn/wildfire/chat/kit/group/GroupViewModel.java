@@ -222,12 +222,12 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         ChatManager.Instance().muteGroupMember(groupId, mute, memberIds, lines, notifyMsg, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                result.setValue(new OperateResult<>(0));
+                result.setValue(new OperateResult<>(true, 0));
             }
 
             @Override
             public void onFail(int errorCode) {
-                result.setValue(new OperateResult<>(errorCode));
+                result.setValue(new OperateResult<>(false, errorCode));
             }
         });
         return result;
@@ -238,12 +238,12 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         ChatManager.Instance().allowGroupMember(groupId, allow, memberIds, lines, notifyMsg, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                result.setValue(new OperateResult<>(0));
+                result.setValue(new OperateResult<>(true, 0));
             }
 
             @Override
             public void onFail(int errorCode) {
-                result.setValue(new OperateResult<>(errorCode));
+                result.setValue(new OperateResult<>(false, errorCode));
             }
         });
         return result;
