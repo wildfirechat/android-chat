@@ -26,11 +26,9 @@ public class AmrVolumeLouder {
         boolean result = false;
         try (
             FileInputStream in = new FileInputStream(inFile);
-            FileOutputStream out = new FileOutputStream(outFile);
+            FileOutputStream out = new FileOutputStream(outFile)
         ) {
-            outFile.deleteOnExit();
             outFile.createNewFile();
-
 
             byte[] amrHead = new byte[6];// amr head 6 bytes
 
@@ -69,12 +67,12 @@ public class AmrVolumeLouder {
                 AmrEncoder.encode(mMode, pcmFrame, amrFrame);
                 out.write(amrFrame);
             }
-            AmrEncoder.exit();
-            in.close();
             out.flush();
             result = true;
         } catch (Throwable e) {
             e.printStackTrace();
+        } finally {
+            AmrEncoder.exit();
         }
         return result;
     }

@@ -96,7 +96,7 @@ public class Config {
     public static String FILE_SAVE_DIR;
 
     // 是否启用自动增大语音消息音量，发送语音消息时，默认录制的音频音量比较小
-    public static boolean ENABLE_AUDIO_MESSAGE_AMPLIFICATION = false;
+    public static boolean ENABLE_AUDIO_MESSAGE_AMPLIFICATION = true;
 
     // 语音消息音量增大倍数
     public static int AUDIO_MESSAGE_AMPLIFICATION_FACTOR = 3;
