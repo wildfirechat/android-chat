@@ -58,8 +58,8 @@
     </LinearLayout>
 
     <View
-        android:visibility="gone"
         style="@style/Line"
-        android:layout_marginLeft="68dp" />
+        android:layout_marginLeft="68dp"
+        android:visibility="visible" />
 
 </LinearLayout>
