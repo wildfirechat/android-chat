@@ -76,6 +76,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private static WfcUIKit wfcUIKit;
     private boolean isSupportMoment = false;
     private WeakReference<Activity> currentActivityWrf;
+    private boolean enableNativeNotification = false;
 
     private WfcUIKit() {
     }
@@ -99,7 +100,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             public void onForeground() {
-                WfcNotificationManager.getInstance().clearAllNotification(application);
+                if (enableNativeNotification) {
+                    WfcNotificationManager.getInstance().clearAllNotification(application);
+                }
                 isBackground = false;
 
                 // 处理没有后台弹出界面权限
@@ -124,6 +127,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         application.registerActivityLifecycleCallbacks(this);
 
         Log.d("WfcUIKit", "init end");
+    }
+
+    public void setEnableNativeNotification(boolean enable) {
+        this.enableNativeNotification = enable;
     }
 
     public boolean isSupportMoment() {
@@ -369,7 +376,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 }
             }
 
-            WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
+            if (enableNativeNotification) {
+                WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
+            }
         } else {
             // do nothing
         }
@@ -377,14 +386,14 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void onRecallMessage(Message message) {
-        if (isBackground) {
+        if (isBackground && enableNativeNotification) {
             WfcNotificationManager.getInstance().handleRecallMessage(application, message);
         }
     }
 
     @Override
     public void onDeleteMessage(Message message) {
-        if (isBackground) {
+        if (isBackground && enableNativeNotification) {
             WfcNotificationManager.getInstance().handleDeleteMessage(application, message);
         }
     }
@@ -397,7 +406,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void onFriendRequestUpdate(List<String> newRequests) {
-        if (isBackground) {
+        if (isBackground && enableNativeNotification) {
             if (newRequests == null || newRequests.isEmpty()) {
                 return;
             }
