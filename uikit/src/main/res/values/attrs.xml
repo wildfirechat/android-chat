@@ -21,11 +21,13 @@
         <attr name="title_color" format="color" />
         <attr name="badge_count" format="integer" />
         <attr name="start_src" format="reference|color" />
+        <attr name="start_tint" format="color" />
         <attr name="end_src" format="reference|color" />
         <attr name="desc" format="string" />
         <attr name="desc_size" format="dimension" />
         <attr name="desc_color" format="color" />
         <attr name="show_arrow_indicator" format="boolean" />
+        <attr name="show_divider" format="boolean" />
         <attr name="divider_align_to_title" format="boolean" />
     </declare-styleable>
 
