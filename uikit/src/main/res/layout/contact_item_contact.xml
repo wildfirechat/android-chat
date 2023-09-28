@@ -68,8 +68,8 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:text="wfc desc"
-                android:textColor="@color/black1"
-                android:textSize="14sp"
+                android:textColor="@color/gray11"
+                android:textSize="11sp"
                 android:visibility="gone" />
         </LinearLayout>
 
