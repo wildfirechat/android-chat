@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -156,6 +158,9 @@ public class ConversationFragment extends Fragment implements
 
     private Map<String, Message> typingMessageMap;
 
+    private String backgroundImageUri = null;
+    private int backgroundImageResId = 0;
+
     private Observer<UiMessage> messageLiveDataObserver = new Observer<UiMessage>() {
         @Override
         public void onChanged(@Nullable UiMessage uiMessage) {
@@ -240,7 +245,7 @@ public class ConversationFragment extends Fragment implements
         @Override
         public void onChanged(@Nullable UiMessage uiMessage) {
             // 聊天室，对方撤回消息
-            if (conversation == null){
+            if (conversation == null) {
                 return;
             }
             if (conversation.type == Conversation.ConversationType.ChatRoom && uiMessage.message.conversation == null) {
@@ -455,6 +460,7 @@ public class ConversationFragment extends Fragment implements
             this.recyclerView.setAdapter(this.adapter);
         }
 
+        // TODO 要支持在线状态是才监听
         if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
             || conversation.type == Conversation.ConversationType.Group) {
             userOnlineStateViewModel.watchUserOnlineState(conversation.type.getValue(), new String[]{conversation.target});
@@ -562,6 +568,12 @@ public class ConversationFragment extends Fragment implements
         userOnlineStateViewModel = ViewModelProviders.of(this).get(UserOnlineStateViewModel.class);
         userOnlineStateViewModel.getUserOnlineStateLiveData().observe(getViewLifecycleOwner(), userOnlineStateLiveDataObserver);
 
+
+        if (backgroundImageUri != null) {
+            setConversationBackgroundImage(backgroundImageUri);
+        } else if (backgroundImageResId != 0) {
+            setConversationBackgroundImage(backgroundImageResId);
+        }
     }
 
     private void setupConversation(Conversation conversation) {
@@ -607,6 +619,28 @@ public class ConversationFragment extends Fragment implements
         setTitle();
     }
 
+    public void setConversationBackgroundImage(String uri) {
+        if (rootLinearLayout == null) {
+            this.backgroundImageUri = uri;
+            return;
+        }
+        ScrollView scrollView = rootLinearLayout.findViewById(R.id.conversationBackgroundScrollView);
+        ImageView imageView = rootLinearLayout.findViewById(R.id.conversationBackgroundImageView);
+        scrollView.setVisibility(View.VISIBLE);
+        Glide.with(this).load(uri).into(imageView);
+    }
+
+    public void setConversationBackgroundImage(int drawableId) {
+        if (rootLinearLayout == null) {
+            this.backgroundImageResId = drawableId;
+            return;
+        }
+        ScrollView scrollView = rootLinearLayout.findViewById(R.id.conversationBackgroundScrollView);
+        ImageView imageView = rootLinearLayout.findViewById(R.id.conversationBackgroundImageView);
+        scrollView.setVisibility(View.VISIBLE);
+        Glide.with(this).load(backgroundImageResId).into(imageView);
+    }
+
     private void loadMessage(long focusMessageId) {
 
         MutableLiveData<List<UiMessage>> messages;
@@ -650,9 +684,9 @@ public class ConversationFragment extends Fragment implements
             && groupMember.type != GroupMember.GroupMemberType.Manager
             && groupMember.type != GroupMember.GroupMemberType.Allowed) {
             inputPanel.disableInput("全员禁言中");
-        } else if (groupMember.type == GroupMember.GroupMemberType.Muted){
+        } else if (groupMember.type == GroupMember.GroupMemberType.Muted) {
             inputPanel.disableInput("你已被禁言");
-        }else {
+        } else {
             inputPanel.enableInput();
         }
     }
