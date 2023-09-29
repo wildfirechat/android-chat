@@ -92,7 +92,7 @@ public class MeFragment extends Fragment {
         view.findViewById(R.id.accountOptionItemView).setOnClickListener(v -> account());
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(v -> files());
         view.findViewById(R.id.themeOptionItemView).setOnClickListener(v -> theme());
-        view.findViewById(R.id.settintOptionItemView).setOnClickListener(v -> setting());
+        view.findViewById(R.id.settingOptionItemView).setOnClickListener(v -> setting());
         view.findViewById(R.id.notificationOptionItemView).setOnClickListener(v -> msgNotifySetting());
         view.findViewById(R.id.conversationOptionItemView).setOnClickListener(v -> conversationSetting());
     }
@@ -103,7 +103,7 @@ public class MeFragment extends Fragment {
         nameTextView = view.findViewById(R.id.nameTextView);
         accountTextView = view.findViewById(R.id.accountTextView);
         notificationOptionItem = view.findViewById(R.id.notificationOptionItemView);
-        settingOptionItem = view.findViewById(R.id.settintOptionItemView);
+        settingOptionItem = view.findViewById(R.id.settingOptionItemView);
         conversationOptionItem = view.findViewById(R.id.conversationOptionItemView);
         fileRecordOptionItem = view.findViewById(R.id.fileRecordOptionItemView);
     }
