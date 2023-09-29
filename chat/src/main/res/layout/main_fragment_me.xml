@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray5"
@@ -95,16 +96,17 @@
         <View
             style="@style/Line"
             android:layout_marginLeft="50dp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/conversationOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
+            android:visibility="gone"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_create_group_chat"
             app:start_tint="@color/colorPrimary"
-            app:title="聊天" />
+            app:title="聊天背景" />
 
     </LinearLayout>
 
@@ -138,23 +140,33 @@
             app:title="收藏" />
     </LinearLayout>
 
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/themeOptionItemView"
-        style="@style/OptionItem"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_theme"
-        app:title="主题" />
+        android:background="@color/white"
+        android:orientation="vertical">
 
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/settintOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        android:clickable="true"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_setting"
-        app:title="@string/setting" />
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/themeOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_theme"
+            app:title="主题" />
 
+        <View
+            style="@style/Line"
+            android:layout_marginLeft="50dp"
+            android:visibility="visible" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/settingOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            android:clickable="true"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_setting"
+            app:title="@string/setting" />
+    </LinearLayout>
 </LinearLayout>
