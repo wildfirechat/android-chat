@@ -28,6 +28,6 @@ public class PushMessageReceiverImpl extends OpenClientPushMessageReceiver {
     public void onReceiveRegId(Context context, String regId) {
         String responseString = "onReceiveRegId regId = " + regId;
         Log.d(TAG, responseString);
-        ChatManager.Instance().setDeviceToken(regId, PushService.PushServiceType.VIVO.ordinal());
+        ChatManager.Instance().setDeviceToken(regId, PushService.PushServiceType.VIVO);
     }
 }

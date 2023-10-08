@@ -7,9 +7,6 @@ import androidx.annotation.NonNull;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.json.JSONException;
-
-import cn.wildfirechat.push.AndroidPushMessage;
 import cn.wildfirechat.push.PushService;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -17,7 +14,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
-        ChatManager.Instance().setDeviceToken(s, PushService.PushServiceType.Google.ordinal());
+        ChatManager.Instance().setDeviceToken(s, PushService.PushServiceType.Google);
     }
 
     @Override
