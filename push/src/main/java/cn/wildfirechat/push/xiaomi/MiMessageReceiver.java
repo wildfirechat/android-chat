@@ -119,7 +119,7 @@ public class MiMessageReceiver extends PushMessageReceiver {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
                 try {
-                    ChatManager.Instance().setDeviceToken(mRegId, PushService.PushServiceType.Xiaomi.ordinal());
+                    ChatManager.Instance().setDeviceToken(mRegId, PushService.PushServiceType.Xiaomi);
                 } catch (NotInitializedExecption notInitializedExecption) {
                     notInitializedExecption.printStackTrace();
                 }
