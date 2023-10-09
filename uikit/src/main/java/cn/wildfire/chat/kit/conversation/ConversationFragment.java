@@ -76,8 +76,10 @@ import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MultiCallOngoingMessageContent;
+import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
@@ -266,9 +268,51 @@ public class ConversationFragment extends Fragment implements
                 if (isDisplayableMessage(uiMessage)) {
                     adapter.updateMessage(uiMessage);
                 }
+                if (uiMessage.progress == 100) {
+                    uiMessage.progress = 0;
+                    messageViewModel.playAudioMessage(uiMessage);
+                }
+                if (uiMessage.audioPlayCompleted) {
+                    uiMessage.audioPlayCompleted = false;
+                    if (uiMessage.continuousPlayAudio) {
+                        uiMessage.continuousPlayAudio = false;
+                        playNextAudioMessage(uiMessage);
+                    }
+                }
             }
         }
     };
+
+    private void playNextAudioMessage(UiMessage uiMessage) {
+        List<UiMessage> messages = adapter.getMessages();
+        boolean found = false;
+        UiMessage toPlayAudioMessage = null;
+        for (int i = 0; i < messages.size(); i++) {
+            UiMessage uimsg = messages.get(i);
+            if (found) {
+                if (uimsg.message.content instanceof SoundMessageContent && uimsg.message.status != MessageStatus.Played) {
+                    toPlayAudioMessage = uimsg;
+                    break;
+                }
+            } else {
+                if (uimsg.message.messageUid == uiMessage.message.messageUid) {
+                    found = true;
+                }
+            }
+        }
+        if (toPlayAudioMessage != null) {
+            File file = DownloadManager.mediaMessageContentFile(toPlayAudioMessage.message);
+            if (file == null) {
+                return;
+            }
+            toPlayAudioMessage.continuousPlayAudio = true;
+            if (file.exists()) {
+                messageViewModel.playAudioMessage(toPlayAudioMessage);
+            } else {
+                messageViewModel.downloadMedia(toPlayAudioMessage, file);
+            }
+        }
+    }
 
     private Observer<UiMessage> messageRemovedLiveDataObserver = new Observer<UiMessage>() {
         @Override
