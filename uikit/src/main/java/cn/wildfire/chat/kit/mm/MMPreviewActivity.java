@@ -359,12 +359,12 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
 
         if (entry.getThumbnail() != null) {
             Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
-                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
-                    .into(photoView);
+                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
+                .into(photoView);
         } else {
             Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
-                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
-                    .into(photoView);
+                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
+                .into(photoView);
         }
     }
 
@@ -418,7 +418,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
 
     private void saveMedia2Album(File file, boolean isImage) {
         String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
             boolean granted = checkSelfPermission(permissions[0]) == PackageManager.PERMISSION_GRANTED;
             if (granted) {
                 ImageUtils.saveMedia2Album(this, file, isImage);
