@@ -290,7 +290,9 @@ public class ConversationFragment extends Fragment implements
         for (int i = 0; i < messages.size(); i++) {
             UiMessage uimsg = messages.get(i);
             if (found) {
-                if (uimsg.message.content instanceof SoundMessageContent && uimsg.message.status != MessageStatus.Played) {
+                if (uimsg.message.content instanceof SoundMessageContent
+                    && uimsg.message.direction == MessageDirection.Receive
+                    && uimsg.message.status != MessageStatus.Played) {
                     toPlayAudioMessage = uimsg;
                     break;
                 }
