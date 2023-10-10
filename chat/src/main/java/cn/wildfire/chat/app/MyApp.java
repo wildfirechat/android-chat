@@ -48,6 +48,7 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             // Config.IM_SERVER_HOST = "im.example.com";
             WfcUIKit wfcUIKit = WfcUIKit.getWfcUIKit();
             wfcUIKit.init(this);
+            wfcUIKit.setEnableNativeNotification(true);
             wfcUIKit.setAppServiceProvider(AppService.Instance());
             PushService.init(this, BuildConfig.APPLICATION_ID);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
