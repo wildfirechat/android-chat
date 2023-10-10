@@ -264,7 +264,7 @@
         <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />
         <activity
             android:name="cn.wildfire.chat.moment.FeedListActivity"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="${packageName}.moment" />
                 <category android:name="android.intent.category.DEFAULT" />
