@@ -19,7 +19,6 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
-import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -56,10 +55,6 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
         } else {
             name = "群聊";
             portrait = null;
-        }
-
-        if (TextUtils.isEmpty(portrait)) {
-            portrait = ImageUtils.getGroupGridPortrait(getFragment().getContext(), conversationInfo.conversation.target, 60);
         }
 
        Glide
