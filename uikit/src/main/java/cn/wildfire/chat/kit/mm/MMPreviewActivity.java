@@ -230,12 +230,19 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
             public void onClick(View v) {
                 videoPlayButton.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
-                    File videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    File videoFile;
+                    if (entry.getMessage() != null) {
+                        videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    } else {
+                        String name = DownloadManager.getNameFromUrl(entry.getMediaUrl());
+                        name = TextUtils.isEmpty(name) ? System.currentTimeMillis() + "" : name;
+                        videoFile = new File(Config.VIDEO_SAVE_DIR, name);
+                    }
                     if (videoFile == null) {
                         return;
                     }
                     if (!videoFile.exists() || secret) {
-                        String tag = entry.getMessage().messageUid + "";
+                        String tag = System.currentTimeMillis() + "";
                         view.setTag(tag);
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
