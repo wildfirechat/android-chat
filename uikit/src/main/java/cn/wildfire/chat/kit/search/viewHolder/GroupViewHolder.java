@@ -16,7 +16,6 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupSearchResult;
@@ -43,9 +42,6 @@ public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
         GroupInfo groupInfo = groupSearchResult.groupInfo;
         nameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
         String portrait = groupSearchResult.groupInfo.portrait;
-        if (TextUtils.isEmpty(portrait)) {
-            portrait = ImageUtils.getGroupGridPortrait(fragment.getContext(), groupSearchResult.groupInfo.target, 60);
-        }
         Glide
             .with(fragment)
             .load(portrait)
