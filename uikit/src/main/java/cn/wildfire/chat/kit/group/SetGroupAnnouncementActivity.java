@@ -27,7 +27,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
 
     private MenuItem confirmMenuItem;
     private GroupInfo groupInfo;
-
+    private GroupAnnouncement currentGroupAnnouncement;
 
     protected void bindViews() {
         super.bindViews();
@@ -64,6 +64,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
                 if (isFinishing()) {
                     return;
                 }
+                currentGroupAnnouncement = announcement;
                 if (TextUtils.isEmpty(announcementEditText.getText())) {
                     announcementEditText.setText(announcement.text);
                 }
@@ -87,11 +88,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
     @Override
     protected void afterMenus(Menu menu) {
         confirmMenuItem = menu.findItem(R.id.confirm);
-        if (announcementEditText.getText().toString().trim().length() > 0) {
-            confirmMenuItem.setEnabled(true);
-        } else {
-            confirmMenuItem.setEnabled(false);
-        }
+        confirmMenuItem.setEnabled(false);
     }
 
     @Override
@@ -105,7 +102,10 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
 
     void onTextChanged() {
         if (confirmMenuItem != null) {
-            confirmMenuItem.setEnabled(announcementEditText.getText().toString().trim().length() > 0);
+            String text = announcementEditText.getText().toString().trim();
+            if (currentGroupAnnouncement == null || !TextUtils.equals(text, currentGroupAnnouncement.text)) {
+                confirmMenuItem.setEnabled(true);
+            }
         }
     }
 
