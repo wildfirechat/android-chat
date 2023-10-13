@@ -67,7 +67,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                Toast.makeText(SetGroupAnnouncementActivity.this, "获取群公告失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SetGroupAnnouncementActivity.this, msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
