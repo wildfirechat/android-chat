@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.group;
 
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.widget.LengthFilter;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.GroupInfo;
 
@@ -30,6 +32,11 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
     protected void bindViews() {
         super.bindViews();
         announcementEditText = findViewById(R.id.announcementEditText);
+        announcementEditText.setFilters(new InputFilter[]{
+            new LengthFilter(2000, maxTextLength -> {
+                Toast.makeText(this, "群公告最多允许 2000 个字符", Toast.LENGTH_SHORT).show();
+            })
+        });
         announcementEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
@@ -132,4 +139,5 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
             }
         });
     }
+
 }
