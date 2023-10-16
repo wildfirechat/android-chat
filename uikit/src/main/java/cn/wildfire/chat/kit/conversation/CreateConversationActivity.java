@@ -83,6 +83,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
             return;
         }
         if (userInfos.size() == 1) {
+            Toast.makeText(this, "选择多位联系人时，才会发起群聊", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, ConversationActivity.class);
             Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfos.get(0).uid);
             intent.putExtra("conversation", conversation);
