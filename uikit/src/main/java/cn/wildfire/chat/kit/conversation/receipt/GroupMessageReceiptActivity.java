@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversation.receipt;
 
 
 import android.content.Intent;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,10 +17,16 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.List;
+import java.util.Map;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.GroupMember;
+import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.GetGroupMembersCallback;
 
 public class GroupMessageReceiptActivity extends WfcBaseActivity {
 
@@ -48,6 +55,43 @@ public class GroupMessageReceiptActivity extends WfcBaseActivity {
         Intent intent = getIntent();
         this.message = intent.getParcelableExtra("message");
         this.groupInfo = intent.getParcelableExtra("groupInfo");
+        updateTabTitles();
+    }
+
+    private void updateTabTitles() {
+        ChatManager.Instance().getGroupMembers(this.message.conversation.target, false, new GetGroupMembersCallback() {
+            @Override
+            public void onSuccess(List<GroupMember> groupMembers) {
+                if (isFinishing()) {
+                    return;
+                }
+
+                Map<String, Long> readEntries = ChatManager.Instance().getConversationRead(message.conversation);
+                int unreadCount = 0;
+                int readCount = 0;
+
+                String selfUid = ChatManager.Instance().getUserId();
+                for (GroupMember member : groupMembers) {
+                    if (TextUtils.equals(message.sender, selfUid) && TextUtils.equals(selfUid, member.memberId)) {
+                        readCount++;
+                        continue;
+                    }
+                    Long readDt = readEntries.get(member.memberId);
+                    if (readDt == null || readDt < message.serverTime) {
+                        unreadCount++;
+                    } else {
+                        readCount++;
+                    }
+                }
+                tabLayout.getTabAt(0).setText("未读(" + unreadCount + ")");
+                tabLayout.getTabAt(1).setText("已读(" + readCount + ")");
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
     }
 
     private class ReceiptFragmentPagerAdapter extends FragmentStatePagerAdapter {

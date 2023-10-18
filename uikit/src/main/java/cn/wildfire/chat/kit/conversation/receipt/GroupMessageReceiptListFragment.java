@@ -99,6 +99,9 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         List<UserInfo> result = new ArrayList<>();
         for (UserInfo info : userInfos) {
             if (TextUtils.equals(this.message.sender, info.uid)) {
+                if (!unread) {
+                    result.add(info);
+                }
                 continue;
             }
             Long readDt = readEntries.get(info.uid);
