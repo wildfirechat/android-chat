@@ -645,13 +645,14 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         audioButton.setVisibility(View.VISIBLE);
         if (isPttMode) {
             pttPanel.attach(rootLinearLayout, audioButton, conversation);
+            pttImageView.setImageResource(R.mipmap.ic_chat_keyboard);
         } else {
             audioRecorderPanel.attach(rootLinearLayout, audioButton);
+            audioImageView.setImageResource(R.mipmap.ic_chat_keyboard);
         }
         editText.setVisibility(View.GONE);
         extImageView.setVisibility(VISIBLE);
         sendButton.setVisibility(View.GONE);
-        audioImageView.setImageResource(R.mipmap.ic_chat_keyboard);
         rootLinearLayout.hideCurrentInput(editText);
         rootLinearLayout.hideAttachedInput(true);
     }
@@ -659,10 +660,13 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     private void hideAudioButton() {
         audioButton.setVisibility(View.GONE);
-        audioRecorderPanel.deattch();
-        if (pttPanel != null) {
+        if (isPttMode) {
             pttPanel.deattch();
+            pttImageView.setImageResource(R.mipmap.ic_ptt);
             isPttMode = false;
+        } else {
+            audioRecorderPanel.deattch();
+            audioImageView.setImageResource(R.mipmap.ic_chat_voice);
         }
         editText.setVisibility(View.VISIBLE);
         if (TextUtils.isEmpty(editText.getText())) {
@@ -672,7 +676,6 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             extImageView.setVisibility(GONE);
             sendButton.setVisibility(View.VISIBLE);
         }
-        audioImageView.setImageResource(R.mipmap.ic_chat_voice);
     }
 
     private void showEmotionLayout() {
