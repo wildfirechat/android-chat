@@ -131,7 +131,7 @@ public class PickConversationTargetFragment extends PickUserFragment {
             intent.putExtra("organizationId", organization.id);
             startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
         } else if (holder instanceof DepartViewHolder) {
-            Organization organization = ((OrganizationViewHolder) holder).getOrganization();
+            Organization organization = ((DepartViewHolder) holder).getOrganization();
             Intent intent = new Intent(getActivity(), PickOrganizationMemberActivity.class);
             intent.putExtra("organizationId", organization.id);
             startActivityForResult(intent, REQUEST_CODE_PICK_ORGANIZATION_MEMBER);
