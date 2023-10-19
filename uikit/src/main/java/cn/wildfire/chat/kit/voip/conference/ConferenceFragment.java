@@ -274,6 +274,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             return;
         }
+        if (session.isAudioOnly()){
+            Toast.makeText(getActivity(), "音频会议不支持开启摄像头", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (!session.isAudience() && !session.videoMuted) {
             muteVideoImageView.setSelected(true);
@@ -339,6 +343,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
 
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
+            if (session.isAudioOnly()) {
+                Toast.makeText(voipBaseActivity, "音频会议不支持屏幕共享", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (!session.isScreenSharing()) {
                 Toast.makeText(getContext(), "开启屏幕共享时，将关闭摄像头，并打开麦克风", Toast.LENGTH_LONG).show();
                 session.muteAudio(false);
