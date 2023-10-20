@@ -3876,7 +3876,12 @@ public class ChatManager {
 
     /**
      * 清除所有会话的未读状态
+     * <p>
+     * 已废弃，本方法不能将已读状态同步到服务端，卸载重装之后，会变回未读
+     * <p>
+     * 请使用{@link #clearUnreadStatus(Conversation)} 或 {@link #clearUnreadStatusEx(List, List)}
      */
+    @Deprecated
     public void clearAllUnreadStatus() {
         if (!checkRemoteService()) {
             return;
