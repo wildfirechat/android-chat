@@ -78,6 +78,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private WeakReference<Activity> currentActivityWrf;
     private boolean enableNativeNotification = false;
 
+    private AVEngineKit.AVEngineCallback avEngineCallback = null;
+
     private WfcUIKit() {
     }
 
@@ -131,6 +133,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     public void setEnableNativeNotification(boolean enable) {
         this.enableNativeNotification = enable;
+    }
+
+    public void setAvEngineCallback(AVEngineKit.AVEngineCallback avEngineCallback) {
+        this.avEngineCallback = avEngineCallback;
     }
 
     public boolean isSupportMoment() {
@@ -253,6 +259,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 startActivity(application, intent);
             }
             VoipCallService.start(application, false);
+            if(avEngineCallback != null) {
+                avEngineCallback.onReceiveCall(AVEngineKit.Instance().getCurrentSession());
+            }
         }, 200);
     }
 
@@ -260,6 +269,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void shouldStartRing(boolean isIncoming) {
+        if(avEngineCallback != null) {
+            avEngineCallback.shouldStartRing(isIncoming);
+            return;
+        }
         if (isIncoming && ChatManager.Instance().isVoipSilent()) {
             Log.d("wfcUIKit", "用户设置禁止voip通知，忽略来电提醒");
             return;
@@ -282,8 +295,20 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void shouldSopRing() {
+        if(avEngineCallback != null) {
+            avEngineCallback.shouldSopRing();
+            return;
+        }
         Log.d("wfcUIKit", "showStopRing");
         ringPlayer.stop();
+    }
+
+    @Override
+    public void didCallEnded(AVEngineKit.CallEndReason reason, int duration) {
+        if(avEngineCallback != null) {
+            avEngineCallback.didCallEnded(reason, duration);
+            return;
+        }
     }
 
     // pls refer to https://stackoverflow.com/questions/11124119/android-starting-new-activity-from-application-class
