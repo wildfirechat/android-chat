@@ -8125,7 +8125,7 @@ public class ChatManager {
             return false;
         }
         try {
-            return "1".equals(mClient.getUserSetting(UserSettingScope.GroupHideNickname, ""));
+            return "1".equals(mClient.getUserSetting(UserSettingScope.GroupHideNickname, groupId));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
