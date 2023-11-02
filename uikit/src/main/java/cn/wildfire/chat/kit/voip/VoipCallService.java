@@ -35,12 +35,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.BuildConfig;
 import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.avenginekit.PeerConnectionClient;
@@ -59,12 +60,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     private View view;
     private WindowManager.LayoutParams params;
     private Intent resumeActivityIntent;
-    private boolean initialized = false;
     private boolean showFloatingWindow = false;
 
     private String focusTargetId;
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     @Override
     public void onCreate() {
@@ -72,10 +72,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         ChatManager.Instance().addOnReceiveMessageListener(this);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (session != null) {
-            initialized = true;
-            startForeground(NOTIFICATION_ID, buildNotification(session));
-        }
+        startForeground(NOTIFICATION_ID, buildNotification(session));
     }
 
     @Nullable
@@ -88,6 +85,14 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     public static void start(Context context, boolean showFloatingView) {
         Intent intent = new Intent(context, VoipCallService.class);
         intent.putExtra("showFloatingView", showFloatingView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
+
+    public static void start(Context context, Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
         } else {
@@ -108,6 +113,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             stopSelf();
             return START_NOT_STICKY;
         }
+        startForeground(NOTIFICATION_ID, buildNotification(session));
         boolean screenShare = intent.getBooleanExtra("screenShare", false);
         if (screenShare) {
             Intent data = intent.getParcelableExtra("data");
@@ -117,10 +123,6 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
 
         focusTargetId = intent.getStringExtra("focusTargetId");
         Log.e("wfc", "on startCommand " + focusTargetId);
-        if (!initialized) {
-            initialized = true;
-            startForeground(NOTIFICATION_ID, buildNotification(session));
-        }
         checkCallState();
         showFloatingWindow = intent.getBooleanExtra("showFloatingView", false);
         if (showFloatingWindow) {
@@ -210,21 +212,25 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
 
         String title;
-        switch (session.getState()) {
-            case Outgoing:
-                title = "等待对方接听...";
-                break;
-            case Incoming:
-                title = "邀请您进行通话...";
-                break;
-            case Connecting:
-                title = "接听中...";
-                break;
-            default:
-                title = "通话中...";
-                break;
+        if (session != null) {
+            switch (session.getState()) {
+                case Outgoing:
+                    title = "等待对方接听...";
+                    break;
+                case Incoming:
+                    title = "邀请您进行通话...";
+                    break;
+                case Connecting:
+                    title = "接听中...";
+                    break;
+                default:
+                    title = "通话中...";
+                    break;
+            }
+        } else {
+            title = "VOIP...";
         }
-        return builder.setSmallIcon(R.mipmap.ic_launcher)
+        return builder.setSmallIcon(R.mipmap.ic_launcher_notification)
             .setContentTitle(title)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
@@ -238,6 +244,9 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             wm.removeView(view);
         }
         ChatManager.Instance().removeOnReceiveMessageListener(this);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
     }
 
     private void showFloatingWindow(AVEngineKit.CallSession session) {
@@ -333,7 +342,15 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             wm.addView(view, params);
         }
         view.findViewById(R.id.screenSharingTextView).setVisibility(View.VISIBLE);
-        view.findViewById(R.id.durationTextView).setVisibility(View.GONE);
+        TextView durationTextView = view.findViewById(R.id.durationTextView);
+        durationTextView.setVisibility(View.VISIBLE);
+        long duration = (System.currentTimeMillis() - session.getConnectedTime()) / 1000;
+        if (duration >= 3600) {
+            durationTextView.setText(String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60)));
+        } else {
+            durationTextView.setText(String.format("%02d:%02d", (duration % 3600) / 60, (duration % 60)));
+        }
+
         view.findViewById(R.id.av_media_type).setVisibility(View.GONE);
     }
 
@@ -351,7 +368,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         ImageView mediaIconV = view.findViewById(R.id.av_media_type);
         mediaIconV.setImageResource(R.drawable.av_float_audio);
 
-        long duration = (System.currentTimeMillis() - session.getStartTime()) / 1000;
+        long duration = (System.currentTimeMillis() - session.getConnectedTime()) / 1000;
         if (duration >= 3600) {
             timeView.setText(String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60)));
         } else {
@@ -366,7 +383,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     private String nextFocusUserId(AVEngineKit.CallSession session) {
         if (!TextUtils.isEmpty(focusTargetId) && (session.getParticipantIds().contains(focusTargetId))) {
             PeerConnectionClient client = session.getClient(focusTargetId);
-            if (client != null && client.state == AVEngineKit.CallState.Connected && !client.videoMuted) {
+            if (client != null && client.state == AVEngineKit.CallState.Connected && !client.videoMuted && !client.audience) {
                 return focusTargetId;
             }
         }
@@ -419,7 +436,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
 
             ImageView portraitImageView = remoteVideoFrameLayout.findViewById(R.id.portraitImageView);
             UserInfo userInfo = ChatManager.Instance().getUserInfo(nextFocusUserId, false);
-            GlideApp.with(remoteVideoFrameLayout).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+            Glide.with(remoteVideoFrameLayout).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
 
             if (TextUtils.equals(ChatManager.Instance().getUserId(), nextFocusUserId)) {
                 session.setupLocalVideoView(videoContainer, SCALE_ASPECT_BALANCED);

@@ -15,7 +15,6 @@
 package cn.wildfire.chat.kit.voip;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +30,6 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -56,21 +54,13 @@ import cn.wildfirechat.remote.ChatManager;
  */
 public abstract class VoipBaseActivity extends FragmentActivity implements AVEngineKit.CallSessionCallback {
 
-    // List of mandatory application permissions.
-    private static final String[] MANDATORY_PERMISSIONS = {
-        Manifest.permission.MODIFY_AUDIO_SETTINGS,
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.CAMERA,
-        Manifest.permission.INTERNET
-    };
-
     private static final int CAPTURE_PERMISSION_REQUEST_CODE = 101;
 
     protected AVEngineKit gEngineKit;
     protected PowerManager.WakeLock wakeLock;
     private Handler handler = new Handler();
 
-    protected boolean isInvitingNewParticipant;
+    public boolean preventShowFloatingViewOnStop;
     private String focusVideoUserId;
     private static final String TAG = "voip";
 
@@ -110,10 +100,25 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         }
 
         // Check for mandatory permissions.
+        String[] permissions;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            permissions = new String[]{
+                Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA,
+                Manifest.permission.BLUETOOTH_CONNECT,
+            };
+        } else {
+            permissions = new String[]{
+                Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA,
+            };
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : MANDATORY_PERMISSIONS) {
+            for (String permission : permissions) {
                 if (checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(MANDATORY_PERMISSIONS, 100);
+                    requestPermissions(permissions, 100);
                     break;
                 }
             }
@@ -132,7 +137,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int result : grantResults) {
             if (result != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "需要录音和摄像头权限，才能进行语音通话", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "需要录音、摄像头等权限，才能进行音视频通话", Toast.LENGTH_SHORT).show();
                 if (gEngineKit.getCurrentSession() != null || gEngineKit.getCurrentSession().getState() != AVEngineKit.CallState.Idle) {
                     gEngineKit.getCurrentSession().endCall();
                 }
@@ -142,19 +147,12 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         }
     }
 
-    @TargetApi(19)
-    private static int getSystemUiVisibility() {
-        int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            flags |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        }
-        return flags;
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isInvitingNewParticipant) {
+        if (preventShowFloatingViewOnStop) {
+            preventShowFloatingViewOnStop = false;
             return;
         }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
@@ -169,7 +167,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     protected void onStop() {
         super.onStop();
-        if (isInvitingNewParticipant) {
+        if (preventShowFloatingViewOnStop) {
             return;
         }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
@@ -218,7 +216,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
                 Intent intent = new Intent(this, VoipCallService.class);
                 intent.putExtra("screenShare", true);
                 intent.putExtra("data", data);
-                startService(intent);
+                VoipCallService.start(this, intent);
                 // 开始屏幕共享是，voip最小化
                 finish();
             } else {
@@ -328,7 +326,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         handler.post(runnable);
     }
 
-    protected boolean checkOverlayPermission() {
+    public boolean checkOverlayPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
                 Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_LONG).show();
@@ -338,6 +336,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
                 if (infos == null || infos.isEmpty()) {
                     return true;
                 }
+                preventShowFloatingViewOnStop = true;
                 startActivity(intent);
                 return false;
             }
@@ -361,14 +360,14 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         if (!TextUtils.isEmpty(focusTargetId)) {
             intent.putExtra("focusTargetId", focusTargetId);
         }
-        startService(intent);
+        VoipCallService.start(this, intent);
         finishFadeout();
     }
 
     public void hideFloatingView() {
         Intent intent = new Intent(this, VoipCallService.class);
         intent.putExtra("showFloatingView", false);
-        startService(intent);
+        VoipCallService.start(this, intent);
     }
 
     protected void finishFadeout() {

@@ -19,20 +19,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.FriendRequest;
 
 public class FriendRequestListFragment extends Fragment {
-    @BindView(R2.id.noNewFriendLinearLayout)
     LinearLayout noNewFriendLinearLayout;
-    @BindView(R2.id.newFriendListLinearLayout)
     LinearLayout newFriendLinearLayout;
-    @BindView(R2.id.friendRequestListRecyclerView)
     RecyclerView recyclerView;
 
     private ContactViewModel contactViewModel;
@@ -42,9 +36,15 @@ public class FriendRequestListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_new_friend_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
         init();
         return view;
+    }
+
+    private void bindViews(View view) {
+        noNewFriendLinearLayout = view.findViewById(R.id.noNewFriendLinearLayout);
+        newFriendLinearLayout = view.findViewById(R.id.newFriendListLinearLayout);
+        recyclerView = view.findViewById(R.id.friendRequestListRecyclerView);
     }
 
     private void init() {

@@ -11,23 +11,32 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
 import java.util.Map;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
 import cn.wildfire.chat.kit.contact.model.GroupValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
+import cn.wildfire.chat.kit.contact.model.OrganizationValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
 import cn.wildfire.chat.kit.contact.viewholder.footer.ContactCountViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.ChannelViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.DepartViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.FriendRequestViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
+import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
+import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.model.ChannelInfo;
@@ -37,16 +46,23 @@ import cn.wildfirechat.remote.ChatManager;
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private boolean pick = false;
     private boolean showChannel = true;
+    // 临时方案，如果本地缓存了组织结构信息，应当更新
+    private boolean isRootOrganizationLoaded = false;
+    private boolean isMyOrganizationLoaded = false;
     private List<String> filterUserList;
     private static final int REQUEST_CODE_PICK_CHANNEL = 100;
 
+    private OrganizationServiceViewModel organizationServiceViewModel;
+
     private boolean isVisibleToUser = false;
+    private ContactViewModel contactViewModel;
+
 
     @Override
     public void setMenuVisibility(boolean isvisible) {
         super.setMenuVisibility(isvisible);
         this.isVisibleToUser = isvisible;
-        if (isvisible) {
+        if (isvisible && contactViewModel != null) {
             contactViewModel.reloadContact();
             contactViewModel.reloadFriendRequestStatus();
         }
@@ -61,6 +77,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             showChannel = bundle.getBoolean("showChannel", true);
             filterUserList = bundle.getStringArrayList("filterUserList");
         }
+        organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
+        contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
     }
 
     @Override
@@ -125,6 +143,41 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         if (showChannel) {
             addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
         }
+        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
+            organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
+                @Override
+                public void onChanged(List<Organization> organizations) {
+                    if (isRootOrganizationLoaded) {
+                        return;
+                    }
+                    isRootOrganizationLoaded = true;
+                    if (!organizations.isEmpty()) {
+                        for (Organization org : organizations) {
+                            OrganizationValue value = new OrganizationValue();
+                            value.setValue(org);
+                            addHeaderViewHolder(OrganizationViewHolder.class, R.layout.contact_header_organization, value);
+                        }
+                    }
+                }
+            });
+            organizationServiceViewModel.myOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
+                @Override
+                public void onChanged(List<Organization> organizations) {
+                    if (isMyOrganizationLoaded) {
+                        return;
+                    }
+                    isMyOrganizationLoaded = true;
+                    if (!organizations.isEmpty()) {
+                        for (Organization org : organizations) {
+                            OrganizationValue value = new OrganizationValue();
+                            value.setValue(org);
+                            addHeaderViewHolder(DepartViewHolder.class, R.layout.contact_header_department, value);
+                        }
+                    }
+
+                }
+            });
+        }
     }
 
     @Override
@@ -147,23 +200,21 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     }
 
     @Override
-    public void onHeaderClick(int index) {
+    public void onHeaderClick(HeaderViewHolder holder) {
         if (pick) {
             showChannelList();
             return;
         }
-        switch (index) {
-            case 0:
-                showFriendRequest();
-                break;
-            case 1:
-                showGroupList();
-                break;
-            case 2:
-                showChannelList();
-                break;
-            default:
-                break;
+        if (holder instanceof FriendRequestViewHolder) {
+            showFriendRequest();
+        } else if (holder instanceof GroupViewHolder) {
+            showGroupList();
+        } else if (holder instanceof ChannelViewHolder) {
+            showChannelList();
+        } else if (holder instanceof OrganizationViewHolder) {
+            showOrganizationMemberList(((OrganizationViewHolder) holder).getOrganization());
+        } else if (holder instanceof DepartViewHolder) {
+            showOrganizationMemberList(((DepartViewHolder) holder).getOrganization());
         }
     }
 
@@ -188,6 +239,12 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         } else {
             startActivity(intent);
         }
+    }
+
+    private void showOrganizationMemberList(Organization org) {
+        Intent intent = new Intent(getActivity(), OrganizationMemberListActivity.class);
+        intent.putExtra("organizationId", org.id);
+        startActivity(intent);
     }
 
     @Override

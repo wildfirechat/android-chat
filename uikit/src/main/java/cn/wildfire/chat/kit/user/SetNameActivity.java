@@ -10,13 +10,11 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import butterknife.BindView;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.SimpleCallback;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.UserInfo;
 
 
@@ -24,7 +22,6 @@ public class SetNameActivity extends WfcBaseActivity {
 
     private UserInfo userInfo;
 
-    @BindView(R2.id.nameEditText)
     EditText nameEditText;
 
     private MenuItem menuItem;
@@ -32,6 +29,17 @@ public class SetNameActivity extends WfcBaseActivity {
     @Override
     protected int contentLayout() {
         return R.layout.contact_set_name_activity;
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        nameEditText = findViewById(R.id.nameEditText);
+        nameEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                onAliasEditTextChange();
+            }
+        });
     }
 
     @Override
@@ -66,7 +74,6 @@ public class SetNameActivity extends WfcBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnTextChanged(R2.id.nameEditText)
     void onAliasEditTextChange() {
         menuItem.setEnabled(nameEditText.getText().toString().trim().length() > 0 ? true : false);
     }

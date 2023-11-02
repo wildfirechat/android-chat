@@ -69,7 +69,11 @@ public class MultiCallActivity extends VoipBaseActivity {
 
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            uiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE;
+        }
         decorView.setSystemUiVisibility(uiOptions);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
@@ -223,7 +227,7 @@ public class MultiCallActivity extends VoipBaseActivity {
     }
 
     void addParticipant(int maxNewInviteParticipantCount) {
-        isInvitingNewParticipant = true;
+        preventShowFloatingViewOnStop = true;
         Intent intent = new Intent(this, PickGroupMemberActivity.class);
         GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(groupId, false);
@@ -239,7 +243,7 @@ public class MultiCallActivity extends VoipBaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == REQUEST_CODE_ADD_PARTICIPANT) {
-            isInvitingNewParticipant = false;
+            preventShowFloatingViewOnStop = false;
             if (resultCode == RESULT_OK) {
                 List<String> newParticipants = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
                 if (newParticipants != null && !newParticipants.isEmpty()) {

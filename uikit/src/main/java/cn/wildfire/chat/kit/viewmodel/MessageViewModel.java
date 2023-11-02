@@ -76,7 +76,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     private MutableLiveData<Pair<String, Long>> messageStartBurnLiveData;
     private MutableLiveData<List<Long>> messageBurnedLiveData;
 
-    private Message toPlayAudioMessage;
+    private Message playingAudioMessage;
 
     public MessageViewModel() {
         ChatManager.Instance().addOnReceiveMessageListener(this);
@@ -179,7 +179,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     public void onRecallMessage(Message message) {
         if (message != null) {
             UiMessage uiMessage = new UiMessage(message);
-            if (toPlayAudioMessage != null && toPlayAudioMessage.messageUid == message.messageUid) {
+            if (playingAudioMessage != null && playingAudioMessage.messageUid == message.messageUid) {
                 stopPlayAudio();
             }
             postMessageUpdate(uiMessage);
@@ -251,16 +251,18 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
             return;
         }
 
-        if (toPlayAudioMessage != null && toPlayAudioMessage.equals(message.message)) {
+        if (playingAudioMessage != null && playingAudioMessage.equals(message.message)) {
             AudioPlayManager.getInstance().stopPlay();
-            toPlayAudioMessage = null;
+            message.continuousPlayAudio = false;
+            playingAudioMessage = null;
             return;
         }
 
-        toPlayAudioMessage = message.message;
+        playingAudioMessage = message.message;
         if (message.message.direction == MessageDirection.Receive && message.message.status != MessageStatus.Played) {
             message.message.status = MessageStatus.Played;
             ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
+            message.continuousPlayAudio = true;
         }
 
         File file = DownloadManager.mediaMessageContentFile(message.message);
@@ -404,7 +406,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
             public void onStop(Uri var1) {
                 if (uri.equals(var1)) {
                     message.isPlaying = false;
-                    toPlayAudioMessage = null;
+                    playingAudioMessage = null;
                     postMessageUpdate(message);
                 }
             }
@@ -413,7 +415,8 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
             public void onComplete(Uri var1) {
                 if (uri.equals(var1)) {
                     message.isPlaying = false;
-                    toPlayAudioMessage = null;
+                    message.audioPlayCompleted = true;
+                    playingAudioMessage = null;
                     postMessageUpdate(message);
                 }
             }

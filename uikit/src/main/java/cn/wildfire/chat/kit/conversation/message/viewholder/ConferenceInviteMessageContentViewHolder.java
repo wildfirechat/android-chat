@@ -14,14 +14,11 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -36,17 +33,26 @@ import cn.wildfirechat.remote.ChatManager;
     ConferenceInviteMessageContent.class,
 })
 public class ConferenceInviteMessageContentViewHolder extends NormalMessageContentViewHolder {
-    @BindView(R2.id.hostPortraitImageView)
     ImageView hostPortraitImageView;
-    @BindView(R2.id.titleTextView)
     TextView titleTextView;
-    @BindView(R2.id.descTextView)
     TextView descTextView;
 
     private ConferenceInviteMessageContent inviteMessageContent;
 
     public ConferenceInviteMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+       itemView.findViewById(R.id.contentLayout).setOnClickListener(_v -> joinConference());
+    }
+
+    private void bindViews(View itemView) {
+        hostPortraitImageView =itemView.findViewById(R.id.hostPortraitImageView);
+        titleTextView =itemView.findViewById(R.id.titleTextView);
+        descTextView =itemView.findViewById(R.id.descTextView);
     }
 
     @Override
@@ -55,7 +61,7 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
         titleTextView.setText(inviteMessageContent.getTitle());
         descTextView.setText(inviteMessageContent.getDesc());
         UserInfo userInfo = ChatManager.Instance().getUserInfo(inviteMessageContent.getHost(), false);
-        GlideApp
+        Glide
             .with(fragment)
             .load(userInfo.portrait)
             .transforms(new CenterCrop(), new RoundedCorners(10))
@@ -63,7 +69,6 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
             .into(hostPortraitImageView);
     }
 
-    @OnClick(R2.id.contentLayout)
     void joinConference() {
         if (!AVEngineKit.isSupportConference()) {
             Toast.makeText(fragment.getActivity(), "本版本不支持会议功能", Toast.LENGTH_SHORT).show();

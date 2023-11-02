@@ -19,11 +19,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.Iterator;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.UserInfo;
@@ -127,9 +123,7 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
     }
 
     class MemberViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R2.id.portraitImageView)
         ImageView portraitImageView;
-        @BindView(R2.id.nameTextView)
         TextView nameTextView;
         private UserInfo userInfo;
         private int type = TYPE_USER;
@@ -137,7 +131,6 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
         private static final int TYPE_ADD = 1;
         private static final int TYPE_REMOVE = 2;
 
-        @OnClick(R2.id.portraitImageView)
         void onClick() {
             if (onMemberClickListener == null) {
                 return;
@@ -161,7 +154,17 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
 
         public MemberViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            bindViews(itemView);
+            bindEvents(itemView);
+        }
+
+        private void bindViews(View itemView) {
+            portraitImageView = itemView.findViewById(R.id.portraitImageView);
+            nameTextView = itemView.findViewById(R.id.nameTextView);
+        }
+
+        private void bindEvents(View itemView) {
+            itemView.findViewById(R.id.portraitImageView).setOnClickListener(_v -> onClick());
         }
 
         public void bindUserInfo(UserInfo userInfo) {

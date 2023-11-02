@@ -13,13 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
@@ -76,18 +74,21 @@ public class GroupMemberMessageHistoryAdapter extends RecyclerView.Adapter<Group
     }
 
     public class MessageViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R2.id.portraitImageView)
         protected ImageView portraitImageView;
-        @BindView(R2.id.nameTextView)
         protected TextView nameTextView;
-        @BindView(R2.id.contentTextView)
         protected TextView contentTextView;
-        @BindView(R2.id.timeTextView)
         protected TextView timeTextView;
 
         public MessageViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            bindViews(itemView);
+        }
+
+        private void bindViews(View itemView) {
+            portraitImageView = itemView.findViewById(R.id.portraitImageView);
+            nameTextView = itemView.findViewById(R.id.nameTextView);
+            contentTextView = itemView.findViewById(R.id.contentTextView);
+            timeTextView = itemView.findViewById(R.id.timeTextView);
         }
 
         public void onBind(Message message) {
@@ -100,7 +101,7 @@ public class GroupMemberMessageHistoryAdapter extends RecyclerView.Adapter<Group
                     senderName = ChatManager.Instance().getUserDisplayName(sender);
                 }
                 nameTextView.setText(senderName);
-                GlideApp.with(portraitImageView).load(sender.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+                Glide.with(portraitImageView).load(sender.portrait).placeholder(R.mipmap.avatar_def).into(portraitImageView);
             }
             if (message.content instanceof NotificationMessageContent) {
                 contentTextView.setText(((NotificationMessageContent) message.content).formatNotification(message));

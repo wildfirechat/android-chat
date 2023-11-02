@@ -14,23 +14,19 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
 
 class VideoConferenceMainView extends RelativeLayout {
 
-    @BindView(R2.id.previewContainerFrameLayout)
     FrameLayout previewContainerFrameLayout;
-    @BindView(R2.id.focusContainerFrameLayout)
     FrameLayout focusContainerFrameLayout;
 
     private AVEngineKit.CallSession callSession;
@@ -39,6 +35,8 @@ class VideoConferenceMainView extends RelativeLayout {
 
     private ConferenceParticipantItemView focusParticipantItemView;
     private ConferenceParticipantItemView myParticipantItemView;
+
+    private OnClickListener clickListener;
 
     public VideoConferenceMainView(Context context) {
         super(context);
@@ -63,7 +61,12 @@ class VideoConferenceMainView extends RelativeLayout {
 
     private void initView(Context context, AttributeSet attrs) {
         View view = inflate(context, R.layout.av_conference_video_main, this);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+    }
+
+    private void bindViews(View view) {
+        previewContainerFrameLayout = view.findViewById(R.id.previewContainerFrameLayout);
+        focusContainerFrameLayout = view.findViewById(R.id.focusContainerFrameLayout);
     }
 
     public void setupProfiles(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile myProfile, AVEngineKit.ParticipantProfile focusProfile) {
@@ -112,6 +115,11 @@ class VideoConferenceMainView extends RelativeLayout {
         // 要在页面取消选择之后，才会走到这儿，取消选择的时候，已经做了相关处理
     }
 
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
+        this.clickListener = l;
+    }
 
     public static final String TAG = "ConferenceVideoFragment";
 
@@ -139,8 +147,9 @@ class VideoConferenceMainView extends RelativeLayout {
 //                conferenceItem.setBackgroundResource(R.color.gray0);
             } else {
                 conferenceItem = new ConferenceParticipantItemVideoView(getContext());
+                ((ConferenceParticipantItemVideoView) conferenceItem).setEnableVideoZoom(true);
             }
-//            conferenceItem.setOnClickListener(clickListener);
+            conferenceItem.setOnClickListener(clickListener);
             conferenceItem.setup(this.callSession, profile);
             if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
                 myParticipantItemView = conferenceItem;
@@ -160,7 +169,7 @@ class VideoConferenceMainView extends RelativeLayout {
                     }
                 } else {
                     focusContainerFrameLayout.removeAllViews();
-                    conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                     focusContainerFrameLayout.addView(conferenceItem);
                     if (!profile.isAudience() && !profile.isVideoMuted()) {
                         this.callSession.setParticipantVideoType(focusProfile.getUserId(), focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_BIG_STREAM);
@@ -169,7 +178,7 @@ class VideoConferenceMainView extends RelativeLayout {
             } else {
                 previewContainerFrameLayout.removeAllViews();
                 focusContainerFrameLayout.removeAllViews();
-                conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                conferenceItem.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 focusContainerFrameLayout.addView(conferenceItem);
             }
         }

@@ -3,22 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@drawable/img_bubble_send"
+    android:backgroundTint="@color/lightColorPrimary"
+    android:gravity="left|center_vertical"
     android:maxWidth="240dp"
     android:minHeight="40dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
-    android:gravity="left|center_vertical"
-    android:background="@drawable/img_bubble_send">
+    tools:targetApi="q">
 
     <TextView
         android:id="@+id/contentTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingEnd="8dp"
-        android:textColor="#ffff"
         android:textColorLink="#3655bf"
         android:textSize="16sp"
         tools:text="对方已挂断" />
+
     <ImageView
         android:id="@+id/callTypeImageView"
         android:layout_width="wrap_content"

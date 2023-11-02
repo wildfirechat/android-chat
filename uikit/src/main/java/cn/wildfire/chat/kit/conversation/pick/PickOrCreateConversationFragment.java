@@ -21,10 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfirechat.model.Conversation;
@@ -36,7 +33,6 @@ import cn.wildfirechat.remote.GetConversationListCallback;
 
 public class PickOrCreateConversationFragment extends Fragment implements PickOrCreateConversationAdapter.OnConversationItemClickListener, PickOrCreateConversationAdapter.OnNewConversationItemClickListener {
     private static final int REQUEST_CODE_PICK_CONVERSATION_TARGET = 100;
-    @BindView(R2.id.recyclerView)
     RecyclerView recyclerView;
 
     private OnPickOrCreateConversationListener listener;
@@ -49,9 +45,13 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.pick_or_create_conversation_fragmentn, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
         init();
         return view;
+    }
+
+    private void bindViews(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
     }
 
 

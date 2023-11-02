@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:autoLink="phone|email|map|web"
     android:background="@drawable/img_bubble_send"
+    android:backgroundTint="@color/lightColorPrimary"
     android:gravity="left|center_vertical"
     android:linksClickable="true"
     android:maxWidth="240dp"
@@ -17,4 +18,5 @@
     tools:text="嗯嗯嗯嗯嗯嗯"
     android:textColor="#ffff"
     android:textColorLink="#3655bf"
-    android:textSize="16sp" />
+    android:textSize="16sp"
+    tools:targetApi="q" />

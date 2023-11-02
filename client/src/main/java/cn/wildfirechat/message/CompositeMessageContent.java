@@ -130,6 +130,7 @@ public class CompositeMessageContent extends MediaMessageContent {
     private void decode(MessagePayload payload, Converter contentConverter) {
         super.decode(payload);
         title = payload.content;
+        this.mediaType = MessageContentMediaType.FILE;
         this.binaryContent = payload.binaryContent;
     }
 
@@ -148,7 +149,7 @@ public class CompositeMessageContent extends MediaMessageContent {
                 msgObj.put("from", message.sender);
                 msgObj.put("tos", message.toUsers);
                 msgObj.put("direction", message.direction.value());
-                msgObj.put("status", message.status);
+                msgObj.put("status", message.status.value());
                 msgObj.put("serverTime", message.serverTime);
                 if (!TextUtils.isEmpty(message.localExtra)) {
                     msgObj.put("le", message.localExtra);
@@ -265,7 +266,7 @@ public class CompositeMessageContent extends MediaMessageContent {
                 message.serverTime = object.optLong("serverTime");
                 message.localExtra = object.optString("le");
 
-                MessagePayload messagePayload = super.encode();
+                MessagePayload messagePayload = new MessagePayload();
                 messagePayload.type = object.optInt("ctype");
                 messagePayload.searchableContent = object.optString("csc");
                 messagePayload.pushContent = object.optString("cpc");

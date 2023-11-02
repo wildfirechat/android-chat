@@ -13,14 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -28,13 +25,9 @@ import cn.wildfire.chat.kit.user.UserViewModel;
 public class UserViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;
     protected UserListAdapter adapter;
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.nameTextView)
     TextView nameTextView;
-    @BindView(R2.id.descTextView)
     TextView descTextView;
-    @BindView(R2.id.categoryTextView)
     protected TextView categoryTextView;
 
     protected UIUserInfo userInfo;
@@ -43,7 +36,14 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.fragment = fragment;
         this.adapter = adapter;
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        nameTextView = itemView.findViewById(R.id.nameTextView);
+        descTextView = itemView.findViewById(R.id.descTextView);
+        categoryTextView = itemView.findViewById(R.id.categoryTextView);
     }
 
     public void onBind(UIUserInfo userInfo) {
@@ -62,7 +62,7 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         } else {
             descTextView.setVisibility(View.GONE);
         }
-        GlideApp.with(fragment).load(userInfo.getUserInfo().portrait).placeholder(R.mipmap.avatar_def)
+        Glide.with(fragment).load(userInfo.getUserInfo().portrait).placeholder(R.mipmap.avatar_def)
             .transforms(new CenterCrop(), new RoundedCorners(10))
             .into(portraitImageView);
     }

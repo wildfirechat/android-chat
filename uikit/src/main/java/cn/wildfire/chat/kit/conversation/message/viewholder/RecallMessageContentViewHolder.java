@@ -9,10 +9,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.OnClick;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -24,15 +22,24 @@ import cn.wildfirechat.remote.ChatManager;
 @MessageContentType(RecallMessageContent.class)
 @EnableContextMenu
 public class RecallMessageContentViewHolder extends NotificationMessageContentViewHolder {
-    @BindView(R2.id.notificationTextView)
     TextView notificationTextView;
-    @BindView(R2.id.reeditTextView)
     TextView reeditTextView;
 
     private RecallMessageContent content;
 
     public RecallMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+       itemView.findViewById(R.id.reeditTextView).setOnClickListener(this::onClick);
+    }
+
+    private void bindViews(View itemView) {
+        notificationTextView =itemView.findViewById(R.id.notificationTextView);
+        reeditTextView =itemView.findViewById(R.id.reeditTextView);
     }
 
     @Override
@@ -51,7 +58,6 @@ public class RecallMessageContentViewHolder extends NotificationMessageContentVi
         }
     }
 
-    @OnClick(R2.id.reeditTextView)
     public void onClick(View view) {
         fragment.setInputText(content.getOriginalSearchableContent());
     }

@@ -70,6 +70,7 @@ public class CheckableUserListAdapter extends UserListAdapter {
             UIUserInfo userInfo = viewHolder.getBindContact();
             if (onUserClickListener != null) {
                 onUserClickListener.onUserClick(userInfo);
+                viewHolder.setChecked(userInfo.isChecked());
             }
         });
         return viewHolder;

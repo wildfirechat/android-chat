@@ -16,10 +16,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import java.io.File;
 
-import butterknife.BindView;
-import butterknife.OnClick;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -29,17 +27,21 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.SoundMessageContent;
 
 public class FavAudioContentViewHolder extends FavContentViewHolder {
-    @BindView(R2.id.audioImageView)
     ImageView audioImageView;
-    @BindView(R2.id.audioContentLayout)
     RelativeLayout contentLayout;
-    @BindView(R2.id.durationTextView)
     TextView durationTextView;
 
     private UiMessage uiMessage;
 
     public FavAudioContentViewHolder(@NonNull View itemView) {
         super(itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        audioImageView = itemView.findViewById(R.id.audioImageView);
+        contentLayout = itemView.findViewById(R.id.audioContentLayout);
+        durationTextView = itemView.findViewById(R.id.durationTextView);
     }
 
     @Override
@@ -54,10 +56,10 @@ public class FavAudioContentViewHolder extends FavContentViewHolder {
         contentLayout.setLayoutParams(params);
     }
 
-    @OnClick(R2.id.audioContentLayout)
-    void playAudio(){
+    @Override
+    protected void onClick() {
         Message message = favoriteItem.toMessage();
-        uiMessage =new UiMessage(message);
+        uiMessage = new UiMessage(message);
 
         MessageViewModel messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
         File file = DownloadManager.mediaMessageContentFile(message);

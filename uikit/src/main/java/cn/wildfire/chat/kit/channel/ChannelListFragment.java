@@ -22,17 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 
 
 public class ChannelListFragment extends Fragment implements ChannelListAdapter.OnChannelClickListener {
-    @BindView(R2.id.recyclerView)
     RecyclerView recyclerView;
     private ChannelViewModel channelViewModel;
     private ChannelListAdapter channelListAdapter;
@@ -51,9 +47,13 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.channel_list_frament, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
         init();
         return view;
+    }
+
+    private void bindViews(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
     }
 
     @Override

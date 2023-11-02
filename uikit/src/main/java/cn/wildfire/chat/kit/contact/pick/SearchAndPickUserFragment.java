@@ -20,11 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 
@@ -33,18 +29,26 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
     private PickUserViewModel pickUserViewModel;
     private PickUserFragment pickUserFragment;
 
-    @BindView(R2.id.usersRecyclerView)
     RecyclerView contactRecyclerView;
-    @BindView(R2.id.tipTextView)
     TextView tipTextView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_search_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.tipTextView).setOnClickListener(_v -> onTipTextViewClick());
+    }
+
+    private void bindViews(View view) {
+        contactRecyclerView = view.findViewById(R.id.usersRecyclerView);
+        tipTextView = view.findViewById(R.id.tipTextView);
     }
 
     public void setPickUserFragment(PickUserFragment pickUserFragment) {
@@ -52,7 +56,6 @@ public class SearchAndPickUserFragment extends Fragment implements UserListAdapt
     }
 
 
-    @OnClick(R2.id.tipTextView)
     void onTipTextViewClick() {
         pickUserFragment.hideSearchContactFragment();
     }

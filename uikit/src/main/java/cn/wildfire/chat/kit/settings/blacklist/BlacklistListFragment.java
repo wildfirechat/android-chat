@@ -23,16 +23,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 
 
 public class BlacklistListFragment extends Fragment implements BlacklistListAdapter.OnBlacklistItemClickListener, PopupMenu.OnMenuItemClickListener {
-    @BindView(R2.id.recyclerView)
     RecyclerView recyclerView;
     private BlacklistViewModel blacklistViewModel;
     private BlacklistListAdapter blacklistListAdapter;
@@ -43,9 +39,13 @@ public class BlacklistListFragment extends Fragment implements BlacklistListAdap
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.blacklist_list_frament, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
         init();
         return view;
+    }
+
+    private void bindViews(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
     }
 
     @Override

@@ -5,9 +5,7 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.pick.PickContactActivity;
 import cn.wildfire.chat.kit.conversation.pick.PickConversationActivity;
@@ -23,6 +21,14 @@ public class FileRecordListActivity extends WfcBaseActivity {
         return R.layout.activity_file_record_list;
     }
 
+    protected void bindEvents() {
+        super.bindEvents();
+        findViewById(R.id.allFilesItemView).setOnClickListener(v -> allFiles());
+        findViewById(R.id.myFilesItemView).setOnClickListener(v -> myFiles());
+        findViewById(R.id.conversationFilesItemView).setOnClickListener(v -> convFiles());
+        findViewById(R.id.userFilesItemView).setOnClickListener(v -> userFiles());
+    }
+
     @Override
     protected void afterViews() {
         if (!isDarkTheme()) {
@@ -35,26 +41,22 @@ public class FileRecordListActivity extends WfcBaseActivity {
         super.onDestroy();
     }
 
-    @OnClick(R2.id.allFilesItemView)
     void allFiles() {
         Intent intent = new Intent(this, FileRecordActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.myFilesItemView)
     void myFiles() {
         Intent intent = new Intent(this, FileRecordActivity.class);
         intent.putExtra("isMyFiles", true);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.conversationFilesItemView)
     void convFiles() {
         Intent intent = new Intent(this, PickConversationActivity.class);
         startActivityForResult(intent, PICK_CONVERSATION_REQUEST);
     }
 
-    @OnClick(R2.id.userFilesItemView)
     void userFiles() {
         //Todo Select a user first.
         Intent intent = new Intent(this, PickContactActivity.class);

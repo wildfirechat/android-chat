@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.group;
 
+import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,21 +14,36 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.BindView;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.widget.LengthFilter;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.GroupInfo;
 
 public class SetGroupAnnouncementActivity extends WfcBaseActivity {
-    @BindView(R2.id.announcementEditText)
     EditText announcementEditText;
 
     private MenuItem confirmMenuItem;
     private GroupInfo groupInfo;
+    private GroupAnnouncement currentGroupAnnouncement;
+
+    protected void bindViews() {
+        super.bindViews();
+        announcementEditText = findViewById(R.id.announcementEditText);
+        announcementEditText.setFilters(new InputFilter[]{
+            new LengthFilter(2000, maxTextLength -> {
+                Toast.makeText(this, "群公告最多允许 2000 个字符", Toast.LENGTH_SHORT).show();
+            })
+        });
+        announcementEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                SetGroupAnnouncementActivity.this.onTextChanged();
+            }
+        });
+    }
 
     @Override
     protected int contentLayout() {
@@ -47,6 +64,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
                 if (isFinishing()) {
                     return;
                 }
+                currentGroupAnnouncement = announcement;
                 if (TextUtils.isEmpty(announcementEditText.getText())) {
                     announcementEditText.setText(announcement.text);
                 }
@@ -57,7 +75,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                Toast.makeText(SetGroupAnnouncementActivity.this, "获取群公告失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SetGroupAnnouncementActivity.this, msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -70,11 +88,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
     @Override
     protected void afterMenus(Menu menu) {
         confirmMenuItem = menu.findItem(R.id.confirm);
-        if (announcementEditText.getText().toString().trim().length() > 0) {
-            confirmMenuItem.setEnabled(true);
-        } else {
-            confirmMenuItem.setEnabled(false);
-        }
+        confirmMenuItem.setEnabled(false);
     }
 
     @Override
@@ -86,20 +100,22 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnTextChanged(R2.id.announcementEditText)
     void onTextChanged() {
         if (confirmMenuItem != null) {
-            confirmMenuItem.setEnabled(announcementEditText.getText().toString().trim().length() > 0);
+            String text = announcementEditText.getText().toString().trim();
+            if (currentGroupAnnouncement == null || !TextUtils.equals(text, currentGroupAnnouncement.text)) {
+                confirmMenuItem.setEnabled(true);
+            }
         }
     }
 
     private void setGroupName() {
         String announcement = announcementEditText.getText().toString().trim();
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("请稍后...")
-                .progress(true, 100)
-                .cancelable(false)
-                .build();
+            .content("请稍后...")
+            .progress(true, 100)
+            .cancelable(false)
+            .build();
         dialog.show();
 
         WfcUIKit.getWfcUIKit().getAppServiceProvider().updateGroupAnnouncement(groupInfo.target, announcement, new AppServiceProvider.UpdateGroupAnnouncementCallback() {
@@ -123,4 +139,5 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
             }
         });
     }
+
 }

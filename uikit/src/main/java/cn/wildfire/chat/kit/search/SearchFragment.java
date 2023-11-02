@@ -22,17 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class SearchFragment extends Fragment {
-    @BindView(R2.id.recyclerView)
     RecyclerView recyclerView;
-    @BindView(R2.id.emptyLinearLayout)
     LinearLayout emptyLinearLayout;
-    @BindView(R2.id.descLinearLayout)
     LinearLayout descLinearLayout;
     private SearchResultAdapter adapter;
     private SearchViewModel searchViewModel;
@@ -56,7 +50,7 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.search_fragment, container, false);
         searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
         searchViewModel.getResultLiveData().observeForever(searchResultObserver);
-        ButterKnife.bind(this, view);
+        bindViews(view);
         inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -66,6 +60,12 @@ public class SearchFragment extends Fragment {
         });
         descLinearLayout.setVisibility(hideSearchDescView ? View.GONE: View.VISIBLE);
         return view;
+    }
+
+    private void bindViews(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
+        emptyLinearLayout = view.findViewById(R.id.emptyLinearLayout);
+        descLinearLayout = view.findViewById(R.id.descLinearLayout);
     }
 
 

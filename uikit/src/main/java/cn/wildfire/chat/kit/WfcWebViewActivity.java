@@ -16,7 +16,6 @@ import android.webkit.WebViewClient;
 
 import androidx.annotation.Nullable;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.workspace.JsApi;
 import cn.wildfirechat.message.LinkMessageContent;
@@ -26,9 +25,13 @@ import wendu.dsbridge.DWebView;
 public class WfcWebViewActivity extends WfcBaseActivity {
     private String url;
 
-    @BindView(R2.id.webview)
     DWebView webView;
     private JsApi jsApi;
+
+    protected void bindViews() {
+        super.bindViews();
+        webView = findViewById(R.id.webview);
+    }
 
     public static void loadUrl(Context context, String title, String url) {
         Intent intent = new Intent(context, WfcWebViewActivity.class);

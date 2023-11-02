@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/compositeContentLayout"
     android:layout_gravity="right"
     android:background="@drawable/img_bubble_send"
+    android:backgroundTint="@color/lightColorPrimary"
     android:orientation="vertical"
     android:paddingLeft="16dp"
     android:paddingTop="12dp"
     android:paddingRight="16dp"
-    android:paddingBottom="12dp">
+    android:paddingBottom="12dp"
+    tools:targetApi="q">
 
 
     <TextView

@@ -13,10 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
@@ -29,7 +26,6 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     private GroupInfo groupInfo;
     private GroupMemberListAdapter groupMemberListAdapter;
 
-    @BindView(R2.id.memberRecyclerView)
     RecyclerView memberRecyclerView;
 
     public static GroupMemberListFragment newInstance(GroupInfo groupInfo) {
@@ -44,6 +40,9 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
+        if (groupInfo == null) {
+            getActivity().finish();
+        }
     }
 
     @Override
@@ -54,7 +53,10 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
-        ButterKnife.bind(this, view);
+        if (groupInfo == null) {
+            return;
+        }
+        bindViews(view);
         groupMemberListAdapter = new GroupMemberListAdapter(groupInfo);
         memberRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
         memberRecyclerView.setAdapter(groupMemberListAdapter);
@@ -62,6 +64,10 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, userInfos -> loadAndShowGroupMembers());
         loadAndShowGroupMembers();
+    }
+
+    private void bindViews(View view) {
+        memberRecyclerView = view.findViewById(R.id.memberRecyclerView);
     }
 
     private void loadAndShowGroupMembers() {

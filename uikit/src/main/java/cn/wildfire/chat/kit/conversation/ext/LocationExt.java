@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.conversation.ext;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -11,15 +13,12 @@ import android.os.Build;
 import android.view.View;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.location.data.LocationData;
 import cn.wildfire.chat.kit.third.location.ui.activity.MyLocationActivity;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
-
-import static android.app.Activity.RESULT_OK;
 
 public class LocationExt extends ConversationExt {
 
@@ -34,9 +33,10 @@ public class LocationExt extends ConversationExt {
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!((WfcBaseActivity) activity).checkPermission(permissions)) {
-                activity.requestPermissions(permissions, 100);
+        String[] notGrantedPermissions = checkPermissions(permissions);
+        if (notGrantedPermissions.length > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                activity.requestPermissions(notGrantedPermissions, 100);
                 return;
             }
         }

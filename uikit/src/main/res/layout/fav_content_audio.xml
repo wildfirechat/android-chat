@@ -9,7 +9,8 @@
         android:id="@+id/audioContentLayout"
         android:layout_width="65dp"
         android:layout_height="50dp"
-        android:background="@drawable/img_bubble_receive">
+        android:background="@drawable/img_bubble_receive"
+        android:backgroundTint="@color/white">
 
         <ImageView
             android:id="@+id/audioImageView"

@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
@@ -90,13 +89,9 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private List<Fragment> mFragmentList = new ArrayList<>(4);
 
-    @BindView(R.id.bottomNavigationView)
     BottomNavigationView bottomNavigationView;
-    @BindView(R.id.contentViewPager)
     ViewPagerFixed contentViewPager;
-    @BindView(R.id.startingTextView)
     TextView startingTextView;
-    @BindView(R.id.contentLinearLayout)
     LinearLayout contentLinearLayout;
 
     private QBadgeView unreadMessageUnreadBadgeView;
@@ -112,6 +107,14 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private ContactViewModel contactViewModel;
     private ConversationListViewModel conversationListViewModel;
+
+    protected void bindViews() {
+        super.bindViews();
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        contentViewPager = findViewById(R.id.contentViewPager);
+        startingTextView = findViewById(R.id.startingTextView);
+        contentLinearLayout = findViewById(R.id.contentLinearLayout);
+    }
 
     private Observer<Boolean> imStatusLiveDataObserver = status -> {
         if (status && !isInitialized) {
@@ -146,10 +149,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
         connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
             if (status == ConnectionStatus.ConnectionStatusTokenIncorrect
-                || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch
-                || status == ConnectionStatus.ConnectionStatusRejected
-                || status == ConnectionStatus.ConnectionStatusLogout
-                || status == ConnectionStatus.ConnectionStatusKickedoff) {
+                    || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch
+                    || status == ConnectionStatus.ConnectionStatusRejected
+                    || status == ConnectionStatus.ConnectionStatusLogout
+                    || status == ConnectionStatus.ConnectionStatusKickedoff) {
                 SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
                 sp.edit().clear().apply();
                 OKHttpHelper.clearCookies();
@@ -161,12 +164,16 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                         reLogin(true);
                     }
                 }
+            } else if (status == ConnectionStatus.ConnectionStatusNotLicensed) {
+                Toast.makeText(MainActivity.this, "专业版IM服务没有授权或者授权过期！！！", Toast.LENGTH_LONG).show();
+            } else if (status == ConnectionStatus.ConnectionStatusTimeInconsistent) {
+                Toast.makeText(MainActivity.this, "服务器和客户端时间相差太大！！！", Toast.LENGTH_LONG).show();
             }
         });
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         messageViewModel.messageLiveData().observe(this, uiMessage -> {
             if (uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
-                || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT) {
+                    || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT) {
                 updateMomentBadgeView();
             }
         });
@@ -179,6 +186,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
                 handleSend(intent);
             }
         }
+
+        requestNotificationPermission();
     }
 
     @Override
@@ -215,7 +224,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         initView();
 
         conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(0)))
-            .get(ConversationListViewModel.class);
+                .get(ConversationListViewModel.class);
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
 
             if (unreadCount != null && unreadCount.unread > 0) {
@@ -518,7 +527,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100 && grantResults.length > 0
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startActivityForResult(new Intent(this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
         }
     }
@@ -527,7 +536,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(
-            getBaseContext().getPackageName());
+                getBaseContext().getPackageName());
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
         finish();
@@ -617,16 +626,16 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private void updateDisplayName() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("修改个人昵称？")
-            .positiveText("修改")
-            .negativeText("取消")
-            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                @Override
-                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    Intent intent = new Intent(MainActivity.this, ChangeMyNameActivity.class);
-                    startActivity(intent);
-                }
-            }).build();
+                .content("修改个人昵称？")
+                .positiveText("修改")
+                .negativeText("取消")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent intent = new Intent(MainActivity.this, ChangeMyNameActivity.class);
+                        startActivity(intent);
+                    }
+                }).build();
         dialog.show();
     }
 
@@ -673,7 +682,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         }
 
         if (text.startsWith("我分享了【")
-            && text.indexOf("】, 快来看吧！@小米浏览器 | http") > 1) {
+                && text.indexOf("】, 快来看吧！@小米浏览器 | http") > 1) {
             return true;
         }
         return false;
@@ -688,5 +697,18 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         String url = text.substring(text.indexOf("http"));
         content.setUrl(url);
         return content;
+    }
+
+    private void requestNotificationPermission() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) {
+            return;
+        }
+
+        String[] permissions = new String[]{Manifest.permission.POST_NOTIFICATIONS};
+        if (!checkPermission(permissions)) {
+            if (!checkPermission(permissions)) {
+                requestPermissions(permissions, 101);
+            }
+        }
     }
 }

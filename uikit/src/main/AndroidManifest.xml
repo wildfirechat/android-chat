@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="cn.wildfire.chat.kit">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <!-- 音视频通话时， 允许普通电话打断音视频通话 -->
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- 通过GPS得到精确位置 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -27,10 +23,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 访问网络. 某些位置信息需要从网络服务器获取 -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 访问WiFi状态. 需要WiFi信息用于网络定位 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- 修改WiFi状态. 发起WiFi扫描, 需要WiFi信息用于网络定位 -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <!-- 访问网络状态, 检测网络的可用性. 需要网络运营商相关信息用于网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 访问网络的变化, 需要某些信息用于网络定位 -->
@@ -38,11 +30,11 @@
     <!-- 访问手机当前状态, 需要某些信息用于网络定位 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!-- 蓝牙分享所需的权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         android:allowBackup="true"
@@ -91,7 +83,7 @@
 
         <activity
             android:name="cn.wildfire.chat.kit.mm.MMPreviewActivity"
-            android:theme="@style/AppTheme.FullScreen" />
+            android:theme="@style/AppTheme.TransparentFullScreen" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
             android:exported="false"
@@ -134,11 +126,14 @@
             android:name="cn.wildfire.chat.kit.settings.PrivacySettingActivity"
             android:label="隐私设置" />
         <activity
+            android:name="cn.wildfire.chat.kit.settings.PrivacyFindMeSettingActivity"
+            android:label="隐私设置" />
+        <activity
             android:name="cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity"
             android:label="黑名单" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.MessageNotifySettingActivity"
-            android:label="新消息通知" />
+            android:label="消息与通知" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.ConversationInfoActivity"
             android:label="会话详情" />
@@ -157,6 +152,9 @@
         <activity
             android:name="cn.wildfire.chat.kit.conversation.pick.PickConversationActivity"
             android:label="选择会话" />
+        <activity
+            android:name=".conversation.receipt.GroupMessageReceiptActivity"
+            android:label="消息阅读状态" />
         <activity
             android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"
             android:label="频道列表" />
@@ -263,18 +261,18 @@
 
 
         <!--moment start-->
-        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
-        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />
-        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />
-        <activity
-            android:name="cn.wildfire.chat.moment.FeedListActivity"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="${packageName}.moment" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />
+<!--        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />-->
+<!--        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />-->
+<!--        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />-->
+<!--        <activity-->
+<!--            android:name="cn.wildfire.chat.moment.FeedListActivity"-->
+<!--            android:exported="false">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="${packageName}.moment" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+<!--        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />-->
         <!--moment end-->
 
         <activity android:name=".group.manage.MuteGroupMemberActivity" />
@@ -289,13 +287,22 @@
             android:label="组合消息" />
         <activity
             android:name=".favorite.FavoriteListActivity"
-            android:label="收藏" />
+            android:label="我的收藏" />
         <activity
             android:name=".group.GroupMemberMessageHistoryActivity"
             android:label="用户消息" />
         <activity
             android:name=".widget.AlertDialogActivity"
             android:theme="@style/AppThemeDialog" />
+        <activity
+            android:name=".organization.OrganizationMemberListActivity"
+            android:label="组织通讯录" />
+        <activity
+            android:name=".organization.EmployeeInfoActivity"
+            android:label="员工信息" />
+        <activity
+            android:name=".organization.pick.PickOrganizationMemberActivity"
+            android:label="选取组织成员" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

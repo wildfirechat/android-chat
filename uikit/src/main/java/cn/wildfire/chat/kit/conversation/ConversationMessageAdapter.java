@@ -54,7 +54,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     // check or normal
     private int mode;
     private List<UiMessage> messages = new ArrayList<>();
-    private Map<String, Long> deliveries;
     private Map<String, Long> readEntries;
     private OnPortraitClickListener onPortraitClickListener;
     private OnMessageCheckListener onMessageCheckListener;
@@ -126,20 +125,10 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
-    public void setDeliveries(Map<String, Long> deliveries) {
-        // TODO diff
-        this.deliveries = deliveries;
-        notifyDataSetChanged();
-    }
-
     public void setReadEntries(Map<String, Long> readEntries) {
         // TODO diff
         this.readEntries = readEntries;
         notifyDataSetChanged();
-    }
-
-    public Map<String, Long> getDeliveries() {
-        return deliveries;
     }
 
     public Map<String, Long> getReadEntries() {
@@ -179,7 +168,13 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             return;
         }
         oldestMessageUid = newMessages.get(0).message.messageUid;
-        newMessages = newMessages.stream().filter(m -> m.message.messageId != 0).collect(Collectors.toList());
+        List<UiMessage> filteredMsgs = new ArrayList<>();
+        for (UiMessage m : newMessages) {
+            if (m.message.messageId != 0) {
+                filteredMsgs.add(m);
+            }
+        }
+        newMessages = filteredMsgs;
         if (newMessages.isEmpty()) {
             return;
         } else {
@@ -208,7 +203,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                     index = i;
                     break;
                 }
-            } else if (message.message.messageId > 0) {
+            }
+            if (message.message.messageId > 0) {
                 if (messages.get(i).message.messageId == message.message.messageId) {
                     messages.set(i, message);
                     index = i;
@@ -624,8 +620,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 if (msg.message.messageId == message.message.messageId) {
                     return true;
                 }
-                // 聊天室里面，由于消息不存储，messageId都是0
-            } else if (message.message.messageUid > 0) {
+            }
+            // 聊天室里面，由于消息不存储，messageId都是0，被远程更新的消息，也会走这儿
+            if (message.message.messageUid > 0) {
                 if (msg.message.messageUid == message.message.messageUid) {
                     return true;
                 }

@@ -61,6 +61,11 @@
   *;
 }
 
+-keep class cn.wildfire.chat.kit.organization.model.** {*;}
+-keepclassmembers class cn.wildfire.chat.kit.organization.model.** {
+  *;
+}
+
 -keepclassmembers class cn.wildfirechat.** {
     <init>(...);
 }

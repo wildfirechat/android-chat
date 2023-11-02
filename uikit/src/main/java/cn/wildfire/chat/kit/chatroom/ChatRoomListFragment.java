@@ -14,10 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.model.Conversation;
 
@@ -26,11 +23,16 @@ public class ChatRoomListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chatroom_list_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindEvents(view);
         return view;
     }
 
-    @OnClick({R2.id.chatRoomTextView_0, R2.id.chatRoomTextView_1, R2.id.chatRoomTextView_2})
+    private void bindEvents(View view) {
+        view.findViewById(R.id.chatRoomTextView_0).setOnClickListener(this::joinChatRoom);
+        view.findViewById(R.id.chatRoomTextView_1).setOnClickListener(this::joinChatRoom);
+        view.findViewById(R.id.chatRoomTextView_2).setOnClickListener(this::joinChatRoom);
+    }
+
     void joinChatRoom(View view) {
         String roomId = "chatroom1";
         String title = "野火IM聊天室1";

@@ -3,14 +3,12 @@ apply plugin: 'com.android.library'
 group = 'com.github.wildfirechat'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 34
 
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 34
 
         // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
@@ -39,22 +37,25 @@ android {
         }
     }
 
-    lintOptions {
-        abortOnError false
-    }
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
+    }
+    namespace 'cn.wildfirechat.client'
+    lint {
+        abortOnError false
+    }
+    buildFeatures {
+        aidl true
     }
 }
 
 
 dependencies {
     api project(':mars-core-release')
-    def lifecycle_version = '2.2.0'
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    api 'com.squareup.okhttp3:okhttp:3.11.0'
-    implementation 'com.squareup.okio:okio:1.14.0'
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    api 'com.squareup.okhttp3:okhttp:4.11.0'
+    implementation 'com.squareup.okio:okio:3.2.0'
 }
 repositories {
     mavenCentral()

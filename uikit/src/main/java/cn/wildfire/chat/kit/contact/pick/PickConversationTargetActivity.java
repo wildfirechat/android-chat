@@ -19,6 +19,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.organization.model.Organization;
 
 public abstract class PickConversationTargetActivity extends WfcBaseActivity implements PickConversationTargetFragment.OnGroupPickListener {
     public static final String CURRENT_PARTICIPANTS = "currentParticipants";
@@ -29,6 +30,7 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
     private TextView confirmTv;
 
     protected PickUserViewModel pickUserViewModel;
+    private PickConversationTargetFragment fragment;
     private Observer<UIUserInfo> contactCheckStatusUpdateLiveDataObserver = new Observer<UIUserInfo>() {
         @Override
         public void onChanged(@Nullable UIUserInfo userInfo) {
@@ -94,11 +96,11 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
     }
 
     private void initView() {
-        PickConversationTargetFragment fragment = PickConversationTargetFragment.newInstance(pickGroupForResult, multiGroupMode);
+        fragment = PickConversationTargetFragment.newInstance(pickGroupForResult, multiGroupMode);
         fragment.setOnGroupPickListener(this);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, fragment)
-                .commit();
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 
     @Override
@@ -107,10 +109,10 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
         pickUserViewModel.userCheckStatusUpdateLiveData().removeObserver(contactCheckStatusUpdateLiveDataObserver);
     }
 
-    protected abstract void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos);
+    protected abstract void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations);
 
     protected void onConfirmClick() {
         List<UIUserInfo> newlyCheckedUserInfos = pickUserViewModel.getCheckedUsers();
-        onContactPicked(newlyCheckedUserInfos);
+        onContactPicked(newlyCheckedUserInfos, fragment.getCheckedOrganizations());
     }
 }

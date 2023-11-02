@@ -7,26 +7,30 @@ package cn.wildfire.chat.kit.favorite.viewholder;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfirechat.message.FileMessageContent;
 
 public class FavFileContentViewHolder extends FavContentViewHolder {
-    @BindView(R2.id.fileIconImageView)
     ImageView fileIconImageView;
-    @BindView(R2.id.fileNameTextView)
     TextView fileNameTextView;
-    @BindView(R2.id.fileSizeTextView)
     TextView fileSizeTextView;
 
     public FavFileContentViewHolder(@NonNull View itemView) {
         super(itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        fileIconImageView = itemView.findViewById(R.id.fileIconImageView);
+        fileNameTextView = itemView.findViewById(R.id.fileNameTextView);
+        fileSizeTextView = itemView.findViewById(R.id.fileSizeTextView);
     }
 
     @Override
@@ -37,5 +41,10 @@ public class FavFileContentViewHolder extends FavContentViewHolder {
         fileNameTextView.setText(fileMessageContent.getName());
         fileSizeTextView.setText(FileUtils.getReadableFileSize(fileMessageContent.getSize()));
         fileIconImageView.setImageResource(FileUtils.getFileTypeImageResId(fileMessageContent.getName()));
+    }
+
+    @Override
+    protected void onClick() {
+        Toast.makeText(fragment.getContext(), "暂不支持预览", Toast.LENGTH_SHORT).show();
     }
 }

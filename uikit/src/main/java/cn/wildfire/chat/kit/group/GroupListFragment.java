@@ -20,10 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
@@ -31,11 +28,8 @@ import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GetGroupsCallback;
 
 public class GroupListFragment extends Fragment implements OnGroupItemClickListener {
-    @BindView(R2.id.groupRecyclerView)
     RecyclerView recyclerView;
-    @BindView(R2.id.tipTextView)
     TextView tipTextView;
-    @BindView(R2.id.groupsLinearLayout)
     LinearLayout groupsLinearLayout;
 
     private GroupListAdapter groupListAdapter;
@@ -49,9 +43,15 @@ public class GroupListFragment extends Fragment implements OnGroupItemClickListe
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.group_list_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
         init();
         return view;
+    }
+
+    private void bindViews(View view) {
+        recyclerView = view.findViewById(R.id.groupRecyclerView);
+        tipTextView = view.findViewById(R.id.tipTextView);
+        groupsLinearLayout = view.findViewById(R.id.groupsLinearLayout);
     }
 
     private void init() {

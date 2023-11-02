@@ -18,8 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.workspace.JsApi;
 import cn.wildfirechat.chat.R;
 
@@ -28,7 +26,6 @@ public class WorkspaceFragment extends Fragment {
     private String htmlContent;
     private JsApi jsApi;
 
-    @BindView(R.id.webview)
     WebView webView;
 
     public static WorkspaceFragment loadUrl(String url) {
@@ -51,9 +48,13 @@ public class WorkspaceFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_webview, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
         init();
         return view;
+    }
+
+    private void bindViews(View view) {
+        webView = view.findViewById(R.id.webview);
     }
 
     private void init() {

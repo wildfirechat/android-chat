@@ -15,11 +15,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
+import androidx.lifecycle.ViewTreeLifecycleOwner;
+import androidx.lifecycle.ViewTreeViewModelStoreOwner;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.UserInfo;
@@ -31,6 +37,8 @@ public class ConferenceParticipantItemView extends RelativeLayout {
     protected MicImageView micImageView;
     protected ImageView videoStateImageView;
     protected TextView nameTextView;
+
+    private UserViewModel userViewModel;
 
     public ConferenceParticipantItemView(@NonNull Context context) {
         super(context);
@@ -79,15 +87,34 @@ public class ConferenceParticipantItemView extends RelativeLayout {
         String participantKey = VoipBaseActivity.participantKey(profile.getUserId(), profile.isScreenSharing());
         UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
         this.setTag(participantKey);
+        updateParticipantUserInfoViews(userInfo);
 
-        GlideApp.with(this).load(userInfo.portrait).apply(new RequestOptions().circleCrop()).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+        LifecycleOwner lifecycleOwner = ViewTreeLifecycleOwner.get(nameTextView);
+        ViewModelStoreOwner viewModelStoreOwner = ViewTreeViewModelStoreOwner.get(nameTextView);
+        if (viewModelStoreOwner != null && lifecycleOwner != null) {
+            UserViewModel userViewModel = new ViewModelProvider(viewModelStoreOwner).get(UserViewModel.class);
+            userViewModel.userInfoLiveData().observe(lifecycleOwner, userInfos -> {
+                for (UserInfo info : userInfos) {
+                    if (info.uid.equals(profile.getUserId())) {
+                        updateParticipantUserInfoViews(info);
+                        break;
+                    }
+                }
+            });
+
+        }
+
         //statusTextView.setText(R.string.connecting);
 //        } else {
 //            videoContainer.setVisibility(GONE);
 //        }
         videoStateImageView.setSelected(profile.isAudience() || profile.isVideoMuted());
         micImageView.setMuted(profile.isAudience() || profile.isAudioMuted());
-        nameTextView.setText(ChatManager.Instance().getUserDisplayName(profile.getUserId()));
+    }
+
+    private void updateParticipantUserInfoViews(UserInfo userInfo) {
+        Glide.with(this).load(userInfo.portrait).apply(new RequestOptions().circleCrop()).placeholder(R.mipmap.avatar_def).into(portraitImageView);
+        nameTextView.setText(ChatManager.Instance().getUserDisplayName(userInfo));
     }
 
     public void updateParticipantProfile(AVEngineKit.ParticipantProfile profile) {

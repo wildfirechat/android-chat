@@ -4,17 +4,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 import cn.wildfirechat.model.VideoParam;
 
 /**
  * @ClassName WeChatImageUtils
- * @Description  高仿微信的图片宽高比,获取小视频的参数
+ * @Description 高仿微信的图片宽高比, 获取小视频的参数
  * @Author dhl
  * @Date 2021/1/7 13:49
  * @Version 1.0
@@ -22,8 +22,10 @@ import cn.wildfirechat.model.VideoParam;
 public class WeChatImageUtils {
 
     private static final String TAG = "WeChatImageUtils";
+
     /**
      * 适当的宽高
+     *
      * @param outWidth
      * @param outHeight
      * @return
@@ -35,15 +37,15 @@ public class WeChatImageUtils {
         int maxHeight = 400;
         int minWidth = 300;
         int minHeight = 250;
-        if(outWidth == 0 && outHeight == 0){
-            return new int[]{imageWidth,imageHeight};
+        if (outWidth == 0 && outHeight == 0) {
+            return new int[]{imageWidth, imageHeight};
         }
         if (outWidth / maxWidth > outHeight / maxHeight) {//
             if (outWidth >= maxWidth) {//
                 imageWidth = maxWidth;
                 imageHeight = outHeight * maxWidth / outWidth;
             } else {
-                imageWidth = outWidth ;
+                imageWidth = outWidth;
                 imageHeight = outHeight;
 
             }
@@ -66,11 +68,11 @@ public class WeChatImageUtils {
                 }
 
             } else {
-                imageHeight = outHeight ;
+                imageHeight = outHeight;
                 imageWidth = outWidth;
             }
             if (outWidth < minWidth) {
-                imageWidth = minWidth ;
+                imageWidth = minWidth;
                 int height = outHeight * minWidth / outWidth;
                 if (height > maxHeight) {
                     imageHeight = maxHeight;
@@ -80,12 +82,11 @@ public class WeChatImageUtils {
             }
         }
 
-        return new int[]{imageWidth,imageHeight};
+        return new int[]{imageWidth, imageHeight};
     }
 
     /**
      * 获取图片的尺寸，只获取尺寸，不加载bitmap 不会耗时
-     *
      */
     public static int[] getSize(File file) {
         if (file == null) return new int[]{0, 0};
@@ -104,23 +105,28 @@ public class WeChatImageUtils {
      * 通过第一帧获取宽高
      * 通过源文件获取会有点小问题
      */
-    public static VideoParam getVideoParam(String path){
+    public static VideoParam getVideoParam(String path) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(path);
         VideoParam videoParam = null;
-        long duration = Long.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)) ;
+        long duration = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
         Bitmap bitmap = retriever.getFrameAtTime();
-        if(bitmap != null){
+        if (bitmap != null) {
             int width = bitmap.getWidth();
             int height = bitmap.getHeight();
-            int[] imageSize = WeChatImageUtils.getImageSizeByOrgSizeToWeChat(width,height);
-            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, imageSize[0]/2, imageSize[1]/2);
+            int[] imageSize = WeChatImageUtils.getImageSizeByOrgSizeToWeChat(width, height);
+            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, imageSize[0] / 2, imageSize[1] / 2);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             thumbnail.compress(Bitmap.CompressFormat.JPEG, 75, baos);
-            Log.e(TAG,"thumbnailBytes="+ baos.toByteArray().length/1024+"kb");
-            videoParam = new VideoParam(width,height,duration,baos.toByteArray());
+            Log.e(TAG, "thumbnailBytes=" + baos.toByteArray().length / 1024 + "kb");
+            videoParam = new VideoParam(width, height, duration, baos.toByteArray());
         }
-        retriever.release();
+        try {
+            retriever.release();
+        } catch (IOException e) {
+            e.printStackTrace();
+            videoParam = new VideoParam(0, 0, 0, new byte[0]);
+        }
         return videoParam;
     }
 

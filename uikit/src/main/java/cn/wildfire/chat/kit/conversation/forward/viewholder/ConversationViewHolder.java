@@ -16,10 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.Conversation;
@@ -31,18 +28,21 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
     private Fragment fragment;
     private UserViewModel userViewModel;
     private GroupViewModel groupViewModel;
-    @BindView(R2.id.nameTextView)
     TextView nameTextView;
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
 
     public ConversationViewHolder(Fragment fragment, View itemView) {
         super(itemView);
         this.fragment = fragment;
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
 
         userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
+    }
+
+    private void bindViews(View itemView) {
+        nameTextView = itemView.findViewById(R.id.nameTextView);
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
     }
 
     public void onBind(ConversationInfo conversationInfo) {

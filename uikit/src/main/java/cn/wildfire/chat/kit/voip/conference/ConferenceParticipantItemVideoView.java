@@ -24,7 +24,7 @@ public class ConferenceParticipantItemVideoView extends ConferenceParticipantIte
     public ZoomableFrameLayout videoContainer;
     private boolean enableVideoZoom = false;
 
-    private static final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+    private static final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
 
     public ConferenceParticipantItemVideoView(@NonNull Context context) {
         super(context);
@@ -85,6 +85,8 @@ public class ConferenceParticipantItemVideoView extends ConferenceParticipantIte
             session.setupLocalVideoView(videoContainer, scalingType);
         } else {
             session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, scalingType);
+            // 用下面这种效果更好
+            //session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, RendererCommon.ScalingType.SCALE_ASPECT_FILL, scalingType);
         }
         //statusTextView.setText(R.string.connecting);
         } else {

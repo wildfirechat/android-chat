@@ -16,20 +16,22 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfirechat.model.GroupInfo;
 
 public class SetGroupRemarkActivity extends WfcBaseActivity {
-    @BindView(R2.id.remarkEditText)
     EditText remarkEditText;
 
     private MenuItem confirmMenuItem;
     private GroupInfo groupInfo;
     private GroupViewModel groupViewModel;
+
+    protected void bindViews() {
+        super.bindViews();
+        remarkEditText = findViewById(R.id.remarkEditText);
+    }
 
     @Override
     protected int contentLayout() {

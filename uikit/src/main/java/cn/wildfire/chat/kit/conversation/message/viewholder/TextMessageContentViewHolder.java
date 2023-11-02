@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.TextView;
@@ -16,9 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lqr.emoji.MoonUtils;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -45,15 +44,25 @@ import cn.wildfirechat.remote.ChatManager;
 })
 @EnableContextMenu
 public class TextMessageContentViewHolder extends NormalMessageContentViewHolder {
-    @BindView(R2.id.contentTextView)
     TextView contentTextView;
-    @BindView(R2.id.refTextView)
     TextView refTextView;
 
     private QuoteInfo quoteInfo;
 
     public TextMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+        itemView.findViewById(R.id.contentTextView).setOnClickListener(this::onClick);
+        itemView.findViewById(R.id.refTextView).setOnClickListener(this::onRefClick);
+    }
+
+    private void bindViews(View itemView) {
+        contentTextView = itemView.findViewById(R.id.contentTextView);
+        refTextView = itemView.findViewById(R.id.refTextView);
     }
 
     @Override
@@ -61,7 +70,17 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         TextMessageContent textMessageContent = (TextMessageContent) message.message.content;
         String content = textMessageContent.getContent();
         if (content.startsWith("<") && content.endsWith(">")) {
-            contentTextView.setText(Html.fromHtml(content));
+            Spanned spanned = null;
+            try {
+                spanned = Html.fromHtml(content);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (spanned != null && spanned.length() > 0) {
+                contentTextView.setText(spanned);
+            } else {
+                MoonUtils.identifyFaceExpression(fragment.getContext(), contentTextView, ((TextMessageContent) message.message.content).getContent(), ImageSpan.ALIGN_BOTTOM);
+            }
         } else {
             MoonUtils.identifyFaceExpression(fragment.getContext(), contentTextView, ((TextMessageContent) message.message.content).getContent(), ImageSpan.ALIGN_BOTTOM);
         }
@@ -82,13 +101,11 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         }
     }
 
-    @OnClick(R2.id.contentTextView)
     public void onClick(View view) {
         String content = ((TextMessageContent) message.message.content).getContent();
         WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", content);
     }
 
-    @OnClick(R2.id.refTextView)
     public void onRefClick(View view) {
         Message message = ChatManager.Instance().getMessageByUid(quoteInfo.getMessageUid());
         if (message != null) {

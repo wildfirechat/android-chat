@@ -10,11 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.client.Platform;
@@ -25,16 +22,26 @@ import cn.wildfirechat.remote.GeneralCallback;
 
 public class PCSessionActivity extends WfcBaseActivity {
 
-    @BindView(R2.id.kickOffPCButton)
     Button kickOffPCButton;
-    @BindView(R2.id.descTextView)
     TextView descTextView;
-    @BindView(R2.id.muteImageView)
     ImageView muteImageView;
 
     private PCOnlineInfo pcOnlineInfo;
     private boolean isMuteWhenPCOnline = false;
 
+    protected void bindEvents() {
+        super.bindEvents();
+        findViewById(R.id.kickOffPCButton).setOnClickListener(v -> kickOffPC());
+        findViewById(R.id.muteImageView).setOnClickListener(v -> mutePhone());
+        findViewById(R.id.fileHelperImageView).setOnClickListener(v -> fileHelper());
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        kickOffPCButton = findViewById(R.id.kickOffPCButton);
+        descTextView = findViewById(R.id.descTextView);
+        muteImageView = findViewById(R.id.muteImageView);
+    }
 
     @Override
     protected void beforeViews() {
@@ -42,11 +49,13 @@ public class PCSessionActivity extends WfcBaseActivity {
         if (pcOnlineInfo == null) {
             finish();
         }
-
     }
 
     @Override
     protected void afterViews() {
+        if (pcOnlineInfo == null){
+            return;
+        }
         Platform platform = pcOnlineInfo.getPlatform();
         setTitle(platform.getPlatFormName() + " 已登录");
         kickOffPCButton.setText("退出 " + platform.getPlatFormName() + " 登录");
@@ -61,7 +70,6 @@ public class PCSessionActivity extends WfcBaseActivity {
         return R.layout.pc_session_activity;
     }
 
-    @OnClick(R2.id.kickOffPCButton)
     void kickOffPC() {
         ChatManager.Instance().kickoffPCClient(pcOnlineInfo.getClientId(), new GeneralCallback() {
             @Override
@@ -83,7 +91,6 @@ public class PCSessionActivity extends WfcBaseActivity {
         });
     }
 
-    @OnClick(R2.id.muteImageView)
     void mutePhone() {
         ChatManager.Instance().muteNotificationWhenPcOnline(!isMuteWhenPCOnline, new GeneralCallback() {
             @Override
@@ -106,7 +113,6 @@ public class PCSessionActivity extends WfcBaseActivity {
         });
     }
 
-    @OnClick(R2.id.fileHelperImageView)
     void fileHelper() {
         Intent intent = ConversationActivity.buildConversationIntent(this, Conversation.ConversationType.Single, Config.FILE_TRANSFER_ID, 0);
         startActivity(intent);

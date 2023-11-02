@@ -6,9 +6,14 @@ package cn.wildfire.chat.kit.conversation.ext.core;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfirechat.model.Conversation;
@@ -106,6 +111,16 @@ public abstract class ConversationExt {
             throw new IllegalArgumentException("request code should in [0, 256]");
         }
         extension.startActivityForResult(intent, requestCode, index);
+    }
+
+    public String[] checkPermissions(@NonNull String[] permissions) {
+        List<String> notGrantedPermissions = new ArrayList<>();
+        for (String permission : permissions) {
+            if (activity.checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                notGrantedPermissions.add(permission);
+            }
+        }
+        return notGrantedPermissions.toArray(new String[0]);
     }
 
 }

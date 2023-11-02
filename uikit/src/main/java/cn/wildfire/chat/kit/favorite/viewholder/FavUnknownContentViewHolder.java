@@ -10,16 +10,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 
 public class FavUnknownContentViewHolder extends FavContentViewHolder {
-    @BindView(R2.id.favUnkownContentTextView)
     TextView textView;
 
     public FavUnknownContentViewHolder(@NonNull View itemView) {
         super(itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        textView = itemView.findViewById(R.id.favUnkownContentTextView);
     }
 
     @Override

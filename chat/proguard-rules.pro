@@ -29,6 +29,7 @@
 
 -dontshrink
 -keep class org.webrtc.**  { *; }
+-keep class com.serenegiant.**  { *; }
 -keepclasseswithmembernames class * { native <methods>; }
 
 -keep class okhttp3.** {*;}
@@ -56,6 +57,11 @@
   *;
 }
 
+-keep class  cn.wildfire.chat.kit.voip.conference.model.** {*;}
+-keepclassmembers class  cn.wildfire.chat.kit.voip.conference.model.** {
+  *;
+}
+
 -keep class cn.wildfire.chat.kit.group.GroupAnnouncement {*;}
 -keepclassmembers class cn.wildfire.chat.kit.group.GroupAnnouncement {
   *;
@@ -63,6 +69,11 @@
 
 -keep class cn.wildfirechat.model.** {*;}
 -keepclassmembers class cn.wildfirechat.model.** {
+  *;
+}
+
+-keep class cn.wildfire.chat.kit.organization.model.** {*;}
+-keepclassmembers class cn.wildfire.chat.kit.organization.model.** {
   *;
 }
 

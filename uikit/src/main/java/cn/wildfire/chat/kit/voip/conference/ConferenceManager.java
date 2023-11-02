@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.voip.conference;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -41,6 +42,8 @@ public class ConferenceManager implements OnReceiveMessageListener {
     private boolean isMuteAll;
 
     private String localFocusUserId;
+
+    private static final String TAG = "ConferenceManager";
 
     private ConferenceManager(Application application) {
         this.context = application;
@@ -247,10 +250,23 @@ public class ConferenceManager implements OnReceiveMessageListener {
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
             if (mute) {
                 if (!session.isAudience() && session.videoMuted) {
-                    session.switchAudience(true);
+                    boolean result = session.switchAudience(true);
+                    if (!result) {
+                        Log.d(TAG, "switch to audience fail");
+                        return;
+                    }
                 }
                 session.muteAudio(true);
             } else {
+                if (session.isAudience() && !session.canSwitchAudience()) {
+                    Log.d(TAG, "can not switch to audience");
+                    return;
+                }
+                if (session.isAudience() && isParticipantFull(session)) {
+                    Toast.makeText(context, "发言人数已满，无法切换到发言人！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 session.muteAudio(false);
                 if (session.videoMuted || session.isAudience()) {
                     session.switchAudience(false);
@@ -269,6 +285,10 @@ public class ConferenceManager implements OnReceiveMessageListener {
                 }
                 session.muteVideo(true);
             } else {
+                if (session.isAudience() && isParticipantFull(session)) {
+                    Toast.makeText(context, "发言人数已满，无法切换到发言人！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 session.muteVideo(false);
                 if (session.audioMuted || session.isAudience()) {
                     session.switchAudience(false);
@@ -559,5 +579,19 @@ public class ConferenceManager implements OnReceiveMessageListener {
         Conversation conversation = new Conversation(Conversation.ConversationType.ChatRoom, this.currentConferenceInfo.getConferenceId(), 0);
         ChatManager.Instance().sendMessage(conversation, content, null, 0, null);
 
+    }
+
+    private boolean isParticipantFull(AVEngineKit.CallSession session) {
+        if (currentConferenceInfo.getMaxParticipants() > 0) {
+            int participantCount = 0;
+            List<AVEngineKit.ParticipantProfile> profiles = session.getParticipantProfiles();
+            for (AVEngineKit.ParticipantProfile p : profiles) {
+                if (!p.isAudience()) {
+                    participantCount++;
+                }
+            }
+            return participantCount >= currentConferenceInfo.getMaxParticipants();
+        }
+        return false;
     }
 }

@@ -15,10 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.Conversation;
@@ -27,11 +24,8 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 
 public class ConversationViewHolder extends ResultItemViewHolder<ConversationSearchResult> {
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.nameTextView)
     TextView nameTextView;
-    @BindView(R2.id.descTextView)
     TextView descTextView;
 
     private UserViewModel userViewModel;
@@ -39,10 +33,16 @@ public class ConversationViewHolder extends ResultItemViewHolder<ConversationSea
 
     public ConversationViewHolder(Fragment fragment, View itemView) {
         super(fragment, itemView);
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
 
         userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
+    }
+
+    private void bindViews(View itemView) {
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        nameTextView = itemView.findViewById(R.id.nameTextView);
+        descTextView = itemView.findViewById(R.id.descTextView);
     }
 
     @Override

@@ -9,16 +9,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
@@ -33,23 +29,18 @@ import cn.wildfire.chat.kit.widget.QuickIndexBar;
  */
 public abstract class BaseUserListFragment extends ProgressFragment implements QuickIndexBar.OnLetterUpdateListener, UserListAdapter.OnUserClickListener, UserListAdapter.OnHeaderClickListener, UserListAdapter.OnFooterClickListener {
 
-    @BindView(R2.id.usersRecyclerView)
     RecyclerView usersRecyclerView;
-    @BindView(R2.id.quickIndexBar)
     QuickIndexBar quickIndexBar;
-    @BindView(R2.id.indexLetterTextView)
     TextView indexLetterTextView;
 
     protected UserListAdapter userListAdapter;
 
     private LinearLayoutManager linearLayoutManager;
-    protected ContactViewModel contactViewModel;
     private boolean showQuickIndexBar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
     }
 
     @Override
@@ -59,8 +50,14 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
 
     @Override
     protected void afterViews(View view) {
-        ButterKnife.bind(this, view);
+        bindViews(view);
         initView();
+    }
+
+    private void bindViews(View view) {
+        usersRecyclerView = view.findViewById(R.id.usersRecyclerView);
+        quickIndexBar = view.findViewById(R.id.quickIndexBar);
+        indexLetterTextView = view.findViewById(R.id.indexLetterTextView);
     }
 
     private void initView() {
@@ -179,7 +176,7 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
     }
 
     @Override
-    public void onHeaderClick(int index) {
+    public void onHeaderClick(HeaderViewHolder holder) {
 
     }
 

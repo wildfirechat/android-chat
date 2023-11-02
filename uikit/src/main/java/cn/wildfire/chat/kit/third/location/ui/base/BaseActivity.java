@@ -17,31 +17,21 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.appbar.AppBarLayout;
 import com.jaeger.library.StatusBarUtil;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public abstract class BaseActivity<V, T extends BasePresenter<V>> extends AppCompatActivity {
 
     protected T mPresenter;
 
     //以下是所有Activity中可能会出现的控件
-    @BindView(R2.id.appBarLayout)
     protected AppBarLayout mAppBar;
     //    @BindView(R2.id.toolbar)
     //    protected Toolbar mToolbar;
-    @BindView(R2.id.toolbarContainerFrameLayout)
     public FrameLayout mToolbar;
-    @BindView(R2.id.backImageView)
     public ImageView mToolbarNavigation;
-    @BindView(R2.id.backDividerView)
     public View mToolbarDivision;
-    @BindView(R2.id.titleLinearLayout)
     public LinearLayout mLlToolbarTitle;
-    @BindView(R2.id.titleTextView)
     public TextView mToolbarTitle;
-    @BindView(R2.id.subTitleTextView)
     public TextView mToolbarSubTitle;
 
     @Override
@@ -55,9 +45,8 @@ public abstract class BaseActivity<V, T extends BasePresenter<V>> extends AppCom
             mPresenter.attachView((V) this);//因为之后所有的子类都要实现对应的View接口
         }
 
-        //子类不再需要设置布局ID，也不再需要使用ButterKnife.bind()
         setContentView(provideContentViewId());
-        ButterKnife.bind(this);
+        bindViews();
 
         setupAppBarAndToolbar();
 
@@ -67,6 +56,16 @@ public abstract class BaseActivity<V, T extends BasePresenter<V>> extends AppCom
         initView();
         initData();
         initListener();
+    }
+
+    private void bindViews() {
+        mAppBar = findViewById(R.id.appBarLayout);
+        mToolbar = findViewById(R.id.toolbarContainerFrameLayout);
+        mToolbarNavigation = findViewById(R.id.backImageView);
+        mToolbarDivision = findViewById(R.id.backDividerView);
+        mLlToolbarTitle = findViewById(R.id.titleLinearLayout);
+        mToolbarTitle = findViewById(R.id.titleTextView);
+        mToolbarSubTitle = findViewById(R.id.subTitleTextView);
     }
 
     /**

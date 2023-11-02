@@ -22,6 +22,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,11 +31,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.model.GroupInfo;
@@ -50,7 +52,7 @@ import cn.wildfirechat.remote.GetGroupMembersCallback;
 public class ImageUtils {
     private static final String THUMB_IMG_DIR_PATH = UIUtils.getContext().getCacheDir().getAbsolutePath();
     private static final int IMG_WIDTH = 480; //超過此寬、高則會 resize圖片
-    private static final int IMG_HIGHT = 800;
+    private static final int IMG_HEIGHT = 800;
     private static final int COMPRESS_QUALITY = 70; //壓縮 JPEG使用的品質(70代表壓縮率為 30%)
 
 
@@ -113,14 +115,14 @@ public class ImageUtils {
         final int width = options.outWidth;
         int inSampleSize = 1;
 
-        if (height > IMG_HIGHT || width > IMG_WIDTH) {
+        if (height > IMG_HEIGHT || width > IMG_WIDTH) {
 
             final int halfHeight = height / 2;
             final int halfWidth = width / 2;
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) >= IMG_HIGHT
+            while ((halfHeight / inSampleSize) >= IMG_HEIGHT
                 && (halfWidth / inSampleSize) >= IMG_WIDTH) {
                 inSampleSize *= 2;
             }
@@ -199,11 +201,11 @@ public class ImageUtils {
 
                             Drawable drawable = null;
                             try {
-                                drawable = GlideApp.with(context).load(info.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
+                                drawable = Glide.with(context).load(info.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 try {
-                                    drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
+                                    drawable = Glide.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
                                 } catch (ExecutionException ex) {
                                     ex.printStackTrace();
                                 } catch (InterruptedException ex) {
@@ -339,18 +341,20 @@ public class ImageUtils {
     /**
      * 图片入系统相册
      */
-    public static void saveMedia2Album(Context context, File mediaFile) {
+    public static void saveMedia2Album(Context context, File mediaFile, boolean isImage) {
+        ContentResolver contentResolver = context.getContentResolver();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, System.currentTimeMillis() + "-" + mediaFile.getName());
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, isImage ? "image/jpg" : "video/mp4");
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ContentResolver contentResolver = context.getContentResolver();
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, System.currentTimeMillis() + "-" + mediaFile.getName());
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg");
             contentValues.put(MediaStore.MediaColumns.IS_PENDING, 1);
             contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
             Uri uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
             try (FileOutputStream fos = (FileOutputStream) contentResolver.openOutputStream(uri);
+                 FileInputStream fis = new FileInputStream(mediaFile)
             ) {
-                fos.getChannel().transferFrom(new FileInputStream(mediaFile).getChannel(), 0, mediaFile.length());
+                fos.getChannel().transferFrom(fis.getChannel(), 0, mediaFile.length());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -360,15 +364,44 @@ public class ImageUtils {
             contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0);
             contentResolver.update(uri, contentValues, null, null);
         } else {
-            try {
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), mediaFile.getAbsolutePath(), mediaFile.getName(), "");
+            Uri uri = contentResolver.insert(isImage ? MediaStore.Images.Media.EXTERNAL_CONTENT_URI : MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
+            try (OutputStream os = contentResolver.openOutputStream(uri);
+                 FileInputStream fis = new FileInputStream(mediaFile)
+            ) {
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) > 0) {
+                    os.write(buffer, 0, length);
+                }
             } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            Uri uri = Uri.fromFile(mediaFile);
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
         }
+    }
+
+    public static int[] scaleDown(int width, int height, int maxWidth, int maxHeight) {
+        int[] size = new int[2];
+        if (width < maxWidth && height < maxHeight) {
+            size[0] = width;
+            size[1] = height;
+            return size;
+        }
+
+        float widthRatio = (float) maxWidth / width;
+        float heightRatio = (float) maxHeight / height;
+
+        float scale = Math.min(widthRatio, heightRatio);
+
+        float scaledWidth = width * scale;
+        float scaledHeight = height * scale;
+        size[0] = (int) Math.ceil(scaledWidth);
+        size[1] = (int) Math.ceil(scaledHeight);
+
+        return size;
     }
 
 }

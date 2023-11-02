@@ -24,17 +24,14 @@ import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.bumptech.glide.Glide;
+
 import org.webrtc.RendererCommon;
 import org.webrtc.StatsReport;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -43,23 +40,14 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class MultiCallVideoFragment extends Fragment implements AVEngineKit.CallSessionCallback {
-    @BindView(R2.id.rootView)
     RelativeLayout rootLinearLayout;
-    @BindView(R2.id.durationTextView)
     TextView durationTextView;
-    @BindView(R2.id.fullScreenDurationTextView)
     TextView fullScreenDurationTextView;
-    @BindView(R2.id.videoContainerGridLayout)
     GridLayout participantGridView;
-    @BindView(R2.id.focusVideoContainerFrameLayout)
     FrameLayout focusVideoContainerFrameLayout;
-    @BindView(R2.id.muteImageView)
     ImageView muteImageView;
-    @BindView(R2.id.videoImageView)
     ImageView videoImageView;
-    @BindView(R2.id.topActions)
     View topActionContainer;
-    @BindView(R2.id.callControlActions)
     View callControlActionContainer;
 
     private List<String> participants;
@@ -76,9 +64,32 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_multi_video_outgoing_connected, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.minimizeImageView).setOnClickListener(_v -> minimize());
+        view.findViewById(R.id.addParticipantImageView).setOnClickListener(_v -> addParticipant());
+        view.findViewById(R.id.muteImageView).setOnClickListener(_v -> mute());
+        view.findViewById(R.id.switchCameraImageView).setOnClickListener(_v -> switchCamera());
+        view.findViewById(R.id.videoImageView).setOnClickListener(_v -> video());
+        view.findViewById(R.id.hangupImageView).setOnClickListener(_v -> hangup());
+        view.findViewById(R.id.shareScreenImageView).setOnClickListener(_v -> shareScreen());
+    }
+
+    private void bindViews(View view) {
+        rootLinearLayout = view.findViewById(R.id.rootView);
+        durationTextView = view.findViewById(R.id.durationTextView);
+        fullScreenDurationTextView = view.findViewById(R.id.fullScreenDurationTextView);
+        participantGridView = view.findViewById(R.id.videoContainerGridLayout);
+        focusVideoContainerFrameLayout = view.findViewById(R.id.focusVideoContainerFrameLayout);
+        muteImageView = view.findViewById(R.id.muteImageView);
+        videoImageView = view.findViewById(R.id.videoImageView);
+        topActionContainer = view.findViewById(R.id.topActions);
+        callControlActionContainer = view.findViewById(R.id.callControlActions);
     }
 
     private AVEngineKit getEngineKit() {
@@ -132,7 +143,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
             voipCallItem.getStatusTextView().setText(R.string.connecting);
             voipCallItem.setOnClickListener(clickListener);
-            GlideApp.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+            Glide.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
             participantGridView.addView(voipCallItem);
 
             session.setupRemoteVideoView(userInfo.uid, voipCallItem.videoContainer, scalingType);
@@ -143,7 +154,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         voipCallItem.getStatusTextView().setText(focusedUserInfo.displayName);
         voipCallItem.setOnClickListener(clickListener);
-        GlideApp.with(voipCallItem).load(focusedUserInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+        Glide.with(voipCallItem).load(focusedUserInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
         session.setupLocalVideoView(voipCallItem.videoContainer, scalingType);
 
         focusVideoContainerFrameLayout.addView(voipCallItem);
@@ -172,7 +183,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     }
 
 
-    @OnClick(R2.id.minimizeImageView)
     void minimize() {
         Activity activity = getActivity();
         if (activity != null && !activity.isFinishing()) {
@@ -180,12 +190,10 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         }
     }
 
-    @OnClick(R2.id.addParticipantImageView)
     void addParticipant() {
         ((MultiCallActivity) getActivity()).addParticipant(AVEngineKit.MAX_VIDEO_PARTICIPANT_COUNT - participants.size() - 1);
     }
 
-    @OnClick(R2.id.muteImageView)
     void mute() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
@@ -195,7 +203,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         }
     }
 
-    @OnClick(R2.id.switchCameraImageView)
     void switchCamera() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && !session.isScreenSharing() && session.getState() == AVEngineKit.CallState.Connected) {
@@ -203,7 +210,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         }
     }
 
-    @OnClick(R2.id.videoImageView)
     void video() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected && !session.isScreenSharing()) {
@@ -213,7 +219,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         }
     }
 
-    @OnClick(R2.id.hangupImageView)
     void hangup() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
@@ -222,14 +227,9 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
     }
 
 
-    @OnClick(R2.id.shareScreenImageView)
     void shareScreen() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
-            return;
-        }
-        if (session.videoMuted) {
-            // TODO 目前关闭摄像头之后，不支持屏幕共享
             return;
         }
         if (!AVEngineKit.isSupportConference()) {
@@ -237,7 +237,14 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
             return;
         }
         if (!session.isScreenSharing()) {
+            Toast.makeText(getContext(), "开启屏幕共享时，将关闭摄像头，并打开麦克风", Toast.LENGTH_LONG).show();
+            session.muteAudio(false);
+            session.muteVideo(true);
+
             ((VoipBaseActivity) getActivity()).startScreenShare();
+            if (session.isAudience()) {
+                session.switchAudience(false);
+            }
         } else {
             ((VoipBaseActivity) getActivity()).stopScreenShare();
         }
@@ -283,7 +290,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         voipCallItem.setLayoutParams(new ViewGroup.LayoutParams(with / 3, with / 3));
         voipCallItem.getStatusTextView().setText(userInfo.displayName);
         voipCallItem.setOnClickListener(clickListener);
-        GlideApp.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
+        Glide.with(voipCallItem).load(userInfo.portrait).placeholder(R.mipmap.avatar_def).into(voipCallItem.getPortraitImageView());
         participantGridView.addView(voipCallItem);
         participants.add(userId);
 
@@ -339,7 +346,6 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
 
     @Override
     public void didError(String reason) {
-        Toast.makeText(getActivity(), "发生错误" + reason, Toast.LENGTH_SHORT).show();
     }
 
     @Override

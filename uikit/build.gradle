@@ -9,18 +9,14 @@ android {
             storePassword 'wildfirechat'
         }
     }
-    compileSdkVersion 31
-    aaptOptions.cruncherEnabled = false
-    aaptOptions.useNewCruncher = false
+    compileSdkVersion 34
     defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
-        versionCode 27
-        versionName "0.8.0.rc3"
+        minSdkVersion 21
+        targetSdkVersion 34
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
-                includeCompileClasspath true
+//                includeCompileClasspath true
             }
         }
 
@@ -34,9 +30,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    lintOptions {
-        abortOnError false
-    }
     sourceSets {
         main {
             res.srcDirs += ['src/main/res-av']
@@ -49,12 +42,16 @@ android {
     }
     productFlavors {
     }
+    namespace 'cn.wildfire.chat.kit'
+    lint {
+        abortOnError false
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.6'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 
     // wfc kit start
     implementation project(':webrtc')
@@ -62,23 +59,23 @@ dependencies {
     api project(':client')
     api project(':avenginekit')
     api project(':pttclient')
+    api project(':badgeview')
+
     implementation project(':emojilibrary')
     implementation project(':imagepicker')
 
     implementation 'com.lqr.adapter:library:1.0.2'
     implementation 'com.jaeger.statusbaruitl:library:1.3.5'
 
-    api 'q.rorbin:badgeview:1.1.3'
-    api 'androidx.appcompat:appcompat:1.3.0-alpha01'
-    api 'com.google.android.material:material:1.6.1'
+    api 'androidx.appcompat:appcompat:1.7.0-alpha03'
+    api 'com.google.android.material:material:1.10.0'
     implementation 'cjt.library.wheel:camera:1.1.9'
-    implementation 'com.jakewharton:butterknife:10.2.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
-    api 'com.github.bumptech.glide:glide:4.9.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    api 'com.github.bumptech.glide:glide:4.15.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
+    annotationProcessor 'androidx.annotation:annotation:1.7.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     api 'com.afollestad.material-dialogs:core:0.9.6.0'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.9.0'
 
     api "androidx.lifecycle:lifecycle-extensions:2.2.0"
     api 'com.king.zxing:zxing-lite:1.1.1'
@@ -100,4 +97,3 @@ dependencies {
     // kit wfc end
 }
 
-apply plugin: 'com.jakewharton.butterknife'

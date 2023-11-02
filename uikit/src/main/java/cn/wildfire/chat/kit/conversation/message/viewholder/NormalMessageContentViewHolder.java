@@ -6,7 +6,6 @@ package cn.wildfire.chat.kit.conversation.message.viewholder;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -20,12 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
@@ -33,15 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.Optional;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
@@ -80,34 +74,48 @@ import cn.wildfirechat.remote.UserSettingScope;
  * 普通消息
  */
 public abstract class NormalMessageContentViewHolder extends MessageContentViewHolder {
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.errorLinearLayout)
     LinearLayout errorLinearLayout;
-    @BindView(R2.id.nameTextView)
     TextView nameTextView;
-    @BindView(R2.id.progressBar)
     ProgressBar progressBar;
-    @BindView(R2.id.checkbox)
     CheckBox checkBox;
 
-    @BindView(R2.id.singleReceiptImageView)
     @Nullable
     ImageView singleReceiptImageView;
 
-    @BindView(R2.id.groupReceiptFrameLayout)
     @Nullable
     FrameLayout groupReceiptFrameLayout;
 
-    @BindView(R2.id.deliveryProgressBar)
     @Nullable
     ProgressBar deliveryProgressBar;
-    @BindView(R2.id.readProgressBar)
     @Nullable
     ProgressBar readProgressBar;
 
     public NormalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+        if (errorLinearLayout != null) {
+            errorLinearLayout.setOnClickListener(this::onRetryClick);
+        }
+        if (groupReceiptFrameLayout != null) {
+            groupReceiptFrameLayout.setOnClickListener(this::OnGroupMessageReceiptClick);
+        }
+    }
+
+    private void bindViews(View itemView) {
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        errorLinearLayout = itemView.findViewById(R.id.errorLinearLayout);
+        nameTextView = itemView.findViewById(R.id.nameTextView);
+        progressBar = itemView.findViewById(R.id.progressBar);
+        checkBox = itemView.findViewById(R.id.checkbox);
+        singleReceiptImageView = itemView.findViewById(R.id.singleReceiptImageView);
+        groupReceiptFrameLayout = itemView.findViewById(R.id.groupReceiptFrameLayout);
+        deliveryProgressBar = itemView.findViewById(R.id.deliveryProgressBar);
+        readProgressBar = itemView.findViewById(R.id.readProgressBar);
     }
 
     @Override
@@ -166,8 +174,6 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         return true;
     }
 
-    @Optional
-    @OnClick(R2.id.errorLinearLayout)
     public void onRetryClick(View itemView) {
         new MaterialDialog.Builder(fragment.getContext())
             .content("重新发送?")
@@ -178,8 +184,6 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             .show();
     }
 
-    @Optional
-    @OnClick(R2.id.groupReceiptFrameLayout)
     public void OnGroupMessageReceiptClick(View itemView) {
         ((ConversationMessageAdapter) adapter).onGroupMessageReceiptClick(message.message);
     }
@@ -194,7 +198,15 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
         List<String> items = new ArrayList();
         items.add("删除本地消息");
-        if (message.message.conversation.type == Conversation.ConversationType.Group || message.message.conversation.type == Conversation.ConversationType.Single) {
+        boolean isSuperGroup = false;
+        if (message.message.conversation.type == Conversation.ConversationType.Group) {
+            GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.message.conversation.target, false);
+            if (groupInfo != null && groupInfo.superGroup == 1) {
+                isSuperGroup = true;
+            }
+        }
+        // 超级群组不支持远端删除
+        if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup) || message.message.conversation.type == Conversation.ConversationType.Single) {
             items.add("删除远程消息");
         } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
             items.add("删除自己及对方消息");
@@ -315,16 +327,21 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         }
 
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
-            String userId = ChatManager.Instance().getUserId();
             if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
-                GroupInfo groupInfo = groupViewModel.getGroupInfo(message.conversation.target, false);
-                if (groupInfo != null && userId.equals(groupInfo.owner)) {
+                GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
+                GroupMember fromMember = groupViewModel.getGroupMember(message.conversation.target, message.sender);
+                if (groupMember == null || fromMember == null) {
+                    return true;
+                }
+                // 群主允许撤回所有消息
+                if (groupMember.type == GroupMember.GroupMemberType.Owner) {
                     return false;
                 }
-                GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
-                if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Manager
-                    || groupMember.type == GroupMember.GroupMemberType.Owner)) {
+
+                // 管理员可以测试普通成员的消息
+                if (groupMember.type == GroupMember.GroupMemberType.Manager
+                    && (fromMember.type != GroupMember.GroupMemberType.Owner && fromMember.type != GroupMember.GroupMemberType.Manager)) {
                     return false;
                 }
             }
@@ -395,7 +412,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             }
         }
         if (portraitImageView != null && portraitUrl != null) {
-            GlideApp
+            Glide
                 .with(fragment)
                 .load(portraitUrl)
                 .transforms(new CenterCrop(), new RoundedCorners(10))
@@ -463,21 +480,16 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             return;
         }
 
-        Map<String, Long> deliveries = ((ConversationMessageAdapter) adapter).getDeliveries();
         Map<String, Long> readEntries = ((ConversationMessageAdapter) adapter).getReadEntries();
 
         if (item.conversation.type == Conversation.ConversationType.Single) {
             singleReceiptImageView.setVisibility(View.VISIBLE);
             groupReceiptFrameLayout.setVisibility(View.GONE);
             Long readTimestamp = readEntries != null && !readEntries.isEmpty() ? readEntries.get(message.message.conversation.target) : null;
-            Long deliverTimestamp = deliveries != null && !deliveries.isEmpty() ? deliveries.get(message.message.conversation.target) : null;
 
             if (readTimestamp != null && readTimestamp >= message.message.serverTime) {
                 ImageViewCompat.setImageTintList(singleReceiptImageView, null);
                 return;
-            }
-            if (deliverTimestamp == null || deliverTimestamp >= message.message.serverTime) {
-                ImageViewCompat.setImageTintList(singleReceiptImageView, ColorStateList.valueOf(ContextCompat.getColor(fragment.getContext(), R.color.gray)));
             }
         } else if (item.conversation.type == Conversation.ConversationType.Group) {
             singleReceiptImageView.setVisibility(View.GONE);
@@ -488,14 +500,14 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 } else {
                     groupReceiptFrameLayout.setVisibility(View.VISIBLE);
                 }
-                int deliveryCount = 0;
-                if (deliveries != null) {
-                    for (Map.Entry<String, Long> delivery : deliveries.entrySet()) {
-                        if (delivery.getValue() >= item.serverTime) {
-                            deliveryCount++;
-                        }
-                    }
-                }
+//                int deliveryCount = 0;
+//                if (deliveries != null) {
+//                    for (Map.Entry<String, Long> delivery : deliveries.entrySet()) {
+//                        if (delivery.getValue() >= item.serverTime) {
+//                            deliveryCount++;
+//                        }
+//                    }
+//                }
                 int readCount = 0;
                 if (readEntries != null) {
                     for (Map.Entry<String, Long> readEntry : readEntries.entrySet()) {
@@ -509,8 +521,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 if (groupInfo == null) {
                     return;
                 }
-                deliveryProgressBar.setMax(groupInfo.memberCount - 1);
-                deliveryProgressBar.setProgress(deliveryCount);
+//                deliveryProgressBar.setMax(groupInfo.memberCount - 1);
+//                deliveryProgressBar.setProgress(deliveryCount);
                 readProgressBar.setMax(groupInfo.memberCount - 1);
                 readProgressBar.setProgress(readCount);
             } else {

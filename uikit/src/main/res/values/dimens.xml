@@ -6,7 +6,7 @@
 
     <!--列表item间距-->
     <dimen name="item_margin_left_and_right">16dp</dimen>
-    <dimen name="item_margin_top_and_bottom">7dp</dimen>
+    <dimen name="item_margin_top_and_bottom">5dp</dimen>
 
     <!--选项间距-->
     <dimen name="option_item_margin_top">10dp</dimen>

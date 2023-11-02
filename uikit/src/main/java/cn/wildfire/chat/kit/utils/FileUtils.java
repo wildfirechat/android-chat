@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.utils;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +40,10 @@ import java.util.Comparator;
 
 import cn.wildfire.chat.kit.BuildConfig;
 import cn.wildfire.chat.kit.R;
+import cn.wildfirechat.message.FileMessageContent;
+import cn.wildfirechat.message.Message;
+import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.remote.ChatManager;
 import okhttp3.ResponseBody;
 
 public class FileUtils {
@@ -308,6 +314,20 @@ public class FileUtils {
         long size = cursor.getLong(sizeIndex);
         cursor.close();
         return size;
+    }
+
+    public static boolean copyFile(File srcFile, File dstFile) {
+        try (
+            FileInputStream inputStream = new FileInputStream(srcFile);
+            FileChannel src = inputStream.getChannel();
+            FileChannel dst = new FileOutputStream(dstFile).getChannel();
+        ) {
+            dst.transferFrom(src, 0, src.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 
@@ -879,9 +899,66 @@ public class FileUtils {
         }
     }
 
-    public static boolean isFileExists(String path){
+    public static boolean isFileExists(String path) {
         File file = new File(path);
         return file.exists();
+    }
+
+    public static void openFile(Context context, Message message) {
+        if (context == null || message == null) {
+            return;
+        }
+
+        File file = DownloadManager.mediaMessageContentFile(message);
+        if (file == null) {
+            return;
+        }
+        ChatManager.Instance().setMediaMessagePlayed(message.messageId);
+
+        if (file.exists()) {
+            Intent intent = FileUtils.getViewIntent(context, file);
+            try {
+                context.startActivity(intent);
+            } catch (Exception e) {
+                Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            String fileUrl;
+            if (message.conversation.type == Conversation.ConversationType.SecretChat) {
+                fileUrl = DownloadManager.buildSecretChatMediaUrl(message);
+            } else {
+                fileUrl = ((FileMessageContent) message.content).remoteUrl;
+            }
+            Toast.makeText(context, "文件下载中，请稍候...", Toast.LENGTH_LONG).show();
+            DownloadManager.download(fileUrl, file.getParent(), file.getName(), new DownloadManager.OnDownloadListener() {
+                @Override
+                public void onSuccess(File file) {
+                    ChatManager.Instance().getMainHandler().post(() -> {
+                        if (context instanceof Activity) {
+                            if (((Activity) context).isFinishing()) {
+                                return;
+                            }
+                        }
+                        try {
+                            Intent intent = FileUtils.getViewIntent(context, file);
+                            context.startActivity(intent);
+                        } catch (Exception e) {
+                            Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onProgress(int progress) {
+
+                }
+
+                @Override
+                public void onFail() {
+
+                }
+            });
+        }
     }
 
 }

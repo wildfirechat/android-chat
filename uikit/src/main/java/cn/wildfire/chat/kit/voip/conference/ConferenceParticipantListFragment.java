@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
@@ -31,12 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
@@ -45,16 +41,11 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceParticipantListFragment extends Fragment {
-    @BindView(R2.id.recyclerView)
     RecyclerView recyclerView;
-    @BindView(R2.id.handupTextView)
     TextView handupTextView;
-    @BindView(R2.id.applyingUnmuteTextView)
     TextView applyingUnmuteTextView;
 
-    @BindView(R2.id.muteAllButton)
     Button muteAllButton;
-    @BindView(R2.id.unmuteAllButton)
     Button unmuteAllButton;
     private AVEngineKit.CallSession callSession;
 
@@ -67,9 +58,25 @@ public class ConferenceParticipantListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_conference_participant_list, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.applyingUnmuteTextView).setOnClickListener(_v -> showApplyingUnmuteDialog());
+        view.findViewById(R.id.handupTextView).setOnClickListener(_v -> showHandupDialog());
+        view.findViewById(R.id.muteAllButton).setOnClickListener(_v -> muteAll());
+        view.findViewById(R.id.unmuteAllButton).setOnClickListener(_v -> unmuteAll());
+    }
+
+    private void bindViews(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
+        handupTextView = view.findViewById(R.id.handupTextView);
+        applyingUnmuteTextView = view.findViewById(R.id.applyingUnmuteTextView);
+        muteAllButton = view.findViewById(R.id.muteAllButton);
+        unmuteAllButton = view.findViewById(R.id.unmuteAllButton);
     }
 
     private void init() {
@@ -89,19 +96,16 @@ public class ConferenceParticipantListFragment extends Fragment {
         this.loadAndShowConferenceParticipants();
     }
 
-    @OnClick(R2.id.applyingUnmuteTextView)
     void showApplyingUnmuteDialog() {
         ConferenceApplyUnmuteListFragment fragment = new ConferenceApplyUnmuteListFragment();
         fragment.show(getChildFragmentManager(), "applyUnmuteFragment");
     }
 
-    @OnClick(R2.id.handupTextView)
     void showHandupDialog() {
         ConferenceHandUpListFragment fragment = new ConferenceHandUpListFragment();
         fragment.show(getChildFragmentManager(), "handUpFragment");
     }
 
-    @OnClick(R2.id.muteAllButton)
     void muteAll() {
         new MaterialDialog.Builder(getActivity())
             .title("所有成员将被静音")
@@ -114,7 +118,6 @@ public class ConferenceParticipantListFragment extends Fragment {
 
     }
 
-    @OnClick(R2.id.unmuteAllButton)
     void unmuteAll() {
         new MaterialDialog.Builder(getActivity())
             .title("允许全体成员开麦")
@@ -127,7 +130,7 @@ public class ConferenceParticipantListFragment extends Fragment {
     }
 
     private void loadAndShowConferenceParticipants() {
-        if (ChatManager.Instance().getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
+        if (conferenceManager.getCurrentConferenceInfo() != null && ChatManager.Instance().getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
             List<String> applyingUnmuteMembers = conferenceManager.getApplyingUnmuteMembers();
             if (applyingUnmuteMembers.isEmpty()) {
                 applyingUnmuteTextView.setVisibility(View.GONE);
@@ -292,28 +295,31 @@ public class ConferenceParticipantListFragment extends Fragment {
     class ParticipantViewHolder extends RecyclerView.ViewHolder {
         private View itemView;
 
-        @BindView(R2.id.portraitImageView)
         ImageView portraitImageView;
-        @BindView(R2.id.nameTextView)
         TextView nameTextView;
-        @BindView(R2.id.descTextView)
         TextView descTextView;
-        @BindView(R2.id.audioImageView)
         ImageView audioImageView;
-        @BindView(R2.id.videoImageView)
         ImageView videoImageView;
 
         public ParticipantViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
-            ButterKnife.bind(this, itemView);
+            bindViews(itemView);
+        }
+
+        private void bindViews(View itemView) {
+            portraitImageView = itemView.findViewById(R.id.portraitImageView);
+            nameTextView = itemView.findViewById(R.id.nameTextView);
+            descTextView = itemView.findViewById(R.id.descTextView);
+            audioImageView = itemView.findViewById(R.id.audioImageView);
+            videoImageView = itemView.findViewById(R.id.videoImageView);
         }
 
         public void onBind(AVEngineKit.ParticipantProfile profile) {
             UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
             String displayName = ChatManager.Instance().getUserDisplayName(userInfo);
             nameTextView.setText(displayName);
-            GlideApp.with(this.itemView).load(userInfo.portrait).placeholder(R.mipmap.avatar_def)
+            Glide.with(this.itemView).load(userInfo.portrait).placeholder(R.mipmap.avatar_def)
                 .apply(RequestOptions.bitmapTransform(new RoundedCorners(10)))
                 .into(portraitImageView);
 
@@ -331,8 +337,8 @@ public class ConferenceParticipantListFragment extends Fragment {
                         desc += "，屏幕共享";
                     }
                 } else {
-                    if (profile.isScreenSharing()){
-                        desc +="屏幕共享";
+                    if (profile.isScreenSharing()) {
+                        desc += "屏幕共享";
                     }
                 }
             }

@@ -11,21 +11,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.conversation.message.CompositeMessageContentActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfirechat.message.CompositeMessageContent;
 
 public class FavCompositeContentViewHolder extends FavContentViewHolder {
-    @BindView(R2.id.titleTextView)
     TextView titleTextView;
-    @BindView(R2.id.contentTextView)
     TextView contentTextView;
 
     public FavCompositeContentViewHolder(@NonNull View itemView) {
         super(itemView);
+        bindViews(itemView);
+    }
+
+
+    private void bindViews(View itemView) {
+        titleTextView = itemView.findViewById(R.id.titleTextView);
+        contentTextView = itemView.findViewById(R.id.contentTextView);
     }
 
     @Override
@@ -36,8 +39,8 @@ public class FavCompositeContentViewHolder extends FavContentViewHolder {
         contentTextView.setText(compositeMessageContent.compositeDigest());
     }
 
-    @OnClick(R2.id.contentTextView)
-    void showFavText() {
+    @Override
+    protected void onClick() {
         Intent intent = new Intent(fragment.getContext(), CompositeMessageContentActivity.class);
         intent.putExtra("message", favoriteItem.toMessage());
         fragment.startActivity(intent);

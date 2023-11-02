@@ -5,7 +5,12 @@
 package cn.wildfire.chat.kit.audio;
 
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +24,7 @@ import java.io.File;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfirechat.remote.ChatManager;
 
 public class AudioRecorderPanel implements View.OnTouchListener {
     private int maxDuration = Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * 1000;
@@ -42,8 +48,14 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     private ImageView stateImageView;
     private PopupWindow recordingWindow;
 
+    private Vibrator vibrator;
+    private SoundPool soundPool;
+    private int sendAudioMessageSuccessSoundId;
+
     public AudioRecorderPanel(Context context) {
         this.context = context;
+        this.vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        this.soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
     }
 
     /**
@@ -78,11 +90,14 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         this.button = button;
         this.button.setText("按住 说话");
         this.button.setOnTouchListener(this);
+
+        this.sendAudioMessageSuccessSoundId = this.soundPool.load(context, R.raw.audido_msg_send_success, 0);
     }
 
     public void deattch() {
         rootView = null;
         button = null;
+        this.soundPool.unload(R.raw.audido_msg_send_success);
     }
 
     public void setRecordListener(OnRecordListener recordListener) {
@@ -144,6 +159,11 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         startTime = System.currentTimeMillis();
         showRecording();
         tick();
+        if (vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(40, -1));
+            }
+        }
     }
 
     public boolean isShowingRecorder() {
@@ -157,10 +177,24 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         if (recorder != null) {
             recorder.stopRecord();
         }
+        this.soundPool.play(this.sendAudioMessageSuccessSoundId, 0.1f, 0.1f, 0, 0, 1);
         if (recordListener != null) {
             long duration = System.currentTimeMillis() - startTime;
             if (duration > minDuration) {
-                recordListener.onRecordSuccess(currentAudioFile, (int) duration / 1000);
+                if (Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION) {
+                    ChatManager.Instance().getWorkHandler().post(() -> {
+                        String louderFile = currentAudioFile + "-amf";
+                        boolean result = AmrVolumeLouder.increaseVolume(currentAudioFile, louderFile, Config.AUDIO_MESSAGE_AMPLIFICATION_FACTOR);
+                        if (result) {
+                            new File(currentAudioFile).delete();
+                            recordListener.onRecordSuccess(louderFile, (int) duration / 1000);
+                        } else {
+                            recordListener.onRecordSuccess(currentAudioFile, (int) duration / 1000);
+                        }
+                    });
+                } else {
+                    recordListener.onRecordSuccess(currentAudioFile, (int) duration / 1000);
+                }
                 hideRecording();
             } else {
                 showTooShortTip();
@@ -295,11 +329,16 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     }
 
     private void updateVolume() {
-        if (isToCancel || recorder == null) {
+        if (isToCancel || recorder == null || this.stateImageView == null) {
             return;
         }
         // refer to https://www.cnblogs.com/lqminn/archive/2012/10/10/2717904.html
-        int db = 8 * recorder.getMaxAmplitude() / 32768;
+        int db;
+        if (Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION) {
+            db = 8 * recorder.getMaxAmplitude() * Config.AUDIO_MESSAGE_AMPLIFICATION_FACTOR / 32768;
+        } else {
+            db = 8 * recorder.getMaxAmplitude() / 32768;
+        }
         switch (db) {
             case 0:
                 this.stateImageView.setImageResource(R.mipmap.ic_volume_1);

@@ -25,11 +25,7 @@ import com.lqr.imagepicker.bean.ImageItem;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
@@ -37,12 +33,9 @@ import cn.wildfirechat.model.Conversation;
 
 public class CreateChannelActivity extends WfcBaseActivity {
     @Nullable
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
 
-    @BindView(R2.id.channelNameTextInputEditText)
     TextInputEditText nameInputEditText;
-    @BindView(R2.id.channelDescTextInputEditText)
     TextInputEditText descInputEditText;
 
     private static final int REQUEST_CODE_PICK_IMAGE = 100;
@@ -50,12 +43,23 @@ public class CreateChannelActivity extends WfcBaseActivity {
     private String portraitPath;
 
 
+    protected void bindEvents() {
+        super.bindEvents();
+        portraitImageView.setOnClickListener(v -> portraitClick());
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        portraitImageView = findViewById(R.id.portraitImageView);
+        nameInputEditText = findViewById(R.id.channelNameTextInputEditText);
+        descInputEditText = findViewById(R.id.channelDescTextInputEditText);
+    }
+
     @Override
     protected int contentLayout() {
         return R.layout.channel_create_fragment;
     }
 
-    @OnTextChanged(value = R2.id.channelNameTextInputEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void inputChannelName(Editable editable) {
 //        if (!TextUtils.isEmpty(editable)) {
 //            confirmButton.setEnabled(true);
@@ -64,7 +68,6 @@ public class CreateChannelActivity extends WfcBaseActivity {
 //        }
     }
 
-    @OnTextChanged(value = R2.id.channelDescTextInputEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void inputChannelDesc(Editable editable) {
 
     }
@@ -84,7 +87,6 @@ public class CreateChannelActivity extends WfcBaseActivity {
         }
     }
 
-    @OnClick(R2.id.portraitImageView)
     void portraitClick() {
         ImagePicker.picker().pick(this, REQUEST_CODE_PICK_IMAGE);
     }
@@ -111,10 +113,10 @@ public class CreateChannelActivity extends WfcBaseActivity {
             return;
         }
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("创建频道中...")
-                .progress(true, 10)
-                .cancelable(false)
-                .show();
+            .content("创建频道中...")
+            .progress(true, 10)
+            .cancelable(false)
+            .show();
         channelViewModel.createChannel(null, channelName, portraitPath, desc, null).observe(this, new Observer<OperateResult<String>>() {
             @Override
             public void onChanged(@Nullable OperateResult<String> result) {

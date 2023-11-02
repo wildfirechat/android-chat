@@ -18,6 +18,9 @@ public class UiMessage {
     public Message message;
     public Object extra;
 
+    public boolean continuousPlayAudio;
+    public boolean audioPlayCompleted;
+
     public UiMessage(Message message) {
         this.message = message;
     }

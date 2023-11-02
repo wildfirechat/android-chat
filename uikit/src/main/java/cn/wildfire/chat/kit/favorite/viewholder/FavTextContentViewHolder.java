@@ -10,18 +10,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 
 public class FavTextContentViewHolder extends FavContentViewHolder {
-    @BindView(R2.id.favTextContentTextView)
     TextView favTextContentTextView;
 
     public FavTextContentViewHolder(@NonNull View itemView) {
         super(itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        favTextContentTextView = itemView.findViewById(R.id.favTextContentTextView);
     }
 
     @Override
@@ -30,8 +32,8 @@ public class FavTextContentViewHolder extends FavContentViewHolder {
         favTextContentTextView.setText(item.getTitle());
     }
 
-    @OnClick(R2.id.favTextContentTextView)
-    void showFavText() {
+    @Override
+    protected void onClick() {
         WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "收藏内容", favoriteItem.getTitle());
     }
 }

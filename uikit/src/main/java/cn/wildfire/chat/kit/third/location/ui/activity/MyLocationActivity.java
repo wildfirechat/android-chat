@@ -5,12 +5,14 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,9 +39,7 @@ import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
 import java.util.List;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.third.location.ui.base.BaseActivity;
 import cn.wildfire.chat.kit.third.location.ui.presenter.MyLocationAtPresenter;
 import cn.wildfire.chat.kit.third.location.ui.view.IMyLocationAtView;
@@ -63,21 +63,25 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
     private Circle accuracy;
     private TencentSearch mTencentSearch;
 
-    @BindView(R2.id.confirmButton)
     Button mBtnToolbarSend;
-    @BindView(R2.id.rlMap)
     RelativeLayout mRlMap;
-    @BindView(R2.id.map)
     MapView mMap;
-    @BindView(R2.id.ibShowLocation)
     ImageButton mIbShowLocation;
-    @BindView(R2.id.rvPOI)
     RecyclerView mRvPOI;
-    @BindView(R2.id.pb)
     ProgressBar mPb;
+
+    private void bindViews() {
+        mBtnToolbarSend = findViewById(R.id.confirmButton);
+        mRlMap = findViewById(R.id.rlMap);
+        mMap = findViewById(R.id.map);
+        mIbShowLocation = findViewById(R.id.ibShowLocation);
+        mRvPOI = findViewById(R.id.rvPOI);
+        mPb = findViewById(R.id.pb);
+    }
 
     @Override
     public void initView() {
+        bindViews();
         mBtnToolbarSend.setVisibility(View.GONE);
         setRlMapHeight(maxHeight);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -142,17 +146,9 @@ public class MyLocationActivity extends BaseActivity<IMyLocationAtView, MyLocati
     private void requestLocationUpdate() {
         //开启定位
         int error = mLocationManager.requestLocationUpdates(mLocationRequest, MyLocationActivity.this);
-        switch (error) {
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            default:
-                break;
+        if (error != 0){
+            Toast.makeText(this, "腾讯地图key不正确，请看日志，查看更多信息", Toast.LENGTH_LONG).show();
+            Log.e(MyLocationActivity.class.getSimpleName(), "!!! 腾讯地图key不正确，请查看AndroidManifest.xml里面的TencentMapSDK的配置及注释 !!!");
         }
     }
 

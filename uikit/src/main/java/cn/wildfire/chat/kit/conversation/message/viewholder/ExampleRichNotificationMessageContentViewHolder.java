@@ -13,10 +13,9 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.R2;
+import com.bumptech.glide.Glide;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
@@ -30,11 +29,20 @@ import cn.wildfirechat.message.StickerMessageContent;
 @EnableContextMenu
 public class ExampleRichNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder {
     private String path;
-    @BindView(R2.id.stickerImageView)
     ImageView imageView;
 
     public ExampleRichNotificationMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+       itemView.findViewById(R.id.stickerImageView).setOnClickListener(this::onClick);
+    }
+
+    private void bindViews(View itemView) {
+        imageView =itemView.findViewById(R.id.stickerImageView);
     }
 
     @Override
@@ -47,21 +55,20 @@ public class ExampleRichNotificationMessageContentViewHolder extends Notificatio
             if (stickerMessage.localPath.equals(path)) {
                 return;
             }
-            GlideApp.with(fragment).load(stickerMessage.localPath)
+            Glide.with(fragment).load(stickerMessage.localPath)
                 .into(imageView);
             path = stickerMessage.localPath;
         } else {
             CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
             progressDrawable.start();
-            GlideApp.with(fragment)
+            Glide.with(fragment)
                 .load(stickerMessage.remoteUrl)
                 .placeholder(progressDrawable)
                 .into(imageView);
         }
     }
 
-    @OnClick(R2.id.stickerImageView)
     public void onClick(View view) {
         Toast.makeText(fragment.getContext(), "TODO", Toast.LENGTH_SHORT).show();
     }

@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -25,12 +26,7 @@ import org.webrtc.StatsReport;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -39,23 +35,32 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.CallSessionCallback {
 
-    @BindView(R2.id.invitorImageView)
     ImageView invitorImageView;
-    @BindView(R2.id.invitorTextView)
     TextView invitorTextView;
-    @BindView(R2.id.participantGridView)
     RecyclerView participantRecyclerView;
 
-    @BindView(R2.id.acceptImageView)
     ImageView acceptImageView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_multi_incoming, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.hangupImageView).setOnClickListener(_v -> hangup());
+        view.findViewById(R.id.acceptImageView).setOnClickListener(_v -> accept());
+    }
+
+    private void bindViews(View view) {
+        invitorImageView = view.findViewById(R.id.invitorImageView);
+        invitorTextView = view.findViewById(R.id.invitorTextView);
+        participantRecyclerView = view.findViewById(R.id.participantGridView);
+        acceptImageView = view.findViewById(R.id.acceptImageView);
     }
 
     private void init() {
@@ -71,7 +76,7 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo invitor = userViewModel.getUserInfo(session.initiator, false);
         invitorTextView.setText(invitor.displayName);
-        GlideApp.with(this).load(invitor.portrait).placeholder(R.mipmap.avatar_def).into(invitorImageView);
+        Glide.with(this).load(invitor.portrait).placeholder(R.mipmap.avatar_def).into(invitorImageView);
 
         List<String> participants = session.getParticipantIds();
         participants.remove(invitor.uid);
@@ -90,12 +95,10 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
     }
 
 
-    @OnClick(R2.id.hangupImageView)
     void hangup() {
         ((MultiCallActivity) getActivity()).hangup();
     }
 
-    @OnClick(R2.id.acceptImageView)
     void accept() {
         ((MultiCallActivity) getActivity()).accept();
     }

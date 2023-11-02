@@ -4,10 +4,12 @@
 
 package cn.wildfire.chat.kit.mm;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,32 +23,40 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfire.chat.kit.GlideApp;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
+import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
+import cn.wildfire.chat.kit.widget.PhotoView;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.remote.ChatManager;
 
 /**
  * @author imndx
  */
-public class MMPreviewActivity extends Activity {
+public class MMPreviewActivity extends AppCompatActivity implements PhotoView.OnDragListener, ZoomableFrameLayout.OnDragListener {
     private SparseArray<View> views;
     private View currentVideoView;
+    private ProgressBar videoLoadProgressBar;
+    private ImageView videoPlayButton;
+
+    private PhotoView currentPhotoView;
     private ViewPager viewPager;
     private MMPagerAdapter adapter;
     private boolean secret;
@@ -57,6 +67,31 @@ public class MMPreviewActivity extends Activity {
     private boolean pendingPreviewInitialMedia;
 
     public static final String TAG = "MMPreviewActivity";
+
+
+    @Override
+    public void onDragToFinish() {
+        finish();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            super.finishAfterTransition();
+//        } else {
+//            finish();
+//        }
+    }
+
+    @Override
+    public void onDragOffset(float offset, float maxOffset) {
+        View view = findViewById(R.id.bgMaskView);
+        float alpha = 1 - offset / maxOffset;
+        view.setAlpha(Math.max(alpha, 0.2f));
+
+        if (videoPlayButton != null) {
+            videoPlayButton.setVisibility(offset != 0.0 ? View.GONE : View.VISIBLE);
+        }
+        if (videoLoadProgressBar != null && offset != 0.0) {
+            videoLoadProgressBar.setVisibility(View.GONE);
+        }
+    }
 
     private class MMPagerAdapter extends PagerAdapter {
         private List<MediaEntry> entries;
@@ -121,6 +156,11 @@ public class MMPreviewActivity extends Activity {
             if (currentVideoView != null) {
                 resetVideoView(currentVideoView);
                 currentVideoView = null;
+                videoPlayButton = null;
+                videoLoadProgressBar = null;
+            }
+            if (currentPhotoView != null) {
+                currentPhotoView.resetScale();
             }
             MediaEntry entry = adapter.getEntry(position);
             preview(view, entry);
@@ -160,36 +200,49 @@ public class MMPreviewActivity extends Activity {
     private void previewVideo(View view, MediaEntry entry) {
 
         PhotoView photoView = view.findViewById(R.id.photoView);
+        photoView.setOnDragListener(this);
+        currentPhotoView = photoView;
+
         ImageView saveImageView = view.findViewById(R.id.saveImageView);
+        ZoomableFrameLayout zoomableFrameLayout = view.findViewById(R.id.zoomableFrameLayout);
+        zoomableFrameLayout.setEnableZoom(true);
+        zoomableFrameLayout.setOnDragListener(this);
         saveImageView.setVisibility(View.GONE);
+
         if (entry.getThumbnail() != null) {
-            GlideApp.with(photoView).load(entry.getThumbnail()).diskCacheStrategy(diskCacheStrategy).into(photoView);
+            Glide.with(photoView).load(entry.getThumbnail()).diskCacheStrategy(diskCacheStrategy).into(photoView);
         } else {
-            GlideApp.with(photoView).load(entry.getThumbnailUrl()).diskCacheStrategy(diskCacheStrategy).into(photoView);
+            Glide.with(photoView).load(entry.getThumbnailUrl()).diskCacheStrategy(diskCacheStrategy).into(photoView);
         }
 
         VideoView videoView = view.findViewById(R.id.videoView);
         videoView.setVisibility(View.INVISIBLE);
 
-        ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
-        loadingProgressBar.setVisibility(View.GONE);
+        videoLoadProgressBar = view.findViewById(R.id.loading);
+        videoLoadProgressBar.setVisibility(View.GONE);
 
-        ImageView btn = view.findViewById(R.id.btnVideo);
-        btn.setVisibility(View.VISIBLE);
-        btn.setOnClickListener(new View.OnClickListener() {
+        videoPlayButton = view.findViewById(R.id.btnVideo);
+        videoPlayButton.setVisibility(View.VISIBLE);
+
+
+        videoPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(entry.getMediaUrl())) {
-                    return;
-                }
-                btn.setVisibility(View.GONE);
+                videoPlayButton.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
-                    File videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    File videoFile;
+                    if (entry.getMessage() != null) {
+                        videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    } else {
+                        String name = DownloadManager.getNameFromUrl(entry.getMediaUrl());
+                        name = TextUtils.isEmpty(name) ? System.currentTimeMillis() + "" : name;
+                        videoFile = new File(Config.VIDEO_SAVE_DIR, name);
+                    }
                     if (videoFile == null) {
                         return;
                     }
                     if (!videoFile.exists() || secret) {
-                        String tag = entry.getMessage().messageUid + "";
+                        String tag = System.currentTimeMillis() + "";
                         view.setTag(tag);
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
@@ -203,7 +256,7 @@ public class MMPreviewActivity extends Activity {
                                         targetView.findViewById(R.id.loading).setVisibility(View.GONE);
                                         playVideo(targetView, file.getAbsolutePath());
                                     }
-                                    ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
+                                    saveMedia2Album(file, false);
                                 });
                             }
 
@@ -246,6 +299,7 @@ public class MMPreviewActivity extends Activity {
 
         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
         loadingProgressBar.setVisibility(View.GONE);
+
         view.findViewById(R.id.loading).setVisibility(View.GONE);
         currentVideoView = view;
 
@@ -265,6 +319,8 @@ public class MMPreviewActivity extends Activity {
 
     private void previewImage(View view, MediaEntry entry) {
         PhotoView photoView = view.findViewById(R.id.photoView);
+        photoView.setOnDragListener(this);
+        currentPhotoView = photoView;
         ImageView saveImageView = view.findViewById(R.id.saveImageView);
 
         String mediaUrl = entry.getMediaUrl();
@@ -275,22 +331,30 @@ public class MMPreviewActivity extends Activity {
                 saveImageView.setVisibility(View.VISIBLE);
                 saveImageView.setOnClickListener(v -> {
                     Toast.makeText(this, "图片保存中", Toast.LENGTH_SHORT).show();
-                    File file = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    File file = null;
+                    if (entry.getMessage() != null) {
+                        file = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    } else {
+                        String name = DownloadManager.getNameFromUrl(entry.getMediaUrl());
+                        name = TextUtils.isEmpty(name) ? System.currentTimeMillis() + "" : name;
+                        file = new File(Config.FILE_SAVE_DIR, name);
+                    }
                     if (file == null) {
+                        Toast.makeText(MMPreviewActivity.this, "图片保存失败 file == null", Toast.LENGTH_LONG).show();
                         return;
                     }
+
                     if (file.exists()) {
-                        ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
-                        Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+                        saveMedia2Album(file, true);
                     } else {
+                        File finalFile = file;
                         DownloadManager.download(entry.getMediaUrl(), file.getParent(), file.getName(), new DownloadManager.SimpleOnDownloadListener() {
                             @Override
                             public void onUiSuccess(File file1) {
                                 if (isFinishing()) {
                                     return;
                                 }
-                                ImageUtils.saveMedia2Album(MMPreviewActivity.this, file);
-                                Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+                                saveMedia2Album(finalFile, true);
                             }
                         });
                     }
@@ -301,11 +365,11 @@ public class MMPreviewActivity extends Activity {
         }
 
         if (entry.getThumbnail() != null) {
-            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
+            Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
                 .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
                 .into(photoView);
         } else {
-            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
+            Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
                 .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
                 .into(photoView);
         }
@@ -315,6 +379,8 @@ public class MMPreviewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mm_preview);
+        supportPostponeEnterTransition();
+
         views = new SparseArray<>(3);
         viewPager = findViewById(R.id.viewPager);
         adapter = new MMPagerAdapter(entries);
@@ -357,6 +423,23 @@ public class MMPreviewActivity extends Activity {
         entries = null;
     }
 
+    private void saveMedia2Album(File file, boolean isImage) {
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
+            boolean granted = checkSelfPermission(permissions[0]) == PackageManager.PERMISSION_GRANTED;
+            if (granted) {
+                ImageUtils.saveMedia2Album(this, file, isImage);
+                Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MMPreviewActivity.this, "请授权访问外部存储设备权限", Toast.LENGTH_LONG).show();
+                requestPermissions(permissions, 100);
+            }
+        } else {
+            ImageUtils.saveMedia2Album(this, file, isImage);
+            Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+        }
+    }
+
     public static void previewMedia(Context context, List<MediaEntry> entries, int current) {
         previewMedia(context, entries, current, false);
     }
@@ -374,12 +457,12 @@ public class MMPreviewActivity extends Activity {
     }
 
     public static void previewImage(Context context, Message message) {
-        List<MediaEntry> entries = new ArrayList<>();
-
         if (!(message.content instanceof ImageMessageContent)) {
             Log.e(TAG, "previewImage without imageMessageContent");
             return;
         }
+
+        List<MediaEntry> entries = new ArrayList<>();
         MediaEntry entry = new MediaEntry(message);
         entries.add(entry);
         previewMedia(context, entries, 0, false);
@@ -396,26 +479,13 @@ public class MMPreviewActivity extends Activity {
     }
 
     public static void previewVideo(Context context, Message message) {
-        if (!(message.content instanceof ImageMessageContent)) {
+        if (!(message.content instanceof VideoMessageContent)) {
             Log.e(TAG, "previewVideo without videoMessageContent");
             return;
         }
         List<MediaEntry> entries = new ArrayList<>();
 
         MediaEntry entry = new MediaEntry(message);
-        entries.add(entry);
-        previewMedia(context, entries, 0, false);
-    }
-
-
-    public static void previewVideo(Context context, String videoUrl) {
-        List<MediaEntry> entries = new ArrayList<>();
-
-        MediaEntry entry = new MediaEntry();
-        entry.setType(MediaEntry.TYPE_VIDEO);
-//        entry.setThumbnail(videoMessageContent.getThumbnail());
-        entry.setMediaUrl(videoUrl);
-//        entry.setMediaLocalPath(videoMessageContent.localPath);
         entries.add(entry);
         previewMedia(context, entries, 0, false);
     }

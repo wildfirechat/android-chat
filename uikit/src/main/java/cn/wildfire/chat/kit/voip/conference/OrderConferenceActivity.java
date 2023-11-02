@@ -23,37 +23,27 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import butterknife.BindView;
-import butterknife.OnCheckedChanged;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.widget.DateTimePickerHelper;
 import cn.wildfire.chat.kit.widget.FixedTextInputEditText;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback2;
 
 public class OrderConferenceActivity extends WfcBaseActivity {
-    @BindView(R2.id.conferenceTitleTextInputEditText)
     FixedTextInputEditText titleEditText;
-    @BindView((R2.id.audienceSwitch))
+    SwitchMaterial passwordSwitch;
     SwitchMaterial audienceSwitch;
-    @BindView((R2.id.modeSwitch))
     SwitchMaterial modeSwitch;
-    @BindView((R2.id.advanceSwitch))
     SwitchMaterial advancedSwitch;
 
-    @BindView(R2.id.endDateTimeTextView)
     TextView endDateTimeTextView;
-    @BindView(R2.id.startDateTimeTextView)
     TextView startDateTimeTextView;
 
-    @BindView(R2.id.passwordTextView)
     TextView passwordTextView;
 
     private Date endDateTime;
@@ -65,6 +55,33 @@ public class OrderConferenceActivity extends WfcBaseActivity {
     private String password;
 
     private static final String TAG = "orderConference";
+
+    protected void bindEvents() {
+        super.bindEvents();
+        findViewById(R.id.endDateTimeRelativeLayout).setOnClickListener(v -> pickEndDateTime());
+        findViewById(R.id.startDateTimeRelativeLayout).setOnClickListener(v -> pickStartDateTime());
+
+        audienceSwitch.setOnCheckedChangeListener(this::audienceChecked);
+        passwordSwitch.setOnCheckedChangeListener(this::passwordChecked);
+        titleEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                conferenceTitle(s);
+            }
+        });
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        titleEditText = findViewById(R.id.conferenceTitleTextInputEditText);
+        audienceSwitch = findViewById(R.id.audienceSwitch);
+        passwordSwitch = findViewById(R.id.passwordSwitch);
+        modeSwitch = findViewById((R.id.modeSwitch));
+        advancedSwitch = findViewById((R.id.advanceSwitch));
+        endDateTimeTextView = findViewById(R.id.endDateTimeTextView);
+        startDateTimeTextView = findViewById(R.id.startDateTimeTextView);
+        passwordTextView = findViewById(R.id.passwordTextView);
+    }
 
     @Override
     protected int contentLayout() {
@@ -97,7 +114,6 @@ public class OrderConferenceActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        super.afterViews();
         UserInfo userInfo = ChatManager.Instance().getUserInfo(ChatManager.Instance().getUserId(), false);
         if (userInfo != null) {
             titleEditText.setText(userInfo.displayName + "的会议");
@@ -110,7 +126,6 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         endDateTime = calendar.getTime();
     }
 
-    @OnCheckedChanged(R2.id.audienceSwitch)
     void audienceChecked(CompoundButton button, boolean checked) {
         if (checked) {
             modeSwitch.setChecked(true);
@@ -121,7 +136,6 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         }
     }
 
-    @OnCheckedChanged(R2.id.passwordSwitch)
     void passwordChecked(CompoundButton button, boolean checked) {
         if (checked) {
             new MaterialDialog.Builder(this)
@@ -151,7 +165,6 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         }
     }
 
-    @OnTextChanged(value = R2.id.conferenceTitleTextInputEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void conferenceTitle(Editable editable) {
         this.title = editable.toString();
         if (!TextUtils.isEmpty(title)) {
@@ -165,7 +178,6 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         }
     }
 
-    @OnClick(R2.id.endDateTimeRelativeLayout)
     void pickEndDateTime() {
         DateTimePickerHelper.pickDateTime(this, new DateTimePickerHelper.PickDateTimeCallBack() {
             @Override
@@ -185,7 +197,6 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         });
     }
 
-    @OnClick(R2.id.startDateTimeRelativeLayout)
     void pickStartDateTime() {
         DateTimePickerHelper.pickDateTime(this, new DateTimePickerHelper.PickDateTimeCallBack() {
             @Override

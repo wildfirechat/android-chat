@@ -14,11 +14,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.util.Date;
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -33,26 +30,36 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     private String conferenceId;
     private String password;
     private ConferenceInfo conferenceInfo;
-    @BindView(R2.id.titleTextView)
     TextView titleTextView;
-    @BindView(R2.id.ownerTextView)
     TextView ownerTextView;
-    @BindView(R2.id.callIdTextView)
     TextView callIdTextView;
-    @BindView(R2.id.startDateTimeTextView)
     TextView startDateTimeView;
-    @BindView(R2.id.endDateTimeTextView)
     TextView endDateTimeView;
-    @BindView(R2.id.audioSwitch)
     SwitchMaterial audioSwitch;
-    @BindView(R2.id.videoSwitch)
     SwitchMaterial videoSwitch;
-    @BindView(R2.id.joinConferenceBtn)
     Button joinConferenceButton;
 
     private MenuItem destroyItem;
     private MenuItem favItem;
     private MenuItem unFavItem;
+
+    protected void bindEvents() {
+        super.bindEvents();
+        findViewById(R.id.conferenceQRCodeLinearLayout).setOnClickListener(v -> showConferenceQRCode());
+        findViewById(R.id.joinConferenceBtn).setOnClickListener(v -> joinConference());
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        titleTextView = findViewById(R.id.titleTextView);
+        ownerTextView = findViewById(R.id.ownerTextView);
+        callIdTextView = findViewById(R.id.callIdTextView);
+        startDateTimeView = findViewById(R.id.startDateTimeTextView);
+        endDateTimeView = findViewById(R.id.endDateTimeTextView);
+        audioSwitch = findViewById(R.id.audioSwitch);
+        videoSwitch = findViewById(R.id.videoSwitch);
+        joinConferenceButton = findViewById(R.id.joinConferenceBtn);
+    }
 
     @Override
     protected int contentLayout() {
@@ -70,11 +77,17 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         destroyItem = menu.findItem(R.id.destroy);
         favItem = menu.findItem(R.id.fav);
         unFavItem = menu.findItem(R.id.unfav);
+        if (conferenceInfo != null) {
+            if (Objects.equals(conferenceInfo.getOwner(), ChatManager.Instance().getUserId())) {
+                destroyItem.setVisible(true);
+            } else {
+                destroyItem.setVisible(false);
+            }
+        }
     }
 
     @Override
     protected void afterViews() {
-        super.afterViews();
         Intent intent = getIntent();
         conferenceId = intent.getStringExtra("conferenceId");
         password = intent.getStringExtra("password");
@@ -131,14 +144,12 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R2.id.conferenceQRCodeLinearLayout)
     void showConferenceQRCode() {
         String qrcodeValue = WfcScheme.buildConferenceScheme(conferenceId, password);
         Intent intent = QRCodeActivity.buildQRCodeIntent(this, "会议二维码", null, qrcodeValue);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.joinConferenceBtn)
     void joinConference() {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -149,15 +160,14 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         }
 
         ConferenceInfo info = conferenceInfo;
-        boolean audience = info.isAudience() || (!audioSwitch.isChecked() && !videoSwitch.isChecked());
-        boolean muteVideo = !videoSwitch.isEnabled() || !videoSwitch.isChecked();
-        boolean muteAudio = !audioSwitch.isEnabled() || !audioSwitch.isChecked();
+        boolean audience = !audioSwitch.isChecked() && !videoSwitch.isChecked();
+        boolean muteVideo = audience || !videoSwitch.isChecked();
+        boolean muteAudio = audience || !audioSwitch.isChecked();
         AVEngineKit.CallSession session = AVEngineKit.Instance().joinConference(info.getConferenceId(), false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", audience, info.isAdvance(), muteAudio, muteVideo, null);
         if (session != null) {
             Intent intent = new Intent(this, ConferenceActivity.class);
             startActivity(intent);
 
-            ConferenceManager.getManager().setCurrentConferenceInfo(conferenceInfo);
             ConferenceManager.getManager().joinChatRoom();
 
             finish();
@@ -167,10 +177,11 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
     }
 
     private void setupConferenceInfo(ConferenceInfo info) {
-        if (isFinishing()){
+        if (isFinishing()) {
             return;
         }
         conferenceInfo = info;
+        ConferenceManager.getManager().setCurrentConferenceInfo(info);
         titleTextView.setText(info.getConferenceTitle());
         String owner = info.getOwner();
         String ownerName = ChatManager.Instance().getUserDisplayName(owner);
@@ -179,7 +190,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         startDateTimeView.setText(info.getStartTime() == 0 ? "现在" : new Date(info.getStartTime() * 1000).toString());
         endDateTimeView.setText(new Date(info.getEndTime() * 1000).toString());
 
-        if (info.isAudience() && !owner.equals(ChatManager.Instance().getUserId())) {
+        if (info.isAudience() && !info.isAllowTurnOnMic() && !owner.equals(ChatManager.Instance().getUserId())) {
             audioSwitch.setChecked(false);
             videoSwitch.setChecked(false);
             audioSwitch.setEnabled(false);
@@ -197,10 +208,12 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
             joinConferenceButton.setText("加入会议");
         }
 
-        if (Objects.equals(owner, ChatManager.Instance().getUserId())) {
-            destroyItem.setVisible(true);
-        } else {
-            destroyItem.setVisible(false);
+        if (destroyItem != null) {
+            if (Objects.equals(owner, ChatManager.Instance().getUserId())) {
+                destroyItem.setVisible(true);
+            } else {
+                destroyItem.setVisible(false);
+            }
         }
     }
 

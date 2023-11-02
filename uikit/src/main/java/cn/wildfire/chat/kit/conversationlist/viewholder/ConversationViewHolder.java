@@ -22,10 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.ConversationViewModel;
@@ -52,27 +49,17 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected ConversationListViewModel conversationListViewModel;
     private ConversationViewModel conversationViewModel;
 
-    @BindView(R2.id.nameTextView)
     protected TextView nameTextView;
-    @BindView(R2.id.timeTextView)
     protected TextView timeTextView;
-    @BindView(R2.id.portraitImageView)
     protected ImageView portraitImageView;
-    @BindView(R2.id.slient)
     protected ImageView silentImageView;
-    @BindView(R2.id.unreadCountTextView)
     protected TextView unreadCountTextView;
-    @BindView(R2.id.redDotView)
     protected View redDotView;
-    @BindView(R2.id.contentTextView)
     protected TextView contentTextView;
-    @BindView(R2.id.promptTextView)
     protected TextView promptTextView;
 
-    @BindView(R2.id.statusImageView)
     protected ImageView statusImageView;
 
-    @BindView(R2.id.secretChatIndicator)
     protected ImageView secretChatIndicator;
 
     public ConversationViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {
@@ -80,10 +67,23 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         this.fragment = fragment;
         this.itemView = itemView;
         this.adapter = adapter;
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
         conversationListViewModel = new ViewModelProvider(fragment.getActivity(), new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.SecretChat), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
         conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
+    }
+
+    private void bindViews(View itemView) {
+        nameTextView = itemView.findViewById(R.id.nameTextView);
+        timeTextView = itemView.findViewById(R.id.timeTextView);
+        portraitImageView = itemView.findViewById(R.id.portraitImageView);
+        silentImageView = itemView.findViewById(R.id.slient);
+        unreadCountTextView = itemView.findViewById(R.id.unreadCountTextView);
+        redDotView = itemView.findViewById(R.id.redDotView);
+        contentTextView = itemView.findViewById(R.id.contentTextView);
+        promptTextView = itemView.findViewById(R.id.promptTextView);
+        statusImageView = itemView.findViewById(R.id.statusImageView);
+        secretChatIndicator = itemView.findViewById(R.id.secretChatIndicator);
     }
 
     final public void onBind(ConversationInfo conversationInfo, int position) {

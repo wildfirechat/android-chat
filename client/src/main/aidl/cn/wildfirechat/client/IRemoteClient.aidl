@@ -71,7 +71,7 @@ import android.os.ParcelFileDescriptor;
 // Declare any non-default types here with import statements
 
 interface IRemoteClient {
-    boolean connect(in String userId, in String token);
+    long connect(in String userId, in String token);
     void disconnect(in boolean disablePush, in boolean clearSession);
     void setForeground(in int isForeground);
     void onNetworkChange();
@@ -116,6 +116,7 @@ interface IRemoteClient {
     List<Message> getMessagesInStatusSync(in Conversation conversation, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser);
 
     oneway void getMessagesAsync(in Conversation conversation, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void getMentionedMessagesAsync(in Conversation conversation, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
     oneway void getMessagesInTypesAsync(in Conversation conversation, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesInStatusAsync(in Conversation conversation, in int[] messageStatus, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
     oneway void getMessagesExAsync(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
@@ -147,6 +148,7 @@ interface IRemoteClient {
     boolean clearUnreadStatus(in int conversationType, in String target, in int line);
     boolean clearUnreadStatusEx(in int[] conversationTypes, in int[] lines);
     boolean clearMessageUnreadStatus(long messageId);
+    boolean clearUnreadStatusBeforeMessage(long messageId, in Conversation conversation);
     void clearAllUnreadStatus();
     boolean markAsUnRead(in int conversationType, in String target, in int line, in boolean sync);
     void clearMessages(in int conversationType, in String target, in int line);
@@ -177,7 +179,10 @@ interface IRemoteClient {
     oneway void setDeviceToken(in String token, in int pushType);
 
     List<FriendRequest> getFriendRequest(in boolean incomming);
+    List<FriendRequest> getAllFriendRequest();
     FriendRequest getOneFriendRequest(in String userId, in boolean incomming);
+    boolean clearFriendRequest(in boolean direction, in long beforeTime);
+    boolean deleteFriendRequest(in String userId, in boolean direction);
     String getFriendAlias(in String userId);
     oneway void setFriendAlias(in String userId, in String alias, in IGeneralCallback callback);
     String getFriendExtra(in String userId);
@@ -198,6 +203,7 @@ interface IRemoteClient {
     oneway void getChatRoomInfo(in String chatRoomId, in long updateDt, in IGetChatRoomInfoCallback callback);
     oneway void getChatRoomMembersInfo(in String chatRoomId, in int maxCount, in IGetChatRoomMembersInfoCallback callback);
     GroupInfo getGroupInfo(in String groupId, in boolean refresh);
+    List<GroupInfo> getGroupInfos(in List<String> groupIds, in boolean refresh);
     oneway void getGroupInfoEx(in String groupId, in boolean refresh, in IGetGroupCallback callback);
     UserInfo getUserInfo(in String userId, in String groupId, in boolean refresh);
     List<UserInfo> getUserInfos(in List<String> userIds, in String groupId);
@@ -212,10 +218,14 @@ interface IRemoteClient {
     void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
     void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
-    List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
-    List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset);
-    List<Message> searchMessageByTypesAndTimes(in Conversation conversation, in String keyword, in int[] contentTypes, in long startTime, in long endTime, in boolean desc, in int limit, in int offset);
-    oneway void searchMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in String keyword, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
+    List<ConversationSearchResult> searchConversationEx(in String keyword, in int[] conversationTypes, in int[] lines, in long startTime, in long endTime, in boolean desc, in int limit, in int offset);
+    List<ConversationSearchResult> searchConversationEx2(in String keyword, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long startTime, in long endTime, in boolean desc, in int limit, in int offset, in boolean onlyMentionedMsg);
+    List<Message> searchMessage(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset, in String withUser);
+    List<Message> searchMentionedMessages(in Conversation conversation, in String keyword, in boolean desc, in int limit, in int offset);
+    List<Message> searchMessageByTypes(in Conversation conversation, in String keyword, in int[] contentTypes, in boolean desc, in int limit, in int offset, in String withUser);
+    List<Message> searchMessageByTypesAndTimes(in Conversation conversation, in String keyword, in int[] contentTypes, in long startTime, in long endTime, in boolean desc, in int limit, in int offset, in String withUser);
+    oneway void searchMessagesEx(in int[] conversationTypes, in int[] lines, in int[] contentTypes, in String keyword, in long fromIndex, in boolean before, in int count, in String withUser, in IGetMessageCallback callback);
+    oneway void searchMentionedMessagesEx(in int[] conversationTypes, in int[] lines, in String keyword, in boolean desc, in int limit, in int offset, in IGetMessageCallback callback);
 
     List<GroupSearchResult> searchGroups(in String keyword);
     List<UserInfo> searchFriends(in String keyworkd);
@@ -282,14 +292,19 @@ interface IRemoteClient {
 
     int getMessageCount(in Conversation conversation);
     boolean begainTransaction();
-    void commitTransaction();
+    boolean commitTransaction();
+    boolean rollbackTransaction();
 
     boolean isCommercialServer();
     boolean isReceiptEnabled();
     boolean isGlobalDisableSyncDraft();
     boolean isEnableSecretChat();
+    boolean isEnableUserOnlineState();
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
+    void useAES256();
+    void useTcpShortLink();
+    void noUseFts();
     void checkSignature();
 
     String getProtoRevision();
@@ -306,4 +321,6 @@ interface IRemoteClient {
     byte[] decodeSecretChatData(in String targetid, in byte[] mediaData);
 
     oneway void decodeSecretChatDataAsync(in String targetId, in ParcelFileDescriptor pfd, in int length, in IGeneralCallbackInt callback);
+
+    oneway void setDefaultPortraitProviderClass(in String clazz);
 }

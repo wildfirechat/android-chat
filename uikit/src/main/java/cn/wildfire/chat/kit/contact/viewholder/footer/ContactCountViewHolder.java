@@ -9,21 +9,22 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 
 public class ContactCountViewHolder extends FooterViewHolder<ContactCountFooterValue> {
-    @BindView(R2.id.countTextView)
     TextView countTextView;
     private UserListAdapter adapter;
 
     public ContactCountViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         this.adapter = adapter;
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        countTextView = itemView.findViewById(R.id.countTextView);
     }
 
     @Override

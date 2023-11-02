@@ -9,8 +9,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
@@ -29,11 +28,13 @@ import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
 import cn.wildfirechat.message.notification.GroupPrivateChatNotificationContent;
 import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
+import cn.wildfirechat.message.notification.KickoffGroupMemberVisibleNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupExtraNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupMemberExtraNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
+import cn.wildfirechat.message.notification.QuitGroupVisibleNotificationContent;
 import cn.wildfirechat.message.notification.StartSecretChatMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationContent;
@@ -50,6 +51,8 @@ import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationConten
     ModifyGroupExtraNotificationContent.class,
     ModifyGroupMemberExtraNotificationContent.class,
     QuitGroupNotificationContent.class,
+    QuitGroupVisibleNotificationContent.class,
+    KickoffGroupMemberVisibleNotificationContent.class,
     TransferGroupOwnerNotificationContent.class,
     TipNotificationContent.class,
     FriendAddedMessageContent.class,
@@ -71,11 +74,15 @@ import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationConten
  */
 public class SimpleNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder {
 
-    @BindView(R2.id.notificationTextView)
     TextView notificationTextView;
 
     public SimpleNotificationMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        notificationTextView =itemView.findViewById(R.id.notificationTextView);
     }
 
     @Override

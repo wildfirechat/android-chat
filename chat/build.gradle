@@ -11,20 +11,18 @@ android {
             storePassword 'wildfirechat'
         }
     }
-    compileSdkVersion 31
-    aaptOptions.cruncherEnabled = false
-    aaptOptions.useNewCruncher = false
+    compileSdkVersion 34
     ndkVersion '18.1.5063045'
     defaultConfig {
         applicationId "cn.wildfirechat.chat"
         minSdkVersion 21
-        targetSdkVersion 31 //当targetversion大于23时，需要使用fileprovider
-        versionCode 44
-        versionName '0.9.6'
+        targetSdkVersion 34
+        versionCode 50
+        versionName '1.1.1'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
-                includeCompileClasspath true
+//                includeCompileClasspath true
             }
         }
 
@@ -66,10 +64,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    lintOptions {
-        abortOnError false
-    }
     productFlavors {
+    }
+    namespace 'cn.wildfirechat.chat'
+    lint {
+        abortOnError false
     }
 }
 
@@ -77,14 +76,13 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     implementation 'com.tencent.bugly:crashreport:4.0.0'
     implementation 'com.tencent.bugly:nativecrashreport:3.9.2'
-    implementation 'com.jakewharton:butterknife:10.2.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
     implementation 'androidx.multidex:multidex:2.0.1'
 
-    implementation 'q.rorbin:badgeview:1.1.3'
     implementation project(':push')
 
     implementation 'com.github.tiann:FreeReflection:3.1.0'
+
+    implementation project(':uvccamera')
 
     // 采用 library module 的方式依赖 uikit，如果需要采用 aar 方式集成，请仔细下面的注释
     implementation project(':uikit')
@@ -102,8 +100,6 @@ dependencies {
 //    implementation project(':imagepicker')
 //    implementation project(':pttclient')
 
-    implementation 'com.jakewharton:butterknife:10.2.1'
-    implementation 'q.rorbin:badgeview:1.1.3'
 
     implementation 'com.lqr.adapter:library:1.0.2'
     implementation 'com.jaeger.statusbaruitl:library:1.3.5'
@@ -111,15 +107,14 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.3.0-alpha01'
     implementation 'com.google.android.material:material:1.3.0-alpha01'
     implementation 'cjt.library.wheel:camera:1.1.9'
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.google.code.gson:gson:2.8.5'
 
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation 'com.king.zxing:zxing-lite:1.1.1'
-    implementation 'com.github.wendux:DSBridge-Android:3.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'com.google.android:flexbox:2.0.1'
@@ -128,6 +123,8 @@ dependencies {
     implementation 'io.kvh:amr:1.1.1'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okio:okio:1.14.0'
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
+    implementation 'cn.aigestudio.wheelpicker:WheelPicker:1.1.3'
 
     // moment start
 //    implementation project(':momentclient')

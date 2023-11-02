@@ -9,23 +9,24 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.wildfire.chat.kit.R2;
+import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
 import cn.wildfirechat.remote.ChatManager;
 
 @SuppressWarnings("unused")
 public class FriendRequestViewHolder extends HeaderViewHolder<FriendRequestValue> {
-    @BindView(R2.id.unreadFriendRequestCountTextView)
     TextView unreadRequestCountTextView;
     private FriendRequestValue value;
 
 
     public FriendRequestViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
         super(fragment, adapter, itemView);
-        ButterKnife.bind(this, itemView);
+        bindViews(itemView);
+    }
+
+    private void bindViews(View itemView) {
+        unreadRequestCountTextView = itemView.findViewById(R.id.unreadFriendRequestCountTextView);
     }
 
     @Override

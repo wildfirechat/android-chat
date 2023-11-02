@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="40dp"
-    android:background="@drawable/selector_common_item">
+    android:background="@drawable/selector_stick_top_item">
+
     <ImageView
         android:id="@+id/pc_image_view"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@mipmap/pc"
         android:layout_marginStart="10dp"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp"/>
+        android:paddingRight="10dp"
+        android:src="@mipmap/pc"
+        app:tint="#7C7C7C" />
+
     <TextView
         android:id="@+id/statusTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:text="pc online"/>
+        android:text="pc online" />
 </LinearLayout>

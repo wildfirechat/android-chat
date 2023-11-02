@@ -22,11 +22,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
@@ -34,11 +30,8 @@ import cn.wildfirechat.model.GroupInfo;
 
 public class GroupManageFragment extends Fragment {
     private GroupInfo groupInfo;
-    @BindView(R2.id.joinOptionItemView)
     OptionItemView joinOptionItemView;
-    @BindView(R2.id.searchOptionItemView)
     OptionItemView searchOptionItemView;
-    @BindView(R2.id.historyMessageOptionItemView)
     OptionItemView historyOptionItemView;
 
     private GroupViewModel groupViewModel;
@@ -55,15 +48,36 @@ public class GroupManageFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
+        if (groupInfo == null) {
+            getActivity().finish();
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.group_manage_fragment, container, false);
-        ButterKnife.bind(this, view);
-        init();
+        if (groupInfo != null) {
+            bindViews(view);
+            bindEvents(view);
+            init();
+        }
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.managerOptionItemView).setOnClickListener(_v -> showGroupManagerSetting());
+        view.findViewById(R.id.muteOptionItemView).setOnClickListener(_v -> showGroupMuteSetting());
+        view.findViewById(R.id.permissionOptionItemView).setOnClickListener(_v -> showMemberPermissionSetting());
+        view.findViewById(R.id.joinOptionItemView).setOnClickListener(_v -> showJoinTypeSetting());
+        view.findViewById(R.id.searchOptionItemView).setOnClickListener(_v -> showSearchSetting());
+        view.findViewById(R.id.historyMessageOptionItemView).setOnClickListener(_v -> showHistoryMessageSetting());
+    }
+
+    private void bindViews(View view) {
+        joinOptionItemView = view.findViewById(R.id.joinOptionItemView);
+        searchOptionItemView = view.findViewById(R.id.searchOptionItemView);
+        historyOptionItemView = view.findViewById(R.id.historyMessageOptionItemView);
     }
 
     private void setupGroupOptionsView(GroupInfo groupInfo) {
@@ -96,14 +110,12 @@ public class GroupManageFragment extends Fragment {
         });
     }
 
-    @OnClick(R2.id.managerOptionItemView)
     void showGroupManagerSetting() {
         Intent intent = new Intent(getActivity(), GroupManagerListActivity.class);
         intent.putExtra("groupInfo", groupInfo);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.muteOptionItemView)
     void showGroupMuteSetting() {
         Intent intent = new Intent(getActivity(), GroupMuteOrAllowActivity.class);
         intent.putExtra("groupInfo", groupInfo);
@@ -111,14 +123,12 @@ public class GroupManageFragment extends Fragment {
 
     }
 
-    @OnClick(R2.id.permissionOptionItemView)
     void showMemberPermissionSetting() {
         Intent intent = new Intent(getActivity(), GroupMemberPermissionActivity.class);
         intent.putExtra("groupInfo", groupInfo);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.joinOptionItemView)
     void showJoinTypeSetting() {
         new MaterialDialog.Builder(getActivity())
             .items(R.array.group_join_type)
@@ -135,7 +145,6 @@ public class GroupManageFragment extends Fragment {
             .show();
     }
 
-    @OnClick(R2.id.searchOptionItemView)
     void showSearchSetting() {
         new MaterialDialog.Builder(getActivity())
             .items(R.array.group_search_type)
@@ -152,7 +161,6 @@ public class GroupManageFragment extends Fragment {
             .show();
     }
 
-    @OnClick(R2.id.historyMessageOptionItemView)
     void showHistoryMessageSetting() {
         new MaterialDialog.Builder(getActivity())
             .items(R.array.group_history_message)

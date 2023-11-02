@@ -17,19 +17,12 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import cn.wildfire.chat.kit.net.base.ResultWrapper;
 import cn.wildfire.chat.kit.net.base.StatusResult;
 import okhttp3.Call;
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -46,10 +39,7 @@ import okhttp3.Response;
 public class OKHttpHelper {
     private static final String TAG = "OKHttpHelper";
     private static final String WFC_OKHTTP_COOKIE_CONFIG = "WFC_OK_HTTP_COOKIES";
-    private static final Map<String, List<Cookie>> cookieStore = new ConcurrentHashMap<>();
     private static final String AUTHORIZATION_HEADER = "authToken";
-
-    private static String authToken = "";
 
     private static WeakReference<Context> AppContext;
 
@@ -58,50 +48,15 @@ public class OKHttpHelper {
     public static void init(Context context) {
         AppContext = new WeakReference<>(context);
         SharedPreferences sp = context.getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, Context.MODE_PRIVATE);
-        authToken = sp.getString(AUTHORIZATION_HEADER, null);
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS);
 
-        // 优先使用token认证
-        if (TextUtils.isEmpty(authToken)) {
-            builder.cookieJar(new CookieJar() {
-                @Override
-                public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                    cookieStore.put(url.host(), cookies);
-                    if (AppContext != null && AppContext.get() != null) {
-                        SharedPreferences sp = AppContext.get().getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, 0);
-                        Set<String> set = new HashSet<>();
-                        for (Cookie k : cookies) {
-                            set.add(gson.toJson(k));
-                        }
-                        sp.edit().putStringSet(url.host(), set).apply();
-                    }
-                }
-
-                @Override
-                public List<Cookie> loadForRequest(HttpUrl url) {
-                    List<Cookie> cookies = cookieStore.get(url.host());
-                    if (cookies == null) {
-                        if (AppContext != null && AppContext.get() != null) {
-                            SharedPreferences sp = AppContext.get().getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, 0);
-                            Set<String> set = sp.getStringSet(url.host(), new HashSet<>());
-                            cookies = new ArrayList<>();
-                            for (String s : set) {
-                                Cookie cookie = gson.fromJson(s, Cookie.class);
-                                cookies.add(cookie);
-                            }
-                            cookieStore.put(url.host(), cookies);
-                        }
-                    }
-
-                    return cookies;
-                }
-            });
-        }
         builder.addInterceptor(chain -> {
             Request request = chain.request();
+            String host = request.url().host();
+            String authToken = sp.getString(AUTHORIZATION_HEADER + ":" + host, null);
             if (!TextUtils.isEmpty(authToken)) {
                 request = request.newBuilder()
                     .addHeader(AUTHORIZATION_HEADER, authToken)
@@ -110,9 +65,7 @@ public class OKHttpHelper {
             Response response = chain.proceed(request);
             String responseAuthToken = response.header(AUTHORIZATION_HEADER, null);
             if (!TextUtils.isEmpty(responseAuthToken)) {
-                authToken = responseAuthToken;
-                // 重新登录之后，清除cookie，采用token进行认证
-                sp.edit().clear().putString(AUTHORIZATION_HEADER, authToken).apply();
+                sp.edit().putString(AUTHORIZATION_HEADER + ":" + host, responseAuthToken).apply();
             }
             return response;
         });
@@ -237,7 +190,6 @@ public class OKHttpHelper {
     public static void clearCookies() {
         SharedPreferences sp = AppContext.get().getSharedPreferences(WFC_OKHTTP_COOKIE_CONFIG, 0);
         sp.edit().clear().apply();
-        cookieStore.clear();
     }
 
     private static <T> void handleResponse(String url, Call call, okhttp3.Response response, Callback<T> callback) {

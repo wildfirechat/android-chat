@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:autoLink="phone|email|map|web"
         android:background="@drawable/img_bubble_receive"
+        android:backgroundTint="@color/white"
         android:gravity="left|center_vertical"
         android:linksClickable="true"
         android:maxWidth="240dp"

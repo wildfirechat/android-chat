@@ -17,8 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import butterknife.ButterKnife;
-
 public abstract class WfcBaseNoToolbarActivity extends AppCompatActivity {
 
     @Override
@@ -27,7 +25,6 @@ public abstract class WfcBaseNoToolbarActivity extends AppCompatActivity {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         beforeViews();
         setContentView(contentLayout());
-        ButterKnife.bind(this);
         afterViews();
     }
 
@@ -55,7 +52,6 @@ public abstract class WfcBaseNoToolbarActivity extends AppCompatActivity {
     /**
      * {@link AppCompatActivity#setContentView(int)}之后调用
      * <p>
-     * 此时已经调用了{@link ButterKnife#bind(Activity)}, 子类里面不需要再次调用
      */
     protected void afterViews() {
 

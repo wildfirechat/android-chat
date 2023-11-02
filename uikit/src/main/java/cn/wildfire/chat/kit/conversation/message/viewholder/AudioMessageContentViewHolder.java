@@ -16,11 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -36,18 +33,27 @@ import cn.wildfirechat.message.core.MessageStatus;
 
 @EnableContextMenu
 public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder {
-    @BindView(R2.id.audioImageView)
     ImageView ivAudio;
-    @BindView(R2.id.durationTextView)
     TextView durationTextView;
-    @BindView(R2.id.audioContentLayout)
     RelativeLayout contentLayout;
     @Nullable
-    @BindView(R2.id.playStatusIndicator)
     View playStatusIndicator;
 
     public AudioMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+       itemView.findViewById(R.id.audioContentLayout).setOnClickListener(this::onClick);
+    }
+
+    private void bindViews(View itemView) {
+        ivAudio =itemView.findViewById(R.id.audioImageView);
+        durationTextView =itemView.findViewById(R.id.durationTextView);
+        contentLayout =itemView.findViewById(R.id.audioContentLayout);
+        playStatusIndicator =itemView.findViewById(R.id.playStatusIndicator);
     }
 
     @Override
@@ -83,14 +89,6 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
                 ivAudio.setBackgroundResource(R.drawable.audio_animation_left_list);
             }
         }
-
-        // 下载完成，开始播放
-        if (message.progress == 100) {
-            message.progress = 0;
-            itemView.post(() -> {
-                messageViewModel.playAudioMessage(message);
-            });
-        }
     }
 
     @Override
@@ -98,7 +96,6 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         // TODO 可实现语音是否持续播放、中断登录逻辑
     }
 
-    @OnClick(R2.id.audioContentLayout)
     public void onClick(View view) {
         File file = DownloadManager.mediaMessageContentFile(message.message);
         if (file == null) {

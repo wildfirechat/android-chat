@@ -4,8 +4,11 @@
 
 package cn.wildfire.chat.kit.user;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -20,6 +23,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -32,21 +37,24 @@ import com.lqr.imagepicker.bean.ImageItem;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
+import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.group.GroupMemberMessageHistoryActivity;
+import cn.wildfire.chat.kit.mm.MMPreviewActivity;
+import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
+import cn.wildfire.chat.kit.organization.model.EmployeeEx;
+import cn.wildfire.chat.kit.organization.model.Organization;
+import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -56,43 +64,35 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class UserInfoFragment extends Fragment {
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
 
-    @BindView(R2.id.titleTextView)
     TextView titleTextView;
-    @BindView(R2.id.displayNameTextView)
     TextView displayNameTextView;
-    @BindView(R2.id.groupAliasTextView)
     TextView groupAliasTextView;
-    @BindView(R2.id.accountTextView)
     TextView accountTextView;
 
-    @BindView(R2.id.chatButton)
     View chatButton;
-    @BindView(R2.id.voipChatButton)
     View voipChatButton;
-    @BindView(R2.id.inviteButton)
     Button inviteButton;
-    @BindView(R2.id.aliasOptionItemView)
     OptionItemView aliasOptionItemView;
 
-    @BindView(R2.id.messagesOptionItemView)
+
+    OptionItemView orgOptionItemView;
     OptionItemView messagesOptionItemView;
 
-    @BindView(R2.id.qrCodeOptionItemView)
     OptionItemView qrCodeOptionItemView;
 
-    @BindView(R2.id.momentButton)
     View momentButton;
 
-    @BindView(R2.id.favContactTextView)
     TextView favContactTextView;
 
     private UserInfo userInfo;
     private String groupId;
     private UserViewModel userViewModel;
+    private OrganizationServiceViewModel organizationServiceViewModel;
     private ContactViewModel contactViewModel;
+
+    private List<Organization> organizations;
 
     public static UserInfoFragment newInstance(UserInfo userInfo, String groupId) {
         UserInfoFragment fragment = new UserInfoFragment();
@@ -118,14 +118,45 @@ public class UserInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_info_fragment, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.chatButton).setOnClickListener(_v -> chat());
+        view.findViewById(R.id.momentButton).setOnClickListener(_v -> moment());
+        view.findViewById(R.id.voipChatButton).setOnClickListener(_v -> voipChat());
+        view.findViewById(R.id.aliasOptionItemView).setOnClickListener(_v -> alias());
+        view.findViewById(R.id.messagesOptionItemView).setOnClickListener(_v -> showUserMessages());
+        view.findViewById(R.id.portraitImageView).setOnClickListener(_v -> portrait());
+        view.findViewById(R.id.orgOptionItemView).setOnClickListener(_v -> showOrg());
+        view.findViewById(R.id.inviteButton).setOnClickListener(_v -> invite());
+        view.findViewById(R.id.qrCodeOptionItemView).setOnClickListener(_v -> showMyQRCode());
+    }
+
+    private void bindViews(View view) {
+        portraitImageView = view.findViewById(R.id.portraitImageView);
+        titleTextView = view.findViewById(R.id.titleTextView);
+        displayNameTextView = view.findViewById(R.id.displayNameTextView);
+        groupAliasTextView = view.findViewById(R.id.groupAliasTextView);
+        accountTextView = view.findViewById(R.id.accountTextView);
+        chatButton = view.findViewById(R.id.chatButton);
+        voipChatButton = view.findViewById(R.id.voipChatButton);
+        inviteButton = view.findViewById(R.id.inviteButton);
+        aliasOptionItemView = view.findViewById(R.id.aliasOptionItemView);
+        orgOptionItemView = view.findViewById(R.id.orgOptionItemView);
+        messagesOptionItemView = view.findViewById(R.id.messagesOptionItemView);
+        qrCodeOptionItemView = view.findViewById(R.id.qrCodeOptionItemView);
+        momentButton = view.findViewById(R.id.momentButton);
+        favContactTextView = view.findViewById(R.id.favContactTextView);
     }
 
     private void init() {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
         String selfUid = userViewModel.getUserId();
         if (selfUid.equals(userInfo.uid)) {
             // self
@@ -177,6 +208,9 @@ public class UserInfoFragment extends Fragment {
         } else {
             messagesOptionItemView.setVisibility(View.GONE);
         }
+        if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
+            loadOrganizationData();
+        }
     }
 
     private void setUserInfo(UserInfo userInfo) {
@@ -204,7 +238,6 @@ public class UserInfoFragment extends Fragment {
         accountTextView.setText("野火ID:" + userInfo.name);
     }
 
-    @OnClick(R2.id.chatButton)
     void chat() {
         Intent intent = new Intent(getActivity(), ConversationActivity.class);
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfo.uid, 0);
@@ -213,14 +246,12 @@ public class UserInfoFragment extends Fragment {
         getActivity().finish();
     }
 
-    @OnClick(R2.id.momentButton)
     void moment() {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
         intent.putExtra("userInfo", userInfo);
         startActivity(intent);
     }
 
-    @OnClick(R2.id.voipChatButton)
     void voipChat() {
         new MaterialDialog.Builder(getActivity())
             .items("音频聊天", "视频聊天")
@@ -234,7 +265,6 @@ public class UserInfoFragment extends Fragment {
             .show();
     }
 
-    @OnClick(R2.id.aliasOptionItemView)
     void alias() {
         String selfUid = userViewModel.getUserId();
         if (selfUid.equals(userInfo.uid)) {
@@ -247,7 +277,6 @@ public class UserInfoFragment extends Fragment {
         }
     }
 
-    @OnClick(R2.id.messagesOptionItemView)
     void showUserMessages() {
         Intent intent = new Intent(getActivity(), GroupMemberMessageHistoryActivity.class);
         intent.putExtra("groupId", groupId);
@@ -257,12 +286,62 @@ public class UserInfoFragment extends Fragment {
 
     private static final int REQUEST_CODE_PICK_IMAGE = 100;
 
-    @OnClick(R2.id.portraitImageView)
     void portrait() {
-        if (userInfo.uid.equals(userViewModel.getUserId())) {
-            updatePortrait();
+        if (!userInfo.uid.equals(userViewModel.getUserId())) {
+            if (!TextUtils.isEmpty(userInfo.portrait)) {
+                MMPreviewActivity.previewImage(getContext(), userInfo.portrait);
+            } else {
+                Toast.makeText(getActivity(), "用户未设置头像", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        String[] permissions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions = new String[]{
+                Manifest.permission.READ_MEDIA_IMAGES,
+            };
         } else {
-            // TODO show big portrait
+            permissions = new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+            };
+        }
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (String permission : permissions) {
+                if (activity.checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(permissions, 100);
+                    return;
+                }
+            }
+        }
+        updatePortrait();
+    }
+
+    void showOrg() {
+        if (organizations.size() > 1) {
+            String[] names = new String[organizations.size()];
+            for (int i = 0; i < organizations.size(); i++) {
+                names[i] = organizations.get(i).name;
+            }
+            new MaterialDialog.Builder(getActivity())
+                .items(names)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                        Intent intent = new Intent(getActivity(), OrganizationMemberListActivity.class);
+                        intent.putExtra("organizationId", organizations.get(position).id);
+                        startActivity(intent);
+                    }
+                })
+                .build()
+                .show();
+        } else {
+            Intent intent = new Intent(getActivity(), OrganizationMemberListActivity.class);
+            intent.putExtra("organizationId", organizations.get(0).id);
+            startActivity(intent);
         }
     }
 
@@ -298,7 +377,6 @@ public class UserInfoFragment extends Fragment {
         }
     }
 
-    @OnClick(R2.id.inviteButton)
     void invite() {
         Intent intent = new Intent(getActivity(), InviteFriendActivity.class);
         intent.putExtra("userInfo", userInfo);
@@ -306,10 +384,44 @@ public class UserInfoFragment extends Fragment {
         getActivity().finish();
     }
 
-    @OnClick(R2.id.qrCodeOptionItemView)
     void showMyQRCode() {
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_USER + userInfo.uid;
         startActivity(QRCodeActivity.buildQRCodeIntent(getActivity(), "二维码", userInfo.portrait, qrCodeValue));
+    }
+
+    private void loadOrganizationData() {
+        organizationServiceViewModel.getEmployeeEx(userInfo.uid)
+            .observe(getViewLifecycleOwner(), new Observer<EmployeeEx>() {
+                @Override
+                public void onChanged(EmployeeEx employeeEx) {
+                    if (employeeEx.relationships != null && !employeeEx.relationships.isEmpty()) {
+                        organizations = new ArrayList<>();
+                        List<Integer> ids = new ArrayList<>();
+                        for (OrganizationRelationship r : employeeEx.relationships) {
+                            if (r.bottom) {
+                                ids.add(r.organizationId);
+                            }
+                        }
+                        organizationServiceViewModel.getOrganizations(ids)
+                            .observe(getViewLifecycleOwner(), new Observer<List<Organization>>() {
+                                @Override
+                                public void onChanged(List<Organization> orgs) {
+                                    StringBuilder desc = new StringBuilder();
+                                    for (Organization org : orgs) {
+                                        desc.append(org.name);
+                                        desc.append("、");
+                                    }
+                                    organizations.addAll(orgs);
+
+                                    if (!TextUtils.isEmpty(desc)) {
+                                        orgOptionItemView.setVisibility(View.VISIBLE);
+                                        orgOptionItemView.setDesc(desc.substring(0, desc.length() - 1));
+                                    }
+                                }
+                            });
+                    }
+                }
+            });
     }
 }

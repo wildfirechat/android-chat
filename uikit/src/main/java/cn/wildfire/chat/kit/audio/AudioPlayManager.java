@@ -13,6 +13,7 @@ import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaDataSource;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
@@ -21,6 +22,8 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import java.io.IOException;
+
+import cn.wildfire.chat.kit.R;
 
 public class AudioPlayManager implements SensorEventListener {
     private static final String TAG = "LQR_AudioPlayManager";
@@ -34,6 +37,8 @@ public class AudioPlayManager implements SensorEventListener {
     private PowerManager.WakeLock _wakeLock;
     private AudioManager.OnAudioFocusChangeListener afChangeListener;
     private Context context;
+    private SoundPool soundPool;
+    private int audioMsgPlayCompletionSoundId;
 
     public AudioPlayManager() {
     }
@@ -43,24 +48,23 @@ public class AudioPlayManager implements SensorEventListener {
     }
 
     @Override
-    @TargetApi(11)
     public void onSensorChanged(SensorEvent event) {
         float range = event.values[0];
         if (this._sensor != null && this._mediaPlayer != null) {
             if (this._mediaPlayer.isPlaying()) {
                 if ((double) range > 0.0D) {
-                    if (this._audioManager.getMode() == 0) {
+                    if (this._audioManager.getMode() == AudioManager.MODE_NORMAL) {
                         return;
                     }
 
-                    this._audioManager.setMode(0);
+                    this._audioManager.setMode(AudioManager.MODE_NORMAL);
                     this._audioManager.setSpeakerphoneOn(true);
                     final int positions = this._mediaPlayer.getCurrentPosition();
 
                     try {
                         this._mediaPlayer.reset();
                         this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        this._mediaPlayer.setVolume(1.0F, 1.0F);
+//                        this._mediaPlayer.setVolume(1.0F, 1.0F);
                         this._mediaPlayer.setDataSource(this.context, this._playingUri);
                         this._mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             public void onPrepared(MediaPlayer mp) {
@@ -80,33 +84,24 @@ public class AudioPlayManager implements SensorEventListener {
                     this.setScreenOn();
                 } else {
                     this.setScreenOff();
-                    if (Build.VERSION.SDK_INT >= 11) {
-                        if (this._audioManager.getMode() == 3) {
-                            return;
-                        }
-
-                        this._audioManager.setMode(3);
-                    } else {
-                        if (this._audioManager.getMode() == 2) {
-                            return;
-                        }
-
-                        this._audioManager.setMode(2);
+                    if (this._audioManager.getMode() == AudioManager.MODE_IN_COMMUNICATION) {
+                        return;
                     }
+
+                    this._audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
 
                     this._audioManager.setSpeakerphoneOn(false);
                     this.replay();
                 }
             } else if ((double) range > 0.0D) {
-                if (this._audioManager.getMode() == 0) {
+                if (this._audioManager.getMode() == AudioManager.MODE_NORMAL) {
                     return;
                 }
 
-                this._audioManager.setMode(0);
+                this._audioManager.setMode(AudioManager.MODE_NORMAL);
                 this._audioManager.setSpeakerphoneOn(true);
                 this.setScreenOn();
             }
-
         }
     }
 
@@ -143,7 +138,7 @@ public class AudioPlayManager implements SensorEventListener {
         try {
             this._mediaPlayer.reset();
             this._mediaPlayer.setAudioStreamType(0);
-            this._mediaPlayer.setVolume(1.0F, 1.0F);
+//            this._mediaPlayer.setVolume(1.0F, 1.0F);
             this._mediaPlayer.setDataSource(this.context, this._playingUri);
             this._mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 public void onPrepared(MediaPlayer mp) {
@@ -159,9 +154,13 @@ public class AudioPlayManager implements SensorEventListener {
 
     public void startPlay(Context context, Uri audioUri, byte[] data, IAudioPlayListener playListener) {
         //   低于 Android 6.0 的版本，不支持
+        if (soundPool == null) {
+            soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+            audioMsgPlayCompletionSoundId = soundPool.load(context, R.raw.audio_msg_play_completion, 0);
+        }
         if (data != null && data.length > 0) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                startPlay(context, audioUri, new ByteArrayMediaDataSource(data), playListener);
+                _startPlay(context, audioUri, new ByteArrayMediaDataSource(data), playListener);
             } else {
                 Log.d(TAG, "not support mediaDataSource");
             }
@@ -171,91 +170,99 @@ public class AudioPlayManager implements SensorEventListener {
     }
 
     public void startPlay(Context context, Uri audioUri, IAudioPlayListener playListener) {
-        startPlay(context, audioUri, (MediaDataSource) null, playListener);
+        if (soundPool == null) {
+            soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+            audioMsgPlayCompletionSoundId = soundPool.load(context, R.raw.audio_msg_play_completion, 0);
+        }
+        _startPlay(context, audioUri, null, playListener);
     }
 
-    private void startPlay(Context context, Uri audioUri, MediaDataSource mediaDataSource, IAudioPlayListener playListener) {
-        if (context != null && audioUri != null) {
-            this.context = context;
-            if (this._playListener != null && this._playingUri != null) {
-                this._playListener.onStop(this._playingUri);
-            }
-
-            this.resetMediaPlayer();
-            this.afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
-                public void onAudioFocusChange(int focusChange) {
-                    Log.d(TAG, "OnAudioFocusChangeListener " + focusChange);
-                    if (AudioPlayManager.this._audioManager != null && focusChange == -1) {
-                        AudioPlayManager.this._audioManager.abandonAudioFocus(AudioPlayManager.this.afChangeListener);
-                        AudioPlayManager.this.afChangeListener = null;
-                        AudioPlayManager.this.resetMediaPlayer();
-                    }
-
-                }
-            };
-
-            try {
-                this._powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-                this._audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-                if (!this._audioManager.isWiredHeadsetOn()) {
-                    this._sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-                    this._sensor = this._sensorManager.getDefaultSensor(8);
-                    this._sensorManager.registerListener(this, this._sensor, 3);
-                }
-
-                this.muteAudioFocus(this._audioManager, true);
-                this._playListener = playListener;
-                this._playingUri = audioUri;
-                this._mediaPlayer = new MediaPlayer();
-                this._mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    public void onCompletion(MediaPlayer mp) {
-                        if (AudioPlayManager.this._playListener != null) {
-                            AudioPlayManager.this._playListener.onComplete(AudioPlayManager.this._playingUri);
-                            AudioPlayManager.this._playListener = null;
-                            AudioPlayManager.this.context = null;
-                        }
-
-                        AudioPlayManager.this.reset();
-                    }
-                });
-                this._mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                    public boolean onError(MediaPlayer mp, int what, int extra) {
-                        AudioPlayManager.this.reset();
-                        return true;
-                    }
-                });
-                this._mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        Log.e(TAG, "onPrepared");
-                        mp.start();
-                    }
-                });
-                this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                if (mediaDataSource != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        this._mediaPlayer.setDataSource(mediaDataSource);
-                    }
-                } else {
-                    this._mediaPlayer.setDataSource(context, audioUri);
-                }
-                this._mediaPlayer.prepareAsync();
-                if (this._playListener != null) {
-                    this._playListener.onStart(this._playingUri);
-                }
-            } catch (Exception var5) {
-                var5.printStackTrace();
-                if (this._playListener != null) {
-                    this._playListener.onStop(audioUri);
-                    this._playListener = null;
-                }
-
-                this.reset();
-            }
-
-        } else {
-            Log.e(TAG, "startPlay context or audioUri is null.");
+    private void _startPlay(Context context, Uri audioUri, Object mediaDataSource, IAudioPlayListener playListener) {
+        if (context == null || audioUri == null) {
+            return;
         }
+        this.context = context;
+        if (soundPool == null) {
+            soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+            audioMsgPlayCompletionSoundId = soundPool.load(context, R.raw.audio_msg_play_completion, 0);
+        }
+        if (this._playListener != null && this._playingUri != null) {
+            this._playListener.onStop(this._playingUri);
+        }
+
+        this.resetMediaPlayer();
+        this.afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+            public void onAudioFocusChange(int focusChange) {
+                Log.d(TAG, "OnAudioFocusChangeListener " + focusChange);
+                if (AudioPlayManager.this._audioManager != null && focusChange == -1) {
+                    AudioPlayManager.this._audioManager.abandonAudioFocus(AudioPlayManager.this.afChangeListener);
+                    AudioPlayManager.this.afChangeListener = null;
+                    AudioPlayManager.this.resetMediaPlayer();
+                }
+
+            }
+        };
+
+        try {
+            this._powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            this._audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            if (!this._audioManager.isWiredHeadsetOn()) {
+                this._sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+                this._sensor = this._sensorManager.getDefaultSensor(8);
+                this._sensorManager.registerListener(this, this._sensor, 3);
+            }
+
+            this.muteAudioFocus(this._audioManager, true);
+            this._playListener = playListener;
+            this._playingUri = audioUri;
+            this._mediaPlayer = new MediaPlayer();
+            this._mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                public void onCompletion(MediaPlayer mp) {
+                    if (AudioPlayManager.this._playListener != null) {
+                        AudioPlayManager.this._playListener.onComplete(AudioPlayManager.this._playingUri);
+                        AudioPlayManager.this._playListener = null;
+                        AudioPlayManager.this.context = null;
+                    }
+                    soundPool.play(audioMsgPlayCompletionSoundId, 0.1f, 0.1f, 0, 0, 1);
+
+                    AudioPlayManager.this.reset();
+                }
+            });
+            this._mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    AudioPlayManager.this.reset();
+                    return true;
+                }
+            });
+            this._mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    Log.e(TAG, "onPrepared");
+                    mp.start();
+                }
+            });
+            this._mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            if (mediaDataSource != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    this._mediaPlayer.setDataSource((MediaDataSource) mediaDataSource);
+                }
+            } else {
+                this._mediaPlayer.setDataSource(context, audioUri);
+            }
+            this._mediaPlayer.prepareAsync();
+            if (this._playListener != null) {
+                this._playListener.onStart(this._playingUri);
+            }
+        } catch (Exception var5) {
+            var5.printStackTrace();
+            if (this._playListener != null) {
+                this._playListener.onStop(audioUri);
+                this._playListener = null;
+            }
+
+            this.reset();
+        }
+
     }
 
     public void setPlayListener(IAudioPlayListener listener) {
@@ -349,7 +356,7 @@ public class AudioPlayManager implements SensorEventListener {
             if (position + size > length) {
                 size -= (position + size) - length;
             }
-            System.arraycopy(data, (int)position, buffer, offset, size);
+            System.arraycopy(data, (int) position, buffer, offset, size);
             return size;
         }
 

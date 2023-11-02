@@ -9,27 +9,31 @@ import android.widget.Toast;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-import butterknife.BindView;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 
 public class MessageNotifySettingActivity extends WfcBaseActivity {
-    @BindView(R2.id.switchMsgNotification)
     SwitchMaterial switchMsgNotification;
-    @BindView(R2.id.switchVoipNotification)
     SwitchMaterial switchVoipNotification;
-    @BindView(R2.id.switchShowMsgDetail)
     SwitchMaterial switchShowMsgDetail;
-    @BindView(R2.id.switchUserReceipt)
     SwitchMaterial switchUserReceipt;
-    @BindView(R2.id.switchSyncDraft)
     SwitchMaterial switchSyncDraft;
-    @BindView(R2.id.switchPtt)
     SwitchMaterial switchPtt;
+    SwitchMaterial switchAudioMessageAmplification;
+
+    protected void bindViews() {
+        super.bindViews();
+        switchMsgNotification = findViewById(R.id.switchMsgNotification);
+        switchVoipNotification = findViewById(R.id.switchVoipNotification);
+        switchShowMsgDetail = findViewById(R.id.switchShowMsgDetail);
+        switchUserReceipt = findViewById(R.id.switchUserReceipt);
+        switchSyncDraft = findViewById(R.id.switchSyncDraft);
+        switchPtt = findViewById(R.id.switchPtt);
+        switchAudioMessageAmplification = findViewById(R.id.switchAudioMessageAmplification);
+    }
 
     @Override
     protected int contentLayout() {
@@ -38,8 +42,6 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        super.afterViews();
-
         switchMsgNotification.setChecked(!ChatManager.Instance().isGlobalSilent());
         switchShowMsgDetail.setChecked(!ChatManager.Instance().isHiddenNotificationDetail());
 
@@ -118,6 +120,13 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
         switchSyncDraft.setOnCheckedChangeListener((buttonView, isChecked) -> {
             sp.edit().putBoolean("pttEnabled", isChecked).apply();
             Toast.makeText(this, "开关对讲功能，重新启动应用生效", Toast.LENGTH_SHORT).show();
+        });
+
+        boolean audioMessageAmplificationEnabled = sp.getBoolean("audioMessageAmplificationEnabled", false);
+        switchAudioMessageAmplification.setChecked(audioMessageAmplificationEnabled);
+        switchAudioMessageAmplification.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sp.edit().putBoolean("audioMessageAmplificationEnabled", isChecked).apply();
+            Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION = isChecked;
         });
     }
 }

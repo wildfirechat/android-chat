@@ -16,19 +16,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import org.webrtc.StatsReport;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.glide.BlurTransformation;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
@@ -39,24 +35,15 @@ import cn.wildfirechat.remote.ChatManager;
 public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSessionCallback {
     private AVEngineKit gEngineKit;
 
-    @BindView(R2.id.backgroundImageView)
     ImageView backgroundImageView;
 
-    @BindView(R2.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R2.id.nameTextView)
     TextView nameTextView;
-    @BindView(R2.id.muteImageView)
     ImageView muteImageView;
-    @BindView(R2.id.speakerImageView)
     ImageView spearImageView;
-    @BindView(R2.id.incomingActionContainer)
     ViewGroup incomingActionContainer;
-    @BindView(R2.id.outgoingActionContainer)
     ViewGroup outgoingActionContainer;
-    @BindView(R2.id.descTextView)
     TextView descTextView;
-    @BindView(R2.id.durationTextView)
     TextView durationTextView;
 
     private static final String TAG = "AudioFragment";
@@ -70,9 +57,31 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_p2p_audio_layout, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.muteImageView).setOnClickListener(_v -> mute());
+        view.findViewById(R.id.incomingHangupImageView).setOnClickListener(_v -> hangup());
+        view.findViewById(R.id.outgoingHangupImageView).setOnClickListener(_v -> hangup());
+        view.findViewById(R.id.acceptImageView).setOnClickListener(_v -> onCallConnect());
+        view.findViewById(R.id.minimizeImageView).setOnClickListener(_v -> minimize());
+        view.findViewById(R.id.speakerImageView).setOnClickListener(_v -> speakerClick());
+    }
+
+    private void bindViews(View view) {
+        backgroundImageView = view.findViewById(R.id.backgroundImageView);
+        portraitImageView = view.findViewById(R.id.portraitImageView);
+        nameTextView = view.findViewById(R.id.nameTextView);
+        muteImageView = view.findViewById(R.id.muteImageView);
+        spearImageView = view.findViewById(R.id.speakerImageView);
+        incomingActionContainer = view.findViewById(R.id.incomingActionContainer);
+        outgoingActionContainer = view.findViewById(R.id.outgoingActionContainer);
+        descTextView = view.findViewById(R.id.descTextView);
+        durationTextView = view.findViewById(R.id.durationTextView);
     }
 
     @Override
@@ -166,7 +175,6 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
     }
 
-    @OnClick(R2.id.muteImageView)
     public void mute() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
@@ -176,7 +184,6 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
     }
 
-    @OnClick({R2.id.incomingHangupImageView, R2.id.outgoingHangupImageView})
     public void hangup() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null) {
@@ -187,7 +194,6 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
     }
 
-    @OnClick(R2.id.acceptImageView)
     public void onCallConnect() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null) {
@@ -202,12 +208,10 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
     }
 
-    @OnClick(R2.id.minimizeImageView)
     public void minimize() {
         ((SingleCallActivity) getActivity()).showFloatingView(null);
     }
 
-    @OnClick(R2.id.speakerImageView)
     public void speakerClick() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || (session.getState() != AVEngineKit.CallState.Connected && session.getState() != AVEngineKit.CallState.Outgoing)) {
@@ -253,22 +257,35 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         }
         String targetId = session.getParticipantIds().get(0);
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
-        GlideApp.with(this)
-            .load(userInfo.portrait)
-            .placeholder(R.mipmap.avatar_def)
-            .apply(RequestOptions.bitmapTransform(new RoundedCorners(10)))
-            .into(portraitImageView);
-        GlideApp.with(this)
-            .load(userInfo.portrait)
-            .apply(RequestOptions.bitmapTransform(new BlurTransformation(10)))
-            .into(backgroundImageView);
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
+        updateUserInfoViews(userInfo);
+
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel.userInfoLiveData().observe(getViewLifecycleOwner(), userInfos -> {
+            for (UserInfo info : userInfos) {
+                if (info.uid.equals(targetId)) {
+                    updateUserInfoViews(info);
+                    break;
+                }
+            }
+        });
         muteImageView.setSelected(session.isAudioMuted());
         updateCallDuration();
 
         AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
         spearImageView.setSelected(audioManager.getSelectedAudioDevice() == AVAudioManager.AudioDevice.SPEAKER_PHONE);
+    }
+
+    private void updateUserInfoViews(UserInfo userInfo) {
+        Glide.with(this)
+            .load(userInfo.portrait)
+            .placeholder(R.mipmap.avatar_def)
+            .apply(RequestOptions.bitmapTransform(new RoundedCorners(10)))
+            .into(portraitImageView);
+        Glide.with(this)
+            .load(userInfo.portrait)
+            .apply(RequestOptions.bitmapTransform(new BlurTransformation(10)))
+            .into(backgroundImageView);
+        nameTextView.setText(ChatManager.Instance().getUserDisplayName(userInfo));
     }
 
     private void runOnUiThread(Runnable runnable) {

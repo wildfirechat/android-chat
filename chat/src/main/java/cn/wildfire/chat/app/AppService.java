@@ -43,17 +43,18 @@ import cn.wildfirechat.remote.GeneralCallback2;
 import okhttp3.MediaType;
 
 public class AppService implements AppServiceProvider {
-    private static AppService Instance = new AppService();
+    private static final AppService Instance = new AppService();
 
     /**
      * App Server默认使用的是8888端口，替换为自己部署的服务时需要注意端口别填错了
      * <br>
+     * 这是个 http 地址，http 前缀不能省略，否则会提示配置错误，然后直接退出
      * <br>
      * 正式商用时，建议用https，确保token安全
      * <br>
      * <br>
      */
-    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://wildfirechat.net:8888";
+    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://wildfirechat.net:8888";
 //    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://app.wildfirechat.net";
 
     private AppService() {
@@ -132,7 +133,7 @@ public class AppService implements AppServiceProvider {
             params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
         } catch (Exception e) {
             e.printStackTrace();
-            callback.onUiFailure(-1, "网络出来问题了。。。");
+            callback.onUiFailure(-1, "获取clientId失败");
             return;
         }
 
@@ -529,12 +530,14 @@ public class AppService implements AppServiceProvider {
             }, 5 * 1000);
         }
 
-        for (String[] ice : Config.ICE_SERVERS) {
-            if (!ice[0].startsWith("turn")) {
-                Toast.makeText(context, "Turn配置错误，请检查配置，应用即将关闭...", Toast.LENGTH_LONG).show();
-                new Handler().postDelayed(() -> {
-                    throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查配置!\n");
-                }, 5 * 1000);
+        if (Config.ICE_SERVERS != null) {
+            for (String[] ice : Config.ICE_SERVERS) {
+                if (!ice[0].startsWith("turn")) {
+                    Toast.makeText(context, "Turn配置错误，请检查配置，应用即将关闭...", Toast.LENGTH_LONG).show();
+                    new Handler().postDelayed(() -> {
+                        throw new IllegalArgumentException("config error\n 参数配置错误\n请仔细阅读配置相关注释，并检查配置!\n");
+                    }, 5 * 1000);
+                }
             }
         }
     }

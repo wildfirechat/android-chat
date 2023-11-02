@@ -19,17 +19,13 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Collections;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfirechat.model.GroupInfo;
 
 public class GroupMemberPermissionFragment extends Fragment {
     private GroupInfo groupInfo;
 
-    @BindView(R2.id.privateChatSwitchButton)
     SwitchMaterial privateChatSwitchButton;
 
     public static GroupMemberPermissionFragment newInstance(GroupInfo groupInfo) {
@@ -44,15 +40,24 @@ public class GroupMemberPermissionFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
+        if (groupInfo == null) {
+            getActivity().finish();
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.group_manage_member_permission_fragment, container, false);
-        ButterKnife.bind(this, view);
-        init();
+        if (groupInfo != null) {
+            bindViews(view);
+            init();
+        }
         return view;
+    }
+
+    private void bindViews(View view) {
+        privateChatSwitchButton = view.findViewById(R.id.privateChatSwitchButton);
     }
 
     private void init() {

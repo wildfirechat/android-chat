@@ -15,15 +15,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -37,14 +34,23 @@ public class GroupInfoActivity extends WfcBaseActivity {
     private GroupInfo groupInfo;
     private boolean isJoined;
     private GroupViewModel groupViewModel;
-    @BindView(R2.id.groupNameTextView)
     TextView groupNameTextView;
-    @BindView(R2.id.portraitImageView)
     ImageView groupPortraitImageView;
-    @BindView(R2.id.actionButton)
     Button actionButton;
 
     private MaterialDialog dialog;
+
+    protected void bindEvents() {
+        super.bindEvents();
+        findViewById(R.id.actionButton).setOnClickListener(v -> action());
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        groupNameTextView = findViewById(R.id.groupNameTextView);
+        groupPortraitImageView = findViewById(R.id.portraitImageView);
+        actionButton = findViewById(R.id.actionButton);
+    }
 
     @Override
     protected void afterViews() {
@@ -123,7 +129,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
         if (groupInfo == null) {
             return;
         }
-        GlideApp.with(this)
+        Glide.with(this)
             .load(groupInfo.portrait)
             .placeholder(R.mipmap.ic_group_chat)
             .into(groupPortraitImageView);
@@ -135,7 +141,6 @@ public class GroupInfoActivity extends WfcBaseActivity {
         return R.layout.group_info_activity;
     }
 
-    @OnClick(R2.id.actionButton)
     void action() {
         if (isJoined) {
             Intent intent = ConversationActivity.buildConversationIntent(this, Conversation.ConversationType.Group, groupId, 0);

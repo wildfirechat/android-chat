@@ -63,24 +63,56 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
+
             <ImageView
                 android:id="@+id/secretChatIndicator"
-                android:visibility="gone"
-                android:src="@mipmap/ic_lock"
                 android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_marginRight="10px"
-                android:layout_height="20dp"/>
-            <!--昵称或群名-->
-            <TextView
-                android:id="@+id/nameTextView"
+                android:src="@mipmap/ic_lock"
+                android:visibility="gone" />
+
+            <TableLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="wfc"
-                android:textColor="@color/black1"
-                android:textSize="16sp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:shrinkColumns="0">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <!--昵称或群名-->
+                    <TextView
+                        android:id="@+id/nameTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="会话名称"
+                        android:textColor="@color/black1"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/organizationGroupIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@drawable/shape_round_3"
+                        android:paddingLeft="2dp"
+                        android:paddingTop="1dp"
+                        android:paddingRight="2dp"
+                        android:paddingBottom="1dp"
+                        android:text="官方"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:visibility="gone" />
+                </TableRow>
+            </TableLayout>
 
             <TextView
                 android:id="@+id/timeTextView"
@@ -114,6 +146,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:ellipsize="end"
+                    android:layout_gravity="center_vertical"
                     android:maxLines="1"
                     android:text="@string/draft"
                     android:textColor="@color/red7"
@@ -135,12 +168,12 @@
                     android:id="@+id/contentTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_gravity="center_vertical"
                     android:ellipsize="marquee"
                     android:singleLine="true"
                     android:textColor="@color/gray11"
-                    android:textSize="14sp"
-                    tools:text="content" />
+                    android:textSize="13sp"
+                    tools:text="[草稿]" />
 
             </LinearLayout>
 

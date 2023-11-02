@@ -13,10 +13,9 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import cn.wildfire.chat.kit.GlideApp;
-import cn.wildfire.chat.kit.R2;
+import com.bumptech.glide.Glide;
+
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
@@ -30,22 +29,31 @@ import cn.wildfirechat.model.Conversation;
 @MessageContentType(RichNotificationMessageContent.class)
 @EnableContextMenu
 public class RichNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder {
-    @BindView(R2.id.titleTextView)
     TextView titleTextView;
-    @BindView(R2.id.descTextView)
     TextView descTextView;
 
-    @BindView(R2.id.dataContainerLayout)
     LinearLayout dataContainerLayout;
 
-    @BindView(R2.id.exPortraitImageView)
     ImageView exPortraitImageView;
-    @BindView(R2.id.exNameTextView)
     TextView exNameTextView;
 
 
     public RichNotificationMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
+        bindViews(itemView);
+        bindEvents(itemView);
+    }
+
+    private void bindEvents(View itemView) {
+        itemView.findViewById(R.id.richNotificationContentItemView).setOnClickListener(this::onClick);
+    }
+
+    private void bindViews(View itemView) {
+        titleTextView =itemView.findViewById(R.id.titleTextView);
+        descTextView =itemView.findViewById(R.id.descTextView);
+        dataContainerLayout =itemView.findViewById(R.id.dataContainerLayout);
+        exPortraitImageView =itemView.findViewById(R.id.exPortraitImageView);
+        exNameTextView =itemView.findViewById(R.id.exNameTextView);
     }
 
     @Override
@@ -63,7 +71,7 @@ public class RichNotificationMessageContentViewHolder extends NotificationMessag
             CircularProgressDrawable progressDrawable = new CircularProgressDrawable(fragment.getContext());
             progressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
             progressDrawable.start();
-            GlideApp.with(fragment)
+            Glide.with(fragment)
                 .load(imagePath)
                 .placeholder(progressDrawable)
                 .into(exPortraitImageView);
@@ -85,7 +93,6 @@ public class RichNotificationMessageContentViewHolder extends NotificationMessag
         }
     }
 
-    @OnClick(R2.id.richNotificationContentItemView)
     public void onClick(View view) {
         RichNotificationMessageContent rich = (RichNotificationMessageContent) message.message.content;
         WfcWebViewActivity.loadUrl(fragment.getContext(), "", rich.exUrl);

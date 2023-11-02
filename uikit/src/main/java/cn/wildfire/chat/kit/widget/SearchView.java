@@ -16,20 +16,13 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 
 public class SearchView extends FrameLayout {
 
-    @BindView(R2.id.editText)
     EditText mEditText;
-    @BindView(R2.id.search_cancel)
     View mCancelView;
 
-    @OnClick(R2.id.search_cancel)
     public void onCancelClick() {
         mEditText.setText("");
     }
@@ -51,7 +44,7 @@ public class SearchView extends FrameLayout {
 
     private void init() {
         inflate(getContext(), R.layout.search_view, this);
-        ButterKnife.bind(this);
+        bindViews();
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -69,6 +62,12 @@ public class SearchView extends FrameLayout {
                 handleCancelView(s.toString());
             }
         });
+    }
+
+    private void bindViews() {
+        mEditText = findViewById(R.id.editText);
+        mCancelView = findViewById(R.id.search_cancel);
+        mCancelView.setOnClickListener(_v -> onCancelClick());
     }
 
     private void search(String s) {

@@ -25,11 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public abstract class WfcBaseActivity extends AppCompatActivity {
-    @BindView(R2.id.toolbar)
     Toolbar toolbar;
 
     @Override
@@ -38,7 +34,8 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         beforeViews();
         setContentView(contentLayout());
-        ButterKnife.bind(this);
+        bindViews();
+        bindEvents();
         setSupportActionBar(toolbar);
         SharedPreferences sp = getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
         if (sp.getBoolean("darkTheme", true)) {
@@ -51,6 +48,14 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
             customToolbarAndStatusBarBackgroundColor(false);
         }
         afterViews();
+    }
+
+    protected void bindViews() {
+        toolbar = findViewById(R.id.toolbar);
+    }
+
+    protected void bindEvents() {
+
     }
 
     /**
@@ -145,10 +150,8 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
     /**
      * {@link AppCompatActivity#setContentView(int)}之后调用
      * <p>
-     * 此时已经调用了{@link ButterKnife#bind(Activity)}, 子类里面不需要再次调用
      */
     protected void afterViews() {
-
     }
 
     /**

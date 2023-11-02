@@ -24,6 +24,9 @@ public class MediaEntry {
     private Bitmap thumbnail;
     private Message message;
 
+    private int width;
+    private int height;
+
     public MediaEntry() {
     }
 
@@ -90,5 +93,21 @@ public class MediaEntry {
 
     public void setMessage(Message message) {
         this.message = message;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 }

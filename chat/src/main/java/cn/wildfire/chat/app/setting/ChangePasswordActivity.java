@@ -4,45 +4,77 @@
 
 package cn.wildfire.chat.app.setting;
 
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
+import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.chat.R;
 
 public class ChangePasswordActivity extends WfcBaseActivity {
-    @BindView(R.id.confirmButton)
     Button confirmButton;
-    @BindView(R.id.oldPasswordEditText)
     EditText oldPasswordEditText;
-    @BindView(R.id.newPasswordEditText)
     EditText newPasswordEditText;
-    @BindView(R.id.confirmPasswordEditText)
     EditText confirmPasswordEditText;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    protected void bindEvents() {
+        super.bindEvents();
+        findViewById(R.id.confirmButton).setOnClickListener(v -> resetPassword());
+        oldPasswordEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                oldPassword(s);
+            }
+        });
+        newPasswordEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                newPassword(s);
+            }
+        });
+        confirmPasswordEditText.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                confirmPassword(s);
+            }
+        });
+    }
+
+    protected void bindViews() {
+        super.bindViews();
+        confirmButton = findViewById(R.id.confirmButton);
+        oldPasswordEditText = findViewById(R.id.oldPasswordEditText);
+        newPasswordEditText = findViewById(R.id.newPasswordEditText);
+        confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText);
+    }
 
     @Override
     protected int contentLayout() {
         return R.layout.change_password_activity;
     }
 
-//    @Override
-//    protected void afterViews() {
+    @Override
+    protected void afterViews() {
 //        setStatusBarTheme(this, false);
 //        setStatusBarColor(R.color.gray14);
-//    }
+    }
 
-    @OnTextChanged(value = R.id.oldPasswordEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void oldPassword(Editable editable) {
         if (!TextUtils.isEmpty(newPasswordEditText.getText()) && !TextUtils.isEmpty(confirmPasswordEditText.getText()) && !TextUtils.isEmpty(editable)) {
             confirmButton.setEnabled(true);
@@ -51,7 +83,6 @@ public class ChangePasswordActivity extends WfcBaseActivity {
         }
     }
 
-    @OnTextChanged(value = R.id.newPasswordEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void newPassword(Editable editable) {
         if (!TextUtils.isEmpty(oldPasswordEditText.getText()) && !TextUtils.isEmpty(confirmPasswordEditText.getText()) && !TextUtils.isEmpty(editable)) {
             confirmButton.setEnabled(true);
@@ -60,7 +91,6 @@ public class ChangePasswordActivity extends WfcBaseActivity {
         }
     }
 
-    @OnTextChanged(value = R.id.confirmPasswordEditText, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void confirmPassword(Editable editable) {
         if (!TextUtils.isEmpty(oldPasswordEditText.getText()) && !TextUtils.isEmpty(newPasswordEditText.getText()) && !TextUtils.isEmpty(editable)) {
             confirmButton.setEnabled(true);
@@ -69,7 +99,6 @@ public class ChangePasswordActivity extends WfcBaseActivity {
         }
     }
 
-    @OnClick(R.id.confirmButton)
     void resetPassword() {
 
         String oldPassword = oldPasswordEditText.getText().toString().trim();

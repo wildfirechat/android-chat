@@ -29,9 +29,6 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.app.setting.AccountActivity;
 import cn.wildfire.chat.app.setting.SettingActivity;
 import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
@@ -47,23 +44,18 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class MeFragment extends Fragment {
 
-    @BindView(R.id.meLinearLayout)
     LinearLayout meLinearLayout;
-    @BindView(R.id.portraitImageView)
     ImageView portraitImageView;
-    @BindView(R.id.nameTextView)
     TextView nameTextView;
-    @BindView(R.id.accountTextView)
     TextView accountTextView;
 
-    @BindView(R.id.notificationOptionItemView)
     OptionItemView notificationOptionItem;
 
-    @BindView(R.id.settintOptionItemView)
     OptionItemView settingOptionItem;
 
-    @BindView(R.id.fileRecordOptionItemView)
     OptionItemView fileRecordOptionItem;
+
+    OptionItemView conversationOptionItem;
 
     private UserViewModel userViewModel;
     private UserInfo userInfo;
@@ -88,9 +80,32 @@ public class MeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_fragment_me, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
         init();
         return view;
+    }
+
+    private void bindEvents(View view) {
+        view.findViewById(R.id.meLinearLayout).setOnClickListener(v -> showMyInfo());
+        view.findViewById(R.id.favOptionItemView).setOnClickListener(v -> fav());
+        view.findViewById(R.id.accountOptionItemView).setOnClickListener(v -> account());
+        view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(v -> files());
+        view.findViewById(R.id.themeOptionItemView).setOnClickListener(v -> theme());
+        view.findViewById(R.id.settingOptionItemView).setOnClickListener(v -> setting());
+        view.findViewById(R.id.notificationOptionItemView).setOnClickListener(v -> msgNotifySetting());
+        view.findViewById(R.id.conversationOptionItemView).setOnClickListener(v -> conversationSetting());
+    }
+
+    private void bindViews(View view) {
+        meLinearLayout = view.findViewById(R.id.meLinearLayout);
+        portraitImageView = view.findViewById(R.id.portraitImageView);
+        nameTextView = view.findViewById(R.id.nameTextView);
+        accountTextView = view.findViewById(R.id.accountTextView);
+        notificationOptionItem = view.findViewById(R.id.notificationOptionItemView);
+        settingOptionItem = view.findViewById(R.id.settingOptionItemView);
+        conversationOptionItem = view.findViewById(R.id.conversationOptionItemView);
+        fileRecordOptionItem = view.findViewById(R.id.fileRecordOptionItemView);
     }
 
     private void updateUserInfo(UserInfo userInfo) {
@@ -128,33 +143,28 @@ public class MeFragment extends Fragment {
         userViewModel.userInfoLiveData().removeObserver(userInfoLiveDataObserver);
     }
 
-    @OnClick(R.id.meLinearLayout)
     void showMyInfo() {
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);
         intent.putExtra("userInfo", userInfo);
         startActivity(intent);
     }
 
-    @OnClick(R.id.favOptionItemView)
     void fav() {
         Intent intent = new Intent(getActivity(), FavoriteListActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R.id.accountOptionItemView)
     void account() {
         Intent intent = new Intent(getActivity(), AccountActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R.id.fileRecordOptionItemView)
     void files() {
         Intent intent = new Intent(getActivity(), FileRecordListActivity.class);
         startActivity(intent);
     }
 
 
-    @OnClick(R.id.themeOptionItemView)
     void theme() {
         SharedPreferences sp = getActivity().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
         boolean darkTheme = sp.getBoolean("darkTheme", true);
@@ -180,16 +190,18 @@ public class MeFragment extends Fragment {
         startActivity(i);
     }
 
-    @OnClick(R.id.settintOptionItemView)
     void setting() {
         Intent intent = new Intent(getActivity(), SettingActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R.id.notificationOptionItemView)
     void msgNotifySetting() {
         Intent intent = new Intent(getActivity(), MessageNotifySettingActivity.class);
         startActivity(intent);
     }
 
+    void conversationSetting() {
+        // TODO
+        // 设置背景等
+    }
 }

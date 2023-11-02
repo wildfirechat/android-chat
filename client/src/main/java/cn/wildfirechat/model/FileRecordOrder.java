@@ -15,4 +15,14 @@ public enum FileRecordOrder {
     FileRecordOrder(int value) {
         this.value = value;
     }
+
+    public static FileRecordOrder type(int type) {
+        FileRecordOrder out = null;
+        if (type >= 0 && type < FileRecordOrder.values().length) {
+            return FileRecordOrder.values()[type];
+        }
+
+        throw new IllegalArgumentException("FileRecordOrder " + type + " is invalid");
+
+    }
 }

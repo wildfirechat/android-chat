@@ -13,11 +13,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -51,11 +48,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.R2;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
@@ -88,39 +81,26 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceFragment extends BaseConferenceFragment implements AVEngineKit.CallSessionCallback {
 
-    @BindView(R2.id.rootFrameLayout)
     FrameLayout rootFrameLayout;
 
-    @BindView(R2.id.topBarView)
     LinearLayout topBarView;
 
-    @BindView(R2.id.bottomPanel)
     FrameLayout bottomPanel;
 
-    @BindView(R2.id.titleTextView)
     TextView titleTextView;
-    @BindView(R2.id.durationTextView)
     TextView durationTextView;
 
-    @BindView(R2.id.manageParticipantTextView)
     TextView manageParticipantTextView;
 
-    @BindView(R2.id.muteImageView)
     ImageView muteAudioImageView;
-    @BindView(R2.id.videoImageView)
     ImageView muteVideoImageView;
-    @BindView(R2.id.shareScreenImageView)
     ImageView shareScreenImageView;
 
-    @BindView(R2.id.speakerImageView)
     ImageView speakerImageView;
 
-    @BindView(R2.id.micLinearLayout)
     LinearLayout micLinearLayout;
-    @BindView(R2.id.micImageView)
     MicImageView micImageView;
 
-    @BindView(R2.id.dotsIndicator)
     WormDotsIndicator dotsIndicator;
 
     private SparseArray<View> conferencePages;
@@ -145,7 +125,8 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.av_conference, container, false);
-        ButterKnife.bind(this, view);
+        bindViews(view);
+        bindEvents(view);
 
         callSession = AVEngineKit.Instance().getCurrentSession();
         if (callSession == null || callSession.getState() == AVEngineKit.CallState.Idle) {
@@ -207,6 +188,35 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         return view;
     }
 
+    private void bindEvents(View view) {
+        view.findViewById(R.id.speakerImageView).setOnClickListener(_v -> switchSpeaker());
+        view.findViewById(R.id.manageParticipantView).setOnClickListener(_v -> addParticipant());
+        view.findViewById(R.id.muteView).setOnClickListener(_v -> muteAudio());
+        view.findViewById(R.id.micLinearLayout).setOnClickListener(_v -> muteAudio());
+        view.findViewById(R.id.videoView).setOnClickListener(_v -> muteVideo());
+        view.findViewById(R.id.switchCameraImageView).setOnClickListener(_v -> switchCamera());
+        view.findViewById(R.id.hangupImageView).setOnClickListener(_v -> hangup());
+        view.findViewById(R.id.shareScreenView).setOnClickListener(_v -> shareScreen());
+        view.findViewById(R.id.titleLinearLayout).setOnClickListener(_v -> showConferenceInfoDialog());
+        view.findViewById(R.id.moreActionLinearLayout).setOnClickListener(_v -> showMoreActionDialog());
+    }
+
+    private void bindViews(View view) {
+        rootFrameLayout = view.findViewById(R.id.rootFrameLayout);
+        topBarView = view.findViewById(R.id.topBarView);
+        bottomPanel = view.findViewById(R.id.bottomPanel);
+        titleTextView = view.findViewById(R.id.titleTextView);
+        durationTextView = view.findViewById(R.id.durationTextView);
+        manageParticipantTextView = view.findViewById(R.id.manageParticipantTextView);
+        muteAudioImageView = view.findViewById(R.id.muteImageView);
+        muteVideoImageView = view.findViewById(R.id.videoImageView);
+        shareScreenImageView = view.findViewById(R.id.shareScreenImageView);
+        speakerImageView = view.findViewById(R.id.speakerImageView);
+        micLinearLayout = view.findViewById(R.id.micLinearLayout);
+        micImageView = view.findViewById(R.id.micImageView);
+        dotsIndicator = view.findViewById(R.id.dotsIndicator);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -221,7 +231,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         handler.removeCallbacks(hideBarCallback);
     }
 
-    @OnClick(R2.id.speakerImageView)
     void switchSpeaker() {
         AVAudioManager audioManager = AVEngineKit.Instance().getAVAudioManager();
         AVAudioManager.AudioDevice selectedAudioDevice = audioManager.getSelectedAudioDevice();
@@ -232,12 +241,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         audioManager.setDefaultAudioDevice(selectedAudioDevice == AVAudioManager.AudioDevice.EARPIECE ? AVAudioManager.AudioDevice.SPEAKER_PHONE : AVAudioManager.AudioDevice.EARPIECE);
     }
 
-    @OnClick(R2.id.manageParticipantView)
     void addParticipant() {
         ((ConferenceActivity) getContext()).showParticipantList();
     }
 
-    @OnClick({R2.id.muteView, R2.id.micLinearLayout})
     void muteAudio() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
@@ -262,10 +269,13 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
     }
 
-    @OnClick(R2.id.videoView)
     void muteVideo() {
         AVEngineKit.CallSession session = callSession;
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
+            return;
+        }
+        if (session.isAudioOnly()){
+            Toast.makeText(getActivity(), "音频会议不支持开启摄像头", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -285,7 +295,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
     }
 
-    @OnClick(R2.id.switchCameraImageView)
     void switchCamera() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
@@ -294,7 +303,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
     }
 
-    @OnClick(R2.id.hangupImageView)
     void hangup() {
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         ConferenceManager conferenceManager = ConferenceManager.getManager();
@@ -327,24 +335,33 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         }
     }
 
-    @OnClick(R2.id.shareScreenView)
     void shareScreen() {
+        VoipBaseActivity voipBaseActivity = ((VoipBaseActivity) getActivity());
+        if (!voipBaseActivity.checkOverlayPermission()) {
+            return;
+        }
+
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
-            if (session.isAudience()) {
+            if (session.isAudioOnly()) {
+                Toast.makeText(voipBaseActivity, "音频会议不支持屏幕共享", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-//            shareScreenImageView.setSelected(!session.isScreenSharing());
             if (!session.isScreenSharing()) {
+                Toast.makeText(getContext(), "开启屏幕共享时，将关闭摄像头，并打开麦克风", Toast.LENGTH_LONG).show();
+                session.muteAudio(false);
+                session.muteVideo(true);
+
                 ((VoipBaseActivity) getContext()).startScreenShare();
+                if (session.isAudience()) {
+                    session.switchAudience(false);
+                }
             } else {
                 ((VoipBaseActivity) getContext()).stopScreenShare();
             }
         }
     }
 
-    @OnClick(R2.id.titleLinearLayout)
     void showConferenceInfoDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(getContext());
         View view = LayoutInflater.from(getContext()).inflate(R.layout.av_conference_info_dialog, null);
@@ -386,7 +403,6 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         dialog.show();
     }
 
-    @OnClick(R2.id.moreActionLinearLayout)
     void showMoreActionDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(getContext());
         View view = LayoutInflater.from(getContext()).inflate(R.layout.av_conference_action_more, null);
@@ -417,16 +433,11 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             dialog.dismiss();
         });
         view.findViewById(R.id.minimizeLinearLayout).setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                if (!Settings.canDrawOverlays(getActivity())) {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getActivity().getPackageName()));
-                    startActivity(intent);
-                }
+            if (((VoipBaseActivity) getActivity()).checkOverlayPermission()) {
+                Activity activity = (Activity) getContext();
+                activity.finish();
+                dialog.dismiss();
             }
-            Activity activity = (Activity) getContext();
-            activity.finish();
-            dialog.dismiss();
         });
         view.findViewById(R.id.recordLinearLayout).setOnClickListener(v -> {
             if (ChatManager.Instance().getUserId().equals(conferenceInfo.getOwner())) {
@@ -610,6 +621,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             View view = null;
             if (position == 0) {
                 view = new VideoConferenceMainView(container.getContext());
+                view.setOnClickListener(clickListener);
             } else {
                 view = new ConferenceParticipantGridView(container.getContext());
             }
@@ -852,6 +864,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     public void didReceiveRemoteVideoTrack(String userId, boolean screenSharing) {
         // 预览视频流可能会被焦点视频流覆盖，采用下面的方法修复
         if (currentPosition == 0 && !fixPreviewSurfaceViewZOrder) {
+            Object obj = conferencePages.get(0);
+            if (!(obj instanceof VideoConferenceMainView)) {
+                return;
+            }
             VideoConferenceMainView mainView = (VideoConferenceMainView) conferencePages.get(0);
             SurfaceView previewSurfaceView = mainView.findViewWithTag("sv_" + ChatManager.Instance().getUserId());
             if (previewSurfaceView != null) {
@@ -943,6 +959,12 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                         }
                     }
                 }
+
+                // 当前页的用户离开会议时
+                if (!currentPageUpdated && currentPageParticipantProfiles.size() < AUDIO_CONFERENCE_PARTICIPANT_COUNT_PER_PAGE) {
+                    currentPageUpdated = true;
+                }
+
                 if (currentPageUpdated) {
                     ((ConferenceParticipantGridView) view).setParticipantProfiles(this.callSession, currentPageParticipantProfiles);
                 }
@@ -971,7 +993,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         profiles.add(0, myProfile);
         String focusUserId = ConferenceManager.getManager().getCurrentConferenceInfo().getFocus();
         AVEngineKit.ParticipantProfile focusUserProfile = focusUserId == null ? null : callSession.getParticipantProfile(focusUserId, true);
-        if (focusUserProfile == null){
+        if (focusUserProfile == null) {
             focusUserProfile = focusUserId == null ? null : callSession.getParticipantProfile(focusUserId, false);
         }
 
