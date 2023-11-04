@@ -259,7 +259,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 startActivity(application, intent);
             }
             VoipCallService.start(application, false);
-            if(avEngineCallback != null) {
+            if (avEngineCallback != null) {
                 avEngineCallback.onReceiveCall(AVEngineKit.Instance().getCurrentSession());
             }
         }, 200);
@@ -269,7 +269,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void shouldStartRing(boolean isIncoming) {
-        if(avEngineCallback != null) {
+        if (avEngineCallback != null) {
             avEngineCallback.shouldStartRing(isIncoming);
             return;
         }
@@ -294,9 +294,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     }
 
     @Override
-    public void shouldSopRing() {
-        if(avEngineCallback != null) {
-            avEngineCallback.shouldSopRing();
+    public void shouldStopRing() {
+        if (avEngineCallback != null) {
+            avEngineCallback.shouldStopRing();
             return;
         }
         Log.d("wfcUIKit", "showStopRing");
@@ -305,7 +305,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void didCallEnded(AVEngineKit.CallEndReason reason, int duration) {
-        if(avEngineCallback != null) {
+        if (avEngineCallback != null) {
             avEngineCallback.didCallEnded(reason, duration);
             return;
         }
@@ -315,16 +315,17 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     public static void singleCall(Context context, String targetId, boolean isAudioOnly) {
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetId);
         AVEngineKit.CallSession session = AVEngineKit.Instance().startCall(conversation, Collections.singletonList(targetId), isAudioOnly, null);
+        if (session != null) {
 //        session.setVideoCapturer(new UVCCameraCapturer());
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setMode(isAudioOnly ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
+            audioManager.setSpeakerphoneOn(!isAudioOnly);
 
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(isAudioOnly ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
-        audioManager.setSpeakerphoneOn(!isAudioOnly);
+            Intent voip = new Intent(context, SingleCallActivity.class);
+            startActivity(context, voip);
 
-        Intent voip = new Intent(context, SingleCallActivity.class);
-        startActivity(context, voip);
-
-        VoipCallService.start(context, false);
+            VoipCallService.start(context, false);
+        }
     }
 
     public static void multiCall(Context context, String groupId, List<String> participants, boolean isAudioOnly) {
@@ -334,14 +335,15 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         }
 
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId);
-        AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
+        AVEngineKit.CallSession session = AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
+        if (session != null) {
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setMode(AudioManager.MODE_NORMAL);
+            audioManager.setSpeakerphoneOn(true);
 
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(AudioManager.MODE_NORMAL);
-        audioManager.setSpeakerphoneOn(true);
-
-        Intent intent = new Intent(context, MultiCallActivity.class);
-        startActivity(context, intent);
+            Intent intent = new Intent(context, MultiCallActivity.class);
+            startActivity(context, intent);
+        }
     }
 
     public static void startActivity(Context context, Intent intent) {
