@@ -3824,8 +3824,13 @@ public class ChatManager {
             if (msg != null) {
                 if (mClient.clearUnreadStatusBeforeMessage(messageId, conversation)) {
                     ConversationInfo conversationInfo = getConversation(msg.conversation);
-                    for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
-                        listener.onConversationUnreadStatusClear(conversationInfo);
+                    if (conversationInfo != null) {
+                        UnreadCount unreadCount = conversationInfo.unreadCount;
+                        if (unreadCount.unread == 0 && unreadCount.unreadMention == 0 && unreadCount.unreadMentionAll == 0) {
+                            for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
+                                listener.onConversationUnreadStatusClear(conversationInfo);
+                            }
+                        }
                     }
                     return true;
                 }
