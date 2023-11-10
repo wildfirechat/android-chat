@@ -2425,6 +2425,7 @@ public class ChatManager {
         msg.status = MessageStatus.Sending;
         msg.serverTime = System.currentTimeMillis();
         msg.sender = userId;
+        msg.messageUid = 0;
         if (!checkRemoteService()) {
             if (callback != null) {
                 msg.status = MessageStatus.Send_Failure;
