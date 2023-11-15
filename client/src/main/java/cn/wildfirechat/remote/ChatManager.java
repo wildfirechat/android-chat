@@ -287,7 +287,13 @@ public class ChatManager {
         Name(2),
 
         //精确搜索电话号码
-        Mobile(3);
+        Mobile(3),
+
+        //精确搜索用户Id
+        UserId(4),
+
+        //精确搜索name或电话号码或用户ID
+        NameOrMobileOrUserId(5);
 
         SearchUserType(int value) {
         }
@@ -320,12 +326,14 @@ public class ChatManager {
      * - DisplayName: 第1位是否禁止搜索昵称
      * - Name: 第2位是否禁止搜索账户
      * - Mobile: 第3位是否禁止搜索电话号码
+     * - UserId: 第4位是否禁止搜索用户ID
      */
 
     public interface DisableSearchUserMask {
         int DisplayName = 1;
         int Name = 2;
         int Mobile = 4;
+        int UserId = 8;
     }
 
     public enum SecretChatState {
