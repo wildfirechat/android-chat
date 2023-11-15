@@ -313,6 +313,12 @@ public class ChatManager {
                 case 3:
                     searchUserType = Mobile;
                     break;
+                case 4:
+                    searchUserType = UserId;
+                    break;
+                case 5:
+                    searchUserType = NameOrMobileOrUserId;
+                    break;
                 default:
                     throw new IllegalArgumentException("type " + searchUserType + " is invalid");
             }
