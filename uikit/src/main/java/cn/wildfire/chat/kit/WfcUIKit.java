@@ -217,6 +217,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         SharedPreferences sp = application.getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
         if (pttEnabled) {
+             // 全局对讲生效；如果只希望某些会话里面，对讲生效，请调用 {@link PTTClient#setEnablePtt(Conversation, boolean)} 设置
+            PTTClient.ENABLE_GLOBAL_PTT = true;
             PTTClient.getInstance().init(application);
         }
     }
