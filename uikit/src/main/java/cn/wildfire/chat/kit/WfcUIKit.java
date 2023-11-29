@@ -218,7 +218,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
         if (pttEnabled) {
              // 全局对讲生效；如果只希望某些会话里面，对讲生效，请调用 {@link PTTClient#setEnablePtt(Conversation, boolean)} 设置
-            PTTClient.ENABLE_GLOBAL_PTT = true;
+            // PTTClient.ENABLE_GLOBAL_PTT = true;
             PTTClient.getInstance().init(application);
         }
     }
