@@ -5204,6 +5204,10 @@ public class ChatManager {
     }
 
     public void getUserInfo(String userId, boolean refresh, GetUserInfoCallback callback) {
+        getUserInfo(userId, null, refresh, callback);
+    }
+
+    public void getUserInfo(String userId, String groupId, boolean refresh, GetUserInfoCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null) {
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -5211,7 +5215,7 @@ public class ChatManager {
             return;
         }
         try {
-            mClient.getUserInfoEx(userId, refresh, new IGetUserCallback.Stub() {
+            mClient.getUserInfoEx(userId, groupId, refresh, new IGetUserCallback.Stub() {
                 @Override
                 public void onSuccess(UserInfo userInfo) throws RemoteException {
                     if (callback != null) {

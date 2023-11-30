@@ -1901,8 +1901,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getUserInfoEx(String userId, boolean refresh, IGetUserCallback callback) throws RemoteException {
-            ProtoLogic.getUserInfoEx(userId, refresh, new ProtoLogic.IGetUserInfoCallback() {
+        public void getUserInfoEx(String userId, String groupId, boolean refresh, IGetUserCallback callback) throws RemoteException {
+            ProtoLogic.getUserInfoEx2(userId, groupId, refresh, new ProtoLogic.IGetUserInfoCallback() {
                 @Override
                 public void onSuccess(ProtoUserInfo protoUserInfo) {
                     try {
