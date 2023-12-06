@@ -600,7 +600,7 @@ public class ConversationFragment extends Fragment implements
             if (groupInfo == null) {
                 return;
             }
-            boolean show = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
+            boolean show = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
             if (showGroupMemberName != show) {
                 showGroupMemberName = show;
                 adapter.notifyDataSetChanged();
@@ -629,7 +629,7 @@ public class ConversationFragment extends Fragment implements
             groupViewModel.getGroupMembers(conversation.target, true);
             groupInfo = groupViewModel.getGroupInfo(conversation.target, true);
             groupMember = groupViewModel.getGroupMember(conversation.target, userViewModel.getUserId());
-            showGroupMemberName = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
+            showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
 
             updateGroupMuteStatus();
         }

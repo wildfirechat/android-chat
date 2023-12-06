@@ -434,7 +434,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     private void showGroupMemberAlias(Conversation conversation, Message message, String sender) {
         UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         String hideGroupNickName = userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, conversation.target);
-        if ((!TextUtils.isEmpty(hideGroupNickName) && !"1".equals(hideGroupNickName)) || message.direction == MessageDirection.Send) {
+        if ((!TextUtils.isEmpty(hideGroupNickName) && "1".equals(hideGroupNickName)) || message.direction == MessageDirection.Send) {
             nameTextView.setVisibility(View.GONE);
             return;
         }

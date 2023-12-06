@@ -304,9 +304,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             groupManageOptionItemView.setVisibility(View.VISIBLE);
         }
 
-        showGroupMemberNickNameSwitchButton.setChecked("1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target)));
+        showGroupMemberNickNameSwitchButton.setChecked(!"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target)));
         showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            userViewModel.setUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target, isChecked ? "1" : "0");
+            userViewModel.setUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target, isChecked ? "0" : "1");
         });
 
         myGroupNickNameOptionItemView.setDesc(groupMember.alias);
