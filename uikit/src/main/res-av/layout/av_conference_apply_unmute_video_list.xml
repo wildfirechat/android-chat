@@ -6,32 +6,12 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/handupTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="xxx 正在举手" />
-
-    <TextView
-        android:id="@+id/applyingUnmuteAudioTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="xxx 正在申请解除静音" />
-
-    <TextView
-        android:id="@+id/applyingUnmuteVideoTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="xxx 正在申请打开摄像头" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:minHeight="200dp"
         android:padding="10dp" />
 
     <LinearLayout
@@ -40,20 +20,20 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/muteAllButton"
+            android:id="@+id/approveAllButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:text="全员静音" />
+            android:text="全部同意" />
 
         <Button
-            android:id="@+id/unmuteAllButton"
+            android:id="@+id/rejectAllButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:text=" 取消全员静音" />
+            android:text="全部拒绝" />
     </LinearLayout>
 </LinearLayout>
 
