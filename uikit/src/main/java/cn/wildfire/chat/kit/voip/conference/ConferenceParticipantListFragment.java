@@ -43,7 +43,8 @@ import cn.wildfirechat.remote.ChatManager;
 public class ConferenceParticipantListFragment extends Fragment {
     RecyclerView recyclerView;
     TextView handupTextView;
-    TextView applyingUnmuteTextView;
+    TextView applyingUnmuteAudioTextView;
+    TextView applyingUnmuteVideoTextView;
 
     Button muteAllButton;
     Button unmuteAllButton;
@@ -65,16 +66,18 @@ public class ConferenceParticipantListFragment extends Fragment {
     }
 
     private void bindEvents(View view) {
-        view.findViewById(R.id.applyingUnmuteTextView).setOnClickListener(_v -> showApplyingUnmuteDialog());
+        view.findViewById(R.id.applyingUnmuteAudioTextView).setOnClickListener(_v -> showApplyingUnmuteDialog(true));
+        view.findViewById(R.id.applyingUnmuteVideoTextView).setOnClickListener(_v -> showApplyingUnmuteDialog(false));
         view.findViewById(R.id.handupTextView).setOnClickListener(_v -> showHandupDialog());
-        view.findViewById(R.id.muteAllButton).setOnClickListener(_v -> muteAll());
-        view.findViewById(R.id.unmuteAllButton).setOnClickListener(_v -> unmuteAll());
+        view.findViewById(R.id.muteAllButton).setOnClickListener(_v -> muteAll(true));
+        view.findViewById(R.id.unmuteAllButton).setOnClickListener(_v -> unmuteAll(true));
     }
 
     private void bindViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
         handupTextView = view.findViewById(R.id.handupTextView);
-        applyingUnmuteTextView = view.findViewById(R.id.applyingUnmuteTextView);
+        applyingUnmuteAudioTextView = view.findViewById(R.id.applyingUnmuteAudioTextView);
+        applyingUnmuteVideoTextView = view.findViewById(R.id.applyingUnmuteVideoTextView);
         muteAllButton = view.findViewById(R.id.muteAllButton);
         unmuteAllButton = view.findViewById(R.id.unmuteAllButton);
     }
@@ -96,9 +99,14 @@ public class ConferenceParticipantListFragment extends Fragment {
         this.loadAndShowConferenceParticipants();
     }
 
-    void showApplyingUnmuteDialog() {
-        ConferenceApplyUnmuteListFragment fragment = new ConferenceApplyUnmuteListFragment();
-        fragment.show(getChildFragmentManager(), "applyUnmuteFragment");
+    void showApplyingUnmuteDialog(boolean audio) {
+        if (audio) {
+            ConferenceApplyUnmuteAudioListFragment fragment = new ConferenceApplyUnmuteAudioListFragment();
+            fragment.show(getChildFragmentManager(), "applyUnmuteAudioFragment");
+        } else {
+            ConferenceApplyUnmuteVideoListFragment fragment = new ConferenceApplyUnmuteVideoListFragment();
+            fragment.show(getChildFragmentManager(), "applyUnmuteVideoFragment");
+        }
     }
 
     void showHandupDialog() {
@@ -106,42 +114,54 @@ public class ConferenceParticipantListFragment extends Fragment {
         fragment.show(getChildFragmentManager(), "handUpFragment");
     }
 
-    void muteAll() {
+    void muteAll(boolean audio) {
         new MaterialDialog.Builder(getActivity())
-            .title("所有成员将被静音")
-            .checkBoxPrompt("允许成员自主解除静音", false, null)
+            .title(audio ? "所有成员将被静音" : "所有成员将关闭摄像头")
+            .checkBoxPrompt(audio ? "允许成员自主解除静音" : "允许成员自主打开摄像头", false, null)
             .negativeText("取消")
-            .positiveText("全体静音")
+            .positiveText("确定")
             .positiveColor(getResources().getColor(R.color.red0))
-            .onPositive((dialog, which) -> conferenceManager.requestMuteAll(dialog.isPromptCheckBoxChecked()))
+            .onPositive((dialog, which) -> conferenceManager.requestMuteAll(audio, dialog.isPromptCheckBoxChecked()))
             .show();
 
     }
 
-    void unmuteAll() {
+    void unmuteAll(boolean audio) {
         new MaterialDialog.Builder(getActivity())
-            .title("允许全体成员开麦")
-            .checkBoxPrompt("是否要求成员开麦", false, null)
+            .title(audio ? "允许全体成员开麦" : "允许成员打开摄像头")
+            .checkBoxPrompt(audio ? "是否要求成员开麦" : "是否要求成员打开摄像头", false, null)
             .negativeText("取消")
-            .positiveText("取消全体静音")
+            .positiveText("确定")
             .positiveColor(getResources().getColor(R.color.red0))
-            .onPositive((dialog, which) -> conferenceManager.requestUnmuteAll(dialog.isPromptCheckBoxChecked()))
+            .onPositive((dialog, which) -> conferenceManager.requestUnmuteAll(audio, dialog.isPromptCheckBoxChecked()))
             .show();
     }
 
     private void loadAndShowConferenceParticipants() {
         if (conferenceManager.getCurrentConferenceInfo() != null && ChatManager.Instance().getUserId().equals(conferenceManager.getCurrentConferenceInfo().getOwner())) {
-            List<String> applyingUnmuteMembers = conferenceManager.getApplyingUnmuteMembers();
-            if (applyingUnmuteMembers.isEmpty()) {
-                applyingUnmuteTextView.setVisibility(View.GONE);
+            List<String> applyingUnmuteAudioMembers = conferenceManager.getApplyingUnmuteAudioMembers();
+            if (applyingUnmuteAudioMembers.isEmpty()) {
+                applyingUnmuteAudioTextView.setVisibility(View.GONE);
             } else {
-                applyingUnmuteTextView.setVisibility(View.VISIBLE);
-                String text = ChatManager.Instance().getUserDisplayName(applyingUnmuteMembers.get(0));
-                if (applyingUnmuteMembers.size() > 1) {
+                applyingUnmuteAudioTextView.setVisibility(View.VISIBLE);
+                String text = ChatManager.Instance().getUserDisplayName(applyingUnmuteAudioMembers.get(0));
+                if (applyingUnmuteAudioMembers.size() > 1) {
                     text += " 等";
                 }
                 text += "正在申请解除静音";
-                applyingUnmuteTextView.setText(text);
+                applyingUnmuteAudioTextView.setText(text);
+            }
+            List<String> applyingUnmuteVideoMembers = conferenceManager.getApplyingUnmuteVideoMembers();
+            if (applyingUnmuteVideoMembers.isEmpty()) {
+                applyingUnmuteVideoTextView.setVisibility(View.GONE);
+            } else {
+                applyingUnmuteVideoTextView.setVisibility(View.VISIBLE);
+                String text = ChatManager.Instance().getUserDisplayName(applyingUnmuteVideoMembers.get(0));
+                if (applyingUnmuteVideoMembers.size() > 1) {
+                    text += " 等";
+                }
+                text += "正在申请打开摄像头";
+                applyingUnmuteVideoTextView.setText(text);
             }
             List<String> handupMembers = conferenceManager.getHandUpMembers();
             if (handupMembers.isEmpty()) {
@@ -156,7 +176,7 @@ public class ConferenceParticipantListFragment extends Fragment {
                 handupTextView.setText(text);
             }
 
-            if (conferenceManager.isMuteAll()) {
+            if (conferenceManager.isMuteAllAudio()) {
                 muteAllButton.setEnabled(false);
                 unmuteAllButton.setEnabled(true);
             } else {
@@ -165,7 +185,8 @@ public class ConferenceParticipantListFragment extends Fragment {
             }
         } else {
             handupTextView.setVisibility(View.GONE);
-            applyingUnmuteTextView.setVisibility(View.GONE);
+            applyingUnmuteAudioTextView.setVisibility(View.GONE);
+            applyingUnmuteVideoTextView.setVisibility(View.GONE);
             muteAllButton.setVisibility(View.GONE);
             unmuteAllButton.setVisibility(View.GONE);
         }
@@ -232,14 +253,25 @@ public class ConferenceParticipantListFragment extends Fragment {
                 }
             } else {
                 // 他人
-                if (profile.isAudience()) {
+                if (profile.isAudience() || profile.isAudioMuted()) {
                     items.put("邀请发言", () -> {
-                        conferenceManager.requestMemberMute(profile.getUserId(), false);
+                        conferenceManager.requestMemberMute(true, profile.getUserId(), false);
                         return null;
                     });
-                } else {
+                } else if (!profile.isAudience() && !profile.isAudioMuted()) {
                     items.put("取消发言", () -> {
-                        conferenceManager.requestMemberMute(profile.getUserId(), true);
+                        conferenceManager.requestMemberMute(true, profile.getUserId(), true);
+                        return null;
+                    });
+                }
+                if (profile.isAudience() || profile.isVideoMuted()) {
+                    items.put("邀请打开摄像头", () -> {
+                        conferenceManager.requestMemberMute(false, profile.getUserId(), false);
+                        return null;
+                    });
+                } else if (!profile.isAudience() && !profile.isVideoMuted()) {
+                    items.put("关闭摄像头", () -> {
+                        conferenceManager.requestMemberMute(false, profile.getUserId(), true);
                         return null;
                     });
                 }

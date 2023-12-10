@@ -8,6 +8,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -23,7 +24,6 @@ import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfire.chat.kit.widget.AlertDialogActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
@@ -35,11 +35,17 @@ public class ConferenceManager implements OnReceiveMessageListener {
     private static ConferenceManager manager;
     private final Application context;
     private ConferenceInfo currentConferenceInfo;
-    private final List<String> applyingUnmuteMembers;
-    private boolean isApplyingUnmute;
+    private final List<String> applyingUnmuteAudioMembers;
+    private final List<String> applyingUnmuteVideoMembers;
+    private boolean isApplyingUnmuteAudio;
+    private boolean isApplyingUnmuteVideo;
     private final List<String> handUpMembers;
     private boolean isHandUp;
-    private boolean isMuteAll;
+    private boolean isMuteAllAudio;
+    private boolean isMuteAllVideo;
+
+    private boolean isAllowUnmuteAudioWhenMuteAll;
+    private boolean isAllownUnMuteVideoWhenMuteAll;
 
     private String localFocusUserId;
 
@@ -47,7 +53,8 @@ public class ConferenceManager implements OnReceiveMessageListener {
 
     private ConferenceManager(Application application) {
         this.context = application;
-        this.applyingUnmuteMembers = new ArrayList<>();
+        this.applyingUnmuteAudioMembers = new ArrayList<>();
+        this.applyingUnmuteVideoMembers = new ArrayList<>();
         this.handUpMembers = new ArrayList<>();
     }
 
@@ -74,9 +81,13 @@ public class ConferenceManager implements OnReceiveMessageListener {
         this.currentConferenceInfo = currentConferenceInfo;
         if (currentConferenceInfo == null) {
             handUpMembers.clear();
-            applyingUnmuteMembers.clear();
+            applyingUnmuteAudioMembers.clear();
+            applyingUnmuteVideoMembers.clear();
             isHandUp = false;
-            isApplyingUnmute = false;
+            isApplyingUnmuteAudio = false;
+            isApplyingUnmuteVideo = false;
+        } else {
+            joinChatRoom();
         }
     }
 
@@ -88,12 +99,20 @@ public class ConferenceManager implements OnReceiveMessageListener {
         this.localFocusUserId = localFocusUserId;
     }
 
-    public List<String> getApplyingUnmuteMembers() {
-        return applyingUnmuteMembers;
+    public List<String> getApplyingUnmuteAudioMembers() {
+        return applyingUnmuteAudioMembers;
     }
 
-    public boolean isApplyingUnmute() {
-        return isApplyingUnmute;
+    public List<String> getApplyingUnmuteVideoMembers() {
+        return applyingUnmuteVideoMembers;
+    }
+
+    public boolean isApplyingUnmuteAudio() {
+        return isApplyingUnmuteAudio;
+    }
+
+    public boolean isApplyingUnmuteVideo() {
+        return isApplyingUnmuteVideo;
     }
 
     public List<String> getHandUpMembers() {
@@ -104,8 +123,12 @@ public class ConferenceManager implements OnReceiveMessageListener {
         return isHandUp;
     }
 
-    public boolean isMuteAll() {
-        return isMuteAll;
+    public boolean isMuteAllAudio() {
+        return isMuteAllAudio;
+    }
+
+    public boolean isMuteAllVideo() {
+        return isMuteAllVideo;
     }
 
     @Override
@@ -125,41 +148,79 @@ public class ConferenceManager implements OnReceiveMessageListener {
                     String senderName;
                     if (session.getCallId().equals(commandContent.getConferenceId())) {
                         switch (commandContent.getCommandType()) {
-                            case ConferenceCommandContent.ConferenceCommandType.MUTE_ALL:
+                            case ConferenceCommandContent.ConferenceCommandType.MUTE_ALL_AUDIO:
                                 reloadConferenceInfo();
-                                onMuteAll();
+                                onMuteAll(true, commandContent.getBoolValue());
                                 break;
-                            case ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL:
+                            case ConferenceCommandContent.ConferenceCommandType.MUTE_ALL_VIDEO:
                                 reloadConferenceInfo();
-                                onCancelMuteAll(commandContent.getBoolValue());
+                                onMuteAll(false, commandContent.getBoolValue());
                                 break;
-                            case ConferenceCommandContent.ConferenceCommandType.REQUEST_MUTE:
+                            case ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL_AUDIO:
+                                reloadConferenceInfo();
+                                onCancelMuteAll(true, commandContent.getBoolValue());
+                                break;
+                            case ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL_VIDEO:
+                                reloadConferenceInfo();
+                                onCancelMuteAll(false, commandContent.getBoolValue());
+                                break;
+                            case ConferenceCommandContent.ConferenceCommandType.REQUEST_MUTE_AUDIO:
                                 if (commandContent.getTargetUserId().equals(ChatManager.Instance().getUserId())) {
-                                    onRequestMute(commandContent.getBoolValue());
+                                    onRequestMute(true, commandContent.getBoolValue());
                                 }
                                 break;
-                            case ConferenceCommandContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST:
+                            case ConferenceCommandContent.ConferenceCommandType.REQUEST_MUTE_VIDEO:
+                                if (commandContent.getTargetUserId().equals(ChatManager.Instance().getUserId())) {
+                                    onRequestMute(false, commandContent.getBoolValue());
+                                }
+                                break;
+                            case ConferenceCommandContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST_AUDIO:
                                 Toast.makeText(context, "主持人拒绝了你的发言请求", Toast.LENGTH_SHORT).show();
                                 break;
-                            case ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE:
+                            case ConferenceCommandContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST_VIDEO:
+                                Toast.makeText(context, "主持人拒绝了你的打开摄像头请求", Toast.LENGTH_SHORT).show();
+                                break;
+                            case ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE_AUDIO:
                                 senderName = ChatManager.Instance().getUserDisplayName(msg.sender);
                                 Toast.makeText(context, senderName + " 请求发言", Toast.LENGTH_SHORT).show();
                                 if (commandContent.getBoolValue()) {
-                                    this.applyingUnmuteMembers.remove(msg.sender);
+                                    this.applyingUnmuteAudioMembers.remove(msg.sender);
                                 } else {
-                                    if (!this.applyingUnmuteMembers.contains(msg.sender)) {
-                                        this.applyingUnmuteMembers.add(msg.sender);
+                                    if (!this.applyingUnmuteAudioMembers.contains(msg.sender)) {
+                                        this.applyingUnmuteAudioMembers.add(msg.sender);
                                     }
                                 }
                                 LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
                                 break;
-                            case ConferenceCommandContent.ConferenceCommandType.APPROVE_UNMUTE:
-                            case ConferenceCommandContent.ConferenceCommandType.APPROVE_ALL_UNMUTE:
-                                if (this.isApplyingUnmute) {
-                                    this.isApplyingUnmute = false;
+                            case ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE_VIDEO:
+                                senderName = ChatManager.Instance().getUserDisplayName(msg.sender);
+                                Toast.makeText(context, senderName + " 请求打开摄像头", Toast.LENGTH_SHORT).show();
+                                if (commandContent.getBoolValue()) {
+                                    this.applyingUnmuteVideoMembers.remove(msg.sender);
+                                } else {
+                                    if (!this.applyingUnmuteVideoMembers.contains(msg.sender)) {
+                                        this.applyingUnmuteVideoMembers.add(msg.sender);
+                                    }
+                                }
+                                LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
+                                break;
+                            case ConferenceCommandContent.ConferenceCommandType.APPROVE_UNMUTE_AUDIO:
+                            case ConferenceCommandContent.ConferenceCommandType.APPROVE_ALL_UNMUTE_AUDIO:
+                                if (this.isApplyingUnmuteAudio) {
+                                    this.isApplyingUnmuteAudio = false;
                                     if (commandContent.getBoolValue()) {
                                         this.muteAudio(false);
                                         Toast.makeText(context, "主持人同意了你的发言请求", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                break;
+                            case ConferenceCommandContent.ConferenceCommandType.APPROVE_UNMUTE_VIDEO:
+                            case ConferenceCommandContent.ConferenceCommandType.APPROVE_ALL_UNMUTE_VIDEO:
+                                if (this.isApplyingUnmuteVideo) {
+                                    this.isApplyingUnmuteVideo = false;
+                                    if (commandContent.getBoolValue()) {
+                                        this.muteVideo(false);
+                                        Toast.makeText(context, "主持人同意了你的打开摄像头请求", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 break;
@@ -216,32 +277,44 @@ public class ConferenceManager implements OnReceiveMessageListener {
         }
     }
 
-    public void joinChatRoom() {
+    private void joinChatRoom() {
         ChatManager.Instance().joinChatRoom(currentConferenceInfo.getConferenceId(), null);
     }
 
-    public void applyUnmute(boolean isCancel) {
-        this.isApplyingUnmute = !isCancel;
-        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE, null, isCancel);
+    public void applyUnmute(boolean audio, boolean isCancel) {
+        if (audio) {
+            this.isApplyingUnmuteAudio = !isCancel;
+        } else {
+            this.isApplyingUnmuteVideo = !isCancel;
+        }
+        this.sendCommandMessage(audio ? ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE_AUDIO : ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE_VIDEO, null, isCancel);
     }
 
-    public void approveUnmute(String userId, boolean isAllow) {
+    public void approveUnmute(boolean audio, String userId, boolean isAllow) {
         if (!this.isOwner()) {
             return;
         }
 
-        this.applyingUnmuteMembers.remove(userId);
-        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.APPROVE_UNMUTE, userId, isAllow);
+        if (audio) {
+            this.applyingUnmuteAudioMembers.remove(userId);
+        } else {
+            this.applyingUnmuteVideoMembers.remove(userId);
+        }
+        this.sendCommandMessage(audio ? ConferenceCommandContent.ConferenceCommandType.APPROVE_UNMUTE_AUDIO : ConferenceCommandContent.ConferenceCommandType.APPROVE_UNMUTE_VIDEO, userId, isAllow);
         LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
     }
 
-    public void approveAllMemberUnmute(boolean isAllow) {
+    public void approveAllMemberUnmute(boolean audio, boolean isAllow) {
         if (!this.isOwner()) {
             return;
         }
 
-        this.applyingUnmuteMembers.clear();
-        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.APPROVE_ALL_UNMUTE, null, isAllow);
+        if (audio) {
+            this.applyingUnmuteAudioMembers.clear();
+        } else {
+            this.applyingUnmuteVideoMembers.clear();
+        }
+        this.sendCommandMessage(audio ? ConferenceCommandContent.ConferenceCommandType.APPROVE_ALL_UNMUTE_AUDIO : ConferenceCommandContent.ConferenceCommandType.APPROVE_ALL_UNMUTE_VIDEO, null, isAllow);
         LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
     }
 
@@ -317,25 +390,29 @@ public class ConferenceManager implements OnReceiveMessageListener {
         }
     }
 
-    public void requestMemberMute(String userId, boolean mute) {
+    public void requestMemberMute(boolean audio, String userId, boolean mute) {
         if (!isOwner()) {
             return;
         }
-        this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.REQUEST_MUTE, userId, mute);
+        this.sendCommandMessage(audio ? ConferenceCommandContent.ConferenceCommandType.REQUEST_MUTE_AUDIO : ConferenceCommandContent.ConferenceCommandType.REQUEST_MUTE_VIDEO, userId, mute);
     }
 
-    public void requestMuteAll(boolean allowMemberUnmute) {
+    public void requestMuteAll(boolean audio, boolean allowMemberUnmute) {
         if (!this.isOwner()) {
             return;
         }
-        this.isMuteAll = true;
+        if (audio) {
+            this.isMuteAllAudio = true;
+        } else {
+            this.isMuteAllVideo = true;
+        }
         currentConferenceInfo.setAudience(true);
         currentConferenceInfo.setAllowTurnOnMic(allowMemberUnmute);
 
         WfcUIKit.getWfcUIKit().getAppServiceProvider().updateConference(currentConferenceInfo, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.MUTE_ALL, null, allowMemberUnmute);
+                sendCommandMessage(audio ? ConferenceCommandContent.ConferenceCommandType.MUTE_ALL_AUDIO : ConferenceCommandContent.ConferenceCommandType.MUTE_ALL_VIDEO, null, allowMemberUnmute);
                 LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
             }
 
@@ -346,18 +423,22 @@ public class ConferenceManager implements OnReceiveMessageListener {
         });
     }
 
-    public void requestUnmuteAll(boolean unmute) {
+    public void requestUnmuteAll(boolean audio, boolean unmute) {
         if (!this.isOwner()) {
             return;
         }
-        this.isMuteAll = false;
+        if (audio) {
+            this.isMuteAllAudio = false;
+        } else {
+            this.isMuteAllVideo = false;
+        }
         currentConferenceInfo.setAudience(false);
         currentConferenceInfo.setAllowTurnOnMic(true);
 
         WfcUIKit.getWfcUIKit().getAppServiceProvider().updateConference(currentConferenceInfo, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL, null, unmute);
+                sendCommandMessage(audio ? ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL_AUDIO : ConferenceCommandContent.ConferenceCommandType.CANCEL_MUTE_ALL_VIDEO, null, unmute);
                 LiveDataBus.setValue("kConferenceMutedStateChanged", new Object());
             }
 
@@ -519,42 +600,30 @@ public class ConferenceManager implements OnReceiveMessageListener {
         return currentConferenceInfo.getOwner().equals(ChatManager.Instance().getUserId());
     }
 
-    private void onRequestMute(boolean mute) {
-        if (!mute) {
-            AlertDialogActivity.showAlterDialog(context, "主持人邀请你发言", false, "拒绝", "接受",
-                () -> Toast.makeText(context, "你拒绝了发言邀请", Toast.LENGTH_SHORT).show(),
-                () -> {
-                    Toast.makeText(context, "你接受了发言邀请", Toast.LENGTH_SHORT).show();
-                    muteAudioVideo(false);
-                });
-        } else {
-            Toast.makeText(context, "主持人关闭了你的发言", Toast.LENGTH_SHORT).show();
-            muteAudioVideo(true);
-        }
+    private void onRequestMute(boolean audio, boolean mute) {
+        Pair<Boolean, Boolean> value = new Pair<>(audio, mute);
+        LiveDataBus.setValue("onRequestMute", value);
     }
 
-    private void onCancelMuteAll(boolean requestUnmute) {
-        if (requestUnmute) {
-            AlertDialogActivity.showAlterDialog(context, "主持人关闭了全员静音，是否要打开麦克风", false, "忽略", "打开",
-                () -> {
-                },
-                () -> {
-                    muteAudio(false);
-                });
-        }
-        Toast.makeText(context, "主持人关闭了全员静音", Toast.LENGTH_SHORT).show();
+    private void onCancelMuteAll(boolean audio, boolean requestUnmute) {
+        Pair<Boolean, Boolean> value = new Pair<>(audio, requestUnmute);
+        LiveDataBus.setValue("onCancelMuteAll", value);
     }
 
 
-    private void onMuteAll() {
+    private void onMuteAll(boolean audio, boolean allowUnmute) {
         reloadConferenceInfo();
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (!session.isAudience()) {
-            session.switchAudience(true);
-            session.muteAudio(true);
-            session.muteVideo(true);
+            if (audio) {
+                this.isAllowUnmuteAudioWhenMuteAll = allowUnmute;
+                muteAudio(true);
+            } else {
+                this.isAllownUnMuteVideoWhenMuteAll = allowUnmute;
+                muteVideo(true);
+            }
         }
-        Toast.makeText(context, "主持人开启了全员静音", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, audio ? "主持人开启了全员静音" : "主持人关闭了所有人的摄像头", Toast.LENGTH_SHORT).show();
     }
 
     private void reloadConferenceInfo() {
