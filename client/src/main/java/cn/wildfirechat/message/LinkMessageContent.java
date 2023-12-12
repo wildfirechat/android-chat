@@ -95,7 +95,7 @@ public class LinkMessageContent extends MessageContent {
 
 
         try {
-            if (payload.content != null) {
+            if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 contentDigest = jsonObject.optString("d");
                 url = jsonObject.optString("u");
