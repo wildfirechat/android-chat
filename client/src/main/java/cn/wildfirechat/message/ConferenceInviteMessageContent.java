@@ -4,21 +4,16 @@
 
 package cn.wildfirechat.message;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Invite;
+
 import android.os.Parcel;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_Start;
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Invite;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -160,6 +155,7 @@ public class ConferenceInviteMessageContent extends MessageContent {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        payload.pushContent = "会议邀请";
         return payload;
     }
 
@@ -167,6 +163,7 @@ public class ConferenceInviteMessageContent extends MessageContent {
     @Override
     public void decode(MessagePayload payload) {
         callId = payload.content;
+        pushContent = payload.pushContent;
 
         try {
             if (payload.binaryContent != null) {
