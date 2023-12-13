@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -149,10 +150,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
         connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
             if (status == ConnectionStatus.ConnectionStatusTokenIncorrect
-                    || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch
-                    || status == ConnectionStatus.ConnectionStatusRejected
-                    || status == ConnectionStatus.ConnectionStatusLogout
-                    || status == ConnectionStatus.ConnectionStatusKickedoff) {
+                || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch
+                || status == ConnectionStatus.ConnectionStatusRejected
+                || status == ConnectionStatus.ConnectionStatusLogout
+                || status == ConnectionStatus.ConnectionStatusKickedoff) {
                 SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
                 sp.edit().clear().apply();
                 OKHttpHelper.clearCookies();
@@ -173,7 +174,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         messageViewModel.messageLiveData().observe(this, uiMessage -> {
             if (uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
-                    || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT) {
+                || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT) {
                 updateMomentBadgeView();
             }
         });
@@ -187,7 +188,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             }
         }
 
-        requestNotificationPermission();
+        requestMandatoryPermissions();
     }
 
     @Override
@@ -224,7 +225,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         initView();
 
         conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(0)))
-                .get(ConversationListViewModel.class);
+            .get(ConversationListViewModel.class);
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
 
             if (unreadCount != null && unreadCount.unread > 0) {
@@ -527,7 +528,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100 && grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startActivityForResult(new Intent(this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
         }
     }
@@ -536,7 +537,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(
-                getBaseContext().getPackageName());
+            getBaseContext().getPackageName());
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
         finish();
@@ -626,16 +627,16 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private void updateDisplayName() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("修改个人昵称？")
-                .positiveText("修改")
-                .negativeText("取消")
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Intent intent = new Intent(MainActivity.this, ChangeMyNameActivity.class);
-                        startActivity(intent);
-                    }
-                }).build();
+            .content("修改个人昵称？")
+            .positiveText("修改")
+            .negativeText("取消")
+            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                @Override
+                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    Intent intent = new Intent(MainActivity.this, ChangeMyNameActivity.class);
+                    startActivity(intent);
+                }
+            }).build();
         dialog.show();
     }
 
@@ -682,7 +683,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         }
 
         if (text.startsWith("我分享了【")
-                && text.indexOf("】, 快来看吧！@小米浏览器 | http") > 1) {
+            && text.indexOf("】, 快来看吧！@小米浏览器 | http") > 1) {
             return true;
         }
         return false;
@@ -699,15 +700,21 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         return content;
     }
 
-    private void requestNotificationPermission() {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) {
-            return;
+    private void requestMandatoryPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "需要后台弹出界面和显示悬浮窗权限，否则后台运行时，无法弹出音视频界面", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            }
         }
 
-        String[] permissions = new String[]{Manifest.permission.POST_NOTIFICATIONS};
-        if (!checkPermission(permissions)) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            String[] permissions = new String[]{Manifest.permission.POST_NOTIFICATIONS};
             if (!checkPermission(permissions)) {
-                requestPermissions(permissions, 101);
+                if (!checkPermission(permissions)) {
+                    requestPermissions(permissions, 101);
+                }
             }
         }
     }
