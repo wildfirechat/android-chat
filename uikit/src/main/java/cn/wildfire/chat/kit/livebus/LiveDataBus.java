@@ -35,6 +35,14 @@ public final class LiveDataBus {
         getLiveData(subject).observe(lifecycle, action);
     }
 
+    public static void subscribeForever(String subject, @NonNull Observer<Object> action) {
+        getLiveData(subject).observeForever(action);
+    }
+
+    public static void unsubscribe(String subject, Observer<Object> observer) {
+        getLiveData(subject).removeObserver(observer);
+    }
+
     static void unregister(String subject) {
         sSubjectMap.remove(subject);
         Log.d("LiveDataBus", "remove subject " + subject);
