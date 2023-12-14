@@ -167,9 +167,6 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         if (session != null) {
             Intent intent = new Intent(this, ConferenceActivity.class);
             startActivity(intent);
-
-            ConferenceManager.getManager().joinChatRoom();
-
             finish();
         } else {
             Toast.makeText(this, "加入会议失败", Toast.LENGTH_SHORT).show();
