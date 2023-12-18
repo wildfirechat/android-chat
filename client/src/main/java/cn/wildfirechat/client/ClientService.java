@@ -31,6 +31,7 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
@@ -135,6 +136,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 /**
@@ -578,8 +580,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                             return;
                         }
                     }
-                    if (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                        uploadThenSend = true;
+                    if (isSupportBigFilesUpload() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
+                        if (ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024) {
+                            uploadThenSend = true;
+                        }
                     }
                 } else {
                     if (!(msg.content instanceof CompositeMessageContent) && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
@@ -604,7 +608,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
                 String filePath = file.getAbsolutePath();
 
-                uploadBigFile(messageId, filePath, MessageContentMediaType.FILE.getValue(), null, new UploadMediaCallback() {
+                String extension = MimeTypeMap.getFileExtensionFromUrl(filePath);
+                String contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                uploadBigFile(messageId, file.getName(), filePath, null, MessageContentMediaType.FILE.getValue(), contentType, new UploadMediaCallback() {
                     @Override
                     public void onSuccess(String result) {
                         protoMessage.getContent().setRemoteMediaUrl(result);
@@ -1477,9 +1483,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             android.util.Log.d(TAG, "stargLog");
             Xlog.setConsoleLogOpen(true);
             String path = getLogPath();
-            //wflog为ChatSManager中使用判断日志文件，如果修改需要对应修改
+            // FYI: https://github.com/Tencent/mars/issues/363
+            String xlogMMapDir = getFilesDir().getAbsolutePath() + "/xlog";
             try {
-                Xlog.appenderOpen(Xlog.LEVEL_INFO, AppednerModeAsync, path, path, "wflog", null);
+                //wflog为ChatSManager中使用判断日志文件，如果修改需要对应修改
+                Xlog.appenderOpen(Xlog.LEVEL_INFO, AppednerModeAsync, xlogMMapDir, path, "wflog", null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1893,8 +1901,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getUserInfoEx(String userId, boolean refresh, IGetUserCallback callback) throws RemoteException {
-            ProtoLogic.getUserInfoEx(userId, refresh, new ProtoLogic.IGetUserInfoCallback() {
+        public void getUserInfoEx(String userId, String groupId, boolean refresh, IGetUserCallback callback) throws RemoteException {
+            ProtoLogic.getUserInfoEx2(userId, groupId, refresh, new ProtoLogic.IGetUserInfoCallback() {
                 @Override
                 public void onSuccess(ProtoUserInfo protoUserInfo) {
                     try {
@@ -1924,30 +1932,72 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
                 return;
             }
-            ProtoLogic.uploadMedia(fileName, data, mediaType, new ProtoLogic.IUploadMediaCallback() {
-                @Override
-                public void onSuccess(String s) {
-                    try {
-                        callback.onSuccess(s);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+            android.util.Log.d(TAG, "uploadMedia " + fileName + " " + data.length + " " + mediaType);
+            if (isSupportBigFilesUpload()) {
+                android.util.Log.d(TAG, "uploadMedia00");
+                String extension = MimeTypeMap.getFileExtensionFromUrl(fileName);
+                String contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                uploadBigFile(-1, fileName, null, data, mediaType, contentType, new UploadMediaCallback() {
+                    @Override
+                    public void onSuccess(String result) {
+                        android.util.Log.d(TAG, "uploadMedia success " + result);
+                        if (callback != null) {
+                            try {
+                                callback.onSuccess(result);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
-                }
 
-                @Override
-                public void onProgress(long uploaded, long total) {
-
-                }
-
-                @Override
-                public void onFailure(int i) {
-                    try {
-                        callback.onFailure(i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onProgress(long uploaded, long total) {
+                        android.util.Log.d(TAG, "uploadMedia progress " + uploaded + " " + total);
+                        try {
+                            if (callback != null)
+                                callback.onProgress(uploaded, total);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
+
+                    @Override
+                    public void onFail(int errorCode) {
+                        android.util.Log.d(TAG, "uploadMedia fail " + errorCode);
+                        try {
+                            if (callback != null)
+                                callback.onFailure(errorCode);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } else {
+                ProtoLogic.uploadMedia(fileName, data, mediaType, new ProtoLogic.IUploadMediaCallback() {
+                    @Override
+                    public void onSuccess(String s) {
+                        try {
+                            callback.onSuccess(s);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onProgress(long uploaded, long total) {
+
+                    }
+
+                    @Override
+                    public void onFailure(int i) {
+                        try {
+                            callback.onFailure(i);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
         }
 
         @Override
@@ -1969,7 +2019,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
 
                 if (tcpShortLink || (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload())) {
-                    uploadBigFile(-1, mediaPath, mediaType, null, new UploadMediaCallback() {
+                    uploadBigFile(-1, file.getName(), mediaPath, null, mediaType, null, new UploadMediaCallback() {
                         @Override
                         public void onSuccess(String result) {
                             if (callback != null) {
@@ -4519,16 +4569,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         int index;
     }
 
-    private void uploadBigFile(long messageId, String filePath, int mediaType, String contentType, UploadMediaCallback callback) {
-        File file = new File(filePath);
-        ProtoLogic.getUploadMediaUrl(file.getName(), mediaType, contentType, new ProtoLogic.IGetUploadMediaUrlCallback() {
+    private void uploadBigFile(long messageId, String fileName, String filePath, byte[] data, int mediaType, String contentType, UploadMediaCallback callback) {
+        String finalContentType = contentType != null ? contentType : "application/octet-stream";
+        ProtoLogic.getUploadMediaUrl(fileName, mediaType, finalContentType, new ProtoLogic.IGetUploadMediaUrlCallback() {
             @Override
             public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
                 if (serverType == 1) {
                     String[] ss = uploadUrl.split("\\?");
-                    uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, callback);
+                    uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, data, finalContentType, callback);
                 } else {
-                    uploadFile(messageId, filePath, uploadUrl, remoteUrl, callback);
+                    uploadFile(messageId, filePath, data, uploadUrl, remoteUrl, finalContentType, callback);
                 }
             }
 
@@ -4542,7 +4592,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     // progress, error, success
-    private void uploadFile(long messageId, String filePath, String uploadUrl, String remoteUrl, UploadMediaCallback callback) {
+    private void uploadFile(long messageId, String filePath, byte[] data, String uploadUrl, String remoteUrl, String contentType, UploadMediaCallback callback) {
 
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient.Builder()
@@ -4551,15 +4601,22 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 .build();
         }
 
-        MediaType type = MediaType.parse("application/octet-stream");
-        File file = new File(filePath);
-        RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(type, file), callback::onProgress);
+        MediaType mediaType = MediaType.parse(contentType);
+        RequestBody requestBody;
+        if (!TextUtils.isEmpty(filePath)) {
+            File file = new File(filePath);
+            requestBody = RequestBody.create(mediaType, file);
+        } else {
+            requestBody = RequestBody.create(data, mediaType);
+        }
+        RequestBody fileBody = new UploadFileRequestBody(requestBody, callback::onProgress);
 
         Request request = new Request.Builder().url(uploadUrl).put(fileBody).build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                android.util.Log.d(TAG, "uploadFile fail " + e.getMessage());
                 e.printStackTrace();
                 callback.onFail(4);
                 uploadingMap.remove(messageId);
@@ -4568,12 +4625,18 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.code() != 200) {
-                    Log.e(TAG, "uploadMediaFail " + response.code());
-                    callback.onFail(4);
+                    ResponseBody body = response.body();
+                    String respStr = null;
+                    if (body != null) {
+                        respStr = body.string();
+                    }
+                    android.util.Log.e(TAG, "uploadFile " + response.code() + " " + respStr);
+                    callback.onFail(response.code());
                 } else {
                     callback.onSuccess(remoteUrl);
                 }
                 uploadingMap.remove(messageId);
+                response.close();
             }
         });
         if (messageId > 0) {
@@ -4581,7 +4644,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
     }
 
-    private void uploadQiniu(long messageId, String uploadUrl, String remoteUrl, String token, String key, String filePath, UploadMediaCallback callback) {
+    private void uploadQiniu(long messageId, String uploadUrl, String remoteUrl, String token, String key, String filePath, byte[] data, String contentType, UploadMediaCallback callback) {
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -4589,9 +4652,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 .build();
         }
 
-        File file = new File(filePath);
-        MediaType type = MediaType.parse("application/octet-stream");
-        RequestBody fileBody = new UploadFileRequestBody(RequestBody.create(type, file), callback::onProgress);
+        MediaType mediaType = MediaType.parse(contentType);
+        RequestBody requestBody;
+        if (!TextUtils.isEmpty(filePath)) {
+            File file = new File(filePath);
+            requestBody = RequestBody.create(mediaType, file);
+        } else {
+            requestBody = RequestBody.create(data, mediaType);
+        }
+        RequestBody fileBody = new UploadFileRequestBody(requestBody, callback::onProgress);
 
         final MultipartBody.Builder mb = new MultipartBody.Builder();
         mb.addFormDataPart("key", key);
@@ -4613,12 +4682,18 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.code() != 200) {
-                    Log.e(TAG, "uploadMediaFail " + response.code());
-                    callback.onFail(4);
+                    ResponseBody body = response.body();
+                    String respStr = null;
+                    if (body != null) {
+                        respStr = body.string();
+                    }
+                    android.util.Log.e(TAG, "uploadFile " + response.code() + " " + respStr);
+                    callback.onFail(response.code());
                 } else {
                     callback.onSuccess(remoteUrl);
                 }
                 uploadingMap.remove(messageId);
+                response.close();
             }
         });
         if (messageId > 0) {

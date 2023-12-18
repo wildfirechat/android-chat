@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -11,9 +13,12 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- 通过GPS得到精确位置 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -32,7 +37,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -259,18 +264,18 @@
 
 
         <!--moment start-->
-        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
-        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />
-        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />
-        <activity
-            android:name="cn.wildfire.chat.moment.FeedListActivity"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="${packageName}.moment" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />
+        <!--        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />-->
+        <!--        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />-->
+        <!--        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />-->
+        <!--        <activity-->
+        <!--            android:name="cn.wildfire.chat.moment.FeedListActivity"-->
+        <!--            android:exported="false">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="${packageName}.moment" />-->
+        <!--                <category android:name="android.intent.category.DEFAULT" />-->
+        <!--            </intent-filter>-->
+        <!--        </activity>-->
+        <!--        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />-->
         <!--moment end-->
 
         <activity android:name=".group.manage.MuteGroupMemberActivity" />

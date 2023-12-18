@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
@@ -34,7 +35,6 @@ import java.util.Map;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
@@ -327,16 +327,21 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         }
 
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
-            String userId = ChatManager.Instance().getUserId();
             if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
-                GroupInfo groupInfo = groupViewModel.getGroupInfo(message.conversation.target, false);
-                if (groupInfo != null && userId.equals(groupInfo.owner)) {
+                GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
+                GroupMember fromMember = groupViewModel.getGroupMember(message.conversation.target, message.sender);
+                if (groupMember == null || fromMember == null) {
+                    return true;
+                }
+                // 群主允许撤回所有消息
+                if (groupMember.type == GroupMember.GroupMemberType.Owner) {
                     return false;
                 }
-                GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
-                if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Manager
-                    || groupMember.type == GroupMember.GroupMemberType.Owner)) {
+
+                // 管理员可以测试普通成员的消息
+                if (groupMember.type == GroupMember.GroupMemberType.Manager
+                    && (fromMember.type != GroupMember.GroupMemberType.Owner && fromMember.type != GroupMember.GroupMemberType.Manager)) {
                     return false;
                 }
             }
@@ -407,7 +412,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             }
         }
         if (portraitImageView != null && portraitUrl != null) {
-            GlideApp
+            Glide
                 .with(fragment)
                 .load(portraitUrl)
                 .transforms(new CenterCrop(), new RoundedCorners(10))
@@ -429,7 +434,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     private void showGroupMemberAlias(Conversation conversation, Message message, String sender) {
         UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         String hideGroupNickName = userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, conversation.target);
-        if ((!TextUtils.isEmpty(hideGroupNickName) && !"1".equals(hideGroupNickName)) || message.direction == MessageDirection.Send) {
+        if ((!TextUtils.isEmpty(hideGroupNickName) && "1".equals(hideGroupNickName)) || message.direction == MessageDirection.Send) {
             nameTextView.setVisibility(View.GONE);
             return;
         }

@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
@@ -28,6 +29,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.lqr.imagepicker.ImagePicker;
@@ -41,7 +43,6 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -256,7 +257,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     this.groupInfo = groupInfo;
                     groupNameOptionItemView.setDesc(groupInfo.name);
                     groupRemarkOptionItemView.setDesc(groupInfo.remark);
-                    GlideApp.with(this).load(groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
+                    Glide.with(this).load(groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
                     loadAndShowGroupMembers(false);
                     break;
                 }
@@ -303,14 +304,14 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             groupManageOptionItemView.setVisibility(View.VISIBLE);
         }
 
-        showGroupMemberNickNameSwitchButton.setChecked("1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target)));
+        showGroupMemberNickNameSwitchButton.setChecked(!"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target)));
         showGroupMemberNickNameSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            userViewModel.setUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target, isChecked ? "1" : "0");
+            userViewModel.setUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target, isChecked ? "0" : "1");
         });
 
         myGroupNickNameOptionItemView.setDesc(groupMember.alias);
         groupNameOptionItemView.setDesc(groupInfo.name);
-        GlideApp.with(this).load(groupInfo.portrait).transform(new RoundedCorners(5)).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
+        Glide.with(this).load(groupInfo.portrait).transform(new RoundedCorners(5)).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
         groupRemarkOptionItemView.setDesc(groupInfo.remark);
 
         stickTopSwitchButton.setChecked(conversationInfo.top > 0);
@@ -446,25 +447,48 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     void quitGroup() {
-        if (groupInfo != null && userViewModel.getUserId().equals(groupInfo.owner)) {
-            groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
-                if (aBoolean != null && aBoolean) {
-                    Intent intent = new Intent(getContext().getPackageName() + ".main");
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getActivity(), "解散群组失败", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
-                if (aBoolean != null && aBoolean) {
-                    Intent intent = new Intent(getContext().getPackageName() + ".main");
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (groupInfo == null) {
+            return;
         }
+
+        String title;
+        String content;
+        if (userViewModel.getUserId().equals(groupInfo.owner)) {
+            title = "解散群组";
+            content = "确定解散群组？";
+        } else {
+            title = "退出群组";
+            content = "确定退出群组？";
+        }
+        new AlertDialog.Builder(getActivity())
+            .setTitle(title)
+            .setMessage(content)
+            .setPositiveButton("确定", (dialog, which) -> {
+                if (userViewModel.getUserId().equals(groupInfo.owner)) {
+                    groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
+                        if (aBoolean != null && aBoolean) {
+                            Intent intent = new Intent(getContext().getPackageName() + ".main");
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(getActivity(), "解散群组失败", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    groupViewModel.quitGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
+                        if (aBoolean != null && aBoolean) {
+                            Intent intent = new Intent(getContext().getPackageName() + ".main");
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            })
+            .setNegativeButton("取消", (dialog, which) -> {
+                // do nothing
+            })
+            .show();
     }
 
     void clearMessage() {

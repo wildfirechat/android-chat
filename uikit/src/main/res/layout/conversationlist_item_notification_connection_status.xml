@@ -3,7 +3,7 @@
     android:id="@+id/statusTextView"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="@drawable/selector_common_item"
+    android:background="@drawable/selector_stick_top_item"
     android:gravity="center"
     android:orientation="vertical"
     android:text="connecting">

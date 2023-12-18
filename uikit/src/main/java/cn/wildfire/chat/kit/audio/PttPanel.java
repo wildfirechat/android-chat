@@ -50,6 +50,7 @@ public class PttPanel implements View.OnTouchListener {
     public PttPanel(Context context) {
         this.context = context;
         this.handler = ChatManager.Instance().getMainHandler();
+        this.soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
     }
 
     /**
@@ -65,7 +66,6 @@ public class PttPanel implements View.OnTouchListener {
         this.button.setOnTouchListener(this);
         this.conversation = conversation;
         this.maxDuration = PTTClient.getInstance().getMaxSpeakTime(conversation) * 1000;
-        this.soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
         this.startSoundId = this.soundPool.load(context, R.raw.ptt_begin, 1);
         this.stopSoundId = this.soundPool.load(context, R.raw.ptt_end, 1);
 
@@ -82,7 +82,6 @@ public class PttPanel implements View.OnTouchListener {
         this.conversation = null;
         this.soundPool.unload(this.startSoundId);
         this.soundPool.unload(this.stopSoundId);
-        this.soundPool = null;
         this.handler.removeCallbacks(this::tick);
     }
 

@@ -15,7 +15,6 @@
 package cn.wildfire.chat.kit.voip;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +30,6 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -62,7 +60,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     protected PowerManager.WakeLock wakeLock;
     private Handler handler = new Handler();
 
-    protected boolean isInvitingNewParticipant;
+    public boolean preventShowFloatingViewOnStop;
     private String focusVideoUserId;
     private static final String TAG = "voip";
 
@@ -153,7 +151,8 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     protected void onResume() {
         super.onResume();
-        if (isInvitingNewParticipant) {
+        if (preventShowFloatingViewOnStop) {
+            preventShowFloatingViewOnStop = false;
             return;
         }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
@@ -168,7 +167,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     protected void onStop() {
         super.onStop();
-        if (isInvitingNewParticipant) {
+        if (preventShowFloatingViewOnStop) {
             return;
         }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
@@ -327,7 +326,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         handler.post(runnable);
     }
 
-    protected boolean checkOverlayPermission() {
+    public boolean checkOverlayPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
                 Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_LONG).show();
@@ -337,6 +336,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
                 if (infos == null || infos.isEmpty()) {
                     return true;
                 }
+                preventShowFloatingViewOnStop = true;
                 startActivity(intent);
                 return false;
             }

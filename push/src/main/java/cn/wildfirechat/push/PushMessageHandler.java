@@ -34,13 +34,13 @@ public abstract class PushMessageHandler {
     }
 
     //IM push message
-    abstract public void handleIMPushMessage(Context context, AndroidPushMessage pushMessage, PushService.PushServiceType pushServiceType);
+    abstract public void handleIMPushMessage(Context context, AndroidPushMessage pushMessage, int pushServiceType);
 
     //Application push data
     abstract public void handlePushMessageData(Context context, String pushData);
 
 
-    public static void didReceiveIMPushMessage(final Context context, final AndroidPushMessage pushMessage, final PushService.PushServiceType pushServiceType) {
+    public static void didReceiveIMPushMessage(final Context context, final AndroidPushMessage pushMessage, final int pushServiceType) {
         if (customHandler != null) {
             customHandler.handleIMPushMessage(context, pushMessage, pushServiceType);
         } else if (defaultHandler != null) {

@@ -5,6 +5,7 @@
     android:layout_height="100dp"
     android:adjustViewBounds="true"
     android:background="@drawable/img_bubble_send_white"
+    android:backgroundTint="@color/white"
     android:padding="10dp"
     android:scaleType="fitCenter">
 
@@ -20,12 +21,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/fileIconImageView"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
         android:layout_toRightOf="@id/fileIconImageView"
+        android:ellipsize="end"
         android:maxWidth="200dp"
         android:maxLines="1"
-        android:text="文件名。。。。。"
+        android:text="文文件。。。"
         android:textSize="18sp" />
 
     <TextView
@@ -33,11 +34,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/fileIconImageView"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
         android:layout_toRightOf="@id/fileIconImageView"
         android:maxLines="1"
-        android:text="3K" />
+        android:text="3K"
+        android:textSize="12sp" />
 
 </RelativeLayout>

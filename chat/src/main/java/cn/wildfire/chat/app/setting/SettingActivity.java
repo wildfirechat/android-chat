@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.main.SplashActivity;
+import cn.wildfire.chat.app.misc.DiagnoseActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -95,22 +96,8 @@ public class SettingActivity extends WfcBaseActivity {
     }
 
     void diagnose() {
-        long start = System.currentTimeMillis();
-        OKHttpHelper.get("http://" + Config.IM_SERVER_HOST + "/api/version", null, new SimpleCallback<String>() {
-            @Override
-            public void onUiSuccess(String s) {
-                long duration = (System.currentTimeMillis() - start) / 2;
-                diagnoseOptionItemView.setDesc(duration + "ms");
-                Toast.makeText(SettingActivity.this, "服务器延迟为：" + duration + "ms", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onUiFailure(int code, String msg) {
-                diagnoseOptionItemView.setDesc("test failed");
-                Toast.makeText(SettingActivity.this, "访问IM Server失败", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+        Intent intent = new Intent(this, DiagnoseActivity.class);
+        startActivity(intent);
     }
 
     void uploadLog() {

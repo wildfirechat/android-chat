@@ -13,11 +13,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -277,6 +274,10 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             return;
         }
+        if (session.isAudioOnly()) {
+            Toast.makeText(getActivity(), "音频会议不支持开启摄像头", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (!session.isAudience() && !session.videoMuted) {
             muteVideoImageView.setSelected(true);
@@ -335,8 +336,17 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     void shareScreen() {
+        VoipBaseActivity voipBaseActivity = ((VoipBaseActivity) getActivity());
+        if (!voipBaseActivity.checkOverlayPermission()) {
+            return;
+        }
+
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
+            if (session.isAudioOnly()) {
+                Toast.makeText(voipBaseActivity, "音频会议不支持屏幕共享", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (!session.isScreenSharing()) {
                 Toast.makeText(getContext(), "开启屏幕共享时，将关闭摄像头，并打开麦克风", Toast.LENGTH_LONG).show();
                 session.muteAudio(false);
@@ -423,16 +433,11 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             dialog.dismiss();
         });
         view.findViewById(R.id.minimizeLinearLayout).setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                if (!Settings.canDrawOverlays(getActivity())) {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getActivity().getPackageName()));
-                    startActivity(intent);
-                }
+            if (((VoipBaseActivity) getActivity()).checkOverlayPermission()) {
+                Activity activity = (Activity) getContext();
+                activity.finish();
+                dialog.dismiss();
             }
-            Activity activity = (Activity) getContext();
-            activity.finish();
-            dialog.dismiss();
         });
         view.findViewById(R.id.recordLinearLayout).setOnClickListener(v -> {
             if (ChatManager.Instance().getUserId().equals(conferenceInfo.getOwner())) {
@@ -488,37 +493,72 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     };
 
     private void requestUnmute(boolean audio) {
-        if (ConferenceManager.getManager().isApplyingUnmute()) {
-            new MaterialDialog.Builder(getContext())
-                .content("主持人不允许解除静音，您已经申请解除静音，正在等待主持人操作")
-                .negativeText("取消申请")
-                .onNegative((dialog, which) -> {
-                    Toast.makeText(getContext(), "已取消申请", Toast.LENGTH_SHORT).show();
-                    ConferenceManager.getManager().applyUnmute(true);
-                })
-                .positiveText("继续申请")
-                .onPositive((dialog, which) -> {
-                    Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
-                    ConferenceManager.getManager().applyUnmute(false);
-                })
-                .cancelable(false)
-                .build()
-                .show();
-        } else {
-            new MaterialDialog.Builder(getContext())
-                .content("主持人不允许解除静音，您可以向主持人申请解除静音")
-                .negativeText("取消")
-                .onNegative((dialog, which) -> {
+        if (audio) {
+            if (ConferenceManager.getManager().isApplyingUnmuteAudio()) {
+                new MaterialDialog.Builder(getContext())
+                    .content("主持人不允许解除静音，您已经申请解除静音，正在等待主持人操作")
+                    .negativeText("取消申请")
+                    .onNegative((dialog, which) -> {
+                        Toast.makeText(getContext(), "已取消申请", Toast.LENGTH_SHORT).show();
+                        ConferenceManager.getManager().applyUnmute(true, true);
+                    })
+                    .positiveText("继续申请")
+                    .onPositive((dialog, which) -> {
+                        Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                        ConferenceManager.getManager().applyUnmute(true, false);
+                    })
+                    .cancelable(false)
+                    .build()
+                    .show();
+            } else {
+                new MaterialDialog.Builder(getContext())
+                    .content("主持人不允许解除静音，您可以向主持人申请解除静音")
+                    .negativeText("取消")
+                    .onNegative((dialog, which) -> {
 
-                })
-                .positiveText("申请解除静音")
-                .onPositive((dialog, which) -> {
-                    Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
-                    ConferenceManager.getManager().applyUnmute(false);
-                })
-                .cancelable(false)
-                .build()
-                .show();
+                    })
+                    .positiveText("申请解除静音")
+                    .onPositive((dialog, which) -> {
+                        Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                        ConferenceManager.getManager().applyUnmute(true, false);
+                    })
+                    .cancelable(false)
+                    .build()
+                    .show();
+            }
+        } else {
+            if (ConferenceManager.getManager().isApplyingUnmuteAudio()) {
+                new MaterialDialog.Builder(getContext())
+                    .content("主持人不允许打开摄像头，您已经申请解除静音，正在等待主持人操作")
+                    .negativeText("取消申请")
+                    .onNegative((dialog, which) -> {
+                        Toast.makeText(getContext(), "已取消申请", Toast.LENGTH_SHORT).show();
+                        ConferenceManager.getManager().applyUnmute(false, true);
+                    })
+                    .positiveText("继续申请")
+                    .onPositive((dialog, which) -> {
+                        Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                        ConferenceManager.getManager().applyUnmute(false, false);
+                    })
+                    .cancelable(false)
+                    .build()
+                    .show();
+            } else {
+                new MaterialDialog.Builder(getContext())
+                    .content("主持人不允许打开摄像头，您可以向主持人申请解除静音")
+                    .negativeText("取消")
+                    .onNegative((dialog, which) -> {
+
+                    })
+                    .positiveText("申请打开摄像头")
+                    .onPositive((dialog, which) -> {
+                        Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                        ConferenceManager.getManager().applyUnmute(false, false);
+                    })
+                    .cancelable(false)
+                    .build()
+                    .show();
+            }
         }
     }
 

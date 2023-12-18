@@ -48,15 +48,20 @@ public class GroupManageFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
+        if (groupInfo == null) {
+            getActivity().finish();
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.group_manage_fragment, container, false);
-        bindViews(view);
-        bindEvents(view);
-        init();
+        if (groupInfo != null) {
+            bindViews(view);
+            bindEvents(view);
+            init();
+        }
         return view;
     }
 

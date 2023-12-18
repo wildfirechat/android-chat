@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.group.manage;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
@@ -29,7 +30,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.remote.ChatManager;
 
-public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment {
+public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment implements UserListAdapter.OnUserLongClickListener {
     private GroupViewModel groupViewModel;
     private GroupInfo groupInfo;
     private GroupMember groupMember;
@@ -63,11 +64,13 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment {
 
     @Override
     public UserListAdapter onCreateUserListAdapter() {
-        return new UserListAdapter(this);
+        UserListAdapter adapter = new UserListAdapter(this);
+        adapter.setOnUserLongClickListener(this);
+        return adapter;
     }
 
     @Override
-    public void initFooterViewHolders() {
+    public void initHeaderViewHolders() {
         if (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager) {
             addHeaderViewHolder(MuteGroupMemberViewHolder.class, R.layout.group_manage_item_mute_member, new HeaderValue(groupInfo, groupMuted));
         }
@@ -92,6 +95,36 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment {
             })
             .cancelable(true)
             .build()
+            .show();
+    }
+
+    @Override
+    public void onUserLongClick(UIUserInfo userInfo) {
+        new MaterialDialog.Builder(getActivity())
+            .content(!groupMuted ? "取消禁言" : "取消允许发言")
+            .positiveText("确定")
+            .negativeText("取消")
+            .onPositive((dialog, which) -> {
+                if (!groupMuted) {
+                    groupViewModel.muteGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0))
+                        .observe(this, booleanOperateResult -> {
+                            if (!booleanOperateResult.isSuccess()) {
+                                Toast.makeText(getActivity(), "操作失败", Toast.LENGTH_SHORT).show();
+                            } else {
+                                this.loadAndShowGroupMembers(true);
+                            }
+                        });
+                } else {
+                    groupViewModel.allowGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0))
+                        .observe(this, booleanOperateResult -> {
+                            if (!booleanOperateResult.isSuccess()) {
+                                Toast.makeText(getActivity(), "操作失败", Toast.LENGTH_SHORT).show();
+                            } else {
+                                this.loadAndShowGroupMembers(true);
+                            }
+                        });
+                }
+            })
             .show();
     }
 

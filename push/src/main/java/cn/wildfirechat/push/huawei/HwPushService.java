@@ -17,7 +17,7 @@ public class HwPushService extends HmsMessageService {
     public void onNewToken(String s) {
         super.onNewToken(s);
         Log.d("HMS", "onNewToken: " + s);
-        ChatManager.Instance().setDeviceToken(s, PushService.PushServiceType.HMS.ordinal());
+        ChatManager.Instance().setDeviceToken(s, PushService.PushServiceType.HMS);
     }
 
     @Override

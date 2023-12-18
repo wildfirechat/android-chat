@@ -45,7 +45,7 @@ public class PrivacyFindMeSettingActivity extends WfcBaseActivity {
         displayNameSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             int flag = getUserPrivacySearchableFlag();
             if (isChecked) {
-                flag &= (DisableSearchUserMask.DisplayName | DisableSearchUserMask.Mobile);
+                flag &= (DisableSearchUserMask.DisplayName | DisableSearchUserMask.Mobile | DisableSearchUserMask.UserId);
             } else {
                 flag |= DisableSearchUserMask.Name;
             }
@@ -67,7 +67,7 @@ public class PrivacyFindMeSettingActivity extends WfcBaseActivity {
         nameSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             int flag = getUserPrivacySearchableFlag();
             if (isChecked) {
-                flag &= (DisableSearchUserMask.DisplayName | DisableSearchUserMask.Mobile);
+                flag &= (DisableSearchUserMask.DisplayName | DisableSearchUserMask.Mobile | DisableSearchUserMask.UserId);
             } else {
                 flag |= DisableSearchUserMask.Name;
             }
@@ -89,7 +89,7 @@ public class PrivacyFindMeSettingActivity extends WfcBaseActivity {
         mobileSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             int flag = getUserPrivacySearchableFlag();
             if (isChecked) {
-                flag &= (DisableSearchUserMask.DisplayName | DisableSearchUserMask.Name);
+                flag &= (DisableSearchUserMask.DisplayName | DisableSearchUserMask.Name | DisableSearchUserMask.UserId);
             } else {
                 flag |= DisableSearchUserMask.Mobile;
             }

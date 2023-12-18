@@ -15,19 +15,19 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.voip.FullScreenBottomSheetDialogFragment;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
-public class ConferenceApplyUnmuteListFragment extends FullScreenBottomSheetDialogFragment {
+public class ConferenceApplyUnmuteVideoListFragment extends FullScreenBottomSheetDialogFragment {
     private RecyclerView recyclerView;
     private ApplyUnmuteListAdapter adapter;
     private List<String> applyUnmuteList;
@@ -62,12 +62,12 @@ public class ConferenceApplyUnmuteListFragment extends FullScreenBottomSheetDial
 //        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
         view.findViewById(R.id.approveAllButton).setOnClickListener(v -> {
-            ConferenceManager.getManager().approveAllMemberUnmute(true);
+            ConferenceManager.getManager().approveAllMemberUnmute(false, true);
             dismiss();
         });
 
         view.findViewById(R.id.rejectAllButton).setOnClickListener(v -> {
-            ConferenceManager.getManager().approveAllMemberUnmute(false);
+            ConferenceManager.getManager().approveAllMemberUnmute(false, false);
             dismiss();
         });
 
@@ -83,7 +83,7 @@ public class ConferenceApplyUnmuteListFragment extends FullScreenBottomSheetDial
     }
 
     private void loadAndShowApplyUnmuteList() {
-        this.applyUnmuteList = ConferenceManager.getManager().getApplyingUnmuteMembers();
+        this.applyUnmuteList = ConferenceManager.getManager().getApplyingUnmuteVideoMembers();
     }
 
     class ApplyUnmuteListAdapter extends RecyclerView.Adapter<ApplyUnmuteViewHolder> {
@@ -118,13 +118,13 @@ public class ConferenceApplyUnmuteListFragment extends FullScreenBottomSheetDial
             itemView.findViewById(R.id.approveTextView).setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 String userId = applyUnmuteList.get(position);
-                ConferenceManager.getManager().approveUnmute(userId, true);
+                ConferenceManager.getManager().approveUnmute(false, userId, true);
                 dismiss();
             });
             itemView.findViewById(R.id.rejectTextView).setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 String userId = applyUnmuteList.get(position);
-                ConferenceManager.getManager().approveUnmute(userId, false);
+                ConferenceManager.getManager().approveUnmute(false, userId, false);
                 dismiss();
             });
         }
@@ -133,7 +133,7 @@ public class ConferenceApplyUnmuteListFragment extends FullScreenBottomSheetDial
             UserInfo userInfo = ChatManager.Instance().getUserInfo(userId, false);
             String displayName = ChatManager.Instance().getUserDisplayName(userInfo);
             nameTextView.setText(displayName);
-            GlideApp.with(this.itemView).load(userInfo.portrait).placeholder(R.mipmap.avatar_def)
+            Glide.with(this.itemView).load(userInfo.portrait).placeholder(R.mipmap.avatar_def)
                 .apply(RequestOptions.bitmapTransform(new RoundedCorners(10)))
                 .into(portraitImageView);
         }

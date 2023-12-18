@@ -22,6 +22,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
 import cn.wildfirechat.model.GroupInfo;
@@ -51,7 +52,7 @@ import cn.wildfirechat.remote.GetGroupMembersCallback;
 public class ImageUtils {
     private static final String THUMB_IMG_DIR_PATH = UIUtils.getContext().getCacheDir().getAbsolutePath();
     private static final int IMG_WIDTH = 480; //超過此寬、高則會 resize圖片
-    private static final int IMG_HIGHT = 800;
+    private static final int IMG_HEIGHT = 800;
     private static final int COMPRESS_QUALITY = 70; //壓縮 JPEG使用的品質(70代表壓縮率為 30%)
 
 
@@ -114,14 +115,14 @@ public class ImageUtils {
         final int width = options.outWidth;
         int inSampleSize = 1;
 
-        if (height > IMG_HIGHT || width > IMG_WIDTH) {
+        if (height > IMG_HEIGHT || width > IMG_WIDTH) {
 
             final int halfHeight = height / 2;
             final int halfWidth = width / 2;
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) >= IMG_HIGHT
+            while ((halfHeight / inSampleSize) >= IMG_HEIGHT
                 && (halfWidth / inSampleSize) >= IMG_WIDTH) {
                 inSampleSize *= 2;
             }
@@ -200,11 +201,11 @@ public class ImageUtils {
 
                             Drawable drawable = null;
                             try {
-                                drawable = GlideApp.with(context).load(info.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
+                                drawable = Glide.with(context).load(info.portrait).placeholder(R.mipmap.avatar_def).submit(60, 60).get();
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 try {
-                                    drawable = GlideApp.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
+                                    drawable = Glide.with(context).load(R.mipmap.avatar_def).submit(60, 60).get();
                                 } catch (ExecutionException ex) {
                                     ex.printStackTrace();
                                 } catch (InterruptedException ex) {
@@ -380,6 +381,27 @@ public class ImageUtils {
 
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
         }
+    }
+
+    public static int[] scaleDown(int width, int height, int maxWidth, int maxHeight) {
+        int[] size = new int[2];
+        if (width < maxWidth && height < maxHeight) {
+            size[0] = width;
+            size[1] = height;
+            return size;
+        }
+
+        float widthRatio = (float) maxWidth / width;
+        float heightRatio = (float) maxHeight / height;
+
+        float scale = Math.min(widthRatio, heightRatio);
+
+        float scaledWidth = width * scale;
+        float scaledHeight = height * scale;
+        size[0] = (int) Math.ceil(scaledWidth);
+        size[1] = (int) Math.ceil(scaledHeight);
+
+        return size;
     }
 
 }

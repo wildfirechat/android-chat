@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_Start;
+
 import android.os.Parcel;
 
 import org.json.JSONArray;
@@ -16,8 +18,6 @@ import java.util.List;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_Start;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -116,6 +116,7 @@ public class CallStartMessageContent extends MessageContent {
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.content = callId;
+        payload.pushContent = "音视频通话邀请";
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -146,7 +147,6 @@ public class CallStartMessageContent extends MessageContent {
                 pushDataWrite.put("participants", targetIds);
             }
             payload.pushData = pushDataWrite.toString();
-            payload.pushContent = "音视频通话邀请";
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -157,6 +157,7 @@ public class CallStartMessageContent extends MessageContent {
     @Override
     public void decode(MessagePayload payload) {
         callId = payload.content;
+        pushContent = payload.pushContent;
 
         try {
             if (payload.binaryContent != null) {

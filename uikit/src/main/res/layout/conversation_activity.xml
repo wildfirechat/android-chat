@@ -10,6 +10,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ScrollView
+            android:id="@+id/conversationBackgroundScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/conversationBackgroundImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop" />
+        </ScrollView>
+
         <LinearLayout
             android:id="@+id/contentLayout"
             android:layout_width="match_parent"
@@ -79,8 +92,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ongoingCallRecyclerView"
             android:layout_width="match_parent"
-            android:background="@color/white"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             android:visibility="gone" />
     </FrameLayout>
 </cn.wildfire.chat.kit.widget.InputAwareLayout>

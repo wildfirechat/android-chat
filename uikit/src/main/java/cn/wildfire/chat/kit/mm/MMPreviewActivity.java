@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
@@ -35,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -210,9 +210,9 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         saveImageView.setVisibility(View.GONE);
 
         if (entry.getThumbnail() != null) {
-            GlideApp.with(photoView).load(entry.getThumbnail()).diskCacheStrategy(diskCacheStrategy).into(photoView);
+            Glide.with(photoView).load(entry.getThumbnail()).diskCacheStrategy(diskCacheStrategy).into(photoView);
         } else {
-            GlideApp.with(photoView).load(entry.getThumbnailUrl()).diskCacheStrategy(diskCacheStrategy).into(photoView);
+            Glide.with(photoView).load(entry.getThumbnailUrl()).diskCacheStrategy(diskCacheStrategy).into(photoView);
         }
 
         VideoView videoView = view.findViewById(R.id.videoView);
@@ -230,12 +230,19 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
             public void onClick(View v) {
                 videoPlayButton.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
-                    File videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    File videoFile;
+                    if (entry.getMessage() != null) {
+                        videoFile = DownloadManager.mediaMessageContentFile(entry.getMessage());
+                    } else {
+                        String name = DownloadManager.getNameFromUrl(entry.getMediaUrl());
+                        name = TextUtils.isEmpty(name) ? System.currentTimeMillis() + "" : name;
+                        videoFile = new File(Config.VIDEO_SAVE_DIR, name);
+                    }
                     if (videoFile == null) {
                         return;
                     }
                     if (!videoFile.exists() || secret) {
-                        String tag = entry.getMessage().messageUid + "";
+                        String tag = System.currentTimeMillis() + "";
                         view.setTag(tag);
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
@@ -358,13 +365,13 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         }
 
         if (entry.getThumbnail() != null) {
-            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
-                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
-                    .into(photoView);
+            Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
+                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
+                .into(photoView);
         } else {
-            GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
-                    .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
-                    .into(photoView);
+            Glide.with(MMPreviewActivity.this).load(entry.getMediaUrl()).diskCacheStrategy(diskCacheStrategy)
+                .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
+                .into(photoView);
         }
     }
 
@@ -418,7 +425,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
 
     private void saveMedia2Album(File file, boolean isImage) {
         String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
             boolean granted = checkSelfPermission(permissions[0]) == PackageManager.PERMISSION_GRANTED;
             if (granted) {
                 ImageUtils.saveMedia2Album(this, file, isImage);

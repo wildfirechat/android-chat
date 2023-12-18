@@ -9,16 +9,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.king.zxing.util.CodeUtils;
 
-import cn.wildfire.chat.kit.GlideApp;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 
@@ -59,12 +60,15 @@ public class QRCodeActivity extends WfcBaseActivity {
     protected void afterViews() {
         bindViews();
         setTitle(title);
-
+        if (TextUtils.isEmpty(qrCodeValue)) {
+            finish();
+            return;
+        }
         genQRCode();
     }
 
     private void genQRCode() {
-        GlideApp.with(this)
+        Glide.with(this)
             .asBitmap()
             .load(logoUrl)
             .placeholder(R.mipmap.ic_launcher)

@@ -14,7 +14,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import cn.wildfire.chat.kit.GlideApp;
+import com.bumptech.glide.Glide;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -68,13 +69,13 @@ public class ArticlesMessageContentViewHolder extends ContextableNotificationMes
             topArticleContainerRelativeLayout.setVisibility(View.VISIBLE);
             singleArticleContainerLinearLayout.setVisibility(View.GONE);
 
-            GlideApp.with(fragment).load(content.topArticle.cover).into(topCoverImageView);
+            Glide.with(fragment).load(content.topArticle.cover).into(topCoverImageView);
             topTitleTextView.setText(content.topArticle.title);
         } else {
             topArticleContainerRelativeLayout.setVisibility(View.GONE);
             singleArticleContainerLinearLayout.setVisibility(View.VISIBLE);
 
-            GlideApp.with(fragment).load(content.topArticle.cover).into(singleCoverImageView);
+            Glide.with(fragment).load(content.topArticle.cover).into(singleCoverImageView);
             singleTitleTextView.setText(content.topArticle.title);
         }
 
@@ -92,7 +93,7 @@ public class ArticlesMessageContentViewHolder extends ContextableNotificationMes
         TextView titleTextView = view.findViewById(R.id.titleTextView);
         titleTextView.setText(article.title);
         ImageView coverImageView = view.findViewById(R.id.coverImageView);
-        GlideApp.with(fragment).load(article.cover).into(coverImageView);
+        Glide.with(fragment).load(article.cover).into(coverImageView);
         view.setOnClickListener(v -> openArticle(article));
 
         subArticlesContainerRelativeLayout.addView(view);

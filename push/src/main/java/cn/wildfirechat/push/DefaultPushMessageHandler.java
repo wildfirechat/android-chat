@@ -8,7 +8,7 @@ import android.content.Context;
 
 class DefaultPushMessageHandler extends PushMessageHandler {
     @Override
-    public void handleIMPushMessage(Context context, AndroidPushMessage pushMessage, PushService.PushServiceType pushServiceType) {
+    public void handleIMPushMessage(Context context, AndroidPushMessage pushMessage, int pushServiceType) {
         // do nothing， 透传消息的receiver都在主进程执行，当有透传消息时，会启动主进程，然后主进程主动去拉取消息，
         // 并处理
 //        Intent intent = new Intent();

@@ -12,8 +12,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -76,6 +79,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private static WfcUIKit wfcUIKit;
     private boolean isSupportMoment = false;
     private WeakReference<Activity> currentActivityWrf;
+    private boolean enableNativeNotification = false;
+
+    private AVEngineKit.AVEngineCallback avEngineCallback = null;
 
     private WfcUIKit() {
     }
@@ -99,7 +105,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             public void onForeground() {
-                WfcNotificationManager.getInstance().clearAllNotification(application);
+                if (enableNativeNotification) {
+                    WfcNotificationManager.getInstance().clearAllNotification(application);
+                }
                 isBackground = false;
 
                 // 处理没有后台弹出界面权限
@@ -124,6 +132,14 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         application.registerActivityLifecycleCallbacks(this);
 
         Log.d("WfcUIKit", "init end");
+    }
+
+    public void setEnableNativeNotification(boolean enable) {
+        this.enableNativeNotification = enable;
+    }
+
+    public void setAvEngineCallback(AVEngineKit.AVEngineCallback avEngineCallback) {
+        this.avEngineCallback = avEngineCallback;
     }
 
     public boolean isSupportMoment() {
@@ -204,6 +220,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         SharedPreferences sp = application.getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
         if (pttEnabled) {
+             // 全局对讲生效；如果只希望某些会话里面，对讲生效，请调用 {@link PTTClient#setEnablePtt(Conversation, boolean)} 设置
+            // PTTClient.ENABLE_GLOBAL_PTT = true;
             PTTClient.getInstance().init(application);
         }
     }
@@ -246,6 +264,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 startActivity(application, intent);
             }
             VoipCallService.start(application, false);
+            if (avEngineCallback != null) {
+                avEngineCallback.onReceiveCall(AVEngineKit.Instance().getCurrentSession());
+            }
         }, 200);
     }
 
@@ -253,6 +274,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void shouldStartRing(boolean isIncoming) {
+        if (avEngineCallback != null) {
+            avEngineCallback.shouldStartRing(isIncoming);
+            return;
+        }
         if (isIncoming && ChatManager.Instance().isVoipSilent()) {
             Log.d("wfcUIKit", "用户设置禁止voip通知，忽略来电提醒");
             return;
@@ -274,25 +299,38 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     }
 
     @Override
-    public void shouldSopRing() {
+    public void shouldStopRing() {
+        if (avEngineCallback != null) {
+            avEngineCallback.shouldStopRing();
+            return;
+        }
         Log.d("wfcUIKit", "showStopRing");
         ringPlayer.stop();
+    }
+
+    @Override
+    public void didCallEnded(AVEngineKit.CallEndReason reason, int duration) {
+        if (avEngineCallback != null) {
+            avEngineCallback.didCallEnded(reason, duration);
+            return;
+        }
     }
 
     // pls refer to https://stackoverflow.com/questions/11124119/android-starting-new-activity-from-application-class
     public static void singleCall(Context context, String targetId, boolean isAudioOnly) {
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetId);
         AVEngineKit.CallSession session = AVEngineKit.Instance().startCall(conversation, Collections.singletonList(targetId), isAudioOnly, null);
+        if (session != null) {
 //        session.setVideoCapturer(new UVCCameraCapturer());
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setMode(isAudioOnly ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
+            audioManager.setSpeakerphoneOn(!isAudioOnly);
 
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(isAudioOnly ? AudioManager.MODE_IN_COMMUNICATION : AudioManager.MODE_NORMAL);
-        audioManager.setSpeakerphoneOn(!isAudioOnly);
+            Intent voip = new Intent(context, SingleCallActivity.class);
+            startActivity(context, voip);
 
-        Intent voip = new Intent(context, SingleCallActivity.class);
-        startActivity(context, voip);
-
-        VoipCallService.start(context, false);
+            VoipCallService.start(context, false);
+        }
     }
 
     public static void multiCall(Context context, String groupId, List<String> participants, boolean isAudioOnly) {
@@ -302,14 +340,15 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         }
 
         Conversation conversation = new Conversation(Conversation.ConversationType.Group, groupId);
-        AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
+        AVEngineKit.CallSession session = AVEngineKit.Instance().startCall(conversation, participants, isAudioOnly, null);
+        if (session != null) {
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setMode(AudioManager.MODE_NORMAL);
+            audioManager.setSpeakerphoneOn(true);
 
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(AudioManager.MODE_NORMAL);
-        audioManager.setSpeakerphoneOn(true);
-
-        Intent intent = new Intent(context, MultiCallActivity.class);
-        startActivity(context, intent);
+            Intent intent = new Intent(context, MultiCallActivity.class);
+            startActivity(context, intent);
+        }
     }
 
     public static void startActivity(Context context, Intent intent) {
@@ -326,10 +365,16 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                     return;
                 }
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(context)){
+                    Toast.makeText(context, "无法弹出页面，请允许后台弹出界面权限和显示悬浮窗权限", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
             Intent main = new Intent(context.getPackageName() + ".main");
 //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent = null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 pendingIntent = PendingIntent.getActivities(context, 100, new Intent[]{main, intent}, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
             } else {
                 pendingIntent = PendingIntent.getActivities(context, 100, new Intent[]{main, intent}, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -369,7 +414,9 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 }
             }
 
-            WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
+            if (enableNativeNotification) {
+                WfcNotificationManager.getInstance().handleReceiveMessage(application, msgs);
+            }
         } else {
             // do nothing
         }
@@ -377,14 +424,14 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void onRecallMessage(Message message) {
-        if (isBackground) {
+        if (isBackground && enableNativeNotification) {
             WfcNotificationManager.getInstance().handleRecallMessage(application, message);
         }
     }
 
     @Override
     public void onDeleteMessage(Message message) {
-        if (isBackground) {
+        if (isBackground && enableNativeNotification) {
             WfcNotificationManager.getInstance().handleDeleteMessage(application, message);
         }
     }
@@ -397,7 +444,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
 
     @Override
     public void onFriendRequestUpdate(List<String> newRequests) {
-        if (isBackground) {
+        if (isBackground && enableNativeNotification) {
             if (newRequests == null || newRequests.isEmpty()) {
                 return;
             }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray5"
@@ -68,62 +69,104 @@
 
 
     <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/notificationOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_notification"
-        app:title="消息与通知" />
-
-    <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/accountOptionItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
         android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="true"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_account"
         app:title="账号与安全" />
 
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/fileRecordOptionItemView"
-        style="@style/OptionItem"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_option_item"
-        app:divider_align_to_title="true"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_settings_file"
-        app:title="文件" />
+        android:background="@color/white"
+        android:orientation="vertical">
 
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/favOptionItemView"
-        style="@style/OptionItem"
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/notificationOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            app:show_arrow_indicator="true"
+            app:show_divider="false"
+            app:start_src="@mipmap/ic_notification"
+            app:title="消息与通知" />
+
+        <View
+            style="@style/Line"
+            android:layout_marginLeft="50dp"
+            android:visibility="gone" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/conversationOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            android:visibility="gone"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_create_group_chat"
+            app:start_tint="@color/colorPrimary"
+            app:title="聊天背景" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="true"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_star"
-        app:title="收藏" />
+        android:background="@color/white"
+        android:orientation="vertical">
 
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/themeOptionItemView"
-        style="@style/OptionItem"
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/fileRecordOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_option_item"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_settings_file"
+            app:title="文件" />
+
+        <View
+            style="@style/Line"
+            android:layout_marginLeft="50dp"
+            android:visibility="visible" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/favOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_star"
+            app:title="收藏" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="true"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_theme"
-        app:title="主题" />
+        android:background="@color/white"
+        android:orientation="vertical">
 
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/settintOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        android:clickable="true"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_setting"
-        app:title="@string/setting" />
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/themeOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_theme"
+            app:title="主题" />
 
+        <View
+            style="@style/Line"
+            android:layout_marginLeft="50dp"
+            android:visibility="visible" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/settingOptionItemView"
+            style="@style/OptionItem"
+            android:background="@drawable/selector_common_item"
+            android:clickable="true"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_setting"
+            app:title="@string/setting" />
+    </LinearLayout>
 </LinearLayout>

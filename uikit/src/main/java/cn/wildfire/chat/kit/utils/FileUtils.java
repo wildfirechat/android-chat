@@ -6,7 +6,6 @@ package cn.wildfire.chat.kit.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -930,23 +929,23 @@ public class FileUtils {
             } else {
                 fileUrl = ((FileMessageContent) message.content).remoteUrl;
             }
+            Toast.makeText(context, "文件下载中，请稍候...", Toast.LENGTH_LONG).show();
             DownloadManager.download(fileUrl, file.getParent(), file.getName(), new DownloadManager.OnDownloadListener() {
                 @Override
                 public void onSuccess(File file) {
-                    if (context instanceof Activity) {
-                        if (((Activity) context).isFinishing()) {
-                            return;
+                    ChatManager.Instance().getMainHandler().post(() -> {
+                        if (context instanceof Activity) {
+                            if (((Activity) context).isFinishing()) {
+                                return;
+                            }
                         }
-                    }
-                    Intent intent = FileUtils.getViewIntent(context, file);
-                    ComponentName cn = intent.resolveActivity(context.getPackageManager());
-                    if (cn == null) {
-                        ChatManager.Instance().getMainHandler().post(() -> {
+                        try {
+                            Intent intent = FileUtils.getViewIntent(context, file);
+                            context.startActivity(intent);
+                        } catch (Exception e) {
                             Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
-                        });
-                        return;
-                    }
-                    context.startActivity(intent);
+                        }
+                    });
                 }
 
                 @Override

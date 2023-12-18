@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="left"
     android:background="@drawable/img_bubble_receive"
+    android:backgroundTint="@color/white"
     android:orientation="vertical"
     android:paddingLeft="16dp"
     android:paddingTop="12dp"

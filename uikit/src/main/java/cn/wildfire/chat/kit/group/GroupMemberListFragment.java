@@ -40,6 +40,9 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupInfo = getArguments().getParcelable("groupInfo");
+        if (groupInfo == null) {
+            getActivity().finish();
+        }
     }
 
     @Override
@@ -50,6 +53,9 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
+        if (groupInfo == null) {
+            return;
+        }
         bindViews(view);
         groupMemberListAdapter = new GroupMemberListAdapter(groupInfo);
         memberRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));

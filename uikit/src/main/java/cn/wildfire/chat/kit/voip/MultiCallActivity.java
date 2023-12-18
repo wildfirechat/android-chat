@@ -227,7 +227,7 @@ public class MultiCallActivity extends VoipBaseActivity {
     }
 
     void addParticipant(int maxNewInviteParticipantCount) {
-        isInvitingNewParticipant = true;
+        preventShowFloatingViewOnStop = true;
         Intent intent = new Intent(this, PickGroupMemberActivity.class);
         GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(groupId, false);
@@ -243,7 +243,7 @@ public class MultiCallActivity extends VoipBaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == REQUEST_CODE_ADD_PARTICIPANT) {
-            isInvitingNewParticipant = false;
+            preventShowFloatingViewOnStop = false;
             if (resultCode == RESULT_OK) {
                 List<String> newParticipants = data.getStringArrayListExtra(PickGroupMemberActivity.EXTRA_RESULT);
                 if (newParticipants != null && !newParticipants.isEmpty()) {

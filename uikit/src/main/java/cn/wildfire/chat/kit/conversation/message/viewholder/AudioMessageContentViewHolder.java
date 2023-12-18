@@ -89,14 +89,6 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
                 ivAudio.setBackgroundResource(R.drawable.audio_animation_left_list);
             }
         }
-
-        // 下载完成，开始播放
-        if (message.progress == 100) {
-            message.progress = 0;
-            itemView.post(() -> {
-                messageViewModel.playAudioMessage(message);
-            });
-        }
     }
 
     @Override

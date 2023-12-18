@@ -20,11 +20,18 @@ import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.push.PushService;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.remote.OnConnectToServerListener;
 
-public class MyApp extends BaseApp {
+public class MyApp extends BaseApp implements OnConnectToServerListener {
 
     // 一定记得替换为你们自己的，ID请从BUGLY官网申请。关于BUGLY，可以从BUGLY官网了解，或者百度。
     public static String BUGLY_ID = "15dfd5f6d1";
+
+    public static String routeHost;
+    public static int routePort;
+
+    public static String longLinkHost;
+    public static int longLinkPort;
 
     @Override
     public void onCreate() {
@@ -41,6 +48,7 @@ public class MyApp extends BaseApp {
             // Config.IM_SERVER_HOST = "im.example.com";
             WfcUIKit wfcUIKit = WfcUIKit.getWfcUIKit();
             wfcUIKit.init(this);
+            wfcUIKit.setEnableNativeNotification(true);
             wfcUIKit.setAppServiceProvider(AppService.Instance());
             PushService.init(this, BuildConfig.APPLICATION_ID);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
@@ -61,8 +69,9 @@ public class MyApp extends BaseApp {
             }
 
             ChatManager.Instance().setDefaultPortraitProviderClazz(WfcDefaultPortraitProvider.class);
+            ChatManager.Instance().addConnectToServerListener(this);
 
-            Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION = sp.getBoolean("audioMessageAmplificationEnabled", false);
+            Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION = sp.getBoolean("audioMessageAmplificationEnabled", Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION);
         }
     }
 
@@ -94,5 +103,17 @@ public class MyApp extends BaseApp {
             }
         }
         return null;
+    }
+
+
+    @Override
+    public void onConnectToServer(String host, String ip, int port) {
+        if (TextUtils.isEmpty(ip)) {
+            routeHost = host;
+            routePort = port;
+        } else {
+            longLinkHost = host;
+            longLinkPort = port;
+        }
     }
 }

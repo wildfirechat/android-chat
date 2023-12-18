@@ -38,7 +38,11 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
     @Override
     protected void afterViews() {
         groupInfo = getIntent().getParcelableExtra("groupInfo");
-        init();
+        if (groupInfo != null) {
+            init();
+        } else {
+            finish();
+        }
     }
 
     private void init() {
@@ -65,6 +69,8 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
                 if (!booleanOperateResult.isSuccess()) {
                     switchButton.setChecked(!isChecked);
                     Toast.makeText(this, "禁言失败 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                } else {
+                    initGroupMemberMuteListFragment(true);
                 }
             });
         });
@@ -73,21 +79,20 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
     }
 
     private GroupMemberMuteOrAllowListFragment fragment;
-    private GroupMemberMuteOrAllowListFragment fragment2;
 
     private void initGroupMemberMuteListFragment(boolean forceUpdate) {
-        if (fragment == null || forceUpdate) {
-            fragment = GroupMemberMuteOrAllowListFragment.newInstance(groupInfo, true);
+        // 全局禁言
+        if (groupInfo.mute == 1) {
+            if (fragment == null || forceUpdate) {
+                fragment = GroupMemberMuteOrAllowListFragment.newInstance(groupInfo, true);
+            }
+        } else {
+            if (fragment == null || forceUpdate) {
+                fragment = GroupMemberMuteOrAllowListFragment.newInstance(groupInfo, false);
+            }
         }
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, fragment)
             .commit();
-
-        if (fragment2 == null || forceUpdate) {
-            fragment2 = GroupMemberMuteOrAllowListFragment.newInstance(groupInfo, false);
-        }
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout2, fragment2)
-                .commit();
     }
 }

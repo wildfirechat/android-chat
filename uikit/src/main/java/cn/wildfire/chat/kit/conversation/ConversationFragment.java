@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -74,8 +76,10 @@ import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MultiCallOngoingMessageContent;
+import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.model.ChannelInfo;
@@ -155,6 +159,9 @@ public class ConversationFragment extends Fragment implements
     private Map<String, Message> ongoingCalls;
 
     private Map<String, Message> typingMessageMap;
+
+    private String backgroundImageUri = null;
+    private int backgroundImageResId = 0;
 
     private Observer<UiMessage> messageLiveDataObserver = new Observer<UiMessage>() {
         @Override
@@ -240,6 +247,9 @@ public class ConversationFragment extends Fragment implements
         @Override
         public void onChanged(@Nullable UiMessage uiMessage) {
             // 聊天室，对方撤回消息
+            if (conversation == null) {
+                return;
+            }
             if (conversation.type == Conversation.ConversationType.ChatRoom && uiMessage.message.conversation == null) {
                 List<UiMessage> messages = adapter.getMessages();
                 for (UiMessage uiMsg : messages) {
@@ -258,9 +268,53 @@ public class ConversationFragment extends Fragment implements
                 if (isDisplayableMessage(uiMessage)) {
                     adapter.updateMessage(uiMessage);
                 }
+                if (uiMessage.progress == 100) {
+                    uiMessage.progress = 0;
+                    messageViewModel.playAudioMessage(uiMessage);
+                }
+                if (uiMessage.audioPlayCompleted) {
+                    uiMessage.audioPlayCompleted = false;
+                    if (uiMessage.continuousPlayAudio) {
+                        uiMessage.continuousPlayAudio = false;
+                        playNextAudioMessage(uiMessage);
+                    }
+                }
             }
         }
     };
+
+    private void playNextAudioMessage(UiMessage uiMessage) {
+        List<UiMessage> messages = adapter.getMessages();
+        boolean found = false;
+        UiMessage toPlayAudioMessage = null;
+        for (int i = 0; i < messages.size(); i++) {
+            UiMessage uimsg = messages.get(i);
+            if (found) {
+                if (uimsg.message.content instanceof SoundMessageContent
+                    && uimsg.message.direction == MessageDirection.Receive
+                    && uimsg.message.status != MessageStatus.Played) {
+                    toPlayAudioMessage = uimsg;
+                    break;
+                }
+            } else {
+                if (uimsg.message.messageUid == uiMessage.message.messageUid) {
+                    found = true;
+                }
+            }
+        }
+        if (toPlayAudioMessage != null) {
+            File file = DownloadManager.mediaMessageContentFile(toPlayAudioMessage.message);
+            if (file == null) {
+                return;
+            }
+            toPlayAudioMessage.continuousPlayAudio = true;
+            if (file.exists()) {
+                messageViewModel.playAudioMessage(toPlayAudioMessage);
+            } else {
+                messageViewModel.downloadMedia(toPlayAudioMessage, file);
+            }
+        }
+    }
 
     private Observer<UiMessage> messageRemovedLiveDataObserver = new Observer<UiMessage>() {
         @Override
@@ -452,6 +506,7 @@ public class ConversationFragment extends Fragment implements
             this.recyclerView.setAdapter(this.adapter);
         }
 
+        // TODO 要支持在线状态是才监听
         if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
             || conversation.type == Conversation.ConversationType.Group) {
             userOnlineStateViewModel.watchUserOnlineState(conversation.type.getValue(), new String[]{conversation.target});
@@ -545,7 +600,7 @@ public class ConversationFragment extends Fragment implements
             if (groupInfo == null) {
                 return;
             }
-            boolean show = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
+            boolean show = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
             if (showGroupMemberName != show) {
                 showGroupMemberName = show;
                 adapter.notifyDataSetChanged();
@@ -559,6 +614,12 @@ public class ConversationFragment extends Fragment implements
         userOnlineStateViewModel = ViewModelProviders.of(this).get(UserOnlineStateViewModel.class);
         userOnlineStateViewModel.getUserOnlineStateLiveData().observe(getViewLifecycleOwner(), userOnlineStateLiveDataObserver);
 
+
+        if (backgroundImageUri != null) {
+            setConversationBackgroundImage(backgroundImageUri);
+        } else if (backgroundImageResId != 0) {
+            setConversationBackgroundImage(backgroundImageResId);
+        }
     }
 
     private void setupConversation(Conversation conversation) {
@@ -568,7 +629,7 @@ public class ConversationFragment extends Fragment implements
             groupViewModel.getGroupMembers(conversation.target, true);
             groupInfo = groupViewModel.getGroupInfo(conversation.target, true);
             groupMember = groupViewModel.getGroupMember(conversation.target, userViewModel.getUserId());
-            showGroupMemberName = "1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
+            showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
 
             updateGroupMuteStatus();
         }
@@ -602,6 +663,28 @@ public class ConversationFragment extends Fragment implements
         ongoingCalls = null;
 
         setTitle();
+    }
+
+    public void setConversationBackgroundImage(String uri) {
+        if (rootLinearLayout == null) {
+            this.backgroundImageUri = uri;
+            return;
+        }
+        ScrollView scrollView = rootLinearLayout.findViewById(R.id.conversationBackgroundScrollView);
+        ImageView imageView = rootLinearLayout.findViewById(R.id.conversationBackgroundImageView);
+        scrollView.setVisibility(View.VISIBLE);
+        Glide.with(this).load(uri).into(imageView);
+    }
+
+    public void setConversationBackgroundImage(int drawableId) {
+        if (rootLinearLayout == null) {
+            this.backgroundImageResId = drawableId;
+            return;
+        }
+        ScrollView scrollView = rootLinearLayout.findViewById(R.id.conversationBackgroundScrollView);
+        ImageView imageView = rootLinearLayout.findViewById(R.id.conversationBackgroundImageView);
+        scrollView.setVisibility(View.VISIBLE);
+        Glide.with(this).load(backgroundImageResId).into(imageView);
     }
 
     private void loadMessage(long focusMessageId) {
@@ -647,9 +730,9 @@ public class ConversationFragment extends Fragment implements
             && groupMember.type != GroupMember.GroupMemberType.Manager
             && groupMember.type != GroupMember.GroupMemberType.Allowed) {
             inputPanel.disableInput("全员禁言中");
-        } else if (groupMember.type == GroupMember.GroupMemberType.Muted){
+        } else if (groupMember.type == GroupMember.GroupMemberType.Muted) {
             inputPanel.disableInput("你已被禁言");
-        }else {
+        } else {
             inputPanel.enableInput();
         }
     }

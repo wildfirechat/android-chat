@@ -34,7 +34,7 @@ public class MeizuPushReceiver extends MzPushMessageReceiver {
     public void onRegister(Context context, String pushId) {
         Log.e(TAG, "onReceiveClientId -> " + "pushId = " + pushId);
         try {
-            ChatManager.Instance().setDeviceToken(pushId, PushService.PushServiceType.MeiZu.ordinal());
+            ChatManager.Instance().setDeviceToken(pushId, PushService.PushServiceType.MeiZu);
         } catch (NotInitializedExecption notInitializedExecption) {
             notInitializedExecption.printStackTrace();
         }

@@ -10,7 +10,7 @@
         android:maxSdkVersion="32" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="29" />
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -125,6 +125,9 @@
             android:name="cn.wildfire.chat.app.setting.ResetPasswordActivity"
             android:label="设置新密码" />
         <activity android:name="cn.wildfire.chat.app.setting.AccountActivity" />
+        <activity
+            android:name="cn.wildfire.chat.app.misc.DiagnoseActivity"
+            android:label="诊断" />
 
     </application>
 </manifest>

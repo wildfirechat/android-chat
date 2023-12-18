@@ -29,8 +29,8 @@ public class ConversationActivity extends WfcBaseActivity {
     }
 
     private void setConversationBackground() {
-        // you can setup your conversation background here
-//        getWindow().setBackgroundDrawableResource(R.mipmap.splash);
+        // 设置聊天背景
+//        conversationFragment.setConversationBackgroundImage("https://static.wildfirechat.net/web_wfc_bg2.jpeg");
     }
 
     @Override

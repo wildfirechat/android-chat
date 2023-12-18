@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/contactLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="56dp"
         android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
         android:paddingTop="@dimen/item_margin_top_and_bottom"
@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/leftImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_marginLeft="@dimen/item_margin_left_and_right"
             android:visibility="gone" />
 
@@ -66,8 +66,8 @@
             android:id="@+id/rightImageView"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:scaleType="center"
             android:layout_marginRight="13dp"
+            android:scaleType="center"
             android:src="@mipmap/ic_right_arrow"
             android:visibility="gone" />
 

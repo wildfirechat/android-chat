@@ -150,6 +150,7 @@ import cn.wildfirechat.message.notification.KickoffGroupMemberVisibleNotificatio
 import cn.wildfirechat.message.notification.ModifyGroupAliasNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupExtraNotificationContent;
 import cn.wildfirechat.message.notification.ModifyGroupMemberExtraNotificationContent;
+import cn.wildfirechat.message.notification.ModifyGroupSettingsNotificationContent;
 import cn.wildfirechat.message.notification.NotificationMessageContent;
 import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
 import cn.wildfirechat.message.notification.QuitGroupNotificationContent;
@@ -286,7 +287,13 @@ public class ChatManager {
         Name(2),
 
         //精确搜索电话号码
-        Mobile(3);
+        Mobile(3),
+
+        //精确搜索用户Id
+        UserId(4),
+
+        //精确搜索name或电话号码或用户ID
+        NameOrMobileOrUserId(5);
 
         SearchUserType(int value) {
         }
@@ -306,6 +313,12 @@ public class ChatManager {
                 case 3:
                     searchUserType = Mobile;
                     break;
+                case 4:
+                    searchUserType = UserId;
+                    break;
+                case 5:
+                    searchUserType = NameOrMobileOrUserId;
+                    break;
                 default:
                     throw new IllegalArgumentException("type " + searchUserType + " is invalid");
             }
@@ -319,12 +332,14 @@ public class ChatManager {
      * - DisplayName: 第1位是否禁止搜索昵称
      * - Name: 第2位是否禁止搜索账户
      * - Mobile: 第3位是否禁止搜索电话号码
+     * - UserId: 第4位是否禁止搜索用户ID
      */
 
     public interface DisableSearchUserMask {
         int DisplayName = 1;
         int Name = 2;
         int Mobile = 4;
+        int UserId = 8;
     }
 
     public enum SecretChatState {
@@ -545,7 +560,7 @@ public class ChatManager {
      * @param port 服务器port
      */
     private void onConnectToServer(final String host, final String ip, final int port) {
-        Log.e(TAG, "connectToServer " + host + " " + ip + "" + port);
+        Log.e(TAG, "connectToServer " + host + " " + ip + " " + port + " " + getConnectionStatus());
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -2424,6 +2439,7 @@ public class ChatManager {
         msg.status = MessageStatus.Sending;
         msg.serverTime = System.currentTimeMillis();
         msg.sender = userId;
+        msg.messageUid = 0;
         if (!checkRemoteService()) {
             if (callback != null) {
                 msg.status = MessageStatus.Send_Failure;
@@ -3715,9 +3731,9 @@ public class ChatManager {
      *
      * @param conversation
      */
-    public void clearUnreadStatus(Conversation conversation) {
+    public boolean clearUnreadStatus(Conversation conversation) {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
 
         try {
@@ -3727,16 +3743,18 @@ public class ChatManager {
                 for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                     listener.onConversationUnreadStatusClear(conversationInfo);
                 }
+                return true;
             }
 
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void clearUnreadStatusEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
+    public boolean clearUnreadStatusEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines) {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
         int[] inTypes = new int[conversationTypes.size()];
         int[] inLines = new int[lines.size()];
@@ -3756,10 +3774,12 @@ public class ChatManager {
                         listener.onConversationUnreadStatusClear(info);
                     }
                 }
+                return true;
             }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public boolean markAsUnRead(Conversation conversation, boolean syncToOtherClient) {
@@ -3781,9 +3801,9 @@ public class ChatManager {
         return false;
     }
 
-    public void clearMessageUnreadStatus(long messageId) {
+    public boolean clearMessageUnreadStatus(long messageId) {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
 
         try {
@@ -3794,11 +3814,13 @@ public class ChatManager {
                     for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
                         listener.onConversationUnreadStatusClear(conversationInfo);
                     }
+                    return true;
                 }
             }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     /**
@@ -3807,9 +3829,9 @@ public class ChatManager {
      * @param messageId
      * @param conversation
      */
-    public void clearUnreadStatusBeforeMessage(long messageId, Conversation conversation) {
+    public boolean clearUnreadStatusBeforeMessage(long messageId, Conversation conversation) {
         if (!checkRemoteService()) {
-            return;
+            return false;
         }
 
         try {
@@ -3817,14 +3839,21 @@ public class ChatManager {
             if (msg != null) {
                 if (mClient.clearUnreadStatusBeforeMessage(messageId, conversation)) {
                     ConversationInfo conversationInfo = getConversation(msg.conversation);
-                    for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
-                        listener.onConversationUnreadStatusClear(conversationInfo);
+                    if (conversationInfo != null) {
+                        UnreadCount unreadCount = conversationInfo.unreadCount;
+                        if (unreadCount.unread == 0 && unreadCount.unreadMention == 0 && unreadCount.unreadMentionAll == 0) {
+                            for (OnConversationInfoUpdateListener listener : conversationInfoUpdateListeners) {
+                                listener.onConversationUnreadStatusClear(conversationInfo);
+                            }
+                        }
                     }
+                    return true;
                 }
             }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     /**
@@ -3867,7 +3896,12 @@ public class ChatManager {
 
     /**
      * 清除所有会话的未读状态
+     * <p>
+     * 已废弃，本方法不能将已读状态同步到服务端，卸载重装之后，会变回未读
+     * <p>
+     * 请使用{@link #clearUnreadStatus(Conversation)} 或 {@link #clearUnreadStatusEx(List, List)}
      */
+    @Deprecated
     public void clearAllUnreadStatus() {
         if (!checkRemoteService()) {
             return;
@@ -5170,6 +5204,10 @@ public class ChatManager {
     }
 
     public void getUserInfo(String userId, boolean refresh, GetUserInfoCallback callback) {
+        getUserInfo(userId, null, refresh, callback);
+    }
+
+    public void getUserInfo(String userId, String groupId, boolean refresh, GetUserInfoCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null) {
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -5177,7 +5215,7 @@ public class ChatManager {
             return;
         }
         try {
-            mClient.getUserInfoEx(userId, refresh, new IGetUserCallback.Stub() {
+            mClient.getUserInfoEx(userId, groupId, refresh, new IGetUserCallback.Stub() {
                 @Override
                 public void onSuccess(UserInfo userInfo) throws RemoteException {
                     if (callback != null) {
@@ -5259,6 +5297,33 @@ public class ChatManager {
      * @param callback
      */
     public void uploadMedia(String fileName, byte[] data, int mediaType, final GeneralCallback2 callback) {
+        uploadMedia2(fileName, data, mediaType, new UploadMediaCallback() {
+            @Override
+            public void onSuccess(String result) {
+                callback.onSuccess(result);
+            }
+
+            @Override
+            public void onProgress(long uploaded, long total) {
+
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                callback.onFail(errorCode);
+            }
+        });
+    }
+
+    /**
+     * 上传媒体数据
+     * 开始 TCP 短链接之后，该方法不可用，请使用{@link ChatManager#uploadMediaFile}
+     *
+     * @param data      不能超过1M，为了安全，实际只有900K
+     * @param mediaType 媒体类型，可选值参考{@link cn.wildfirechat.message.MessageContentMediaType}
+     * @param callback
+     */
+    public void uploadMedia2(String fileName, byte[] data, int mediaType, final UploadMediaCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -5287,7 +5352,14 @@ public class ChatManager {
 
                 @Override
                 public void onProgress(final long uploaded, final long total) throws RemoteException {
-
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onProgress(uploaded, total);
+                            }
+                        });
+                    }
                 }
 
                 @Override
@@ -7006,6 +7078,7 @@ public class ChatManager {
         }
     }
 
+    // connect host
     public String getHost() {
         if (!checkRemoteService()) {
             return null;
@@ -7019,6 +7092,7 @@ public class ChatManager {
         }
     }
 
+    // shortlink port
     public int getPort() {
         if (!checkRemoteService()) {
             return 80;
@@ -7032,6 +7106,7 @@ public class ChatManager {
         }
     }
 
+    // route host
     public String getHostEx() {
         if (!checkRemoteService()) {
             return null;
@@ -8074,7 +8149,7 @@ public class ChatManager {
             return false;
         }
         try {
-            return "1".equals(mClient.getUserSetting(UserSettingScope.GroupHideNickname, ""));
+            return "1".equals(mClient.getUserSetting(UserSettingScope.GroupHideNickname, groupId));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -8884,6 +8959,7 @@ public class ChatManager {
         registerMessageContent(LocationMessageContent.class);
         registerMessageContent(ModifyGroupAliasNotificationContent.class);
         registerMessageContent(ModifyGroupExtraNotificationContent.class);
+        registerMessageContent(ModifyGroupSettingsNotificationContent.class);
         registerMessageContent(ModifyGroupMemberExtraNotificationContent.class);
         registerMessageContent(QuitGroupNotificationContent.class);
         registerMessageContent(RecallMessageContent.class);
