@@ -125,6 +125,7 @@ public class ConferenceInviteMessageContent extends MessageContent {
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.content = callId;
+        payload.pushContent = "会议邀请";
 
         try {
             JSONObject objWrite = new JSONObject();
