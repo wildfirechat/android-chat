@@ -1283,6 +1283,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void clearMessagesEx2(int conversationType, String target, int line, int keepCount) throws RemoteException {
+            ProtoLogic.clearMessagesKeepLatest(conversationType, target, line, keepCount);
+        }
+
+        @Override
         public void clearAllMessages(boolean removeConversation) throws RemoteException {
             ProtoLogic.clearAllMessages(removeConversation);
         }
@@ -3373,6 +3378,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean isGroupReceiptEnabled() throws RemoteException {
+            return ProtoLogic.isGroupReceiptEnabled();
+        }
+
+        @Override
         public boolean isGlobalDisableSyncDraft() throws RemoteException {
             return ProtoLogic.isGlobalDisableSyncDraft();
         }
@@ -4080,6 +4090,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             onConnectToServerListenes.finishBroadcast();
         });
+    }
+
+    @Override
+    public void onConnected(String host, String ip, int port, boolean isMainNw) {
+        android.util.Log.d(TAG, "onConnected:" + host);
     }
 
     @Override

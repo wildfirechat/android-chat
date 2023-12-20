@@ -221,6 +221,7 @@ public class ChatManager {
     private String sendLogCommand;
     private int connectionStatus;
     private int receiptStatus = -1; // 1, enable
+    private int groupReceiptStatus = -1; // 1, enable
     private int userReceiptStatus = -1; //1, enable
 
     private int backupAddressStrategy = 1;
@@ -3965,6 +3966,31 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 清除会话消息保留指定的最新条数消息
+     *
+     * @param conversation
+     * @param keepCount
+     */
+    public void clearMessagesKeepLatest(Conversation conversation, int keepCount) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            int convType = 0;
+            String target = "";
+            int line = 0;
+            if (conversation != null) {
+                convType = conversation.type.getValue();
+                target = conversation.target;
+                line = conversation.line;
+            }
+            mClient.clearMessagesEx2(convType, target, line, keepCount);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 清除所有会话
@@ -7577,7 +7603,7 @@ public class ChatManager {
     }
 
     /*
-    是否开启了已送达报告和已读报告功能
+    是否开启了已读报告功能
      */
     public boolean isReceiptEnabled() {
         if (!checkRemoteService()) {
@@ -7591,6 +7617,27 @@ public class ChatManager {
             boolean isReceiptEnabled = mClient.isReceiptEnabled();
             receiptStatus = isReceiptEnabled ? 1 : 0;
             return isReceiptEnabled;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /*
+    群组是否开启了已送达报告和已读报告功能
+    */
+    public boolean isGroupReceiptEnabled() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        if (groupReceiptStatus != -1) {
+            return groupReceiptStatus == 1;
+        }
+
+        try {
+            boolean isGroupReceiptEnabled = mClient.isGroupReceiptEnabled();
+            groupReceiptStatus = isGroupReceiptEnabled ? 1 : 0;
+            return isGroupReceiptEnabled;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
