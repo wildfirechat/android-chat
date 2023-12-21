@@ -211,6 +211,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private boolean noUseFts = false;
 
+    private boolean _connectedToMainNetwork;
+    private int doubleNetworkStrategy;
+
     private OkHttpClient okHttpClient;
     private ConcurrentHashMap<Long, Call> uploadingMap;
 
@@ -376,6 +379,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setBackupAddressStrategy(int strategy) throws RemoteException {
+            doubleNetworkStrategy = strategy;
+            if (strategy == 0) {
+                _connectedToMainNetwork = true;
+            }
             ProtoLogic.setBackupAddressStrategy(strategy);
         }
 
@@ -3585,6 +3592,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 e.printStackTrace();
             }
         }
+
+        @Override
+        public boolean isConnectedToMainNetwork() throws RemoteException {
+            return connectedToMainNetwork();
+        }
     }
 
     private static UserOnlineState[] convertProtoUserOnlineStates(ProtoUserOnlineState[] protoUserOnlineStates) {
@@ -4095,6 +4107,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     @Override
     public void onConnected(String host, String ip, int port, boolean isMainNw) {
         android.util.Log.d(TAG, "onConnected:" + host);
+        this._connectedToMainNetwork = isMainNw;
     }
 
     @Override
@@ -4589,6 +4602,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.getUploadMediaUrl(fileName, mediaType, finalContentType, new ProtoLogic.IGetUploadMediaUrlCallback() {
             @Override
             public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
+                uploadUrl = (connectedToMainNetwork() || TextUtils.isEmpty(backUploadupUrl)) ? uploadUrl : backUploadupUrl;
                 if (serverType == 1) {
                     String[] ss = uploadUrl.split("\\?");
                     uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, data, finalContentType, callback);
@@ -4713,6 +4727,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         });
         if (messageId > 0) {
             uploadingMap.put(messageId, call);
+        }
+    }
+
+    private boolean connectedToMainNetwork() {
+        if (doubleNetworkStrategy == 1) {
+            return true;
+        } else if (doubleNetworkStrategy == 2) {
+            return false;
+        } else {
+            return _connectedToMainNetwork;
         }
     }
 
