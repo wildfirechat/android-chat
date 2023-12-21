@@ -106,6 +106,7 @@ interface IRemoteClient {
     boolean cancelSendingMessage(in long messageId);
     oneway void recall(in long messageUid, IGeneralCallback callback);
     long getServerDeltaTime();
+    boolean isConnectedToMainNetwork();
     List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines, in boolean lastMessage);
     oneway void getConversationListAsync(in int[] conversationTypes, in int[] lines, in IGetConversationListCallback callback);
     ConversationInfo getConversation(in int conversationType, in String target, in int line);

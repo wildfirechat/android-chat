@@ -7492,6 +7492,22 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 当前服务是否连接到了主网络
+     */
+    public boolean isConnectedToMainNetwork() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.isConnectedToMainNetwork();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public String getImageThumbPara() {
         if (!checkRemoteService()) {
             return null;
