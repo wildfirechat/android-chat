@@ -264,18 +264,18 @@
 
 
         <!--moment start-->
-        <!--        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />-->
-        <!--        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />-->
-        <!--        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />-->
-        <!--        <activity-->
-        <!--            android:name="cn.wildfire.chat.moment.FeedListActivity"-->
-        <!--            android:exported="false">-->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="${packageName}.moment" />-->
-        <!--                <category android:name="android.intent.category.DEFAULT" />-->
-        <!--            </intent-filter>-->
-        <!--        </activity>-->
-        <!--        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />-->
+        <activity android:name="cn.wildfire.chat.moment.PublishFeedActivity" />
+        <activity android:name="cn.wildfire.chat.moment.FeedMessageActivity" />
+        <activity android:name="cn.wildfire.chat.moment.FeedDetailActivity" />
+        <activity
+            android:name="cn.wildfire.chat.moment.FeedListActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="${packageName}.moment" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />
         <!--moment end-->
 
         <activity android:name=".group.manage.MuteGroupMemberActivity" />
