@@ -89,7 +89,8 @@ dependencies {
     implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
 
     // moment start
-//    implementation project(':momentclient')
+    // momentclient module is just for dev, do not uncomment
+    // implementation project(':momentclient')
     //over scroller helper
 //    implementation 'me.everything:overscroll-decor-android:1.0.4'
     // moment end
