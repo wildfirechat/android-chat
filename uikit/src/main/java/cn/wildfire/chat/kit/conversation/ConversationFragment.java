@@ -77,6 +77,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MultiCallOngoingMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
+import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
@@ -330,7 +331,7 @@ public class ConversationFragment extends Fragment implements
     };
 
     private boolean isDisplayableMessage(UiMessage uiMessage) {
-        return uiMessage.message.messageId != 0;
+        return uiMessage.message.messageId != 0 || uiMessage.message.content instanceof StreamingTextGeneratingMessageContent;
     }
 
     private Observer<Pair<String, Long>> messageStartBurnLiveDataObserver = new Observer<Pair<String, Long>>() {
