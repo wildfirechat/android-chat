@@ -122,6 +122,8 @@ import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
+import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
+import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
@@ -9058,6 +9060,8 @@ public class ChatManager {
         registerMessageContent(RichNotificationMessageContent.class);
         registerMessageContent(ArticlesMessageContent.class);
         registerMessageContent(ChannelMenuEventMessageContent.class);
+        registerMessageContent(StreamingTextGeneratingMessageContent.class);
+        registerMessageContent(StreamingTextGeneratedMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
