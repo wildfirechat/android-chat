@@ -66,7 +66,6 @@ public class StreamingTextGeneratedMessageContent extends MessageContent {
     }
 
     public void readFromParcel(Parcel source) {
-        super.readFromParcel(source);
         this.text = source.readString();
         this.streamId = source.readString();
     }
