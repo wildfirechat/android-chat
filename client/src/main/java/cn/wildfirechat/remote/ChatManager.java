@@ -5589,8 +5589,11 @@ public class ChatManager {
             mClient.updateRemoteMessageContent(messageUid, messageContent.encode(), distribute, updateLocal, new IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
+                    Message updatedMessage = mClient.getMessageByUid(messageUid);
                     mainHandler.post(() -> {
-                        onDeleteMessage(messageUid);
+                        for (OnMessageUpdateListener listener : messageUpdateListeners) {
+                            listener.onMessageUpdate(updatedMessage);
+                        }
                         if (callback != null) {
                             callback.onSuccess();
                         }
