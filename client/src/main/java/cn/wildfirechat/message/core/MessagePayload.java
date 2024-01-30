@@ -111,7 +111,7 @@ public class MessagePayload implements Parcelable {
         dest.writeString(this.extra);
     }
 
-    protected MessagePayload(Parcel in) {
+    public MessagePayload(Parcel in) {
         this.type = in.readInt();
         this.searchableContent = in.readString();
         this.pushContent = in.readString();
