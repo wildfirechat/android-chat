@@ -307,6 +307,7 @@ interface IRemoteClient {
     void useSM4();
     void useAES256();
     void useTcpShortLink();
+    void useRawMsg();
     void noUseFts();
     void checkSignature();
 

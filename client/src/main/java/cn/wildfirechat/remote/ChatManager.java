@@ -120,6 +120,7 @@ import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.MultiCallOngoingMessageContent;
 import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
+import cn.wildfirechat.message.RawMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
@@ -236,6 +237,8 @@ public class ChatManager {
 
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
+
+    private boolean rawMsg = false;
     private boolean noUseFts = false;
     private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
@@ -1154,6 +1157,19 @@ public class ChatManager {
 
         try {
             mClient.useTcpShortLink();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void useRawMsg() {
+        rawMsg = true;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.useRawMsg();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -2475,8 +2491,15 @@ public class ChatManager {
                     }
                 }
             }
-        } else if (msg.content instanceof TextMessageContent) {
-            if (sendLogCommand != null && sendLogCommand.equals(((TextMessageContent) msg.content).getContent())) {
+        } else if (sendLogCommand != null && (msg.content instanceof TextMessageContent || (rawMsg && msg.content instanceof RawMessageContent))) {
+            String text = "";
+            if(msg.content instanceof TextMessageContent) {
+                text = ((TextMessageContent)msg.content).getContent();
+            } else if(msg.content instanceof RawMessageContent) {
+                text = ((RawMessageContent)msg.content).payload.searchableContent;
+            }
+
+            if (sendLogCommand.equals(text)) {
                 List<String> logFilesPath = getLogFilesPath();
                 if (logFilesPath.size() > 0) {
                     FileMessageContent fileMessageContent = new FileMessageContent(logFilesPath.get(logFilesPath.size() - 1));
@@ -8692,6 +8715,12 @@ public class ChatManager {
     }
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
+        if(rawMsg) {
+            RawMessageContent rawMessageContent = new RawMessageContent();
+            rawMessageContent.payload = payload;
+            return rawMessageContent;
+        }
+
         MessageContent content = null;
         try {
             Class cls = messageContentMap.get(payload.type);
@@ -8794,6 +8823,9 @@ public class ChatManager {
                     }
                     if (tcpShortLink) {
                         mClient.useTcpShortLink();
+                    }
+                    if (rawMsg) {
+                        mClient.useRawMsg();
                     }
                     if (noUseFts) {
                         mClient.noUseFts();

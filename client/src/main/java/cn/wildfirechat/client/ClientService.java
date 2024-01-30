@@ -69,6 +69,7 @@ import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
+import cn.wildfirechat.message.RawMessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -208,6 +209,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private boolean useSM4 = false;
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
+
+    private boolean rawMsg = false;
 
     private boolean noUseFts = false;
 
@@ -3446,6 +3449,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void useRawMsg() throws RemoteException {
+            rawMsg = true;
+        }
+
+        @Override
         public void noUseFts() throws RemoteException {
             noUseFts = true;
             ProtoLogic.noUseFts();
@@ -3830,7 +3838,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
-
+        if(rawMsg) {
+            RawMessageContent rawMessageContent = new RawMessageContent();
+            rawMessageContent.payload = payload;
+            return rawMessageContent;
+        }
+        
         MessageContent content = contentOfType(payload.type);
         try {
             if (content instanceof CompositeMessageContent) {
