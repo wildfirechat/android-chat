@@ -1162,6 +1162,9 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 仅限 flutter 、uniapp 插件使用，请勿使用
+     */
     public void useRawMsg() {
         rawMsg = true;
         if (!checkRemoteService()) {
@@ -2493,10 +2496,10 @@ public class ChatManager {
             }
         } else if (sendLogCommand != null && (msg.content instanceof TextMessageContent || (rawMsg && msg.content instanceof RawMessageContent))) {
             String text = "";
-            if(msg.content instanceof TextMessageContent) {
-                text = ((TextMessageContent)msg.content).getContent();
-            } else if(msg.content instanceof RawMessageContent) {
-                text = ((RawMessageContent)msg.content).payload.searchableContent;
+            if (msg.content instanceof TextMessageContent) {
+                text = ((TextMessageContent) msg.content).getContent();
+            } else if (msg.content instanceof RawMessageContent) {
+                text = ((RawMessageContent) msg.content).payload.searchableContent;
             }
 
             if (sendLogCommand.equals(text)) {
@@ -8715,7 +8718,7 @@ public class ChatManager {
     }
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
-        if(rawMsg) {
+        if (rawMsg) {
             RawMessageContent rawMessageContent = new RawMessageContent();
             rawMessageContent.payload = payload;
             return rawMessageContent;
