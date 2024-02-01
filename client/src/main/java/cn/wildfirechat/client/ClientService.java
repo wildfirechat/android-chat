@@ -567,7 +567,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void send(cn.wildfirechat.message.Message msg, final ISendMessageCallback callback, int expireDuration) throws RemoteException {
-
             msg.messageId = 0;
             msg.messageUid = 0;
             msg.sender = userId;
@@ -575,33 +574,42 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             boolean uploadThenSend = false;
             File file = null;
+            String localPath = null;
+            String remoteUrl = null;
+
             if (msg.content instanceof MediaMessageContent) {
-                if (!TextUtils.isEmpty(((MediaMessageContent) msg.content).localPath)) {
-                    file = new File(((MediaMessageContent) msg.content).localPath);
-                    if (!file.exists() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                        android.util.Log.e(TAG, "mediaMessage invalid, file not exist");
-                        callback.onFailure(-1);
-                        return;
-                    }
-                    if (tcpShortLink) {
-                        if (!isSupportBigFilesUpload()) {
-                            android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
-                            callback.onFailure(-1);
-                            return;
-                        }
-                    }
-                    if (isSupportBigFilesUpload() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                        if (ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024) {
-                            uploadThenSend = true;
-                        }
-                    }
-                } else {
-                    if (!(msg.content instanceof CompositeMessageContent) && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                        android.util.Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
+                localPath = ((MediaMessageContent) msg.content).localPath;
+                remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
+            } else if (msg.content instanceof RawMessageContent) {
+                localPath = ((RawMessageContent) msg.content).payload.localMediaPath;
+                remoteUrl = ((RawMessageContent) msg.content).payload.remoteMediaUrl;
+            }
+
+            if (!TextUtils.isEmpty(localPath)) {
+                file = new File(localPath);
+                if (!file.exists() && TextUtils.isEmpty(remoteUrl)) {
+                    android.util.Log.e(TAG, "mediaMessage invalid, file not exist");
+                    callback.onFailure(-1);
+                    return;
+                }
+                if (tcpShortLink) {
+                    if (!isSupportBigFilesUpload()) {
+                        android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
                         callback.onFailure(-1);
                         return;
                     }
                 }
+                if (isSupportBigFilesUpload() && TextUtils.isEmpty(remoteUrl)) {
+                    if (ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024) {
+                        uploadThenSend = true;
+                    }
+                }
+            } else if (msg.content instanceof MediaMessageContent
+                && !(msg.content instanceof CompositeMessageContent)
+                && TextUtils.isEmpty(remoteUrl)) {
+                android.util.Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
+                callback.onFailure(-1);
+                return;
             }
 
             if (uploadThenSend) {
@@ -3838,12 +3846,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
-        if(rawMsg) {
+        if (rawMsg) {
             RawMessageContent rawMessageContent = new RawMessageContent();
             rawMessageContent.payload = payload;
             return rawMessageContent;
         }
-        
+
         MessageContent content = contentOfType(payload.type);
         try {
             if (content instanceof CompositeMessageContent) {
