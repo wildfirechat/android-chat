@@ -112,11 +112,11 @@ public class VoipExt extends ConversationExt {
         }
 
         if (conversation.type == Conversation.ConversationType.Single) {
-            UserInfo userInfo = ChatManager.Instance().getUserInfo(conversation.target, false);
-            // robot
-            if (userInfo.type == 1) {
-                return true;
-            }
+//            UserInfo userInfo = ChatManager.Instance().getUserInfo(conversation.target, false);
+//            // robot
+//            if (userInfo.type == 1) {
+//                return true;
+//            }
             return false;
         }
         return true;

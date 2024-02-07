@@ -222,6 +222,7 @@ public class CallStartMessageContent extends MessageContent {
         dest.writeByte(this.audioOnly ? (byte) 1 : (byte) 0);
         dest.writeInt(this.status);
         dest.writeString(this.pin);
+        dest.writeInt(this.type);
     }
 
     protected CallStartMessageContent(Parcel in) {
@@ -234,6 +235,7 @@ public class CallStartMessageContent extends MessageContent {
         this.audioOnly = in.readByte() != 0;
         this.status = in.readInt();
         this.pin = in.readString();
+        this.type = in.readInt();
     }
 
     public static final Creator<CallStartMessageContent> CREATOR = new Creator<CallStartMessageContent>() {
