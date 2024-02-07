@@ -99,6 +99,7 @@ public class UserOnlineState implements Parcelable {
 
         String onlineClientDesc = "";
         String lastSeenDesc = "";
+        long lastSeen = 0;
         for (ClientState s : clientStates) {
             //
             // /**
@@ -125,11 +126,15 @@ public class UserOnlineState implements Parcelable {
             // lastSeen;
 
             String[] ps = new String[]{"", "iOS", "Android", "Windows", "Mac", "Web", "小程序", "Linux", "iPad", "Android-Pad", "Harmony", "Harmony-Pad", "Harmony-PC"};
-            if (s.getState() == 0) {
-                onlineClientDesc += ps[s.getPlatform()] + " ";
-            } else {
-                // TODO
-                lastSeenDesc += ps[s.getPlatform()] + " ";
+            if(s.getPlatform() > 0 && s.getPlatform() < ps.length) {
+                if (s.getState() == 0) {
+                    onlineClientDesc += ps[s.getPlatform()] + " ";
+                } else {
+                    if(s.getLastSeen() > lastSeen) {
+                        lastSeen = s.getLastSeen();
+                        lastSeenDesc += ps[s.getPlatform()] + " ";
+                    }
+                }
             }
         }
 
