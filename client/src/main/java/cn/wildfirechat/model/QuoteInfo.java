@@ -15,6 +15,8 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class QuoteInfo implements Parcelable {
     private long messageUid;
+    // 本地使用
+    private Message message;
     private String userId;
     private String userDisplayName;
     private String messageDigest;
@@ -25,6 +27,14 @@ public class QuoteInfo implements Parcelable {
 
     public void setMessageUid(long messageUid) {
         this.messageUid = messageUid;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
+    }
+
+    public Message getMessage() {
+        return this.message;
     }
 
     public String getUserId() {
@@ -53,6 +63,7 @@ public class QuoteInfo implements Parcelable {
 
     public static QuoteInfo initWithMessage(Message message) {
         QuoteInfo info = new QuoteInfo();
+        info.message = message;
         if (message != null) {
             info.messageUid = message.messageUid;
             info.userId = message.sender;
