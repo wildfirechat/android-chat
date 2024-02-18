@@ -33,6 +33,7 @@ import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.QuoteInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -95,10 +96,30 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         quoteInfo = textMessageContent.getQuoteInfo();
         if (quoteInfo != null && quoteInfo.getMessageUid() > 0) {
             refTextView.setVisibility(View.VISIBLE);
-            refTextView.setText(quoteInfo.getUserDisplayName() + ": " + quoteInfo.getMessageDigest());
+            refTextView.setText(this.quoteMessageDigest(quoteInfo));
         } else {
             refTextView.setVisibility(View.GONE);
         }
+    }
+
+    private String quoteMessageDigest(QuoteInfo quoteInfo) {
+        Message message = quoteInfo.getMessage();
+        if (message == null) {
+            message = ChatManager.Instance().getMessageByUid(quoteInfo.getMessageUid());
+        }
+        String desc;
+        if (message != null) {
+            if (message.content instanceof RecallMessageContent) {
+                desc = "消息已被撤回";
+            } else {
+                desc = message.content.digest(message);
+            }
+        } else {
+            desc = "消息不可用，可能被删除或者过期";
+            ChatManager.Instance().loadRemoteQuotedMessage(this.message.message);
+        }
+
+        return desc;
     }
 
     public void onClick(View view) {

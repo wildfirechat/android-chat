@@ -185,6 +185,7 @@ import cn.wildfirechat.model.NullConversationInfo;
 import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
+import cn.wildfirechat.model.QuoteInfo;
 import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.Socks5ProxyInfo;
@@ -3421,6 +3422,32 @@ public class ChatManager {
         }
     }
 
+    public void loadRemoteQuotedMessage(Message message) {
+        if (!(message.content instanceof TextMessageContent)) {
+            return;
+        }
+        TextMessageContent textMessageContent = (TextMessageContent) message.content;
+        QuoteInfo quoteInfo = textMessageContent.getQuoteInfo();
+        if (quoteInfo == null || quoteInfo.getMessageUid() == 0) {
+            return;
+        }
+
+        this.getRemoteMessage(quoteInfo.getMessageUid(), new GetOneRemoteMessageCallback() {
+            @Override
+            public void onSuccess(Message msg) {
+                textMessageContent.getQuoteInfo().setMessage(msg);
+                for (OnMessageUpdateListener listener : messageUpdateListeners) {
+                    listener.onMessageUpdate(message);
+                }
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
+        });
+    }
+
     /**
      * 获取远程历史消息
      *
@@ -3433,12 +3460,10 @@ public class ChatManager {
         }
 
         try {
-            List<Message> outMsgs = new ArrayList<>();
             mClient.getRemoteMessage(messageUid, new IGetRemoteMessagesCallback.Stub() {
                 @Override
                 public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
                     if (callback != null) {
-                        outMsgs.addAll(messages);
                         if (!hasMore) {
                             mainHandler.post(() -> {
                                 callback.onSuccess(messages.get(0));
