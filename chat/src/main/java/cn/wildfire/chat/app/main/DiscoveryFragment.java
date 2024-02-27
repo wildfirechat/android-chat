@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import cn.wildfire.chat.kit.WfcIntent;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
@@ -28,6 +27,7 @@ import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferencePortalActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
+import cn.wildfire.chat.moment.FeedListActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
@@ -111,9 +111,9 @@ public class DiscoveryFragment extends Fragment {
     }
 
     void moment() {
-        Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
+//        Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
         // 具体项目中，如果不能隐式启动，可改为下面这种显示启动朋友圈页面
-//        Intent intent = new Intent(getActivity(), FeedListActivity.class);
+        Intent intent = new Intent(getActivity(), FeedListActivity.class);
         startActivity(intent);
     }
 
