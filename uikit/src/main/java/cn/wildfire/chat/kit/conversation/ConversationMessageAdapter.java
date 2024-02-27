@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.conversation;
 
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,8 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderMan
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
+import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -155,8 +158,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (message == null) {
             return;
         }
-        if (contains(message)) {
-            updateMessage(message);
+        int index = contains(message);
+        if (index >= 0) {
+            updateMessage(index, message);
             return;
         }
         messages.add(message);
@@ -191,6 +195,13 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         int insertStartPosition = this.messages.size();
         this.messages.addAll(newMessages);
         notifyItemRangeInserted(insertStartPosition, newMessages.size());
+    }
+
+    public void updateMessage(int index, UiMessage message) {
+        if (index >= 0) {
+            messages.set(index, message);
+            notifyItemChanged(index);
+        }
     }
 
     public void updateMessage(UiMessage message) {
@@ -613,22 +624,42 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         notifyItemChanged(position);
     }
 
-    private boolean contains(UiMessage message) {
-        for (UiMessage msg : messages) {
+    private int contains(UiMessage message) {
+        int index = -1;
+        for (int i = 0; i < messages.size(); i++) {
+            UiMessage msg = messages.get(i);
             // 消息发送成功之前，messageUid都是0
             if (message.message.messageId > 0) {
                 if (msg.message.messageId == message.message.messageId) {
-                    return true;
+                    index = i;
+                    break;
                 }
+            }
+            if (msg.message.messageId == 0
+                && msg.message.content instanceof StreamingTextGeneratingMessageContent
+                && (message.message.content instanceof StreamingTextGeneratingMessageContent || message.message.content instanceof StreamingTextGeneratedMessageContent)) {
+                String streamId;
+                if (message.message.content instanceof StreamingTextGeneratingMessageContent) {
+                    streamId = ((StreamingTextGeneratingMessageContent) message.message.content).getStreamId();
+                } else {
+                    streamId = ((StreamingTextGeneratedMessageContent) message.message.content).getStreamId();
+                }
+
+                if (TextUtils.equals(((StreamingTextGeneratingMessageContent) msg.message.content).getStreamId(), streamId)) {
+                    index = i;
+                    break;
+                }
+
             }
             // 聊天室里面，由于消息不存储，messageId都是0，被远程更新的消息，也会走这儿
             if (message.message.messageUid > 0) {
                 if (msg.message.messageUid == message.message.messageUid) {
-                    return true;
+                    index = i;
+                    break;
                 }
             }
         }
-        return false;
+        return index;
     }
 
     public interface OnPortraitClickListener {

@@ -347,7 +347,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 }
             } else {
                 enableAddMember = true;
-                if (groupMember.type != GroupMember.GroupMemberType.Normal || userId.equals(groupInfo.owner)) {
+                if (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager) {
                     enableRemoveMember = true;
                 }
             }

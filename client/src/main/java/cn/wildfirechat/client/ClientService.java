@@ -69,6 +69,7 @@ import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
+import cn.wildfirechat.message.RawMessageContent;
 import cn.wildfirechat.message.UnknownMessageContent;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -209,7 +210,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
 
+    private boolean rawMsg = false;
+
     private boolean noUseFts = false;
+
+    private boolean _connectedToMainNetwork;
+    private int doubleNetworkStrategy;
 
     private OkHttpClient okHttpClient;
     private ConcurrentHashMap<Long, Call> uploadingMap;
@@ -376,6 +382,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void setBackupAddressStrategy(int strategy) throws RemoteException {
+            doubleNetworkStrategy = strategy;
+            if (strategy == 0) {
+                _connectedToMainNetwork = true;
+            }
             ProtoLogic.setBackupAddressStrategy(strategy);
         }
 
@@ -557,7 +567,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void send(cn.wildfirechat.message.Message msg, final ISendMessageCallback callback, int expireDuration) throws RemoteException {
-
             msg.messageId = 0;
             msg.messageUid = 0;
             msg.sender = userId;
@@ -565,33 +574,42 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
             boolean uploadThenSend = false;
             File file = null;
+            String localPath = null;
+            String remoteUrl = null;
+
             if (msg.content instanceof MediaMessageContent) {
-                if (!TextUtils.isEmpty(((MediaMessageContent) msg.content).localPath)) {
-                    file = new File(((MediaMessageContent) msg.content).localPath);
-                    if (!file.exists() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                        android.util.Log.e(TAG, "mediaMessage invalid, file not exist");
-                        callback.onFailure(-1);
-                        return;
-                    }
-                    if (tcpShortLink) {
-                        if (!isSupportBigFilesUpload()) {
-                            android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
-                            callback.onFailure(-1);
-                            return;
-                        }
-                    }
-                    if (isSupportBigFilesUpload() && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                        if (ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024) {
-                            uploadThenSend = true;
-                        }
-                    }
-                } else {
-                    if (!(msg.content instanceof CompositeMessageContent) && TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                        android.util.Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
+                localPath = ((MediaMessageContent) msg.content).localPath;
+                remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
+            } else if (msg.content instanceof RawMessageContent) {
+                localPath = ((RawMessageContent) msg.content).payload.localMediaPath;
+                remoteUrl = ((RawMessageContent) msg.content).payload.remoteMediaUrl;
+            }
+
+            if (!TextUtils.isEmpty(localPath)) {
+                file = new File(localPath);
+                if (!file.exists() && TextUtils.isEmpty(remoteUrl)) {
+                    android.util.Log.e(TAG, "mediaMessage invalid, file not exist");
+                    callback.onFailure(-1);
+                    return;
+                }
+                if (tcpShortLink) {
+                    if (!isSupportBigFilesUpload()) {
+                        android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
                         callback.onFailure(-1);
                         return;
                     }
                 }
+                if (isSupportBigFilesUpload() && TextUtils.isEmpty(remoteUrl)) {
+                    if (ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024) {
+                        uploadThenSend = true;
+                    }
+                }
+            } else if (msg.content instanceof MediaMessageContent
+                && !(msg.content instanceof CompositeMessageContent)
+                && TextUtils.isEmpty(remoteUrl)) {
+                android.util.Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
+                callback.onFailure(-1);
+                return;
             }
 
             if (uploadThenSend) {
@@ -1280,6 +1298,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void clearMessagesEx(int conversationType, String target, int line, long before) throws RemoteException {
             ProtoLogic.clearMessagesEx(conversationType, target, line, before);
+        }
+
+        @Override
+        public void clearMessagesEx2(int conversationType, String target, int line, int keepCount) throws RemoteException {
+            ProtoLogic.clearMessagesKeepLatest(conversationType, target, line, keepCount);
         }
 
         @Override
@@ -3373,6 +3396,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean isGroupReceiptEnabled() throws RemoteException {
+            return ProtoLogic.isGroupReceiptEnabled();
+        }
+
+        @Override
         public boolean isGlobalDisableSyncDraft() throws RemoteException {
             return ProtoLogic.isGlobalDisableSyncDraft();
         }
@@ -3426,6 +3454,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void useTcpShortLink() throws RemoteException {
             tcpShortLink = true;
             ProtoLogic.setTcpShortLink();
+        }
+
+        @Override
+        public void useRawMsg() throws RemoteException {
+            rawMsg = true;
         }
 
         @Override
@@ -3574,6 +3607,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             } catch (Throwable e) {
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public boolean isConnectedToMainNetwork() throws RemoteException {
+            return connectedToMainNetwork();
         }
     }
 
@@ -3808,6 +3846,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
+        if (rawMsg) {
+            RawMessageContent rawMessageContent = new RawMessageContent();
+            rawMessageContent.payload = payload;
+            return rawMessageContent;
+        }
 
         MessageContent content = contentOfType(payload.type);
         try {
@@ -4080,6 +4123,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             onConnectToServerListenes.finishBroadcast();
         });
+    }
+
+    @Override
+    public void onConnected(String host, String ip, int port, boolean isMainNw) {
+        android.util.Log.d(TAG, "onConnected:" + host);
+        this._connectedToMainNetwork = isMainNw;
     }
 
     @Override
@@ -4574,6 +4623,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.getUploadMediaUrl(fileName, mediaType, finalContentType, new ProtoLogic.IGetUploadMediaUrlCallback() {
             @Override
             public void onSuccess(String uploadUrl, String remoteUrl, String backUploadupUrl, int serverType) {
+                uploadUrl = (connectedToMainNetwork() || TextUtils.isEmpty(backUploadupUrl)) ? uploadUrl : backUploadupUrl;
                 if (serverType == 1) {
                     String[] ss = uploadUrl.split("\\?");
                     uploadQiniu(messageId, ss[0], remoteUrl, ss[1], ss[2], filePath, data, finalContentType, callback);
@@ -4698,6 +4748,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         });
         if (messageId > 0) {
             uploadingMap.put(messageId, call);
+        }
+    }
+
+    private boolean connectedToMainNetwork() {
+        if (doubleNetworkStrategy == 1) {
+            return true;
+        } else if (doubleNetworkStrategy == 2) {
+            return false;
+        } else {
+            return _connectedToMainNetwork;
         }
     }
 

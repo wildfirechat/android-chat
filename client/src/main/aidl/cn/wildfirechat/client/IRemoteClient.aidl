@@ -106,6 +106,7 @@ interface IRemoteClient {
     boolean cancelSendingMessage(in long messageId);
     oneway void recall(in long messageUid, IGeneralCallback callback);
     long getServerDeltaTime();
+    boolean isConnectedToMainNetwork();
     List<ConversationInfo> getConversationList(in int[] conversationTypes, in int[] lines, in boolean lastMessage);
     oneway void getConversationListAsync(in int[] conversationTypes, in int[] lines, in IGetConversationListCallback callback);
     ConversationInfo getConversation(in int conversationType, in String target, in int line);
@@ -153,6 +154,7 @@ interface IRemoteClient {
     boolean markAsUnRead(in int conversationType, in String target, in int line, in boolean sync);
     void clearMessages(in int conversationType, in String target, in int line);
     void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
+    void clearMessagesEx2(in int conversationType, in String target, in int line, in int keepCount);
     void clearAllMessages(in boolean removeConversation);
     void setMediaMessagePlayed(in long messageId);
     boolean setMessageLocalExtra(in long messageId, in String extra);
@@ -297,6 +299,7 @@ interface IRemoteClient {
 
     boolean isCommercialServer();
     boolean isReceiptEnabled();
+    boolean isGroupReceiptEnabled();
     boolean isGlobalDisableSyncDraft();
     boolean isEnableSecretChat();
     boolean isEnableUserOnlineState();
@@ -304,6 +307,7 @@ interface IRemoteClient {
     void useSM4();
     void useAES256();
     void useTcpShortLink();
+    void useRawMsg();
     void noUseFts();
     void checkSignature();
 

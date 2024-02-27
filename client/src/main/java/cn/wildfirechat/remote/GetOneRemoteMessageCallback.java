@@ -4,12 +4,10 @@
 
 package cn.wildfirechat.remote;
 
-import java.util.List;
-
 import cn.wildfirechat.message.Message;
 
 public interface GetOneRemoteMessageCallback {
-    void onSuccess(Message messages);
+    void onSuccess(Message message);
 
     void onFail(int errorCode);
 }

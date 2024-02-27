@@ -40,6 +40,7 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(CompositeMessageContentViewHolder.class, R.layout.conversation_item_composite_send, R.layout.conversation_item_composite_receive);
         registerMessageViewHolder(LinkMessageContentViewHolder.class, R.layout.conversation_item_link_send, R.layout.conversation_item_link_receive);
         registerMessageViewHolder(ArticlesMessageContentViewHolder.class, R.layout.conversation_item_articles, R.layout.conversation_item_articles);
+        registerMessageViewHolder(StreamingTextMessageContentViewHolder.class, R.layout.conversation_item_streaming_text_receive, R.layout.conversation_item_streaming_text_receive);
     }
 
     private SparseArray<Class<? extends MessageContentViewHolder>> messageViewHolders = new SparseArray<>();

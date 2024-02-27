@@ -14,7 +14,10 @@ public enum Platform {
     PlatformType_WX(6),
     PlatformType_Linux(7),
     PlatformType_iPad(8),
-    PlatformType_APad(9);
+    PlatformType_APad(9),
+    PlatformType_Harmony(10),
+    PlatformType_Harmony_Pad(11),
+    PlatformType_Harmony_PC(12);
 
     private int value;
 
@@ -27,7 +30,7 @@ public enum Platform {
     }
 
     public static Platform platform(int platform) {
-        if (platform >= 0 && platform < 9) {
+        if (platform >= 0 && platform < 13) {
             return Platform.values()[platform];
         }
         return Platform.PlatformType_UNSET;
@@ -36,6 +39,12 @@ public enum Platform {
     public String getPlatFormName() {
         String platFormName = "PC";
         switch (this) {
+            case PlatformType_iOS:
+                platFormName = "iOS";
+                break;
+            case PlatformType_Android:
+                platFormName = "Android";
+                break;
             case PlatformType_Windows:
                 platFormName = "Windows";
                 break;
@@ -56,6 +65,15 @@ public enum Platform {
                 break;
             case PlatformType_APad:
                 platFormName = "Android 平板";
+                break;
+            case PlatformType_Harmony:
+                platFormName = "鸿蒙手机";
+                break;
+            case PlatformType_Harmony_Pad:
+                platFormName = "鸿蒙Pad";
+                break;
+            case PlatformType_Harmony_PC:
+                platFormName = "鸿蒙PC";
                 break;
             default:
                 break;
