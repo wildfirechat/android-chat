@@ -716,15 +716,15 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         }
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "需要后台弹出界面和显示悬浮窗权限，否则后台运行时，无法弹出音视频界面", Toast.LENGTH_LONG).show();
-                if (!resumed) {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                    startActivity(intent);
-                }
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (!Settings.canDrawOverlays(this)) {
+//                Toast.makeText(this, "需要后台弹出界面和显示悬浮窗权限，否则后台运行时，无法弹出音视频界面", Toast.LENGTH_LONG).show();
+//                if (!resumed) {
+//                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+//                    startActivity(intent);
+//                }
+//            }
+//        }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             String[] permissions = new String[]{Manifest.permission.POST_NOTIFICATIONS};
