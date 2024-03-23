@@ -3846,7 +3846,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
-        if (rawMsg) {
+        if (rawMsg && (payload.type < 400 || payload.type >= 500)) {
             RawMessageContent rawMessageContent = new RawMessageContent();
             rawMessageContent.payload = payload;
             return rawMessageContent;
