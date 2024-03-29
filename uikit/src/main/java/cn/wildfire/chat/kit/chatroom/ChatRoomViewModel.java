@@ -8,12 +8,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import cn.wildfire.chat.kit.common.OperateResult;
-import cn.wildfirechat.model.ChatRoomInfo;
-import cn.wildfirechat.model.ChatRoomMembersInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GetChatRoomInfoCallback;
-import cn.wildfirechat.remote.GetChatRoomMembersInfoCallback;
+import cn.chatme.model.ChatRoomInfo;
+import cn.chatme.model.ChatRoomMembersInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.GetChatRoomInfoCallback;
+import cn.chatme.remote.GetChatRoomMembersInfoCallback;
 
 public class ChatRoomViewModel extends ViewModel {
     public MutableLiveData<OperateResult<Boolean>> joinChatRoom(String chatRoomId) {

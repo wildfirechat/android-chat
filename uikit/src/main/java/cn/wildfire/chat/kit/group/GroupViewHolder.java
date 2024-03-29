@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class GroupViewHolder extends RecyclerView.ViewHolder {
     protected Fragment fragment;

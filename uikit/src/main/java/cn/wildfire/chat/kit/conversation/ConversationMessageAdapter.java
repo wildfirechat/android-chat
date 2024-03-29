@@ -42,11 +42,11 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageContentViewHo
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
-import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.Message;
+import cn.chatme.message.StreamingTextGeneratedMessageContent;
+import cn.chatme.message.StreamingTextGeneratingMessageContent;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ConversationFragment fragment;

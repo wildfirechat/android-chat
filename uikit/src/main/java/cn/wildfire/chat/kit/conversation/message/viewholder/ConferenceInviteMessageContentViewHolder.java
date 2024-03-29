@@ -24,10 +24,10 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.message.ConferenceInviteMessageContent;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.message.ConferenceInviteMessageContent;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 @MessageContentType(value = {
     ConferenceInviteMessageContent.class,

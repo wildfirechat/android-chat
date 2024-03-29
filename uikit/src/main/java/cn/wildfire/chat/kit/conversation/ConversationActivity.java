@@ -14,9 +14,9 @@ import androidx.lifecycle.ViewModelProviders;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.remote.ChatManager;
 
 public class ConversationActivity extends WfcBaseActivity {
     private boolean isInitialized = false;

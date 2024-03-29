@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.model.FileRecord;
+import cn.chatme.model.FileRecord;
 
 class FileRecordAdapter extends RecyclerView.Adapter<FileRecordViewHolder> {
     private List<FileRecord> fileRecords;

@@ -22,10 +22,10 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GetGroupsCallback;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GetGroupsCallback;
 
 public class GroupListFragment extends Fragment implements OnGroupItemClickListener {
     RecyclerView recyclerView;

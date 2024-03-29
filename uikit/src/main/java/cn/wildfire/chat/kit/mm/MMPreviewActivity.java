@@ -42,10 +42,10 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
 import cn.wildfire.chat.kit.widget.PhotoView;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.ImageMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.VideoMessageContent;
+import cn.chatme.remote.ChatManager;
 
 /**
  * @author imndx

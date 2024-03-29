@@ -24,7 +24,7 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.utils.FileUtils;
-import cn.wildfirechat.message.FileMessageContent;
+import cn.chatme.message.FileMessageContent;
 
 @MessageContentType(FileMessageContent.class)
 @EnableContextMenu

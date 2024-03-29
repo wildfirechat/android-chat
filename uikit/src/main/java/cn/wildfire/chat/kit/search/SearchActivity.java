@@ -13,7 +13,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
 import cn.wildfire.chat.kit.widget.SearchView;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.remote.ChatManager;
 
 /**
  * 如果启动{@link android.content.Intent}里面包含keyword，直接开始搜索

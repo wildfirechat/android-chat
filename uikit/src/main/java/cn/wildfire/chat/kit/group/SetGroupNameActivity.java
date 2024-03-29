@@ -23,8 +23,8 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.ModifyGroupInfoType;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.ModifyGroupInfoType;
 
 public class SetGroupNameActivity extends WfcBaseActivity {
     EditText nameEditText;

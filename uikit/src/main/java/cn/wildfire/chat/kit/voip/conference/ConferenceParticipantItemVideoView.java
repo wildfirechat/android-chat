@@ -17,8 +17,8 @@ import org.webrtc.RendererCommon;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.remote.ChatManager;
 
 public class ConferenceParticipantItemVideoView extends ConferenceParticipantItemView {
     public ZoomableFrameLayout videoContainer;

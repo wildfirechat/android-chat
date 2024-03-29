@@ -17,10 +17,10 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.GroupMember;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class GroupMemberListFragment extends ProgressFragment implements GroupMemberListAdapter.OnMemberClickListener {
     private GroupInfo groupInfo;

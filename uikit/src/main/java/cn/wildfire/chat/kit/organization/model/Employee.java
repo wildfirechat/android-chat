@@ -7,7 +7,7 @@ package cn.wildfire.chat.kit.organization.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.UserInfo;
 
 public class Employee implements Parcelable {
     public String employeeId;

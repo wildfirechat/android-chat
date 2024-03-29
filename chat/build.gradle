@@ -59,7 +59,7 @@ dependencies {
     implementation 'com.tencent.bugly:nativecrashreport:3.9.2'
     implementation 'androidx.multidex:multidex:2.0.1'
 
-    implementation project(':push')
+//    implementation project(':push')
 
     implementation 'com.github.tiann:FreeReflection:3.1.0'
 
@@ -108,9 +108,9 @@ dependencies {
     implementation 'cn.aigestudio.wheelpicker:WheelPicker:1.1.3'
 
     // moment start
-//    implementation project(':momentclient')
+    implementation project(':momentclient')
     //over scroller helper
-//    implementation 'me.everything:overscroll-decor-android:1.0.4'
+    implementation 'me.everything:overscroll-decor-android:1.0.4'
     // moment end
 
     // kit wfc end

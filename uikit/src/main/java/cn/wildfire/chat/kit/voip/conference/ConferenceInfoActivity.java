@@ -22,9 +22,9 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.BooleanCallback;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
 
 public class ConferenceInfoActivity extends WfcBaseActivity {
     private String conferenceId;

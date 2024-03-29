@@ -13,14 +13,14 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.third.utils.FileUtils;
-import cn.wildfirechat.message.MessageContentMediaType;
-import cn.wildfirechat.model.ModifyMyInfoEntry;
-import cn.wildfirechat.model.ModifyMyInfoType;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.OnUserInfoUpdateListener;
-import cn.wildfirechat.remote.UploadMediaCallback;
+import cn.chatme.message.MessageContentMediaType;
+import cn.chatme.model.ModifyMyInfoEntry;
+import cn.chatme.model.ModifyMyInfoType;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.OnUserInfoUpdateListener;
+import cn.chatme.remote.UploadMediaCallback;
 
 public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener {
     private MutableLiveData<List<UserInfo>> userInfoLiveData;

@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.conversation.message.CompositeMessageContentActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
-import cn.wildfirechat.message.CompositeMessageContent;
+import cn.chatme.message.CompositeMessageContent;
 
 public class FavCompositeContentViewHolder extends FavContentViewHolder {
     TextView titleTextView;

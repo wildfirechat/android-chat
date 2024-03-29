@@ -17,7 +17,7 @@ import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
     protected GroupInfo groupInfo;

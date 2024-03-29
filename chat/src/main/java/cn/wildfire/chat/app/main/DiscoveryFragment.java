@@ -28,12 +28,12 @@ import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferencePortalActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.chatme.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.core.MessageStatus;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.Message;
+import cn.chatme.message.core.MessageStatus;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 
 public class DiscoveryFragment extends Fragment {
     OptionItemView momentOptionItemView;

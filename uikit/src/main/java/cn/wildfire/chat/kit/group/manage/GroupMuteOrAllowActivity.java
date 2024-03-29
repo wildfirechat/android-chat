@@ -17,7 +17,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class GroupMuteOrAllowActivity extends WfcBaseActivity {
     private GroupInfo groupInfo;

@@ -36,10 +36,10 @@ import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class SingleConversationInfoFragment extends Fragment implements ConversationMemberAdapter.OnMemberClickListener, CompoundButton.OnCheckedChangeListener {
 

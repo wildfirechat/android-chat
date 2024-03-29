@@ -39,8 +39,8 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class MeFragment extends Fragment {
 

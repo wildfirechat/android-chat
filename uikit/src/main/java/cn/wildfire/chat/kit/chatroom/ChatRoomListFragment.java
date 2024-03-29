@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.Conversation;
 
 public class ChatRoomListFragment extends Fragment {
     @Nullable

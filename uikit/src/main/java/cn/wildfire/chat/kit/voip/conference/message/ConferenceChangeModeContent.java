@@ -4,18 +4,18 @@
 
 package cn.wildfire.chat.kit.voip.conference.message;
 
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Change_Model;
+import static cn.chatme.message.core.MessageContentType.ContentType_Conference_Change_Model;
 
 import android.os.Parcel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.core.ContentTag;
-import cn.wildfirechat.message.core.MessagePayload;
-import cn.wildfirechat.message.core.PersistFlag;
+import cn.chatme.message.Message;
+import cn.chatme.message.MessageContent;
+import cn.chatme.message.core.ContentTag;
+import cn.chatme.message.core.MessagePayload;
+import cn.chatme.message.core.PersistFlag;
 
 /**
  * Created by heavyrain lee on 2017/12/6.

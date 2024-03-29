@@ -20,9 +20,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class GroupMemberListAdapter extends RecyclerView.Adapter<GroupMemberListAdapter.MemberViewHolder> {
     private GroupInfo groupInfo;

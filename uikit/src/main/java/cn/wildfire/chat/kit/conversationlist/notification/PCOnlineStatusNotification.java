@@ -6,7 +6,7 @@ package cn.wildfire.chat.kit.conversationlist.notification;
 
 import java.util.Objects;
 
-import cn.wildfirechat.model.PCOnlineInfo;
+import cn.chatme.model.PCOnlineInfo;
 
 public class PCOnlineStatusNotification extends StatusNotification {
     private PCOnlineInfo pcOnlineInfo;

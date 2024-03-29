@@ -24,8 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
 
 
 public class BlacklistListFragment extends Fragment implements BlacklistListAdapter.OnBlacklistItemClickListener, PopupMenu.OnMenuItemClickListener {

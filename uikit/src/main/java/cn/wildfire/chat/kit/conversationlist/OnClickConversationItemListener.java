@@ -4,7 +4,7 @@
 
 package cn.wildfire.chat.kit.conversationlist;
 
-import cn.wildfirechat.model.ConversationInfo;
+import cn.chatme.model.ConversationInfo;
 
 public interface OnClickConversationItemListener {
     void onClickConversationItem(ConversationInfo conversationInfo);

@@ -17,14 +17,14 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.core.MessageDirection;
-import cn.wildfirechat.message.core.MessageStatus;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.utils.WeChatImageUtils;
+import cn.chatme.message.ImageMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.MessageContent;
+import cn.chatme.message.core.MessageDirection;
+import cn.chatme.message.core.MessageStatus;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.utils.WeChatImageUtils;
 
 /**
  * 图片尺寸展示高仿微信

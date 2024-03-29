@@ -7,11 +7,11 @@ package cn.wildfire.chat.kit.mm;
 import android.graphics.Bitmap;
 
 import cn.wildfire.chat.kit.utils.DownloadManager;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.MediaMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.message.ImageMessageContent;
+import cn.chatme.message.MediaMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.VideoMessageContent;
+import cn.chatme.model.Conversation;
 
 public class MediaEntry {
     public static final int TYPE_IMAGE = 0;

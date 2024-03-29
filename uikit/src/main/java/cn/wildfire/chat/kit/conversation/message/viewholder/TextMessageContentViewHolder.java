@@ -27,15 +27,15 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.widget.LinkClickListener;
 import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.PTextMessageContent;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.message.notification.RecallMessageContent;
-import cn.wildfirechat.model.QuoteInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.ImageMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.MessageContent;
+import cn.chatme.message.PTextMessageContent;
+import cn.chatme.message.TextMessageContent;
+import cn.chatme.message.VideoMessageContent;
+import cn.chatme.message.notification.RecallMessageContent;
+import cn.chatme.model.QuoteInfo;
+import cn.chatme.remote.ChatManager;
 
 
 @MessageContentType(value = {

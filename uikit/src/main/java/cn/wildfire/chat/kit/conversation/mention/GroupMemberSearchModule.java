@@ -20,9 +20,9 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.search.SearchableModule;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.GroupMember;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class GroupMemberSearchModule extends SearchableModule<UserInfo, UserViewHolder> {
     private String groupId;

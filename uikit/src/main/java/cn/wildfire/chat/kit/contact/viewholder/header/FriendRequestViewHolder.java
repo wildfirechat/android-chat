@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.remote.ChatManager;
 
 @SuppressWarnings("unused")
 public class FriendRequestViewHolder extends HeaderViewHolder<FriendRequestValue> {

@@ -19,8 +19,8 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.remote.ChatManager;
 
 class ConferenceParticipantGridView extends RelativeLayout {
     private AVEngineKit.CallSession callSession;

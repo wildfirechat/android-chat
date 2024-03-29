@@ -19,7 +19,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class SetGroupRemarkActivity extends WfcBaseActivity {
     EditText remarkEditText;

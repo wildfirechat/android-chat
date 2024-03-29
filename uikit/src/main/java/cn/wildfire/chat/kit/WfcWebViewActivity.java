@@ -18,8 +18,8 @@ import androidx.annotation.Nullable;
 
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.workspace.JsApi;
-import cn.wildfirechat.message.LinkMessageContent;
-import cn.wildfirechat.message.Message;
+import cn.chatme.message.LinkMessageContent;
+import cn.chatme.message.Message;
 import wendu.dsbridge.DWebView;
 
 public class WfcWebViewActivity extends WfcBaseActivity {

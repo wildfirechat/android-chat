@@ -20,9 +20,9 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class GroupMessageReceiptAdapter extends RecyclerView.Adapter<GroupMessageReceiptAdapter.MemberViewHolder> {
     private GroupInfo groupInfo;

@@ -18,10 +18,10 @@ import com.bumptech.glide.request.RequestOptions;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationSearchResult;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationSearchResult;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.UserInfo;
 
 public class ConversationViewHolder extends ResultItemViewHolder<ConversationSearchResult> {
     ImageView portraitImageView;

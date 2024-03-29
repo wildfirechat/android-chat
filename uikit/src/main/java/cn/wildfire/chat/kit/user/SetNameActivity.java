@@ -15,7 +15,7 @@ import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.UserInfo;
 
 
 public class SetNameActivity extends WfcBaseActivity {

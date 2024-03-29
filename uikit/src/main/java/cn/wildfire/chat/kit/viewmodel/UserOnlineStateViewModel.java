@@ -9,10 +9,10 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Map;
 
-import cn.wildfirechat.model.UserOnlineState;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.OnUserOnlineEventListener;
-import cn.wildfirechat.remote.WatchOnlineStateCallback;
+import cn.chatme.model.UserOnlineState;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.OnUserOnlineEventListener;
+import cn.chatme.remote.WatchOnlineStateCallback;
 
 public class UserOnlineStateViewModel extends ViewModel implements OnUserOnlineEventListener {
     private MutableLiveData<Map<String, UserOnlineState>> userOnlineStateLiveData = new MutableLiveData<>();

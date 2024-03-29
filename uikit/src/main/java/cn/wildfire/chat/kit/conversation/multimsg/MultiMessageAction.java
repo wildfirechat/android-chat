@@ -10,7 +10,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.Conversation;
 
 public abstract class MultiMessageAction {
     protected Conversation conversation;

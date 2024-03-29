@@ -14,9 +14,9 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.Message;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 
 public class SearchViewModel extends ViewModel {
     private MutableLiveData<SearchResult> resultLiveData = new MutableLiveData<>();

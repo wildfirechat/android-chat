@@ -39,9 +39,9 @@ import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
-import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.model.UserOnlineState;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.ChannelInfo;
+import cn.chatme.model.UserOnlineState;
+import cn.chatme.remote.ChatManager;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private boolean pick = false;

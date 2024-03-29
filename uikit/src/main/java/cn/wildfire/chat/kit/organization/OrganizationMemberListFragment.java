@@ -25,8 +25,8 @@ import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.model.OrganizationEx;
 import cn.wildfire.chat.kit.widget.BreadCrumbsView;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class OrganizationMemberListFragment extends ProgressFragment implements OrganizationMemberListAdapter.OnOrganizationMemberClickListener, BreadCrumbsView.OnTabListener {
     private int orgId;

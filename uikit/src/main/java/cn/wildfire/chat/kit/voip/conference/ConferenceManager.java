@@ -24,12 +24,12 @@ import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.OnReceiveMessageListener;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.message.Message;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.OnReceiveMessageListener;
 
 public class ConferenceManager implements OnReceiveMessageListener {
     private static ConferenceManager manager;

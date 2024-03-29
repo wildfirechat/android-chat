@@ -58,7 +58,7 @@ dependencies {
 
     api project(':client')
     api project(':avenginekit')
-    api project(':pttclient')
+//    api project(':pttclient')
     api project(':badgeview')
 
     implementation project(':emojilibrary')
@@ -90,7 +90,7 @@ dependencies {
 
     // moment start
     // momentclient module is just for dev, do not uncomment
-    // implementation project(':momentclient')
+//     implementation project(':momentclient')
     //over scroller helper
 //    implementation 'me.everything:overscroll-decor-android:1.0.4'
     // moment end

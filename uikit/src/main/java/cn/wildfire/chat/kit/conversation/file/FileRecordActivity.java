@@ -6,7 +6,7 @@ package cn.wildfire.chat.kit.conversation.file;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.Conversation;
 
 public class FileRecordActivity extends WfcBaseActivity {
 

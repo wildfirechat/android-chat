@@ -22,9 +22,9 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.ChannelViewHolder;
-import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.SearchChannelCallback;
+import cn.chatme.model.ChannelInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.SearchChannelCallback;
 
 public class ChannelSearchModule extends SearchableModule<ChannelInfo, ChannelViewHolder> {
     @Override

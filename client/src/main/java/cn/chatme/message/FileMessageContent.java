@@ -1,0 +1,112 @@
+/*
+ * Copyright (c) 2024 WildFireChat. All rights reserved.
+ */
+
+package cn.chatme.message;
+
+import android.os.Parcel;
+import android.text.TextUtils;
+
+import java.io.File;
+
+import cn.chatme.message.core.ContentTag;
+import cn.chatme.message.core.MessageContentType;
+import cn.chatme.message.core.MessagePayload;
+import cn.chatme.message.core.PersistFlag;
+
+/**
+ * Created by heavyrain lee on 2017/12/6.
+ */
+
+@ContentTag(type = MessageContentType.ContentType_File, flag = PersistFlag.Persist_And_Count)
+public class FileMessageContent extends MediaMessageContent {
+    private String name;
+    private int size;
+    private static final String FILE_NAME_PREFIX = "[文件] ";
+
+    public FileMessageContent() {
+        this.mediaType = MessageContentMediaType.FILE;
+    }
+
+    public FileMessageContent(String filePath) {
+        File file = new File(filePath);
+        this.name = filePath.substring(filePath.lastIndexOf("/") + 1);
+        this.size = (int) file.length();
+        this.localPath = filePath;
+        this.mediaType = MessageContentMediaType.FILE;
+    }
+
+    @Override
+    public MessagePayload encode() {
+        MessagePayload payload = super.encode();
+        payload.searchableContent = name;
+        payload.content = size + "";
+
+        return payload;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    @Override
+    public void decode(MessagePayload payload) {
+        super.decode(payload);
+        if (TextUtils.isEmpty(payload.searchableContent)) {
+            return;
+        }
+        if (payload.searchableContent.startsWith(FILE_NAME_PREFIX)) {
+            name = payload.searchableContent.substring(payload.searchableContent.indexOf(FILE_NAME_PREFIX) + FILE_NAME_PREFIX.length());
+        } else {
+            name = payload.searchableContent;
+        }
+        size = Integer.parseInt(payload.content);
+    }
+
+    @Override
+    public String digest(Message message) {
+        return "[文件]" + name;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(this.name);
+        dest.writeInt(this.size);
+    }
+
+    protected FileMessageContent(Parcel in) {
+        super(in);
+        this.name = in.readString();
+        this.size = in.readInt();
+    }
+
+    public static final Creator<FileMessageContent> CREATOR = new Creator<FileMessageContent>() {
+        @Override
+        public FileMessageContent createFromParcel(Parcel source) {
+            return new FileMessageContent(source);
+        }
+
+        @Override
+        public FileMessageContent[] newArray(int size) {
+            return new FileMessageContent[size];
+        }
+    };
+}

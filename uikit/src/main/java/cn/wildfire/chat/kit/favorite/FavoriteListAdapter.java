@@ -25,7 +25,7 @@ import cn.wildfire.chat.kit.favorite.viewholder.FavImageContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavTextContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavUnknownContentViewHolder;
 import cn.wildfire.chat.kit.favorite.viewholder.FavVideoContentViewHolder;
-import cn.wildfirechat.message.core.MessageContentType;
+import cn.chatme.message.core.MessageContentType;
 
 public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Fragment favListFragment;

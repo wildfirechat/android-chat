@@ -24,7 +24,7 @@ import java.io.File;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.remote.ChatManager;
 
 public class AudioRecorderPanel implements View.OnTouchListener {
     private int maxDuration = Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * 1000;

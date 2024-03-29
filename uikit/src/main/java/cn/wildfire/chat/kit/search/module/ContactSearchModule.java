@@ -19,9 +19,9 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class ContactSearchModule extends SearchableModule<UserInfo, UserViewHolder> {
     @Override

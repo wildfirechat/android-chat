@@ -12,8 +12,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
 
 public class MessageNotifySettingActivity extends WfcBaseActivity {
     SwitchMaterial switchMsgNotification;

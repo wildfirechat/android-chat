@@ -14,11 +14,11 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfirechat.client.Platform;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.PCOnlineInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
+import cn.chatme.client.Platform;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.PCOnlineInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
 
 public class PCSessionActivity extends WfcBaseActivity {
 

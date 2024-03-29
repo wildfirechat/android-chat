@@ -27,7 +27,7 @@ import com.bumptech.glide.request.RequestOptions;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.ChannelInfo;
+import cn.chatme.model.ChannelInfo;
 
 public class ChannelInfoActivity extends AppCompatActivity {
     ImageView portraitImageView;

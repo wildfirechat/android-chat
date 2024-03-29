@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.remote.ChatManager;
 
 public class BlacklistViewModel extends ViewModel {
 

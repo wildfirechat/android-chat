@@ -17,8 +17,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupSearchResult;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.GroupSearchResult;
 
 public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
     ImageView portraitImageView;

@@ -27,9 +27,9 @@ import com.bumptech.glide.request.RequestOptions;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class ConferenceParticipantItemView extends RelativeLayout {
     public ImageView portraitImageView;

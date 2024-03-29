@@ -22,11 +22,11 @@ import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GetGroupMembersCallback;
+import cn.chatme.message.Message;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.GroupMember;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GetGroupMembersCallback;
 
 public class GroupMessageReceiptActivity extends WfcBaseActivity {
 

@@ -20,7 +20,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.UserInfo;
 
 public class MultiCallParticipantAdapter extends RecyclerView.Adapter<ParticipantViewHolder> {
     private List<UserInfo> participants;

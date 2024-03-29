@@ -12,23 +12,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.UnreadCount;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GetConversationListCallback;
-import cn.wildfirechat.remote.OnClearMessageListener;
-import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
-import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
-import cn.wildfirechat.remote.OnDeleteMessageListener;
-import cn.wildfirechat.remote.OnRecallMessageListener;
-import cn.wildfirechat.remote.OnReceiveMessageListener;
-import cn.wildfirechat.remote.OnRemoveConversationListener;
-import cn.wildfirechat.remote.OnSendMessageListener;
-import cn.wildfirechat.remote.OnSettingUpdateListener;
-import cn.wildfirechat.remote.SecretMessageBurnStateListener;
+import cn.chatme.message.Message;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.model.UnreadCount;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.GetConversationListCallback;
+import cn.chatme.remote.OnClearMessageListener;
+import cn.chatme.remote.OnConnectionStatusChangeListener;
+import cn.chatme.remote.OnConversationInfoUpdateListener;
+import cn.chatme.remote.OnDeleteMessageListener;
+import cn.chatme.remote.OnRecallMessageListener;
+import cn.chatme.remote.OnReceiveMessageListener;
+import cn.chatme.remote.OnRemoveConversationListener;
+import cn.chatme.remote.OnSendMessageListener;
+import cn.chatme.remote.OnSettingUpdateListener;
+import cn.chatme.remote.SecretMessageBurnStateListener;
 
 /**
  * how

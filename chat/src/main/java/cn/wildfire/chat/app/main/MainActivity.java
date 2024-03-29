@@ -75,16 +75,16 @@ import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfire.chat.kit.workspace.WebViewFragment;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.client.ConnectionStatus;
-import cn.wildfirechat.message.LinkMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.core.MessageContentType;
-import cn.wildfirechat.message.core.MessageStatus;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.client.ConnectionStatus;
+import cn.chatme.message.LinkMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.MessageContent;
+import cn.chatme.message.TextMessageContent;
+import cn.chatme.message.core.MessageContentType;
+import cn.chatme.message.core.MessageStatus;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageChangeListener {

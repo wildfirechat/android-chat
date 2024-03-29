@@ -18,9 +18,9 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.MessageViewHolder;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.Message;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 
 public class ConversationMessageSearchModule extends SearchableModule<Message, MessageViewHolder> {
     private Conversation conversation;

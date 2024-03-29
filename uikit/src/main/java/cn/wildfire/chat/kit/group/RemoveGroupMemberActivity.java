@@ -19,8 +19,8 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.GroupMember;
+import cn.chatme.remote.ChatManager;
 
 public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
     private MenuItem menuItem;

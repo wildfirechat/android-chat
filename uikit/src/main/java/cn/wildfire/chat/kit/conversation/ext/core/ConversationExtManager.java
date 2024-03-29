@@ -15,7 +15,7 @@ import cn.wildfire.chat.kit.conversation.ext.LocationExt;
 import cn.wildfire.chat.kit.conversation.ext.ShootExt;
 import cn.wildfire.chat.kit.conversation.ext.UserCardExt;
 import cn.wildfire.chat.kit.conversation.ext.VoipExt;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.Conversation;
 
 public class ConversationExtManager {
     private static ConversationExtManager instance;

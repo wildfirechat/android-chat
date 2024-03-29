@@ -26,13 +26,13 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.contact.ContactListActivity;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.conversation.forward.ForwardPromptView;
-import cn.wildfirechat.message.CardMessageContent;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.CardMessageContent;
+import cn.chatme.message.TextMessageContent;
+import cn.chatme.model.ChannelInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class UserCardExt extends ConversationExt {
 

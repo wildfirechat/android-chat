@@ -27,12 +27,12 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
-import cn.wildfirechat.client.ConnectionStatus;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.PCOnlineInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.client.ConnectionStatus;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.PCOnlineInfo;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class ConversationListFragment extends ProgressFragment {
     private RecyclerView recyclerView;

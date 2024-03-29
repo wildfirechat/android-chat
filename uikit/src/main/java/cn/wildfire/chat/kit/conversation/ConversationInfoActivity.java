@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.model.ConversationInfo;
+import cn.chatme.model.ConversationInfo;
 
 public class ConversationInfoActivity extends WfcBaseActivity {
 

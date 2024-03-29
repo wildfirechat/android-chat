@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.contact.pick.PickUserFragment;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class PickGroupMemberFragment extends PickUserFragment {
     private GroupInfo groupInfo;

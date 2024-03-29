@@ -26,9 +26,9 @@ import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.GroupMember;
+import cn.chatme.remote.ChatManager;
 
 public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment implements UserListAdapter.OnUserLongClickListener {
     private GroupViewModel groupViewModel;

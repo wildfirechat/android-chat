@@ -23,14 +23,14 @@ import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
-import cn.wildfirechat.message.CompositeMessageContent;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.message.CompositeMessageContent;
+import cn.chatme.message.ImageMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.TextMessageContent;
+import cn.chatme.message.VideoMessageContent;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.UserInfo;
 
 public class ForwardActivity extends PickOrCreateConversationActivity {
     private List<Message> messages;

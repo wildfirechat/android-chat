@@ -20,9 +20,9 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
-import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.chatme.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.remote.ChatManager;
 
 public class DiagnoseActivity extends WfcBaseActivity {
 

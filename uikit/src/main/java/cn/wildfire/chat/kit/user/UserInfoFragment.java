@@ -59,9 +59,9 @@ import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class UserInfoFragment extends Fragment {
     ImageView portraitImageView;

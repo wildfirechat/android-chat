@@ -6,7 +6,7 @@ package cn.wildfire.chat.kit.group.manage;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class GroupManagerListActivity extends WfcBaseActivity {
 

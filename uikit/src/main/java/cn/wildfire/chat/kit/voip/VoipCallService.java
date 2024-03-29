@@ -43,15 +43,15 @@ import java.util.List;
 import cn.wildfire.chat.kit.BuildConfig;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.avenginekit.PeerConnectionClient;
-import cn.wildfirechat.message.JoinCallRequestMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MultiCallOngoingMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.OnReceiveMessageListener;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.avenginekit.PeerConnectionClient;
+import cn.chatme.message.JoinCallRequestMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.MultiCallOngoingMessageContent;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.OnReceiveMessageListener;
 
 public class VoipCallService extends Service implements OnReceiveMessageListener {
     private static final int NOTIFICATION_ID = 1;

@@ -30,8 +30,8 @@ import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolderManager;
 import cn.wildfire.chat.kit.conversationlist.viewholder.StatusNotificationContainerViewHolder;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
 
 public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Fragment fragment;

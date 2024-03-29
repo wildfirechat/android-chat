@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class GroupListActivity extends WfcBaseActivity {
 

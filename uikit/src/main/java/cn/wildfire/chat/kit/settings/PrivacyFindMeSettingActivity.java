@@ -11,10 +11,10 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.ChatManager.DisableSearchUserMask;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.UserSettingScope;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.ChatManager.DisableSearchUserMask;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.UserSettingScope;
 
 public class PrivacyFindMeSettingActivity extends WfcBaseActivity {
     SwitchMaterial displayNameSwitch;

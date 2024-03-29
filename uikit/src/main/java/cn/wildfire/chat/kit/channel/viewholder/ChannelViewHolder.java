@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import cn.wildfire.chat.kit.*;
-import cn.wildfirechat.model.ChannelInfo;
+import cn.chatme.model.ChannelInfo;
 
 public class ChannelViewHolder extends RecyclerView.ViewHolder {
     ImageView portraitImageView;

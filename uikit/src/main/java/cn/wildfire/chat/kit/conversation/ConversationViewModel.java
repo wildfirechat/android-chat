@@ -17,16 +17,16 @@ import java.util.List;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.BurnMessageInfo;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.CreateSecretChatCallback;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GetMessageCallback;
-import cn.wildfirechat.remote.GetRemoteMessageCallback;
-import cn.wildfirechat.remote.SecretChatStateChangeListener;
+import cn.chatme.message.Message;
+import cn.chatme.model.BurnMessageInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.CreateSecretChatCallback;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.GetMessageCallback;
+import cn.chatme.remote.GetRemoteMessageCallback;
+import cn.chatme.remote.SecretChatStateChangeListener;
 
 public class ConversationViewModel extends ViewModel implements AppScopeViewModel, SecretChatStateChangeListener {
     private MutableLiveData<Conversation> clearConversationMessageLiveData;

@@ -16,11 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.message.JoinCallRequestMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MultiCallOngoingMessageContent;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.JoinCallRequestMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.MultiCallOngoingMessageContent;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class OngoingCallAdapter extends RecyclerView.Adapter<OngoingCallAdapter.OngoingCallViewHolder> {
 

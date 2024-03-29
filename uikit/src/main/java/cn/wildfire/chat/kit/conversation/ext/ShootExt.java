@@ -22,8 +22,8 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.mm.TakePhotoActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
-import cn.wildfirechat.message.TypingMessageContent;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.message.TypingMessageContent;
+import cn.chatme.model.Conversation;
 
 public class ShootExt extends ConversationExt {
 

@@ -26,8 +26,8 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 
 public class ConferenceMessageFragment extends Fragment {
     RecyclerView messageRecyclerView;

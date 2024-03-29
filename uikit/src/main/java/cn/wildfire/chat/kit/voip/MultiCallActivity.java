@@ -23,10 +23,10 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
-import cn.wildfirechat.avenginekit.AVAudioManager;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVAudioManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.remote.ChatManager;
 
 public class MultiCallActivity extends VoipBaseActivity {
 

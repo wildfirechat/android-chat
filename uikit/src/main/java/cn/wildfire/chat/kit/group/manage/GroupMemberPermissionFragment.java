@@ -21,7 +21,7 @@ import java.util.Collections;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class GroupMemberPermissionFragment extends Fragment {
     private GroupInfo groupInfo;

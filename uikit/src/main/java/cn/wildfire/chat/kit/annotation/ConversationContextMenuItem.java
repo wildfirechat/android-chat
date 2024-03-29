@@ -9,7 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import cn.wildfirechat.model.ConversationInfo;
+import cn.chatme.model.ConversationInfo;
 
 /**
  * 用户会话的长安菜单项

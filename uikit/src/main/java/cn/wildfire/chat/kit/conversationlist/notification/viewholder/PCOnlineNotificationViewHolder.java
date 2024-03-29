@@ -15,8 +15,8 @@ import cn.wildfire.chat.kit.annotation.StatusNotificationType;
 import cn.wildfire.chat.kit.conversationlist.notification.PCOnlineStatusNotification;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.pc.PCSessionActivity;
-import cn.wildfirechat.model.PCOnlineInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.PCOnlineInfo;
+import cn.chatme.remote.ChatManager;
 
 @StatusNotificationType(PCOnlineStatusNotification.class)
 public class PCOnlineNotificationViewHolder extends StatusNotificationViewHolder {

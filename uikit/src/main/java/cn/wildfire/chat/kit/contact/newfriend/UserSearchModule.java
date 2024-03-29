@@ -21,9 +21,9 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.SearchUserCallback;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.SearchUserCallback;
 
 public class UserSearchModule extends SearchableModule<UserInfo, UserViewHolder> {
     @Override

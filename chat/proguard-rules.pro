@@ -85,7 +85,7 @@
     <init>(...);
 }
 
--keepclassmembers class cn.wildfirechat.message.MessageContent {
+-keepclassmembers class cn.chatme.message.MessageContent {
     encode();
 }
 

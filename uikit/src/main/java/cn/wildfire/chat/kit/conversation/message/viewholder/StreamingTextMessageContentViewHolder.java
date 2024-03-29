@@ -27,9 +27,9 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.widget.LinkClickListener;
 import cn.wildfire.chat.kit.widget.LinkTextViewMovementMethod;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
-import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
+import cn.chatme.message.MessageContent;
+import cn.chatme.message.StreamingTextGeneratedMessageContent;
+import cn.chatme.message.StreamingTextGeneratingMessageContent;
 
 
 @MessageContentType(value = {

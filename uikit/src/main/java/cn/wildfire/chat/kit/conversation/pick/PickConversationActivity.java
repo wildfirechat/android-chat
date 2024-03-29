@@ -11,7 +11,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.OnClickConversationItemListener;
-import cn.wildfirechat.model.ConversationInfo;
+import cn.chatme.model.ConversationInfo;
 
 public class PickConversationActivity extends WfcBaseActivity implements OnClickConversationItemListener {
     @Override

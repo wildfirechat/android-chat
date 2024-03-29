@@ -24,13 +24,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <service
-            android:name="cn.wildfirechat.client.ClientService"
+            android:name="cn.chatme.client.ClientService"
             android:process=":marsservice" />
         <receiver
             android:name="com.tencent.mars.BaseEvent$ConnectionReceiver"
             android:process=":marsservice" />
 
         <!--must run in th main process-->
-        <receiver android:name="cn.wildfirechat.remote.RecoverReceiver" />
+        <receiver android:name="cn.chatme.remote.RecoverReceiver" />
     </application>
 </manifest>

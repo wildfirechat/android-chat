@@ -29,9 +29,9 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.message.TypingMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.TypingMessageContent;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 
 public class ImageExt extends ConversationExt {
 

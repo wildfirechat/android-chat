@@ -20,11 +20,11 @@ import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.ConversationViewHolder;
-import cn.wildfirechat.model.ConversationSearchResult;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.ConversationSearchResult;
+import cn.chatme.remote.ChatManager;
 
-import static cn.wildfirechat.model.Conversation.ConversationType.Group;
-import static cn.wildfirechat.model.Conversation.ConversationType.Single;
+import static cn.chatme.model.Conversation.ConversationType.Group;
+import static cn.chatme.model.Conversation.ConversationType.Single;
 
 public class ConversationSearchModule extends SearchableModule<ConversationSearchResult, ConversationViewHolder> {
     @Override

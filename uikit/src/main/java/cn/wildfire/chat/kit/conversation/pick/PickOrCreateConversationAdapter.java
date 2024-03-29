@@ -18,7 +18,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.forward.viewholder.CategoryViewHolder;
 import cn.wildfire.chat.kit.conversation.forward.viewholder.ConversationViewHolder;
 import cn.wildfire.chat.kit.conversation.forward.viewholder.CreateConversationViewHolder;
-import cn.wildfirechat.model.ConversationInfo;
+import cn.chatme.model.ConversationInfo;
 
 public class PickOrCreateConversationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Fragment fragment;

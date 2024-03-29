@@ -15,9 +15,9 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.notification.NotificationMessageContent;
-import cn.wildfirechat.message.notification.RecallMessageContent;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.notification.NotificationMessageContent;
+import cn.chatme.message.notification.RecallMessageContent;
+import cn.chatme.remote.ChatManager;
 
 @MessageContentType(RecallMessageContent.class)
 @EnableContextMenu
@@ -49,7 +49,7 @@ public class RecallMessageContentViewHolder extends NotificationMessageContentVi
         notificationTextView.setText(message.message.digest());
         long delta = ChatManager.Instance().getServerDeltaTime();
         long now = System.currentTimeMillis();
-        if (content.getOriginalContentType() == cn.wildfirechat.message.core.MessageContentType.ContentType_Text
+        if (content.getOriginalContentType() == cn.chatme.message.core.MessageContentType.ContentType_Text
             && ((NotificationMessageContent) message.message.content).fromSelf
             && now - (message.message.serverTime - delta) < Config.RECALL_REEDIT_TIME_LIMIT * 1000) {
             reeditTextView.setVisibility(View.VISIBLE);

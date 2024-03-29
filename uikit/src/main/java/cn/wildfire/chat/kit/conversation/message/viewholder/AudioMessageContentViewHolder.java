@@ -24,10 +24,10 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
-import cn.wildfirechat.message.PTTSoundMessageContent;
-import cn.wildfirechat.message.SoundMessageContent;
-import cn.wildfirechat.message.core.MessageDirection;
-import cn.wildfirechat.message.core.MessageStatus;
+import cn.chatme.message.PTTSoundMessageContent;
+import cn.chatme.message.SoundMessageContent;
+import cn.chatme.message.core.MessageDirection;
+import cn.chatme.message.core.MessageStatus;
 
 @MessageContentType(value = {SoundMessageContent.class, PTTSoundMessageContent.class})
 

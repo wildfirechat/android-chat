@@ -34,10 +34,10 @@ import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.widget.DateTimePickerHelper;
 import cn.wildfire.chat.kit.widget.FixedTextInputEditText;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback2;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback2;
 
 public class CreateConferenceActivity extends WfcBaseActivity {
     FixedTextInputEditText titleEditText;

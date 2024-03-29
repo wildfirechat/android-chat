@@ -57,7 +57,7 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.audio.AudioRecorderPanel;
-import cn.wildfire.chat.kit.audio.PttPanel;
+//import cn.wildfire.chat.kit.audio.PttPanel;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExtension;
 import cn.wildfire.chat.kit.conversation.mention.Mention;
 import cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity;
@@ -68,18 +68,18 @@ import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
-import cn.wildfirechat.message.ChannelMenuEventMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.TypingMessageContent;
-import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.model.ChannelMenu;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.QuoteInfo;
-import cn.wildfirechat.ptt.PTTClient;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.ChannelMenuEventMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.TextMessageContent;
+import cn.chatme.message.TypingMessageContent;
+import cn.chatme.model.ChannelInfo;
+import cn.chatme.model.ChannelMenu;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.QuoteInfo;
+//import cn.chatme.ptt.PTTClient;
+import cn.chatme.remote.ChatManager;
 
 public class ConversationInputPanel extends FrameLayout implements IEmotionSelectedListener {
 
@@ -114,7 +114,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private Fragment fragment;
     private FragmentActivity activity;
     private AudioRecorderPanel audioRecorderPanel;
-    private PttPanel pttPanel;
+//    private PttPanel pttPanel;
 
     private long lastTypingTime;
     private String draftString;
@@ -168,10 +168,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
         SharedPreferences sp = fragment.getContext().getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
-        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost()) && conversation.type != Conversation.ConversationType.Channel) {
-            pttImageView.setVisibility(View.VISIBLE);
-            pttPanel = new PttPanel(getContext());
-        }
+//        if (pttEnabled && PTTClient.checkAddress(ChatManager.Instance().getHost()) && conversation.type != Conversation.ConversationType.Channel) {
+//            pttImageView.setVisibility(View.VISIBLE);
+//            pttPanel = new PttPanel(getContext());
+//        }
     }
 
     private QuoteInfo quoteInfo;
@@ -215,9 +215,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (audioRecorderPanel != null) {
             audioRecorderPanel.deattch();
         }
-        if (pttPanel != null) {
-            pttPanel.deattch();
-        }
+//        if (pttPanel != null) {
+//            pttPanel.deattch();
+//        }
     }
 
     public void init(Fragment fragment, InputAwareLayout rootInputAwareLayout) {
@@ -345,9 +345,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     void onEmotionImageViewClick() {
 
-        if (audioRecorderPanel.isShowingRecorder() || (pttPanel != null && pttPanel.isShowingTalking())) {
-            return;
-        }
+//        if (audioRecorderPanel.isShowingRecorder() || (pttPanel != null && pttPanel.isShowingTalking())) {
+//            return;
+//        }
         if (rootLinearLayout.getCurrentInput() == emotionContainerFrameLayout) {
             hideEmotionLayout();
             rootLinearLayout.showSoftkey(editText);
@@ -644,7 +644,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private void showAudioButton() {
         audioButton.setVisibility(View.VISIBLE);
         if (isPttMode) {
-            pttPanel.attach(rootLinearLayout, audioButton, conversation);
+//            pttPanel.attach(rootLinearLayout, audioButton, conversation);
             pttImageView.setImageResource(R.mipmap.ic_chat_keyboard);
         } else {
             audioRecorderPanel.attach(rootLinearLayout, audioButton);
@@ -661,7 +661,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     private void hideAudioButton() {
         audioButton.setVisibility(View.GONE);
         if (isPttMode) {
-            pttPanel.deattch();
+//            pttPanel.deattch();
             pttImageView.setImageResource(R.mipmap.ic_ptt);
             isPttMode = false;
         } else {

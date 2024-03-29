@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
 
 @ConversationInfoType(type = Conversation.ConversationType.ChatRoom, line = 0)
 @EnableContextMenu

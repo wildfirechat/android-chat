@@ -8,9 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import cn.wildfire.chat.kit.common.OperateResult;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.OnSettingUpdateListener;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.OnSettingUpdateListener;
 
 public class SettingViewModel extends ViewModel implements OnSettingUpdateListener {
     private MutableLiveData<Object> settingUpdatedLiveData;

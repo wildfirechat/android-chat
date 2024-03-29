@@ -9,12 +9,12 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.core.ContentTag;
-import cn.wildfirechat.message.core.MessageContentType;
-import cn.wildfirechat.message.core.MessagePayload;
-import cn.wildfirechat.message.core.PersistFlag;
+import cn.chatme.message.Message;
+import cn.chatme.message.MessageContent;
+import cn.chatme.message.core.ContentTag;
+import cn.chatme.message.core.MessageContentType;
+import cn.chatme.message.core.MessagePayload;
+import cn.chatme.message.core.PersistFlag;
 
 @ContentTag(flag = PersistFlag.Transparent, type = MessageContentType.ContentType_Conference_Command)
 public class ConferenceCommandContent extends MessageContent {

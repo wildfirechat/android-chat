@@ -9,8 +9,8 @@ import android.util.SparseArray;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.core.ContentTag;
+import cn.chatme.message.MessageContent;
+import cn.chatme.message.core.ContentTag;
 
 public class MessageViewHolderManager {
     private static final String TAG = "MsgViewHolderManager";

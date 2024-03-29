@@ -19,9 +19,9 @@ import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.GroupMember;
+import cn.chatme.remote.ChatManager;
 
 public class MentionGroupMemberFragment extends BaseUserListFragment {
     private GroupInfo groupInfo;

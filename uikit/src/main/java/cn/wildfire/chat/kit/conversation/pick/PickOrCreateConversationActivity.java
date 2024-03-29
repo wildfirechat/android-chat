@@ -24,9 +24,9 @@ import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.module.ContactSearchModule;
 import cn.wildfire.chat.kit.search.module.GroupSearchViewModule;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupSearchResult;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.GroupSearchResult;
+import cn.chatme.model.UserInfo;
 
 abstract public class PickOrCreateConversationActivity extends WfcBaseActivity {
     private SearchFragment searchFragment;

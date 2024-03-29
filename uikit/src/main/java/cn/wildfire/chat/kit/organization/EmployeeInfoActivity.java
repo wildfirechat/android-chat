@@ -18,8 +18,8 @@ import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.user.SetAliasActivity;
 import cn.wildfire.chat.kit.user.SetNameActivity;
 import cn.wildfire.chat.kit.user.UserInfoFragment;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class EmployeeInfoActivity extends WfcBaseActivity {
     private UserInfo userInfo;

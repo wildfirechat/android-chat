@@ -23,11 +23,11 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.Message;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.GroupMember;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class GroupMessageReceiptListFragment extends ProgressFragment implements GroupMessageReceiptAdapter.OnMemberClickListener {
     private GroupInfo groupInfo;

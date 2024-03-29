@@ -16,7 +16,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.CompositeMessageContentActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.CompositeMessageContent;
+import cn.chatme.message.CompositeMessageContent;
 
 
 @MessageContentType(value = {

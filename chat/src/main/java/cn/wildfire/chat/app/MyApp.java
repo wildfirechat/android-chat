@@ -18,9 +18,9 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderMan
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
-import cn.wildfirechat.push.PushService;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.OnConnectToServerListener;
+//import cn.wildfirechat.push.PushService;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.OnConnectToServerListener;
 
 public class MyApp extends BaseApp implements OnConnectToServerListener {
 
@@ -50,7 +50,7 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             wfcUIKit.init(this);
             wfcUIKit.setEnableNativeNotification(true);
             wfcUIKit.setAppServiceProvider(AppService.Instance());
-            PushService.init(this, BuildConfig.APPLICATION_ID);
+//            PushService.init(this, BuildConfig.APPLICATION_ID);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
             setupWFCDirs();
 

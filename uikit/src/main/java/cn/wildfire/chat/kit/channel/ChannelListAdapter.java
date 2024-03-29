@@ -16,7 +16,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.channel.viewholder.CategoryViewHolder;
 import cn.wildfire.chat.kit.channel.viewholder.ChannelViewHolder;
-import cn.wildfirechat.model.ChannelInfo;
+import cn.chatme.model.ChannelInfo;
 
 public class ChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<ChannelInfo> followedChannels;

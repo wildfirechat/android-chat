@@ -22,7 +22,7 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.message.LocationMessageContent;
+import cn.chatme.message.LocationMessageContent;
 
 @MessageContentType(LocationMessageContent.class)
 @EnableContextMenu

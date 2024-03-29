@@ -4,7 +4,7 @@
 
 package cn.wildfire.chat.kit.conversation.message.model;
 
-import cn.wildfirechat.message.Message;
+import cn.chatme.message.Message;
 
 public class UiMessage {
     public boolean isPlaying;

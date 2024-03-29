@@ -18,9 +18,9 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.GroupViewHolder;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupSearchResult;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.GroupSearchResult;
+import cn.chatme.remote.ChatManager;
 
 public class GroupSearchViewModule extends SearchableModule<GroupSearchResult, GroupViewHolder> {
     @Override

@@ -23,8 +23,8 @@ import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.SoundMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.SoundMessageContent;
 
 public class FavAudioContentViewHolder extends FavContentViewHolder {
     ImageView audioImageView;

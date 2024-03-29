@@ -18,14 +18,14 @@ import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.FriendRequest;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.OnFriendUpdateListener;
-import cn.wildfirechat.remote.SearchUserCallback;
-import cn.wildfirechat.remote.StringListCallback;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.FriendRequest;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.OnFriendUpdateListener;
+import cn.chatme.remote.SearchUserCallback;
+import cn.chatme.remote.StringListCallback;
 
 public class ContactViewModel extends ViewModel implements OnFriendUpdateListener {
     private MutableLiveData<List<UIUserInfo>> contactListLiveData;

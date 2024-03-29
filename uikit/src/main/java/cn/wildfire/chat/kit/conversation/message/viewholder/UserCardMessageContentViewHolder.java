@@ -21,9 +21,9 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
-import cn.wildfirechat.message.CardMessageContent;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.CardMessageContent;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 @MessageContentType(value = {
     CardMessageContent.class,

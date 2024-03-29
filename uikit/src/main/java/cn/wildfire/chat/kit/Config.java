@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit;
 
+import cn.chatme.client.ClientService;
+
 /**
  * Created by heavyrain lee on 2017/11/24.
  */
@@ -86,7 +88,7 @@ public class Config {
      * <p>
      * 大量会话时，会导致，快速进出会话界面，会话消息加载缓慢，故再次控制会话数，只展示最新的{@link MAX_CONVERSATION_LIST_SIZE}条
      * <p>
-     * 直接修改此字段不会生效，请修改{@link cn.wildfirechat.client.ClientService#MAX_CONVERSATION_LIST_SIZE }字段
+     * 直接修改此字段不会生效，请修改{@link ClientService#MAX_CONVERSATION_LIST_SIZE }字段
      */
     public static final int MAX_CONVERSATION_LIST_SIZE = 1000;
 

@@ -29,7 +29,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.Conversation;
 
 public class CreateChannelActivity extends WfcBaseActivity {
     @Nullable

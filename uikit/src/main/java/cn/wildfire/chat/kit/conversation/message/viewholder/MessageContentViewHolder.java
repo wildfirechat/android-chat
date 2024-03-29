@@ -18,7 +18,7 @@ import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfirechat.message.Message;
+import cn.chatme.message.Message;
 
 public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
     @NonNull

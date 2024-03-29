@@ -6,8 +6,8 @@ package cn.wildfire.chat.kit;
 
 import static androidx.core.app.NotificationCompat.CATEGORY_MESSAGE;
 import static androidx.core.app.NotificationCompat.DEFAULT_ALL;
-import static cn.wildfirechat.message.core.PersistFlag.Persist_And_Count;
-import static cn.wildfirechat.model.Conversation.ConversationType.Single;
+import static cn.chatme.message.core.PersistFlag.Persist_And_Count;
+import static cn.chatme.model.Conversation.ConversationType.Single;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -28,18 +28,18 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.core.MessageContentType;
-import cn.wildfirechat.message.core.MessageDirection;
-import cn.wildfirechat.message.notification.RecallMessageContent;
-import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.PCOnlineInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GetUserInfoCallback;
+import cn.chatme.message.Message;
+import cn.chatme.message.core.MessageContentType;
+import cn.chatme.message.core.MessageDirection;
+import cn.chatme.message.notification.RecallMessageContent;
+import cn.chatme.model.ChannelInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.PCOnlineInfo;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GetUserInfoCallback;
 
 public class WfcNotificationManager {
     private WfcNotificationManager() {

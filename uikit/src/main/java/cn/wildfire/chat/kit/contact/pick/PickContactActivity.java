@@ -21,7 +21,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.UserInfo;
 
 public class PickContactActivity extends WfcBaseActivity {
     public static final String PARAM_MAX_COUNT = "maxCount";

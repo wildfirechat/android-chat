@@ -18,12 +18,12 @@ import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfirechat.message.ConferenceInviteMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.message.ConferenceInviteMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.TextMessageContent;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.UserInfo;
 
 public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
     private ConferenceInviteMessageContent inviteMessage;

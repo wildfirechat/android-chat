@@ -17,11 +17,11 @@ import com.bumptech.glide.Glide;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.notification.NotificationMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.Message;
+import cn.chatme.message.notification.NotificationMessageContent;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class MessageViewHolder extends RecyclerView.ViewHolder {
     protected ImageView portraitImageView;

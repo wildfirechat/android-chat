@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import cn.wildfire.chat.kit.*;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class BlacklistViewHolder extends RecyclerView.ViewHolder {
     ImageView portraitImageView;

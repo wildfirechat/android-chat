@@ -22,10 +22,10 @@ import cn.wildfire.chat.kit.organization.model.EmployeeEx;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.model.OrganizationEx;
 import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
-import cn.wildfirechat.client.ConnectionStatus;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
+import cn.chatme.client.ConnectionStatus;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.OnConnectionStatusChangeListener;
 
 public class OrganizationServiceViewModel extends ViewModel implements OnConnectionStatusChangeListener {
     private static final String TAG = OrganizationServiceViewModel.class.getSimpleName();

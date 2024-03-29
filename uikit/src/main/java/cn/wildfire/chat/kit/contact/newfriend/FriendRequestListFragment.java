@@ -22,7 +22,7 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.FriendRequest;
+import cn.chatme.model.FriendRequest;
 
 public class FriendRequestListFragment extends Fragment {
     LinearLayout noNewFriendLinearLayout;

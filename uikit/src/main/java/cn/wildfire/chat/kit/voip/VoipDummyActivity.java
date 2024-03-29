@@ -12,8 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import cn.wildfire.chat.kit.voip.conference.ConferenceActivity;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.model.Conversation;
 
 public class VoipDummyActivity extends FragmentActivity {
     @Override

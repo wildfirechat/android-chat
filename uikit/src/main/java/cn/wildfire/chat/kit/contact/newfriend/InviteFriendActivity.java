@@ -16,7 +16,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.UserInfo;
 
 public class InviteFriendActivity extends WfcBaseActivity {
     TextView introTextView;

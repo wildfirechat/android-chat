@@ -19,11 +19,11 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.third.utils.TimeConvertUtils;
 import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.widget.BubbleImageView;
-import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.message.core.MessageDirection;
-import cn.wildfirechat.message.core.MessageStatus;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.utils.WeChatImageUtils;
+import cn.chatme.message.VideoMessageContent;
+import cn.chatme.message.core.MessageDirection;
+import cn.chatme.message.core.MessageStatus;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.utils.WeChatImageUtils;
 
 /**
  * 小视频尺寸展示高仿微信,并且带上时间

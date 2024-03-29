@@ -23,8 +23,8 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.widget.SimpleLabelView;
-import cn.wildfirechat.message.notification.RichNotificationMessageContent;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.message.notification.RichNotificationMessageContent;
+import cn.chatme.model.Conversation;
 
 @MessageContentType(RichNotificationMessageContent.class)
 @EnableContextMenu

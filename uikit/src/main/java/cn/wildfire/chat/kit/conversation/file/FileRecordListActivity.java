@@ -9,8 +9,8 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.pick.PickContactActivity;
 import cn.wildfire.chat.kit.conversation.pick.PickConversationActivity;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.model.UserInfo;
 
 public class FileRecordListActivity extends WfcBaseActivity {
     private static final int PICK_CONVERSATION_REQUEST = 200;

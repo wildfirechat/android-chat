@@ -8,11 +8,10 @@ import androidx.fragment.app.Fragment;
 import java.util.List;
 
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.OnReceiveMessageListener;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.message.Message;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.OnReceiveMessageListener;
 
 public abstract class BaseConferenceFragment extends Fragment implements OnReceiveMessageListener {
 

@@ -8,7 +8,7 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.remote.ChatManager;
 
 
 /**

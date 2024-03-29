@@ -15,8 +15,8 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class UserInfoActivity extends WfcBaseActivity {
     private UserInfo userInfo;

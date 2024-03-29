@@ -17,7 +17,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.conversation.mention.Mention;
 import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
-import cn.wildfirechat.model.QuoteInfo;
+import cn.chatme.model.QuoteInfo;
 
 public class Draft {
     private String content;

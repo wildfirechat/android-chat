@@ -20,8 +20,8 @@ import com.bumptech.glide.request.RequestOptions;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.FriendRequest;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.FriendRequest;
+import cn.chatme.model.UserInfo;
 
 public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
     private FriendRequestListFragment fragment;

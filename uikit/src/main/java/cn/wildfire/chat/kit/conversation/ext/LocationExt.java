@@ -17,8 +17,8 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.location.data.LocationData;
 import cn.wildfire.chat.kit.third.location.ui.activity.MyLocationActivity;
-import cn.wildfirechat.message.TypingMessageContent;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.message.TypingMessageContent;
+import cn.chatme.model.Conversation;
 
 public class LocationExt extends ConversationExt {
 

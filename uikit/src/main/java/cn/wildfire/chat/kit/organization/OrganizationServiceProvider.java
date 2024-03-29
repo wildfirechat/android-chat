@@ -12,7 +12,7 @@ import cn.wildfire.chat.kit.organization.model.EmployeeEx;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.model.OrganizationEx;
 import cn.wildfire.chat.kit.organization.model.OrganizationRelationship;
-import cn.wildfirechat.remote.GeneralCallback;
+import cn.chatme.remote.GeneralCallback;
 
 public interface OrganizationServiceProvider {
     void login(GeneralCallback callback);

@@ -43,10 +43,10 @@ import org.webrtc.StatsReport;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.client.NotInitializedExecption;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.client.NotInitializedExecption;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 /**
  * Activity for peer connection call setup, call waiting

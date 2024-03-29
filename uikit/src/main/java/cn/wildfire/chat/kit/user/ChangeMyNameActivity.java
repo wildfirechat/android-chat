@@ -4,7 +4,7 @@
 
 package cn.wildfire.chat.kit.user;
 
-import static cn.wildfirechat.model.ModifyMyInfoType.Modify_DisplayName;
+import static cn.chatme.model.ModifyMyInfoType.Modify_DisplayName;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -25,8 +25,8 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
-import cn.wildfirechat.model.ModifyMyInfoEntry;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.ModifyMyInfoEntry;
+import cn.chatme.model.UserInfo;
 
 public class ChangeMyNameActivity extends WfcBaseActivity {
 

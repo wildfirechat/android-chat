@@ -14,7 +14,7 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
-import cn.wildfirechat.message.UnknownMessageContent;
+import cn.chatme.message.UnknownMessageContent;
 
 @MessageContentType(UnknownMessageContent.class)
 @EnableContextMenu

@@ -20,10 +20,10 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GetMessageCallback;
+import cn.chatme.message.Message;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GetMessageCallback;
 
 public class GroupMemberMessageHistoryFragment extends Fragment {
     RecyclerView recyclerView;

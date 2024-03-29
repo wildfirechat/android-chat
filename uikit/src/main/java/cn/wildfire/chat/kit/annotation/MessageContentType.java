@@ -9,7 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import cn.wildfirechat.message.MessageContent;
+import cn.chatme.message.MessageContent;
 
 /**
  * 用于设置消息UI({@link cn.wildfire.chat.kit.conversation.message.viewholder.MessageContentViewHolder})和消息体({@link MessageContent})对应关系

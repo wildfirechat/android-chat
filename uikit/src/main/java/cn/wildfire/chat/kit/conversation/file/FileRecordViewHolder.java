@@ -18,10 +18,10 @@ import java.util.Date;
 
 import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.utils.FileUtils;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.FileRecord;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.FileRecord;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 class FileRecordViewHolder extends RecyclerView.ViewHolder {
     TextView fileNameTextView;

@@ -19,10 +19,10 @@ import com.bumptech.glide.request.RequestOptions;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.UserInfo;
 
 public class ConversationViewHolder extends RecyclerView.ViewHolder {
     private Fragment fragment;

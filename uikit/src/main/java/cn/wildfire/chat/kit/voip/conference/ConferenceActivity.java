@@ -31,10 +31,10 @@ import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.widget.AlertDialogActivity;
-import cn.wildfirechat.avenginekit.AVAudioManager;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.message.ConferenceInviteMessageContent;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVAudioManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.message.ConferenceInviteMessageContent;
+import cn.chatme.remote.ChatManager;
 
 public class ConferenceActivity extends VoipBaseActivity {
 

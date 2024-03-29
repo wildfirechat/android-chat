@@ -24,8 +24,8 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
-import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.ChannelInfo;
+import cn.chatme.model.Conversation;
 
 
 public class ChannelListFragment extends Fragment implements ChannelListAdapter.OnChannelClickListener {

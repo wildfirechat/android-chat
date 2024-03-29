@@ -17,20 +17,20 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.wildfirechat.message.CompositeMessageContent;
-import cn.wildfirechat.message.FileMessageContent;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.LinkMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.SoundMessageContent;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.message.core.MessageContentType;
-import cn.wildfirechat.message.core.MessagePayload;
-import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.CompositeMessageContent;
+import cn.chatme.message.FileMessageContent;
+import cn.chatme.message.ImageMessageContent;
+import cn.chatme.message.LinkMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.SoundMessageContent;
+import cn.chatme.message.TextMessageContent;
+import cn.chatme.message.VideoMessageContent;
+import cn.chatme.message.core.MessageContentType;
+import cn.chatme.message.core.MessagePayload;
+import cn.chatme.model.ChannelInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.remote.ChatManager;
 
 public class FavoriteItem {
     private int favId;

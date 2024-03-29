@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.utils.PinyinUtils;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class UIUserInfo {
     private String category = "";

@@ -23,8 +23,8 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.common.OperateResult;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.FileRecord;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.FileRecord;
 
 /**
  * A simple {@link Fragment} subclass.

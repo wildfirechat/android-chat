@@ -19,10 +19,10 @@ import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.ChannelInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.remote.ChatManager;
 
 @ConversationInfoType(type = Conversation.ConversationType.Channel, line = 0)
 @EnableContextMenu

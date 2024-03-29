@@ -36,9 +36,9 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class ConferenceParticipantListFragment extends Fragment {
     RecyclerView recyclerView;

@@ -40,10 +40,10 @@ import java.util.Comparator;
 
 import cn.wildfire.chat.kit.BuildConfig;
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.message.FileMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.FileMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 import okhttp3.ResponseBody;
 
 public class FileUtils {

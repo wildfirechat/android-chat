@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.utils.FileUtils;
-import cn.wildfirechat.message.FileMessageContent;
+import cn.chatme.message.FileMessageContent;
 
 public class FavFileContentViewHolder extends FavContentViewHolder {
     ImageView fileIconImageView;

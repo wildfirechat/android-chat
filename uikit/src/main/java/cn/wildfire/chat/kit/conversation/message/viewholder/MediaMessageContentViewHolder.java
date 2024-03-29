@@ -28,11 +28,11 @@ import cn.wildfire.chat.kit.conversation.ConversationMessageAdapter;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.mm.MediaEntry;
-import cn.wildfirechat.message.MediaMessageContent;
-import cn.wildfirechat.message.core.MessageContentType;
-import cn.wildfirechat.message.core.MessageStatus;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.MediaMessageContent;
+import cn.chatme.message.core.MessageContentType;
+import cn.chatme.message.core.MessageStatus;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 
 public abstract class MediaMessageContentViewHolder extends NormalMessageContentViewHolder {
 

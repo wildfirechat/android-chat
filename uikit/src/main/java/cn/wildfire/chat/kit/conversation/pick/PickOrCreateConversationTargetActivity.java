@@ -24,8 +24,8 @@ import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.UserInfo;
 
 // conversation target could be user, group and etc.
 public class PickOrCreateConversationTargetActivity extends PickConversationTargetActivity {

@@ -8,7 +8,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.Conversation;
 
 public class MultiMessageActionManager {
     private static MultiMessageActionManager instance;

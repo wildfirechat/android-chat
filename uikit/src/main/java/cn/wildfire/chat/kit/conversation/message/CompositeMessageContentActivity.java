@@ -20,14 +20,14 @@ import cn.wildfire.chat.kit.mm.MMPreviewActivity;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.utils.FileUtils;
-import cn.wildfirechat.message.CompositeMessageContent;
-import cn.wildfirechat.message.FileMessageContent;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.CompositeMessageContent;
+import cn.chatme.message.FileMessageContent;
+import cn.chatme.message.ImageMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.MessageContent;
+import cn.chatme.message.VideoMessageContent;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 
 public class CompositeMessageContentActivity extends WfcBaseActivity implements CompositeMessageContentAdapter.OnMessageClickListener {
     RecyclerView recyclerView;

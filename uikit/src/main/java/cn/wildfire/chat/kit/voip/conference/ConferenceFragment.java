@@ -56,10 +56,10 @@ import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfire.chat.kit.widget.ClickableViewPager;
-import cn.wildfirechat.avenginekit.AVAudioManager;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVAudioManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 // main view
 // participantPreviewView

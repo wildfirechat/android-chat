@@ -32,7 +32,7 @@ import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.organization.pick.PickOrganizationMemberActivity;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class PickConversationTargetFragment extends PickUserFragment {
     private final static int REQUEST_CODE_PICK_GROUP = 100;

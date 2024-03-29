@@ -7,9 +7,9 @@ package cn.wildfire.chat.kit.voip.conference;
 import android.app.Dialog;
 
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.TextMessageContent;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 
 public class ConferenceMessageInputDialogFragment extends KeyboardDialogFragment {
     @Override

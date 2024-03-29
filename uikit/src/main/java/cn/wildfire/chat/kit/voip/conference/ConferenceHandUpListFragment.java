@@ -24,8 +24,8 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.voip.FullScreenBottomSheetDialogFragment;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class ConferenceHandUpListFragment extends FullScreenBottomSheetDialogFragment {
     private RecyclerView recyclerView;

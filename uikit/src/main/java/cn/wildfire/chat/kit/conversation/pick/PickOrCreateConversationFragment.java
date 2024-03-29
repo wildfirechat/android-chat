@@ -24,12 +24,12 @@ import java.util.List;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GetConversationListCallback;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GetConversationListCallback;
 
 public class PickOrCreateConversationFragment extends Fragment implements PickOrCreateConversationAdapter.OnConversationItemClickListener, PickOrCreateConversationAdapter.OnNewConversationItemClickListener {
     private static final int REQUEST_CODE_PICK_CONVERSATION_TARGET = 100;

@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.common.OperateResult;
-import cn.wildfirechat.message.MessageContentMediaType;
-import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GeneralCallback2;
-import cn.wildfirechat.remote.OnChannelInfoUpdateListener;
-import cn.wildfirechat.remote.UploadMediaCallback;
+import cn.chatme.message.MessageContentMediaType;
+import cn.chatme.model.ChannelInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.GeneralCallback2;
+import cn.chatme.remote.OnChannelInfoUpdateListener;
+import cn.chatme.remote.UploadMediaCallback;
 
 public class ChannelViewModel extends ViewModel implements OnChannelInfoUpdateListener {
 

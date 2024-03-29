@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
 
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.Conversation;
 
 public class ConversationListViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     private List<Conversation.ConversationType> types;

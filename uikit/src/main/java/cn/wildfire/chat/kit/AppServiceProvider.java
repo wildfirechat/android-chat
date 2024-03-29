@@ -8,13 +8,14 @@ import android.app.Application;
 
 import java.util.List;
 
+import cn.chatme.remote.ChatManager;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.net.BooleanCallback;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GeneralCallback2;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.GeneralCallback2;
 
 
 public interface AppServiceProvider {
@@ -43,7 +44,7 @@ public interface AppServiceProvider {
     void showPCLoginActivity(String userId, String token, int platform);
 
     /**
-     * 前置条件是已经调过{@link cn.wildfirechat.remote.ChatManager#init(Application, String)}
+     * 前置条件是已经调过{@link ChatManager#init(Application, String)}
      *
      * @param callback
      */

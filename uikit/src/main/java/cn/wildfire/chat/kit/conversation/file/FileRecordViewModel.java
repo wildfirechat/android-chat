@@ -11,12 +11,12 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 
 import cn.wildfire.chat.kit.common.OperateResult;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.FileRecord;
-import cn.wildfirechat.model.FileRecordOrder;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GetFileRecordCallback;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.FileRecord;
+import cn.chatme.model.FileRecordOrder;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.GetFileRecordCallback;
 
 public class FileRecordViewModel extends ViewModel {
     public LiveData<OperateResult<List<FileRecord>>> getConversationFileRecords(Conversation conversation, String fromUser, long beforeMessageUid, int count) {

@@ -13,11 +13,11 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.NullGroupInfo;
-import cn.wildfirechat.model.NullUserInfo;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.DefaultPortraitProvider;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.NullGroupInfo;
+import cn.chatme.model.NullUserInfo;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.DefaultPortraitProvider;
 
 public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
     @Override

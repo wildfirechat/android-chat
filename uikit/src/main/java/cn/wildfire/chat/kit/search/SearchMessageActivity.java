@@ -7,7 +7,7 @@ package cn.wildfire.chat.kit.search;
 import java.util.List;
 
 import cn.wildfire.chat.kit.search.module.ConversationMessageSearchModule;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.Conversation;
 
 public class SearchMessageActivity extends SearchActivity {
     private Conversation conversation;

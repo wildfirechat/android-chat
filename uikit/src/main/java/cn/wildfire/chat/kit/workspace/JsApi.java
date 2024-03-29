@@ -25,10 +25,10 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.contact.pick.PickContactActivity;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GeneralCallback2;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.GeneralCallback2;
 import wendu.dsbridge.CompletionHandler;
 import wendu.dsbridge.DWebView;
 

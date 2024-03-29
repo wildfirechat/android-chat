@@ -1,0 +1,103 @@
+/*
+ * Copyright (c) 2024 WildFireChat. All rights reserved.
+ */
+
+package cn.chatme.model;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by heavyrainlee on 17/12/2017.
+ */
+
+
+public class ChannelInfo implements Parcelable {
+    public interface ChannelStatusMask {
+        //第0位表示是否允许查看用户所有信息，还是只允许看用户id，用户名称，用户昵称和用户头像
+        int Channel_State_Mask_FullInfo = 0x01;
+        //第1位表示是否允许查看非订阅用户信息
+        int Channel_State_Mask_Unsubscribed_User_Access = 0x02;
+        //第2位表示是否允许主动添加用户订阅关系
+        int Channel_State_Mask_Active_Subscribe = 0x04;
+        //第3位表示是否允许给非订阅用户发送消息
+        int Channel_State_Mask_Message_Unsubscribed = 0x08;
+        //第4位表示是否私有
+        int Channel_State_Mask_Private = 0x10;
+        //第6位表示是否删除
+        int Channel_State_Mask_Deleted = 0x40;
+    }
+
+    public String channelId;
+    public String name;
+    public String portrait;
+    public String desc;
+    public String owner;
+    public int status;
+    public String extra;
+    public long updateDt;
+    public List<ChannelMenu> menus;
+
+    public ChannelInfo() {
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.channelId);
+        dest.writeString(this.name);
+        dest.writeString(this.portrait);
+        dest.writeString(this.desc);
+        dest.writeString(this.owner);
+        dest.writeInt(this.status);
+        dest.writeString(this.extra);
+        dest.writeLong(this.updateDt);
+        dest.writeList(this.menus);
+    }
+
+    public void readFromParcel(Parcel source) {
+        this.channelId = source.readString();
+        this.name = source.readString();
+        this.portrait = source.readString();
+        this.desc = source.readString();
+        this.owner = source.readString();
+        this.status = source.readInt();
+        this.extra = source.readString();
+        this.updateDt = source.readLong();
+        this.menus = new ArrayList<ChannelMenu>();
+        source.readList(this.menus, ChannelMenu.class.getClassLoader());
+    }
+
+    protected ChannelInfo(Parcel in) {
+        this.channelId = in.readString();
+        this.name = in.readString();
+        this.portrait = in.readString();
+        this.desc = in.readString();
+        this.owner = in.readString();
+        this.status = in.readInt();
+        this.extra = in.readString();
+        this.updateDt = in.readLong();
+        this.menus = new ArrayList<ChannelMenu>();
+        in.readList(this.menus, ChannelMenu.class.getClassLoader());
+    }
+
+    public static final Creator<ChannelInfo> CREATOR = new Creator<ChannelInfo>() {
+        @Override
+        public ChannelInfo createFromParcel(Parcel source) {
+            return new ChannelInfo(source);
+        }
+
+        @Override
+        public ChannelInfo[] newArray(int size) {
+            return new ChannelInfo[size];
+        }
+    };
+}

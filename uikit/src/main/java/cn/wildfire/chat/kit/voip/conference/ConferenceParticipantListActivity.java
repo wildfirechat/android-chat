@@ -10,8 +10,8 @@ import android.view.MenuItem;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.message.ConferenceInviteMessageContent;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.message.ConferenceInviteMessageContent;
 
 public class ConferenceParticipantListActivity extends WfcBaseActivity {
     @Override

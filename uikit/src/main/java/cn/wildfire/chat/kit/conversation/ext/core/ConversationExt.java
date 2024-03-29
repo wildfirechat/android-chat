@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.model.Conversation;
 
 public abstract class ConversationExt {
     protected FragmentActivity activity;

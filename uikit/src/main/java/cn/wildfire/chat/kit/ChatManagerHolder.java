@@ -4,8 +4,8 @@
 
 package cn.wildfire.chat.kit;
 
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.remote.ChatManager;
 
 /**
  * Created by WF Chat on 2017/12/12.

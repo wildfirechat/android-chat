@@ -13,7 +13,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class MuteGroupMemberViewHolder extends HeaderViewHolder<HeaderValue> {
     TextView titleTextView;

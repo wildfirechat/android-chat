@@ -20,9 +20,9 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.model.GroupInfo;
 
 @ConversationInfoType(type = Conversation.ConversationType.Group, line = 0)
 @EnableContextMenu

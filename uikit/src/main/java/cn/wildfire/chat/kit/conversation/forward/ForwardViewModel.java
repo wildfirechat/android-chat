@@ -10,11 +10,11 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 
 import cn.wildfire.chat.kit.common.OperateResult;
-import cn.wildfirechat.message.ArticlesMessageContent;
-import cn.wildfirechat.message.LinkMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.ArticlesMessageContent;
+import cn.chatme.message.LinkMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
 
 public class ForwardViewModel extends ViewModel {
     public MutableLiveData<OperateResult<Integer>> forward(Conversation targetConversation, Message... messages) {

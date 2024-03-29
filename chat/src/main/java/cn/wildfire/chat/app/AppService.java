@@ -36,10 +36,10 @@ import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.chat.BuildConfig;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GeneralCallback2;
+import cn.chatme.model.Conversation;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallback;
+import cn.chatme.remote.GeneralCallback2;
 import okhttp3.MediaType;
 
 public class AppService implements AppServiceProvider {

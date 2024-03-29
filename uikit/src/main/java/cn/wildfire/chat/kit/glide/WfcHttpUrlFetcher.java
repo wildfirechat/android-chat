@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GeneralCallbackBytes;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GeneralCallbackBytes;
 
 /**
  * A DataFetcher that retrieves an {@link java.io.InputStream} for a Url.

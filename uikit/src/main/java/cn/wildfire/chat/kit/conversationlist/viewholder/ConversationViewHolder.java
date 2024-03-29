@@ -32,13 +32,13 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.core.MessageDirection;
-import cn.wildfirechat.message.core.MessageStatus;
-import cn.wildfirechat.message.notification.NotificationMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.ConversationInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.Message;
+import cn.chatme.message.core.MessageDirection;
+import cn.chatme.message.core.MessageStatus;
+import cn.chatme.message.notification.NotificationMessageContent;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.ConversationInfo;
+import cn.chatme.remote.ChatManager;
 
 @SuppressWarnings("unused")
 public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {

@@ -26,7 +26,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
-import cn.wildfirechat.model.GroupInfo;
+import cn.chatme.model.GroupInfo;
 
 public class GroupManageFragment extends Fragment {
     private GroupInfo groupInfo;

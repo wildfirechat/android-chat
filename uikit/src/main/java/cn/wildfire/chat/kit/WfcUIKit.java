@@ -53,19 +53,19 @@ import cn.wildfire.chat.kit.voip.VoipCallService;
 import cn.wildfire.chat.kit.voip.conference.ConferenceManager;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceCommandContent;
-import cn.wildfirechat.avenginekit.AVEngineKit;
-import cn.wildfirechat.avenginekit.VideoProfile;
-import cn.wildfirechat.client.NotInitializedExecption;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.message.notification.PCLoginRequestMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.ptt.PTTClient;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.OnDeleteMessageListener;
-import cn.wildfirechat.remote.OnFriendUpdateListener;
-import cn.wildfirechat.remote.OnRecallMessageListener;
-import cn.wildfirechat.remote.OnReceiveMessageListener;
+import cn.chatme.avenginekit.AVEngineKit;
+import cn.chatme.avenginekit.VideoProfile;
+import cn.chatme.client.NotInitializedExecption;
+import cn.chatme.message.Message;
+import cn.chatme.message.core.PersistFlag;
+import cn.chatme.message.notification.PCLoginRequestMessageContent;
+import cn.chatme.model.Conversation;
+//import cn.chatme.ptt.PTTClient;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.OnDeleteMessageListener;
+import cn.chatme.remote.OnFriendUpdateListener;
+import cn.chatme.remote.OnRecallMessageListener;
+import cn.chatme.remote.OnReceiveMessageListener;
 
 
 public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnDeleteMessageListener, OnFriendUpdateListener, Application.ActivityLifecycleCallbacks {
@@ -192,7 +192,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     }
 
     private void initMomentClient(Application application) {
-        String momentClientClassName = "cn.wildfirechat.moment.MomentClient";
+        String momentClientClassName = "cn.chatme.moment.MomentClient";
         try {
             Class clazz = Class.forName(momentClientClassName);
             Constructor constructor = clazz.getConstructor();
@@ -222,7 +222,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         if (pttEnabled) {
              // 全局对讲生效；如果只希望某些会话里面，对讲生效，请调用 {@link PTTClient#setEnablePtt(Conversation, boolean)} 设置
             // PTTClient.ENABLE_GLOBAL_PTT = true;
-            PTTClient.getInstance().init(application);
+//            PTTClient.getInstance().init(application);
         }
     }
 

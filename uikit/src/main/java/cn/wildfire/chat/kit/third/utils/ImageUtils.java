@@ -38,12 +38,12 @@ import java.util.concurrent.ExecutionException;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.utils.portrait.CombineBitmapTools;
-import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupMember;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.GetGroupInfoCallback;
-import cn.wildfirechat.remote.GetGroupMembersCallback;
+import cn.chatme.model.GroupInfo;
+import cn.chatme.model.GroupMember;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
+import cn.chatme.remote.GetGroupInfoCallback;
+import cn.chatme.remote.GetGroupMembersCallback;
 
 /**
  * @创建者 CSDN_LQR

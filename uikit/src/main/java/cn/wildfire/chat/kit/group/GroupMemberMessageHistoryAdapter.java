@@ -19,11 +19,11 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.notification.NotificationMessageContent;
-import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
+import cn.chatme.message.Message;
+import cn.chatme.message.notification.NotificationMessageContent;
+import cn.chatme.model.Conversation;
+import cn.chatme.model.UserInfo;
+import cn.chatme.remote.ChatManager;
 
 public class GroupMemberMessageHistoryAdapter extends RecyclerView.Adapter<GroupMemberMessageHistoryAdapter.MessageViewHolder> {
     private List<Message> messages;

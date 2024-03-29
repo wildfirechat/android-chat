@@ -25,16 +25,16 @@ import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.net.SimpleCallback;
-import cn.wildfirechat.message.ArticlesMessageContent;
-import cn.wildfirechat.message.CompositeMessageContent;
-import cn.wildfirechat.message.FileMessageContent;
-import cn.wildfirechat.message.ImageMessageContent;
-import cn.wildfirechat.message.Message;
-import cn.wildfirechat.message.MessageContent;
-import cn.wildfirechat.message.SoundMessageContent;
-import cn.wildfirechat.message.TextMessageContent;
-import cn.wildfirechat.message.VideoMessageContent;
-import cn.wildfirechat.model.Conversation;
+import cn.chatme.message.ArticlesMessageContent;
+import cn.chatme.message.CompositeMessageContent;
+import cn.chatme.message.FileMessageContent;
+import cn.chatme.message.ImageMessageContent;
+import cn.chatme.message.Message;
+import cn.chatme.message.MessageContent;
+import cn.chatme.message.SoundMessageContent;
+import cn.chatme.message.TextMessageContent;
+import cn.chatme.message.VideoMessageContent;
+import cn.chatme.model.Conversation;
 
 public abstract class ContextableNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder{
     public ContextableNotificationMessageContentViewHolder(@NonNull ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
