@@ -74,6 +74,9 @@ public class GroupInfo implements Parcelable {
     //群成员私聊状态，0 普通群组；1 超级群组。超级群组不支持服务器端删除。
     public int superGroup;
 
+    //群组是否被解散，0 没有被解散；1 已经被解散。
+    public int deleted;
+
     public GroupInfo() {
     }
 
@@ -101,6 +104,7 @@ public class GroupInfo implements Parcelable {
         dest.writeInt(this.historyMessage);
         dest.writeInt(this.maxMemberCount);
         dest.writeInt(this.superGroup);
+        dest.writeInt(this.deleted);
     }
 
     protected GroupInfo(Parcel in) {
@@ -121,6 +125,7 @@ public class GroupInfo implements Parcelable {
         this.historyMessage = in.readInt();
         this.maxMemberCount = in.readInt();
         this.superGroup = in.readInt();
+        this.deleted = in.readInt();
     }
 
     public static final Creator<GroupInfo> CREATOR = new Creator<GroupInfo>() {

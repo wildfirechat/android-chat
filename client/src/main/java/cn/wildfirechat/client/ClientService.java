@@ -3707,6 +3707,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         groupInfo.searchable = protoGroupInfo.getSearchable();
         groupInfo.historyMessage = protoGroupInfo.getHistoryMessage();
         groupInfo.maxMemberCount = protoGroupInfo.getMaxMemberCount();
+        groupInfo.superGroup = protoGroupInfo.getSuperGroup();
+        groupInfo.deleted = protoGroupInfo.getDeleted();
 
         groupInfo.portrait = protoGroupInfo.getPortrait();
         if (TextUtils.isEmpty(groupInfo.portrait) && defaultPortraitProvider != null) {
