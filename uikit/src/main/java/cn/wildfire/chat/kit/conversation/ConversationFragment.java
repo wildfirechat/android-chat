@@ -405,7 +405,7 @@ public class ConversationFragment extends Fragment implements
             for (GroupMember member : groupMembers) {
                 if (member.groupId.equals(groupInfo.target) && member.memberId.equals(userViewModel.getUserId())) {
                     groupMember = member;
-                    updateGroupMuteStatus();
+                    updateGroupConversationInputStatus();
                     break;
                 }
             }
@@ -418,7 +418,7 @@ public class ConversationFragment extends Fragment implements
             for (GroupInfo info : groupInfos) {
                 if (info.target.equals(groupInfo.target)) {
                     groupInfo = info;
-                    updateGroupMuteStatus();
+                    updateGroupConversationInputStatus();
                     setTitle();
                     adapter.notifyDataSetChanged();
                     break;
@@ -632,7 +632,7 @@ public class ConversationFragment extends Fragment implements
             groupMember = groupViewModel.getGroupMember(conversation.target, userViewModel.getUserId());
             showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
 
-            updateGroupMuteStatus();
+            updateGroupConversationInputStatus();
         }
         userViewModel.getUserInfo(userViewModel.getUserId(), true);
 
@@ -722,7 +722,7 @@ public class ConversationFragment extends Fragment implements
         });
     }
 
-    private void updateGroupMuteStatus() {
+    private void updateGroupConversationInputStatus() {
         if (groupInfo == null || groupMember == null) {
             return;
         }
@@ -733,6 +733,8 @@ public class ConversationFragment extends Fragment implements
             inputPanel.disableInput("全员禁言中");
         } else if (groupMember.type == GroupMember.GroupMemberType.Muted) {
             inputPanel.disableInput("你已被禁言");
+        } else if (groupInfo.deleted == 1) {
+            inputPanel.disableInput("群组已被解散");
         } else {
             inputPanel.enableInput();
         }
