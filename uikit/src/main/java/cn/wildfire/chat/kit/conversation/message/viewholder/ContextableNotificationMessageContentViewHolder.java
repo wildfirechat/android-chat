@@ -35,8 +35,10 @@ import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.remote.ChatManager;
 
-public abstract class ContextableNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder{
+public abstract class ContextableNotificationMessageContentViewHolder extends NotificationMessageContentViewHolder {
     public ContextableNotificationMessageContentViewHolder(@NonNull ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
     }
@@ -44,9 +46,18 @@ public abstract class ContextableNotificationMessageContentViewHolder extends No
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, confirm = false, priority = 11)
     public void removeMessage(View itemView, UiMessage message) {
 
-        List<String> items = new ArrayList();
+        List<String> items = new ArrayList<>();
         items.add("删除本地消息");
-        if (message.message.conversation.type == Conversation.ConversationType.Group || message.message.conversation.type == Conversation.ConversationType.Single) {
+        boolean isSuperGroup = false;
+        if (message.message.conversation.type == Conversation.ConversationType.Group) {
+            GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.message.conversation.target, false);
+            if (groupInfo != null && groupInfo.superGroup == 1) {
+                isSuperGroup = true;
+            }
+        }
+        if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup)
+            || message.message.conversation.type == Conversation.ConversationType.Single
+            || message.message.conversation.type == Conversation.ConversationType.Channel) {
             items.add("删除远程消息");
         } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
             items.add("删除自己及对方消息");

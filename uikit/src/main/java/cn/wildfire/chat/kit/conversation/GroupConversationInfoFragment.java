@@ -492,8 +492,13 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     void clearMessage() {
+        List<String> items = new ArrayList<>();
+        items.add("清空本地会话");
+        if (this.groupInfo.superGroup != 1) {
+            items.add("清空远程会话");
+        }
         new MaterialDialog.Builder(getActivity())
-            .items("清空本地会话", "清空远程会话")
+            .items(items)
             .itemsCallback(new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {

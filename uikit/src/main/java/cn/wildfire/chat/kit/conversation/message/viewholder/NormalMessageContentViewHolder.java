@@ -196,7 +196,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, confirm = false, priority = 11)
     public void removeMessage(View itemView, UiMessage message) {
 
-        List<String> items = new ArrayList();
+        List<String> items = new ArrayList<>();
         items.add("删除本地消息");
         boolean isSuperGroup = false;
         if (message.message.conversation.type == Conversation.ConversationType.Group) {
@@ -206,7 +206,10 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             }
         }
         // 超级群组不支持远端删除
-        if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup) || message.message.conversation.type == Conversation.ConversationType.Single) {
+        if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup)
+            || message.message.conversation.type == Conversation.ConversationType.Single
+            || message.message.conversation.type == Conversation.ConversationType.Channel
+        ) {
             items.add("删除远程消息");
         } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
             items.add("删除自己及对方消息");
