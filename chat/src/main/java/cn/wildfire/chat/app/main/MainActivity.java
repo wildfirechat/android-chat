@@ -133,7 +133,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     @Override
     protected void onResume() {
         super.onResume();
-        this.requestMandatoryPermissions();
 
         if (contactViewModel != null) {
             contactViewModel.reloadFriendRequestStatus();

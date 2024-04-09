@@ -15,10 +15,10 @@
     审核被拒、或者需要填写权限使用说明时，可参考：
     本应用是一个即时通讯相关应用，需要基于精确闹钟去实现心跳机制，以便能和后端服务保持长连接，实时收到消息
     -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission
-        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:name="android.permission.USE_EXACT_ALARM"
         android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
         android:usesCleartextTraffic="true"
