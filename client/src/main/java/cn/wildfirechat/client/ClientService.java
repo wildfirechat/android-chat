@@ -29,11 +29,14 @@ import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.os.SharedMemory;
 import android.preference.PreferenceManager;
+import android.system.ErrnoException;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.tencent.mars.BaseEvent;
 import com.tencent.mars.Mars;
@@ -53,6 +56,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -222,6 +226,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private DefaultPortraitProvider defaultPortraitProvider;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private class ClientServiceStub extends IRemoteClient.Stub {
 
         @Override
@@ -3579,23 +3584,44 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void decodeSecretChatDataAsync(String targetId, ParcelFileDescriptor pfd, int length, IGeneralCallbackInt callback) throws RemoteException {
-            MemoryFile memoryFile = MemoryFileHelper.openMemoryFile(pfd, length, MemoryFileHelper.OPEN_READWRITE);
-            byte[] data = new byte[length];
-            try {
-                memoryFile.readBytes(data, 0, 0, data.length);
-                data = ProtoLogic.decodeSecretChatData(targetId, data);
-                memoryFile.writeBytes(data, 0, 0, data.length);
-                if (callback != null) {
-                    callback.onSuccess(data.length);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                SharedMemory sharedMemory = SharedMemory.fromFileDescriptor(pfd);
+                byte[] data = new byte[length];
+                try {
+                    ByteBuffer byteBuffer = sharedMemory.mapReadWrite();
+                    byteBuffer.get(data, 0, data.length);
+                    data = ProtoLogic.decodeSecretChatData(targetId, data);
+                    byteBuffer.clear();
+                    byteBuffer.put(data, 0, data.length);
+                    if (callback != null) {
+                        callback.onSuccess(data.length);
+                    }
+                } catch (ErrnoException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    if (sharedMemory != null) {
+                        sharedMemory.close();
+                    }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                if (callback != null) {
-                    callback.onFailure(-1);
-                }
-            } finally {
-                if (memoryFile != null) {
-                    memoryFile.close();
+            } else {
+                MemoryFile memoryFile = MemoryFileHelper.openMemoryFile(pfd, length, MemoryFileHelper.OPEN_READWRITE);
+                byte[] data = new byte[length];
+                try {
+                    memoryFile.readBytes(data, 0, 0, data.length);
+                    data = ProtoLogic.decodeSecretChatData(targetId, data);
+                    memoryFile.writeBytes(data, 0, 0, data.length);
+                    if (callback != null) {
+                        callback.onSuccess(data.length);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    if (callback != null) {
+                        callback.onFailure(-1);
+                    }
+                } finally {
+                    if (memoryFile != null) {
+                        memoryFile.close();
+                    }
                 }
             }
         }
