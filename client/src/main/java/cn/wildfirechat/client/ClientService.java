@@ -67,6 +67,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import cn.wildfirechat.ErrorCode;
+import cn.wildfirechat.ashmen.AshmenHolder;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.MarkUnreadMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
@@ -3583,45 +3584,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void decodeSecretChatDataAsync(String targetId, ParcelFileDescriptor pfd, int length, IGeneralCallbackInt callback) throws RemoteException {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                SharedMemory sharedMemory = SharedMemory.fromFileDescriptor(pfd);
+        public void decodeSecretChatDataAsync(String targetId, AshmenHolder ashmenHolder, int length, IGeneralCallbackInt callback) throws RemoteException {
+            try {
                 byte[] data = new byte[length];
-                try {
-                    ByteBuffer byteBuffer = sharedMemory.mapReadWrite();
-                    byteBuffer.get(data, 0, data.length);
-                    data = ProtoLogic.decodeSecretChatData(targetId, data);
-                    byteBuffer.clear();
-                    byteBuffer.put(data, 0, data.length);
-                    if (callback != null) {
-                        callback.onSuccess(data.length);
-                    }
-                } catch (ErrnoException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    if (sharedMemory != null) {
-                        sharedMemory.close();
-                    }
+                ashmenHolder.readBytes(data, 0, length);
+                data = ProtoLogic.decodeSecretChatData(targetId, data);
+                ashmenHolder.writeBytes(data, 0, data.length);
+                ashmenHolder.close();
+                if (callback != null) {
+                    callback.onSuccess(data.length);
                 }
-            } else {
-                MemoryFile memoryFile = MemoryFileHelper.openMemoryFile(pfd, length, MemoryFileHelper.OPEN_READWRITE);
-                byte[] data = new byte[length];
-                try {
-                    memoryFile.readBytes(data, 0, 0, data.length);
-                    data = ProtoLogic.decodeSecretChatData(targetId, data);
-                    memoryFile.writeBytes(data, 0, 0, data.length);
-                    if (callback != null) {
-                        callback.onSuccess(data.length);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    if (callback != null) {
-                        callback.onFailure(-1);
-                    }
-                } finally {
-                    if (memoryFile != null) {
-                        memoryFile.close();
-                    }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (callback != null) {
+                    callback.onFailure(-1);
                 }
             }
         }
