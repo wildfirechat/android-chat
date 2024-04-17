@@ -61,7 +61,7 @@ import java.util.concurrent.CountDownLatch;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.UserSource;
-import cn.wildfirechat.ashmen.AshmenHolder;
+import cn.wildfirechat.ashmen.AshmenWrapper;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
@@ -8629,10 +8629,10 @@ public class ChatManager {
             return;
         }
         try {
-            AshmenHolder ashmenHolder = AshmenHolder.create(targetId, mediaData.length);
-            ashmenHolder.writeBytes(mediaData, 0, mediaData.length);
-            AshmenHolder finalAshmenHolder = ashmenHolder;
-            mClient.decodeSecretChatDataAsync(targetId, ashmenHolder, mediaData.length, new IGeneralCallbackInt.Stub() {
+            AshmenWrapper ashmenWrapper = AshmenWrapper.create(targetId, mediaData.length);
+            ashmenWrapper.writeBytes(mediaData, 0, mediaData.length);
+            AshmenWrapper finalAshmenHolder = ashmenWrapper;
+            mClient.decodeSecretChatDataAsync(targetId, ashmenWrapper, mediaData.length, new IGeneralCallbackInt.Stub() {
                 @Override
                 public void onSuccess(int length) throws RemoteException {
                     if (callback != null) {

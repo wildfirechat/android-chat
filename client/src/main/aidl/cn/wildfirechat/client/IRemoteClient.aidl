@@ -65,7 +65,7 @@ import cn.wildfirechat.model.Socks5ProxyInfo;
 import java.util.List;
 import java.util.Map;
 
-import cn.wildfirechat.ashmen.AshmenHolder;
+import cn.wildfirechat.ashmen.AshmenWrapper;
 
 // Declare any non-default types here with import statements
 
@@ -323,7 +323,7 @@ interface IRemoteClient {
     BurnMessageInfo getBurnMessageInfo(in long messageId);
     byte[] decodeSecretChatData(in String targetid, in byte[] mediaData);
 
-    oneway void decodeSecretChatDataAsync(in String targetId, in AshmenHolder ashmenHolder, in int length, in IGeneralCallbackInt callback);
+    oneway void decodeSecretChatDataAsync(in String targetId, in AshmenWrapper ashmenWrapper, in int length, in IGeneralCallbackInt callback);
 
     oneway void setDefaultPortraitProviderClass(in String clazz);
 }
