@@ -22,18 +22,24 @@ import cn.wildfirechat.utils.MemoryFileHelper;
 import cn.wildfirechat.utils.MemoryFileUtil;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class AshmenHolder implements Parcelable {
-    public SharedMemory sm;
+public class AshmenWrapper implements Parcelable {
+    private SharedMemory sm;
+
+    // 跨进程时，不传输MemoryFile
     private MemoryFile mf;
-    public ParcelFileDescriptor pfd;
+    private ParcelFileDescriptor pfd;
     private int length;
 
-    public static AshmenHolder create(String name, int length) {
-        AshmenHolder ashmenHolder = new AshmenHolder();
-        ashmenHolder.length = length;
+    private AshmenWrapper() {
+
+    }
+
+    public static AshmenWrapper create(String name, int length) {
+        AshmenWrapper ashmenWrapper = new AshmenWrapper();
+        ashmenWrapper.length = length;
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             try {
-                ashmenHolder.sm = SharedMemory.create(name, length);
+                ashmenWrapper.sm = SharedMemory.create(name, length);
             } catch (ErrnoException e) {
                 throw new RuntimeException(e);
             }
@@ -41,13 +47,13 @@ public class AshmenHolder implements Parcelable {
             try {
                 MemoryFile memoryFile = new MemoryFile(name, length);
                 FileDescriptor fileDescriptor = MemoryFileUtil.getFileDescriptor(memoryFile);
-                ashmenHolder.pfd = ParcelFileDescriptor.dup(fileDescriptor);
-                ashmenHolder.mf = memoryFile;
+                ashmenWrapper.pfd = ParcelFileDescriptor.dup(fileDescriptor);
+                ashmenWrapper.mf = memoryFile;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        return ashmenHolder;
+        return ashmenWrapper;
     }
 
     public void writeBytes(byte[] src, int offset, int count) {
@@ -122,10 +128,7 @@ public class AshmenHolder implements Parcelable {
         }
     }
 
-    public AshmenHolder() {
-    }
-
-    protected AshmenHolder(Parcel in) {
+    protected AshmenWrapper(Parcel in) {
         this.length = in.readInt();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             this.sm = in.readParcelable(SharedMemory.class.getClassLoader());
@@ -135,15 +138,15 @@ public class AshmenHolder implements Parcelable {
         }
     }
 
-    public static final Creator<AshmenHolder> CREATOR = new Creator<AshmenHolder>() {
+    public static final Creator<AshmenWrapper> CREATOR = new Creator<AshmenWrapper>() {
         @Override
-        public AshmenHolder createFromParcel(Parcel source) {
-            return new AshmenHolder(source);
+        public AshmenWrapper createFromParcel(Parcel source) {
+            return new AshmenWrapper(source);
         }
 
         @Override
-        public AshmenHolder[] newArray(int size) {
-            return new AshmenHolder[size];
+        public AshmenWrapper[] newArray(int size) {
+            return new AshmenWrapper[size];
         }
     };
 }

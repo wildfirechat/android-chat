@@ -23,15 +23,11 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.LocaleList;
 import android.os.Looper;
-import android.os.MemoryFile;
 import android.os.Parcel;
-import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
-import android.os.SharedMemory;
 import android.preference.PreferenceManager;
-import android.system.ErrnoException;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
@@ -56,7 +52,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,7 +62,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import cn.wildfirechat.ErrorCode;
-import cn.wildfirechat.ashmen.AshmenHolder;
+import cn.wildfirechat.ashmen.AshmenWrapper;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.MarkUnreadMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
@@ -133,7 +128,6 @@ import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.DefaultPortraitProvider;
 import cn.wildfirechat.remote.RecoverReceiver;
 import cn.wildfirechat.remote.UploadMediaCallback;
-import cn.wildfirechat.utils.MemoryFileHelper;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -3584,7 +3578,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void decodeSecretChatDataAsync(String targetId, AshmenHolder ashmenHolder, int length, IGeneralCallbackInt callback) throws RemoteException {
+        public void decodeSecretChatDataAsync(String targetId, AshmenWrapper ashmenHolder, int length, IGeneralCallbackInt callback) throws RemoteException {
             try {
                 byte[] data = new byte[length];
                 ashmenHolder.readBytes(data, 0, length);
