@@ -22,6 +22,6 @@ jobs:
       run: ./gradlew clean aDebug
 
       # 打包完成之后进行上传
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
           path: chat/build/outputs/apk/debug/chat-debug.apk
