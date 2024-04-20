@@ -312,13 +312,13 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         }
 
         // pls refer to https://github.com/google/ExoPlayer/issues/7999
-        ViewGroup p = (ViewGroup) pipVideoContainer.getParent();
-        p.removeView(fullscreenVideoContainer);
-        p.removeView(pipVideoContainer);
-        ChatManager.Instance().getMainHandler().post(() -> {
-            p.addView(fullscreenVideoContainer, 0);
-            p.addView(pipVideoContainer, 1);
-        });
+//        ViewGroup p = (ViewGroup) pipVideoContainer.getParent();
+//        p.removeView(fullscreenVideoContainer);
+//        p.removeView(pipVideoContainer);
+//        ChatManager.Instance().getMainHandler().post(() -> {
+//            p.addView(fullscreenVideoContainer, 0);
+//            p.addView(pipVideoContainer, 1);
+//        });
     }
 
     private void init() {
