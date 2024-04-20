@@ -7783,6 +7783,27 @@ public class ChatManager {
     }
 
     /**
+     * 当前用户是否开启添加好友需要验证，默认为开启
+     *
+     * @return true，需要验证；false，不需要验证
+     */
+    public boolean isAddFriendNeedVerify() {
+        String value = this.getUserSetting(UserSettingScope.AddFriend_NoVerify, "");
+        return !"1".equals(value);
+    }
+
+    /**
+     * 修改当前用户是否开启添加好友需要验证功能
+     *
+     * @param enable   是否需要验证
+     * @param callback 结果回调
+     */
+    public void setAddFriendNeedVerify(boolean enable, GeneralCallback callback) {
+        this.setUserSetting(UserSettingScope.AddFriend_NoVerify, "", enable ? "0" : "1", callback);
+    }
+
+
+    /**
      * IM服务进程是否bind成功
      *
      * @return
