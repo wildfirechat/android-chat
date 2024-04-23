@@ -2647,28 +2647,33 @@ public class ChatManager {
             mClient.recall(msg.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    if (msg.messageId > 0) {
-                        Message recallMsg = mClient.getMessage(msg.messageId);
-                        msg.content = recallMsg.content;
-                        msg.sender = recallMsg.sender;
-                        msg.serverTime = recallMsg.serverTime;
+                    Message recallMsg = mClient.getMessage(msg.messageId);
+                    if (recallMsg == null) {
+                        msg.messageId = 0;
+                        msg.conversation = null;
+                        msg.content = null;
                     } else {
-                        MessagePayload payload = msg.content.encode();
-                        RecallMessageContent recallCnt = new RecallMessageContent();
-                        recallCnt.setOperatorId(userId);
-                        recallCnt.setMessageUid(msg.messageUid);
-                        recallCnt.fromSelf = true;
-                        recallCnt.setOriginalSender(msg.sender);
-                        recallCnt.setOriginalContent(payload.content);
-                        recallCnt.setOriginalContentType(payload.type);
-                        recallCnt.setOriginalExtra(payload.extra);
-                        recallCnt.setOriginalSearchableContent(payload.searchableContent);
-                        recallCnt.setOriginalMessageTimestamp(msg.serverTime);
-                        msg.content = recallCnt;
-                        msg.sender = userId;
-                        msg.serverTime = System.currentTimeMillis();
+                        if (msg.messageId > 0) {
+                            msg.content = recallMsg.content;
+                            msg.sender = recallMsg.sender;
+                            msg.serverTime = recallMsg.serverTime;
+                        } else {
+                            MessagePayload payload = msg.content.encode();
+                            RecallMessageContent recallCnt = new RecallMessageContent();
+                            recallCnt.setOperatorId(userId);
+                            recallCnt.setMessageUid(msg.messageUid);
+                            recallCnt.fromSelf = true;
+                            recallCnt.setOriginalSender(msg.sender);
+                            recallCnt.setOriginalContent(payload.content);
+                            recallCnt.setOriginalContentType(payload.type);
+                            recallCnt.setOriginalExtra(payload.extra);
+                            recallCnt.setOriginalSearchableContent(payload.searchableContent);
+                            recallCnt.setOriginalMessageTimestamp(msg.serverTime);
+                            msg.content = recallCnt;
+                            msg.sender = userId;
+                            msg.serverTime = System.currentTimeMillis();
+                        }
                     }
-
                     mainHandler.post(() -> {
                         if (callback != null) {
                             callback.onSuccess();
