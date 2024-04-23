@@ -251,34 +251,34 @@ public class ConversationFragment extends Fragment implements
             if (conversation == null) {
                 return;
             }
-            if (conversation.type == Conversation.ConversationType.ChatRoom && uiMessage.message.conversation == null) {
-                List<UiMessage> messages = adapter.getMessages();
-                for (UiMessage uiMsg : messages) {
-                    if (uiMsg.message.messageUid == uiMessage.message.messageUid) {
-                        RecallMessageContent content = new RecallMessageContent(uiMsg.message.sender, uiMsg.message.messageUid);
-                        content.setOriginalSender(uiMsg.message.sender);
-                        uiMsg.message.content = content;
-                        adapter.updateMessage(uiMsg);
-                        break;
-                    }
-                }
-            } else {
-                if (!isMessageInCurrentConversation(uiMessage)) {
+
+            // message deleted
+            if (uiMessage.message.conversation == null) {
+                adapter.removeMessage(uiMessage);
+                return;
+            }
+            if (uiMessage.message.content instanceof RecallMessageContent) {
+                Message msg = ChatManager.Instance().getMessageByUid(uiMessage.message.messageUid);
+                if (msg == null) {
+                    adapter.removeMessage(uiMessage);
                     return;
                 }
-                if (isDisplayableMessage(uiMessage)) {
-                    adapter.updateMessage(uiMessage);
-                }
-                if (uiMessage.progress == 100) {
-                    uiMessage.progress = 0;
-                    messageViewModel.playAudioMessage(uiMessage);
-                }
-                if (uiMessage.audioPlayCompleted) {
-                    uiMessage.audioPlayCompleted = false;
-                    if (uiMessage.continuousPlayAudio) {
-                        uiMessage.continuousPlayAudio = false;
-                        playNextAudioMessage(uiMessage);
-                    }
+            }
+            if (!isMessageInCurrentConversation(uiMessage)) {
+                return;
+            }
+            if (isDisplayableMessage(uiMessage)) {
+                adapter.updateMessage(uiMessage);
+            }
+            if (uiMessage.progress == 100) {
+                uiMessage.progress = 0;
+                messageViewModel.playAudioMessage(uiMessage);
+            }
+            if (uiMessage.audioPlayCompleted) {
+                uiMessage.audioPlayCompleted = false;
+                if (uiMessage.continuousPlayAudio) {
+                    uiMessage.continuousPlayAudio = false;
+                    playNextAudioMessage(uiMessage);
                 }
             }
         }
@@ -321,12 +321,7 @@ public class ConversationFragment extends Fragment implements
         @Override
         public void onChanged(@Nullable UiMessage uiMessage) {
             // 当通过server api删除消息时，只知道消息的uid
-            if (uiMessage.message.conversation != null && !isMessageInCurrentConversation(uiMessage)) {
-                return;
-            }
-            if (uiMessage.message.messageId == 0 || isDisplayableMessage(uiMessage)) {
-                adapter.removeMessage(uiMessage);
-            }
+            adapter.removeMessage(uiMessage);
         }
     };
 
