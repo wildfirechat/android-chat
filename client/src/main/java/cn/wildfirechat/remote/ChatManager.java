@@ -6287,6 +6287,18 @@ public class ChatManager {
      * @param callback
      */
     public void quitGroup(String groupId, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
+        quitGroup(groupId, false, lines, notifyMsg, callback);;
+    }
+    /**
+     * 退出群组
+     *
+     * @param groupId
+     * @param keepMessage 是否保留消息
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
+    public void quitGroup(String groupId, boolean keepMessage, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -6304,7 +6316,7 @@ public class ChatManager {
             inlines[j] = lines.get(j);
         }
         try {
-            mClient.quitGroup(groupId, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.quitGroup(groupId, keepMessage, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
