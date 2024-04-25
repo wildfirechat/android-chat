@@ -2466,8 +2466,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void quitGroup(String groupId, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.quitGroup(groupId, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+        public void quitGroup(String groupId, boolean keepMessage, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.quitGroupEx(groupId, keepMessage, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -3697,6 +3697,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         groupInfo.extra = protoGroupInfo.getExtra();
         groupInfo.remark = protoGroupInfo.getRemark();
         groupInfo.updateDt = protoGroupInfo.getUpdateDt();
+        groupInfo.memberDt = protoGroupInfo.getMemberDt();
         groupInfo.mute = protoGroupInfo.getMute();
         groupInfo.joinType = protoGroupInfo.getJoinType();
         groupInfo.privateChat = protoGroupInfo.getPrivateChat();

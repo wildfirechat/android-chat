@@ -236,7 +236,7 @@ interface IRemoteClient {
     oneway void createGroup(in String groupId, in String groupName, in String groupPortrait, in int groupType, in String groupExtra, in List<String> memberIds, in String memberExtra, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback2 callback);
     oneway void addGroupMembers(in String groupId, in List<String> memberIds, in String extra, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void removeGroupMembers(in String groupId, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
-    oneway void quitGroup(in String groupId, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
+    oneway void quitGroup(in String groupId, in boolean keepMessage, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void dismissGroup(in String groupId, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void modifyGroupInfo(in String groupId, in int modifyType, in String newValue, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void modifyGroupAlias(in String groupId, in String newAlias, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);

@@ -51,6 +51,8 @@ public class GroupInfo implements Parcelable {
     public String extra;
     public String remark;
     public long updateDt;
+    // 群成员的最后更新日期，一般是没有什么作用，唯一的作用就是当用户退出群组后，再获取群组信息，memberDt会为负数。
+    public long memberDt;
 
 
     //0 正常；1 全局禁言
@@ -97,6 +99,7 @@ public class GroupInfo implements Parcelable {
         dest.writeString(this.extra);
         dest.writeString(this.remark);
         dest.writeLong(this.updateDt);
+        dest.writeLong(this.memberDt);
         dest.writeInt(this.mute);
         dest.writeInt(this.joinType);
         dest.writeInt(this.privateChat);
@@ -118,6 +121,7 @@ public class GroupInfo implements Parcelable {
         this.extra = in.readString();
         this.remark = in.readString();
         this.updateDt = in.readLong();
+        this.memberDt = in.readLong();
         this.mute = in.readInt();
         this.joinType = in.readInt();
         this.privateChat = in.readInt();
