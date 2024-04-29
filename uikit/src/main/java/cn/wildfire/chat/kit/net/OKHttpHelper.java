@@ -58,6 +58,10 @@ public class OKHttpHelper {
             String host = request.url().host();
             int port = request.url().port();
             String authToken = sp.getString(AUTHORIZATION_HEADER + ":" + host + "-" + port, null);
+            // 兼容保存 authToken 时，未考虑端口
+            if (TextUtils.isEmpty(authToken)) {
+                authToken = sp.getString(AUTHORIZATION_HEADER + ":" + host, null);
+            }
             if (!TextUtils.isEmpty(authToken)) {
                 request = request.newBuilder()
                     .addHeader(AUTHORIZATION_HEADER, authToken)
