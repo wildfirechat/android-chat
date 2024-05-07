@@ -851,6 +851,12 @@ public class ChatManager {
     }
 
     public void unWatchOnlineState(int conversationType, String[] targets, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
         try {
             mClient.unwatchOnlineState(conversationType, targets, new IGeneralCallback.Stub() {
                 @Override
