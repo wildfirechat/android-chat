@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray5"
     android:orientation="vertical">
 
     <!--
@@ -81,7 +80,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@color/white"
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
@@ -114,7 +112,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@color/white"
         android:orientation="vertical">
 
 
@@ -144,7 +141,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@color/white"
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
