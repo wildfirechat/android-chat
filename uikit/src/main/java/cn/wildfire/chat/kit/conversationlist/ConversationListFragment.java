@@ -63,9 +63,9 @@ public class ConversationListFragment extends ProgressFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (adapter != null && isVisibleToUser) {
-            reloadConversations();
-        }
+//        if (adapter != null && isVisibleToUser) {
+//            reloadConversations();
+//        }
     }
 
     public void setOnClickConversationItemListener(OnClickConversationItemListener listener) {
@@ -161,6 +161,7 @@ public class ConversationListFragment extends ProgressFragment {
         if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
             loadAndShowPCOnlineNotification();
         }
+        reloadConversations();
     }
 
     private void loadAndShowPCOnlineNotification() {

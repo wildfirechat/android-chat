@@ -62,10 +62,10 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     public void setMenuVisibility(boolean isvisible) {
         super.setMenuVisibility(isvisible);
         this.isVisibleToUser = isvisible;
-        if (isvisible && contactViewModel != null) {
-            contactViewModel.reloadContact();
-            contactViewModel.reloadFriendRequestStatus();
-        }
+//        if (isvisible && contactViewModel != null) {
+//            contactViewModel.reloadContact();
+//            contactViewModel.reloadFriendRequestStatus();
+//        }
     }
 
     @Override
@@ -84,11 +84,11 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     @Override
     public void onResume() {
         super.onResume();
-        if (isVisibleToUser) {
-            contactViewModel.reloadContact();
-            contactViewModel.reloadFriendRequestStatus();
-            contactViewModel.reloadFavContact();
-        }
+//        if (isVisibleToUser) {
+//            contactViewModel.reloadContact();
+//            contactViewModel.reloadFriendRequestStatus();
+//            contactViewModel.reloadFavContact();
+//        }
     }
 
     @Override
@@ -110,7 +110,9 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             patchUserOnlineState(uiUserInfos);
             userListAdapter.setFavUsers(uiUserInfos);
         });
-
+        contactViewModel.reloadContact();
+        contactViewModel.reloadFriendRequestStatus();
+        contactViewModel.reloadFavContact();
     }
 
     private void patchUserOnlineState(List<UIUserInfo> userInfos) {

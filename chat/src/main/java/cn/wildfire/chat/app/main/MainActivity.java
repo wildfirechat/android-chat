@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +30,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -87,14 +88,14 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import q.rorbin.badgeview.QBadgeView;
 
-public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageChangeListener {
+public class MainActivity extends WfcBaseActivity {
 
     private List<Fragment> mFragmentList = new ArrayList<>(4);
 
     BottomNavigationView bottomNavigationView;
-    ViewPagerFixed contentViewPager;
+    ViewPager2 contentViewPager;
     TextView startingTextView;
-    LinearLayout contentLinearLayout;
+//    LinearLayout contentLinearLayout;
 
     private QBadgeView unreadMessageUnreadBadgeView;
     private QBadgeView unreadFriendRequestBadgeView;
@@ -104,6 +105,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private static final int REQUEST_CODE_PICK_CONTACT = 101;
 
     private boolean isInitialized = false;
+    private int currentIndex = 0;
 
     private ContactListFragment contactListFragment;
 
@@ -115,7 +117,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         contentViewPager = findViewById(R.id.contentViewPager);
         startingTextView = findViewById(R.id.startingTextView);
-        contentLinearLayout = findViewById(R.id.contentLinearLayout);
+//        contentLinearLayout = findViewById(R.id.contentLinearLayout);
     }
 
     private Observer<Boolean> imStatusLiveDataObserver = status -> {
@@ -251,7 +253,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private void showUnreadMessageBadgeView(int count) {
         if (unreadMessageUnreadBadgeView == null) {
-            BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
+            ViewGroup bottomNavigationMenuView = ((ViewGroup) bottomNavigationView.getChildAt(0));
             View view = bottomNavigationMenuView.getChildAt(0);
             unreadMessageUnreadBadgeView = new QBadgeView(MainActivity.this);
             unreadMessageUnreadBadgeView.bindTarget(view);
@@ -325,10 +327,10 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         setTitle(getString(R.string.app_name));
 
         startingTextView.setVisibility(View.GONE);
-        contentLinearLayout.setVisibility(View.VISIBLE);
+//        contentLinearLayout.setVisibility(View.VISIBLE);
 
         //设置ViewPager的最大缓存页面
-        contentViewPager.setOffscreenPageLimit(4);
+        contentViewPager.setOffscreenPageLimit(5);
 
         ConversationListFragment conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();
@@ -342,8 +344,58 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         }
         mFragmentList.add(discoveryFragment);
         mFragmentList.add(meFragment);
-        contentViewPager.setAdapter(new HomeFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
-        contentViewPager.setOnPageChangeListener(this);
+        contentViewPager.setAdapter(new HomeFragmentPagerAdapter(this, mFragmentList));
+        contentViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (position == 1) {
+                    contactListFragment.showQuickIndexBar(false);
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                currentIndex = position;
+                if (position == 1) {
+                    contactListFragment.showQuickIndexBar(true);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager2.SCROLL_STATE_IDLE) {
+                    //滚动过程中隐藏快速导航条
+//                    contactListFragment.showQuickIndexBar(false);
+                    int position = currentIndex;
+                    if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
+                        if (position > 1) {
+                            position++;
+                        }
+                    }
+                    switch (position) {
+                        case 0:
+                            bottomNavigationView.setSelectedItemId(R.id.conversation_list);
+                            break;
+                        case 1:
+                            bottomNavigationView.setSelectedItemId(R.id.contact);
+                            break;
+                        case 2:
+                            bottomNavigationView.setSelectedItemId(R.id.workspace);
+                            break;
+                        case 3:
+                            bottomNavigationView.setSelectedItemId(R.id.discovery);
+                            break;
+                        case 4:
+                            bottomNavigationView.setSelectedItemId(R.id.me);
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+//            contactListFragment.showQuickIndexBar(true);
+                }
+            }
+        });
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -458,49 +510,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void searchUser() {
         Intent intent = new Intent(this, SearchUserActivity.class);
         startActivity(intent);
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
-            if (position > 1) {
-                position++;
-            }
-        }
-        switch (position) {
-            case 0:
-                bottomNavigationView.setSelectedItemId(R.id.conversation_list);
-                break;
-            case 1:
-                bottomNavigationView.setSelectedItemId(R.id.contact);
-                break;
-            case 2:
-                bottomNavigationView.setSelectedItemId(R.id.workspace);
-                break;
-            case 3:
-                bottomNavigationView.setSelectedItemId(R.id.discovery);
-                break;
-            case 4:
-                bottomNavigationView.setSelectedItemId(R.id.me);
-                break;
-            default:
-                break;
-        }
-        contactListFragment.showQuickIndexBar(position == 1);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-        if (state != ViewPager.SCROLL_STATE_IDLE) {
-            //滚动过程中隐藏快速导航条
-            contactListFragment.showQuickIndexBar(false);
-        } else {
-            contactListFragment.showQuickIndexBar(true);
-        }
     }
 
     @Override
