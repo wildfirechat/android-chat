@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -45,6 +46,7 @@ import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
+    private static final String TAG = "contactList";
     private boolean pick = false;
     private boolean showChannel = true;
     // 临时方案，如果本地缓存了组织结构信息，应当更新
@@ -98,6 +100,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     protected void afterViews(View view) {
         super.afterViews(view);
         contactViewModel.contactListLiveData().observe(this, userInfos -> {
+            Log.d(TAG, "contactListUpdate");
             showContent();
             if (filterUserList != null) {
                 userInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
@@ -105,8 +108,13 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             patchUserOnlineState(userInfos);
             userListAdapter.setUsers(userInfos);
         });
-        contactViewModel.friendRequestUpdatedLiveData().observe(getActivity(), integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
+        contactViewModel.friendRequestUpdatedLiveData().observe(getActivity(), integer -> {
+
+            Log.d(TAG, "friendRequestUpdate");
+            userListAdapter.updateHeader(0, new FriendRequestValue(integer));
+        });
         contactViewModel.favContactListLiveData().observe(getActivity(), uiUserInfos -> {
+            Log.d(TAG, "favContactListUpdate");
             if (filterUserList != null) {
                 uiUserInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
             }
@@ -115,6 +123,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         });
 
         userViewModel.userInfoLiveData().observe(this, userInfos -> {
+            Log.d(TAG, "userInfoUpdate");
             contactViewModel.reloadContact();
             contactViewModel.reloadFavContact();
         });

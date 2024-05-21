@@ -73,6 +73,7 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
         usersRecyclerView.setAdapter(userListAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         usersRecyclerView.setLayoutManager(linearLayoutManager);
+        usersRecyclerView.setHasFixedSize(true);
 
         if (showQuickIndexBar) {
             quickIndexBar.setVisibility(View.VISIBLE);

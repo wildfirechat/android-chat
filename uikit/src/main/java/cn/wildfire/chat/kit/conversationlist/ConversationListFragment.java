@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversationlist;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.View;
 
 import androidx.lifecycle.Observer;
@@ -35,6 +36,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConversationListFragment extends ProgressFragment {
+    private static final String TAG = "ConvList";
     private RecyclerView recyclerView;
     private ConversationListAdapter adapter;
     private static final List<Conversation.ConversationType> types = Arrays.asList(Conversation.ConversationType.Single,
@@ -102,6 +104,7 @@ public class ConversationListFragment extends ProgressFragment {
         userViewModel.userInfoLiveData().observe(this, new Observer<List<UserInfo>>() {
             @Override
             public void onChanged(List<UserInfo> userInfos) {
+                Log.d(TAG, "userInfoUpdate");
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
                 adapter.notifyItemRangeChanged(start, end - start + 1);
@@ -111,6 +114,7 @@ public class ConversationListFragment extends ProgressFragment {
         groupViewModel.groupInfoUpdateLiveData().observe(this, new Observer<List<GroupInfo>>() {
             @Override
             public void onChanged(List<GroupInfo> groupInfos) {
+                Log.d(TAG, "groupInfoUpdate");
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
                 adapter.notifyItemRangeChanged(start, end - start + 1);
@@ -121,10 +125,12 @@ public class ConversationListFragment extends ProgressFragment {
         statusNotificationViewModel.statusNotificationLiveData().observe(this, new Observer<Object>() {
             @Override
             public void onChanged(Object o) {
+                Log.d(TAG, "statusNotification");
                 adapter.updateStatusNotification(statusNotificationViewModel.getNotificationItems());
             }
         });
         conversationListViewModel.connectionStatusLiveData().observe(this, status -> {
+            Log.d(TAG, "connectionStatus");
             ConnectionStatusNotification connectionStatusNotification = new ConnectionStatusNotification();
             switch (status) {
                 case ConnectionStatus.ConnectionStatusConnecting:
@@ -152,6 +158,7 @@ public class ConversationListFragment extends ProgressFragment {
             if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusReceiveing) {
                 return;
             }
+            Log.d(TAG, "settingUpdate");
             conversationListViewModel.reloadConversationList(true);
             conversationListViewModel.reloadConversationUnreadStatus();
 
