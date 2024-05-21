@@ -704,15 +704,15 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
 
     private void requestMandatoryPermissions() {
         boolean resumed = false;
-        if (Build.VERSION.SDK_INT >= 33) {
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            if (!alarmManager.canScheduleExactAlarms()) {
-                Toast.makeText(this, "需要精确闹钟权限，否则不能正常使用 IM 功能", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + getPackageName()));
-                startActivity(intent);
-                resumed = true;
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= 33) {
+//            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//            if (!alarmManager.canScheduleExactAlarms()) {
+//                Toast.makeText(this, "需要精确闹钟权限，否则不能正常使用 IM 功能", Toast.LENGTH_LONG).show();
+//                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + getPackageName()));
+//                startActivity(intent);
+//                resumed = true;
+//            }
+//        }
 
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
