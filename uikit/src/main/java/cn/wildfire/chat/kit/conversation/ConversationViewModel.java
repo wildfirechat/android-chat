@@ -58,7 +58,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     }
 
     // 包含不存储类型消息
-    public MutableLiveData<List<UiMessage>> loadOldMessages(Conversation conversation, String withUser, long fromMessageId, long fromMessageUid, int count) {
+    public MutableLiveData<List<UiMessage>> loadOldMessages(Conversation conversation, String withUser, long fromMessageId, long fromMessageUid, int count, boolean enableLoadRemoteMessageWhenNoMoreLocalOldMessage) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
             ChatManager.Instance().getMessages(conversation, fromMessageId, true, count, withUser, new GetMessageCallback() {
@@ -75,7 +75,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                             }
                         }
                         result.setValue(uiMsgs);
-                    } else if (conversation.type != Conversation.ConversationType.SecretChat) {
+                    } else if (enableLoadRemoteMessageWhenNoMoreLocalOldMessage && conversation.type != Conversation.ConversationType.SecretChat) {
                         ChatManager.Instance().getRemoteMessages(conversation, null, fromMessageUid, count, new GetRemoteMessageCallback() {
                             @Override
                             public void onSuccess(List<Message> messages) {
@@ -245,8 +245,8 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     }
 
 
-    public MutableLiveData<List<UiMessage>> getMessages(Conversation conversation, String withUser) {
-        return loadOldMessages(conversation, withUser, 0, 0, 20);
+    public MutableLiveData<List<UiMessage>> getMessages(Conversation conversation, String withUser, boolean enableLoadRemoteMessageWhenNoMoreLocalOldMessage) {
+        return loadOldMessages(conversation, withUser, 0, 0, 20, enableLoadRemoteMessageWhenNoMoreLocalOldMessage);
     }
 
     public void saveDraft(Conversation conversation, String draftString) {
