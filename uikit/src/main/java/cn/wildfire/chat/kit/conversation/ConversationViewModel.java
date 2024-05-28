@@ -18,6 +18,8 @@ import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -95,7 +97,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                                 result.postValue(new ArrayList<>());
                             }
                         });
-                    }else {
+                    } else {
                         result.postValue(new ArrayList<>());
                     }
                 }
@@ -158,6 +160,16 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
 
             List<UiMessage> messages = new ArrayList<>();
             messages.addAll(oldMessages);
+            TipNotificationContent tipNotificationContent = new TipNotificationContent();
+            tipNotificationContent.tip = "--------- 以下是新消息 ----------";
+            tipNotificationContent.fromSelf = true;
+            Message tipMessage = new Message();
+            tipMessage.conversation = conversation;
+            tipMessage.content = tipNotificationContent;
+            tipMessage.direction = MessageDirection.Send;
+            tipMessage.messageId = Long.MAX_VALUE;
+            messages.add(new UiMessage(tipMessage));
+
             if (message != null) {
                 messages.add(new UiMessage(message));
             }
