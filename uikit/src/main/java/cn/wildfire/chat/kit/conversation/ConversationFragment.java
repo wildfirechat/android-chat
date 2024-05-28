@@ -520,13 +520,7 @@ public class ConversationFragment extends Fragment implements
         handler = new Handler();
         rootLinearLayout.addOnKeyboardShownListener(this);
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            if (adapter.getMessages() == null || adapter.getMessages().isEmpty()) {
-                swipeRefreshLayout.setRefreshing(false);
-                return;
-            }
-            loadMoreOldMessages();
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::loadMoreOldMessages);
 
         // message list
         adapter = new ConversationMessageAdapter(this);
@@ -690,7 +684,7 @@ public class ConversationFragment extends Fragment implements
             shouldContinueLoadNewMessage = true;
             messages = conversationViewModel.loadAroundMessages(conversation, channelPrivateChatUser, focusMessageId, MESSAGE_LOAD_AROUND);
         } else {
-            messages = conversationViewModel.getMessages(conversation, channelPrivateChatUser);
+            messages = conversationViewModel.getMessages(conversation, channelPrivateChatUser, false);
         }
 
         // load message
@@ -1044,7 +1038,7 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void reloadMessage() {
-        conversationViewModel.getMessages(conversation, channelPrivateChatUser).observe(this, uiMessages -> {
+        conversationViewModel.getMessages(conversation, channelPrivateChatUser, true).observe(this, uiMessages -> {
             adapter.setMessages(uiMessages);
             adapter.notifyDataSetChanged();
         });
@@ -1056,7 +1050,7 @@ public class ConversationFragment extends Fragment implements
 
     private void loadMoreOldMessages(boolean scrollToBottom) {
 
-        conversationViewModel.loadOldMessages(conversation, channelPrivateChatUser, adapter.oldestMessageId, adapter.oldestMessageUid, MESSAGE_LOAD_COUNT_PER_TIME)
+        conversationViewModel.loadOldMessages(conversation, channelPrivateChatUser, adapter.oldestMessageId, adapter.oldestMessageUid, MESSAGE_LOAD_COUNT_PER_TIME, true)
             .observe(this, uiMessages -> {
                 adapter.addMessagesAtHead(uiMessages);
 
