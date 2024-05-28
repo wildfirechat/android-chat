@@ -110,7 +110,14 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 messages = messages.stream().filter(m -> m.message.messageId != 0).collect(Collectors.toList());
                 if (!messages.isEmpty()) {
-                    oldestMessageId = messages.get(0).message.messageId;
+                    for (int i = 0; i < messages.size(); i++) {
+                        Message msg = messages.get(i).message;
+                        // 以下是新消息 那条提示消息的 messageId 是 Long.MAX_VALUE
+                        if (msg.messageId != Long.MAX_VALUE) {
+                            oldestMessageId = msg.messageId;
+                            break;
+                        }
+                    }
                 }
                 this.messages = messages;
             } else {
@@ -120,7 +127,14 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                     }
                 }
                 if (!this.messages.isEmpty()) {
-                    oldestMessageId = this.messages.get(0).message.messageId;
+                    for (int i = 0; i < messages.size(); i++) {
+                        Message msg = messages.get(i).message;
+                        // 以下是新消息 那条提示消息的 messageId 是 Long.MAX_VALUE
+                        if (msg.messageId != Long.MAX_VALUE) {
+                            oldestMessageId = msg.messageId;
+                            break;
+                        }
+                    }
                 }
             }
         } else {
