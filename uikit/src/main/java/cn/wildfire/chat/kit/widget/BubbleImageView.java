@@ -21,11 +21,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.ImageView;
 
 import cn.wildfire.chat.kit.R;
 
-public class BubbleImageView extends ImageView {
+public class BubbleImageView extends androidx.appcompat.widget.AppCompatImageView {
 
     private static final int LOCATION_LEFT = 0;
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;

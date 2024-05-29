@@ -83,7 +83,8 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
 
     public PhotoView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setScaleType(ScaleType.MATRIX);
+        // FYI: https://github.com/bumptech/glide/issues/1054
+//        setScaleType(ScaleType.MATRIX);
         addOnLayoutChangeListener(this);
 
         ViewConfiguration configuration = ViewConfiguration.get(getContext());
@@ -179,6 +180,9 @@ public class PhotoView extends AppCompatImageView implements View.OnLayoutChange
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (getScaleType() != ScaleType.MATRIX) {
+            setScaleType(ScaleType.MATRIX);
+        }
         if (mScaleGestureDetector != null) {
             mScaleGestureDetector.onTouchEvent(event);
         }
