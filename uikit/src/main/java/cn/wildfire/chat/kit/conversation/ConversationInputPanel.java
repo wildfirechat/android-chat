@@ -51,6 +51,7 @@ import com.lqr.emoji.MoonUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.Config;
@@ -108,6 +109,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     ConversationExtension extension;
     private Conversation conversation;
+    private String targetUser;
     private MessageViewModel messageViewModel;
     private ConversationViewModel conversationViewModel;
     private InputAwareLayout rootLinearLayout;
@@ -155,9 +157,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     }
 
-    public void setupConversation(Conversation conversation) {
+    public void setupConversation(Conversation conversation, String targetUser) {
         this.conversation = conversation;
-        this.extension.bind(this.messageViewModel, conversation);
+        this.targetUser = targetUser;
+        this.extension.bind(this.messageViewModel, conversation, targetUser);
 
         setDraft();
         if (conversation.type == Conversation.ConversationType.Channel) {
@@ -245,7 +248,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 //发送文件
                 File file = new File(audioFile);
                 if (file.exists()) {
-                    messageViewModel.sendAudioFile(conversation, Uri.parse(audioFile), duration);
+                    messageViewModel.sendAudioFile(conversation, toUsers(), Uri.parse(audioFile), duration);
                 }
             }
 
@@ -258,7 +261,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             public void onRecordStateChanged(AudioRecorderPanel.RecordState state) {
                 if (state == AudioRecorderPanel.RecordState.START) {
                     TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_VOICE);
-                    messageViewModel.sendMessage(conversation, content);
+                    messageViewModel.sendMessage(conversation, toUsers(), content);
                 }
             }
         });
@@ -566,7 +569,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 }
             }
         }
-        messageViewModel.sendTextMsg(conversation, txtContent);
+        messageViewModel.sendTextMsg(conversation, toUsers(), txtContent);
         editText.setText("");
     }
 
@@ -723,7 +726,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             if (now - lastTypingTime > TYPING_INTERVAL_IN_SECOND * 1000) {
                 lastTypingTime = now;
                 TypingMessageContent content = new TypingMessageContent(type);
-                messageViewModel.sendMessage(conversation, content);
+                messageViewModel.sendMessage(conversation, toUsers(), content);
             }
         }
     }
@@ -769,7 +772,14 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             key = stickerBitmapPath;
         }
         String remoteUrl = sharedPreferences.getString(key, null);
-        messageViewModel.sendStickerMsg(conversation, stickerBitmapPath, remoteUrl);
+        messageViewModel.sendStickerMsg(conversation, toUsers(), stickerBitmapPath, remoteUrl);
+    }
+
+    private List<String> toUsers() {
+        if (TextUtils.isEmpty(this.targetUser)) {
+            return null;
+        }
+        return Collections.singletonList(this.targetUser);
     }
 
 

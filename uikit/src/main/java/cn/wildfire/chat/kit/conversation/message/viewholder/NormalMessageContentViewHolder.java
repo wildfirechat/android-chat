@@ -62,7 +62,6 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -404,9 +403,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         // TODO get user info from viewModel
         String portraitUrl = null;
         if (item.conversation.type == Conversation.ConversationType.Channel && item.direction == MessageDirection.Receive) {
-            ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(item.conversation.target, false);
-            if (channelInfo != null) {
-                portraitUrl = channelInfo.portrait;
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(item.sender, false);
+            if (userInfo != null) {
+                portraitUrl = userInfo.portrait;
             }
         } else {
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(item.sender, false);
