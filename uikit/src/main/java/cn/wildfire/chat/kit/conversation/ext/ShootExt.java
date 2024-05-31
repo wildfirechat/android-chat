@@ -43,7 +43,7 @@ public class ShootExt extends ConversationExt {
         Intent intent = new Intent(activity, TakePhotoActivity.class);
         startActivityForResult(intent, 100);
         TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
-        messageViewModel.sendMessage(conversation, content);
+        messageViewModel.sendMessage(conversation, toUsers(), content);
     }
 
     @Override
@@ -57,12 +57,12 @@ public class ShootExt extends ConversationExt {
             if (data.getBooleanExtra("take_photo", true)) {
                 //照片
                 File file = new File(path);
-                messageViewModel.sendImgMsg(conversation, ImageUtils.genThumbImgFile(path), file);
+                messageViewModel.sendImgMsg(conversation, toUsers(), ImageUtils.genThumbImgFile(path), file);
                 ImageUtils.saveMedia2Album(fragment.getContext(), file, true);
             } else {
                 //小视频
                 File file = new File(path);
-                messageViewModel.sendVideoMsg(conversation, new File(path));
+                messageViewModel.sendVideoMsg(conversation, toUsers(), new File(path));
                 ImageUtils.saveMedia2Album(fragment.getContext(), file, false);
             }
         }

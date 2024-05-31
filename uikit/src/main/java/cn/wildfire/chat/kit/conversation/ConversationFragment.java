@@ -145,8 +145,8 @@ public class ConversationFragment extends Fragment implements
     private Handler handler;
     private long initialFocusedMessageId;
     private long firstUnreadMessageId;
-    // 用户channel主发起，针对某个用户的会话
-    private String channelPrivateChatUser;
+    // 实现定向消息，主要用户频道主发起针对某个用户的会话
+    private String targetUser;
     private String conversationTitle = "";
     private LinearLayoutManager layoutManager;
 
@@ -511,7 +511,7 @@ public class ConversationFragment extends Fragment implements
         this.conversation = conversation;
         this.conversationTitle = title;
         this.initialFocusedMessageId = focusMessageId;
-        this.channelPrivateChatUser = target;
+        this.targetUser = target;
         this.isPreJoinedChatRoom = isJoinedChatRoom;
         setupConversation(conversation);
     }
@@ -625,7 +625,7 @@ public class ConversationFragment extends Fragment implements
         }
         userViewModel.getUserInfo(userViewModel.getUserId(), true);
 
-        inputPanel.setupConversation(conversation);
+        inputPanel.setupConversation(conversation, this.targetUser);
 
         if (conversation.type != Conversation.ConversationType.ChatRoom) {
             loadMessage(initialFocusedMessageId);
@@ -682,9 +682,9 @@ public class ConversationFragment extends Fragment implements
         MutableLiveData<List<UiMessage>> messages;
         if (focusMessageId != -1) {
             shouldContinueLoadNewMessage = true;
-            messages = conversationViewModel.loadAroundMessages(conversation, channelPrivateChatUser, focusMessageId, MESSAGE_LOAD_AROUND);
+            messages = conversationViewModel.loadAroundMessages(conversation, targetUser, focusMessageId, MESSAGE_LOAD_AROUND);
         } else {
-            messages = conversationViewModel.getMessages(conversation, channelPrivateChatUser, false);
+            messages = conversationViewModel.getMessages(conversation, targetUser, false);
         }
 
         // load message
@@ -837,12 +837,12 @@ public class ConversationFragment extends Fragment implements
                 conversationTitle = channelInfo.name;
             }
 
-            if (!TextUtils.isEmpty(channelPrivateChatUser)) {
-                UserInfo channelPrivateChatUserInfo = userViewModel.getUserInfo(channelPrivateChatUser, false);
+            if (!TextUtils.isEmpty(targetUser)) {
+                UserInfo channelPrivateChatUserInfo = userViewModel.getUserInfo(targetUser, false);
                 if (channelPrivateChatUserInfo != null) {
-                    conversationTitle += "@" + userViewModel.getUserDisplayName(channelPrivateChatUserInfo);
+                    conversationTitle = userViewModel.getUserDisplayName(channelPrivateChatUserInfo) + "@" + conversationTitle;
                 } else {
-                    conversationTitle += "@<" + channelPrivateChatUser + ">";
+                    conversationTitle = "<" + targetUser + ">" + "@" + conversationTitle;
                 }
             }
         } else if (conversation.type == Conversation.ConversationType.SecretChat) {
@@ -871,9 +871,8 @@ public class ConversationFragment extends Fragment implements
 
     @Override
     public void onPortraitClick(UserInfo userInfo) {
-        if (conversation.type == Conversation.ConversationType.Channel) {
-            Intent intent = new Intent(getActivity(), ChannelInfoActivity.class);
-            intent.putExtra("channelId", conversation.target);
+        if (conversation.type == Conversation.ConversationType.Channel && TextUtils.isEmpty(targetUser)) {
+            Intent intent = ConversationActivity.buildConversationIntent(getActivity(), this.conversation, userInfo.uid, -1);
             startActivity(intent);
             return;
         }
@@ -1038,7 +1037,7 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void reloadMessage() {
-        conversationViewModel.getMessages(conversation, channelPrivateChatUser, true).observe(this, uiMessages -> {
+        conversationViewModel.getMessages(conversation, targetUser, true).observe(this, uiMessages -> {
             adapter.setMessages(uiMessages);
             adapter.notifyDataSetChanged();
         });
@@ -1050,7 +1049,7 @@ public class ConversationFragment extends Fragment implements
 
     private void loadMoreOldMessages(boolean scrollToBottom) {
 
-        conversationViewModel.loadOldMessages(conversation, channelPrivateChatUser, adapter.oldestMessageId, adapter.oldestMessageUid, MESSAGE_LOAD_COUNT_PER_TIME, true)
+        conversationViewModel.loadOldMessages(conversation, targetUser, adapter.oldestMessageId, adapter.oldestMessageUid, MESSAGE_LOAD_COUNT_PER_TIME, true)
             .observe(this, uiMessages -> {
                 adapter.addMessagesAtHead(uiMessages);
 
@@ -1064,7 +1063,7 @@ public class ConversationFragment extends Fragment implements
     private void loadMoreNewMessages() {
         loadingNewMessage = true;
         adapter.showLoadingNewMessageProgressBar();
-        conversationViewModel.loadNewMessages(conversation, channelPrivateChatUser, adapter.getItem(adapter.getItemCount() - 2).message.messageId, MESSAGE_LOAD_COUNT_PER_TIME)
+        conversationViewModel.loadNewMessages(conversation, targetUser, adapter.getItem(adapter.getItemCount() - 2).message.messageId, MESSAGE_LOAD_COUNT_PER_TIME)
             .observe(this, messages -> {
                 loadingNewMessage = false;
                 adapter.dismissLoadingNewMessageProgressBar();

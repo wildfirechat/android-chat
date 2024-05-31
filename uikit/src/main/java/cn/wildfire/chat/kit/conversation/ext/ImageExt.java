@@ -73,7 +73,7 @@ public class ImageExt extends ConversationExt {
             Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(activity);
             startActivityForResult(intent, 100);
             TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
-            messageViewModel.sendMessage(conversation, content);
+            messageViewModel.sendMessage(conversation, toUsers(), content);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 activity.requestPermissions(permissions, 100);
@@ -114,7 +114,7 @@ public class ImageExt extends ConversationExt {
                     for (ImageItem imageItem : images) {
                         boolean isGif = isGifFile(imageItem.path);
                         if (isGif) {
-                            UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, imageItem.path, null));
+                            UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, toUsers(), imageItem.path, null));
                             continue;
                         }
                         File imageFileThumb;
@@ -140,7 +140,7 @@ public class ImageExt extends ConversationExt {
 //                    }
 //                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
                         File finalImageFileSource = imageFileSource;
-                        UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
+                        UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, toUsers(), imageFileThumb, finalImageFileSource));
 
                     }
 

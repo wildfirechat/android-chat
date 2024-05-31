@@ -84,12 +84,12 @@ public class ConversationExtension {
     }
 
 
-    public void bind(MessageViewModel messageViewModel, Conversation conversation) {
+    public void bind(MessageViewModel messageViewModel, Conversation conversation, String targetUser) {
         this.conversation = conversation;
         setupExtViewPager(extViewPager);
 
         for (int i = 0; i < exts.size(); i++) {
-            exts.get(i).onBind(fragment, messageViewModel, conversation, this, i);
+            exts.get(i).onBind(fragment, messageViewModel, conversation, targetUser, this, i);
         }
     }
 
@@ -151,12 +151,12 @@ public class ConversationExtension {
     }
 
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(exts == null || exts.isEmpty()){
+        if (exts == null || exts.isEmpty()) {
             return false;
         }
         int index = requestCode & 0x7F;
         ConversationExt conversationExt = exts.get(index);
-        if(conversationExt == null){
+        if (conversationExt == null) {
             return false;
         }
         conversationExt.onActivityResult((requestCode >> 7) & 0xFF, resultCode, data);
