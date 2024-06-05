@@ -491,7 +491,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
             if (readTimestamp != null && readTimestamp >= message.message.serverTime) {
                 ImageViewCompat.setImageTintList(singleReceiptImageView, null);
-                return;
+            } else {
+                singleReceiptImageView.setImageResource(R.mipmap.receipt);
             }
         } else if (item.conversation.type == Conversation.ConversationType.Group) {
             singleReceiptImageView.setVisibility(View.GONE);
