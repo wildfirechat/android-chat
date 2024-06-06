@@ -75,6 +75,7 @@ import cn.wildfirechat.client.IGetFileRecordCallback;
 import cn.wildfirechat.client.IGetGroupCallback;
 import cn.wildfirechat.client.IGetGroupMemberCallback;
 import cn.wildfirechat.client.IGetMessageCallback;
+import cn.wildfirechat.client.IGetRemoteDomainInfosCallback;
 import cn.wildfirechat.client.IGetRemoteMessagesCallback;
 import cn.wildfirechat.client.IGetUploadUrlCallback;
 import cn.wildfirechat.client.IGetUserCallback;
@@ -82,6 +83,7 @@ import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
 import cn.wildfirechat.client.IOnConnectToServerListener;
 import cn.wildfirechat.client.IOnConnectionStatusChangeListener;
+import cn.wildfirechat.client.IOnDomainInfoUpdateListener;
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
 import cn.wildfirechat.client.IOnGroupMembersUpdateListener;
@@ -167,6 +169,7 @@ import cn.wildfirechat.model.ChatRoomMembersInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.ConversationSearchResult;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.FileRecord;
 import cn.wildfirechat.model.FileRecordOrder;
 import cn.wildfirechat.model.Friend;
@@ -179,6 +182,7 @@ import cn.wildfirechat.model.ModifyGroupInfoType;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.NullChannelInfo;
 import cn.wildfirechat.model.NullConversationInfo;
+import cn.wildfirechat.model.NullDomainInfo;
 import cn.wildfirechat.model.NullGroupInfo;
 import cn.wildfirechat.model.NullUserInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
@@ -269,6 +273,7 @@ public class ChatManager {
     private List<OnUserOnlineEventListener> userOnlineEventListeners = new ArrayList<>();
     private List<SecretChatStateChangeListener> secretChatStateChangeListeners = new ArrayList<>();
     private List<SecretMessageBurnStateListener> secretMessageBurnStateListeners = new ArrayList<>();
+    private List<OnDomainInfoUpdateListener> domainInfoUpdateListeners = new ArrayList<>();
 
 
     // key = userId
@@ -797,6 +802,14 @@ public class ChatManager {
         mainHandler.post(() -> {
             for (SecretMessageBurnStateListener listener : secretMessageBurnStateListeners) {
                 listener.onSecretMessageBurned(messageIds);
+            }
+        });
+    }
+
+    private void onDomainInfoUpdate(DomainInfo domainInfo) {
+        mainHandler.post(() -> {
+            for (OnDomainInfoUpdateListener listener : domainInfoUpdateListeners) {
+                listener.onDomainInfoUpdate(domainInfo);
             }
         });
     }
@@ -1629,6 +1642,61 @@ public class ChatManager {
     }
 
     /**
+     * 获取外域信息
+     *
+     * @param domainId
+     * @param refresh   是否刷新域信息。为true时，会从服务器拉取最新的域信息，如果有更新，则会通过{@link OnDomainInfoUpdateListener}回调更新后的信息
+     * @return 域信息，可能为null
+     */
+    public @Nullable
+    DomainInfo getDomainInfo(String domainId, boolean refresh) {
+        if (!checkRemoteService()) {
+            return new NullDomainInfo(domainId);
+        }
+        if (TextUtils.isEmpty(domainId)) {
+            Log.e(TAG, "Error, channelId is empty");
+            return new NullDomainInfo(domainId);
+        }
+
+        try {
+            DomainInfo domainInfo = mClient.getDomainInfo(domainId, refresh);
+            if (domainInfo == null) {
+                domainInfo = new NullDomainInfo(domainId);
+            }
+            return domainInfo;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void loadRemoteDomains(GetRemoteDomainsCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.getRemoteDomainInfos(new IGetRemoteDomainInfosCallback.Stub() {
+                @Override
+                public void onSuccess(List<DomainInfo> domainInfos) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onSuccess(domainInfos));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 添加会话更新监听
      *
      * @param listener
@@ -1882,6 +1950,17 @@ public class ChatManager {
 
     public void removeSecretMessageBurnStateListener(SecretMessageBurnStateListener listener) {
         secretMessageBurnStateListeners.remove(listener);
+    }
+
+    public void addDomainInfoUpdateListener(OnDomainInfoUpdateListener listener) {
+        if (listener == null) {
+            return;
+        }
+        domainInfoUpdateListeners.add(listener);
+    }
+
+    public void removeDomainInfoUpdateListener(OnUserOnlineEventListener listener) {
+        domainInfoUpdateListeners.remove(listener);
     }
 
     private void validateMessageContent(Class<? extends MessageContent> msgContentClazz) {
@@ -4269,6 +4348,59 @@ public class ChatManager {
 
         try {
             mClient.searchUser(keyword, searchUserType.ordinal(), page, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
+                @Override
+                public void onSuccess(final List<UserInfo> userInfos) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(userInfos);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
+     * 搜索用户
+     *
+     * @param domainId
+     * @param keyword
+     * @param searchUserType
+     * @param page
+     * @param callback
+     */
+    public void searchUserEx(String domainId, String keyword, SearchUserType searchUserType, int page, final SearchUserCallback callback) {
+        if (userSource != null) {
+            userSource.searchUser(keyword, callback);
+            return;
+        }
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.searchUserEx(domainId, keyword, searchUserType.ordinal(), page, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
                 @Override
                 public void onSuccess(final List<UserInfo> userInfos) throws RemoteException {
                     if (callback != null) {
@@ -7748,6 +7880,18 @@ public class ChatManager {
         return false;
     }
 
+    public boolean isEnableMesh() {
+        if (!checkRemoteService()) {
+            return false;
+        }
+        try {
+            return mClient.isEnableMesh();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     /**
      * 判断当前用户是否开启密聊功能。开关仅影响密聊的创建，已经创建的密聊不受此开关影响。
@@ -9027,6 +9171,12 @@ public class ChatManager {
                         @Override
                         public void onSecretChatStateChanged(String targetid, int state) throws RemoteException {
                             ChatManager.this.onSecretChatStateChanged(targetid, state);
+                        }
+                    });
+                    mClient.setDomainInfoUpdateListener(new IOnDomainInfoUpdateListener.Stub() {
+                        @Override
+                        public void onDomainInfoUpdated(DomainInfo domainInfo) throws RemoteException {
+                            ChatManager.this.onDomainInfoUpdate(domainInfo);
                         }
                     });
 
