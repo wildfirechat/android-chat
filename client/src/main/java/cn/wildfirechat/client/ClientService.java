@@ -87,6 +87,7 @@ import cn.wildfirechat.model.ClientState;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.ConversationSearchResult;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.FileRecord;
 import cn.wildfirechat.model.Friend;
 import cn.wildfirechat.model.FriendRequest;
@@ -103,6 +104,7 @@ import cn.wildfirechat.model.ProtoChatRoomInfo;
 import cn.wildfirechat.model.ProtoChatRoomMembersInfo;
 import cn.wildfirechat.model.ProtoConversationInfo;
 import cn.wildfirechat.model.ProtoConversationSearchresult;
+import cn.wildfirechat.model.ProtoDomainInfo;
 import cn.wildfirechat.model.ProtoFileRecord;
 import cn.wildfirechat.model.ProtoFriend;
 import cn.wildfirechat.model.ProtoFriendRequest;
@@ -158,7 +160,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     ProtoLogic.IOnlineEventCallback,
     ProtoLogic.ISecretChatStateCallback,
     ProtoLogic.ISecretMessageBurnStateCallback,
-    ProtoLogic.IChannelInfoUpdateCallback, ProtoLogic.IGroupMembersUpdateCallback {
+    ProtoLogic.IChannelInfoUpdateCallback,
+    ProtoLogic.IDomainInfoUpdateCallback,
+    ProtoLogic.IGroupMembersUpdateCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
     private int mConnectionStatus;
@@ -184,6 +188,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private RemoteCallbackList<IOnTrafficDataListener> onTrafficDataListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnSecretChatStateListener> onSecretChatStateListenerRemoteCallbackList = new WfcRemoteCallbackList<>();
     private RemoteCallbackList<IOnSecretMessageBurnStateListener> onSecretMessageBurnStateCallbackList = new WfcRemoteCallbackList<>();
+    private RemoteCallbackList<IOnDomainInfoUpdateListener> onDomainInfoUpdatedCallbackList = new WfcRemoteCallbackList<>();
 
     private AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo();
     //        public final String DEVICE_NAME = android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL;
@@ -1373,6 +1378,35 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void searchUser(String keyword, int searchType, int page, final ISearchUserCallback callback) throws RemoteException {
             ProtoLogic.searchUser(keyword, searchType, page, new ProtoLogic.ISearchUserCallback() {
+                @Override
+                public void onSuccess(ProtoUserInfo[] userInfos) {
+                    List<UserInfo> out = new ArrayList<>();
+                    if (userInfos != null) {
+                        for (ProtoUserInfo protoUserInfo : userInfos) {
+                            out.add(convertProtoUserInfo(protoUserInfo));
+                        }
+                    }
+                    try {
+                        callback.onSuccess(out);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) {
+                    try {
+                        callback.onFailure(errorCode);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void searchUserEx(String domainId, String keyword, int searchType, int page, final ISearchUserCallback callback) throws RemoteException {
+            ProtoLogic.searchUserEx(domainId, keyword, searchType, page, new ProtoLogic.ISearchUserCallback() {
                 @Override
                 public void onSuccess(ProtoUserInfo[] userInfos) {
                     List<UserInfo> out = new ArrayList<>();
@@ -2992,6 +3026,38 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public DomainInfo getDomainInfo(String domainId, boolean refresh) throws RemoteException {
+            return convertProtoDomainInfo(ProtoLogic.getDomainInfo(domainId, refresh));
+        }
+
+        @Override
+        public void getRemoteDomainInfos(IGetRemoteDomainInfosCallback callback) throws RemoteException {
+            ProtoLogic.getRemoteDomains(new ProtoLogic.ILoadRemoteDomainsCallback() {
+                @Override
+                public void onSuccess(ProtoDomainInfo[] protoDomainInfos) {
+                    List<DomainInfo> domainInfoList = new ArrayList<>();
+                    for (ProtoDomainInfo protoDomainInfo : protoDomainInfos) {
+                        domainInfoList.add(convertProtoDomainInfo(protoDomainInfo));
+                    }
+                    try {
+                        callback.onSuccess(domainInfoList);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        }
+
+        @Override
         public void searchChannel(String keyword, ISearchChannelCallback callback) throws RemoteException {
             ProtoLogic.searchChannel(keyword, new ProtoLogic.ISearchChannelCallback() {
                 @Override
@@ -3416,6 +3482,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public boolean isEnableMesh() throws RemoteException {
+            return ProtoLogic.IsEnableMesh();
+        }
+
+        @Override
         public void sendConferenceRequest(long sessionId, String roomId, String request, boolean advanced, String data, IGeneralCallback2 callback) throws RemoteException {
             ProtoLogic.sendConferenceRequest(sessionId, roomId, request, advanced, data, new ProtoLogic.IGeneralCallback2() {
                 @Override
@@ -3546,6 +3617,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setDomainInfoUpdateListener(IOnDomainInfoUpdateListener listener) throws RemoteException {
+            onDomainInfoUpdatedCallbackList.register(listener);
+        }
+
+        @Override
         public void setSecretChatBurnTime(String targetId, int burnTime) throws RemoteException {
             ProtoLogic.setSecretChatBurnTime(targetId, burnTime);
         }
@@ -3662,6 +3738,23 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         return channelInfo;
+    }
+
+    private DomainInfo convertProtoDomainInfo(ProtoDomainInfo protoDomainInfo) {
+        if (protoDomainInfo == null) {
+            return null;
+        }
+        DomainInfo domainInfo = new DomainInfo();
+        domainInfo.domainId = protoDomainInfo.getDomainId();
+        domainInfo.name = protoDomainInfo.getName();
+        domainInfo.desc = protoDomainInfo.getDesc();
+        domainInfo.tel = protoDomainInfo.getTel();
+        domainInfo.email = protoDomainInfo.getEmail();
+        domainInfo.extra = protoDomainInfo.getExtra();
+        domainInfo.address = protoDomainInfo.getAddress();
+        domainInfo.updateDt = protoDomainInfo.getUpdateDt();
+
+        return domainInfo;
     }
 
     private ChannelMenu convertProtoChannelMenu(ProtoChannelMenu menu) {
@@ -3968,6 +4061,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setOnlineEventCallback(ClientService.this);
         ProtoLogic.setSecretChatStateCallback(ClientService.this);
         ProtoLogic.setSecretMessageBurnStateCallback(ClientService.this);
+        ProtoLogic.setDomainInfoUpdateCallback(ClientService.this);
         Log.i(TAG, "Proto connect:" + userName);
         ProtoLogic.setAuthInfo(userName, userPwd);
         return ProtoLogic.connect(mHost);
@@ -4527,6 +4621,26 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             onSecretMessageBurnStateCallbackList.finishBroadcast();
         });
+    }
+
+    @Override
+    public void onDomainInfoUpdated(ProtoDomainInfo protoDomainInfo) {
+        handler.post(() -> {
+            DomainInfo domainInfo = convertProtoDomainInfo(protoDomainInfo);
+            int i = onDomainInfoUpdatedCallbackList.beginBroadcast();
+            IOnDomainInfoUpdateListener listener;
+            while (i > 0) {
+                i--;
+                listener = onDomainInfoUpdatedCallbackList.getBroadcastItem(i);
+                try {
+                    listener.onDomainInfoUpdated(domainInfo);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+            onDomainInfoUpdatedCallbackList.finishBroadcast();
+        });
+
     }
 //    // 只是大概大小
 //    private int getMessageLength(ProtoMessage message) {

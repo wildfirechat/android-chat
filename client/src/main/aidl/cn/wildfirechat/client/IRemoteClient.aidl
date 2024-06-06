@@ -17,6 +17,8 @@ import cn.wildfirechat.client.IGetGroupInfoCallback;
 import cn.wildfirechat.client.ICreateChannelCallback;
 import cn.wildfirechat.client.ISearchChannelCallback;
 import cn.wildfirechat.client.IGetRemoteMessagesCallback;
+import cn.wildfirechat.client.IGetRemoteDomainInfosCallback;
+import cn.wildfirechat.client.IOnDomainInfoUpdateListener;
 import cn.wildfirechat.client.IGetFileRecordCallback;
 import cn.wildfirechat.client.IGetAuthorizedMediaUrlCallback;
 import cn.wildfirechat.client.IGetUploadUrlCallback;
@@ -57,6 +59,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.ChannelInfo;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.Socks5ProxyInfo;
@@ -166,6 +169,7 @@ interface IRemoteClient {
     Map getConversationRead(in int conversationType, in String target, in int line);
     Map getMessageDelivery(in int conversationType, in String target);
     oneway void searchUser(in String keyword, in int searchType, in int page, in ISearchUserCallback callback);
+    oneway void searchUserEx(in String domainId, in String keyword, in int searchType, in int page, in ISearchUserCallback callback);
 
     boolean isMyFriend(in String userId);
     List<String> getMyFriendList(in boolean refresh);
@@ -272,6 +276,11 @@ interface IRemoteClient {
     List<String> getMyChannels();
     List<String> getListenedChannels();
     oneway void getRemoteListenedChannels(in IGeneralCallback3 callback);
+
+    DomainInfo getDomainInfo(in String domainId, in boolean refresh);
+    oneway void getRemoteDomainInfos(in IGetRemoteDomainInfosCallback callback);
+    oneway void setDomainInfoUpdateListener(in IOnDomainInfoUpdateListener listener);
+
     oneway void requireLock(in String lockId, in long duration, in IGeneralCallback callback);
     oneway void releaseLock(in String lockId, in IGeneralCallback callback);
 
@@ -302,6 +311,8 @@ interface IRemoteClient {
     boolean isGlobalDisableSyncDraft();
     boolean isEnableSecretChat();
     boolean isEnableUserOnlineState();
+    boolean isEnableMesh();
+
     void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
     void useSM4();
     void useAES256();
