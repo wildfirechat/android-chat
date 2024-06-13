@@ -145,8 +145,8 @@ public class ConversationFragment extends Fragment implements
     private Handler handler;
     private long initialFocusedMessageId;
     private long firstUnreadMessageId;
-    // 用户channel主发起，针对某个用户的会话
-    private String channelPrivateChatUser;
+    // 实现定向消息，主要用户频道主发起针对某个用户的会话
+    private String targetUser;
     private String conversationTitle = "";
     private LinearLayoutManager layoutManager;
 
@@ -251,34 +251,34 @@ public class ConversationFragment extends Fragment implements
             if (conversation == null) {
                 return;
             }
-            if (conversation.type == Conversation.ConversationType.ChatRoom && uiMessage.message.conversation == null) {
-                List<UiMessage> messages = adapter.getMessages();
-                for (UiMessage uiMsg : messages) {
-                    if (uiMsg.message.messageUid == uiMessage.message.messageUid) {
-                        RecallMessageContent content = new RecallMessageContent(uiMsg.message.sender, uiMsg.message.messageUid);
-                        content.setOriginalSender(uiMsg.message.sender);
-                        uiMsg.message.content = content;
-                        adapter.updateMessage(uiMsg);
-                        break;
-                    }
-                }
-            } else {
-                if (!isMessageInCurrentConversation(uiMessage)) {
+
+            // message deleted
+            if (uiMessage.message.conversation == null) {
+                adapter.removeMessage(uiMessage);
+                return;
+            }
+            if (uiMessage.message.content instanceof RecallMessageContent) {
+                Message msg = ChatManager.Instance().getMessageByUid(uiMessage.message.messageUid);
+                if (msg == null) {
+                    adapter.removeMessage(uiMessage);
                     return;
                 }
-                if (isDisplayableMessage(uiMessage)) {
-                    adapter.updateMessage(uiMessage);
-                }
-                if (uiMessage.progress == 100) {
-                    uiMessage.progress = 0;
-                    messageViewModel.playAudioMessage(uiMessage);
-                }
-                if (uiMessage.audioPlayCompleted) {
-                    uiMessage.audioPlayCompleted = false;
-                    if (uiMessage.continuousPlayAudio) {
-                        uiMessage.continuousPlayAudio = false;
-                        playNextAudioMessage(uiMessage);
-                    }
+            }
+            if (!isMessageInCurrentConversation(uiMessage)) {
+                return;
+            }
+            if (isDisplayableMessage(uiMessage)) {
+                adapter.updateMessage(uiMessage);
+            }
+            if (uiMessage.progress == 100) {
+                uiMessage.progress = 0;
+                messageViewModel.playAudioMessage(uiMessage);
+            }
+            if (uiMessage.audioPlayCompleted) {
+                uiMessage.audioPlayCompleted = false;
+                if (uiMessage.continuousPlayAudio) {
+                    uiMessage.continuousPlayAudio = false;
+                    playNextAudioMessage(uiMessage);
                 }
             }
         }
@@ -321,12 +321,7 @@ public class ConversationFragment extends Fragment implements
         @Override
         public void onChanged(@Nullable UiMessage uiMessage) {
             // 当通过server api删除消息时，只知道消息的uid
-            if (uiMessage.message.conversation != null && !isMessageInCurrentConversation(uiMessage)) {
-                return;
-            }
-            if (uiMessage.message.messageId == 0 || isDisplayableMessage(uiMessage)) {
-                adapter.removeMessage(uiMessage);
-            }
+            adapter.removeMessage(uiMessage);
         }
     };
 
@@ -405,7 +400,7 @@ public class ConversationFragment extends Fragment implements
             for (GroupMember member : groupMembers) {
                 if (member.groupId.equals(groupInfo.target) && member.memberId.equals(userViewModel.getUserId())) {
                     groupMember = member;
-                    updateGroupMuteStatus();
+                    updateGroupConversationInputStatus();
                     break;
                 }
             }
@@ -418,7 +413,7 @@ public class ConversationFragment extends Fragment implements
             for (GroupInfo info : groupInfos) {
                 if (info.target.equals(groupInfo.target)) {
                     groupInfo = info;
-                    updateGroupMuteStatus();
+                    updateGroupConversationInputStatus();
                     setTitle();
                     adapter.notifyDataSetChanged();
                     break;
@@ -516,7 +511,7 @@ public class ConversationFragment extends Fragment implements
         this.conversation = conversation;
         this.conversationTitle = title;
         this.initialFocusedMessageId = focusMessageId;
-        this.channelPrivateChatUser = target;
+        this.targetUser = target;
         this.isPreJoinedChatRoom = isJoinedChatRoom;
         setupConversation(conversation);
     }
@@ -525,13 +520,7 @@ public class ConversationFragment extends Fragment implements
         handler = new Handler();
         rootLinearLayout.addOnKeyboardShownListener(this);
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            if (adapter.getMessages() == null || adapter.getMessages().isEmpty()) {
-                swipeRefreshLayout.setRefreshing(false);
-                return;
-            }
-            loadMoreOldMessages();
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::loadMoreOldMessages);
 
         // message list
         adapter = new ConversationMessageAdapter(this);
@@ -632,11 +621,11 @@ public class ConversationFragment extends Fragment implements
             groupMember = groupViewModel.getGroupMember(conversation.target, userViewModel.getUserId());
             showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
 
-            updateGroupMuteStatus();
+            updateGroupConversationInputStatus();
         }
         userViewModel.getUserInfo(userViewModel.getUserId(), true);
 
-        inputPanel.setupConversation(conversation);
+        inputPanel.setupConversation(conversation, this.targetUser);
 
         if (conversation.type != Conversation.ConversationType.ChatRoom) {
             loadMessage(initialFocusedMessageId);
@@ -693,9 +682,9 @@ public class ConversationFragment extends Fragment implements
         MutableLiveData<List<UiMessage>> messages;
         if (focusMessageId != -1) {
             shouldContinueLoadNewMessage = true;
-            messages = conversationViewModel.loadAroundMessages(conversation, channelPrivateChatUser, focusMessageId, MESSAGE_LOAD_AROUND);
+            messages = conversationViewModel.loadAroundMessages(conversation, targetUser, focusMessageId, MESSAGE_LOAD_AROUND);
         } else {
-            messages = conversationViewModel.getMessages(conversation, channelPrivateChatUser);
+            messages = conversationViewModel.getMessages(conversation, targetUser, false);
         }
 
         // load message
@@ -722,7 +711,7 @@ public class ConversationFragment extends Fragment implements
         });
     }
 
-    private void updateGroupMuteStatus() {
+    private void updateGroupConversationInputStatus() {
         if (groupInfo == null || groupMember == null) {
             return;
         }
@@ -733,6 +722,8 @@ public class ConversationFragment extends Fragment implements
             inputPanel.disableInput("全员禁言中");
         } else if (groupMember.type == GroupMember.GroupMemberType.Muted) {
             inputPanel.disableInput("你已被禁言");
+        } else if (groupInfo.deleted == 1) {
+            inputPanel.disableInput("群组已被解散");
         } else {
             inputPanel.enableInput();
         }
@@ -846,12 +837,12 @@ public class ConversationFragment extends Fragment implements
                 conversationTitle = channelInfo.name;
             }
 
-            if (!TextUtils.isEmpty(channelPrivateChatUser)) {
-                UserInfo channelPrivateChatUserInfo = userViewModel.getUserInfo(channelPrivateChatUser, false);
+            if (!TextUtils.isEmpty(targetUser)) {
+                UserInfo channelPrivateChatUserInfo = userViewModel.getUserInfo(targetUser, false);
                 if (channelPrivateChatUserInfo != null) {
-                    conversationTitle += "@" + userViewModel.getUserDisplayName(channelPrivateChatUserInfo);
+                    conversationTitle = userViewModel.getUserDisplayName(channelPrivateChatUserInfo) + "@" + conversationTitle;
                 } else {
-                    conversationTitle += "@<" + channelPrivateChatUser + ">";
+                    conversationTitle = "<" + targetUser + ">" + "@" + conversationTitle;
                 }
             }
         } else if (conversation.type == Conversation.ConversationType.SecretChat) {
@@ -880,9 +871,8 @@ public class ConversationFragment extends Fragment implements
 
     @Override
     public void onPortraitClick(UserInfo userInfo) {
-        if (conversation.type == Conversation.ConversationType.Channel) {
-            Intent intent = new Intent(getActivity(), ChannelInfoActivity.class);
-            intent.putExtra("channelId", conversation.target);
+        if (conversation.type == Conversation.ConversationType.Channel && TextUtils.isEmpty(targetUser)) {
+            Intent intent = ConversationActivity.buildConversationIntent(getActivity(), this.conversation, userInfo.uid, -1);
             startActivity(intent);
             return;
         }
@@ -1047,7 +1037,7 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void reloadMessage() {
-        conversationViewModel.getMessages(conversation, channelPrivateChatUser).observe(this, uiMessages -> {
+        conversationViewModel.getMessages(conversation, targetUser, true).observe(this, uiMessages -> {
             adapter.setMessages(uiMessages);
             adapter.notifyDataSetChanged();
         });
@@ -1059,7 +1049,7 @@ public class ConversationFragment extends Fragment implements
 
     private void loadMoreOldMessages(boolean scrollToBottom) {
 
-        conversationViewModel.loadOldMessages(conversation, channelPrivateChatUser, adapter.oldestMessageId, adapter.oldestMessageUid, MESSAGE_LOAD_COUNT_PER_TIME)
+        conversationViewModel.loadOldMessages(conversation, targetUser, adapter.oldestMessageId, adapter.oldestMessageUid, MESSAGE_LOAD_COUNT_PER_TIME, true)
             .observe(this, uiMessages -> {
                 adapter.addMessagesAtHead(uiMessages);
 
@@ -1073,7 +1063,7 @@ public class ConversationFragment extends Fragment implements
     private void loadMoreNewMessages() {
         loadingNewMessage = true;
         adapter.showLoadingNewMessageProgressBar();
-        conversationViewModel.loadNewMessages(conversation, channelPrivateChatUser, adapter.getItem(adapter.getItemCount() - 2).message.messageId, MESSAGE_LOAD_COUNT_PER_TIME)
+        conversationViewModel.loadNewMessages(conversation, targetUser, adapter.getItem(adapter.getItemCount() - 2).message.messageId, MESSAGE_LOAD_COUNT_PER_TIME)
             .observe(this, messages -> {
                 loadingNewMessage = false;
                 adapter.dismissLoadingNewMessageProgressBar();

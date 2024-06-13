@@ -11,19 +11,42 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
+import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class DeleteMultiMessageAction extends MultiMessageAction {
 
     @Override
     public void onClick(List<UiMessage> messages) {
         MessageViewModel messageViewModel = new ViewModelProvider(fragment).get(MessageViewModel.class);
+
+        List<String> items = new ArrayList<>();
+        items.add("删除本地消息");
+        boolean isSuperGroup = false;
+        UiMessage message = messages.get(0);
+        if (message.message.conversation.type == Conversation.ConversationType.Group) {
+            GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.message.conversation.target, false);
+            if (groupInfo != null && groupInfo.superGroup == 1) {
+                isSuperGroup = true;
+            }
+        }
+        if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup)
+            || message.message.conversation.type == Conversation.ConversationType.Single
+            || message.message.conversation.type == Conversation.ConversationType.Channel) {
+            items.add("删除远程消息");
+        } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
+            items.add("删除自己及对方消息");
+        }
+
         new MaterialDialog.Builder(fragment.getContext())
-            .items("删除本地消息", "删除远程消息")
+            .items(items)
             .itemsCallback(new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {

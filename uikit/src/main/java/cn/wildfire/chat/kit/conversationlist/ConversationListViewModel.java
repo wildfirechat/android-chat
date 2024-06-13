@@ -193,7 +193,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     public void removeConversation(ConversationInfo conversationInfo, boolean clearMsg) {
-        ChatManager.Instance().clearUnreadStatus(conversationInfo.conversation);
         ChatManager.Instance().removeConversation(conversationInfo.conversation, clearMsg);
     }
 

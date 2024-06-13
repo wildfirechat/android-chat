@@ -7,6 +7,8 @@
         <!-- 设置activity切换动画 -->
         <!--<item name="android:windowAnimationStyle">@style/activityAnimation</item>-->
         <!-- Customize color of navigation drawer icon and back arrow -->
+        <item name="android:windowBackground">@color/gray5</item>
+        <item name="android:colorBackground">@color/gray5</item>
         <item name="colorBackgroundFloating">@color/white</item>
         <item name="android:navigationBarColor">@color/gray14</item>
         <item name="android:windowLightNavigationBar">true</item>

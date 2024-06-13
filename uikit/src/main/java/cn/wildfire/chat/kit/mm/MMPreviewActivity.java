@@ -206,6 +206,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         ImageView saveImageView = view.findViewById(R.id.saveImageView);
         ZoomableFrameLayout zoomableFrameLayout = view.findViewById(R.id.zoomableFrameLayout);
         zoomableFrameLayout.setEnableZoom(true);
+        zoomableFrameLayout.setEnableDrag(true);
         zoomableFrameLayout.setOnDragListener(this);
         saveImageView.setVisibility(View.GONE);
 

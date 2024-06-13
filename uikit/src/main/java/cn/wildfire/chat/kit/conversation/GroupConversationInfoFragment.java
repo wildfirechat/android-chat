@@ -210,6 +210,11 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 quitGroupButton.setVisibility(View.VISIBLE);
             }
 
+            if (groupInfo.deleted == 1) {
+                Toast.makeText(getActivity(), "群组已被解散", Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+                return;
+            }
         }
 
         if (groupMember == null || groupMember.type == GroupMember.GroupMemberType.Removed) {
@@ -255,6 +260,11 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             for (GroupInfo groupInfo : groupInfos) {
                 if (groupInfo.target.equals(this.groupInfo.target)) {
                     this.groupInfo = groupInfo;
+                    if (groupInfo.deleted == 1){
+                        Toast.makeText(getActivity(), "群组已被解散", Toast.LENGTH_SHORT).show();
+                        getActivity().finish();
+                        return;
+                    }
                     groupNameOptionItemView.setDesc(groupInfo.name);
                     groupRemarkOptionItemView.setDesc(groupInfo.remark);
                     Glide.with(this).load(groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
@@ -492,8 +502,13 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     void clearMessage() {
+        List<String> items = new ArrayList<>();
+        items.add("清空本地会话");
+        if (this.groupInfo.superGroup != 1) {
+            items.add("清空远程会话");
+        }
         new MaterialDialog.Builder(getActivity())
-            .items("清空本地会话", "清空远程会话")
+            .items(items)
             .itemsCallback(new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {

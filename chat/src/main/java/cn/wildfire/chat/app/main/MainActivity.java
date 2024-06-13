@@ -5,6 +5,7 @@
 package cn.wildfire.chat.app.main;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -132,6 +133,7 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     @Override
     protected void onResume() {
         super.onResume();
+
         if (contactViewModel != null) {
             contactViewModel.reloadFriendRequestStatus();
             conversationListViewModel.reloadConversationUnreadStatus();
@@ -173,8 +175,8 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         });
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         messageViewModel.messageLiveData().observe(this, uiMessage -> {
-            if (uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
-                || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT) {
+            if (uiMessage.message.messageId > 0 && (uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
+                || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT)) {
                 updateMomentBadgeView();
             }
         });
@@ -701,13 +703,27 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     }
 
     private void requestMandatoryPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "需要后台弹出界面和显示悬浮窗权限，否则后台运行时，无法弹出音视频界面", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                startActivity(intent);
-            }
-        }
+        boolean resumed = false;
+//        if (Build.VERSION.SDK_INT >= 33) {
+//            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//            if (!alarmManager.canScheduleExactAlarms()) {
+//                Toast.makeText(this, "需要精确闹钟权限，否则不能正常使用 IM 功能", Toast.LENGTH_LONG).show();
+//                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + getPackageName()));
+//                startActivity(intent);
+//                resumed = true;
+//            }
+//        }
+
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (!Settings.canDrawOverlays(this)) {
+//                Toast.makeText(this, "需要后台弹出界面和显示悬浮窗权限，否则后台运行时，无法弹出音视频界面", Toast.LENGTH_LONG).show();
+//                if (!resumed) {
+//                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+//                    startActivity(intent);
+//                }
+//            }
+//        }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             String[] permissions = new String[]{Manifest.permission.POST_NOTIFICATIONS};

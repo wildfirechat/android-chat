@@ -258,9 +258,12 @@ public class WfcHttpUrlFetcher implements DataFetcher<InputStream> {
 
         String[] params = query.split("&");
         for (String param : params) {
-            String name = param.split("=")[0];
-            String value = param.split("=")[1];
-            map.put(name, value);
+            String[] kv = param.split("=");
+            if (kv.length == 2) {
+                String name = kv[0];
+                String value = kv[1];
+                map.put(name, value);
+            }
         }
         return map;
     }

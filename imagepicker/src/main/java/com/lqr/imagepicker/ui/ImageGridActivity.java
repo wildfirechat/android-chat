@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.GridView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.lqr.imagepicker.ImageDataSource;
 import com.lqr.imagepicker.ImagePickStore;
@@ -49,6 +50,8 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     private ImageGridAdapter mImageGridAdapter;  //图片九宫格展示的适配器
 
     private String takePhotoOutputPath;
+    private ImageDataSource imageDataSource;
+    private boolean isFullAccessGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,12 +86,43 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
         mImageGridAdapter = new ImageGridAdapter(this, showCamera, multiMode, limit);
         mImageFolderAdapter = new ImageFolderAdapter(this, null);
 
-        new ImageDataSource(this, null, this);
+        imageDataSource = new ImageDataSource(this, null, this);
+
+        String[] permissions = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+            || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED)) {
+            // Full access on Android 13 (API level 33) or higher
+            isFullAccessGranted = true;
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            // Full access up to Android 12 (API level 32)
+            isFullAccessGranted = true;
+        } else {
+            // Access denied or partial access granted
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissions = new String[]{
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                };
+            } else {
+                permissions = new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                };
+            }
+        }
+        if (!isFullAccessGranted) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                this.requestPermissions(permissions, 100);
+            }
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (!this.isFullAccessGranted) {
+            imageDataSource.refresh();
+        }
         mImageGridAdapter.notifyDataSetChanged();
         mImageFolderAdapter.notifyDataSetChanged();
         updatePickStatus();

@@ -18,6 +18,8 @@ import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.notification.TipNotificationContent;
 import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -56,7 +58,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     }
 
     // 包含不存储类型消息
-    public MutableLiveData<List<UiMessage>> loadOldMessages(Conversation conversation, String withUser, long fromMessageId, long fromMessageUid, int count) {
+    public MutableLiveData<List<UiMessage>> loadOldMessages(Conversation conversation, String withUser, long fromMessageId, long fromMessageUid, int count, boolean enableLoadRemoteMessageWhenNoMoreLocalOldMessage) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
             ChatManager.Instance().getMessages(conversation, fromMessageId, true, count, withUser, new GetMessageCallback() {
@@ -73,7 +75,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                             }
                         }
                         result.setValue(uiMsgs);
-                    } else if (conversation.type != Conversation.ConversationType.SecretChat) {
+                    } else if (enableLoadRemoteMessageWhenNoMoreLocalOldMessage && conversation.type != Conversation.ConversationType.SecretChat) {
                         ChatManager.Instance().getRemoteMessages(conversation, null, fromMessageUid, count, new GetRemoteMessageCallback() {
                             @Override
                             public void onSuccess(List<Message> messages) {
@@ -95,7 +97,7 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
                                 result.postValue(new ArrayList<>());
                             }
                         });
-                    }else {
+                    } else {
                         result.postValue(new ArrayList<>());
                     }
                 }
@@ -158,6 +160,16 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
 
             List<UiMessage> messages = new ArrayList<>();
             messages.addAll(oldMessages);
+            TipNotificationContent tipNotificationContent = new TipNotificationContent();
+            tipNotificationContent.tip = "--------- 以下是新消息 ----------";
+            tipNotificationContent.fromSelf = true;
+            Message tipMessage = new Message();
+            tipMessage.conversation = conversation;
+            tipMessage.content = tipNotificationContent;
+            tipMessage.direction = MessageDirection.Send;
+            tipMessage.messageId = Long.MAX_VALUE;
+            messages.add(new UiMessage(tipMessage));
+
             if (message != null) {
                 messages.add(new UiMessage(message));
             }
@@ -233,8 +245,8 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     }
 
 
-    public MutableLiveData<List<UiMessage>> getMessages(Conversation conversation, String withUser) {
-        return loadOldMessages(conversation, withUser, 0, 0, 20);
+    public MutableLiveData<List<UiMessage>> getMessages(Conversation conversation, String withUser, boolean enableLoadRemoteMessageWhenNoMoreLocalOldMessage) {
+        return loadOldMessages(conversation, withUser, 0, 0, 20, enableLoadRemoteMessageWhenNoMoreLocalOldMessage);
     }
 
     public void saveDraft(Conversation conversation, String draftString) {

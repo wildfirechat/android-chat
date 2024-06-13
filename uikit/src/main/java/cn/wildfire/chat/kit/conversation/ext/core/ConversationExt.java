@@ -7,12 +7,14 @@ package cn.wildfire.chat.kit.conversation.ext.core;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
@@ -24,6 +26,7 @@ public abstract class ConversationExt {
     protected Fragment fragment;
     private int index;
     protected Conversation conversation;
+    private String targetUser;
     protected MessageViewModel messageViewModel;
 
     /**
@@ -72,11 +75,12 @@ public abstract class ConversationExt {
      * @param fragment
      */
 
-    protected void onBind(Fragment fragment, MessageViewModel messageViewModel, Conversation conversation, ConversationExtension conversationExtension, int index) {
+    protected void onBind(Fragment fragment, MessageViewModel messageViewModel, Conversation conversation, String targetUser, ConversationExtension conversationExtension, int index) {
         this.activity = fragment.getActivity();
         this.fragment = fragment;
         this.messageViewModel = messageViewModel;
         this.conversation = conversation;
+        this.targetUser = targetUser;
         this.extension = conversationExtension;
         this.index = index;
     }
@@ -86,6 +90,7 @@ public abstract class ConversationExt {
         this.fragment = null;
         this.messageViewModel = null;
         this.conversation = null;
+        this.targetUser = null;
         this.extension = null;
     }
 
@@ -121,6 +126,13 @@ public abstract class ConversationExt {
             }
         }
         return notGrantedPermissions.toArray(new String[0]);
+    }
+
+    protected List<String> toUsers() {
+        if (TextUtils.isEmpty(this.targetUser)) {
+            return null;
+        }
+        return Collections.singletonList(this.targetUser);
     }
 
 }

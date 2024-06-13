@@ -19,9 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.MemoryFile;
 import android.os.Parcel;
-import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -39,8 +37,6 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -65,6 +61,7 @@ import java.util.concurrent.CountDownLatch;
 
 import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.UserSource;
+import cn.wildfirechat.ashmen.AshmenWrapper;
 import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.client.ICreateChannelCallback;
@@ -192,12 +189,12 @@ import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
-import cn.wildfirechat.utils.MemoryFileUtil;
 
 /**
  * Created by WF Chat on 2017/12/11.
  */
 
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class ChatManager {
     private static final String TAG = ChatManager.class.getName();
 
@@ -854,6 +851,12 @@ public class ChatManager {
     }
 
     public void unWatchOnlineState(int conversationType, String[] targets, GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
         try {
             mClient.unwatchOnlineState(conversationType, targets, new IGeneralCallback.Stub() {
                 @Override
@@ -2650,28 +2653,33 @@ public class ChatManager {
             mClient.recall(msg.messageUid, new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
-                    if (msg.messageId > 0) {
-                        Message recallMsg = mClient.getMessage(msg.messageId);
-                        msg.content = recallMsg.content;
-                        msg.sender = recallMsg.sender;
-                        msg.serverTime = recallMsg.serverTime;
+                    Message recallMsg = mClient.getMessage(msg.messageId);
+                    if (recallMsg == null) {
+                        msg.messageId = 0;
+                        msg.conversation = null;
+                        msg.content = null;
                     } else {
-                        MessagePayload payload = msg.content.encode();
-                        RecallMessageContent recallCnt = new RecallMessageContent();
-                        recallCnt.setOperatorId(userId);
-                        recallCnt.setMessageUid(msg.messageUid);
-                        recallCnt.fromSelf = true;
-                        recallCnt.setOriginalSender(msg.sender);
-                        recallCnt.setOriginalContent(payload.content);
-                        recallCnt.setOriginalContentType(payload.type);
-                        recallCnt.setOriginalExtra(payload.extra);
-                        recallCnt.setOriginalSearchableContent(payload.searchableContent);
-                        recallCnt.setOriginalMessageTimestamp(msg.serverTime);
-                        msg.content = recallCnt;
-                        msg.sender = userId;
-                        msg.serverTime = System.currentTimeMillis();
+                        if (msg.messageId > 0) {
+                            msg.content = recallMsg.content;
+                            msg.sender = recallMsg.sender;
+                            msg.serverTime = recallMsg.serverTime;
+                        } else {
+                            MessagePayload payload = msg.content.encode();
+                            RecallMessageContent recallCnt = new RecallMessageContent();
+                            recallCnt.setOperatorId(userId);
+                            recallCnt.setMessageUid(msg.messageUid);
+                            recallCnt.fromSelf = true;
+                            recallCnt.setOriginalSender(msg.sender);
+                            recallCnt.setOriginalContent(payload.content);
+                            recallCnt.setOriginalContentType(payload.type);
+                            recallCnt.setOriginalExtra(payload.extra);
+                            recallCnt.setOriginalSearchableContent(payload.searchableContent);
+                            recallCnt.setOriginalMessageTimestamp(msg.serverTime);
+                            msg.content = recallCnt;
+                            msg.sender = userId;
+                            msg.serverTime = System.currentTimeMillis();
+                        }
                     }
-
                     mainHandler.post(() -> {
                         if (callback != null) {
                             callback.onSuccess();
@@ -6285,6 +6293,18 @@ public class ChatManager {
      * @param callback
      */
     public void quitGroup(String groupId, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
+        quitGroup(groupId, false, lines, notifyMsg, callback);;
+    }
+    /**
+     * 退出群组
+     *
+     * @param groupId
+     * @param keepMessage 是否保留消息
+     * @param lines
+     * @param notifyMsg
+     * @param callback
+     */
+    public void quitGroup(String groupId, boolean keepMessage, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         if (!checkRemoteService()) {
             if (callback != null)
                 callback.onFail(ErrorCode.SERVICE_DIED);
@@ -6302,7 +6322,7 @@ public class ChatManager {
             inlines[j] = lines.get(j);
         }
         try {
-            mClient.quitGroup(groupId, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
+            mClient.quitGroup(groupId, keepMessage, inlines, content2Payload(notifyMsg), new cn.wildfirechat.client.IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
                     if (callback != null) {
@@ -7786,6 +7806,27 @@ public class ChatManager {
     }
 
     /**
+     * 当前用户是否开启添加好友需要验证，默认为开启
+     *
+     * @return true，需要验证；false，不需要验证
+     */
+    public boolean isAddFriendNeedVerify() {
+        String value = this.getUserSetting(UserSettingScope.AddFriend_NoVerify, "");
+        return !"1".equals(value);
+    }
+
+    /**
+     * 修改当前用户是否开启添加好友需要验证功能
+     *
+     * @param enable   是否需要验证
+     * @param callback 结果回调
+     */
+    public void setAddFriendNeedVerify(boolean enable, GeneralCallback callback) {
+        this.setUserSetting(UserSettingScope.AddFriend_NoVerify, "", enable ? "0" : "1", callback);
+    }
+
+
+    /**
      * IM服务进程是否bind成功
      *
      * @return
@@ -8631,27 +8672,21 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return;
         }
-        MemoryFile memoryFile = null;
         try {
-            memoryFile = new MemoryFile(targetId, mediaData.length);
-            memoryFile.writeBytes(mediaData, 0, 0, memoryFile.length());
-            FileDescriptor fileDescriptor = MemoryFileUtil.getFileDescriptor(memoryFile);
-            ParcelFileDescriptor pdf = ParcelFileDescriptor.dup(fileDescriptor);
-            MemoryFile finalMemoryFile = memoryFile;
-            mClient.decodeSecretChatDataAsync(targetId, pdf, mediaData.length, new IGeneralCallbackInt.Stub() {
+            AshmenWrapper ashmenWrapper = AshmenWrapper.create(targetId, mediaData.length);
+            ashmenWrapper.writeBytes(mediaData, 0, mediaData.length);
+            AshmenWrapper finalAshmenHolder = ashmenWrapper;
+            mClient.decodeSecretChatDataAsync(targetId, ashmenWrapper, mediaData.length, new IGeneralCallbackInt.Stub() {
                 @Override
                 public void onSuccess(int length) throws RemoteException {
                     if (callback != null) {
                         // TODO ByteArrayOutputStream
                         byte[] data = new byte[length];
                         try {
-                            finalMemoryFile.readBytes(data, 0, 0, length);
+                            finalAshmenHolder.readBytes(data, 0, length);
                             callback.onSuccess(data);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            callback.onFail(-1);
                         } finally {
-                            finalMemoryFile.close();
+                            finalAshmenHolder.close();
                         }
                     }
                 }
@@ -8661,12 +8696,10 @@ public class ChatManager {
                     if (callback != null) {
                         callback.onFail(errorCode);
                     }
-                    finalMemoryFile.close();
+                    finalAshmenHolder.close();
                 }
             });
         } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }

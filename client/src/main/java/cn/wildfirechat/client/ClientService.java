@@ -23,9 +23,7 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.LocaleList;
 import android.os.Looper;
-import android.os.MemoryFile;
 import android.os.Parcel;
-import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
@@ -34,6 +32,7 @@ import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.tencent.mars.BaseEvent;
 import com.tencent.mars.Mars;
@@ -63,6 +62,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import cn.wildfirechat.ErrorCode;
+import cn.wildfirechat.ashmen.AshmenWrapper;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.MarkUnreadMessageContent;
 import cn.wildfirechat.message.MediaMessageContent;
@@ -128,7 +128,6 @@ import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.DefaultPortraitProvider;
 import cn.wildfirechat.remote.RecoverReceiver;
 import cn.wildfirechat.remote.UploadMediaCallback;
-import cn.wildfirechat.utils.MemoryFileHelper;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -222,6 +221,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private DefaultPortraitProvider defaultPortraitProvider;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private class ClientServiceStub extends IRemoteClient.Stub {
 
         @Override
@@ -2466,8 +2466,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void quitGroup(String groupId, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
-            ProtoLogic.quitGroup(groupId, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
+        public void quitGroup(String groupId, boolean keepMessage, int[] notifyLines, MessagePayload notifyMsg, final IGeneralCallback callback) throws RemoteException {
+            ProtoLogic.quitGroupEx(groupId, keepMessage, notifyLines, notifyMsg == null ? null : notifyMsg.toProtoContent(), new ProtoLogic.IGeneralCallback() {
                 @Override
                 public void onSuccess() {
                     try {
@@ -3578,24 +3578,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void decodeSecretChatDataAsync(String targetId, ParcelFileDescriptor pfd, int length, IGeneralCallbackInt callback) throws RemoteException {
-            MemoryFile memoryFile = MemoryFileHelper.openMemoryFile(pfd, length, MemoryFileHelper.OPEN_READWRITE);
-            byte[] data = new byte[length];
+        public void decodeSecretChatDataAsync(String targetId, AshmenWrapper ashmenHolder, int length, IGeneralCallbackInt callback) throws RemoteException {
             try {
-                memoryFile.readBytes(data, 0, 0, data.length);
+                byte[] data = new byte[length];
+                ashmenHolder.readBytes(data, 0, length);
                 data = ProtoLogic.decodeSecretChatData(targetId, data);
-                memoryFile.writeBytes(data, 0, 0, data.length);
+                ashmenHolder.writeBytes(data, 0, data.length);
+                ashmenHolder.close();
                 if (callback != null) {
                     callback.onSuccess(data.length);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 if (callback != null) {
                     callback.onFailure(-1);
-                }
-            } finally {
-                if (memoryFile != null) {
-                    memoryFile.close();
                 }
             }
         }
@@ -3701,12 +3697,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         groupInfo.extra = protoGroupInfo.getExtra();
         groupInfo.remark = protoGroupInfo.getRemark();
         groupInfo.updateDt = protoGroupInfo.getUpdateDt();
+        groupInfo.memberDt = protoGroupInfo.getMemberDt();
         groupInfo.mute = protoGroupInfo.getMute();
         groupInfo.joinType = protoGroupInfo.getJoinType();
         groupInfo.privateChat = protoGroupInfo.getPrivateChat();
         groupInfo.searchable = protoGroupInfo.getSearchable();
         groupInfo.historyMessage = protoGroupInfo.getHistoryMessage();
         groupInfo.maxMemberCount = protoGroupInfo.getMaxMemberCount();
+        groupInfo.superGroup = protoGroupInfo.getSuperGroup();
+        groupInfo.deleted = protoGroupInfo.getDeleted();
 
         groupInfo.portrait = protoGroupInfo.getPortrait();
         if (TextUtils.isEmpty(groupInfo.portrait) && defaultPortraitProvider != null) {
@@ -3846,7 +3845,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     public MessageContent messageContentFromPayload(MessagePayload payload, String from) {
-        if (rawMsg) {
+        if (rawMsg && (payload.type < 400 || payload.type >= 500)) {
             RawMessageContent rawMessageContent = new RawMessageContent();
             rawMessageContent.payload = payload;
             return rawMessageContent;
