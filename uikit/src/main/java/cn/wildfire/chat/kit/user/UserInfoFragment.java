@@ -60,8 +60,10 @@ import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.utils.WfcUtils;
 
 public class UserInfoFragment extends Fragment {
     ImageView portraitImageView;
@@ -85,6 +87,7 @@ public class UserInfoFragment extends Fragment {
     View momentButton;
 
     TextView favContactTextView;
+    TextView orgTextView;
 
     private UserInfo userInfo;
     private String groupId;
@@ -151,6 +154,7 @@ public class UserInfoFragment extends Fragment {
         qrCodeOptionItemView = view.findViewById(R.id.qrCodeOptionItemView);
         momentButton = view.findViewById(R.id.momentButton);
         favContactTextView = view.findViewById(R.id.favContactTextView);
+        orgTextView = view.findViewById(R.id.orgTextView);
     }
 
     private void init() {
@@ -210,6 +214,14 @@ public class UserInfoFragment extends Fragment {
         }
         if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
             loadOrganizationData();
+        }
+        if (WfcUtils.isExternalTarget(userInfo.uid)) {
+            String domainId = WfcUtils.getExternalDomainId(userInfo.uid);
+            DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, true);
+            if (domainInfo != null) {
+                orgTextView.setVisibility(View.VISIBLE);
+                orgTextView.setText(WfcUtils.buildExternalDisplayNameSpannableString("@" + domainInfo.name));
+            }
         }
     }
 
