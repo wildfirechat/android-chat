@@ -447,7 +447,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 //        }
         GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
 
-        nameTextView.setText(groupViewModel.getGroupMemberDisplayName(conversation.target, sender));
+        nameTextView.setText(groupViewModel.getGroupMemberDisplayNameEx(conversation.target, sender));
         nameTextView.setTag(sender);
     }
 

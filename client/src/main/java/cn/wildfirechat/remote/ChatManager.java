@@ -117,6 +117,7 @@ import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.MessageContentMediaType;
 import cn.wildfirechat.message.MultiCallOngoingMessageContent;
+import cn.wildfirechat.message.NotDeliveredMessageContent;
 import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.PTextMessageContent;
 import cn.wildfirechat.message.RawMessageContent;
@@ -193,6 +194,7 @@ import cn.wildfirechat.model.Socks5ProxyInfo;
 import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
+import cn.wildfirechat.utils.WfcUtils;
 
 /**
  * Created by WF Chat on 2017/12/11.
@@ -1645,7 +1647,7 @@ public class ChatManager {
      * 获取外域信息
      *
      * @param domainId
-     * @param refresh   是否刷新域信息。为true时，会从服务器拉取最新的域信息，如果有更新，则会通过{@link OnDomainInfoUpdateListener}回调更新后的信息
+     * @param refresh  是否刷新域信息。为true时，会从服务器拉取最新的域信息，如果有更新，则会通过{@link OnDomainInfoUpdateListener}回调更新后的信息
      * @return 域信息，可能为null
      */
     public @Nullable
@@ -1959,7 +1961,7 @@ public class ChatManager {
         domainInfoUpdateListeners.add(listener);
     }
 
-    public void removeDomainInfoUpdateListener(OnUserOnlineEventListener listener) {
+    public void removeDomainInfoUpdateListener(OnDomainInfoUpdateListener listener) {
         domainInfoUpdateListeners.remove(listener);
     }
 
@@ -4498,6 +4500,8 @@ public class ChatManager {
         }
         if (!TextUtils.isEmpty(userInfo.groupAlias)) {
             return userInfo.groupAlias;
+        } else if (WfcUtils.isExternalTarget(memberId)) {
+            return this.getExternalUserDisplayName(memberId);
         } else if (!TextUtils.isEmpty(userInfo.friendAlias)) {
             return userInfo.friendAlias;
         } else if (!TextUtils.isEmpty(userInfo.displayName)) {
@@ -4509,6 +4513,8 @@ public class ChatManager {
     public String getGroupMemberDisplayName(UserInfo userInfo) {
         if (!TextUtils.isEmpty(userInfo.groupAlias)) {
             return userInfo.groupAlias;
+        } else if (WfcUtils.isExternalTarget(userInfo.uid)) {
+            return this.getExternalUserDisplayName(userInfo.uid);
         } else if (!TextUtils.isEmpty(userInfo.friendAlias)) {
             return userInfo.friendAlias;
         } else if (!TextUtils.isEmpty(userInfo.displayName)) {
@@ -4521,7 +4527,9 @@ public class ChatManager {
         if (userInfo == null) {
             return "";
         }
-        if (!TextUtils.isEmpty(userInfo.friendAlias)) {
+        if (WfcUtils.isExternalTarget(userInfo.uid)) {
+            return this.getExternalUserDisplayName(userInfo.uid);
+        } else if (!TextUtils.isEmpty(userInfo.friendAlias)) {
             return userInfo.friendAlias;
         } else if (!TextUtils.isEmpty(userInfo.displayName)) {
             return userInfo.displayName;
@@ -6425,8 +6433,10 @@ public class ChatManager {
      * @param callback
      */
     public void quitGroup(String groupId, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
-        quitGroup(groupId, false, lines, notifyMsg, callback);;
+        quitGroup(groupId, false, lines, notifyMsg, callback);
+        ;
     }
+
     /**
      * 退出群组
      *
@@ -9308,6 +9318,7 @@ public class ChatManager {
         registerMessageContent(ChannelMenuEventMessageContent.class);
         registerMessageContent(StreamingTextGeneratingMessageContent.class);
         registerMessageContent(StreamingTextGeneratedMessageContent.class);
+        registerMessageContent(NotDeliveredMessageContent.class);
     }
 
     private MessageContent contentOfType(int type) {
@@ -9383,5 +9394,14 @@ public class ChatManager {
         }
         Log.d(TAG, "*************** SDK检查 *****************");
         return true;
+    }
+
+    private String getExternalUserDisplayName(String userId) {
+        String domainId = WfcUtils.getExternalDomainId(userId);
+        DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, false);
+        String domainName = domainInfo != null ? domainInfo.name : "<" + domainId + ">";
+        UserInfo userInfo = getUserInfo(userId, false);
+        String userDisplayName = TextUtils.isEmpty(userInfo.displayName) ? "<" + userId + ">" : userInfo.displayName;
+        return userDisplayName + "@" + domainName;
     }
 }

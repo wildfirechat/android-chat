@@ -35,15 +35,15 @@ public class SingleConversationViewHolder extends ConversationViewHolder {
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
         UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversationInfo.conversation.target, false);
         UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
-        String name = userViewModel.getUserDisplayName(userInfo);
+        CharSequence name = userViewModel.getUserDisplayNameEx(userInfo);
         String portrait;
         portrait = userInfo.portrait;
         Glide
-                .with(fragment)
-                .load(portrait)
-                .placeholder(R.mipmap.avatar_def)
-                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
-                .into(portraitImageView);
+            .with(fragment)
+            .load(portrait)
+            .placeholder(R.mipmap.avatar_def)
+            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
+            .into(portraitImageView);
         nameTextView.setText(name);
     }
 

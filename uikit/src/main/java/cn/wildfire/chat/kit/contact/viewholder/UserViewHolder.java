@@ -55,7 +55,7 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
             categoryTextView.setVisibility(View.GONE);
         }
         UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
-        nameTextView.setText(userViewModel.getUserDisplayName(userInfo.getUserInfo()));
+        nameTextView.setText(userViewModel.getUserDisplayNameEx(userInfo.getUserInfo()));
         if (!TextUtils.isEmpty(userInfo.getDesc())) {
             descTextView.setVisibility(View.VISIBLE);
             descTextView.setText(userInfo.getDesc());

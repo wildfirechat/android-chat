@@ -14,6 +14,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfirechat.message.AddParticipantsMessageContent;
+import cn.wildfirechat.message.NotDeliveredMessageContent;
 import cn.wildfirechat.message.notification.AddGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupNameNotificationContent;
 import cn.wildfirechat.message.notification.ChangeGroupPortraitNotificationContent;
@@ -64,7 +65,8 @@ import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationConten
     GroupMuteMemberNotificationContent.class,
     GroupAllowMemberNotificationContent.class,
     AddParticipantsMessageContent.class,
-    StartSecretChatMessageContent.class
+    StartSecretChatMessageContent.class,
+    NotDeliveredMessageContent.class
     // TODO add more
 
 })

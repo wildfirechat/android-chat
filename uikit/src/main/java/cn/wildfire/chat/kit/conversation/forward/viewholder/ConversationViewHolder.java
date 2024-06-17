@@ -51,7 +51,7 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
             UserInfo userInfo = userViewModel.getUserInfo(conversation.target, false);
             if (userInfo != null) {
                 Glide.with(fragment).load(userInfo.portrait).apply(new RequestOptions().centerCrop().placeholder(R.mipmap.avatar_def)).into(portraitImageView);
-                nameTextView.setText(userViewModel.getUserDisplayName(userInfo));
+                nameTextView.setText(userViewModel.getUserDisplayNameEx(userInfo));
             }
         } else {
             GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
