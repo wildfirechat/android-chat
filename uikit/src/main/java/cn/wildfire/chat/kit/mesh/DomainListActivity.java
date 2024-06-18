@@ -7,11 +7,11 @@ package cn.wildfire.chat.kit.mesh;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 
-public class ExternalOrganizationListActivity extends WfcBaseActivity {
+public class DomainListActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        ExternalOrganizationListFragment fragment = new ExternalOrganizationListFragment();
+        DomainListFragment fragment = new DomainListFragment();
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, fragment)
             .commit();

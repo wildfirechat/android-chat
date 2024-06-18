@@ -16,15 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.mesh.viewholder.ExternalOrganizationViewHolder;
+import cn.wildfire.chat.kit.mesh.viewholder.DomainViewHolder;
 import cn.wildfirechat.model.DomainInfo;
 
-public class ExternalOrganizationListAdapter extends RecyclerView.Adapter<ExternalOrganizationViewHolder> {
+public class DomainListAdapter extends RecyclerView.Adapter<DomainViewHolder> {
     private Fragment fragment;
     private List<DomainInfo> domainInfos = new ArrayList<>();
     private OnExternalOrganizationClickListener onExternalOrganizationClickListener;
 
-    public ExternalOrganizationListAdapter(Fragment fragment) {
+    public DomainListAdapter(Fragment fragment) {
         this.fragment = fragment;
     }
 
@@ -38,12 +38,12 @@ public class ExternalOrganizationListAdapter extends RecyclerView.Adapter<Extern
 
     @NonNull
     @Override
-    public ExternalOrganizationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ExternalOrganizationViewHolder holder;
+    public DomainViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        DomainViewHolder holder;
         View view;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         view = inflater.inflate(R.layout.organization_item_organization, parent, false);
-        holder = new ExternalOrganizationViewHolder(view);
+        holder = new DomainViewHolder(view);
         view.setOnClickListener(v -> {
             if (onExternalOrganizationClickListener != null) {
                 int position = holder.getAdapterPosition();
@@ -54,13 +54,13 @@ public class ExternalOrganizationListAdapter extends RecyclerView.Adapter<Extern
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ExternalOrganizationViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DomainViewHolder holder, int position) {
         holder.onBind(this.domainInfos.get(position));
     }
 
     @Override
     public int getItemViewType(int position) {
-        return R.layout.organization_item_organization;
+        return R.layout.domain_item;
     }
 
     @Override

@@ -14,11 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.model.DomainInfo;
 
-public class ExternalOrganizationViewHolder extends RecyclerView.ViewHolder {
+public class DomainViewHolder extends RecyclerView.ViewHolder {
     private TextView nameTextView;
     private ImageView portraitImageView;
 
-    public ExternalOrganizationViewHolder(@NonNull View itemView) {
+    public DomainViewHolder(@NonNull View itemView) {
         super(itemView);
         this.nameTextView = itemView.findViewById(R.id.nameTextView);
         this.portraitImageView = itemView.findViewById(R.id.portraitImageView);

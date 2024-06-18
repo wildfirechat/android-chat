@@ -19,22 +19,22 @@ import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.model.DomainInfo;
 
-public class ExternalOrganizationListFragment extends ProgressFragment implements ExternalOrganizationListAdapter.OnExternalOrganizationClickListener {
+public class DomainListFragment extends ProgressFragment implements DomainListAdapter.OnExternalOrganizationClickListener {
     private RecyclerView recyclerView;
-    private ExternalOrganizationListAdapter adapter;
+    private DomainListAdapter adapter;
 
     private ContactViewModel contactViewModel;
 
     @Override
     protected int contentLayout() {
-        return R.layout.external_organization_list_fragment;
+        return R.layout.domain_list_fragment;
     }
 
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
         recyclerView = view.findViewById(R.id.recyclerView);
-        adapter = new ExternalOrganizationListAdapter(this);
+        adapter = new DomainListAdapter(this);
         adapter.setOnExternalOrganizationClickListener(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
@@ -46,7 +46,7 @@ public class ExternalOrganizationListFragment extends ProgressFragment implement
 
     @Override
     public void onExternalOrganizationClick(DomainInfo domainInfo) {
-        Intent intent = new Intent(getContext(), ExternalOrganizationInfoActivity.class);
+        Intent intent = new Intent(getContext(), DomainInfoActivity.class);
         intent.putExtra("domainInfo", domainInfo);
         startActivity(intent);
     }

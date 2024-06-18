@@ -309,10 +309,10 @@
             android:label="选取组织成员" />
 
         <activity
-            android:name=".mesh.ExternalOrganizationListActivity"
+            android:name=".mesh.DomainListActivity"
             android:label="外部单位列表" />
         <activity
-            android:name=".mesh.ExternalOrganizationInfoActivity"
+            android:name=".mesh.DomainInfoActivity"
             android:label="外部单位详情" />
 
         <provider
