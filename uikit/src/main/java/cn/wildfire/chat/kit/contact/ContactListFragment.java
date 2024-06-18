@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
@@ -48,7 +49,6 @@ import cn.wildfirechat.remote.ChatManager;
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private boolean pick = false;
     private boolean showChannel = true;
-    private boolean showExternalDomain = true;
     // 临时方案，如果本地缓存了组织结构信息，应当更新
     private boolean isRootOrganizationLoaded = false;
     private boolean isMyOrganizationLoaded = false;
@@ -146,9 +146,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         if (showChannel) {
             addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
         }
-        if (showExternalDomain) {
-            addHeaderViewHolder(ExternalDomainViewHolder.class, R.layout.contact_header_external_domain, null);
-        }
+        addHeaderViewHolder(ExternalDomainViewHolder.class, R.layout.contact_header_external_domain, null);
 
         if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
@@ -223,8 +221,12 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         } else if (holder instanceof DepartViewHolder) {
             showOrganizationMemberList(((DepartViewHolder) holder).getOrganization());
         } else if (holder instanceof ExternalDomainViewHolder) {
-            Intent intent = new Intent(getContext(), DomainListActivity.class);
-            startActivity(intent);
+            if (ChatManager.Instance().isEnableMesh()) {
+                Intent intent = new Intent(getContext(), DomainListActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(getContext(), "未开启服务互通功能", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
