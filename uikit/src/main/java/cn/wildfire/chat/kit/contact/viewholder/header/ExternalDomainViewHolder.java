@@ -13,10 +13,10 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 
-public class ExternalOrganizationViewHolder extends HeaderViewHolder<HeaderValue> {
+public class ExternalDomainViewHolder extends HeaderViewHolder<HeaderValue> {
     private TextView nameTextView;
 
-    public ExternalOrganizationViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
+    public ExternalDomainViewHolder(Fragment fragment, UserListAdapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         this.nameTextView = itemView.findViewById(R.id.nameTextView);
     }

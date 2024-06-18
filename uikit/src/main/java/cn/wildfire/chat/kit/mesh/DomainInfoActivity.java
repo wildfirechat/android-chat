@@ -5,7 +5,6 @@
 package cn.wildfire.chat.kit.mesh;
 
 import android.content.Intent;
-import android.widget.TextView;
 
 import androidx.lifecycle.ViewModelProvider;
 
@@ -16,13 +15,12 @@ import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.DomainInfo;
 
-public class ExternalOrganizationInfoActivity extends WfcBaseActivity {
+public class DomainInfoActivity extends WfcBaseActivity {
     private OptionItemView nameOptionItemView;
     private OptionItemView emailOptionItemView;
     private OptionItemView telOptionItemView;
     private OptionItemView addrOptionItemView;
     private OptionItemView descOptionItemView;
-    private TextView searchTextView;
 
     private ContactViewModel contactViewModel;
 
@@ -44,7 +42,7 @@ public class ExternalOrganizationInfoActivity extends WfcBaseActivity {
 
     @Override
     protected int contentLayout() {
-        return R.layout.external_organization_info_activity;
+        return R.layout.domain_info_activity;
     }
 
     @Override

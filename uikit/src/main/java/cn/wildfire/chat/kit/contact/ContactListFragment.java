@@ -30,13 +30,13 @@ import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
 import cn.wildfire.chat.kit.contact.viewholder.footer.ContactCountViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.ChannelViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.DepartViewHolder;
-import cn.wildfire.chat.kit.contact.viewholder.header.ExternalOrganizationViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.ExternalDomainViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.FriendRequestViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
-import cn.wildfire.chat.kit.mesh.ExternalOrganizationListActivity;
+import cn.wildfire.chat.kit.mesh.DomainListActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
@@ -186,7 +186,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             @Override
             public void onChanged(List<DomainInfo> domainInfos) {
                 if (domainInfos != null && !domainInfos.isEmpty()) {
-                    addHeaderViewHolder(ExternalOrganizationViewHolder.class, R.layout.contact_header_external_org, null);
+                    addHeaderViewHolder(ExternalDomainViewHolder.class, R.layout.contact_header_external_org, null);
                 }
             }
         });
@@ -227,8 +227,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             showOrganizationMemberList(((OrganizationViewHolder) holder).getOrganization());
         } else if (holder instanceof DepartViewHolder) {
             showOrganizationMemberList(((DepartViewHolder) holder).getOrganization());
-        } else if (holder instanceof ExternalOrganizationViewHolder) {
-            Intent intent = new Intent(getContext(), ExternalOrganizationListActivity.class);
+        } else if (holder instanceof ExternalDomainViewHolder) {
+            Intent intent = new Intent(getContext(), DomainListActivity.class);
             startActivity(intent);
         }
     }
