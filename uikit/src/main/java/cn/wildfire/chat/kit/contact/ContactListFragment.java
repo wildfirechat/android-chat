@@ -42,13 +42,13 @@ import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.model.ChannelInfo;
-import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ContactListFragment extends BaseUserListFragment implements QuickIndexBar.OnLetterUpdateListener {
     private boolean pick = false;
     private boolean showChannel = true;
+    private boolean showExternalDomain = true;
     // 临时方案，如果本地缓存了组织结构信息，应当更新
     private boolean isRootOrganizationLoaded = false;
     private boolean isMyOrganizationLoaded = false;
@@ -146,6 +146,10 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         if (showChannel) {
             addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
         }
+        if (showExternalDomain) {
+            addHeaderViewHolder(ExternalDomainViewHolder.class, R.layout.contact_header_external_domain, null);
+        }
+
         if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
@@ -181,15 +185,6 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
                 }
             });
         }
-
-        contactViewModel.loadRemoteDomains().observe(this, new Observer<List<DomainInfo>>() {
-            @Override
-            public void onChanged(List<DomainInfo> domainInfos) {
-                if (domainInfos != null && !domainInfos.isEmpty()) {
-                    addHeaderViewHolder(ExternalDomainViewHolder.class, R.layout.contact_header_external_org, null);
-                }
-            }
-        });
     }
 
     @Override

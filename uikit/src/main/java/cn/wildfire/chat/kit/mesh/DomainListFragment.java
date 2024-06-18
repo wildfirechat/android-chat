@@ -57,8 +57,13 @@ public class DomainListFragment extends ProgressFragment implements DomainListAd
             .observe(this, new Observer<List<DomainInfo>>() {
                 @Override
                 public void onChanged(List<DomainInfo> domainInfos) {
-                    adapter.setDomainInfos(domainInfos);
-                    showContent();
+                    if (domainInfos != null && !domainInfos.isEmpty()) {
+
+                        adapter.setDomainInfos(domainInfos);
+                        showContent();
+                    } else {
+                        showEmpty("没有外部单位");
+                    }
                 }
             });
     }
