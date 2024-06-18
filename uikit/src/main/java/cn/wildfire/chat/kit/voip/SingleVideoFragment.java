@@ -158,6 +158,9 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didCreateLocalVideoTrack() {
+        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+        // 设置 videoProcessor
+//        session.setBigVideoProcessor(new TestVideoProcessor());
     }
 
     @Override
