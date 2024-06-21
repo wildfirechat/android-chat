@@ -32,6 +32,9 @@ public interface MessageContentType {
     //流式文本消息
     int ContentType_Streaming_Text_Generated = 15;
 
+    // 消息未能送达
+    int ContentType_NOT_DELIVERED = 16;
+
 
     // 21, 23，24内部使用
     int ContentType_Dumy1 = 21;

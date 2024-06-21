@@ -42,7 +42,7 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
         this.adapter = adapter;
         bindViews(itemView);
         bindEvents(itemView);
-        userViewModel =ViewModelProviders.of(fragment).get(UserViewModel.class);
+        userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         contactViewModel = ViewModelProviders.of(fragment).get(ContactViewModel.class);
     }
 
@@ -73,8 +73,8 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
         this.friendRequest = friendRequest;
         UserInfo userInfo = userViewModel.getUserInfo(friendRequest.target, false);
 
-        if (userInfo != null && !TextUtils.isEmpty(userInfo.displayName)) {
-            nameTextView.setText(userInfo.displayName);
+        if (userInfo != null) {
+            nameTextView.setText(userViewModel.getUserDisplayNameEx(userInfo));
         } else {
             nameTextView.setText("<" + friendRequest.target + ">");
         }

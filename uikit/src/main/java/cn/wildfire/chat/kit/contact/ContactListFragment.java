@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
@@ -30,11 +31,13 @@ import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
 import cn.wildfire.chat.kit.contact.viewholder.footer.ContactCountViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.ChannelViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.DepartViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.ExternalDomainViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.FriendRequestViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
+import cn.wildfire.chat.kit.mesh.DomainListActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
@@ -143,6 +146,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         if (showChannel) {
             addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
         }
+        addHeaderViewHolder(ExternalDomainViewHolder.class, R.layout.contact_header_external_domain, null);
+
         if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
@@ -215,6 +220,13 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             showOrganizationMemberList(((OrganizationViewHolder) holder).getOrganization());
         } else if (holder instanceof DepartViewHolder) {
             showOrganizationMemberList(((DepartViewHolder) holder).getOrganization());
+        } else if (holder instanceof ExternalDomainViewHolder) {
+            if (ChatManager.Instance().isEnableMesh()) {
+                Intent intent = new Intent(getContext(), DomainListActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(getContext(), "未开启服务互通功能", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

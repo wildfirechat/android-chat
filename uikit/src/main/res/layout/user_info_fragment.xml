@@ -11,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/selector_common_item"
+        android:gravity="center_vertical"
         android:paddingLeft="16dp"
+        android:paddingTop="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp">
 
@@ -19,7 +21,6 @@
             android:id="@+id/portraitImageView"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginTop="14dp"
             android:scaleType="centerCrop"
             android:src="@mipmap/avatar_def" />
 
@@ -27,7 +28,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="18dp"
-            android:layout_marginTop="18dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -84,6 +84,15 @@
                 android:textColor="@color/black1"
                 android:textSize="14sp" />
 
+            <TextView
+                android:id="@+id/orgTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:visibility="gone"
+                android:text="组织"
+                android:textColor="@color/black1"
+                android:textSize="14sp" />
 
         </LinearLayout>
 
@@ -118,8 +127,8 @@
             android:id="@+id/orgOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
-            app:desc="前端研发组"
             android:visibility="gone"
+            app:desc="前端研发组"
             app:show_arrow_indicator="true"
             app:title="部门" />
 

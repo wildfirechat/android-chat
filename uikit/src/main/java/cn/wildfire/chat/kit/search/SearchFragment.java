@@ -6,11 +6,13 @@ package cn.wildfire.chat.kit.search;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,20 +30,26 @@ public class SearchFragment extends Fragment {
     RecyclerView recyclerView;
     LinearLayout emptyLinearLayout;
     LinearLayout descLinearLayout;
+    TextView searchTipTextView;
     private SearchResultAdapter adapter;
     private SearchViewModel searchViewModel;
     private Observer<SearchResult> searchResultObserver = this::onSearchResult;
     private InputMethodManager inputManager;
 
     private boolean hideSearchDescView = false;
+    private String searchTip;
 
     public static final String HIDE_SEARCH_DESC_VIEW = "hideSearchDescView";
+    public static final String SEARCH_TIP = "searchTip";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        hideSearchDescView = args != null && args.getBoolean(HIDE_SEARCH_DESC_VIEW);
+        if (args != null) {
+            hideSearchDescView = args.getBoolean(HIDE_SEARCH_DESC_VIEW);
+            searchTip = args.getString(SEARCH_TIP);
+        }
     }
 
     @Nullable
@@ -58,7 +66,11 @@ public class SearchFragment extends Fragment {
                 inputManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
-        descLinearLayout.setVisibility(hideSearchDescView ? View.GONE: View.VISIBLE);
+        descLinearLayout.setVisibility(hideSearchDescView ? View.GONE : View.VISIBLE);
+
+        if (!TextUtils.isEmpty(searchTip)) {
+            searchTipTextView.setText(searchTip);
+        }
         return view;
     }
 
@@ -66,6 +78,7 @@ public class SearchFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         emptyLinearLayout = view.findViewById(R.id.emptyLinearLayout);
         descLinearLayout = view.findViewById(R.id.descLinearLayout);
+        searchTipTextView = view.findViewById(R.id.searchTipTextView);
     }
 
 

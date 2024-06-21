@@ -40,6 +40,10 @@ public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
         return false;
     }
 
+    protected String searchTip() {
+        return null;
+    }
+
     /**
      * 子类如果替换布局，它的布局中必须要包含 R.layout.search_bar
      *
@@ -78,6 +82,7 @@ public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
         searchFragment = new SearchFragment();
         Bundle args = new Bundle();
         args.putBoolean(SearchFragment.HIDE_SEARCH_DESC_VIEW, hideSearchDescView());
+        args.putString(SearchFragment.SEARCH_TIP, searchTip());
         searchFragment.setArguments(args);
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, searchFragment)

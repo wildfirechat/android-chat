@@ -6,11 +6,15 @@ package cn.wildfire.chat.kit.conversation;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -147,7 +151,7 @@ public class ConversationFragment extends Fragment implements
     private long firstUnreadMessageId;
     // 实现定向消息，主要用户频道主发起针对某个用户的会话
     private String targetUser;
-    private String conversationTitle = "";
+    private CharSequence conversationTitle = "";
     private LinearLayoutManager layoutManager;
 
     // for group
@@ -766,7 +770,7 @@ public class ConversationFragment extends Fragment implements
                         String userId = userViewModel.getUserId();
                         UserInfo userInfo = userViewModel.getUserInfo(userId, false);
                         if (userInfo != null) {
-                            content.tip = String.format(welcome, userViewModel.getUserDisplayName(userInfo));
+                            content.tip = String.format(welcome, userViewModel.getUserDisplayNameEx(userInfo));
                         } else {
                             content.tip = String.format(welcome, "<" + userId + ">");
                         }
@@ -789,7 +793,7 @@ public class ConversationFragment extends Fragment implements
         String userId = userViewModel.getUserId();
         UserInfo userInfo = userViewModel.getUserInfo(userId, false);
         if (userInfo != null) {
-            content.tip = String.format(welcome, userViewModel.getUserDisplayName(userInfo));
+            content.tip = String.format(welcome, userViewModel.getUserDisplayNameEx(userInfo));
         } else {
             content.tip = String.format(welcome, "<" + userId + ">");
         }
@@ -817,7 +821,7 @@ public class ConversationFragment extends Fragment implements
 
         if (conversation.type == Conversation.ConversationType.Single) {
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(conversation.target, false);
-            conversationTitle = userViewModel.getUserDisplayName(userInfo);
+            conversationTitle = userViewModel.getUserDisplayNameEx(userInfo);
 
             UserOnlineState userOnlineState = ChatManager.Instance().getUserOnlineStateMap().get(userInfo.uid);
             if (userOnlineState != null) {
@@ -840,7 +844,7 @@ public class ConversationFragment extends Fragment implements
             if (!TextUtils.isEmpty(targetUser)) {
                 UserInfo channelPrivateChatUserInfo = userViewModel.getUserInfo(targetUser, false);
                 if (channelPrivateChatUserInfo != null) {
-                    conversationTitle = userViewModel.getUserDisplayName(channelPrivateChatUserInfo) + "@" + conversationTitle;
+                    conversationTitle = userViewModel.getUserDisplayNameEx(channelPrivateChatUserInfo) + "@" + conversationTitle;
                 } else {
                     conversationTitle = "<" + targetUser + ">" + "@" + conversationTitle;
                 }
@@ -854,7 +858,7 @@ public class ConversationFragment extends Fragment implements
         setActivityTitle(conversationTitle);
     }
 
-    private void setActivityTitle(String title) {
+    private void setActivityTitle(CharSequence title) {
         Activity activity = getActivity();
         if (activity != null) {
             activity.setTitle(title);
@@ -912,7 +916,7 @@ public class ConversationFragment extends Fragment implements
             inputPanel.editText.getEditableText().append(" ");
             inputPanel.editText.getEditableText().replace(position, position + 1, spannableString);
         } else {
-            inputPanel.editText.getEditableText().append(userViewModel.getUserDisplayName(userInfo));
+            inputPanel.editText.getEditableText().append(userViewModel.getUserDisplayNameEx(userInfo));
         }
     }
 
