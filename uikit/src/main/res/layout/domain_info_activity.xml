@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/nameOptionItemView"
+        style="@style/OptionItem"
+        android:background="@drawable/selector_option_item"
+        app:desc="野火线上"
+        app:show_divider="true"
+        app:title="名称" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/emailOptionItemView"
+        style="@style/OptionItem"
+        android:background="@drawable/selector_option_item"
+        app:show_divider="true"
+        app:title="邮箱" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/telOptionItemView"
+        style="@style/OptionItem"
+        android:background="@drawable/selector_option_item"
+        app:show_divider="true"
+        app:title="电话" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/addrOptionItemView"
+        style="@style/OptionItem"
+        android:background="@drawable/selector_option_item"
+        app:show_divider="true"
+        app:title="地址" />
+
+    <cn.wildfire.chat.kit.widget.OptionItemView
+        android:id="@+id/descOptionItemView"
+        style="@style/OptionItem"
+        android:background="@drawable/selector_option_item"
+        app:show_divider="true"
+        app:title="描述" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/option_item_margin_top"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <View style="@style/Line" />
+
+        <TextView
+            android:id="@+id/searchTextView"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_option_item"
+            android:gravity="center"
+            android:text="在本单位中查找用户"
+            android:textColor="@color/black1"
+            android:textSize="16sp" />
+
+        <View style="@style/Line" />
+    </LinearLayout>
+</LinearLayout>

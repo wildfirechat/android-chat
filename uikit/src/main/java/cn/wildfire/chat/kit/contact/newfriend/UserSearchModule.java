@@ -21,11 +21,22 @@ import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.SearchUserCallback;
 
 public class UserSearchModule extends SearchableModule<UserInfo, UserViewHolder> {
+    private DomainInfo domainInfo;
+
+    public UserSearchModule(DomainInfo domainInfo) {
+        this.domainInfo = domainInfo;
+    }
+
+    public UserSearchModule() {
+
+    }
+
     @Override
     public UserViewHolder onCreateViewHolder(Fragment fragment, @NonNull ViewGroup parent, int viewType) {
         View itemView;
@@ -62,25 +73,40 @@ public class UserSearchModule extends SearchableModule<UserInfo, UserViewHolder>
 
     @Override
     public String category() {
-        return null;
+        return this.domainInfo == null ? "在本单位搜索用户" : "在 " + domainInfo.name + " 搜索用户";
     }
 
     @Override
     public List<UserInfo> search(String keyword) {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         List<UserInfo> userInfos = new ArrayList<>();
-        ChatManager.Instance().searchUser(keyword, ChatManager.SearchUserType.General, 0, new SearchUserCallback() {
-            @Override
-            public void onSuccess(List<UserInfo> infos) {
-                userInfos.addAll(infos);
-                countDownLatch.countDown();
-            }
+        if (this.domainInfo == null) {
+            ChatManager.Instance().searchUser(keyword, ChatManager.SearchUserType.General, 0, new SearchUserCallback() {
+                @Override
+                public void onSuccess(List<UserInfo> infos) {
+                    userInfos.addAll(infos);
+                    countDownLatch.countDown();
+                }
 
-            @Override
-            public void onFail(int errorCode) {
-                countDownLatch.countDown();
-            }
-        });
+                @Override
+                public void onFail(int errorCode) {
+                    countDownLatch.countDown();
+                }
+            });
+        } else {
+            ChatManager.Instance().searchUserEx(this.domainInfo.domainId, keyword, ChatManager.SearchUserType.General, 0, new SearchUserCallback() {
+                @Override
+                public void onSuccess(List<UserInfo> infos) {
+                    userInfos.addAll(infos);
+                    countDownLatch.countDown();
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    countDownLatch.countDown();
+                }
+            });
+        }
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {

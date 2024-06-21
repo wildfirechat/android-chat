@@ -51,6 +51,7 @@ import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.UploadMediaCallback;
+import cn.wildfirechat.utils.WfcUtils;
 
 public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListener, OnGroupMembersUpdateListener, OnReceiveMessageListener {
     private MutableLiveData<List<GroupInfo>> groupInfoUpdateLiveData;
@@ -523,6 +524,15 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
 
     public String getGroupMemberDisplayName(String groupId, String memberId) {
         return ChatManager.Instance().getGroupMemberDisplayName(groupId, memberId);
+    }
+
+    public CharSequence getGroupMemberDisplayNameEx(String groupId, String memberId) {
+        String displayName = ChatManager.Instance().getGroupMemberDisplayName(groupId, memberId);
+        if (WfcUtils.isExternalTarget(memberId)) {
+            return WfcUtils.buildExternalDisplayNameSpannableString(displayName);
+        } else {
+            return displayName;
+        }
     }
 
     public MutableLiveData<OperateResult<List<GroupInfo>>> getFavGroups() {
