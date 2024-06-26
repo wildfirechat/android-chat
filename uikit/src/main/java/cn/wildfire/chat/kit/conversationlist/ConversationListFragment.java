@@ -29,6 +29,7 @@ import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.UserInfo;
@@ -102,6 +103,14 @@ public class ConversationListFragment extends ProgressFragment {
         userViewModel.userInfoLiveData().observe(this, new Observer<List<UserInfo>>() {
             @Override
             public void onChanged(List<UserInfo> userInfos) {
+                int start = layoutManager.findFirstVisibleItemPosition();
+                int end = layoutManager.findLastVisibleItemPosition();
+                adapter.notifyItemRangeChanged(start, end - start + 1);
+            }
+        });
+        userViewModel.domainInfoLiveData().observe(this, new Observer<DomainInfo>() {
+            @Override
+            public void onChanged(DomainInfo domainInfo) {
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
                 adapter.notifyItemRangeChanged(start, end - start + 1);
