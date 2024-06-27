@@ -85,7 +85,7 @@
                 android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/orgTextView"
+                android:id="@+id/externalDomainTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"

@@ -87,7 +87,7 @@ public class UserInfoFragment extends Fragment {
     View momentButton;
 
     TextView favContactTextView;
-    TextView orgTextView;
+    TextView externalDomainTextView;
 
     private UserInfo userInfo;
     private String groupId;
@@ -154,7 +154,7 @@ public class UserInfoFragment extends Fragment {
         qrCodeOptionItemView = view.findViewById(R.id.qrCodeOptionItemView);
         momentButton = view.findViewById(R.id.momentButton);
         favContactTextView = view.findViewById(R.id.favContactTextView);
-        orgTextView = view.findViewById(R.id.orgTextView);
+        externalDomainTextView = view.findViewById(R.id.externalDomainTextView);
     }
 
     private void init() {
@@ -219,8 +219,8 @@ public class UserInfoFragment extends Fragment {
             String domainId = WfcUtils.getExternalDomainId(userInfo.uid);
             DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, true);
             if (domainInfo != null) {
-                orgTextView.setVisibility(View.VISIBLE);
-                orgTextView.setText(WfcUtils.buildExternalDisplayNameSpannableString("@" + domainInfo.name));
+                externalDomainTextView.setVisibility(View.VISIBLE);
+                externalDomainTextView.setText(WfcUtils.buildExternalDisplayNameSpannableString("@" + domainInfo.name, 14));
             }
         }
     }

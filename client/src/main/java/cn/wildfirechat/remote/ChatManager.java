@@ -4542,6 +4542,26 @@ public class ChatManager {
         return getUserDisplayName(userInfo);
     }
 
+    public String getGroupDisplayName(String groupId) {
+        GroupInfo groupInfo = getGroupInfo(groupId, false);
+        return getGroupDisplayName(groupInfo);
+    }
+
+    public String getGroupDisplayName(GroupInfo groupInfo) {
+        if (groupInfo == null) {
+            return "群聊";
+        }
+        String name = !TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name;
+        if (WfcUtils.isExternalTarget(groupInfo.target)) {
+            String domainId = WfcUtils.getExternalDomainId(groupInfo.target);
+            DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, true);
+            if (domainInfo != null) {
+                name += " @" + domainInfo.name;
+            }
+        }
+        return name;
+    }
+
     /**
      * 获取好友别名
      *
@@ -9402,6 +9422,6 @@ public class ChatManager {
         String domainName = domainInfo != null ? domainInfo.name : "<" + domainId + ">";
         UserInfo userInfo = getUserInfo(userId, false);
         String userDisplayName = TextUtils.isEmpty(userInfo.displayName) ? "<" + userId + ">" : userInfo.displayName;
-        return userDisplayName + "@" + domainName;
+        return userDisplayName + " @" + domainName;
     }
 }

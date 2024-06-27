@@ -7,6 +7,8 @@ package cn.wildfirechat.utils;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 
 public class WfcUtils {
@@ -28,9 +30,12 @@ public class WfcUtils {
         return null;
     }
 
-    public static SpannableString buildExternalDisplayNameSpannableString(String name) {
+    public static SpannableString buildExternalDisplayNameSpannableString(String name, int spanSize) {
         SpannableString ss = new SpannableString(name);
-        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#F0A040")), name.indexOf("@"), name.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        int start = name.indexOf("@");
+        int end = name.length();
+        ss.setSpan(new ForegroundColorSpan(Color.parseColor("#F0A040")), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        ss.setSpan(new AbsoluteSizeSpan(spanSize, true), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         return ss;
     }
 }

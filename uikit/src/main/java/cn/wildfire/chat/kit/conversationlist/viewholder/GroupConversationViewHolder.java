@@ -4,7 +4,6 @@
 
 package cn.wildfire.chat.kit.conversationlist.viewholder;
 
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,6 +22,8 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.utils.WfcUtils;
 
 @ConversationInfoType(type = Conversation.ConversationType.Group, line = 0)
 @EnableContextMenu
@@ -36,28 +37,34 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
     }
 
     private void bindViews(View itemView) {
-        organizationGroupIndicator =itemView.findViewById(R.id.organizationGroupIndicator);
+        organizationGroupIndicator = itemView.findViewById(R.id.organizationGroupIndicator);
     }
 
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
         GroupInfo groupInfo = ChatManagerHolder.gChatManager.getGroupInfo(conversationInfo.conversation.target, false);
-        String name;
+        CharSequence name;
         String portrait;
         if (groupInfo != null) {
-            name = !TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name;
+            String tmpName = ChatManager.Instance().getGroupDisplayName(groupInfo);
             portrait = groupInfo.portrait;
             if (groupInfo.type == GroupInfo.GroupType.Organization) {
                 organizationGroupIndicator.setVisibility(View.VISIBLE);
             } else {
                 organizationGroupIndicator.setVisibility(View.GONE);
             }
+            if (WfcUtils.isExternalTarget(groupInfo.target)) {
+                name = WfcUtils.buildExternalDisplayNameSpannableString(tmpName, 14);
+            } else {
+                name = tmpName;
+            }
+
         } else {
             name = "群聊";
             portrait = null;
         }
 
-       Glide
+        Glide
             .with(fragment)
             .load(portrait)
             .placeholder(R.mipmap.ic_group_chat)
