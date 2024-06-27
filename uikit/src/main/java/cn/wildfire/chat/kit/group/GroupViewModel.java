@@ -526,10 +526,10 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return ChatManager.Instance().getGroupMemberDisplayName(groupId, memberId);
     }
 
-    public CharSequence getGroupMemberDisplayNameEx(String groupId, String memberId) {
+    public CharSequence getGroupMemberDisplayNameEx(String groupId, String memberId, int spanFontSize) {
         String displayName = ChatManager.Instance().getGroupMemberDisplayName(groupId, memberId);
         if (WfcUtils.isExternalTarget(memberId)) {
-            return WfcUtils.buildExternalDisplayNameSpannableString(displayName);
+            return WfcUtils.buildExternalDisplayNameSpannableString(displayName, spanFontSize);
         } else {
             return displayName;
         }

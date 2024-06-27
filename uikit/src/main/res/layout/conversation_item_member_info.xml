@@ -29,5 +29,17 @@
             android:text="1231"
             android:textColor="@color/gray1"
             android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/externalDomainTextView"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:visibility="gone"
+            android:text="1234"
+            android:textColor="#F0A040"
+            android:textSize="11sp" />
     </LinearLayout>
 </FrameLayout>

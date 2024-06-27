@@ -136,7 +136,7 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
     public CharSequence getUserDisplayNameEx(UserInfo userInfo) {
         String displayName = ChatManager.Instance().getUserDisplayName(userInfo);
         if (WfcUtils.isExternalTarget(userInfo.uid)) {
-            return WfcUtils.buildExternalDisplayNameSpannableString(displayName);
+            return WfcUtils.buildExternalDisplayNameSpannableString(displayName, 14);
         } else {
             return displayName;
         }
