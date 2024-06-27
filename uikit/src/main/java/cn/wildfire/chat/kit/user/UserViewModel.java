@@ -181,7 +181,7 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
 
     @Override
     public void onDomainInfoUpdate(DomainInfo domainInfo) {
-        if (domainInfo != null) {
+        if (domainInfo != null && domainInfoLiveData != null) {
             domainInfoLiveData.setValue(domainInfo);
         }
     }
