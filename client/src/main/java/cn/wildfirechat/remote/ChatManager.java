@@ -2487,8 +2487,13 @@ public class ChatManager {
 
                 @Override
                 public void onMediaUploaded(final String remoteUrl) throws RemoteException {
-                    MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
-                    mediaMessageContent.remoteUrl = remoteUrl;
+                    if(msg.content instanceof MediaMessageContent) {
+                        MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
+                        mediaMessageContent.remoteUrl = remoteUrl;
+                    } else if(msg.content instanceof RawMessageContent) {
+                        RawMessageContent rawMessageContent = (RawMessageContent) msg.content;
+                        rawMessageContent.payload.remoteMediaUrl = remoteUrl;
+                    }
                     if (msg.messageId == 0) {
                         return;
                     }
@@ -2559,9 +2564,18 @@ public class ChatManager {
         }
 
         MediaMessageUploadCallback mediaMessageUploadCallback = null;
-        if (msg.content instanceof MediaMessageContent) {
-            if (TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                String localPath = ((MediaMessageContent) msg.content).localPath;
+        if (msg.content instanceof MediaMessageContent || (msg.content instanceof RawMessageContent && !TextUtils.isEmpty(((RawMessageContent) msg.content).payload.localMediaPath))) {
+            String remoteUrl;
+            String localPath;
+            if(msg.content instanceof MediaMessageContent) {
+                remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
+                localPath = ((MediaMessageContent) msg.content).localPath;
+            } else {
+                remoteUrl = ((RawMessageContent) msg.content).payload.remoteMediaUrl;
+                localPath = ((RawMessageContent) msg.content).payload.localMediaPath;
+            }
+
+            if (TextUtils.isEmpty(remoteUrl)) {
                 if (!TextUtils.isEmpty(localPath)) {
                     File file = new File(localPath);
                     if (!file.exists()) {
@@ -2670,8 +2684,13 @@ public class ChatManager {
 
                 @Override
                 public void onMediaUploaded(final String remoteUrl) throws RemoteException {
-                    MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
-                    mediaMessageContent.remoteUrl = remoteUrl;
+                    if(msg.content instanceof MediaMessageContent) {
+                        MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
+                        mediaMessageContent.remoteUrl = remoteUrl;
+                    } else if(msg.content instanceof RawMessageContent) {
+                        RawMessageContent rawMessageContent = (RawMessageContent) msg.content;
+                        rawMessageContent.payload.remoteMediaUrl = remoteUrl;
+                    }
                     if (msg.messageId == 0) {
                         return;
                     }
