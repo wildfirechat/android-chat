@@ -6491,7 +6491,6 @@ public class ChatManager {
      */
     public void quitGroup(String groupId, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         quitGroup(groupId, false, lines, notifyMsg, callback);
-        ;
     }
 
     /**
@@ -9077,6 +9076,13 @@ public class ChatManager {
      */
     public void setUrlRedirectorClazz(Class<? extends UrlRedirector> clazz) {
         this.urlRedirectorClazz = clazz;
+        if (mClient != null) {
+            try {
+                mClient.setUrlRedirectorClass(clazz.getName());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private boolean checkRemoteService() {
@@ -9283,6 +9289,10 @@ public class ChatManager {
 
                     if (defaultPortraitProviderClazz != null) {
                         mClient.setDefaultPortraitProviderClass(defaultPortraitProviderClazz.getName());
+                    }
+
+                    if (urlRedirectorClazz!= null) {
+                        mClient.setUrlRedirectorClass(urlRedirectorClazz.getName());
                     }
 
                     mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
