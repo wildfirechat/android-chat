@@ -2364,6 +2364,23 @@ public class ChatManager {
     }
 
     /**
+     * 双网环境时，获取当前连接的网络类型
+     *
+     * @return 1 主网络；-1 备选网络；0 未知
+     */
+    public int getConnectedNetworkType() {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+        try {
+            return mClient.getConnectedNetworkType();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
      * 设置协议栈短连接UA。
      *
      * @param userAgent 协议栈短连接使用的UA
@@ -2488,10 +2505,10 @@ public class ChatManager {
 
                 @Override
                 public void onMediaUploaded(final String remoteUrl) throws RemoteException {
-                    if(msg.content instanceof MediaMessageContent) {
+                    if (msg.content instanceof MediaMessageContent) {
                         MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
                         mediaMessageContent.remoteUrl = remoteUrl;
-                    } else if(msg.content instanceof RawMessageContent) {
+                    } else if (msg.content instanceof RawMessageContent) {
                         RawMessageContent rawMessageContent = (RawMessageContent) msg.content;
                         rawMessageContent.payload.remoteMediaUrl = remoteUrl;
                     }
@@ -2568,7 +2585,7 @@ public class ChatManager {
         if (msg.content instanceof MediaMessageContent || (msg.content instanceof RawMessageContent && !TextUtils.isEmpty(((RawMessageContent) msg.content).payload.localMediaPath))) {
             String remoteUrl;
             String localPath;
-            if(msg.content instanceof MediaMessageContent) {
+            if (msg.content instanceof MediaMessageContent) {
                 remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
                 localPath = ((MediaMessageContent) msg.content).localPath;
             } else {
@@ -2685,10 +2702,10 @@ public class ChatManager {
 
                 @Override
                 public void onMediaUploaded(final String remoteUrl) throws RemoteException {
-                    if(msg.content instanceof MediaMessageContent) {
+                    if (msg.content instanceof MediaMessageContent) {
                         MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
                         mediaMessageContent.remoteUrl = remoteUrl;
-                    } else if(msg.content instanceof RawMessageContent) {
+                    } else if (msg.content instanceof RawMessageContent) {
                         RawMessageContent rawMessageContent = (RawMessageContent) msg.content;
                         rawMessageContent.payload.remoteMediaUrl = remoteUrl;
                     }
@@ -7792,6 +7809,26 @@ public class ChatManager {
 
         try {
             return mClient.getMessageCount(conversation);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * 根据会话类型获取消息条数
+     *
+     * @param conversationTypes 目标会话类型数组
+     * @param lines             目标会话线路数组
+     * @return 消息条数
+     */
+    public int getConversationMessageCount(int[] conversationTypes, int[] lines) {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+
+        try {
+            return mClient.getConversationMessageCount(conversationTypes, lines);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
