@@ -11,6 +11,9 @@ import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
 
+/**
+ * 默认头像提供者
+ */
 public interface DefaultPortraitProvider {
     String userDefaultPortrait(UserInfo info);
 
