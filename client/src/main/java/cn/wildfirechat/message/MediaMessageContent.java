@@ -6,6 +6,7 @@ package cn.wildfirechat.message;
 
 import android.os.Parcel;
 
+import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.message.core.MessagePayload;
 
 /**
@@ -29,7 +30,7 @@ public abstract class MediaMessageContent extends MessageContent {
     @Override
     public void decode(MessagePayload payload) {
         this.localPath = payload.localMediaPath;
-        this.remoteUrl = payload.remoteMediaUrl;
+        this.remoteUrl = ClientService.urlRedirect(payload.remoteMediaUrl);
         this.mediaType = payload.mediaType;
     }
 

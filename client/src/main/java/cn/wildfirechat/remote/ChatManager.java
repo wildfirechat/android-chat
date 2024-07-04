@@ -286,6 +286,7 @@ public class ChatManager {
     private Map<String, UserOnlineState> userOnlineStateMap;
 
     private Class<? extends DefaultPortraitProvider> defaultPortraitProviderClazz;
+    private Class<? extends UrlRedirector> urlRedirectorClazz;
 
     public enum SearchUserType {
         //模糊搜索displayName，精确搜索name或电话号码
@@ -9025,6 +9026,15 @@ public class ChatManager {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 双网环境时，设置媒体内容 url 转换器
+     *
+     * @param clazz
+     */
+    public void setUrlRedirectorClazz(Class<? extends UrlRedirector> clazz) {
+        this.urlRedirectorClazz = clazz;
     }
 
     private boolean checkRemoteService() {

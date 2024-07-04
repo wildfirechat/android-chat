@@ -337,4 +337,5 @@ interface IRemoteClient {
     oneway void decodeSecretChatDataAsync(in String targetId, in AshmenWrapper ashmenWrapper, in int length, in IGeneralCallbackInt callback);
 
     oneway void setDefaultPortraitProviderClass(in String clazz);
+    oneway void setUrlRedirectorClass(in String clazz);
 }
