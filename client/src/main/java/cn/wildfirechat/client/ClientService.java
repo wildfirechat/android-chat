@@ -130,6 +130,7 @@ import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.DefaultPortraitProvider;
 import cn.wildfirechat.remote.RecoverReceiver;
 import cn.wildfirechat.remote.UploadMediaCallback;
+import cn.wildfirechat.remote.UrlRedirector;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -3681,9 +3682,28 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
         }
 
+        public void setUrlRedirectorClass(String clazzName) {
+            try {
+                Class cls = Class.forName(clazzName);
+                urlRedirector = (UrlRedirector) cls.newInstance();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+
         @Override
         public boolean isConnectedToMainNetwork() throws RemoteException {
             return connectedToMainNetwork();
+        }
+    }
+
+    private static UrlRedirector urlRedirector;
+
+    public static String urlRedirect(String originalUrl) {
+        if (urlRedirector == null || TextUtils.isEmpty(originalUrl)) {
+            return originalUrl;
+        } else {
+            return urlRedirector.urlRedirect(originalUrl);
         }
     }
 

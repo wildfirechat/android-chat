@@ -69,6 +69,7 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             }
 
             ChatManager.Instance().setDefaultPortraitProviderClazz(WfcDefaultPortraitProvider.class);
+            ChatManager.Instance().setUrlRedirectorClazz(TestUrlRedirector.class);
             ChatManager.Instance().addConnectToServerListener(this);
 
             Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION = sp.getBoolean("audioMessageAmplificationEnabled", Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION);

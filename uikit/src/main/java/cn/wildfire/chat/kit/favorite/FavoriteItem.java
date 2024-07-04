@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.message.CompositeMessageContent;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.ImageMessageContent;
@@ -157,6 +158,8 @@ public class FavoriteItem {
             default:
                 break;
         }
+
+        item.url = ClientService.urlRedirect(item.url);
 
         return item;
     }
