@@ -9017,6 +9017,11 @@ public class ChatManager {
         return content;
     }
 
+    /**
+     * 设置默认头像生成器
+     *
+     * @param clazz
+     */
     public void setDefaultPortraitProviderClazz(Class<? extends DefaultPortraitProvider> clazz) {
         this.defaultPortraitProviderClazz = clazz;
         if (mClient != null) {
