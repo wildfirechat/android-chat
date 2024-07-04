@@ -81,6 +81,7 @@ interface IRemoteClient {
     void setBackupAddressStrategy(in int strategy);
     void setBackupAddress(in String host, in int port);
     void setProtoUserAgent(in String userAgent);
+    int getConnectedNetworkType();
     void addHttpHeader(in String header, in String value);
     void setLiteMode(in boolean isLiteMode);
     void setLowBPSMode(in boolean isLowBPSMode);
@@ -140,6 +141,8 @@ interface IRemoteClient {
 
     Message getMessage(in long messageId);
     Message getMessageByUid(in long messageUid);
+
+    int getConversationMessageCount(in int[] conversationTypes, in int[] lines);
 
     Message insertMessage(in Message message, in boolean notify);
     boolean updateMessageContent(in Message message);

@@ -403,6 +403,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public int getConnectedNetworkType() throws RemoteException {
+            return ProtoLogic.getConnectedNetworkType();
+        }
+
+        @Override
         public void setProtoUserAgent(String userAgent) throws RemoteException {
             ProtoLogic.setUserAgent(userAgent);
         }
@@ -3435,6 +3440,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public int getMessageCount(Conversation conversation) throws RemoteException {
             return ProtoLogic.getMessageCount(conversation.type.getValue(), conversation.target, conversation.line);
+        }
+
+        @Override
+        public int getConversationMessageCount(int[] conversationTypes, int[] lines) throws RemoteException {
+            return ProtoLogic.getConversationMessageCount(conversationTypes, lines);
         }
 
         @Override
