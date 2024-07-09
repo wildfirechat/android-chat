@@ -31,7 +31,6 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
     public static int routePort;
 
     public static String longLinkHost;
-    public static int longLinkPort;
 
     @Override
     public void onCreate() {
@@ -114,7 +113,6 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             routePort = port;
         } else {
             longLinkHost = host;
-            longLinkPort = port;
         }
     }
 }
