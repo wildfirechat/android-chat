@@ -3705,6 +3705,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public boolean isConnectedToMainNetwork() throws RemoteException {
             return connectedToMainNetwork();
         }
+
+        @Override
+        public int getLongLinkPort() throws RemoteException {
+            return StnLogic.getLonglinkPort();
+        }
+
+        @Override
+        public int getRouteErrorCode() throws RemoteException {
+            return StnLogic.getRouteCode();
+        }
     }
 
     private static UrlRedirector urlRedirector;
@@ -4670,7 +4680,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             onDomainInfoUpdatedCallbackList.finishBroadcast();
         });
-
     }
 //    // 只是大概大小
 //    private int getMessageLength(ProtoMessage message) {

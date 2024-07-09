@@ -79,7 +79,7 @@ public class DiagnoseActivity extends WfcBaseActivity {
         sb.append("\n");
         sb.append("Long-Link-Host: " + MyApp.longLinkHost);
         sb.append("\n");
-        sb.append("Long-Link-Port: " + MyApp.longLinkPort);
+        sb.append("Long-Link-Port: " + ChatManager.Instance().getLongLinkPort());
         sb.append("\n");
         sb.append("音视频 SDK: " + (AVEngineKit.isSupportConference() ? "高级版" : "多人版") + "\n");
         String ices = "";
@@ -159,7 +159,7 @@ public class DiagnoseActivity extends WfcBaseActivity {
             return;
         }
         String host = MyApp.longLinkHost;
-        int port = MyApp.longLinkPort;
+        int port = ChatManager.Instance().getLongLinkPort();
         ChatManager.Instance().getWorkHandler().post(() -> {
             try (Socket socket = new Socket(host, port)) {
                 diagnoseResultSB.append("IM-Server 长连接 tcp ping 正常");

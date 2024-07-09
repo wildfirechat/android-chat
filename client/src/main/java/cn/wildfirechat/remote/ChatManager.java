@@ -9085,6 +9085,38 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取长连接端口，长连接连接失败时，返回的是 route 返回的 im-server 配置的长连接端口
+     *
+     * @return 长连接端口
+     */
+    public int getLongLinkPort() {
+        if (mClient != null) {
+            try {
+                return mClient.getLongLinkPort();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 获取 route 请求的错误码
+     *
+     * @return route 请求错误码
+     */
+    public int getRouteErrorCode() {
+        if (mClient != null) {
+            try {
+                return mClient.getRouteErrorCode();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return 0;
+    }
+
     private boolean checkRemoteService() {
         if (INST != null) {
             if (mClient != null) {
@@ -9291,7 +9323,7 @@ public class ChatManager {
                         mClient.setDefaultPortraitProviderClass(defaultPortraitProviderClazz.getName());
                     }
 
-                    if (urlRedirectorClazz!= null) {
+                    if (urlRedirectorClazz != null) {
                         mClient.setUrlRedirectorClass(urlRedirectorClazz.getName());
                     }
 

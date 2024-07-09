@@ -341,4 +341,7 @@ interface IRemoteClient {
 
     oneway void setDefaultPortraitProviderClass(in String clazz);
     oneway void setUrlRedirectorClass(in String clazz);
+
+    int getLongLinkPort();
+    int getRouteErrorCode();
 }
