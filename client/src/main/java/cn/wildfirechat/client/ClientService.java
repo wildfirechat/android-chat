@@ -4060,7 +4060,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         SdtLogic.setCallBack(this);
         // Initialize the Mars PlatformComm
         handler = new Handler(Looper.getMainLooper());
-        Mars.init(getApplicationContext(), handler);
+        // https://github.com/wildfirechat/android-chat/issues/872
+        try {
+            Mars.init(getApplicationContext(), handler);
+        } catch (Exception e) {
+            // do nothing
+        }
 
         android.util.Log.d(TAG, "onnCreate");
         uploadingMap = new ConcurrentHashMap<>();
