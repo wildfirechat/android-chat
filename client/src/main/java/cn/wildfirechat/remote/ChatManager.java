@@ -6936,32 +6936,34 @@ public class ChatManager {
             return;
         }
 
-        try {
-            List<GroupMember> groupMemberList = new ArrayList<>();
-            mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
-                @Override
-                public void onSuccess(List<GroupMember> groupMembers, boolean hasMore) throws RemoteException {
-                    groupMemberList.addAll(groupMembers);
-                    if (!hasMore) {
-                        if (callback != null) {
-                            mainHandler.post(() -> callback.onSuccess(groupMemberList));
+        workHandler.post(() -> {
+            try {
+                List<GroupMember> groupMemberList = new ArrayList<>();
+                mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
+                    @Override
+                    public void onSuccess(List<GroupMember> groupMembers, boolean hasMore) throws RemoteException {
+                        groupMemberList.addAll(groupMembers);
+                        if (!hasMore) {
+                            if (callback != null) {
+                                mainHandler.post(() -> callback.onSuccess(groupMemberList));
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    if (callback != null) {
-                        mainHandler.post(() -> callback.onFail(errorCode));
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+                        if (callback != null) {
+                            mainHandler.post(() -> callback.onFail(errorCode));
+                        }
                     }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                if (callback != null) {
+                    callback.onFail(-1);
                 }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            if (callback != null) {
-                callback.onFail(-1);
             }
-        }
+        });
     }
 
     private String groupMemberCacheKey(String groupId, String memberId) {
