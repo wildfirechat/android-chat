@@ -621,7 +621,7 @@ public class ConversationFragment extends Fragment implements
         if (conversation.type == Conversation.ConversationType.Group) {
             groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
             initGroupObservers();
-            groupViewModel.getGroupMembers(conversation.target, true);
+            groupViewModel.getGroupMembersLiveData(conversation.target, true);
             groupInfo = groupViewModel.getGroupInfo(conversation.target, true);
             groupMember = groupViewModel.getGroupMember(conversation.target, userViewModel.getUserId());
             showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
