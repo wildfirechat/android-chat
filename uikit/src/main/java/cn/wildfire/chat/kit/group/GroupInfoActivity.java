@@ -18,7 +18,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
 import java.util.Collections;
-import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -26,7 +25,6 @@ import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
-import cn.wildfirechat.model.GroupMember;
 
 public class GroupInfoActivity extends WfcBaseActivity {
     private String userId;
@@ -62,7 +60,9 @@ public class GroupInfoActivity extends WfcBaseActivity {
             for (GroupInfo info : groupInfos) {
                 if (info.target.equals(groupId)) {
                     this.groupInfo = info;
+                    dismissLoading();
                     showGroupInfo(info);
+                    updateActionButtonStatus();
                 }
             }
         });
@@ -73,38 +73,26 @@ public class GroupInfoActivity extends WfcBaseActivity {
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userId = userViewModel.getUserId();
 
-        groupViewModel.groupMembersUpdateLiveData().observe(this, members -> {
-            if (members.get(0).groupId.equals(groupId)) {
-                List<GroupMember> gMembers = groupViewModel.getGroupMembers(groupId, false);
-                for (GroupMember member : gMembers) {
-                    if (member.type != GroupMember.GroupMemberType.Removed && member.memberId.equals(userId)) {
-                        this.isJoined = true;
-                    }
-                }
-                dismissLoading();
-                updateActionButtonStatus();
-            }
-        });
-
-        List<GroupMember> groupMembers = groupViewModel.getGroupMembers(groupId, true);
-        if (groupMembers == null || (groupMembers.isEmpty() && groupInfo.memberCount > 0)) {
+        // 本地没有相关群组信息
+        if (groupInfo.updateDt == 0) {
             showLoading();
-        } else {
-            for (GroupMember member : groupMembers) {
-                if (member.type != GroupMember.GroupMemberType.Removed && member.memberId.equals(userId)) {
-                    this.isJoined = true;
-                }
-            }
-            updateActionButtonStatus();
+            return;
         }
+
         showGroupInfo(groupInfo);
     }
 
     private void updateActionButtonStatus() {
-        if (isJoined) {
-            actionButton.setText("进入群聊");
-        } else {
+        if (groupInfo.memberDt < -1) {
+            // 已退出群组
             actionButton.setText("加入群聊");
+        } else if (groupInfo.memberDt == -1) {
+            // 未加入
+            actionButton.setText("加入群聊");
+        } else {
+            // 已加入群组
+            this.isJoined = true;
+            actionButton.setText("进入群聊");
         }
     }
 
