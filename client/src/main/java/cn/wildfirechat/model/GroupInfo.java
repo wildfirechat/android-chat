@@ -52,6 +52,7 @@ public class GroupInfo implements Parcelable {
     public String remark;
     public long updateDt;
     // 群成员的最后更新日期，一般是没有什么作用，唯一的作用就是当用户退出群组后，再获取群组信息，memberDt会为负数。
+    // < -1 已退出群组；-1 未加入群组；>-1 已加入群组
     public long memberDt;
 
 
