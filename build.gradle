@@ -28,7 +28,6 @@ allprojects {
             url "https://developer.huawei.com/repo/"
         }
 
-        maven { url 'https://jitpack.io' }
         maven { url 'https://dl.bintray.com/jenly/maven' }
     }
     configurations {

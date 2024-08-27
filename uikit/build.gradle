@@ -73,7 +73,7 @@ dependencies {
     api 'com.github.bumptech.glide:glide:4.15.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
     annotationProcessor 'androidx.annotation:annotation:1.7.0'
-    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+//    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     api 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.google.code.gson:gson:2.9.0'
 
