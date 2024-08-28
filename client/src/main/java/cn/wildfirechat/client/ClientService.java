@@ -1865,6 +1865,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             });
         }
 
+        @Override
+        public String getJoinedChatroom() throws RemoteException {
+            return ProtoLogic.getJoinedChatroom();
+        }
+
 
         @Override
         public void deleteFriend(String userId, final IGeneralCallback callback) throws RemoteException {
@@ -3558,6 +3563,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public String getProtoRevision() throws RemoteException {
             return ProtoLogic.getProtoRevision();
+        }
+
+        @Override
+        public long getDiskSpaceAvailableSize() throws RemoteException {
+            return ProtoLogic.getAvailableSize();
         }
 
         @Override
