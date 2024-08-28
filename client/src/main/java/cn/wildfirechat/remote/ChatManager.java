@@ -8145,7 +8145,7 @@ public class ChatManager {
      * 设置第三方推送设备token
      *
      * @param token
-     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.push.PushService.PushServiceType}
+     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.push.PushService.PushServiceType}，这个值最大不能超过127
      */
     public void setDeviceToken(String token, int pushType) {
         Log.d(TAG, "setDeviceToken " + token + " " + pushType);
