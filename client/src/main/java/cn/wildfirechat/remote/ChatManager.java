@@ -5368,6 +5368,22 @@ public class ChatManager {
     }
 
     /**
+     * 获取已经加入聊天室的ID
+     * @return 已经加入聊天室的ID，如果为空或者空字符，说明未加入聊天室。
+     */
+    public String getJoinedChatroom() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        try {
+            return mClient.getJoinedChatroom();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 获取用户信息
      *
      * @param userId
@@ -8116,6 +8132,23 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return "";
+        }
+    }
+
+    /**
+     * 获取数据目录所在磁盘的可用空间。
+     * @return 磁盘的可用空间
+     */
+    public long getDiskSpaceAvailableSize() {
+        if (!checkRemoteService()) {
+            return -1;
+        }
+
+        try {
+            return mClient.getDiskSpaceAvailableSize();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return -1;
         }
     }
 

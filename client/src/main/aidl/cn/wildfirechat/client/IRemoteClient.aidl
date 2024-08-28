@@ -210,6 +210,8 @@ interface IRemoteClient {
 
     oneway void getChatRoomInfo(in String chatRoomId, in long updateDt, in IGetChatRoomInfoCallback callback);
     oneway void getChatRoomMembersInfo(in String chatRoomId, in int maxCount, in IGetChatRoomMembersInfoCallback callback);
+
+    String getJoinedChatroom();
     GroupInfo getGroupInfo(in String groupId, in boolean refresh);
     List<GroupInfo> getGroupInfos(in List<String> groupIds, in boolean refresh);
     oneway void getGroupInfoEx(in String groupId, in boolean refresh, in IGetGroupCallback callback);
@@ -325,6 +327,8 @@ interface IRemoteClient {
     void checkSignature();
 
     String getProtoRevision();
+
+    long getDiskSpaceAvailableSize();
 
     oneway void setProxyInfo(in Socks5ProxyInfo proxyInfo);
 
