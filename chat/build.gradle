@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 // 华为推送，agconnect-services.json 文件也得在在application module的根目录
 apply plugin: 'com.huawei.agconnect'
 
+apply plugin: 'com.google.gms.google-services'
+
 android {
     signingConfigs {
         wfc {
@@ -42,6 +44,7 @@ android {
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -51,11 +54,15 @@ android {
     lint {
         abortOnError false
     }
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
-    implementation 'com.tencent.bugly:crashreport:4.0.0'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.1'
+    implementation 'com.tencent.bugly:crashreport:4.0.4'
     implementation 'com.tencent.bugly:nativecrashreport:3.9.2'
     implementation 'androidx.multidex:multidex:2.0.1'
 
