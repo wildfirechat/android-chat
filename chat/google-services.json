@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:387942673236:android:74dd044e8c21c0e4d776c1",
         "android_client_info": {
-          "package_name": "cn.wildfirechat.push"
+          "package_name": "cn.wildfirechat.chat"
         }
       },
       "oauth_client": [

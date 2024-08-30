@@ -1,12 +1,11 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.google.gms.google-services'
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -45,13 +44,14 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.huawei.hms:push:6.1.0.300'
+    implementation 'com.huawei.hms:push:6.12.0.300'
 
-    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation project(':client')
     implementation 'com.meizu.flyme.internet:push-internal:3.4.2@aar'
-    implementation platform('com.google.firebase:firebase-bom:26.6.0')
-    implementation 'com.google.firebase:firebase-messaging:20.1.6'
+    implementation platform('com.google.firebase:firebase-bom:33.2.0')
+    implementation 'com.google.firebase:firebase-messaging:24.0.1'
+    implementation 'com.google.android.gms:play-services-base:18.5.0'
 
     def lifecycle_version = '2.2.0'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
