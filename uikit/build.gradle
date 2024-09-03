@@ -95,8 +95,6 @@ dependencies {
     // moment start
     // momentclient module is just for dev, do not uncomment
 //    implementation project(':momentclient')
-    //over scroller helper
-    implementation 'me.everything:overscroll-decor-android:1.0.4'
     // moment end
 
     // kit wfc end
