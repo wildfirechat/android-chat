@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -330,9 +331,17 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return result;
     }
 
-    public @Nullable
-    GroupInfo getGroupInfo(String groupId, boolean refresh) {
+    public @Nullable GroupInfo getGroupInfo(String groupId, boolean refresh) {
         return ChatManager.Instance().getGroupInfo(groupId, refresh);
+    }
+
+    public LiveData<GroupInfo> getGroupInfoAsync(String groupId, boolean refresh) {
+        MutableLiveData<GroupInfo> data = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(groupId, refresh);
+            data.postValue(groupInfo);
+        });
+        return data;
     }
 
     public List<GroupMember> getGroupMembers(String groupId, boolean forceRefresh) {

@@ -5,7 +5,6 @@
 package cn.wildfire.chat.app.main;
 
 import android.Manifest;
-import android.app.AlarmManager;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +28,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -72,7 +71,6 @@ import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
-import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfire.chat.kit.workspace.WebViewFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
@@ -87,12 +85,12 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import q.rorbin.badgeview.QBadgeView;
 
-public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageChangeListener {
+public class MainActivity extends WfcBaseActivity {
 
     private List<Fragment> mFragmentList = new ArrayList<>(4);
 
     BottomNavigationView bottomNavigationView;
-    ViewPagerFixed contentViewPager;
+    ViewPager2 contentViewPager;
     TextView startingTextView;
     LinearLayout contentLinearLayout;
 
@@ -342,41 +340,44 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
         }
         mFragmentList.add(discoveryFragment);
         mFragmentList.add(meFragment);
-        contentViewPager.setAdapter(new HomeFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList));
-        contentViewPager.setOnPageChangeListener(this);
+        contentViewPager.setAdapter(new HomeFragmentPagerAdapter(this, mFragmentList));
+        contentViewPager.registerOnPageChangeCallback(this.onPageChangeCallback);
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+        bottomNavigationView.setOnItemReselectedListener(item -> {
+            // do nothing
+        });
+        bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.conversation_list:
-                    contentViewPager.setCurrentItem(0, false);
+                    setCurrentViewPagerItem(0, false);
                     setTitle("野火");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.contact:
-                    contentViewPager.setCurrentItem(1, false);
+                    setCurrentViewPagerItem(1, false);
                     setTitle("通讯录");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.workspace:
-                    contentViewPager.setCurrentItem(2, false);
+                    setCurrentViewPagerItem(2, false);
                     setTitle("工作台");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.discovery:
-                    contentViewPager.setCurrentItem(showWorkSpace ? 3 : 2, false);
+                    setCurrentViewPagerItem(showWorkSpace ? 3 : 2, false);
                     setTitle("发现");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.me:
-                    contentViewPager.setCurrentItem(showWorkSpace ? 4 : 3, false);
+                    setCurrentViewPagerItem(showWorkSpace ? 4 : 3, false);
                     setTitle("我的");
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.white, false);
@@ -458,49 +459,6 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
     private void searchUser() {
         Intent intent = new Intent(this, SearchUserActivity.class);
         startActivity(intent);
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
-            if (position > 1) {
-                position++;
-            }
-        }
-        switch (position) {
-            case 0:
-                bottomNavigationView.setSelectedItemId(R.id.conversation_list);
-                break;
-            case 1:
-                bottomNavigationView.setSelectedItemId(R.id.contact);
-                break;
-            case 2:
-                bottomNavigationView.setSelectedItemId(R.id.workspace);
-                break;
-            case 3:
-                bottomNavigationView.setSelectedItemId(R.id.discovery);
-                break;
-            case 4:
-                bottomNavigationView.setSelectedItemId(R.id.me);
-                break;
-            default:
-                break;
-        }
-        contactListFragment.showQuickIndexBar(position == 1);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-        if (state != ViewPager.SCROLL_STATE_IDLE) {
-            //滚动过程中隐藏快速导航条
-            contactListFragment.showQuickIndexBar(false);
-        } else {
-            contactListFragment.showQuickIndexBar(true);
-        }
     }
 
     @Override
@@ -734,4 +692,55 @@ public class MainActivity extends WfcBaseActivity implements ViewPager.OnPageCha
             }
         }
     }
+
+    private void setCurrentViewPagerItem(int item, boolean smoothScroll) {
+        if (contentViewPager.getCurrentItem() != item) {
+            contentViewPager.setCurrentItem(item, smoothScroll);
+        }
+    }
+
+    private ViewPager2.OnPageChangeCallback onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
+                if (position > 1) {
+                    position++;
+                }
+            }
+            switch (position) {
+                case 0:
+                    bottomNavigationView.setSelectedItemId(R.id.conversation_list);
+                    break;
+                case 1:
+                    bottomNavigationView.setSelectedItemId(R.id.contact);
+                    break;
+                case 2:
+                    bottomNavigationView.setSelectedItemId(R.id.workspace);
+                    break;
+                case 3:
+                    bottomNavigationView.setSelectedItemId(R.id.discovery);
+                    break;
+                case 4:
+                    bottomNavigationView.setSelectedItemId(R.id.me);
+                    break;
+                default:
+                    break;
+            }
+            contactListFragment.showQuickIndexBar(position == 1);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            if (state != ViewPager.SCROLL_STATE_IDLE) {
+                //滚动过程中隐藏快速导航条
+                contactListFragment.showQuickIndexBar(false);
+            } else {
+                contactListFragment.showQuickIndexBar(true);
+            }
+        }
+    };
 }

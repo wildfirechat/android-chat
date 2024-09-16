@@ -105,8 +105,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             patchUserOnlineState(userInfos);
             userListAdapter.setUsers(userInfos);
         });
-        contactViewModel.friendRequestUpdatedLiveData().observe(getActivity(), integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
-        contactViewModel.favContactListLiveData().observe(getActivity(), uiUserInfos -> {
+        contactViewModel.friendRequestUpdatedLiveData().observe(this, integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
+        contactViewModel.favContactListLiveData().observe(this, uiUserInfos -> {
             if (filterUserList != null) {
                 uiUserInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
             }
@@ -140,7 +140,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     @Override
     public void initHeaderViewHolders() {
         if (!pick) {
-            addHeaderViewHolder(FriendRequestViewHolder.class, R.layout.contact_header_friend, new FriendRequestValue(contactViewModel.getUnreadFriendRequestCount()));
+            addHeaderViewHolder(FriendRequestViewHolder.class, R.layout.contact_header_friend, new FriendRequestValue(0));
             addHeaderViewHolder(GroupViewHolder.class, R.layout.contact_header_group, new GroupValue());
         }
         if (showChannel) {
