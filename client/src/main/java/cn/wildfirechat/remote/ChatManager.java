@@ -286,6 +286,7 @@ public class ChatManager {
     private Map<String, UserOnlineState> userOnlineStateMap;
 
     private Class<? extends DefaultPortraitProvider> defaultPortraitProviderClazz;
+    private Class<? extends UrlRedirector> urlRedirectorClazz;
 
     public enum SearchUserType {
         //模糊搜索displayName，精确搜索name或电话号码
@@ -2363,6 +2364,23 @@ public class ChatManager {
     }
 
     /**
+     * 双网环境时，获取当前连接的网络类型
+     *
+     * @return 1 主网络；-1 备选网络；0 未知
+     */
+    public int getConnectedNetworkType() {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+        try {
+            return mClient.getConnectedNetworkType();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
      * 设置协议栈短连接UA。
      *
      * @param userAgent 协议栈短连接使用的UA
@@ -2487,8 +2505,13 @@ public class ChatManager {
 
                 @Override
                 public void onMediaUploaded(final String remoteUrl) throws RemoteException {
-                    MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
-                    mediaMessageContent.remoteUrl = remoteUrl;
+                    if (msg.content instanceof MediaMessageContent) {
+                        MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
+                        mediaMessageContent.remoteUrl = remoteUrl;
+                    } else if (msg.content instanceof RawMessageContent) {
+                        RawMessageContent rawMessageContent = (RawMessageContent) msg.content;
+                        rawMessageContent.payload.remoteMediaUrl = remoteUrl;
+                    }
                     if (msg.messageId == 0) {
                         return;
                     }
@@ -2559,9 +2582,18 @@ public class ChatManager {
         }
 
         MediaMessageUploadCallback mediaMessageUploadCallback = null;
-        if (msg.content instanceof MediaMessageContent) {
-            if (TextUtils.isEmpty(((MediaMessageContent) msg.content).remoteUrl)) {
-                String localPath = ((MediaMessageContent) msg.content).localPath;
+        if (msg.content instanceof MediaMessageContent || (msg.content instanceof RawMessageContent && !TextUtils.isEmpty(((RawMessageContent) msg.content).payload.localMediaPath))) {
+            String remoteUrl;
+            String localPath;
+            if (msg.content instanceof MediaMessageContent) {
+                remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
+                localPath = ((MediaMessageContent) msg.content).localPath;
+            } else {
+                remoteUrl = ((RawMessageContent) msg.content).payload.remoteMediaUrl;
+                localPath = ((RawMessageContent) msg.content).payload.localMediaPath;
+            }
+
+            if (TextUtils.isEmpty(remoteUrl)) {
                 if (!TextUtils.isEmpty(localPath)) {
                     File file = new File(localPath);
                     if (!file.exists()) {
@@ -2670,8 +2702,13 @@ public class ChatManager {
 
                 @Override
                 public void onMediaUploaded(final String remoteUrl) throws RemoteException {
-                    MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
-                    mediaMessageContent.remoteUrl = remoteUrl;
+                    if (msg.content instanceof MediaMessageContent) {
+                        MediaMessageContent mediaMessageContent = (MediaMessageContent) msg.content;
+                        mediaMessageContent.remoteUrl = remoteUrl;
+                    } else if (msg.content instanceof RawMessageContent) {
+                        RawMessageContent rawMessageContent = (RawMessageContent) msg.content;
+                        rawMessageContent.payload.remoteMediaUrl = remoteUrl;
+                    }
                     if (msg.messageId == 0) {
                         return;
                     }
@@ -4542,6 +4579,26 @@ public class ChatManager {
         return getUserDisplayName(userInfo);
     }
 
+    public String getGroupDisplayName(String groupId) {
+        GroupInfo groupInfo = getGroupInfo(groupId, false);
+        return getGroupDisplayName(groupInfo);
+    }
+
+    public String getGroupDisplayName(GroupInfo groupInfo) {
+        if (groupInfo == null) {
+            return "群聊";
+        }
+        String name = !TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name;
+        if (WfcUtils.isExternalTarget(groupInfo.target)) {
+            String domainId = WfcUtils.getExternalDomainId(groupInfo.target);
+            DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, true);
+            if (domainInfo != null) {
+                name += " @" + domainInfo.name;
+            }
+        }
+        return name;
+    }
+
     /**
      * 获取好友别名
      *
@@ -5307,6 +5364,22 @@ public class ChatManager {
             if (callback != null) {
                 mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
             }
+        }
+    }
+
+    /**
+     * 获取已经加入聊天室的ID
+     * @return 已经加入聊天室的ID，如果为空或者空字符，说明未加入聊天室。
+     */
+    public String getJoinedChatroom() {
+        if (!checkRemoteService()) {
+            return null;
+        }
+        try {
+            return mClient.getJoinedChatroom();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -6434,7 +6507,6 @@ public class ChatManager {
      */
     public void quitGroup(String groupId, List<Integer> lines, MessageContent notifyMsg, final GeneralCallback callback) {
         quitGroup(groupId, false, lines, notifyMsg, callback);
-        ;
     }
 
     /**
@@ -6880,32 +6952,34 @@ public class ChatManager {
             return;
         }
 
-        try {
-            List<GroupMember> groupMemberList = new ArrayList<>();
-            mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
-                @Override
-                public void onSuccess(List<GroupMember> groupMembers, boolean hasMore) throws RemoteException {
-                    groupMemberList.addAll(groupMembers);
-                    if (!hasMore) {
-                        if (callback != null) {
-                            mainHandler.post(() -> callback.onSuccess(groupMemberList));
+        workHandler.post(() -> {
+            try {
+                List<GroupMember> groupMemberList = new ArrayList<>();
+                mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
+                    @Override
+                    public void onSuccess(List<GroupMember> groupMembers, boolean hasMore) throws RemoteException {
+                        groupMemberList.addAll(groupMembers);
+                        if (!hasMore) {
+                            if (callback != null) {
+                                mainHandler.post(() -> callback.onSuccess(groupMemberList));
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    if (callback != null) {
-                        mainHandler.post(() -> callback.onFail(errorCode));
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+                        if (callback != null) {
+                            mainHandler.post(() -> callback.onFail(errorCode));
+                        }
                     }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                if (callback != null) {
+                    callback.onFail(-1);
                 }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            if (callback != null) {
-                callback.onFail(-1);
             }
-        }
+        });
     }
 
     private String groupMemberCacheKey(String groupId, String memberId) {
@@ -7759,6 +7833,26 @@ public class ChatManager {
     }
 
     /**
+     * 根据会话类型获取消息条数
+     *
+     * @param conversationTypes 目标会话类型数组
+     * @param lines             目标会话线路数组
+     * @return 消息条数
+     */
+    public int getConversationMessageCount(int[] conversationTypes, int[] lines) {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+
+        try {
+            return mClient.getConversationMessageCount(conversationTypes, lines);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
      * 设置代理，只支持socks5代理，只有专业版支持。
      *
      * @param proxyInfo 代理信息
@@ -8041,6 +8135,23 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 获取数据目录所在磁盘的可用空间。
+     * @return 磁盘的可用空间
+     */
+    public long getDiskSpaceAvailableSize() {
+        if (!checkRemoteService()) {
+            return -1;
+        }
+
+        try {
+            return mClient.getDiskSpaceAvailableSize();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     private String getLogPath() {
         return gContext.getCacheDir().getAbsolutePath() + "/log";
     }
@@ -8067,7 +8178,7 @@ public class ChatManager {
      * 设置第三方推送设备token
      *
      * @param token
-     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.push.PushService.PushServiceType}
+     * @param pushType 使用什么推送你，可选值参考{@link cn.wildfirechat.push.PushService.PushServiceType}，这个值最大不能超过127
      */
     public void setDeviceToken(String token, int pushType) {
         Log.d(TAG, "setDeviceToken " + token + " " + pushType);
@@ -8977,6 +9088,11 @@ public class ChatManager {
         return content;
     }
 
+    /**
+     * 设置默认头像生成器
+     *
+     * @param clazz
+     */
     public void setDefaultPortraitProviderClazz(Class<? extends DefaultPortraitProvider> clazz) {
         this.defaultPortraitProviderClazz = clazz;
         if (mClient != null) {
@@ -8986,6 +9102,54 @@ public class ChatManager {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 双网环境时，设置媒体内容 url 转换器
+     *
+     * @param clazz
+     */
+    public void setUrlRedirectorClazz(Class<? extends UrlRedirector> clazz) {
+        this.urlRedirectorClazz = clazz;
+        if (mClient != null) {
+            try {
+                mClient.setUrlRedirectorClass(clazz.getName());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 获取长连接端口，长连接连接失败时，返回的是 route 返回的 im-server 配置的长连接端口
+     *
+     * @return 长连接端口
+     */
+    public int getLongLinkPort() {
+        if (mClient != null) {
+            try {
+                return mClient.getLongLinkPort();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 获取 route 请求的错误码
+     *
+     * @return route 请求错误码
+     */
+    public int getRouteErrorCode() {
+        if (mClient != null) {
+            try {
+                return mClient.getRouteErrorCode();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return 0;
     }
 
     private boolean checkRemoteService() {
@@ -9192,6 +9356,10 @@ public class ChatManager {
 
                     if (defaultPortraitProviderClazz != null) {
                         mClient.setDefaultPortraitProviderClass(defaultPortraitProviderClazz.getName());
+                    }
+
+                    if (urlRedirectorClazz != null) {
+                        mClient.setUrlRedirectorClass(urlRedirectorClazz.getName());
                     }
 
                     mClient.setSecretMessageBurnStateListener(new IOnSecretMessageBurnStateListener.Stub() {
@@ -9402,6 +9570,6 @@ public class ChatManager {
         String domainName = domainInfo != null ? domainInfo.name : "<" + domainId + ">";
         UserInfo userInfo = getUserInfo(userId, false);
         String userDisplayName = TextUtils.isEmpty(userInfo.displayName) ? "<" + userId + ">" : userInfo.displayName;
-        return userDisplayName + "@" + domainName;
+        return userDisplayName + " @" + domainName;
     }
 }

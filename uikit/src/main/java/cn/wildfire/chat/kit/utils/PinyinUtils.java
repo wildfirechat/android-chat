@@ -44,12 +44,14 @@ public class PinyinUtils {
             } else {
                 String s = "#";
                 try {
-                    // 通过char得到拼音集合. 单 -> dan, shan 
-                    s = PinyinHelper.toHanyuPinyinStringArray(c, format)[0];
+                    // 通过char得到拼音集合. 单 -> dan, shan
+                     String[] pyArr = PinyinHelper.toHanyuPinyinStringArray(c, format);
+                     if(pyArr != null && pyArr.length > 0){
+                         s = pyArr[0];
+                     }
                     sb.append(s);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    sb.append(s);
                 }
             }
         }

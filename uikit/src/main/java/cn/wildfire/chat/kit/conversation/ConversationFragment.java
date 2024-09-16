@@ -97,6 +97,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.UserSettingScope;
+import cn.wildfirechat.utils.WfcUtils;
 
 public class ConversationFragment extends Fragment implements
     KeyboardAwareLinearLayout.OnKeyboardShownListener,
@@ -620,7 +621,7 @@ public class ConversationFragment extends Fragment implements
         if (conversation.type == Conversation.ConversationType.Group) {
             groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
             initGroupObservers();
-            groupViewModel.getGroupMembers(conversation.target, true);
+            groupViewModel.getGroupMembersLiveData(conversation.target, true);
             groupInfo = groupViewModel.getGroupInfo(conversation.target, true);
             groupMember = groupViewModel.getGroupMember(conversation.target, userViewModel.getUserId());
             showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
@@ -832,7 +833,12 @@ public class ConversationFragment extends Fragment implements
             }
         } else if (conversation.type == Conversation.ConversationType.Group) {
             if (groupInfo != null) {
-                conversationTitle = (!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name) + "(" + groupInfo.memberCount + "人)";
+                String tmpTitle = ChatManager.Instance().getGroupDisplayName(groupInfo);
+                if (WfcUtils.isExternalTarget(groupInfo.target)) {
+                    conversationTitle = WfcUtils.buildExternalDisplayNameSpannableString(tmpTitle, 14);
+                } else {
+                    conversationTitle = tmpTitle;
+                }
             }
         } else if (conversation.type == Conversation.ConversationType.Channel) {
             ChannelViewModel channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);

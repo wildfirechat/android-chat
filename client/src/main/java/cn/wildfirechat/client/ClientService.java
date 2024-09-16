@@ -130,6 +130,7 @@ import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.DefaultPortraitProvider;
 import cn.wildfirechat.remote.RecoverReceiver;
 import cn.wildfirechat.remote.UploadMediaCallback;
+import cn.wildfirechat.remote.UrlRedirector;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -399,6 +400,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             if (!TextUtils.isEmpty(host)) {
                 ProtoLogic.setBackupAddress(host, port);
             }
+        }
+
+        @Override
+        public int getConnectedNetworkType() throws RemoteException {
+            return ProtoLogic.getConnectedNetworkType();
         }
 
         @Override
@@ -1857,6 +1863,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             });
+        }
+
+        @Override
+        public String getJoinedChatroom() throws RemoteException {
+            return ProtoLogic.getJoinedChatroom();
         }
 
 
@@ -3437,6 +3448,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public int getConversationMessageCount(int[] conversationTypes, int[] lines) throws RemoteException {
+            return ProtoLogic.getConversationMessageCount(conversationTypes, lines);
+        }
+
+        @Override
         public boolean begainTransaction() throws RemoteException {
             return ProtoLogic.beginTransaction();
         }
@@ -3547,6 +3563,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public String getProtoRevision() throws RemoteException {
             return ProtoLogic.getProtoRevision();
+        }
+
+        @Override
+        public long getDiskSpaceAvailableSize() throws RemoteException {
+            return ProtoLogic.getAvailableSize();
         }
 
         @Override
@@ -3681,9 +3702,38 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
         }
 
+        public void setUrlRedirectorClass(String clazzName) {
+            try {
+                Class cls = Class.forName(clazzName);
+                urlRedirector = (UrlRedirector) cls.newInstance();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+
         @Override
         public boolean isConnectedToMainNetwork() throws RemoteException {
             return connectedToMainNetwork();
+        }
+
+        @Override
+        public int getLongLinkPort() throws RemoteException {
+            return StnLogic.getLonglinkPort();
+        }
+
+        @Override
+        public int getRouteErrorCode() throws RemoteException {
+            return StnLogic.getRouteCode();
+        }
+    }
+
+    private static UrlRedirector urlRedirector;
+
+    public static String urlRedirect(String originalUrl) {
+        if (urlRedirector == null || TextUtils.isEmpty(originalUrl)) {
+            return originalUrl;
+        } else {
+            return urlRedirector.urlRedirect(originalUrl);
         }
     }
 
@@ -4020,7 +4070,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         SdtLogic.setCallBack(this);
         // Initialize the Mars PlatformComm
         handler = new Handler(Looper.getMainLooper());
-        Mars.init(getApplicationContext(), handler);
+        // https://github.com/wildfirechat/android-chat/issues/872
+        try {
+            Mars.init(getApplicationContext(), handler);
+        } catch (Exception e) {
+            // do nothing
+        }
 
         android.util.Log.d(TAG, "onnCreate");
         uploadingMap = new ConcurrentHashMap<>();
@@ -4640,7 +4695,6 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             onDomainInfoUpdatedCallbackList.finishBroadcast();
         });
-
     }
 //    // 只是大概大小
 //    private int getMessageLength(ProtoMessage message) {

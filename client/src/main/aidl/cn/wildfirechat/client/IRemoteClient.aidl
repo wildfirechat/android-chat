@@ -81,6 +81,7 @@ interface IRemoteClient {
     void setBackupAddressStrategy(in int strategy);
     void setBackupAddress(in String host, in int port);
     void setProtoUserAgent(in String userAgent);
+    int getConnectedNetworkType();
     void addHttpHeader(in String header, in String value);
     void setLiteMode(in boolean isLiteMode);
     void setLowBPSMode(in boolean isLowBPSMode);
@@ -140,6 +141,8 @@ interface IRemoteClient {
 
     Message getMessage(in long messageId);
     Message getMessageByUid(in long messageUid);
+
+    int getConversationMessageCount(in int[] conversationTypes, in int[] lines);
 
     Message insertMessage(in Message message, in boolean notify);
     boolean updateMessageContent(in Message message);
@@ -207,6 +210,8 @@ interface IRemoteClient {
 
     oneway void getChatRoomInfo(in String chatRoomId, in long updateDt, in IGetChatRoomInfoCallback callback);
     oneway void getChatRoomMembersInfo(in String chatRoomId, in int maxCount, in IGetChatRoomMembersInfoCallback callback);
+
+    String getJoinedChatroom();
     GroupInfo getGroupInfo(in String groupId, in boolean refresh);
     List<GroupInfo> getGroupInfos(in List<String> groupIds, in boolean refresh);
     oneway void getGroupInfoEx(in String groupId, in boolean refresh, in IGetGroupCallback callback);
@@ -323,6 +328,8 @@ interface IRemoteClient {
 
     String getProtoRevision();
 
+    long getDiskSpaceAvailableSize();
+
     oneway void setProxyInfo(in Socks5ProxyInfo proxyInfo);
 
     oneway void watchUserOnlineState(in int conversationType, in String[] targets, in int duration, in IWatchUserOnlineStateCallback callback);
@@ -337,4 +344,8 @@ interface IRemoteClient {
     oneway void decodeSecretChatDataAsync(in String targetId, in AshmenWrapper ashmenWrapper, in int length, in IGeneralCallbackInt callback);
 
     oneway void setDefaultPortraitProviderClass(in String clazz);
+    oneway void setUrlRedirectorClass(in String clazz);
+
+    int getLongLinkPort();
+    int getRouteErrorCode();
 }

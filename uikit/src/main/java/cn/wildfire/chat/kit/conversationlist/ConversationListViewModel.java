@@ -152,11 +152,13 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     public void reloadConversationUnreadStatus() {
-        UnreadCount unreadCount = ChatManager.Instance().getUnreadCountEx(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Collections.singletonList(0));
-        if (unreadCountLiveData == null) {
-            return;
-        }
-        unreadCountLiveData.postValue(unreadCount);
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            UnreadCount unreadCount = ChatManager.Instance().getUnreadCountEx(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Collections.singletonList(0));
+            if (unreadCountLiveData == null) {
+                return;
+            }
+            unreadCountLiveData.postValue(unreadCount);
+        });
     }
 
     @Override

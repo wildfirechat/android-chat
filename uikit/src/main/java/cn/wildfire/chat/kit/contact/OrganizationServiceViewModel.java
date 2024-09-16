@@ -254,16 +254,18 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
 
 
     private void loadRootOrganizations() {
-        organizationServiceProvider.getRootOrganization(new SimpleCallback<List<Organization>>() {
-            @Override
-            public void onUiSuccess(List<Organization> organizations) {
-                rootOrganizationLiveData.setValue(organizations);
-            }
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            organizationServiceProvider.getRootOrganization(new SimpleCallback<List<Organization>>() {
+                @Override
+                public void onUiSuccess(List<Organization> organizations) {
+                    rootOrganizationLiveData.setValue(organizations);
+                }
 
-            @Override
-            public void onUiFailure(int code, String msg) {
+                @Override
+                public void onUiFailure(int code, String msg) {
 
-            }
+                }
+            });
         });
     }
 
