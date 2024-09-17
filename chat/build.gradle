@@ -19,8 +19,8 @@ android {
         applicationId "net.wildfirechat.demo"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 52
-        versionName '1.1.3'
+        versionCode 53
+        versionName '1.2.0'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -58,6 +58,14 @@ android {
     buildFeatures {
         buildConfig true
     }
+
+    // 如果提示 libc++_shared.so 冲突，打开下面的注释
+//    packagingOptions {
+//        pickFirst 'lib/x86/libc++_shared.so'
+//        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+//        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+//        pickFirst 'lib/x86_64/libc++_shared.so'
+//    }
 }
 
 dependencies {
