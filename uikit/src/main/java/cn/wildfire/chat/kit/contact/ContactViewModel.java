@@ -89,7 +89,9 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
                     return;
                 }
                 List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(userIds, null);
-                favContactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos, true));
+                if (userInfos != null){
+                    favContactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos, true));
+                }
             }
 
             @Override
@@ -112,7 +114,6 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         }
         loadingCount.incrementAndGet();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            loadingCount.decrementAndGet();
             SharedPreferences sp = WfcUIKit.getWfcUIKit().getApplication().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
             boolean pcLogined = sp.getBoolean("wfc_uikit_had_pc_session", false);
             UserInfo fileHelpUserInfo = null;
@@ -124,9 +125,10 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             if (fileHelpUserInfo != null && userInfos != null) {
                 userInfos.add(fileHelpUserInfo);
             }
-            if (contactListLiveData != null) {
+            if (contactListLiveData != null && userInfos != null) {
                 contactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos));
             }
+            loadingCount.decrementAndGet();
         });
     }
 
