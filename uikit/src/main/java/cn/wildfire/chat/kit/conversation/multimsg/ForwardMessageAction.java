@@ -57,12 +57,12 @@ public class ForwardMessageAction extends MultiMessageAction {
     private void forward(List<UiMessage> messages) {
         Toast.makeText(fragment.getActivity(), "合并转发", Toast.LENGTH_SHORT).show();
         CompositeMessageContent content = new CompositeMessageContent();
-        String title;
+        String title = "聊天记录";
         if (conversation.type == Conversation.ConversationType.Single) {
             UserInfo userInfo1 = ChatManager.Instance().getUserInfo(ChatManager.Instance().getUserId(), false);
             UserInfo userInfo2 = ChatManager.Instance().getUserInfo(conversation.target, false);
             title = userInfo1.displayName + "和" + userInfo2.displayName + "的聊天记录";
-        } else {
+        } else if (conversation.type == Conversation.ConversationType.Group) {
             title = "群的聊天记录";
         }
         content.setTitle(title);

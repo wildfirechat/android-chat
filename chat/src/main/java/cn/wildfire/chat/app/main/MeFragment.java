@@ -59,6 +59,7 @@ public class MeFragment extends Fragment {
 
     private UserViewModel userViewModel;
     private UserInfo userInfo;
+    private boolean isVisibleToUser;
 
     private Observer<List<UserInfo>> userInfoLiveDataObserver = new Observer<List<UserInfo>>() {
         @Override
@@ -84,6 +85,27 @@ public class MeFragment extends Fragment {
         bindEvents(view);
         init();
         return view;
+    }
+
+    @Override
+
+    public void setMenuVisibility(boolean isvisible) {
+        super.setMenuVisibility(isvisible);
+        this.isVisibleToUser = isvisible;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (this.isVisibleToUser && userViewModel != null) {
+            userViewModel.getUserInfoAsync(userViewModel.getUserId(), true)
+                .observe(getViewLifecycleOwner(), info -> {
+                    userInfo = info;
+                    if (userInfo != null) {
+                        updateUserInfo(userInfo);
+                    }
+                });
+        }
     }
 
     private void bindEvents(View view) {
