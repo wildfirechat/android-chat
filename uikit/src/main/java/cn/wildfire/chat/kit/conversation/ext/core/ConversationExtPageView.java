@@ -6,9 +6,6 @@ package cn.wildfire.chat.kit.conversation.ext.core;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -60,20 +57,9 @@ public class ConversationExtPageView extends LinearLayout implements View.OnClic
             new int[]{}
         };
 
-        int[] colors = new int[]{
-            Color.parseColor("#D9D9D9"),
-            Color.WHITE
-        };
-
-        ColorStateList stateList = new ColorStateList(states, colors);
-
         for (int index = 0; index < exts.size(); index++) {
             ImageView iconImageView = findViewWithTag("icon_" + index);
             iconImageView.setImageResource(exts.get(index).iconResId());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iconImageView.setImageTintList(stateList);
-                iconImageView.setImageTintMode(PorterDuff.Mode.MULTIPLY);
-            }
 
             iconImageView.setOnClickListener(this);
             TextView titleTextView = findViewWithTag("title_" + index);
