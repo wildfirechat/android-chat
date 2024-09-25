@@ -92,7 +92,7 @@ v0.9.9 版本，移除了[ButterKnife](https://github.com/JakeWharton/butterknif
 ![野火IM](http://static.wildfirechat.cn/download_qrcode.png)
 
 ## 应用截图
-[Android Demo 视频演示](https://static.wildfirechat.cn/wf-android-demo-live.mp4)
+[点击查看 Android Demo 视频演示](https://static.wildfirechat.cn/wf-android-demo-live.mp4)
 
 <img src="https://static.wildfirechat.cn/wf-android-demo-1.jpg" width = 40% height = 40% />
 
