@@ -4296,7 +4296,7 @@ public class ChatManager {
 
         try {
             ConversationInfo conversationInfo = getConversation(conversation);
-            if (conversationInfo == null || TextUtils.equals(draft, conversationInfo.draft)) {
+            if (conversationInfo == null || (TextUtils.isEmpty(draft) && TextUtils.isEmpty(conversationInfo.draft)) || TextUtils.equals(draft, conversationInfo.draft)) {
                 return;
             }
             mClient.setConversationDraft(conversation.type.ordinal(), conversation.target, conversation.line, draft);
