@@ -20,4 +20,12 @@ public interface WfcScheme {
         }
         return value;
     }
+
+    static String buildGroupScheme(String groupId, String source) {
+        String value = QR_CODE_PREFIX_GROUP + groupId;
+        if (!TextUtils.isEmpty(source)) {
+            value += "?from=" + source;
+        }
+        return value;
+    }
 }

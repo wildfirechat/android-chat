@@ -260,7 +260,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             for (GroupInfo groupInfo : groupInfos) {
                 if (groupInfo.target.equals(this.groupInfo.target)) {
                     this.groupInfo = groupInfo;
-                    if (groupInfo.deleted == 1){
+                    if (groupInfo.deleted == 1) {
                         Toast.makeText(getActivity(), "群组已被解散", Toast.LENGTH_SHORT).show();
                         getActivity().finish();
                         return;
@@ -523,7 +523,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     void showGroupQRCode() {
-        String qrCodeValue = WfcScheme.QR_CODE_PREFIX_GROUP + groupInfo.target;
+        String qrCodeValue = WfcScheme.buildGroupScheme(groupInfo.target, ChatManager.Instance().getUserId());
         Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "群二维码", groupInfo.portrait, qrCodeValue);
         startActivity(intent);
     }

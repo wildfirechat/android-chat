@@ -130,6 +130,10 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     }
 
     public MutableLiveData<OperateResult<String>> createGroup(Context context, List<UserInfo> checkedUsers, MessageContent notifyMsg, List<Integer> lines) {
+        return createGroupEx(context, checkedUsers, notifyMsg, lines, null, null);
+    }
+
+    public MutableLiveData<OperateResult<String>> createGroupEx(Context context, List<UserInfo> checkedUsers, MessageContent notifyMsg, List<Integer> lines, String groupExra, String memberExtra) {
         List<String> selectedIds = new ArrayList<>(checkedUsers.size());
         List<UserInfo> selectedUsers = new ArrayList<>();
         for (UserInfo userInfo : checkedUsers) {
@@ -154,7 +158,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
 
         MutableLiveData<OperateResult<String>> groupLiveData = new MutableLiveData<>();
         String finalGroupName = groupName;
-        ChatManager.Instance().createGroup(null, finalGroupName, null, GroupInfo.GroupType.Restricted, null, selectedIds, null, lines, notifyMsg, new GeneralCallback2() {
+        ChatManager.Instance().createGroup(null, finalGroupName, null, GroupInfo.GroupType.Restricted, groupExra, selectedIds, memberExtra, lines, notifyMsg, new GeneralCallback2() {
             @Override
             public void onSuccess(String groupId) {
                 groupLiveData.setValue(new OperateResult<>(groupId, 0));
@@ -169,9 +173,13 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     }
 
     public MutableLiveData<Boolean> addGroupMember(GroupInfo groupInfo, List<String> memberIds, MessageContent notifyMsg, List<Integer> notifyLines) {
+        return addGroupMemberEx(groupInfo, memberIds, notifyMsg, notifyLines, null);
+    }
+
+    public MutableLiveData<Boolean> addGroupMemberEx(GroupInfo groupInfo, List<String> memberIds, MessageContent notifyMsg, List<Integer> notifyLines, String memberExtra) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
         // TODO need update group portrait or not?
-        ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, null, notifyLines, notifyMsg, new GeneralCallback() {
+        ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, memberExtra, notifyLines, notifyMsg, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 result.setValue(true);

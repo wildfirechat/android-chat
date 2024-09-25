@@ -23,12 +23,14 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 
 public class GroupInfoActivity extends WfcBaseActivity {
     private String userId;
     private String groupId;
+    private String from;
     private GroupInfo groupInfo;
     private boolean isJoined;
     private GroupViewModel groupViewModel;
@@ -54,6 +56,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
     protected void afterViews() {
         Intent intent = getIntent();
         groupId = intent.getStringExtra("groupId");
+        from = intent.getStringExtra("from");
         groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
 
         groupViewModel.groupInfoUpdateLiveData().observe(this, groupInfos -> {
@@ -80,6 +83,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
         }
 
         showGroupInfo(groupInfo);
+        updateActionButtonStatus();
     }
 
     private void updateActionButtonStatus() {
@@ -135,7 +139,8 @@ public class GroupInfoActivity extends WfcBaseActivity {
             startActivity(intent);
             finish();
         } else {
-            groupViewModel.addGroupMember(groupInfo, Collections.singletonList(userId), null, Collections.singletonList(0)).observe(this, new Observer<Boolean>() {
+            String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_QRCode, this.from);
+            groupViewModel.addGroupMemberEx(groupInfo, Collections.singletonList(userId), null, Collections.singletonList(0), memberExtra).observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(Boolean aBoolean) {
                     if (aBoolean) {
