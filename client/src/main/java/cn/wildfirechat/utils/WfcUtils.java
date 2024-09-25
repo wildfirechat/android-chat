@@ -38,4 +38,5 @@ public class WfcUtils {
         ss.setSpan(new AbsoluteSizeSpan(spanSize, true), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         return ss;
     }
+
 }

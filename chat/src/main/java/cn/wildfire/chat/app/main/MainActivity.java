@@ -505,7 +505,7 @@ public class MainActivity extends WfcBaseActivity {
 
     private void onScanPcQrCode(String qrcode) {
         String prefix = qrcode.substring(0, qrcode.lastIndexOf('/') + 1);
-        String value = qrcode.substring(qrcode.lastIndexOf("/") + 1);
+        String value = qrcode.substring(qrcode.lastIndexOf('/') + 1, qrcode.indexOf('?') > 0 ? qrcode.indexOf('?') : qrcode.length());
         Uri uri = Uri.parse(qrcode);
         Set<String> queryNames = uri.getQueryParameterNames();
         Map<String, Object> params = new HashMap<>();
@@ -520,7 +520,7 @@ public class MainActivity extends WfcBaseActivity {
                 showUser(value);
                 break;
             case WfcScheme.QR_CODE_PREFIX_GROUP:
-                joinGroup(value);
+                joinGroup(value, params);
                 break;
             case WfcScheme.QR_CODE_PREFIX_CHANNEL:
                 subscribeChannel(value);
@@ -552,9 +552,10 @@ public class MainActivity extends WfcBaseActivity {
         startActivity(intent);
     }
 
-    private void joinGroup(String groupId) {
+    private void joinGroup(String groupId, Map<String, Object> params) {
         Intent intent = new Intent(this, GroupInfoActivity.class);
         intent.putExtra("groupId", groupId);
+        intent.putExtra("from", (String) params.get("from"));
         startActivity(intent);
     }
 
