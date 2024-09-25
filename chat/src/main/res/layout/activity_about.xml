@@ -49,31 +49,17 @@
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/introOptionItemView"
             style="@style/OptionItem"
-            android:background="@drawable/selector_option_item"
             app:title="@string/function_introduction" />
-
-        <View
-            style="@style/Line"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" />
-
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/agreementOptionItemView"
             style="@style/OptionItem"
-            android:background="@drawable/selector_option_item"
             app:title="用户协议" />
-
-        <View
-            style="@style/Line"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" />
-
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/privacyOptionItemView"
             style="@style/OptionItem"
-            android:background="@drawable/selector_option_item"
+            app:show_divider="false"
             app:title="隐私政策" />
 
 

@@ -89,10 +89,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:visibility="gone"
                 android:text="组织"
                 android:textColor="@color/black1"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -120,7 +120,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@color/red0"
+        android:background="@color/white"
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
@@ -133,19 +133,26 @@
             app:title="部门" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/groupMemberSourceOptionItemView"
+            style="@style/OptionItem"
+            android:clickable="true"
+            app:desc="扫码进群"
+            app:show_arrow_indicator="false"
+            app:title="进群方式" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/messagesOptionItemView"
             style="@style/OptionItem"
-            android:background="@drawable/selector_common_item"
             app:show_arrow_indicator="true"
             app:title="查看他（她）的消息" />
 
     </LinearLayout>
 
+
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/qrCodeOptionItemView"
         style="@style/OptionItem"
         android:layout_marginTop="20dp"
-        android:background="@drawable/selector_common_item"
         android:visibility="gone"
         app:end_src="@mipmap/qr_code"
         app:title="二维码" />
@@ -161,7 +168,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="56dp"
             android:background="@drawable/selector_common_item"
             android:gravity="center_vertical"
             android:paddingLeft="16dp">
@@ -169,7 +176,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
                 android:text="朋友圈"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
