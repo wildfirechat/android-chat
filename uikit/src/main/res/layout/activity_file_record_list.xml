@@ -20,17 +20,15 @@
         android:id="@+id/myFilesItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="true"
         app:show_arrow_indicator="true"
+        app:show_divider="false"
         app:title="我的文件" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/conversationFilesItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_option_item"
-        app:divider_align_to_title="true"
+        app:show_divider="false"
         app:show_arrow_indicator="true"
         app:title="会话文件" />
 
@@ -38,8 +36,7 @@
         android:id="@+id/userFilesItemView"
         style="@style/OptionItem"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="true"
+        app:show_divider="false"
         app:show_arrow_indicator="true"
         app:title="用户文件" />
 </LinearLayout>
