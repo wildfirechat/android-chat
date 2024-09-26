@@ -36,13 +36,15 @@ public class UserInfoActivity extends WfcBaseActivity {
         if (!isDarkTheme()) {
             setTitleBackgroundResource(R.color.white, false);
         }
-        userInfo = getIntent().getParcelableExtra("userInfo");
-        String groupId = getIntent().getStringExtra("groupId");
+        Intent intent = getIntent();
+        userInfo = intent.getParcelableExtra("userInfo");
+        String groupId = intent.getStringExtra("groupId");
+        groupMemberSource = intent.getParcelableExtra("groupMemberSource");
         if (userInfo == null) {
             finish();
         } else {
             getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, UserInfoFragment.newInstance(userInfo, groupId))
+                .replace(R.id.containerFrameLayout, UserInfoFragment.newInstance(userInfo, groupId, groupMemberSource, friendSource))
                 .commit();
         }
     }

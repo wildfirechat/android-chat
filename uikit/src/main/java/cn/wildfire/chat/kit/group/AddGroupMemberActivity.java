@@ -124,7 +124,7 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
                 checkedIds.add(user.getUserInfo().uid);
             }
             String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
-            groupViewModel.addGroupMemberEx(groupInfo, checkedIds, null, Collections.singletonList(0), memberExtra).observe(this, result -> {
+            groupViewModel.addGroupMember(groupInfo, checkedIds, null, Collections.singletonList(0), memberExtra).observe(this, result -> {
                 dialog.dismiss();
                 Intent intent = new Intent();
                 if (result) {

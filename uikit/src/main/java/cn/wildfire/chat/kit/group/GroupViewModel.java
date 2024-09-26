@@ -130,10 +130,10 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     }
 
     public MutableLiveData<OperateResult<String>> createGroup(Context context, List<UserInfo> checkedUsers, MessageContent notifyMsg, List<Integer> lines) {
-        return createGroupEx(context, checkedUsers, notifyMsg, lines, null, null);
+        return createGroup(context, checkedUsers, notifyMsg, lines, null, null);
     }
 
-    public MutableLiveData<OperateResult<String>> createGroupEx(Context context, List<UserInfo> checkedUsers, MessageContent notifyMsg, List<Integer> lines, String groupExra, String memberExtra) {
+    public MutableLiveData<OperateResult<String>> createGroup(Context context, List<UserInfo> checkedUsers, MessageContent notifyMsg, List<Integer> lines, String groupExra, String memberExtra) {
         List<String> selectedIds = new ArrayList<>(checkedUsers.size());
         List<UserInfo> selectedUsers = new ArrayList<>();
         for (UserInfo userInfo : checkedUsers) {
@@ -173,10 +173,10 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
     }
 
     public MutableLiveData<Boolean> addGroupMember(GroupInfo groupInfo, List<String> memberIds, MessageContent notifyMsg, List<Integer> notifyLines) {
-        return addGroupMemberEx(groupInfo, memberIds, notifyMsg, notifyLines, null);
+        return addGroupMember(groupInfo, memberIds, notifyMsg, notifyLines, null);
     }
 
-    public MutableLiveData<Boolean> addGroupMemberEx(GroupInfo groupInfo, List<String> memberIds, MessageContent notifyMsg, List<Integer> notifyLines, String memberExtra) {
+    public MutableLiveData<Boolean> addGroupMember(GroupInfo groupInfo, List<String> memberIds, MessageContent notifyMsg, List<Integer> notifyLines, String memberExtra) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
         // TODO need update group portrait or not?
         ChatManager.Instance().addGroupMembers(groupInfo.target, memberIds, memberExtra, notifyLines, notifyMsg, new GeneralCallback() {

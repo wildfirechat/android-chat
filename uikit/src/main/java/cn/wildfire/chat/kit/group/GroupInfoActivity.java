@@ -140,7 +140,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
             finish();
         } else {
             String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_QRCode, this.from);
-            groupViewModel.addGroupMemberEx(groupInfo, Collections.singletonList(userId), null, Collections.singletonList(0), memberExtra).observe(this, new Observer<Boolean>() {
+            groupViewModel.addGroupMember(groupInfo, Collections.singletonList(userId), null, Collections.singletonList(0), memberExtra).observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(Boolean aBoolean) {
                     if (aBoolean) {
