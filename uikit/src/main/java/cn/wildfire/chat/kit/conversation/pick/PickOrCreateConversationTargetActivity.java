@@ -86,7 +86,7 @@ public class PickOrCreateConversationTargetActivity extends PickConversationTarg
 
             GroupViewModel groupViewModel = new ViewModelProvider(this).get(GroupViewModel.class);
             String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
-            groupViewModel.createGroupEx(this, new ArrayList<UserInfo>(userMap.values()), null, Collections.singletonList(0), null, memberExtra).observe(this, result -> {
+            groupViewModel.createGroup(this, new ArrayList<UserInfo>(userMap.values()), null, Collections.singletonList(0), null, memberExtra).observe(this, result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {
                     GroupInfo groupInfo = groupViewModel.getGroupInfo(result.getResult(), false);

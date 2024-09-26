@@ -104,7 +104,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
             }
 
             String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
-            groupViewModel.createGroupEx(this, new ArrayList<UserInfo>(userMap.values()), null, Collections.singletonList(0), null, memberExtra).observe(this, result -> {
+            groupViewModel.createGroup(this, new ArrayList<UserInfo>(userMap.values()), null, Collections.singletonList(0), null, memberExtra).observe(this, result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {
                     Toast.makeText(this, getString(R.string.create_group_success), Toast.LENGTH_SHORT).show();
