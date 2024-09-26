@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +24,10 @@ import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
+import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 // conversation target could be user, group and etc.
 public class PickOrCreateConversationTargetActivity extends PickConversationTargetActivity {
@@ -83,7 +85,8 @@ public class PickOrCreateConversationTargetActivity extends PickConversationTarg
             }
 
             GroupViewModel groupViewModel = new ViewModelProvider(this).get(GroupViewModel.class);
-            groupViewModel.createGroup(this, new ArrayList<UserInfo>(userMap.values()), null, Arrays.asList(0)).observe(this, result -> {
+            String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
+            groupViewModel.createGroup(this, new ArrayList<UserInfo>(userMap.values()), null, Collections.singletonList(0), null, memberExtra).observe(this, result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {
                     GroupInfo groupInfo = groupViewModel.getGroupInfo(result.getResult(), false);

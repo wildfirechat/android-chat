@@ -25,7 +25,9 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
+import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class AddGroupMemberActivity extends WfcBaseActivity {
     private MenuItem menuItem;
@@ -121,7 +123,8 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
             for (UIUserInfo user : checkedUsers) {
                 checkedIds.add(user.getUserInfo().uid);
             }
-            groupViewModel.addGroupMember(groupInfo, checkedIds, null, Collections.singletonList(0)).observe(this, result -> {
+            String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
+            groupViewModel.addGroupMember(groupInfo, checkedIds, null, Collections.singletonList(0), memberExtra).observe(this, result -> {
                 dialog.dismiss();
                 Intent intent = new Intent();
                 if (result) {

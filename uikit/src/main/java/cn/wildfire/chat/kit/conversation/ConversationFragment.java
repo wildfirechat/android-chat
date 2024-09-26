@@ -75,6 +75,7 @@ import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardAwareLinearLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.message.EnterChannelChatMessageContent;
 import cn.wildfirechat.message.LeaveChannelChatMessageContent;
 import cn.wildfirechat.message.Message;
@@ -887,11 +888,12 @@ public class ConversationFragment extends Fragment implements
             return;
         }
 
+        GroupMember targetGroupMember = null;
         if (groupInfo != null && groupInfo.privateChat == 1) {
             boolean allowPrivateChat = false;
             GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
             if (groupMember != null && groupMember.type == GroupMember.GroupMemberType.Normal) {
-                GroupMember targetGroupMember = groupViewModel.getGroupMember(groupInfo.target, userInfo.uid);
+                targetGroupMember = groupViewModel.getGroupMember(groupInfo.target, userInfo.uid);
                 if (targetGroupMember != null && (targetGroupMember.type == GroupMember.GroupMemberType.Owner || targetGroupMember.type == GroupMember.GroupMemberType.Manager)) {
                     allowPrivateChat = true;
                 }
@@ -909,6 +911,11 @@ public class ConversationFragment extends Fragment implements
             intent.putExtra("userInfo", userInfo);
             if (conversation.type == Conversation.ConversationType.Group) {
                 intent.putExtra("groupId", conversation.target);
+                if (targetGroupMember == null) {
+                    targetGroupMember = ChatManager.Instance().getGroupMember(conversation.target, userInfo.uid);
+                }
+                GroupMemberSource source = GroupMemberSource.getGroupMemberSource(targetGroupMember.extra);
+                intent.putExtra("groupMemberSource", source);
             }
             startActivity(intent);
         }

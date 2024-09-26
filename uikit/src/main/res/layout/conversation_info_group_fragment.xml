@@ -62,7 +62,6 @@
                 <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/groupNameOptionItemView"
                     style="@style/OptionItem"
-                    android:background="@drawable/selector_option_item"
                     app:desc="@string/untitled"
                     app:show_arrow_indicator="true"
                     app:title="@string/group_name" />
@@ -70,7 +69,6 @@
                 <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/groupPortraitOptionItemView"
                     style="@style/OptionItem"
-                    android:background="@drawable/selector_option_item"
                     app:end_src="@mipmap/qr_code"
                     app:show_arrow_indicator="true"
                     app:title="@string/group_portrait" />
@@ -78,7 +76,6 @@
                 <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/groupQRCodeOptionItemView"
                     style="@style/OptionItem"
-                    android:background="@drawable/selector_option_item"
                     app:end_src="@mipmap/qr_code"
                     app:show_arrow_indicator="true"
                     app:title="二维码" />
@@ -133,7 +130,6 @@
                 <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/groupRemarkOptionItemView"
                     style="@style/OptionItem"
-                    android:background="@drawable/selector_option_item"
                     app:desc="@string/untitled"
                     app:show_arrow_indicator="true"
                     app:title="群备注" />
@@ -148,7 +144,6 @@
                 <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/groupManageOptionItemView"
                     style="@style/OptionItem"
-                    android:background="@drawable/selector_option_item"
                     android:visibility="gone"
                     app:show_arrow_indicator="true"
                     app:title="群管理" />
@@ -159,14 +154,12 @@
                 android:id="@+id/searchMessageOptionItemView"
                 style="@style/OptionItem"
                 android:layout_marginTop="@dimen/option_item_margin_top"
-                android:background="@drawable/selector_option_item"
                 app:show_arrow_indicator="true"
                 app:title="查找聊天记录" />
 
             <cn.wildfire.chat.kit.widget.OptionItemView
                 android:id="@+id/fileRecordOptionItemView"
                 style="@style/OptionItem"
-                android:background="@drawable/selector_option_item"
                 app:show_arrow_indicator="true"
                 app:title="文件记录" />
 

@@ -82,7 +82,7 @@ v0.9.9 版本，移除了[ButterKnife](https://github.com/JakeWharton/butterknif
 2. 其他问题，请到[野火IM论坛](http://bbs.wildfirechat.cn/)进行交流学习
 3. 微信公众号
 
-<img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 50% height = 50% />
+<img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 40% height = 40% />
 
 > 强烈建议关注我们的公众号。我们有新版本发布或者有重大更新会通过公众号通知大家，另外我们也会不定期的发布一些关于野火IM的技术介绍。
 
@@ -92,31 +92,45 @@ v0.9.9 版本，移除了[ButterKnife](https://github.com/JakeWharton/butterknif
 ![野火IM](http://static.wildfirechat.cn/download_qrcode.png)
 
 ## 应用截图
-![ios-demo1](http://static.wildfirechat.cn/android-deomo1.gif)
+[点击查看 Android Demo 视频演示](https://static.wildfirechat.cn/wf-android-demo-live.mp4)
 
-![ios-demo2](http://static.wildfirechat.cn/android-deomo1.gif)
+<img src="https://static.wildfirechat.cn/wf-android-demo-1.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view1.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-2.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view2.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-3.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view3.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-4.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view4.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-5.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view5.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-6.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view6.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-7.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view7.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-8.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view8.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-9.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view9.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-10.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view10.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-11.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view11.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-12.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-13.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-14.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-15.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-16.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-17.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-18.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-19.jpg" width = 40% height = 40% />
 
 
 ## 集成
