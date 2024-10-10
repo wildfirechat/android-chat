@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -64,13 +65,67 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public void setOnClickConversationItemListener(OnClickConversationItemListener onClickConversationItemListener) {
         this.onClickConversationItemListener = onClickConversationItemListener;
-        notifyDataSetChanged();
     }
 
     private void submit(List<StatusNotification> notifications, List<ConversationInfo> conversationInfos) {
+        List<StatusNotification> oldNotifications = this.statusNotifications;
+        List<ConversationInfo> oldConversationInfos = this.conversationInfos;
         this.statusNotifications = notifications;
         this.conversationInfos = conversationInfos;
-        notifyDataSetChanged();
+
+        // TODO work thread 做 diff
+        int oldHeaderCount = listSize(oldNotifications);
+        int newHeaderCount = listSize(statusNotifications);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return oldHeaderCount + listSize(oldConversationInfos);
+            }
+
+            @Override
+            public int getNewListSize() {
+                return newHeaderCount + listSize(conversationInfos);
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                if (oldItemPosition < oldHeaderCount && newItemPosition < newHeaderCount) {
+                    StatusNotification oldNotification = oldNotifications.get(oldItemPosition);
+                    StatusNotification newNotification = statusNotifications.get(newItemPosition);
+                    return oldNotification.equals(newNotification);
+                } else if (oldItemPosition >= oldHeaderCount && newItemPosition >= newHeaderCount) {
+                    oldItemPosition = oldItemPosition - oldHeaderCount;
+                    newItemPosition = newItemPosition - newHeaderCount;
+
+                    ConversationInfo oldInfo = oldConversationInfos.get(oldItemPosition);
+                    ConversationInfo newInfo = conversationInfos.get(newItemPosition);
+
+                    return Conversation.equals(oldInfo.conversation, newInfo.conversation);
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                if (oldItemPosition < oldHeaderCount && newItemPosition < newHeaderCount) {
+                    StatusNotification oldNotification = oldNotifications.get(oldItemPosition);
+                    StatusNotification newNotification = statusNotifications.get(newItemPosition);
+                    return oldNotification.equals(newNotification);
+                } else if (oldItemPosition >= oldHeaderCount && newItemPosition >= newHeaderCount) {
+                    oldItemPosition = oldItemPosition - oldHeaderCount;
+                    newItemPosition = newItemPosition - newHeaderCount;
+
+                    ConversationInfo oldInfo = oldConversationInfos.get(oldItemPosition);
+                    ConversationInfo newInfo = conversationInfos.get(newItemPosition);
+
+                    return oldInfo.equals(newInfo);
+                } else {
+                    return false;
+                }
+            }
+        }, true);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @NonNull
@@ -252,5 +307,9 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     private boolean isStatusNotificationHeader(int position) {
         return position < headerCount();
+    }
+
+    private static int listSize(List list) {
+        return list == null ? 0 : list.size();
     }
 }
