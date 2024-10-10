@@ -74,17 +74,17 @@ import cn.wildfirechat.ashmen.AshmenWrapper;
 
 interface IRemoteClient {
     long connect(in String userId, in String token);
-    void disconnect(in boolean disablePush, in boolean clearSession);
-    void setForeground(in int isForeground);
-    void onNetworkChange();
-    void setServerAddress(in String host);
-    void setBackupAddressStrategy(in int strategy);
-    void setBackupAddress(in String host, in int port);
-    void setProtoUserAgent(in String userAgent);
+    oneway void disconnect(in boolean disablePush, in boolean clearSession);
+    oneway void setForeground(in int isForeground);
+    oneway void onNetworkChange();
+    oneway void setServerAddress(in String host);
+    oneway void setBackupAddressStrategy(in int strategy);
+    oneway void setBackupAddress(in String host, in int port);
+    oneway void setProtoUserAgent(in String userAgent);
     int getConnectedNetworkType();
-    void addHttpHeader(in String header, in String value);
-    void setLiteMode(in boolean isLiteMode);
-    void setLowBPSMode(in boolean isLowBPSMode);
+    oneway void addHttpHeader(in String header, in String value);
+    oneway void setLiteMode(in boolean isLiteMode);
+    oneway void setLowBPSMode(in boolean isLowBPSMode);
     int getConnectionStatus();
 
     oneway void setOnReceiveMessageListener(in IOnReceiveMessageListener listener);
@@ -155,19 +155,19 @@ interface IRemoteClient {
     boolean clearUnreadStatusEx(in int[] conversationTypes, in int[] lines);
     boolean clearMessageUnreadStatus(long messageId);
     boolean clearUnreadStatusBeforeMessage(long messageId, in Conversation conversation);
-    void clearAllUnreadStatus();
+    oneway void clearAllUnreadStatus();
     boolean markAsUnRead(in int conversationType, in String target, in int line, in boolean sync);
-    void clearMessages(in int conversationType, in String target, in int line);
-    void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
-    void clearMessagesEx2(in int conversationType, in String target, in int line, in int keepCount);
-    void clearAllMessages(in boolean removeConversation);
-    void setMediaMessagePlayed(in long messageId);
+    oneway void clearMessages(in int conversationType, in String target, in int line);
+    oneway void clearMessagesEx(in int conversationType, in String target, in int line, in long before);
+    oneway void clearMessagesEx2(in int conversationType, in String target, in int line, in int keepCount);
+    oneway void clearAllMessages(in boolean removeConversation);
+    oneway void setMediaMessagePlayed(in long messageId);
     boolean setMessageLocalExtra(in long messageId, in String extra);
-    void removeConversation(in int conversationType, in String target, in int line, in boolean clearMsg);
+    oneway void removeConversation(in int conversationType, in String target, in int line, in boolean clearMsg);
     oneway void setConversationTop(in int conversationType, in String target, in int line, in int top, in IGeneralCallback callback);
-    void setConversationDraft(in int conversationType, in String target, in int line, in String draft);
+    oneway void setConversationDraft(in int conversationType, in String target, in int line, in String draft);
     oneway void setConversationSilent(in int conversationType, in String target, in int line, in boolean silent,  in IGeneralCallback callback);
-    void setConversationTimestamp(in int conversationType, in String target, in int line, in long timestamp);
+    oneway void setConversationTimestamp(in int conversationType, in String target, in int line, in long timestamp);
 
     Map getConversationRead(in int conversationType, in String target, in int line);
     Map getMessageDelivery(in int conversationType, in String target);
@@ -194,7 +194,7 @@ interface IRemoteClient {
     String getFriendAlias(in String userId);
     oneway void setFriendAlias(in String userId, in String alias, in IGeneralCallback callback);
     String getFriendExtra(in String userId);
-    void clearUnreadFriendRequestStatus();
+    oneway void clearUnreadFriendRequestStatus();
     int getUnreadFriendRequestStatus();
     oneway void removeFriend(in String userId, in IGeneralCallback callback);
     oneway void sendFriendRequest(in String userId, in String reason, in String extra, in IGeneralCallback callback);
@@ -225,8 +225,8 @@ interface IRemoteClient {
     boolean deleteMessage(in long messageId);
     boolean batchDeleteMessages(in long[] messageUids);
     boolean clearUserMessage(in String userId, in long start, in long end);
-    void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
-    void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
+    oneway void deleteRemoteMessage(in long messageUid, in IGeneralCallback callback);
+    oneway void updateRemoteMessageContent(in long messageUid, in MessagePayload payload, in boolean distribute, in boolean updateLocal, in IGeneralCallback callback);
     List<ConversationSearchResult> searchConversation(in String keyword, in int[] conversationTypes, in int[] lines);
     List<ConversationSearchResult> searchConversationEx(in String keyword, in int[] conversationTypes, in int[] lines, in long startTime, in long endTime, in boolean desc, in int limit, in int offset);
     List<ConversationSearchResult> searchConversationEx2(in String keyword, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long startTime, in long endTime, in boolean desc, in int limit, in int offset, in boolean onlyMentionedMsg);
@@ -295,7 +295,7 @@ interface IRemoteClient {
 
     String getImageThumbPara();
 
-    void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
+    oneway void kickoffPCClient(in String pcClientId, in IGeneralCallback callback);
 
     oneway void getAuthCode(in String appId, in int appType, in String host, in IGeneralCallback2 callback);
     oneway void configApplication(in String appId, in int appType, in long timestamp, in String nonceStr, in String signature, in IGeneralCallback callback);
@@ -318,13 +318,13 @@ interface IRemoteClient {
     boolean isEnableUserOnlineState();
     boolean isEnableMesh();
 
-    void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
-    void useSM4();
-    void useAES256();
-    void useTcpShortLink();
-    void useRawMsg();
-    void noUseFts();
-    void checkSignature();
+    oneway void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
+    oneway void useSM4();
+    oneway void useAES256();
+    oneway void useTcpShortLink();
+    oneway void useRawMsg();
+    oneway void noUseFts();
+    oneway void checkSignature();
 
     String getProtoRevision();
 
