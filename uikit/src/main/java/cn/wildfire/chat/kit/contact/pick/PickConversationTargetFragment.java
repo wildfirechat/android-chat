@@ -174,6 +174,10 @@ public class PickConversationTargetFragment extends PickUserFragment {
         return pickedUserAdapter.organizations;
     }
 
+    public List<UIUserInfo> getCheckedUserInfos() {
+        return pickedUserAdapter.users;
+    }
+
     public interface OnGroupPickListener {
         void onGroupPicked(List<GroupInfo> groupInfos);
     }
