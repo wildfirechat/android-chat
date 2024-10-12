@@ -622,7 +622,10 @@ public class ConversationFragment extends Fragment implements
         if (conversation.type == Conversation.ConversationType.Group) {
             groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
             initGroupObservers();
-            groupViewModel.getGroupMembersLiveData(conversation.target, true);
+            // refresh group members
+            ChatManager.Instance().getWorkHandler().postDelayed(() -> {
+                ChatManager.Instance().getGroupMembers(conversation.target, true, null);
+            }, 300);
             groupInfo = groupViewModel.getGroupInfo(conversation.target, true);
             groupMember = groupViewModel.getGroupMember(conversation.target, userViewModel.getUserId());
             showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
