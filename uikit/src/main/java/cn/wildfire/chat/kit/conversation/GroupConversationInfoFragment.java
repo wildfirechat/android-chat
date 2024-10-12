@@ -119,6 +119,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     private GroupInfo groupInfo;
     // me in group
     private GroupMember selfGroupMember;
+    private static final int maxShowGroupMemberCount = 20;
 
 
     public static GroupConversationInfoFragment newInstance(ConversationInfo conversationInfo) {
@@ -279,8 +280,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
 
     private void loadAndShowGroupMembers(boolean refresh) {
-        groupViewModel.getGroupMembersLiveData(conversationInfo.conversation.target, refresh)
-            .observe(this, groupMembers -> {
+        groupViewModel.getGroupMembersLiveData(conversationInfo.conversation.target, maxShowGroupMemberCount)
+            .observe(getViewLifecycleOwner(), groupMembers -> {
                 progressBar.setVisibility(View.GONE);
                 showGroupMembers(groupMembers);
                 showGroupManageViews();
@@ -349,7 +350,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
         boolean enableRemoveMember = false;
         boolean enableAddMember = false;
-        int maxShowMemberCount = 45;
+        int toShowMemberCount = maxShowGroupMemberCount;
         if (groupInfo.type != GroupInfo.GroupType.Organization) {
             if (groupInfo.joinType == 2) {
                 if (selfGroupMember.type == GroupMember.GroupMemberType.Owner || selfGroupMember.type == GroupMember.GroupMemberType.Manager) {
@@ -363,15 +364,15 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 }
             }
             if (enableAddMember) {
-                maxShowMemberCount--;
+                toShowMemberCount--;
             }
             if (enableRemoveMember) {
-                maxShowMemberCount--;
+                toShowMemberCount--;
             }
         }
-        if (memberIds.size() > maxShowMemberCount) {
+        if (memberIds.size() > toShowMemberCount) {
             showAllGroupMemberButton.setVisibility(View.VISIBLE);
-            memberIds = memberIds.subList(0, maxShowMemberCount);
+            memberIds = memberIds.subList(0, toShowMemberCount);
         }
 
         conversationMemberAdapter = new ConversationMemberAdapter(conversationInfo, enableAddMember, enableRemoveMember);

@@ -108,16 +108,25 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
 
     public MutableLiveData<List<UserInfo>> getGroupMemberUserInfosLiveData(String groupId, boolean refresh, long joinBeforeDt) {
         MutableLiveData<List<UserInfo>> groupMemberLiveData = new MutableLiveData<>();
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, refresh);
-            List<String> memberIds = new ArrayList<>(members.size());
-            for (GroupMember member : members) {
-                if (member.createDt <= joinBeforeDt) {
-                    memberIds.add(member.memberId);
+        ChatManager.Instance().getGroupMembers(groupId, refresh, new GetGroupMembersCallback() {
+            @Override
+            public void onSuccess(List<GroupMember> groupMembers) {
+                List<String> memberIds = new ArrayList<>(groupMembers.size());
+                for (GroupMember member : groupMembers) {
+                    if (member.createDt <= joinBeforeDt) {
+                        memberIds.add(member.memberId);
+                    }
                 }
+                ChatManager.Instance().getWorkHandler().post(() -> {
+                    List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
+                    groupMemberLiveData.postValue(userInfos);
+                });
             }
-            List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
-            groupMemberLiveData.postValue(userInfos);
+
+            @Override
+            public void onFail(int errorCode) {
+                groupMemberLiveData.postValue(new ArrayList<>());
+            }
         });
         return groupMemberLiveData;
     }
@@ -356,20 +365,12 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
         return ChatManager.Instance().getGroupMembers(groupId, forceRefresh);
     }
 
-    public MutableLiveData<List<GroupMember>> getGroupMembersLiveData(String groupId, boolean refresh) {
+    public MutableLiveData<List<GroupMember>> getGroupMembersLiveData(String groupId, int maxCount) {
         MutableLiveData<List<GroupMember>> data = new MutableLiveData<>();
-        ChatManager.Instance().getGroupMembers(groupId, refresh, new GetGroupMembersCallback() {
-            @Override
-            public void onSuccess(List<GroupMember> groupMembers) {
-                data.postValue(groupMembers);
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-                data.postValue(new ArrayList<>());
-            }
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            List<GroupMember> groupMembers = ChatManager.Instance().getGroupMembersByCount(groupId, maxCount);
+            data.postValue(groupMembers);
         });
-
         return data;
     }
 
