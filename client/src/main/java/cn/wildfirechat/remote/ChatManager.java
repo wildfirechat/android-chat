@@ -5490,12 +5490,6 @@ public class ChatManager {
                 }
             }
 
-            Collections.sort(userInfos, (o1, o2) -> {
-                int index_1 = userIds.indexOf(o1.uid);
-                int index_2 = userIds.indexOf(o2.uid);
-                return index_1 - index_2;
-            });
-
             return userInfos;
         } catch (RemoteException e) {
             e.printStackTrace();

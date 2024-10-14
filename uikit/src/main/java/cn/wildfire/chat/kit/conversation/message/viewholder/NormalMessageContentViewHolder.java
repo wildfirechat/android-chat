@@ -329,6 +329,10 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         }
 
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
+            MessageContent messageContent = message.content;
+            if (messageContent instanceof CallStartMessageContent) {
+                return true;
+            }
             if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
                 GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
@@ -394,6 +398,24 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 return false;
             }
             return true;
+        }
+
+        if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
+            MessageContent messageContent = message.content;
+            if (messageContent instanceof SoundMessageContent
+                || messageContent instanceof CallStartMessageContent) {
+                return true;
+            }
+            return false;
+        }
+
+        if (MessageContextMenuItemTags.TAG_MULTI_CHECK.equals(tag)) {
+            MessageContent messageContent = message.content;
+            if (messageContent instanceof SoundMessageContent
+                || messageContent instanceof CallStartMessageContent) {
+                return true;
+            }
+            return false;
         }
 
         return false;
