@@ -43,7 +43,7 @@ public class ForwardViewModel extends ViewModel {
         return resultMutableLiveData;
     }
 
-    private MessageContent filterMessageContent(Message msg) {
+    public MessageContent filterMessageContent(Message msg) {
         MessageContent content = msg.content;
         if (content instanceof CallStartMessageContent) {
             content = new TextMessageContent(content.digest(msg));
