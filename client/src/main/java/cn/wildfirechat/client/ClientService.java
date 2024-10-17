@@ -1229,6 +1229,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public cn.wildfirechat.message.Message insertMessage(cn.wildfirechat.message.Message message, boolean notify) throws RemoteException {
             ProtoMessage protoMessage = convertMessage(message);
             message.messageId = ProtoLogic.insertMessage(protoMessage);
+            if(message.messageId > 0) {
+                return getMessage(message.messageId);
+            }
             return message;
         }
 
