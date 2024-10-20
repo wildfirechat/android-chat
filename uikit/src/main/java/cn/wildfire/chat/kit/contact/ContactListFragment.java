@@ -57,19 +57,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     private OrganizationServiceViewModel organizationServiceViewModel;
 
-    private boolean isVisibleToUser = false;
     private ContactViewModel contactViewModel;
 
-
-    @Override
-    public void setMenuVisibility(boolean isvisible) {
-        super.setMenuVisibility(isvisible);
-        this.isVisibleToUser = isvisible;
-        if (isvisible && contactViewModel != null) {
-            contactViewModel.reloadContact();
-            contactViewModel.reloadFriendRequestStatus();
-        }
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,7 +76,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     @Override
     public void onResume() {
         super.onResume();
-        if (isVisibleToUser) {
+        if (userListAdapter.getUsers() == null) {
             contactViewModel.reloadContact();
             contactViewModel.reloadFriendRequestStatus();
             contactViewModel.reloadFavContact();
