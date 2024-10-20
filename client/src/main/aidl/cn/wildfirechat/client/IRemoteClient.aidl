@@ -29,6 +29,7 @@ import cn.wildfirechat.client.IGetUserCallback;
 import cn.wildfirechat.client.IGetGroupCallback;
 import cn.wildfirechat.client.IGetGroupMemberCallback;
 import cn.wildfirechat.client.IGetConversationListCallback;
+import cn.wildfirechat.client.IGetUserInfoListCallback;
 import cn.wildfirechat.client.IWatchUserOnlineStateCallback;
 
 import cn.wildfirechat.client.IOnFriendUpdateListener;
@@ -177,6 +178,7 @@ interface IRemoteClient {
     boolean isMyFriend(in String userId);
     List<String> getMyFriendList(in boolean refresh);
     List<Friend> getFriendList(in boolean refresh);
+    oneway void getFriendUserInfoListAsync(in boolean refresh, in IGetUserInfoListCallback callback);
     oneway void loadFriendRequestFromRemote();
 
     String getUserSetting(in int scope, in String key);
@@ -254,8 +256,9 @@ interface IRemoteClient {
     List<GroupMember> getGroupMembers(in String groupId, in boolean forceUpdate);
     List<GroupMember> getGroupMembersByType(in String groupId, in int type);
     List<GroupMember> getGroupMembersByCount(in String groupId, in int count);
+    oneway void getGroupMemberUserInfosAsync(in String groupId, in boolean forceUpdate, in IGetUserInfoListCallback callback);
     GroupMember getGroupMember(in String groupId, in String memberId);
-    oneway void getGroupMemberEx(in String groupId, in boolean forceUpdate, in IGetGroupMemberCallback callback);
+    oneway void getGroupMembersEx(in String groupId, in boolean forceUpdate, in IGetGroupMemberCallback callback);
     oneway void transferGroup(in String groupId, in String newOwner, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void setGroupManager(in String groupId, in boolean isSet, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void muteOrAllowGroupMember(in String groupId, in boolean isSet, in List<String> memberIds, in boolean isAllow, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);

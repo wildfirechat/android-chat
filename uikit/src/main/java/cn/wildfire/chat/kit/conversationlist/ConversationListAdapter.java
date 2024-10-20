@@ -73,6 +73,10 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         this.statusNotifications = notifications;
         this.conversationInfos = conversationInfos;
 
+        if (listSize(oldConversationInfos) == 0) {
+            notifyDataSetChanged();
+            return;
+        }
         // TODO work thread 做 diff
         int oldHeaderCount = listSize(oldNotifications);
         int newHeaderCount = listSize(statusNotifications);
