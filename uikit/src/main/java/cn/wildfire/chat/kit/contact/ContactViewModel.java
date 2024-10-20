@@ -25,6 +25,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GetRemoteDomainsCallback;
+import cn.wildfirechat.remote.GetUserInfoListCallback;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.SearchUserCallback;
 import cn.wildfirechat.remote.StringListCallback;
@@ -88,10 +89,12 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
                 if (userIds == null || userIds.isEmpty()) {
                     return;
                 }
-                List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(userIds, null);
-                if (userInfos != null){
-                    favContactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos, true));
-                }
+                ChatManager.Instance().getWorkHandler().post(() -> {
+                    List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(userIds, null);
+                    if (userInfos != null) {
+                        favContactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos, true));
+                    }
+                });
             }
 
             @Override
@@ -113,22 +116,29 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             return;
         }
         loadingCount.incrementAndGet();
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            SharedPreferences sp = WfcUIKit.getWfcUIKit().getApplication().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
-            boolean pcLogined = sp.getBoolean("wfc_uikit_had_pc_session", false);
-            UserInfo fileHelpUserInfo = null;
-            if (pcLogined) {
-                fileHelpUserInfo = ChatManager.Instance().getUserInfo(Config.FILE_TRANSFER_ID, true);
+        ChatManager.Instance().getMyFriendListInfoAsync(false, new GetUserInfoListCallback() {
+            @Override
+            public void onSuccess(List<UserInfo> userInfos) {
+                if (contactListLiveData != null && userInfos != null) {
+                    SharedPreferences sp = WfcUIKit.getWfcUIKit().getApplication().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
+                    boolean pcLogined = sp.getBoolean("wfc_uikit_had_pc_session", false);
+                    UserInfo fileHelpUserInfo = null;
+                    if (pcLogined) {
+                        fileHelpUserInfo = ChatManager.Instance().getUserInfo(Config.FILE_TRANSFER_ID, true);
+                    }
+
+                    if (fileHelpUserInfo != null) {
+                        userInfos.add(fileHelpUserInfo);
+                    }
+                    contactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos));
+                }
+                loadingCount.decrementAndGet();
             }
 
-            List<UserInfo> userInfos = ChatManager.Instance().getMyFriendListInfo(false);
-            if (fileHelpUserInfo != null && userInfos != null) {
-                userInfos.add(fileHelpUserInfo);
+            @Override
+            public void onFail(int errorCode) {
+                loadingCount.decrementAndGet();
             }
-            if (contactListLiveData != null && userInfos != null) {
-                contactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos));
-            }
-            loadingCount.decrementAndGet();
         });
     }
 
