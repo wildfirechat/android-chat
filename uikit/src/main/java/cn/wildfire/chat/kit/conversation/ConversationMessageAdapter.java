@@ -222,7 +222,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         int index = -1;
         for (int i = messages.size() - 1; i >= 0; i--) {
             if (message.message.messageUid > 0) {
-                // 聊天室消息收到的消息
+                // 聊天室消息收到的消息，或者消息被远程更新
                 if (messages.get(i).message.messageUid == message.message.messageUid) {
                     messages.set(i, message);
                     index = i;
@@ -649,6 +649,13 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                     break;
                 }
             }
+            // 聊天室里面，由于消息不存储，messageId都是0，被远程更新的消息，也会走这儿
+            if (message.message.messageUid > 0) {
+                if (msg.message.messageUid == message.message.messageUid) {
+                    index = i;
+                    break;
+                }
+            }
             if (msg.message.messageId == 0
                 && msg.message.content instanceof StreamingTextGeneratingMessageContent
                 && (message.message.content instanceof StreamingTextGeneratingMessageContent || message.message.content instanceof StreamingTextGeneratedMessageContent)) {
@@ -664,13 +671,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                     break;
                 }
 
-            }
-            // 聊天室里面，由于消息不存储，messageId都是0，被远程更新的消息，也会走这儿
-            if (message.message.messageUid > 0) {
-                if (msg.message.messageUid == message.message.messageUid) {
-                    index = i;
-                    break;
-                }
             }
         }
         return index;
