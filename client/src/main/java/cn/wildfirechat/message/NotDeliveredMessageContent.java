@@ -88,6 +88,7 @@ public class NotDeliveredMessageContent extends NotificationMessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         try {
             if (payload.binaryContent != null) {
                 JSONObject obj = new JSONObject(new String(payload.binaryContent));

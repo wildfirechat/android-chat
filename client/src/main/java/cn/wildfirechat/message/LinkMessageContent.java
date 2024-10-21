@@ -91,8 +91,8 @@ public class LinkMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         title = payload.searchableContent;
-
 
         try {
             if (payload.binaryContent != null) {

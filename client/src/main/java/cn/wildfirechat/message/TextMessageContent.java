@@ -70,6 +70,7 @@ public class TextMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         content = payload.searchableContent;
         mentionedType = payload.mentionedType;
         mentionedTargets = payload.mentionedTargets;

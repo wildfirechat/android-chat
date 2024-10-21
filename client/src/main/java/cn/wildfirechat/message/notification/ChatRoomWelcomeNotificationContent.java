@@ -25,7 +25,7 @@ public class ChatRoomWelcomeNotificationContent extends NotificationMessageConte
 
     @Override
     public void decode(MessagePayload payload) {
-
+        super.decode(payload);
     }
 
 

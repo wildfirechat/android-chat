@@ -46,6 +46,7 @@ public class PTextMessageContent extends TextMessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         content = payload.searchableContent;
     }
 

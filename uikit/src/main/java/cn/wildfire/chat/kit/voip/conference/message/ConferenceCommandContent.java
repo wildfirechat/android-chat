@@ -104,6 +104,7 @@ public class ConferenceCommandContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         this.conferenceId = payload.content;
         try {
             if (payload.binaryContent != null) {

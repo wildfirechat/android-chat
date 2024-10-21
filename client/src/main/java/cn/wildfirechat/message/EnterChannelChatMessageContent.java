@@ -15,7 +15,7 @@ import cn.wildfirechat.message.core.PersistFlag;
 public class EnterChannelChatMessageContent extends MessageContent {
     @Override
     public void decode(MessagePayload payload) {
-
+        super.decode(payload);
     }
 
     @Override

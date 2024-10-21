@@ -46,6 +46,7 @@ public class PCLoginRequestMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         try {
             JSONObject obj = new JSONObject(new String(payload.binaryContent));
             platform = obj.optInt("p");

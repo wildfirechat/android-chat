@@ -54,6 +54,7 @@ public class RecallMessageContent extends NotificationMessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         operatorId = payload.content;
         messageUid = Long.parseLong(new String(payload.binaryContent));
 
