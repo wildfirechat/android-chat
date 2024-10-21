@@ -218,6 +218,7 @@ public class AddParticipantsMessageContent extends NotificationMessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         callId = payload.content;
 
         try {

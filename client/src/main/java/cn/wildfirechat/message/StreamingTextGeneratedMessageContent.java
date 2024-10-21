@@ -43,6 +43,7 @@ public class StreamingTextGeneratedMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         this.extra = payload.extra;
         this.text = payload.searchableContent;
         this.streamId = payload.content;

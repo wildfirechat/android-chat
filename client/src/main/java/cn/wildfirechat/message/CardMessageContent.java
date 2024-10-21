@@ -115,6 +115,7 @@ public class CardMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         target = payload.content;
         try {
             if (payload.binaryContent != null) {

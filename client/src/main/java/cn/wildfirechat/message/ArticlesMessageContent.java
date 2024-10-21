@@ -48,6 +48,7 @@ public class ArticlesMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         try {
             JSONObject object = new JSONObject(new String(payload.binaryContent));
             JSONObject topObj = object.getJSONObject("top");

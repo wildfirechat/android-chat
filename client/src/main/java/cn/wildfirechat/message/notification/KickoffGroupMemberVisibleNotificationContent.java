@@ -80,6 +80,7 @@ public class KickoffGroupMemberVisibleNotificationContent extends GroupNotificat
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         try {
             if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
