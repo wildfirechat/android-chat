@@ -4737,7 +4737,6 @@ public class ChatManager {
                     }
                     userInfos.addAll(infos);
                     if (!hasMore) {
-                        Log.d("jyj", "friendList size " +  userInfos.size());
                         mainHandler.post(() -> callback.onSuccess(userInfos));
                     }
                 }
