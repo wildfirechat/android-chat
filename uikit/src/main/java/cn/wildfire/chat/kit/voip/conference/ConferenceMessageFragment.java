@@ -59,18 +59,20 @@ public class ConferenceMessageFragment extends Fragment {
     }
 
     private void init() {
-        messageViewModel.messageLiveData().observe(getViewLifecycleOwner(), new Observer<UiMessage>() {
+        messageViewModel.messageLiveData().observe(getViewLifecycleOwner(), new Observer<List<UiMessage>>() {
             @Override
-            public void onChanged(UiMessage uiMessage) {
-                if (uiMessage.message.messageId == 0) {
-                    return;
-                }
-                Conversation conversation = uiMessage.message.conversation;
-                ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
-                if (conferenceInfo != null && conversation.type == Conversation.ConversationType.ChatRoom && conversation.line == 0 && conversation.target.equals(conferenceInfo.getConferenceId())) {
-                    if (!contains(uiMessage)) {
-                        messages.add(uiMessage);
-                        messageAdapter.notifyItemInserted(messages.size() - 1);
+            public void onChanged(List<UiMessage> uiMessages) {
+                for (UiMessage uiMessage : uiMessages) {
+                    if (uiMessage.message.messageId == 0 || uiMessage.message.content.notLoaded > 0) {
+                        return;
+                    }
+                    Conversation conversation = uiMessage.message.conversation;
+                    ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
+                    if (conferenceInfo != null && conversation.type == Conversation.ConversationType.ChatRoom && conversation.line == 0 && conversation.target.equals(conferenceInfo.getConferenceId())) {
+                        if (!contains(uiMessage)) {
+                            messages.add(uiMessage);
+                            messageAdapter.notifyItemInserted(messages.size() - 1);
+                        }
                     }
                 }
             }

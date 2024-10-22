@@ -169,84 +169,105 @@ public class ConversationFragment extends Fragment implements
 
     private String backgroundImageUri = null;
     private int backgroundImageResId = 0;
+    private boolean isCommercialServer = false;
 
-    private Observer<UiMessage> messageLiveDataObserver = new Observer<UiMessage>() {
+    private Observer<List<UiMessage>> messageLiveDataObserver = new Observer<List<UiMessage>>() {
         @Override
-        public void onChanged(@Nullable UiMessage uiMessage) {
-            if (!isMessageInCurrentConversation(uiMessage)) {
-                return;
-            }
-            MessageContent content = uiMessage.message.content;
+        public void onChanged(List<UiMessage> uiMessages) {
 
-            if (content instanceof MultiCallOngoingMessageContent) {
-                MultiCallOngoingMessageContent ongoingCall = (MultiCallOngoingMessageContent) content;
-                AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
-                if (ongoingCall.getInitiator().equals(ChatManager.Instance().getUserId())
-                    || ongoingCall.getTargets().contains(ChatManager.Instance().getUserId())
-                    || (callSession != null && callSession.getState() != AVEngineKit.CallState.Idle)) {
-                    return;
-                }
-
-                if (ongoingCalls == null) {
-                    ongoingCalls = new HashMap<>();
-                }
-                ongoingCalls.put(ongoingCall.getCallId(), uiMessage.message);
-
-                if (ongoingCalls.size() > 0) {
-                    ongoingCallRecyclerView.setVisibility(View.VISIBLE);
-                    if (ongoingCallAdapter == null) {
-                        ongoingCallAdapter = new OngoingCallAdapter();
-                        ongoingCallRecyclerView.setAdapter(ongoingCallAdapter);
-                        ongoingCallRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            boolean hasUnloadMsg = false;
+            if (conversation.type == Conversation.ConversationType.Group && isCommercialServer) {
+                for (UiMessage uimsg : uiMessages) {
+                    if (uimsg.message.content.notLoaded > 0) {
+                        hasUnloadMsg = true;
+                        break;
                     }
-                    ongoingCallAdapter.setOngoingCalls(new ArrayList<>(ongoingCalls.values()));
-                } else {
-                    ongoingCallRecyclerView.setVisibility(View.GONE);
-                    ongoingCallAdapter.setOngoingCalls(null);
                 }
-                cleanExpiredOngoingCalls();
-
-                return;
+            }
+            if (hasUnloadMsg) {
+                uiMessages = uiMessages.subList(uiMessages.size() - 15, uiMessages.size());
+                if (isMessageInCurrentConversation(uiMessages.get(0))) {
+                    adapter.setMessages(new ArrayList<>());
+                    adapter.notifyDataSetChanged();
+                }
             }
 
-            if (isDisplayableMessage(uiMessage) && !(content instanceof RecallMessageContent)) {
-                // 消息定位时，如果收到新消息、或者发送消息，需要重新加载消息列表
-                if (shouldContinueLoadNewMessage) {
-                    shouldContinueLoadNewMessage = false;
-                    reloadMessage();
+            for (UiMessage uiMessage : uiMessages) {
+                if (!isMessageInCurrentConversation(uiMessage)) {
                     return;
                 }
-                adapter.addNewMessage(uiMessage);
-                if (moveToBottom || uiMessage.message.sender.equals(ChatManager.Instance().getUserId())) {
-                    UIUtils.postTaskDelay(() -> {
+                MessageContent content = uiMessage.message.content;
 
-                            int position = adapter.getItemCount() - 1;
-                            if (position < 0) {
-                                return;
-                            }
-                            recyclerView.scrollToPosition(position);
-                        },
-                        100);
-                }
-            }
-            if (content instanceof TypingMessageContent && uiMessage.message.direction == MessageDirection.Receive) {
-                if (typingMessageMap == null) {
-                    typingMessageMap = new HashMap<>();
-                }
-                long now = System.currentTimeMillis();
-                if (now - uiMessage.message.serverTime + ChatManager.Instance().getServerDeltaTime() < TYPING_INTERNAL) {
-                    typingMessageMap.put(uiMessage.message.sender, uiMessage.message);
-                }
-                updateTypingStatusTitle();
-            } else {
-                if (uiMessage.message.direction == MessageDirection.Receive && typingMessageMap != null) {
-                    typingMessageMap.remove(uiMessage.message.sender);
-                }
-                updateTypingStatusTitle();
-            }
+                if (content instanceof MultiCallOngoingMessageContent) {
+                    MultiCallOngoingMessageContent ongoingCall = (MultiCallOngoingMessageContent) content;
+                    AVEngineKit.CallSession callSession = AVEngineKit.Instance().getCurrentSession();
+                    if (ongoingCall.getInitiator().equals(ChatManager.Instance().getUserId())
+                        || ongoingCall.getTargets().contains(ChatManager.Instance().getUserId())
+                        || (callSession != null && callSession.getState() != AVEngineKit.CallState.Idle)) {
+                        return;
+                    }
 
-            if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && uiMessage.message.direction == MessageDirection.Receive) {
-                conversationViewModel.clearUnreadStatus(conversation);
+                    if (ongoingCalls == null) {
+                        ongoingCalls = new HashMap<>();
+                    }
+                    ongoingCalls.put(ongoingCall.getCallId(), uiMessage.message);
+
+                    if (ongoingCalls.size() > 0) {
+                        ongoingCallRecyclerView.setVisibility(View.VISIBLE);
+                        if (ongoingCallAdapter == null) {
+                            ongoingCallAdapter = new OngoingCallAdapter();
+                            ongoingCallRecyclerView.setAdapter(ongoingCallAdapter);
+                            ongoingCallRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                        }
+                        ongoingCallAdapter.setOngoingCalls(new ArrayList<>(ongoingCalls.values()));
+                    } else {
+                        ongoingCallRecyclerView.setVisibility(View.GONE);
+                        ongoingCallAdapter.setOngoingCalls(null);
+                    }
+                    cleanExpiredOngoingCalls();
+
+                    return;
+                }
+
+                if (isDisplayableMessage(uiMessage) && !(content instanceof RecallMessageContent)) {
+                    // 消息定位时，如果收到新消息、或者发送消息，需要重新加载消息列表
+                    if (shouldContinueLoadNewMessage) {
+                        shouldContinueLoadNewMessage = false;
+                        reloadMessage();
+                        return;
+                    }
+                    adapter.addNewMessage(uiMessage);
+                    if (moveToBottom || uiMessage.message.sender.equals(ChatManager.Instance().getUserId())) {
+                        UIUtils.postTaskDelay(() -> {
+
+                                int position = adapter.getItemCount() - 1;
+                                if (position < 0) {
+                                    return;
+                                }
+                                recyclerView.scrollToPosition(position);
+                            },
+                            100);
+                    }
+                }
+                if (content instanceof TypingMessageContent && uiMessage.message.direction == MessageDirection.Receive) {
+                    if (typingMessageMap == null) {
+                        typingMessageMap = new HashMap<>();
+                    }
+                    long now = System.currentTimeMillis();
+                    if (now - uiMessage.message.serverTime + ChatManager.Instance().getServerDeltaTime() < TYPING_INTERNAL) {
+                        typingMessageMap.put(uiMessage.message.sender, uiMessage.message);
+                    }
+                    updateTypingStatusTitle();
+                } else {
+                    if (uiMessage.message.direction == MessageDirection.Receive && typingMessageMap != null) {
+                        typingMessageMap.remove(uiMessage.message.sender);
+                    }
+                    updateTypingStatusTitle();
+                }
+
+                if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && uiMessage.message.direction == MessageDirection.Receive) {
+                    conversationViewModel.clearUnreadStatus(conversation);
+                }
             }
         }
     };
@@ -601,7 +622,6 @@ public class ConversationFragment extends Fragment implements
                 showGroupMemberName = show;
                 adapter.notifyDataSetChanged();
             }
-            reloadMessage();
         };
 
         settingViewModel = ViewModelProviders.of(this).get(SettingViewModel.class);
@@ -616,6 +636,8 @@ public class ConversationFragment extends Fragment implements
         } else if (backgroundImageResId != 0) {
             setConversationBackgroundImage(backgroundImageResId);
         }
+
+        isCommercialServer = ChatManager.Instance().isCommercialServer();
     }
 
     private void setupConversation(Conversation conversation) {
@@ -1069,7 +1091,7 @@ public class ConversationFragment extends Fragment implements
 
     private void loadMoreOldMessages(boolean scrollToBottom) {
 
-        conversationViewModel.loadOldMessages(conversation, targetUser, adapter.oldestMessageId, adapter.oldestMessageUid, MESSAGE_LOAD_COUNT_PER_TIME, true)
+        conversationViewModel.loadOldMessages(conversation, targetUser, adapter.getOldestMessageId(), adapter.getOldestMessageUid(), MESSAGE_LOAD_COUNT_PER_TIME, true)
             .observe(this, uiMessages -> {
                 adapter.addMessagesAtHead(uiMessages);
 

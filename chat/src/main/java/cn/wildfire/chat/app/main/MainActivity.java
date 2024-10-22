@@ -59,6 +59,7 @@ import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.conversation.ConversationViewModel;
 import cn.wildfire.chat.kit.conversation.CreateConversationActivity;
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
+import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversationlist.ConversationListFragment;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
@@ -172,10 +173,12 @@ public class MainActivity extends WfcBaseActivity {
             }
         });
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
-        messageViewModel.messageLiveData().observe(this, uiMessage -> {
-            if (uiMessage.message.messageId > 0 && (uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
-                || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT)) {
-                updateMomentBadgeView();
+        messageViewModel.messageLiveData().observe(this, uiMessages -> {
+            for (UiMessage uiMessage : uiMessages) {
+                if (uiMessage.message.messageId > 0 && (uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
+                    || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT)) {
+                    updateMomentBadgeView();
+                }
             }
         });
 
