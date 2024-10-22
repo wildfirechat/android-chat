@@ -70,6 +70,7 @@ public class RichNotificationMessageContent extends NotificationMessageContent{
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         this.title = payload.pushContent;
         this.desc = payload.content;
         try {

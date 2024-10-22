@@ -38,6 +38,7 @@ public class FriendAddedMessageContent extends NotificationMessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
     }
 
     @Override

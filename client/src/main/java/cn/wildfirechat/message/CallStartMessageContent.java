@@ -172,6 +172,7 @@ public class CallStartMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         callId = payload.content;
         pushContent = payload.pushContent;
 

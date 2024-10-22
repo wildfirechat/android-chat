@@ -101,19 +101,17 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         }
         loadingCount.incrementAndGet();
 
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
-                @Override
-                public void onSuccess(List<ConversationInfo> conversationInfos) {
-                    conversationListLiveData.postValue(conversationInfos);
-                    loadingCount.decrementAndGet();
-                }
+        ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
+            @Override
+            public void onSuccess(List<ConversationInfo> conversationInfos) {
+                conversationListLiveData.postValue(conversationInfos);
+                loadingCount.decrementAndGet();
+            }
 
-                @Override
-                public void onFail(int errorCode) {
-                    loadingCount.decrementAndGet();
-                }
-            });
+            @Override
+            public void onFail(int errorCode) {
+                loadingCount.decrementAndGet();
+            }
         });
     }
 
@@ -121,18 +119,16 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         if (conversationListLiveData == null) {
             conversationListLiveData = new MutableLiveData<>();
         }
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
-                @Override
-                public void onSuccess(List<ConversationInfo> conversationInfos) {
-                    conversationListLiveData.postValue(conversationInfos);
-                }
+        ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
+            @Override
+            public void onSuccess(List<ConversationInfo> conversationInfos) {
+                conversationListLiveData.postValue(conversationInfos);
+            }
 
-                @Override
-                public void onFail(int errorCode) {
+            @Override
+            public void onFail(int errorCode) {
 
-                }
-            });
+            }
         });
 
         return conversationListLiveData;

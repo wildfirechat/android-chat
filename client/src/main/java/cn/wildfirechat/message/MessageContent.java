@@ -18,7 +18,10 @@ import cn.wildfirechat.message.core.PersistFlag;
  */
 
 public abstract class MessageContent implements Parcelable {
-    public abstract void decode(MessagePayload payload);
+    public void decode(MessagePayload payload) {
+        this.extra = payload.extra;
+        this.notLoaded = payload.notLoaded;
+    }
 
     public abstract String digest(Message message);
 
@@ -30,6 +33,10 @@ public abstract class MessageContent implements Parcelable {
 
     //一定要用json，保留未来的可扩展性
     public String extra;
+
+    //消息是否还没有从服务器同步下来
+    public int notLoaded;
+
     public String pushContent;
 
 
@@ -70,6 +77,7 @@ public abstract class MessageContent implements Parcelable {
         dest.writeStringList(this.mentionedTargets);
         dest.writeString(this.extra);
         dest.writeString(this.pushContent);
+        dest.writeInt(this.notLoaded);
     }
 
     public MessageContent() {
@@ -80,5 +88,6 @@ public abstract class MessageContent implements Parcelable {
         this.mentionedTargets = in.createStringArrayList();
         this.extra = in.readString();
         this.pushContent = in.readString();
+        this.notLoaded = in.readInt();
     }
 }

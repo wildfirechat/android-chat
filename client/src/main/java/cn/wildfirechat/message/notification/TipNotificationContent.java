@@ -40,6 +40,7 @@ public class TipNotificationContent extends NotificationMessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         tip = payload.content;
     }
 

@@ -29,6 +29,7 @@ public abstract class MediaMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         this.localPath = payload.localMediaPath;
         this.remoteUrl = ClientService.urlRedirect(payload.remoteMediaUrl);
         this.mediaType = payload.mediaType;

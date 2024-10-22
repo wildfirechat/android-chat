@@ -51,6 +51,7 @@ public class TypingMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         typingType = Integer.parseInt(payload.content);
     }
 

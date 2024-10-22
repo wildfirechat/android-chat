@@ -48,6 +48,7 @@ import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
 import cn.wildfirechat.remote.GetGroupMembersCallback;
 import cn.wildfirechat.remote.GetGroupsCallback;
+import cn.wildfirechat.remote.GetUserInfoListCallback;
 import cn.wildfirechat.remote.OnGroupInfoUpdateListener;
 import cn.wildfirechat.remote.OnGroupMembersUpdateListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
@@ -88,15 +89,17 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
 
     public MutableLiveData<List<UIUserInfo>> getGroupMemberUIUserInfosLiveData(String groupId, boolean refresh) {
         MutableLiveData<List<UIUserInfo>> groupMemberLiveData = new MutableLiveData<>();
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            List<GroupMember> members = ChatManager.Instance().getGroupMembers(groupId, refresh);
-            List<String> memberIds = new ArrayList<>(members.size());
-            for (GroupMember member : members) {
-                memberIds.add(member.memberId);
+        ChatManager.Instance().getGroupMemberUserInfosAsync(groupId, refresh, new GetUserInfoListCallback() {
+            @Override
+            public void onSuccess(List<UserInfo> userInfos) {
+                List<UIUserInfo> users = UIUserInfo.fromUserInfos(userInfos);
+                groupMemberLiveData.postValue(users);
             }
-            List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(memberIds, groupId);
-            List<UIUserInfo> users = UIUserInfo.fromUserInfos(userInfos);
-            groupMemberLiveData.postValue(users);
+
+            @Override
+            public void onFail(int errorCode) {
+
+            }
         });
         return groupMemberLiveData;
     }

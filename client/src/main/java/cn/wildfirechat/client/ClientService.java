@@ -54,6 +54,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -1229,6 +1230,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public cn.wildfirechat.message.Message insertMessage(cn.wildfirechat.message.Message message, boolean notify) throws RemoteException {
             ProtoMessage protoMessage = convertMessage(message);
             message.messageId = ProtoLogic.insertMessage(protoMessage);
+            if(message.messageId > 0) {
+                return getMessage(message.messageId);
+            }
             return message;
         }
 
@@ -1471,6 +1475,35 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 }
             }
             return out;
+        }
+
+        @Override
+        public void getFriendUserInfoListAsync(boolean refresh, IGetUserInfoListCallback callback) throws RemoteException {
+            String[] friends = ProtoLogic.getMyFriendList(refresh);
+            ProtoUserInfo[] protoUserInfos = ProtoLogic.getUserInfos(friends, "");
+
+            UserInfo[] userInfos = new UserInfo[protoUserInfos.length];
+            for (int i = 0; i < userInfos.length; i++) {
+                UserInfo userInfo = convertProtoUserInfo(protoUserInfos[i]);
+                if (userInfo.name == null && userInfo.displayName == null) {
+                    userInfo = new NullUserInfo(userInfo.uid);
+                }
+                userInfos[i] = userInfo;
+            }
+
+            try {
+                SafeIPCEntry<UserInfo> entry;
+                int startIndex = 0;
+                do {
+                    entry = buildSafeIPCEntry(userInfos, startIndex);
+                    callback.onSuccess(entry.entries, entry.entries.size() > 0 && entry.index > 0 && entry.index < userInfos.length - 1);
+                    startIndex = entry.index + 1;
+                } while (entry.index > 0 && entry.index < userInfos.length - 1);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                callback.onFailure(-1);
+            }
+
         }
 
         @Override
@@ -2662,6 +2695,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             return out;
         }
 
+
         @Override
         public List<GroupMember> getGroupMembersByType(String groupId, int type) throws RemoteException {
             ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembersByType(groupId, type);
@@ -2699,7 +2733,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
-        public void getGroupMemberEx(String groupId, boolean forceUpdate, IGetGroupMemberCallback callback) throws RemoteException {
+        public void getGroupMembersEx(String groupId, boolean forceUpdate, IGetGroupMemberCallback callback) throws RemoteException {
             ProtoLogic.getGroupMemberEx(groupId, forceUpdate, new ProtoLogic.IGetGroupMemberCallback() {
                 @Override
                 public void onSuccess(ProtoGroupMember[] protoGroupMembers) {
@@ -2738,6 +2772,39 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             });
+        }
+
+        @Override
+        public void getGroupMemberUserInfosAsync(String groupId, boolean forceUpdate, IGetUserInfoListCallback callback) throws RemoteException {
+            ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembers(groupId, forceUpdate);
+            String[] memberIds = new String[protoGroupMembers.length];
+            for (int i = 0; i < protoGroupMembers.length; i++) {
+                memberIds[i] = protoGroupMembers[i].getMemberId();
+            }
+            ProtoUserInfo[] protoUserInfos = ProtoLogic.getUserInfos(memberIds, "");
+
+            UserInfo[] userInfos = new UserInfo[protoUserInfos.length];
+            for (int i = 0; i < userInfos.length; i++) {
+                UserInfo userInfo = convertProtoUserInfo(protoUserInfos[i]);
+                if (userInfo.name == null && userInfo.displayName == null) {
+                    userInfo = new NullUserInfo(userInfo.uid);
+                }
+                userInfos[i] = userInfo;
+            }
+
+            try {
+                SafeIPCEntry<UserInfo> entry;
+                int startIndex = 0;
+                do {
+                    entry = buildSafeIPCEntry(userInfos, startIndex);
+                    callback.onSuccess(entry.entries, entry.entries.size() > 0 && entry.index > 0 && entry.index < userInfos.length - 1);
+                    startIndex = entry.index + 1;
+                } while (entry.index > 0 && entry.index < userInfos.length - 1);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                callback.onFailure(-1);
+            }
+
         }
 
         @Override

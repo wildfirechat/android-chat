@@ -79,6 +79,7 @@ import cn.wildfirechat.client.IGetRemoteDomainInfosCallback;
 import cn.wildfirechat.client.IGetRemoteMessagesCallback;
 import cn.wildfirechat.client.IGetUploadUrlCallback;
 import cn.wildfirechat.client.IGetUserCallback;
+import cn.wildfirechat.client.IGetUserInfoListCallback;
 import cn.wildfirechat.client.IOnChannelInfoUpdateListener;
 import cn.wildfirechat.client.IOnConferenceEventListener;
 import cn.wildfirechat.client.IOnConnectToServerListener;
@@ -4718,6 +4719,43 @@ public class ChatManager {
         return null;
     }
 
+    public void getMyFriendListInfoAsync(boolean refresh, GetUserInfoListCallback callback) {
+        if (!checkRemoteService()) {
+            Log.e(TAG, "Remote service not available");
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+        try {
+            List<UserInfo> userInfos = new ArrayList<>();
+            mClient.getFriendUserInfoListAsync(refresh, new IGetUserInfoListCallback.Stub() {
+                @Override
+                public void onSuccess(List<UserInfo> infos, boolean hasMore) throws RemoteException {
+                    if (callback == null) {
+                        return;
+                    }
+                    userInfos.addAll(infos);
+                    if (!hasMore) {
+                        mainHandler.post(() -> callback.onSuccess(userInfos));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(-1));
+            }
+        }
+    }
+
     /**
      * 从服务端加载好友请求
      */
@@ -5369,6 +5407,7 @@ public class ChatManager {
 
     /**
      * 获取已经加入聊天室的ID
+     *
      * @return 已经加入聊天室的ID，如果为空或者空字符，说明未加入聊天室。
      */
     public String getJoinedChatroom() {
@@ -6949,7 +6988,7 @@ public class ChatManager {
         workHandler.post(() -> {
             try {
                 List<GroupMember> groupMemberList = new ArrayList<>();
-                mClient.getGroupMemberEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
+                mClient.getGroupMembersEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
                     @Override
                     public void onSuccess(List<GroupMember> groupMembers, boolean hasMore) throws RemoteException {
                         groupMemberList.addAll(groupMembers);
@@ -6974,6 +7013,43 @@ public class ChatManager {
                 }
             }
         });
+    }
+
+    public void getGroupMemberUserInfosAsync(String groupId, boolean refresh, GetUserInfoListCallback callback) {
+        if (!checkRemoteService()) {
+            Log.e(TAG, "Remote service not available");
+            if (callback != null) {
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            }
+            return;
+        }
+        try {
+            List<UserInfo> userInfos = new ArrayList<>();
+            mClient.getGroupMemberUserInfosAsync(groupId, refresh, new IGetUserInfoListCallback.Stub() {
+                @Override
+                public void onSuccess(List<UserInfo> infos, boolean hasMore) throws RemoteException {
+                    if (callback == null) {
+                        return;
+                    }
+                    userInfos.addAll(infos);
+                    if (!hasMore) {
+                        mainHandler.post(() -> callback.onSuccess(userInfos));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null) {
+                mainHandler.post(() -> callback.onFail(-1));
+            }
+        }
     }
 
     private String groupMemberCacheKey(String groupId, String memberId) {
@@ -7181,7 +7257,7 @@ public class ChatManager {
     }
 
     /**
-     * 群全局禁言之后，允许白名单成员发言
+     * 设置群成员允许名单，当设置群全局禁言时，仅群主/群管理/运行名单成员可以发言，仅专业版支持
      *
      * @param groupId
      * @param isSet
@@ -8131,6 +8207,7 @@ public class ChatManager {
 
     /**
      * 获取数据目录所在磁盘的可用空间。
+     *
      * @return 磁盘的可用空间
      */
     public long getDiskSpaceAvailableSize() {

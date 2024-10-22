@@ -15,9 +15,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.audio.AudioPlayManager;
@@ -66,7 +68,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     OnMessageReadListener,
     OnClearMessageListener,
     SecretMessageBurnStateListener {
-    private MutableLiveData<UiMessage> messageLiveData;
+    private MutableLiveData<List<UiMessage>> messageLiveData;
     private MutableLiveData<UiMessage> messageUpdateLiveData;
     private MutableLiveData<UiMessage> messageRemovedLiveData;
     private MutableLiveData<Map<String, String>> mediaUploadedLiveData;
@@ -106,13 +108,11 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     @Override
     public void onReceiveMessage(List<Message> messages, boolean hasMore) {
         if (messageLiveData != null && messages != null) {
-            for (Message msg : messages) {
-                postNewMessage(new UiMessage(msg));
-            }
+            postNewMessage(toUIMessages(messages));
         }
     }
 
-    public MutableLiveData<UiMessage> messageLiveData() {
+    public MutableLiveData<List<UiMessage>> messageLiveData() {
         if (messageLiveData == null) {
             messageLiveData = new MutableLiveData<>();
         }
@@ -528,13 +528,8 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         }
     }
 
-    private void postNewMessage(UiMessage message) {
-        if (message == null || message.message == null) {
-            return;
-        }
-        if (messageLiveData != null) {
-            UIUtils.postTaskSafely(() -> messageLiveData.setValue(message));
-        }
+    private void postNewMessage(List<UiMessage> messages) {
+        messageLiveData.setValue(messages);
     }
 
     @Override
@@ -549,7 +544,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
 
     @Override
     public void onSendPrepare(Message message, long savedTime) {
-        postNewMessage(new UiMessage(message));
+        postNewMessage(Collections.singletonList(new UiMessage(message)));
     }
 
     @Override
@@ -618,5 +613,9 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         if (messageBurnedLiveData != null) {
             messageBurnedLiveData.postValue(messageIds);
         }
+    }
+
+    private List<UiMessage> toUIMessages(List<Message> messages) {
+        return messages.stream().map(UiMessage::new).collect(Collectors.toList());
     }
 }
