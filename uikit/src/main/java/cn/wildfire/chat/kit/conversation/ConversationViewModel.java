@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -27,6 +28,7 @@ import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.CreateSecretChatCallback;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GetMessageCallback;
+import cn.wildfirechat.remote.GetOneRemoteMessageCallback;
 import cn.wildfirechat.remote.GetRemoteMessageCallback;
 import cn.wildfirechat.remote.SecretChatStateChangeListener;
 
@@ -132,29 +134,77 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
     public MutableLiveData<List<UiMessage>> loadAroundMessages(Conversation conversation, String withUser, long focusIndex, int count) {
         MutableLiveData<List<UiMessage>> result = new MutableLiveData<>();
         ChatManager.Instance().getWorkHandler().post(() -> {
-            List<Message> oldMessageList = ChatManager.Instance().getMessages(conversation, focusIndex, true, count, withUser);
-            List<UiMessage> oldMessages = new ArrayList<>();
-            if (oldMessageList != null) {
-                for (Message msg : oldMessageList) {
-                    if (conversation.type == Conversation.ConversationType.SecretChat) {
-                        BurnMessageInfo burnMessageInfo = ChatManager.Instance().getBurnMessageInfo(msg.messageId);
-                        oldMessages.add(new UiMessage(msg, burnMessageInfo));
-                    } else {
-                        oldMessages.add(new UiMessage(msg));
+            List<Message> oldMessageList = new ArrayList<>();
+            List<Message> newMessageList = new ArrayList<>();
+            CountDownLatch countDownLatch = new CountDownLatch(3);
+            ChatManager.Instance().getMessages(conversation, focusIndex, true, count, withUser, new GetMessageCallback() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) {
+                    oldMessageList.addAll(messages);
+                    countDownLatch.countDown();
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    countDownLatch.countDown();
+                }
+            });
+
+            ChatManager.Instance().getMessages(conversation, focusIndex, false, count, withUser, new GetMessageCallback() {
+
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) {
+                    newMessageList.addAll(messages);
+                    countDownLatch.countDown();
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    countDownLatch.countDown();
+                }
+            });
+
+            final Message[] focusMessage = {ChatManager.Instance().getMessage(focusIndex)};
+            if (focusMessage[0] == null || focusMessage[0].content.notLoaded == 0) {
+                countDownLatch.countDown();
+            } else {
+                ChatManager.Instance().getRemoteMessage(focusMessage[0].messageUid, new GetOneRemoteMessageCallback() {
+                    @Override
+                    public void onSuccess(Message message) {
+                        focusMessage[0] = message;
+                        countDownLatch.countDown();
                     }
+
+                    @Override
+                    public void onFail(int errorCode) {
+                        countDownLatch.countDown();
+                    }
+                });
+            }
+
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            List<UiMessage> oldMessages = new ArrayList<>();
+            for (Message msg : oldMessageList) {
+                if (conversation.type == Conversation.ConversationType.SecretChat) {
+                    BurnMessageInfo burnMessageInfo = ChatManager.Instance().getBurnMessageInfo(msg.messageId);
+                    oldMessages.add(new UiMessage(msg, burnMessageInfo));
+                } else {
+                    oldMessages.add(new UiMessage(msg));
                 }
             }
-            Message message = ChatManager.Instance().getMessage(focusIndex);
-            List<Message> newMessageList = ChatManager.Instance().getMessages(conversation, focusIndex, false, count, withUser);
+
             List<UiMessage> newMessages = new ArrayList<>();
-            if (newMessageList != null) {
-                for (Message msg : newMessageList) {
-                    if (conversation.type == Conversation.ConversationType.SecretChat) {
-                        BurnMessageInfo burnMessageInfo = ChatManager.Instance().getBurnMessageInfo(msg.messageId);
-                        newMessages.add(new UiMessage(msg, burnMessageInfo));
-                    } else {
-                        newMessages.add(new UiMessage(msg));
-                    }
+            for (Message msg : newMessageList) {
+                if (conversation.type == Conversation.ConversationType.SecretChat) {
+                    BurnMessageInfo burnMessageInfo = ChatManager.Instance().getBurnMessageInfo(msg.messageId);
+                    newMessages.add(new UiMessage(msg, burnMessageInfo));
+                } else {
+                    newMessages.add(new UiMessage(msg));
                 }
             }
 
@@ -170,8 +220,8 @@ public class ConversationViewModel extends ViewModel implements AppScopeViewMode
             tipMessage.messageId = Long.MAX_VALUE;
             messages.add(new UiMessage(tipMessage));
 
-            if (message != null) {
-                messages.add(new UiMessage(message));
+            if (focusMessage[0] != null) {
+                messages.add(new UiMessage(focusMessage[0]));
             }
             messages.addAll(newMessages);
             result.postValue(messages);
