@@ -41,6 +41,7 @@ import cn.wildfire.chat.kit.mesh.DomainListActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.UserOnlineState;
@@ -58,6 +59,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     private OrganizationServiceViewModel organizationServiceViewModel;
 
     private ContactViewModel contactViewModel;
+    private UserViewModel userViewModel;
 
 
     @Override
@@ -71,6 +73,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         }
         organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
         contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
     }
 
     @Override
@@ -103,6 +106,10 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             userListAdapter.setFavUsers(uiUserInfos);
         });
 
+        userViewModel.userInfoLiveData().observe(this, userInfos -> {
+            contactViewModel.reloadContact();
+            contactViewModel.reloadFavContact();
+        });
     }
 
     private void patchUserOnlineState(List<UIUserInfo> userInfos) {
