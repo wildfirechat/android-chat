@@ -3004,7 +3004,7 @@ public class ChatManager {
      * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count        获取消息条数
      * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
-     * @return 由于ipc大小限制，本接口获取到的消息列表可能不完整，请使用异步获取
+     * @return 由于ipc大小限制，本接口获取到的消息列表可能不完整，并且超级群里面，可能返回为完全加载的消息，请使用异步获取
      */
     @Deprecated
     public List<Message> getMessages(Conversation conversation, long fromIndex, boolean before, int count, String withUser) {
