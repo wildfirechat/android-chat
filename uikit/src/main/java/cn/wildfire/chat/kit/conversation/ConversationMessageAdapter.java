@@ -4,7 +4,6 @@
 
 package cn.wildfire.chat.kit.conversation;
 
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +28,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -63,9 +61,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     private OnPortraitLongClickListener onPortraitLongClickListener;
     private OnMessageReceiptClickListener onMessageReceiptClickListener;
 
-    long oldestMessageUid = Long.MAX_VALUE;
-    long oldestMessageId = Long.MAX_VALUE;
-
     public ConversationMessageAdapter(ConversationFragment fragment) {
         super();
         this.fragment = fragment;
@@ -77,6 +72,25 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setMode(int mode) {
         this.mode = mode;
+    }
+
+    public long getOldestMessageUid() {
+        if (this.messages == null || this.messages.isEmpty()) {
+            return Long.MAX_VALUE;
+        }
+        return this.messages.get(0).message.messageUid;
+    }
+
+    public long getOldestMessageId() {
+        if (this.messages == null || this.messages.isEmpty()) {
+            return Long.MAX_VALUE;
+        }
+        long id = this.messages.get(0).message.messageId;
+        // 以下是新消息 那条提示消息的 messageId 是 Long.MAX_VALUE
+        if (id == Long.MAX_VALUE && this.messages.size() > 1) {
+            id = this.messages.get(1).message.messageId;
+        }
+        return id;
     }
 
     public void clearMessageCheckStatus() {
@@ -106,37 +120,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setMessages(List<UiMessage> messages) {
         if (messages != null && !messages.isEmpty()) {
-            oldestMessageUid = messages.get(0).message.messageUid;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                messages = messages.stream().filter(m -> m.message.messageId != 0).collect(Collectors.toList());
-                if (!messages.isEmpty()) {
-                    for (int i = 0; i < messages.size(); i++) {
-                        Message msg = messages.get(i).message;
-                        // 以下是新消息 那条提示消息的 messageId 是 Long.MAX_VALUE
-                        if (msg.messageId != Long.MAX_VALUE) {
-                            oldestMessageId = msg.messageId;
-                            break;
-                        }
-                    }
-                }
-                this.messages = messages;
-            } else {
-                for (UiMessage uiMsg : messages) {
-                    if (uiMsg.message.messageId != 0) {
-                        this.messages.add(uiMsg);
-                    }
-                }
-                if (!this.messages.isEmpty()) {
-                    for (int i = 0; i < messages.size(); i++) {
-                        Message msg = messages.get(i).message;
-                        // 以下是新消息 那条提示消息的 messageId 是 Long.MAX_VALUE
-                        if (msg.messageId != Long.MAX_VALUE) {
-                            oldestMessageId = msg.messageId;
-                            break;
-                        }
-                    }
-                }
-            }
+            this.messages = messages;
         } else {
             this.messages = new ArrayList<>();
         }
@@ -169,7 +153,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     public void addNewMessage(UiMessage message) {
-        if (message == null) {
+        if (message == null || message.message.messageId == 0) {
             return;
         }
         int index = contains(message);
@@ -185,7 +169,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (newMessages == null || newMessages.isEmpty()) {
             return;
         }
-        oldestMessageUid = newMessages.get(0).message.messageUid;
         List<UiMessage> filteredMsgs = new ArrayList<>();
         for (UiMessage m : newMessages) {
             if (m.message.messageId != 0) {
@@ -195,8 +178,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         newMessages = filteredMsgs;
         if (newMessages.isEmpty()) {
             return;
-        } else {
-            oldestMessageId = newMessages.get(0).message.messageId;
         }
         this.messages.addAll(0, newMessages);
         notifyItemRangeInserted(0, newMessages.size());
