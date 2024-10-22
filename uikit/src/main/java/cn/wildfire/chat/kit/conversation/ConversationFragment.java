@@ -577,6 +577,10 @@ public class ConversationFragment extends Fragment implements
                     }
                 } else {
                     moveToBottom = false;
+                    int firstVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition();
+                    if (firstVisibleItem < 6) {
+                        loadMoreOldMessages();
+                    }
                 }
             }
         });
@@ -1090,7 +1094,6 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void loadMoreOldMessages(boolean scrollToBottom) {
-
         conversationViewModel.loadOldMessages(conversation, targetUser, adapter.getOldestMessageId(), adapter.getOldestMessageUid(), MESSAGE_LOAD_COUNT_PER_TIME, true)
             .observe(this, uiMessages -> {
                 adapter.addMessagesAtHead(uiMessages);
