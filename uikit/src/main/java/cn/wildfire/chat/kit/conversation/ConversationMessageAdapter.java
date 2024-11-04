@@ -171,7 +171,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         List<UiMessage> filteredMsgs = new ArrayList<>();
         for (UiMessage m : newMessages) {
-            if (m.message.messageId != 0) {
+            if (m.message.messageId != 0 && indexOfMessage(m) == -1) {
                 filteredMsgs.add(m);
             }
         }
@@ -281,6 +281,17 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (position >= 0) {
             notifyItemRemoved(position);
         }
+    }
+
+    private int indexOfMessage(UiMessage message) {
+        if (this.messages != null) {
+            for (int i = 0; i < this.messages.size(); i++) {
+                if (this.messages.get(i).message.messageUid == message.message.messageUid) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     @Override
