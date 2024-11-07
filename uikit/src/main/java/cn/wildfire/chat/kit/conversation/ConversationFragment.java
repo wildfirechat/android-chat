@@ -178,7 +178,7 @@ public class ConversationFragment extends Fragment implements
             boolean hasUnloadMsg = false;
             if (conversation.type == Conversation.ConversationType.Group && isCommercialServer) {
                 for (UiMessage uimsg : uiMessages) {
-                    if (uimsg.message.content.notLoaded > 0) {
+                    if (conversation.equals(uimsg.message.conversation) && uimsg.message.content.notLoaded > 0) {
                         hasUnloadMsg = true;
                         break;
                     }
