@@ -279,7 +279,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         view = LayoutInflater.from(this).inflate(R.layout.av_voip_float_view, null);
         view.setOnTouchListener(onTouchListener);
         wm.addView(view, params);
-        if (session.getState() != AVEngineKit.CallState.Connected) {
+        if (session.getState() != AVEngineKit.CallState.Connected && !(!session.isAudioOnly() && session.getState() == AVEngineKit.CallState.Outgoing)) {
             showUnConnectedCallInfo(session);
         } else {
             if (session.isScreenSharing()) {
@@ -288,6 +288,9 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
                 showAudioView(session);
             } else {
                 String nextFocusUserId = nextFocusUserId(session);
+                if (session.state == AVEngineKit.CallState.Outgoing) {
+                    nextFocusUserId = ChatManager.Instance().getUserId();
+                }
                 if (nextFocusUserId != null) {
                     showVideoView(session, nextFocusUserId);
                 } else {
