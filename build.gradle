@@ -9,7 +9,7 @@ buildscript {
         maven {url 'https://developer.huawei.com/repo/'}
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.6.0'
+        classpath 'com.android.tools.build:gradle:8.7.2'
         classpath 'com.huawei.agconnect:agcp:1.9.1.300'
        // classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
