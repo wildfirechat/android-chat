@@ -5536,6 +5536,49 @@ public class ChatManager {
         return null;
     }
 
+    public void getUserInfosAsync(List<String> userIds, String groupId, GetUserInfoListCallback callback) {
+        if (userIds == null || userIds.isEmpty()) {
+            return;
+        }
+
+//        if (userSource != null) {
+//            List<UserInfo> userInfos = new ArrayList<>();
+//            for (String userId : userIds) {
+//                userInfos.add(userSource.getUser(userId));
+//            }
+//            return userInfos;
+//        }
+
+        if (!checkRemoteService()) {
+            callback.onFail(-1);
+            return;
+        }
+
+        try {
+            List<UserInfo> userInfos = new ArrayList<>();
+            mClient.getUserInfosAsync(userIds, groupId, new IGetUserInfoListCallback.Stub() {
+
+                @Override
+                public void onSuccess(List<UserInfo> infos, boolean hasMore) throws RemoteException {
+                    userInfos.addAll(infos);
+                    if (callback != null && !hasMore) {
+                        mainHandler.post(() -> callback.onSuccess(userInfos));
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            callback.onFail(-1);
+        }
+    }
+
     public void getUserInfo(String userId, boolean refresh, GetUserInfoCallback callback) {
         getUserInfo(userId, null, refresh, callback);
     }
