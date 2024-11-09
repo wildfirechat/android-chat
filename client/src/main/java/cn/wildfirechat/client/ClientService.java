@@ -2002,6 +2002,50 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void getUserInfosAsync(List<String> userIds, String groupId, IGetUserInfoListCallback callback) throws RemoteException {
+            String[] userIdsArray = new String[userIds.size()];
+            ProtoLogic.getUserInfosEx(userIds.toArray(userIdsArray), groupId == null ? "" : groupId, new ProtoLogic.ISearchUserCallback() {
+                @Override
+                public void onSuccess(ProtoUserInfo[] protoUserInfos) {
+                    UserInfo[] userInfos = new UserInfo[protoUserInfos.length];
+                    for (int i = 0; i < userInfos.length; i++) {
+                        UserInfo userInfo = convertProtoUserInfo(protoUserInfos[i]);
+                        if (userInfo.name == null && userInfo.displayName == null) {
+                            userInfo = new NullUserInfo(userInfo.uid);
+                        }
+                        userInfos[i] = userInfo;
+                    }
+
+                    try {
+                        SafeIPCEntry<UserInfo> entry;
+                        int startIndex = 0;
+                        do {
+                            entry = buildSafeIPCEntry(userInfos, startIndex);
+                            callback.onSuccess(entry.entries, entry.entries.size() > 0 && entry.index > 0 && entry.index < userInfos.length - 1);
+                            startIndex = entry.index + 1;
+                        } while (entry.index > 0 && entry.index < userInfos.length - 1);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                        try {
+                            callback.onFailure(-1);
+                        } catch (RemoteException ex) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public void getUserInfoEx(String userId, String groupId, boolean refresh, IGetUserCallback callback) throws RemoteException {
             ProtoLogic.getUserInfoEx2(userId, groupId, refresh, new ProtoLogic.IGetUserInfoCallback() {
                 @Override
