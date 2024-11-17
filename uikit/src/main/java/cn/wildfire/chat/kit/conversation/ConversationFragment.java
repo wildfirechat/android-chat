@@ -174,6 +174,9 @@ public class ConversationFragment extends Fragment implements
     private Observer<List<UiMessage>> messageLiveDataObserver = new Observer<List<UiMessage>>() {
         @Override
         public void onChanged(List<UiMessage> uiMessages) {
+            if(conversation == null){
+                return;
+            }
 
             boolean hasUnloadMsg = false;
             if (conversation.type == Conversation.ConversationType.Group && isCommercialServer) {
