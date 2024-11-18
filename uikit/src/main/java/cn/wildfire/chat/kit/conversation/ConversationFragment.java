@@ -174,6 +174,9 @@ public class ConversationFragment extends Fragment implements
     private Observer<List<UiMessage>> messageLiveDataObserver = new Observer<List<UiMessage>>() {
         @Override
         public void onChanged(List<UiMessage> uiMessages) {
+            if(conversation == null){
+                return;
+            }
 
             boolean hasUnloadMsg = false;
             if (conversation.type == Conversation.ConversationType.Group && isCommercialServer) {
@@ -186,15 +189,17 @@ public class ConversationFragment extends Fragment implements
             }
             if (hasUnloadMsg) {
                 uiMessages = uiMessages.subList(uiMessages.size() - 15, uiMessages.size());
+                // 当有消息未完全加载时，onReceiveMessage 回调里面的消息，都是同一个超级群组会话
                 if (isMessageInCurrentConversation(uiMessages.get(0))) {
                     adapter.setMessages(new ArrayList<>());
                     adapter.notifyDataSetChanged();
                 }
+                return;
             }
 
             for (UiMessage uiMessage : uiMessages) {
                 if (!isMessageInCurrentConversation(uiMessage)) {
-                    return;
+                    continue;
                 }
                 MessageContent content = uiMessage.message.content;
 

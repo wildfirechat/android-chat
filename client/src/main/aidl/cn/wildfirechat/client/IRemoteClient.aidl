@@ -219,6 +219,7 @@ interface IRemoteClient {
     oneway void getGroupInfoEx(in String groupId, in boolean refresh, in IGetGroupCallback callback);
     UserInfo getUserInfo(in String userId, in String groupId, in boolean refresh);
     List<UserInfo> getUserInfos(in List<String> userIds, in String groupId);
+    oneway void getUserInfosAsync(in List<String> userIds, in String groupId, in IGetUserInfoListCallback callback);
     oneway void getUserInfoEx(in String userId, in String groupId, in boolean refresh, in IGetUserCallback callback);
 
     oneway void uploadMedia(in String fileName, in byte[] data, int mediaType, in IUploadMediaCallback callback);
