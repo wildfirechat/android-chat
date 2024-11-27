@@ -19,6 +19,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
+import cn.wildfire.chat.app.misc.KeyStoreUtility;
 import cn.wildfire.chat.app.setting.ResetPasswordActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
@@ -120,11 +121,12 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                 dialog.dismiss();
                 //需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
                 ChatManagerHolder.gChatManager.connect(loginResult.getUserId(), loginResult.getToken());
-                SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
-                sp.edit()
-                    .putString("id", loginResult.getUserId())
-                    .putString("token", loginResult.getToken())
-                    .apply();
+                try {
+                    KeyStoreUtility.saveData(SMSLoginActivity.this, "wf_userid", loginResult.getUserId());
+                    KeyStoreUtility.saveData(SMSLoginActivity.this, "wf_token", loginResult.getToken());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 Intent intent = new Intent(SMSLoginActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
