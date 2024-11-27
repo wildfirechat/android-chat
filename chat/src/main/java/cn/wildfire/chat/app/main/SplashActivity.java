@@ -23,6 +23,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
 import cn.wildfire.chat.app.login.LoginActivity;
+import cn.wildfire.chat.app.misc.KeyStoreUtility;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfirechat.chat.R;
 
@@ -40,9 +41,12 @@ public class SplashActivity extends AppCompatActivity {
         hideSystemUI();
         setStatusBarColor(R.color.gray5);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
-        id = sharedPreferences.getString("id", null);
-        token = sharedPreferences.getString("token", null);
+        try {
+            id = KeyStoreUtility.getData(this, "wf_userid");
+            token = KeyStoreUtility.getData(this, "wf_token");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         new Handler().postDelayed(this::showNextScreen, 1000);
     }

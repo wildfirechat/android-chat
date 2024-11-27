@@ -4117,7 +4117,7 @@ public class ChatManager {
     }
 
     /**
-     * 清除会话消息
+     * 清除会话消息，清空指定时间之前的所有消息
      *
      * @param conversation
      * @param beforeTime
