@@ -2621,18 +2621,24 @@ public class ChatManager {
             }
 
             if (sendLogCommand.equals(text)) {
-                List<String> logFilesPath = getLogFilesPath();
-                if (logFilesPath.size() > 0) {
-                    FileMessageContent fileMessageContent = new FileMessageContent(logFilesPath.get(logFilesPath.size() - 1));
-                    msg.content = fileMessageContent;
+                if (!startLog) {
+                    ((TextMessageContent) msg.content).setContent("未开启日志，无法发送日志");
+                } else {
+                    List<String> logFilesPath = getLogFilesPath();
+                    if (!logFilesPath.isEmpty()) {
+                        FileMessageContent fileMessageContent = new FileMessageContent(logFilesPath.get(logFilesPath.size() - 1));
+                        msg.content = fileMessageContent;
 
-                    mediaMessageUploadCallback = new MediaMessageUploadCallback() {
-                        @Override
-                        public void onMediaMessageUploaded(String remoteUrl) {
-                            TextMessageContent textMessageContent = new TextMessageContent(remoteUrl);
-                            sendMessage(msg.conversation, textMessageContent, null, 0, null);
-                        }
-                    };
+                        mediaMessageUploadCallback = new MediaMessageUploadCallback() {
+                            @Override
+                            public void onMediaMessageUploaded(String remoteUrl) {
+                                TextMessageContent textMessageContent = new TextMessageContent(remoteUrl);
+                                sendMessage(msg.conversation, textMessageContent, null, 0, null);
+                            }
+                        };
+                    } else {
+                        ((TextMessageContent) msg.content).setContent("日志为空，无法发送日志");
+                    }
                 }
             }
         }
