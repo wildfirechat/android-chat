@@ -9521,7 +9521,9 @@ public class ChatManager {
 
                     int clientConnectionStatus = mClient.getConnectionStatus();
                     if (connectionStatus == ConnectionStatus.ConnectionStatusConnected) {
+                        //service刚绑定成功时连接状态就已经时连接成功了，可能是应用出现异常重启了。
                         onConnectionStatusChange(clientConnectionStatus);
+                        onSettingUpdated();
                     }
 
                     mainHandler.post(() -> {
