@@ -10098,7 +10098,7 @@ public class ChatManager {
             }
         } catch (Exception e) {
             // do nothing
-            Log.e(TAG, "检查朋友圈 SDK 失败: " + e.getMessage());
+            Log.e(TAG, "检查朋友圈 SDK 失败。不支持朋友圈功能，但不会影响其他功能! " + e.getMessage());
         }
 
         try {
@@ -10110,7 +10110,7 @@ public class ChatManager {
                 Log.e(TAG, "错误，对讲SDK跟域名不匹配。请检查SDK的授权域名是否与当前使用的域名一致。");
             }
         } catch (Exception e) {
-            Log.e(TAG, "检查对讲 SDK 失败: " + e.getMessage());
+            Log.e(TAG, "检查对讲 SDK 失败。不支持对讲功能（该功能不是发送语音消息），但不会影响其他功能！ " + e.getMessage());
         }
         Log.d(TAG, "*************** SDK检查 *****************");
         return true;
