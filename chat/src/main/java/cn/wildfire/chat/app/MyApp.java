@@ -12,7 +12,7 @@ import android.text.TextUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 
 
-import cn.wildfire.chat.app.misc.KeyStoreUtility;
+import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -58,15 +58,15 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             String id = null;
             String token = null;
             try {
-                id = KeyStoreUtility.getData(this, "wf_userid");
-                token = KeyStoreUtility.getData(this, "wf_token");
+                id = KeyStoreUtil.getData(this, "wf_userId");
+                token = KeyStoreUtil.getData(this, "wf_token");
                 if (TextUtils.isEmpty(id) || TextUtils.isEmpty(token)) {
                     SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
                     id = sp.getString("id", null);
                     token = sp.getString("token", null);
                     if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(token)) {
-                        KeyStoreUtility.saveData(this, "wf_userid", id);
-                        KeyStoreUtility.saveData(this, "wf_token", token);
+                        KeyStoreUtil.saveData(this, "wf_userId", id);
+                        KeyStoreUtil.saveData(this, "wf_token", token);
                         sp.edit().remove("id").remove("token").commit();
                     }
                 }
