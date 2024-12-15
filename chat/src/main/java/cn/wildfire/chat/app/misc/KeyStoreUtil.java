@@ -17,17 +17,17 @@ import javax.crypto.Cipher;
 
 import cn.wildfire.chat.kit.Config;
 
-public class KeyStoreUtility {
+public class KeyStoreUtil {
     // 密钥库类型
-    private static String PP_KEYSTORE_TYPE = "AndroidKeyStore";
+    private static final String PP_KEYSTORE_TYPE = "AndroidKeyStore";
     // 密钥库别名
-    private static String  PP_KEYSTORE_ALIAS = "pp_keystore_alias";
+    private static final String PP_KEYSTORE_ALIAS = "pp_keystore_alias";
     // 加密算法标准算法名称
-    private static String PP_TRANSFORMATION = "RSA/ECB/PKCS1Padding";
+    private static final String PP_TRANSFORMATION = "RSA/ECB/PKCS1Padding";
 
     /**
      * 触发生成密钥对.
-     *
+     * <p>
      * 生成RSA 密钥对，包括公钥和私钥
      *
      * @return KeyPair 密钥对，包含公钥和私钥
@@ -35,20 +35,12 @@ public class KeyStoreUtility {
     private static KeyPair generateKey() throws Exception {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             // 创建密钥生成器
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
-                    KeyProperties.KEY_ALGORITHM_RSA,
-                    PP_KEYSTORE_TYPE
-            );
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, PP_KEYSTORE_TYPE);
             // 配置密钥生成器参数
-            KeyGenParameterSpec builder = null;
-
-            builder = new KeyGenParameterSpec.Builder(
-                    PP_KEYSTORE_ALIAS,
-                    KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT
-            )
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
-                    .setDigests(KeyProperties.DIGEST_SHA256)
-                    .build();
+            KeyGenParameterSpec builder = new KeyGenParameterSpec.Builder(PP_KEYSTORE_ALIAS, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
+                .setDigests(KeyProperties.DIGEST_SHA256)
+                .build();
 
             keyPairGenerator.initialize(builder);
             // 生成密钥对
@@ -57,6 +49,7 @@ public class KeyStoreUtility {
             return null;
         }
     }
+
     /**
      * 获取公钥.
      *
@@ -99,8 +92,8 @@ public class KeyStoreUtility {
      * 加密保存数据
      *
      * @param context 上下文
-     * @param key 数据的Key
-     * @param data 数据
+     * @param key     数据的Key
+     * @param data    数据
      */
     public static void saveData(Context context, String key, String data) throws Exception {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -119,7 +112,7 @@ public class KeyStoreUtility {
      * 获取保密数据
      *
      * @param context 上下文
-     * @param key 数据的Key
+     * @param key     数据的Key
      * @return 解密后的数据
      */
     public static String getData(Context context, String key) throws Exception {
