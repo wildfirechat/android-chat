@@ -103,4 +103,7 @@ public class Config {
 
     // 语音消息音量增大倍数
     public static int AUDIO_MESSAGE_AMPLIFICATION_FACTOR = 3;
+
+    // 是否开启水印功能
+    public static boolean ENABLE_WATER_MARK = true;
 }

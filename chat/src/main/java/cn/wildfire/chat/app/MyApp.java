@@ -11,7 +11,6 @@ import android.text.TextUtils;
 
 import com.tencent.bugly.crashreport.CrashReport;
 
-
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
