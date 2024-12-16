@@ -528,7 +528,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     }
 
     private void updateWaterMark() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd hh:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
         String userId = ChatManager.Instance().getUserId();
         if (!TextUtils.isEmpty(userId)) {
             String waterMarkStr = userId + " " + sdf.format(new Date());
