@@ -7,9 +7,7 @@ package cn.wildfire.chat.app.main;
 import static cn.wildfire.chat.app.BaseApp.getContext;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +21,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
 import cn.wildfire.chat.app.login.LoginActivity;
-import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfirechat.chat.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -40,9 +38,12 @@ public class SplashActivity extends AppCompatActivity {
         hideSystemUI();
         setStatusBarColor(R.color.gray5);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
-        id = sharedPreferences.getString("id", null);
-        token = sharedPreferences.getString("token", null);
+        try {
+            id = KeyStoreUtil.getData(this, "wf_userId");
+            token = KeyStoreUtil.getData(this, "wf_token");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         new Handler().postDelayed(this::showNextScreen, 1000);
     }

@@ -10,11 +10,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,8 +40,10 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,6 +71,8 @@ import cn.wildfirechat.remote.OnDeleteMessageListener;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
+import me.aurelion.x.ui.view.watermark.WaterMarkInfo;
+import me.aurelion.x.ui.view.watermark.WaterMarkManager;
 
 
 public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageListener, OnRecallMessageListener, OnDeleteMessageListener, OnFriendUpdateListener, Application.ActivityLifecycleCallbacks {
@@ -130,6 +137,20 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         ConferenceManager.init(application);
 
         application.registerActivityLifecycleCallbacks(this);
+
+        if (Config.ENABLE_WATER_MARK) {
+            WaterMarkManager.setInfo(
+                WaterMarkInfo.create()
+                    .setDegrees(-45)
+                    .setTextSize(UIUtils.dip2Px(application, 18))
+                    .setTextColor(Color.parseColor("#24999999"))
+                    .setTextBold(false)
+                    .setDx(UIUtils.dip2Px(application, 60))
+                    .setDy(UIUtils.dip2Px(application, 120))
+                    .setAlign(Paint.Align.CENTER)
+                    .generate());
+            ChatManager.Instance().getMainHandler().post(this::updateWaterMark);
+        }
 
         Log.d("WfcUIKit", "init end");
     }
@@ -220,7 +241,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         SharedPreferences sp = application.getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         boolean pttEnabled = sp.getBoolean("pttEnabled", true);
         if (pttEnabled) {
-             // 全局对讲生效；如果只希望某些会话里面，对讲生效，请调用 {@link PTTClient#setEnablePtt(Conversation, boolean)} 设置
+            // 全局对讲生效；如果只希望某些会话里面，对讲生效，请调用 {@link PTTClient#setEnablePtt(Conversation, boolean)} 设置
             // PTTClient.ENABLE_GLOBAL_PTT = true;
             PTTClient.getInstance().init(application);
         }
@@ -366,7 +387,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                 }
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(context)){
+                if (!Settings.canDrawOverlays(context)) {
                     Toast.makeText(context, "无法弹出页面，请允许后台弹出界面权限和显示悬浮窗权限", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -504,5 +525,16 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
 
+    }
+
+    private void updateWaterMark() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+        String userId = ChatManager.Instance().getUserId();
+        if (!TextUtils.isEmpty(userId)) {
+            String waterMarkStr = userId + " " + sdf.format(new Date());
+            WaterMarkManager.setText(waterMarkStr);
+        }
+
+        ChatManager.Instance().getMainHandler().postDelayed(this::updateWaterMark, 60 * 1000);
     }
 }
