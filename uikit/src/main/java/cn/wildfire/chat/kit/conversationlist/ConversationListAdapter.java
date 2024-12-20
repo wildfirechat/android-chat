@@ -55,7 +55,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         submit(statusNotifications, this.conversationInfos);
     }
 
-    private int headerCount() {
+    public int headerCount() {
         return isEmpty(this.statusNotifications) ? 0 : 1;
     }
 
