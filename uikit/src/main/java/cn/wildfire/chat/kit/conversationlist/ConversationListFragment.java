@@ -175,15 +175,15 @@ public class ConversationListFragment extends ProgressFragment {
 
     public void scrollToNextUnreadConversation() {
         int start = layoutManager.findFirstVisibleItemPosition();
-        int end = layoutManager.findLastVisibleItemPosition();
         int nextUnreadConversationPosition = adapter.getNextUnreadConversationPosition(start);
-        if (nextUnreadConversationPosition > 0) {
-            if (nextUnreadConversationPosition >= start && nextUnreadConversationPosition <= end) {
-                smoothScroller.setTargetPosition(nextUnreadConversationPosition);
-                layoutManager.startSmoothScroll(smoothScroller);
-            } else {
-                recyclerView.smoothScrollToPosition(nextUnreadConversationPosition);
-            }
+        //  支持循环滚动，后面没有未读会话时，从头开始找
+        if (nextUnreadConversationPosition == -1 && start > adapter.headerCount()) {
+            nextUnreadConversationPosition = adapter.getNextUnreadConversationPosition(0);
+        }
+
+        if (nextUnreadConversationPosition != -1) {
+            smoothScroller.setTargetPosition(nextUnreadConversationPosition);
+            layoutManager.startSmoothScroll(smoothScroller);
         }
     }
 
