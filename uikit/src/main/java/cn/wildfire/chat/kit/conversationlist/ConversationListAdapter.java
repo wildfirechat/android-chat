@@ -63,6 +63,16 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         submit(this.statusNotifications, conversationInfos);
     }
 
+    public int getNextUnreadConversationPosition(int position) {
+        for (int i = position + 1; i < getItemCount(); i++) {
+            ConversationInfo conversationInfo = conversationInfos.get(i - headerCount());
+            if (!conversationInfo.isSilent && (conversationInfo.unreadCount.unread + conversationInfo.unreadCount.unreadMention + conversationInfo.unreadCount.unreadMentionAll) > 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public void setOnClickConversationItemListener(OnClickConversationItemListener onClickConversationItemListener) {
         this.onClickConversationItemListener = onClickConversationItemListener;
     }

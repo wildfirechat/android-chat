@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
@@ -49,6 +50,7 @@ public class ConversationListFragment extends ProgressFragment {
     private StatusNotificationViewModel statusNotificationViewModel;
     private LinearLayoutManager layoutManager;
     private OnClickConversationItemListener onClickConversationItemListener;
+    private RecyclerView.SmoothScroller smoothScroller;
 
     @Override
     protected int contentLayout() {
@@ -89,6 +91,13 @@ public class ConversationListFragment extends ProgressFragment {
 
         recyclerView.setAdapter(adapter);
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+
+        smoothScroller = new LinearSmoothScroller(getContext()) {
+            @Override
+            protected int getVerticalSnapPreference() {
+                return LinearSmoothScroller.SNAP_TO_START;
+            }
+        };
 
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, new Observer<List<UserInfo>>() {
@@ -162,6 +171,20 @@ public class ConversationListFragment extends ProgressFragment {
             loadAndShowPCOnlineNotification();
         }
         reloadConversations();
+    }
+
+    public void scrollToNextUnreadConversation() {
+        int start = layoutManager.findFirstVisibleItemPosition();
+        int end = layoutManager.findLastVisibleItemPosition();
+        int nextUnreadConversationPosition = adapter.getNextUnreadConversationPosition(start);
+        if (nextUnreadConversationPosition > 0) {
+            if (nextUnreadConversationPosition >= start && nextUnreadConversationPosition <= end) {
+                smoothScroller.setTargetPosition(nextUnreadConversationPosition);
+                layoutManager.startSmoothScroll(smoothScroller);
+            } else {
+                recyclerView.smoothScrollToPosition(nextUnreadConversationPosition);
+            }
+        }
     }
 
     private void loadAndShowPCOnlineNotification() {
