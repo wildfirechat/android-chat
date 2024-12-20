@@ -105,9 +105,11 @@ public class MainActivity extends WfcBaseActivity {
     private boolean isInitialized = false;
 
     private ContactListFragment contactListFragment;
+    private ConversationListFragment conversationListFragment;
 
     private ContactViewModel contactViewModel;
     private ConversationListViewModel conversationListViewModel;
+    private long lastSelectConversatonListItemTimestamp = 0;
 
     protected void bindViews() {
         super.bindViews();
@@ -331,7 +333,7 @@ public class MainActivity extends WfcBaseActivity {
         //设置ViewPager的最大缓存页面
         contentViewPager.setOffscreenPageLimit(4);
 
-        ConversationListFragment conversationListFragment = new ConversationListFragment();
+        conversationListFragment = new ConversationListFragment();
         contactListFragment = new ContactListFragment();
         DiscoveryFragment discoveryFragment = new DiscoveryFragment();
         MeFragment meFragment = new MeFragment();
@@ -347,7 +349,17 @@ public class MainActivity extends WfcBaseActivity {
         contentViewPager.registerOnPageChangeCallback(this.onPageChangeCallback);
 
         bottomNavigationView.setOnItemReselectedListener(item -> {
-            // do nothing
+            switch (item.getItemId()) {
+                case R.id.conversation_list:
+                    long now = System.currentTimeMillis();
+                    if(now - lastSelectConversatonListItemTimestamp < 200){
+                        conversationListFragment.scrollToNextUnreadConversation();
+                    }
+                    lastSelectConversatonListItemTimestamp = now;
+                    break;
+                default:
+                    break;
+            }
         });
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
