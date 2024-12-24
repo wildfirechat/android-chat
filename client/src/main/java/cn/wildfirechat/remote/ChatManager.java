@@ -232,7 +232,7 @@ public class ChatManager {
     private int groupReceiptStatus = -1; // 1, enable
     private int userReceiptStatus = -1; //1, enable
 
-    private int backupAddressStrategy = 1;
+    private int backupAddressStrategy = 0;
     private String backupAddressHost = null;
     private int backupAddressPort = 80;
     private String protoUserAgent = null;
