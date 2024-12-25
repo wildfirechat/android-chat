@@ -174,6 +174,9 @@ public class ConversationListFragment extends ProgressFragment {
     }
 
     public void scrollToNextUnreadConversation() {
+        if(layoutManager == null || adapter == null){
+            return;
+        }
         int start = layoutManager.findFirstVisibleItemPosition();
         int nextUnreadConversationPosition = adapter.getNextUnreadConversationPosition(start);
         //  支持循环滚动，后面没有未读会话时，从头开始找

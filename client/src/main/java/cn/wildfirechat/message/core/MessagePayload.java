@@ -38,7 +38,6 @@ public class MessagePayload implements Parcelable {
     //前面的属性都会在网络发送，下面的属性只在本地存储
     public String localMediaPath;
 
-    //前面的属性都会在网络发送，下面的属性只在本地存储
     public String localContent;
 
     public int notLoaded;
