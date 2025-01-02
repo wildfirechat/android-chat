@@ -103,9 +103,9 @@
             <intent-filter android:label="分享到野火IM">
                 <action android:name="android.intent.action.SENDTO" />
                 <action android:name="android.intent.action.SEND" />
-
+<!--                <action android:name="android.intent.action.SEND_MULTIPLE" />-->
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/*" />
+                <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
 
