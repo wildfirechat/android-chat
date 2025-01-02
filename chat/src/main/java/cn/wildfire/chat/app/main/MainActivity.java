@@ -70,15 +70,19 @@ import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
 import cn.wildfire.chat.kit.workspace.WebViewFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
+import cn.wildfirechat.message.FileMessageContent;
+import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.TextMessageContent;
+import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
@@ -189,8 +193,13 @@ public class MainActivity extends WfcBaseActivity {
         String type = intent.getType();
         if (Intent.ACTION_SEND.equals(action)) {
             if ("text/plain".equals(type)) {
-                handleSend(intent);
+                handleSendText(intent);
+            } else {
+                Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                handleSendFile(fileUri);
             }
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+            handleSendMultiple(intent);
         }
 
         requestMandatoryPermissions();
@@ -203,8 +212,13 @@ public class MainActivity extends WfcBaseActivity {
         String type = intent.getType();
         if (Intent.ACTION_SEND.equals(action)) {
             if ("text/plain".equals(type)) {
-                handleSend(intent);
+                handleSendText(intent);
+            } else {
+                Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                handleSendFile(fileUri);
             }
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+            handleSendMultiple(intent); // Handle multiple items being sent
         }
     }
 
@@ -352,7 +366,7 @@ public class MainActivity extends WfcBaseActivity {
             switch (item.getItemId()) {
                 case R.id.conversation_list:
                     long now = System.currentTimeMillis();
-                    if(now - lastSelectConversatonListItemTimestamp < 200){
+                    if (now - lastSelectConversatonListItemTimestamp < 200) {
                         conversationListFragment.scrollToNextUnreadConversation();
                     }
                     lastSelectConversatonListItemTimestamp = now;
@@ -617,8 +631,8 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     // 分享
-    private void handleSend(Intent intent) {
-        String sharedText = intent.getStringExtra(Intent.EXTRA_INTENT);
+    private void handleSendText(Intent intent) {
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (!TextUtils.isEmpty(sharedText)) {
             MessageContent content = new TextMessageContent(sharedText);
             shareMessage(content);
@@ -640,6 +654,49 @@ public class MainActivity extends WfcBaseActivity {
                 }
             }
         }
+    }
+
+    private void handleSendMultiple(Intent intent) {
+        // TODO 暂不支持一次分享多个文件，分享页面不支持，没有相关 UI
+//        ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+//        if (imageUris != null) {
+//            for (Uri uri : imageUris) {
+//                handleSendFile(uri);
+//            }
+//        }
+    }
+
+    private void handleSendFile(Uri fileUri) {
+        if (fileUri == null) {
+            return;
+        }
+        String filePath = FileUtils.getPath(this, fileUri);
+        if (TextUtils.isEmpty(filePath)) {
+            Toast.makeText(this, "Error selecting file", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String suffix = filePath.substring(filePath.lastIndexOf("."));
+        MessageContent content;
+        switch (suffix) {
+            case ".png":
+            case ".jpg":
+            case ".jpeg":
+            case ".gif":
+                content = new ImageMessageContent(filePath);
+                break;
+            case ".3gp":
+            case ".mpg":
+            case ".mpeg":
+            case ".mpe":
+            case ".mp4":
+            case ".avi":
+                content = new VideoMessageContent(filePath);
+                break;
+            default:
+                content = new FileMessageContent(filePath);
+                break;
+        }
+        shareMessage(content);
     }
 
     private void shareMessage(MessageContent content) {
