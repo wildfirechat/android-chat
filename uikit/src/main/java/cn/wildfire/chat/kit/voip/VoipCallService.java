@@ -121,6 +121,14 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             return START_NOT_STICKY;
         }
 
+        // 录制系统音频示例代码
+//        boolean screenShareForRecord = intent.getBooleanExtra("screenShareForSystemAudioRecord", false);
+//        if (screenShareForRecord) {
+//            Intent data = intent.getParcelableExtra("data");
+//            session.startRecordSystemAudio(data);
+//            return START_NOT_STICKY;
+//        }
+
         focusTargetId = intent.getStringExtra("focusTargetId");
         Log.e("wfc", "on startCommand " + focusTargetId);
         checkCallState();
