@@ -8663,6 +8663,25 @@ public class ChatManager {
                 }
             }
         }
+
+        String xlogMMapDir = gContext.getFilesDir().getAbsolutePath() + "/xlog";
+        subFile = new File(xlogMMapDir).listFiles();
+        if (subFile != null) {
+            for (File file : subFile) {
+                //wflog为ChatService中定义的，如果修改需要对应修改
+                if (file.isFile() && file.getName().startsWith("wflog_")) {
+                    paths.add(file.getAbsolutePath());
+                }
+            }
+        }
+
+        // sort paths
+        Collections.sort(paths, (f1, f2) -> {
+            String n1 = f1.substring(f1.lastIndexOf("/") + 1);
+            String n2 = f2.substring(f2.lastIndexOf("/") + 1);
+            return n1.compareTo(n2);
+        });
+
         return paths;
     }
 
