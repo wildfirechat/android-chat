@@ -336,7 +336,8 @@ public class ConferenceActivity extends VoipBaseActivity {
     public void inviteNewParticipant() {
         preventShowFloatingViewOnStop = true;
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), ConferenceManager.getManager().getCurrentConferenceInfo().getOwner(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
+        ConferenceInfo conferenceInfo = ConferenceManager.getManager().getCurrentConferenceInfo();
+        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), ConferenceManager.getManager().getCurrentConferenceInfo().getOwner(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin(), conferenceInfo.getPassword());
         Intent intent = new Intent(this, ConferenceInviteActivity.class);
         intent.putExtra("inviteMessage", invite);
         startActivityForResult(intent, REQUEST_CODE_ADD_PARTICIPANT);
