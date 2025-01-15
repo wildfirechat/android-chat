@@ -24,11 +24,20 @@
 
 本工程为野火IM Android App，开发过程中，充分考虑了二次开发和集成需求，可作为SDK集成到其他应用中，或者直接进行二次开发。
 
-
 开发一套IM系统真的很艰辛，请路过的朋友们给点个star，支持我们坚持下去🙏🙏🙏🙏🙏
 
+## 关于包名/applicationId
+1. 开发者开发具体产品时，请勿直接使用本 demo 的包名/applicationId，我们会不定期修改包名/applicationId
+2. 禁止将本产品用于非法目的，一经发现，我们将停止任何形式的技术支持
+
 ## 开发调试说明
-我们采用最新稳定版Android Studio及对应的gradle进行开发，对于旧版本的IDE，我们没有测试，编译之类问题，需自行解决。
+1. JDK: 17
+2. 我们采用最新稳定版Android Studio及对应的gradle进行开发，对于旧版本的IDE，我们没有测试，编译之类问题，需自行解决。
+
+##  关于 debug 版 apk 可能不能进行音视频通话的特殊说明
+1. 关闭混淆时，命令行下，通过`./gradlew clean aDebug` 或 Android Studio 里面，通过 `Build App Bundle(s)/APK(s) -> Build APK(s)` 生成的 debug 版本 apk，不支持音视频通话，具体原因请参考[useFullClasspathForDexingTransform](https://issuetracker.google.com/issues/333107832)
+2. 开启混淆，debug 版 apk 一切正常，将`chat/build.gradle#buildTypes#debug#minifyEnabled`置为 true，即为 debug 版也开启混淆
+3. 命令行下，通过`./gradlew clean aR`或 Android Studio 里面，通过`Generate Signed App Bundle/APK...`可生成 release 版 apk，release 版 apk，一切正常
 
 ## 二次开发说明
 野火IM采用bugly作为日志手机工具，大家二次开发时，务必将```MyApp.java```中的 ```bugly id``` 替换为你们自己的，否则错误日志都跑我们这儿来了，你们收集不到错误日志，我们也会受到干扰。
@@ -49,22 +58,6 @@
 2. `android.permission.SYSTEM_ALERT_WINDOW`，允许音视频通话窗口最小化，并悬浮在其他窗口之上
 3. `android.permission.BLUETOOTH`、`android.permission.BLUETOOTH_ADMIN`，音视频通话时，允许使用蓝牙耳机
 
-## 升级注意
-v0.8.0 版本，对代码结构及部分实现机制进行了大量调整，变动如下：
-
-1. 将```chat``` application module 拆分为两部分：```uikit``` library module 和 ```chat``` application module。```uikit```可以library的方式导入项目，里面包含了大量可重用的UI。
-2. 移除```LayoutRes```、```SendLayoutRes```、```ReceiveLayoutRes```等注解，并更新```MessageViewHolder```等的实现机制
-
-v0.9.9 版本，移除了[ButterKnife](https://github.com/JakeWharton/butterknife)，可以使用[RemoveButterKnife](https://github.com/ccccmmmz/RemoveButterKnife)结合手动进行移除。
-
-## 特别注意
-1. ```com.android.tools.build:gradle:3.5.0``` 可能存在bug，会导致音视频crash，请勿使用此版本
-
-## Android Support 说明
-
-野火IM Android 客户端，基于```AndroidX```包开发，如果老项目采用的是```Android Support```包，可尝试采用[jetifier](https://developer.android.google.cn/studio/command-line/jetifier?hl=zh_cn)
-转成```Android Support```软件包。
-
 ## Android 4.x 说明
 请使用[api-19](https://github.com/wildfirechat/android-chat/tree/api-19)分支，如果编译失败等，可能是4.x版本的协议栈版本没有及时更新所导致，请微信联系 `wfchat` 进行更新。
 
@@ -81,7 +74,7 @@ v0.9.9 版本，移除了[ButterKnife](https://github.com/JakeWharton/butterknif
 2. 其他问题，请到[野火IM论坛](http://bbs.wildfirechat.cn/)进行交流学习
 3. 微信公众号
 
-<img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 50% height = 50% />
+<img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 40% height = 40% />
 
 > 强烈建议关注我们的公众号。我们有新版本发布或者有重大更新会通过公众号通知大家，另外我们也会不定期的发布一些关于野火IM的技术介绍。
 
@@ -91,31 +84,45 @@ v0.9.9 版本，移除了[ButterKnife](https://github.com/JakeWharton/butterknif
 ![野火IM](http://static.wildfirechat.cn/download_qrcode.png)
 
 ## 应用截图
-![ios-demo1](http://static.wildfirechat.cn/android-deomo1.gif)
+[点击查看 Android Demo 视频演示](https://static.wildfirechat.cn/wf-android-demo-live.mp4)
 
-![ios-demo2](http://static.wildfirechat.cn/android-deomo1.gif)
+<img src="https://static.wildfirechat.cn/wf-android-demo-1.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view1.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-2.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view2.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-3.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view3.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-4.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view4.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-5.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view5.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-6.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view6.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-7.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view7.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-8.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view8.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-9.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view9.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-10.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view10.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-11.jpg" width = 40% height = 40% />
 
-<img src="http://static.wildfirechat.cn/android-view11.png" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wf-android-demo-12.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-13.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-14.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-15.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-16.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-17.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-18.jpg" width = 40% height = 40% />
+
+<img src="https://static.wildfirechat.cn/wf-android-demo-19.jpg" width = 40% height = 40% />
 
 
 ## 集成

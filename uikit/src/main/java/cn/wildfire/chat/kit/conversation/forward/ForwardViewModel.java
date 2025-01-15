@@ -11,8 +11,12 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfirechat.message.ArticlesMessageContent;
+import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.MessageContent;
+import cn.wildfirechat.message.SoundMessageContent;
+import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -31,10 +35,21 @@ public class ForwardViewModel extends ViewModel {
                     ChatManager.Instance().sendMessage(targetConversation, content, null, 0, null);
                 }
             } else {
+                message.content = filterMessageContent(message);
                 ChatManager.Instance().sendMessage(message, null);
             }
         }
         resultMutableLiveData.postValue(new OperateResult<Integer>(0));
         return resultMutableLiveData;
+    }
+
+    public MessageContent filterMessageContent(Message msg) {
+        MessageContent content = msg.content;
+        if (content instanceof CallStartMessageContent) {
+            content = new TextMessageContent(content.digest(msg));
+        } else if (content instanceof SoundMessageContent) {
+            content = new TextMessageContent(content.digest(msg) + " " + ((SoundMessageContent) content).getDuration() + "''");
+        }
+        return content;
     }
 }

@@ -20,21 +20,21 @@ import cn.wildfirechat.message.core.PersistFlag;
 public class ConferenceCommandContent extends MessageContent {
     public interface ConferenceCommandType {
         //全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否允许成员自主解除静音。
-        int MUTE_ALL = 0;
+        int MUTE_ALL_AUDIO = 0;
         //取消全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否邀请成员解除静音。
-        int CANCEL_MUTE_ALL = 1;
+        int CANCEL_MUTE_ALL_AUDIO = 1;
 
         //要求某个用户更改静音状态，只有主持人可以操作。带有参数是否静音/解除静音。
-        int REQUEST_MUTE = 2;
+        int REQUEST_MUTE_AUDIO = 2;
         //拒绝UNMUTE要求。（如果同意不需要通知对方同意)
-        int REJECT_UNMUTE_REQUEST = 3;
+        int REJECT_UNMUTE_REQUEST_AUDIO = 3;
 
         //普通用户申请解除静音，带有参数是请求，还是取消请求。
-        int APPLY_UNMUTE = 4;
+        int APPLY_UNMUTE_AUDIO = 4;
         //管理员批准解除静音申请，带有参数是同意，还是拒绝申请。
-        int APPROVE_UNMUTE = 5;
+        int APPROVE_UNMUTE_AUDIO = 5;
         //管理员批准全部解除静音申请，带有参数是同意，还是拒绝申请。
-        int APPROVE_ALL_UNMUTE = 6;
+        int APPROVE_ALL_UNMUTE_AUDIO = 6;
 
         //举手，带有参数是举手还是放下举手
         int HANDUP = 7;
@@ -51,6 +51,22 @@ public class ConferenceCommandContent extends MessageContent {
         // 取消设置焦点用户
         int CANCEL_FOCUS = 12;
 
+        //全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否允许成员自主解除静音。
+        int MUTE_ALL_VIDEO = 13;
+        //取消全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否邀请成员解除静音。
+        int CANCEL_MUTE_ALL_VIDEO = 14;
+
+        //要求某个用户更改静音状态，只有主持人可以操作。带有参数是否静音/解除静音。
+        int REQUEST_MUTE_VIDEO = 15;
+        //拒绝UNMUTE要求。（如果同意不需要通知对方同意)
+        int REJECT_UNMUTE_REQUEST_VIDEO = 16;
+
+        //普通用户申请解除静音，带有参数是请求，还是取消请求。
+        int APPLY_UNMUTE_VIDEO = 17;
+        //管理员批准解除静音申请，带有参数是同意，还是拒绝申请。
+        int APPROVE_UNMUTE_VIDEO = 18;
+        //管理员批准全部解除静音申请，带有参数是同意，还是拒绝申请。
+        int APPROVE_ALL_UNMUTE_VIDEO = 19;
     }
 
     private String conferenceId;
@@ -88,6 +104,7 @@ public class ConferenceCommandContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         this.conferenceId = payload.content;
         try {
             if (payload.binaryContent != null) {

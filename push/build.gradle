@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
 
     }
 
@@ -25,8 +25,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    compileOnly fileTree(dir: '../push-aar-dep', include: ['*.aar'])
 
-    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation project(':client')
 
     implementation 'com.getui:gtsdk:3.2.10.0'  //个推SDK
@@ -36,7 +37,7 @@ dependencies {
     implementation 'com.getui.opt:xmp:3.2.0'   // 小米
     implementation 'com.assist-v3:oppo:3.1.0'  // oppo
     implementation 'com.assist-v3:vivo:3.1.0'  // vivo
-    implementation 'com.getui.opt:mzp:3.2.0'   // 魅族
+//    implementation 'com.getui.opt:mzp:3.2.0'   // 魅族
 
     def lifecycle_version = '2.2.0'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"

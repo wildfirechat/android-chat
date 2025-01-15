@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class PickContactActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        pickUserViewModel = ViewModelProviders.of(this).get(PickUserViewModel.class);
+        pickUserViewModel = new ViewModelProvider(this).get(PickUserViewModel.class);
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
         Intent intent = getIntent();
         int maxCount = intent.getIntExtra(PARAM_MAX_COUNT, 0);
@@ -102,8 +102,8 @@ public class PickContactActivity extends WfcBaseActivity {
     private void initView() {
         PickContactFragment fragment = new PickContactFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, fragment)
-                .commit();
+            .replace(R.id.containerFrameLayout, fragment)
+            .commit();
     }
 
     @Override

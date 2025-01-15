@@ -46,15 +46,19 @@ android {
     lint {
         abortOnError false
     }
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
 
     // wfc kit start
     implementation project(':webrtc')
+    implementation project(':uikit-aar-dep')
 
     api project(':client')
     api project(':avenginekit')
@@ -64,12 +68,12 @@ dependencies {
     implementation project(':emojilibrary')
     implementation project(':imagepicker')
 
-    implementation 'com.lqr.adapter:library:1.0.2'
-    implementation 'com.jaeger.statusbaruitl:library:1.3.5'
+//    implementation 'com.lqr.adapter:library:1.0.2'
+//    implementation 'com.jaeger.statusbaruitl:library:1.3.5'
 
     api 'androidx.appcompat:appcompat:1.7.0-alpha03'
     api 'com.google.android.material:material:1.10.0'
-    implementation 'cjt.library.wheel:camera:1.1.9'
+//    implementation 'cjt.library.wheel:camera:1.1.9'
     api 'com.github.bumptech.glide:glide:4.15.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
     annotationProcessor 'androidx.annotation:annotation:1.7.0'
@@ -78,20 +82,19 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
 
     api "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    api 'com.king.zxing:zxing-lite:1.1.1'
-    api 'cn.aigestudio.wheelpicker:WheelPicker:1.1.3'
+//    api 'com.king.zxing:zxing-lite:1.1.1'
+//    api 'cn.aigestudio.wheelpicker:WheelPicker:1.1.3'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
-    implementation 'com.google.android:flexbox:2.0.1'
+//    implementation 'com.google.android:flexbox:2.0.1'
 
     implementation 'com.tencent.map.geolocation:TencentLocationSdk-openplatform:7.2.6'
-    implementation 'io.kvh:amr:1.1.1'
-    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
+    compileOnly 'io.kvh:amr:1.1.1'
+//    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
 
     // moment start
+    // momentclient module is just for dev, do not uncomment
 //    implementation project(':momentclient')
-    //over scroller helper
-//    implementation 'me.everything:overscroll-decor-android:1.0.4'
     // moment end
 
     // kit wfc end

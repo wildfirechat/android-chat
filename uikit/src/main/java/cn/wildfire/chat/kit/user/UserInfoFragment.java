@@ -59,9 +59,13 @@ import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.widget.OptionItemView;
+import cn.wildfirechat.client.FriendSource;
+import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.utils.WfcUtils;
 
 public class UserInfoFragment extends Fragment {
     ImageView portraitImageView;
@@ -81,25 +85,39 @@ public class UserInfoFragment extends Fragment {
     OptionItemView messagesOptionItemView;
 
     OptionItemView qrCodeOptionItemView;
+    OptionItemView groupSourceItemView;
 
     View momentButton;
 
     TextView favContactTextView;
+    TextView externalDomainTextView;
 
     private UserInfo userInfo;
     private String groupId;
     private UserViewModel userViewModel;
     private OrganizationServiceViewModel organizationServiceViewModel;
     private ContactViewModel contactViewModel;
+    private GroupMemberSource groupMemberSource;
+    private FriendSource friendSource;
 
     private List<Organization> organizations;
 
     public static UserInfoFragment newInstance(UserInfo userInfo, String groupId) {
+        return newInstance(userInfo, groupId, null, null);
+    }
+
+    public static UserInfoFragment newInstance(UserInfo userInfo, String groupId, GroupMemberSource groupMemberSource, FriendSource friendSource) {
         UserInfoFragment fragment = new UserInfoFragment();
         Bundle args = new Bundle();
         args.putParcelable("userInfo", userInfo);
         if (!TextUtils.isEmpty(groupId)) {
             args.putString("groupId", groupId);
+        }
+        if (groupMemberSource != null) {
+            args.putParcelable("groupMemberSource", groupMemberSource);
+        }
+        if (friendSource != null) {
+            args.putParcelable("friendSource", friendSource);
         }
         fragment.setArguments(args);
         return fragment;
@@ -112,6 +130,8 @@ public class UserInfoFragment extends Fragment {
         assert args != null;
         userInfo = args.getParcelable("userInfo");
         groupId = args.getString("groupId");
+        groupMemberSource = args.getParcelable("groupMemberSource");
+        friendSource = args.getParcelable("friendSource");
     }
 
     @Nullable
@@ -151,6 +171,8 @@ public class UserInfoFragment extends Fragment {
         qrCodeOptionItemView = view.findViewById(R.id.qrCodeOptionItemView);
         momentButton = view.findViewById(R.id.momentButton);
         favContactTextView = view.findViewById(R.id.favContactTextView);
+        externalDomainTextView = view.findViewById(R.id.externalDomainTextView);
+        groupSourceItemView = view.findViewById(R.id.groupMemberSourceOptionItemView);
     }
 
     private void init() {
@@ -172,9 +194,8 @@ public class UserInfoFragment extends Fragment {
             inviteButton.setVisibility(View.GONE);
         } else {
             // stranger
-            momentButton.setVisibility(View.GONE);
-            chatButton.setVisibility(View.GONE);
-            voipChatButton.setVisibility(View.GONE);
+            chatButton.setVisibility(View.VISIBLE);
+            voipChatButton.setVisibility(View.VISIBLE);
             inviteButton.setVisibility(View.VISIBLE);
             aliasOptionItemView.setVisibility(View.GONE);
         }
@@ -210,6 +231,34 @@ public class UserInfoFragment extends Fragment {
         }
         if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
             loadOrganizationData();
+        }
+        if (WfcUtils.isExternalTarget(userInfo.uid)) {
+            String domainId = WfcUtils.getExternalDomainId(userInfo.uid);
+            DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, true);
+            if (domainInfo != null) {
+                externalDomainTextView.setVisibility(View.VISIBLE);
+                externalDomainTextView.setText(WfcUtils.buildExternalDisplayNameSpannableString("@" + domainInfo.name, 14));
+            }
+        }
+
+        if (groupMemberSource != null) {
+            String desc;
+            if (groupMemberSource.type == GroupMemberSource.Type_QRCode) {
+                // 为了支持国际化，故strings.xml
+                desc = "通过扫描" + ChatManager.Instance().getGroupMemberDisplayName(this.groupId, groupMemberSource.targetId) + "分享的二维码加入";
+            } else if (groupMemberSource.type == GroupMemberSource.Type_Card) {
+                desc = "通过" + ChatManager.Instance().getGroupMemberDisplayName(this.groupId, groupMemberSource.targetId) + " 分享的群名片加入";
+            } else if (groupMemberSource.type == GroupMemberSource.Type_Invite) {
+                desc = ChatManager.Instance().getGroupMemberDisplayName(this.groupId, groupMemberSource.targetId) + " 邀请加入";
+            } else if (groupMemberSource.type == GroupMemberSource.Type_Search) {
+                desc = "搜索群聊加入";
+            } else {
+                desc = "未知";
+            }
+            groupSourceItemView.setVisibility(View.VISIBLE);
+            groupSourceItemView.setDesc(desc);
+        } else {
+            groupSourceItemView.setVisibility(View.GONE);
         }
     }
 

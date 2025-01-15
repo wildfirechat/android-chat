@@ -15,11 +15,16 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
+import cn.wildfirechat.client.FriendSource;
+import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class UserInfoActivity extends WfcBaseActivity {
     private UserInfo userInfo;
+    // TODO
+    private GroupMemberSource groupMemberSource;
+    private FriendSource friendSource;
 
     @Override
     protected int contentLayout() {
@@ -31,13 +36,15 @@ public class UserInfoActivity extends WfcBaseActivity {
         if (!isDarkTheme()) {
             setTitleBackgroundResource(R.color.white, false);
         }
-        userInfo = getIntent().getParcelableExtra("userInfo");
-        String groupId = getIntent().getStringExtra("groupId");
+        Intent intent = getIntent();
+        userInfo = intent.getParcelableExtra("userInfo");
+        String groupId = intent.getStringExtra("groupId");
+        groupMemberSource = intent.getParcelableExtra("groupMemberSource");
         if (userInfo == null) {
             finish();
         } else {
             getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, UserInfoFragment.newInstance(userInfo, groupId))
+                .replace(R.id.containerFrameLayout, UserInfoFragment.newInstance(userInfo, groupId, groupMemberSource, friendSource))
                 .commit();
         }
     }

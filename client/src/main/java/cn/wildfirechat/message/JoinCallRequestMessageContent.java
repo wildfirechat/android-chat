@@ -60,6 +60,7 @@ public class JoinCallRequestMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         this.callId = payload.content;
         if (payload.binaryContent != null) {
             try {

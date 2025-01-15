@@ -8,9 +8,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
+
+import androidx.core.content.ContextCompat;
 
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
@@ -38,30 +41,44 @@ public class ImageExt extends ConversationExt {
      */
     @ExtContextMenuItem
     public void pickImage(View containerView, Conversation conversation) {
-
-        String[] permissions;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissions = new String[]{
-                Manifest.permission.READ_MEDIA_IMAGES,
-                Manifest.permission.READ_MEDIA_VIDEO,
-            };
+        String[] permissions = null;
+        boolean isAccessFullOrPartialGranted = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            && (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+            || ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED)) {
+            // Full access on Android 13 (API level 33) or higher
+            isAccessFullOrPartialGranted = true;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED) {
+            // Partial access on Android 14 (API level 34) or higher
+            isAccessFullOrPartialGranted = true;
+        } else if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            // Full access up to Android 12 (API level 32)
+            isAccessFullOrPartialGranted = true;
         } else {
-            permissions = new String[]{
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-            };
-        }
-        String[] notGrantedPermissions = checkPermissions(permissions);
-        if (notGrantedPermissions.length > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                activity.requestPermissions(notGrantedPermissions, 100);
+            // Access denied
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissions = new String[]{
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                };
+            } else {
+                permissions = new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                };
             }
-            return;
         }
 
-        Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(activity);
-        startActivityForResult(intent, 100);
-        TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
-        messageViewModel.sendMessage(conversation, content);
+        if (isAccessFullOrPartialGranted) {
+            Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(activity);
+            startActivityForResult(intent, 100);
+            TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
+            messageViewModel.sendMessage(conversation, toUsers(), content);
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                activity.requestPermissions(permissions, 100);
+            }
+        }
     }
 
     private boolean isGifFile(String file) {
@@ -90,7 +107,6 @@ public class ImageExt extends ConversationExt {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (data != null) {
-
                 ChatManager.Instance().getWorkHandler().post(() -> {
                     //是否发送原图
                     boolean compress = data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
@@ -98,7 +114,7 @@ public class ImageExt extends ConversationExt {
                     for (ImageItem imageItem : images) {
                         boolean isGif = isGifFile(imageItem.path);
                         if (isGif) {
-                            UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, imageItem.path, null));
+                            UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, toUsers(), imageItem.path, null));
                             continue;
                         }
                         File imageFileThumb;
@@ -124,7 +140,7 @@ public class ImageExt extends ConversationExt {
 //                    }
 //                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
                         File finalImageFileSource = imageFileSource;
-                        UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
+                        UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, toUsers(), imageFileThumb, finalImageFileSource));
 
                     }
 

@@ -49,6 +49,7 @@ public class DeleteMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         operatorId = payload.content;
         messageUid = Long.parseLong(new String(payload.binaryContent));
     }

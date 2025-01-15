@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary_background"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
@@ -19,7 +18,7 @@
             android:orientation="vertical">
 
 
-            <cn.wildfire.chat.kit.widget.ViewPagerFixed
+            <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/contentViewPager"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

@@ -62,7 +62,6 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.message.core.PersistFlag;
-import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
@@ -196,7 +195,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, confirm = false, priority = 11)
     public void removeMessage(View itemView, UiMessage message) {
 
-        List<String> items = new ArrayList();
+        List<String> items = new ArrayList<>();
         items.add("删除本地消息");
         boolean isSuperGroup = false;
         if (message.message.conversation.type == Conversation.ConversationType.Group) {
@@ -206,7 +205,10 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             }
         }
         // 超级群组不支持远端删除
-        if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup) || message.message.conversation.type == Conversation.ConversationType.Single) {
+        if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup)
+            || message.message.conversation.type == Conversation.ConversationType.Single
+            || message.message.conversation.type == Conversation.ConversationType.Channel
+        ) {
             items.add("删除远程消息");
         } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
             items.add("删除自己及对方消息");
@@ -327,6 +329,10 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         }
 
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
+            MessageContent messageContent = message.content;
+            if (messageContent instanceof CallStartMessageContent) {
+                return true;
+            }
             if (message.conversation.type == Conversation.ConversationType.Group) {
                 GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
                 GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
@@ -394,6 +400,24 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             return true;
         }
 
+        if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
+            MessageContent messageContent = message.content;
+            if (messageContent instanceof SoundMessageContent
+                || messageContent instanceof CallStartMessageContent) {
+                return true;
+            }
+            return false;
+        }
+
+        if (MessageContextMenuItemTags.TAG_MULTI_CHECK.equals(tag)) {
+            MessageContent messageContent = message.content;
+            if (messageContent instanceof SoundMessageContent
+                || messageContent instanceof CallStartMessageContent) {
+                return true;
+            }
+            return false;
+        }
+
         return false;
     }
 
@@ -401,9 +425,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         // TODO get user info from viewModel
         String portraitUrl = null;
         if (item.conversation.type == Conversation.ConversationType.Channel && item.direction == MessageDirection.Receive) {
-            ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(item.conversation.target, false);
-            if (channelInfo != null) {
-                portraitUrl = channelInfo.portrait;
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(item.sender, false);
+            if (userInfo != null) {
+                portraitUrl = userInfo.portrait;
             }
         } else {
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(item.sender, false);
@@ -434,7 +458,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     private void showGroupMemberAlias(Conversation conversation, Message message, String sender) {
         UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
         String hideGroupNickName = userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, conversation.target);
-        if ((!TextUtils.isEmpty(hideGroupNickName) && !"1".equals(hideGroupNickName)) || message.direction == MessageDirection.Send) {
+        if ((!TextUtils.isEmpty(hideGroupNickName) && "1".equals(hideGroupNickName)) || message.direction == MessageDirection.Send) {
             nameTextView.setVisibility(View.GONE);
             return;
         }
@@ -445,7 +469,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 //        }
         GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
 
-        nameTextView.setText(groupViewModel.getGroupMemberDisplayName(conversation.target, sender));
+        nameTextView.setText(groupViewModel.getGroupMemberDisplayNameEx(conversation.target, sender, 11));
         nameTextView.setTag(sender);
     }
 
@@ -489,7 +513,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
             if (readTimestamp != null && readTimestamp >= message.message.serverTime) {
                 ImageViewCompat.setImageTintList(singleReceiptImageView, null);
-                return;
+            } else {
+                singleReceiptImageView.setImageResource(R.mipmap.receipt);
             }
         } else if (item.conversation.type == Conversation.ConversationType.Group) {
             singleReceiptImageView.setVisibility(View.GONE);

@@ -15,9 +15,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.audio.AudioPlayManager;
@@ -66,7 +68,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     OnMessageReadListener,
     OnClearMessageListener,
     SecretMessageBurnStateListener {
-    private MutableLiveData<UiMessage> messageLiveData;
+    private MutableLiveData<List<UiMessage>> messageLiveData;
     private MutableLiveData<UiMessage> messageUpdateLiveData;
     private MutableLiveData<UiMessage> messageRemovedLiveData;
     private MutableLiveData<Map<String, String>> mediaUploadedLiveData;
@@ -106,13 +108,11 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     @Override
     public void onReceiveMessage(List<Message> messages, boolean hasMore) {
         if (messageLiveData != null && messages != null) {
-            for (Message msg : messages) {
-                postNewMessage(new UiMessage(msg));
-            }
+            postNewMessage(toUIMessages(messages));
         }
     }
 
-    public MutableLiveData<UiMessage> messageLiveData() {
+    public MutableLiveData<List<UiMessage>> messageLiveData() {
         if (messageLiveData == null) {
             messageLiveData = new MutableLiveData<>();
         }
@@ -282,14 +282,17 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     }
 
     public void sendMessage(Conversation conversation, List<String> toUsers, MessageContent content) {
-
-    }
-
-    public void sendMessage(Conversation conversation, MessageContent content) {
         Message msg = new Message();
         msg.conversation = conversation;
         msg.content = content;
+        if (toUsers != null) {
+            msg.toUsers = toUsers.toArray(new String[0]);
+        }
         sendMessage(msg);
+    }
+
+    public void sendMessage(Conversation conversation, MessageContent content) {
+        this.sendMessage(conversation, null, content);
     }
 
     public MutableLiveData<OperateResult<Void>> sendMessageEx(Message message) {
@@ -320,7 +323,17 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     }
 
     public void sendTextMsg(Conversation conversation, TextMessageContent txtContent) {
-        sendMessage(conversation, txtContent);
+        this.sendTextMsg(conversation, null, txtContent);
+    }
+
+    public void sendTextMsg(Conversation conversation, List<String> toUsers, TextMessageContent txtContent) {
+        Message message = new Message();
+        message.conversation = conversation;
+        message.content = txtContent;
+        if (toUsers != null) {
+            message.toUsers = toUsers.toArray(new String[0]);
+        }
+        sendMessage(message);
         ChatManager.Instance().setConversationDraft(conversation, null);
     }
 
@@ -333,52 +346,80 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     }
 
     public void sendImgMsg(Conversation conversation, Uri imageFileThumbUri, Uri imageFileSourceUri) {
+        this.sendImgMsg(conversation, null, imageFileThumbUri, imageFileSourceUri);
+    }
+
+    public void sendImgMsg(Conversation conversation, List<String> toUsers, Uri imageFileThumbUri, Uri imageFileSourceUri) {
         ImageMessageContent imgContent = new ImageMessageContent(imageFileSourceUri.getEncodedPath());
         String thumbParam = ChatManager.Instance().getImageThumbPara();
         if (!TextUtils.isEmpty(thumbParam)) {
             imgContent.setThumbPara(ChatManager.Instance().getImageThumbPara());
         }
-        sendMessage(conversation, imgContent);
+        sendMessage(conversation, toUsers, imgContent);
     }
 
     public void sendImgMsg(Conversation conversation, File imageFileThumb, File imageFileSource) {
+        this.sendImgMsg(conversation, null, imageFileSource, imageFileSource);
+    }
+
+    public void sendImgMsg(Conversation conversation, List<String> toUsers, File imageFileThumb, File imageFileSource) {
         // Uri.fromFile()遇到中文檔名會轉 ASCII，這個 ASCII 的 path 將導致後面 ChatManager.sendMessage()
         // 在 new File()時找不到 File 而 return
         Uri imageFileThumbUri = Uri.parse(Uri.decode(imageFileThumb.getAbsolutePath()));
 //        Uri imageFileThumbUri = Uri.fromFile(imageFileThumb);
         Uri imageFileSourceUri = Uri.parse(Uri.decode(imageFileSource.getAbsolutePath()));
 //        Uri imageFileSourceUri = Uri.fromFile(imageFileSource);
-        sendImgMsg(conversation, imageFileThumbUri, imageFileSourceUri);
+        sendImgMsg(conversation, toUsers, imageFileThumbUri, imageFileSourceUri);
 
     }
 
     public void sendVideoMsg(Conversation conversation, File file) {
+        this.sendVideoMsg(conversation, null, file);
+    }
+
+    public void sendVideoMsg(Conversation conversation, List<String> toUsers, File file) {
         VideoMessageContent videoMessageContent = new VideoMessageContent(file.getPath());
         sendMessage(conversation, videoMessageContent);
     }
 
     public void sendStickerMsg(Conversation conversation, String localPath, String remoteUrl) {
+        this.sendStickerMsg(conversation, null, localPath, remoteUrl);
+    }
+
+    public void sendStickerMsg(Conversation conversation, List<String> toUsers, String localPath, String remoteUrl) {
         StickerMessageContent stickerMessageContent = new StickerMessageContent(localPath);
         stickerMessageContent.remoteUrl = remoteUrl;
-        sendMessage(conversation, stickerMessageContent);
+        sendMessage(conversation, toUsers, stickerMessageContent);
     }
 
     public void sendFileMsg(Conversation conversation, File file) {
+        this.sendFileMsg(conversation, null, file);
+    }
+
+    public void sendFileMsg(Conversation conversation, List<String> toUsers, File file) {
         FileMessageContent fileMessageContent = new FileMessageContent(file.getPath());
-        sendMessage(conversation, fileMessageContent);
+        sendMessage(conversation, toUsers, fileMessageContent);
     }
 
     public void sendLocationMessage(Conversation conversation, LocationData locationData) {
+        this.sendLocationMessage(conversation, null, locationData);
+    }
+
+    public void sendLocationMessage(Conversation conversation, List<String> toUsers, LocationData locationData) {
         LocationMessageContent locCont = new LocationMessageContent();
         locCont.setTitle(locationData.getPoi());
         locCont.getLocation().setLatitude(locationData.getLat());
         locCont.getLocation().setLongitude(locationData.getLng());
         locCont.setThumbnail(locationData.getThumbnail());
 
-        sendMessage(conversation, locCont);
+        sendMessage(conversation, toUsers, locCont);
     }
 
     public void sendAudioFile(Conversation conversation, Uri audioPath, int duration) {
+        this.sendAudioFile(conversation, null, audioPath, duration);
+    }
+
+    public void sendAudioFile(Conversation conversation, List<String> toUsers, Uri audioPath, int duration) {
         if (audioPath != null) {
             File file = new File(audioPath.getPath());
             if (!file.exists() || file.length() == 0L) {
@@ -387,7 +428,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
             }
             SoundMessageContent soundContent = new SoundMessageContent(file.getAbsolutePath());
             soundContent.setDuration(duration);
-            sendMessage(conversation, soundContent);
+            sendMessage(conversation, toUsers, soundContent);
         }
     }
 
@@ -487,13 +528,8 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         }
     }
 
-    private void postNewMessage(UiMessage message) {
-        if (message == null || message.message == null) {
-            return;
-        }
-        if (messageLiveData != null) {
-            UIUtils.postTaskSafely(() -> messageLiveData.setValue(message));
-        }
+    private void postNewMessage(List<UiMessage> messages) {
+        messageLiveData.setValue(messages);
     }
 
     @Override
@@ -508,7 +544,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
 
     @Override
     public void onSendPrepare(Message message, long savedTime) {
-        postNewMessage(new UiMessage(message));
+        postNewMessage(Collections.singletonList(new UiMessage(message)));
     }
 
     @Override
@@ -577,5 +613,9 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         if (messageBurnedLiveData != null) {
             messageBurnedLiveData.postValue(messageIds);
         }
+    }
+
+    private List<UiMessage> toUIMessages(List<Message> messages) {
+        return messages.stream().map(UiMessage::new).collect(Collectors.toList());
     }
 }

@@ -3,13 +3,13 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/selector_common_item"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/contactLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
         android:paddingTop="@dimen/item_margin_top_and_bottom"
         android:paddingRight="@dimen/item_margin_left_and_right"

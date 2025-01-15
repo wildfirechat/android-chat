@@ -35,4 +35,20 @@
         <attr name="maxWidth" format="dimension" />
         <attr name="maxHeight" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="WaterMarkView">
+        <attr name="water_mark_degree" format="integer|reference" />
+        <attr name="water_mark_text" format="string|reference" />
+        <attr name="water_mark_textColor" format="color|reference" />
+        <attr name="water_mark_textSize" format="dimension|reference" />
+        <attr name="water_mark_textBold" format="boolean" />
+        <attr name="water_mark_dx" format="dimension|reference" />
+        <attr name="water_mark_dy" format="dimension|reference" />
+        <attr name="water_mark_align" format="dimension">
+            <enum name="LEFT" value="0" />
+            <enum name="CENTER" value="1" />
+            <enum name="RIGHT" value="2" />
+        </attr>
+        <attr name="water_mark_sync" format="boolean" />
+    </declare-styleable>
 </resources>

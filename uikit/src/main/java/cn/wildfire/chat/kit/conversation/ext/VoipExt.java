@@ -16,10 +16,9 @@ import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.Conversation;
-import cn.wildfirechat.model.UserInfo;
-import cn.wildfirechat.remote.ChatManager;
 
 public class VoipExt extends ConversationExt {
+//    private String targetId;
 
     @ExtContextMenuItem(tag = ConversationExtMenuTags.TAG_VOIP_VIDEO)
     public void video(View containerView, Conversation conversation) {
@@ -89,7 +88,19 @@ public class VoipExt extends ConversationExt {
 
     private void audioChat(String targetId) {
         WfcUIKit.singleCall(activity, targetId, true);
+        // 下面是开始录制系统音频的示例代码
+//        this.targetId = targetId;
+//        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) fragment.getActivity().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+//        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), 102);
     }
+
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        WfcUIKit.singleCall(activity, targetId, true);
+//        Intent intent = new Intent(fragment.getContext(), VoipCallService.class);
+//        intent.putExtra("screenShareForSystemAudioRecord", true);
+//        intent.putExtra("data", data);
+//        VoipCallService.start(fragment.getContext(), intent);
+//    }
 
     private void videoChat(String targetId) {
         WfcUIKit.singleCall(activity, targetId, false);
@@ -112,11 +123,11 @@ public class VoipExt extends ConversationExt {
         }
 
         if (conversation.type == Conversation.ConversationType.Single) {
-            UserInfo userInfo = ChatManager.Instance().getUserInfo(conversation.target, false);
-            // robot
-            if (userInfo.type == 1) {
-                return true;
-            }
+//            UserInfo userInfo = ChatManager.Instance().getUserInfo(conversation.target, false);
+//            // robot
+//            if (userInfo.type == 1) {
+//                return true;
+//            }
             return false;
         }
         return true;

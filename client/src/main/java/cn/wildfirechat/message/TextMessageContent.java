@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Text;
+
 import android.os.Parcel;
 
 import org.json.JSONException;
@@ -13,8 +15,6 @@ import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
 import cn.wildfirechat.model.QuoteInfo;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Text;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -70,6 +70,7 @@ public class TextMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         content = payload.searchableContent;
         mentionedType = payload.mentionedType;
         mentionedTargets = payload.mentionedTargets;

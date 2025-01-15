@@ -38,8 +38,9 @@ public class MessagePayload implements Parcelable {
     //前面的属性都会在网络发送，下面的属性只在本地存储
     public String localMediaPath;
 
-    //前面的属性都会在网络发送，下面的属性只在本地存储
     public String localContent;
+
+    public int notLoaded;
 
     public MessagePayload() {
     }
@@ -62,6 +63,7 @@ public class MessagePayload implements Parcelable {
             this.mentionedTargets = new ArrayList<>();
         }
         this.extra = protoMessageContent.getExtra();
+        this.notLoaded = protoMessageContent.getNotLoaded();
     }
 
     public ProtoMessageContent toProtoContent() {
@@ -109,9 +111,10 @@ public class MessagePayload implements Parcelable {
         dest.writeString(this.localMediaPath);
         dest.writeString(this.localContent);
         dest.writeString(this.extra);
+        dest.writeInt(this.notLoaded);
     }
 
-    protected MessagePayload(Parcel in) {
+    public MessagePayload(Parcel in) {
         this.type = in.readInt();
         this.searchableContent = in.readString();
         this.pushContent = in.readString();
@@ -126,6 +129,7 @@ public class MessagePayload implements Parcelable {
         this.localMediaPath = in.readString();
         this.localContent = in.readString();
         this.extra = in.readString();
+        this.notLoaded = in.readInt();
     }
 
     public static final Creator<MessagePayload> CREATOR = new Creator<MessagePayload>() {

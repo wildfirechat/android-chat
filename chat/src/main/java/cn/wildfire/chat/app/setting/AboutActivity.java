@@ -12,6 +12,7 @@ import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
+import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -47,9 +48,15 @@ public class AboutActivity extends WfcBaseActivity {
                 + Config.IM_SERVER_HOST + "\n"
                 + AppService.APP_SERVER_ADDRESS + "\n";
 
-            for (String[] ice : Config.ICE_SERVERS) {
-                info += ice[0] + " " + ice[1] + " " + ice[2] + "\n";
+            if (AVEngineKit.isSupportConference()) {
+                info += "高级版音视频\n";
+            } else {
+                info += "多人版版音视频\n";
+                for (String[] ice : Config.ICE_SERVERS) {
+                    info += ice[0] + " " + ice[1] + " " + ice[2] + "\n";
+                }
             }
+
             infoTextView.setText(info);
 
         } catch (PackageManager.NameNotFoundException e) {

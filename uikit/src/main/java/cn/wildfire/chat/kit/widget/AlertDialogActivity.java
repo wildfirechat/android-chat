@@ -42,7 +42,7 @@ public class AlertDialogActivity extends FragmentActivity {
         intent.putExtra("cancelable", cancelable);
         intent.putExtra("negativeText", negativeText);
         intent.putExtra("positiveText", positiveText);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         negativeOnclickListerWr = new WeakReference<>(negativeListener);
         positiveOnclickListerWr = new WeakReference<>(positiveListener);
         context.startActivity(intent);

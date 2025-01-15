@@ -33,7 +33,7 @@ public class ChannelMenuEventMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
-        // do nothing
+        super.decode(payload);
     }
 
     @Override

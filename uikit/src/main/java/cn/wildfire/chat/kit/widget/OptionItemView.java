@@ -71,8 +71,8 @@ public class OptionItemView extends LinearLayout {
             return;
         }
 
-        boolean alignDividerToTitle = false;
-        boolean showDivider = false;
+        boolean alignDividerToTitle = true;
+        boolean showDivider = true;
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.OptionItemView);
         for (int i = 0; i < typedArray.getIndexCount(); i++) {
             int attr = typedArray.getIndex(i);
@@ -120,7 +120,7 @@ public class OptionItemView extends LinearLayout {
                 boolean show = typedArray.getBoolean(attr, false);
                 arrowIndicator.setVisibility(show ? VISIBLE : GONE);
             } else if (attr == R.styleable.OptionItemView_divider_align_to_title) {
-                alignDividerToTitle = typedArray.getBoolean(attr, false);
+                alignDividerToTitle = typedArray.getBoolean(attr, true);
             }
         }
 
@@ -128,7 +128,7 @@ public class OptionItemView extends LinearLayout {
             dividerView.setVisibility(VISIBLE);
             if (alignDividerToTitle) {
                 LayoutParams layoutParams = (LayoutParams) dividerView.getLayoutParams();
-                int margin = startImageView.getVisibility() == VISIBLE ? 72 : 16;
+                int margin = startImageView.getVisibility() == VISIBLE ? 52 : 16;
                 layoutParams.leftMargin = dp2px(margin);
                 dividerView.setLayoutParams(layoutParams);
                 dividerView.invalidate();

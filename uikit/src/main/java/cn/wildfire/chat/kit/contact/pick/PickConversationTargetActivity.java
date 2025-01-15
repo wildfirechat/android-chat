@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
@@ -112,7 +113,7 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
     protected abstract void onContactPicked(List<UIUserInfo> newlyCheckedUserInfos, List<Organization> organizations);
 
     protected void onConfirmClick() {
-        List<UIUserInfo> newlyCheckedUserInfos = pickUserViewModel.getCheckedUsers();
+        List<UIUserInfo> newlyCheckedUserInfos = fragment.getCheckedUserInfos().stream().filter(UIUserInfo::isCheckable).collect(Collectors.toList());
         onContactPicked(newlyCheckedUserInfos, fragment.getCheckedOrganizations());
     }
 }

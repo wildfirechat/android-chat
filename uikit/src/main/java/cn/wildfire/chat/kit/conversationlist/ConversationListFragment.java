@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
@@ -29,6 +30,7 @@ import cn.wildfire.chat.kit.viewmodel.SettingViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.UserInfo;
@@ -48,6 +50,7 @@ public class ConversationListFragment extends ProgressFragment {
     private StatusNotificationViewModel statusNotificationViewModel;
     private LinearLayoutManager layoutManager;
     private OnClickConversationItemListener onClickConversationItemListener;
+    private RecyclerView.SmoothScroller smoothScroller;
 
     @Override
     protected int contentLayout() {
@@ -60,14 +63,6 @@ public class ConversationListFragment extends ProgressFragment {
         init();
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (adapter != null && isVisibleToUser) {
-            reloadConversations();
-        }
-    }
-
     public void setOnClickConversationItemListener(OnClickConversationItemListener listener) {
         this.onClickConversationItemListener = listener;
         if (adapter != null) {
@@ -78,7 +73,6 @@ public class ConversationListFragment extends ProgressFragment {
     @Override
     public void onResume() {
         super.onResume();
-//        reloadConversations();
     }
 
     private void init() {
@@ -98,10 +92,25 @@ public class ConversationListFragment extends ProgressFragment {
         recyclerView.setAdapter(adapter);
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
+        smoothScroller = new LinearSmoothScroller(getContext()) {
+            @Override
+            protected int getVerticalSnapPreference() {
+                return LinearSmoothScroller.SNAP_TO_START;
+            }
+        };
+
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, new Observer<List<UserInfo>>() {
             @Override
             public void onChanged(List<UserInfo> userInfos) {
+                int start = layoutManager.findFirstVisibleItemPosition();
+                int end = layoutManager.findLastVisibleItemPosition();
+                adapter.notifyItemRangeChanged(start, end - start + 1);
+            }
+        });
+        userViewModel.domainInfoLiveData().observe(this, new Observer<DomainInfo>() {
+            @Override
+            public void onChanged(DomainInfo domainInfo) {
                 int start = layoutManager.findFirstVisibleItemPosition();
                 int end = layoutManager.findLastVisibleItemPosition();
                 adapter.notifyItemRangeChanged(start, end - start + 1);
@@ -160,6 +169,24 @@ public class ConversationListFragment extends ProgressFragment {
 
         if (ChatManager.Instance().getConnectionStatus() == ConnectionStatus.ConnectionStatusConnected) {
             loadAndShowPCOnlineNotification();
+        }
+        reloadConversations();
+    }
+
+    public void scrollToNextUnreadConversation() {
+        if(layoutManager == null || adapter == null){
+            return;
+        }
+        int start = layoutManager.findFirstVisibleItemPosition();
+        int nextUnreadConversationPosition = adapter.getNextUnreadConversationPosition(start);
+        //  支持循环滚动，后面没有未读会话时，从头开始找
+        if (nextUnreadConversationPosition == -1 && start > adapter.headerCount()) {
+            nextUnreadConversationPosition = adapter.getNextUnreadConversationPosition(0);
+        }
+
+        if (nextUnreadConversationPosition != -1) {
+            smoothScroller.setTargetPosition(nextUnreadConversationPosition);
+            layoutManager.startSmoothScroll(smoothScroller);
         }
     }
 

@@ -9,7 +9,6 @@
         android:id="@+id/momentOptionItemView"
         style="@style/OptionItem"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/selector_common_item"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_moment"
         app:title="朋友圈" />
@@ -18,40 +17,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:background="@color/white"
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/chatRoomOptionItemView"
             style="@style/OptionItem"
-            android:background="@drawable/selector_common_item"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_chatroom"
             app:title="聊天室" />
 
-        <View
-            style="@style/Line"
-            android:layout_marginLeft="50dp"
-            android:visibility="visible" />
-
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/robotOptionItemView"
             style="@style/OptionItem"
-            android:background="@drawable/selector_common_item"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_robot"
             app:title="机器人" />
 
-        <View
-            style="@style/Line"
-            android:layout_marginLeft="50dp"
-            android:visibility="visible" />
-
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/channelOptionItemView"
             style="@style/OptionItem"
-            android:background="@drawable/selector_common_item"
-            app:divider_align_to_title="false"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_channel"
             app:title="频道" />
@@ -61,8 +45,6 @@
         android:id="@+id/cookbookOptionItemView"
         style="@style/OptionItem"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="false"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_dev_docs"
         app:title="开发手册" />
@@ -71,8 +53,6 @@
         android:id="@+id/conferenceOptionItemView"
         style="@style/OptionItem"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/selector_common_item"
-        app:divider_align_to_title="false"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_conference"
         app:title="会议" />

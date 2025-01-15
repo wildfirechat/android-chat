@@ -39,7 +39,9 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     private static final float MIN_ZOOM = 1.0f;
     private static final float MAX_ZOOM = 4.0f;
 
+    private boolean touchListener = false;
     private boolean enableZoom = false;
+    private boolean enableDrag = false;
     private Mode mode = Mode.NONE;
     private float scale = 1.0f;
     private float lastScaleFactor = 0f;
@@ -73,14 +75,14 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
     }
 
     private void init(Context context) {
-        if (!enableZoom) {
-            return;
-        }
         final ScaleGestureDetector scaleDetector = new ScaleGestureDetector(context, this);
         setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (child() == null) {
+                    return false;
+                }
+                if (!enableZoom && !enableDrag) {
                     return false;
                 }
                 int y = (int) motionEvent.getY();
@@ -99,14 +101,16 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if (mode == Mode.DRAG_ZOOM) {
-                            dx = motionEvent.getX() - startX;
-                            dy = motionEvent.getY() - startY;
-                        } else if (mode == Mode.DRAG) {
-                            float tmp = y - lastY;
-                            setY(tmp);
-                            if (dragListener != null) {
-                                dragListener.onDragOffset(tmp, getViewHeight() / 6);
+                        if (enableDrag) {
+                            if (mode == Mode.DRAG_ZOOM) {
+                                dx = motionEvent.getX() - startX;
+                                dy = motionEvent.getY() - startY;
+                            } else if (mode == Mode.DRAG) {
+                                float tmp = y - lastY;
+                                setY(tmp);
+                                if (dragListener != null) {
+                                    dragListener.onDragOffset(tmp, getViewHeight() / 6);
+                                }
                             }
                         }
                         break;
@@ -118,9 +122,9 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                         break;
                     case MotionEvent.ACTION_UP:
                         Log.i(TAG, "UP");
-                        if (mode == Mode.DRAG) {
+                        if (enableDrag && mode == Mode.DRAG) {
                             float tmp = y - lastY;
-                            if (Math.abs(tmp) < getViewHeight() / 6) {
+                            if (scale > 1 || Math.abs(tmp) < getViewHeight() / 6) {
                                 new TranslateUpAnimator(ZoomableFrameLayout.this, tmp, 0);
                             } else {
                                 new TranslateUpAnimator(ZoomableFrameLayout.this, tmp, tmp > 0 ? getViewHeight() : -getViewHeight())
@@ -243,7 +247,10 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
      */
     public void setEnableZoom(boolean enable) {
         this.enableZoom = enable;
-        this.init(getContext());
+    }
+
+    public void setEnableDrag(boolean enable) {
+        this.enableDrag = enable;
     }
 
     public void reset() {

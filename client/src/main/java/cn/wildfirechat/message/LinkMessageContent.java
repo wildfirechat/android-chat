@@ -91,11 +91,11 @@ public class LinkMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         title = payload.searchableContent;
 
-
         try {
-            if (payload.content != null) {
+            if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 contentDigest = jsonObject.optString("d");
                 url = jsonObject.optString("u");

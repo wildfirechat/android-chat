@@ -101,19 +101,17 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         }
         loadingCount.incrementAndGet();
 
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
-                @Override
-                public void onSuccess(List<ConversationInfo> conversationInfos) {
-                    conversationListLiveData.postValue(conversationInfos);
-                    loadingCount.decrementAndGet();
-                }
+        ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
+            @Override
+            public void onSuccess(List<ConversationInfo> conversationInfos) {
+                conversationListLiveData.postValue(conversationInfos);
+                loadingCount.decrementAndGet();
+            }
 
-                @Override
-                public void onFail(int errorCode) {
-                    loadingCount.decrementAndGet();
-                }
-            });
+            @Override
+            public void onFail(int errorCode) {
+                loadingCount.decrementAndGet();
+            }
         });
     }
 
@@ -121,18 +119,16 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         if (conversationListLiveData == null) {
             conversationListLiveData = new MutableLiveData<>();
         }
-        ChatManager.Instance().getWorkHandler().post(() -> {
-            ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
-                @Override
-                public void onSuccess(List<ConversationInfo> conversationInfos) {
-                    conversationListLiveData.postValue(conversationInfos);
-                }
+        ChatManager.Instance().getConversationListAsync(types, lines, new GetConversationListCallback() {
+            @Override
+            public void onSuccess(List<ConversationInfo> conversationInfos) {
+                conversationListLiveData.postValue(conversationInfos);
+            }
 
-                @Override
-                public void onFail(int errorCode) {
+            @Override
+            public void onFail(int errorCode) {
 
-                }
-            });
+            }
         });
 
         return conversationListLiveData;
@@ -152,11 +148,13 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     public void reloadConversationUnreadStatus() {
-        UnreadCount unreadCount = ChatManager.Instance().getUnreadCountEx(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Collections.singletonList(0));
-        if (unreadCountLiveData == null) {
-            return;
-        }
-        unreadCountLiveData.postValue(unreadCount);
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            UnreadCount unreadCount = ChatManager.Instance().getUnreadCountEx(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Collections.singletonList(0));
+            if (unreadCountLiveData == null) {
+                return;
+            }
+            unreadCountLiveData.postValue(unreadCount);
+        });
     }
 
     @Override
@@ -193,7 +191,6 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     }
 
     public void removeConversation(ConversationInfo conversationInfo, boolean clearMsg) {
-        ChatManager.Instance().clearUnreadStatus(conversationInfo.conversation);
         ChatManager.Instance().removeConversation(conversationInfo.conversation, clearMsg);
     }
 

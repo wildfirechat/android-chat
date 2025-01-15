@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Date;
 
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.MyApp;
@@ -68,15 +69,17 @@ public class DiagnoseActivity extends WfcBaseActivity {
 
     private void updateConfigInfo() {
         StringBuilder sb = new StringBuilder();
+        sb.append("当前时间：" + new Date().toString());
+        sb.append("\n");
         sb.append("APP-Sever: " + AppService.APP_SERVER_ADDRESS);
         sb.append("\n");
         sb.append("Route-Host: " + Config.IM_SERVER_HOST);
         sb.append("\n");
         sb.append("Route-Port: " + MyApp.routePort);
         sb.append("\n");
-        sb.append("Long-Link-Port: " + MyApp.longLinkHost);
+        sb.append("Long-Link-Host: " + MyApp.longLinkHost);
         sb.append("\n");
-        sb.append("Long-Link-Port: " + MyApp.longLinkPort);
+        sb.append("Long-Link-Port: " + ChatManager.Instance().getLongLinkPort());
         sb.append("\n");
         sb.append("音视频 SDK: " + (AVEngineKit.isSupportConference() ? "高级版" : "多人版") + "\n");
         String ices = "";
@@ -156,7 +159,7 @@ public class DiagnoseActivity extends WfcBaseActivity {
             return;
         }
         String host = MyApp.longLinkHost;
-        int port = MyApp.longLinkPort;
+        int port = ChatManager.Instance().getLongLinkPort();
         ChatManager.Instance().getWorkHandler().post(() -> {
             try (Socket socket = new Socket(host, port)) {
                 diagnoseResultSB.append("IM-Server 长连接 tcp ping 正常");

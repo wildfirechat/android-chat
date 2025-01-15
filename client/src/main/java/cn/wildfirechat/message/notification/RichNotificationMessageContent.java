@@ -50,7 +50,17 @@ public class RichNotificationMessageContent extends NotificationMessageContent{
             jObj.put("exPortrait", this.exPortrait);
             jObj.put("exUrl", this.exUrl);
             jObj.put("appId", this.appId);
-            jObj.put("datas", this.datas);
+            JSONArray jsonArray = new JSONArray();
+            if (this.datas != null) {
+                for (Data data : this.datas) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("key", data.key);
+                    obj.put("value", data.value);
+                    obj.put("color", data.color);
+                    jsonArray.put(obj);
+                }
+            }
+            jObj.put("datas", jsonArray);
             payload.binaryContent = jObj.toString().getBytes();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -60,6 +70,7 @@ public class RichNotificationMessageContent extends NotificationMessageContent{
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         this.title = payload.pushContent;
         this.desc = payload.content;
         try {

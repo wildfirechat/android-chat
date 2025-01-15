@@ -46,6 +46,8 @@ import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.remote.ChatManager;
+import me.aurelion.x.ui.view.watermark.WaterMarkManager;
+import me.aurelion.x.ui.view.watermark.WaterMarkView;
 
 /**
  * @author imndx
@@ -65,6 +67,8 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     private static int currentPosition = -1;
     private static List<MediaEntry> entries;
     private boolean pendingPreviewInitialMedia;
+
+    protected WaterMarkView mWmv;
 
     public static final String TAG = "MMPreviewActivity";
 
@@ -206,6 +210,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         ImageView saveImageView = view.findViewById(R.id.saveImageView);
         ZoomableFrameLayout zoomableFrameLayout = view.findViewById(R.id.zoomableFrameLayout);
         zoomableFrameLayout.setEnableZoom(true);
+        zoomableFrameLayout.setEnableDrag(true);
         zoomableFrameLayout.setOnDragListener(this);
         saveImageView.setVisibility(View.GONE);
 
@@ -397,6 +402,11 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
         }
         secret = getIntent().getBooleanExtra("secret", false);
         diskCacheStrategy = secret ? DiskCacheStrategy.NONE : DiskCacheStrategy.AUTOMATIC;
+
+        if (Config.ENABLE_WATER_MARK) {
+            mWmv = WaterMarkManager.getView(this);
+            ((ViewGroup) findViewById(android.R.id.content)).addView(mWmv);
+        }
     }
 
     @Override
@@ -410,6 +420,9 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mWmv != null) {
+            mWmv.onDestroy();
+        }
         if (secret) {
             for (MediaEntry entry : entries) {
                 if (entry.getType() == MediaEntry.TYPE_VIDEO) {

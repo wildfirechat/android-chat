@@ -14,11 +14,18 @@
         android:text="xxx 正在举手" />
 
     <TextView
-        android:id="@+id/applyingUnmuteTextView"
+        android:id="@+id/applyingUnmuteAudioTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:text="xxx 正在申请解除静音" />
+
+    <TextView
+        android:id="@+id/applyingUnmuteVideoTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="xxx 正在申请打开摄像头" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

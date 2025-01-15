@@ -14,19 +14,24 @@ import java.util.List;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfirechat.message.MessageContentMediaType;
+import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.ModifyMyInfoType;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.OnDomainInfoUpdateListener;
 import cn.wildfirechat.remote.OnUserInfoUpdateListener;
 import cn.wildfirechat.remote.UploadMediaCallback;
+import cn.wildfirechat.utils.WfcUtils;
 
-public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener {
+public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener, OnDomainInfoUpdateListener {
     private MutableLiveData<List<UserInfo>> userInfoLiveData;
+    private MutableLiveData<DomainInfo> domainInfoLiveData;
 
     public UserViewModel() {
         ChatManager.Instance().addUserInfoUpdateListener(this);
+        ChatManager.Instance().addDomainInfoUpdateListener(this);
     }
 
     public static List<UserInfo> getUsers(List<String> ids, String groupId) {
@@ -37,6 +42,7 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
     protected void onCleared() {
         super.onCleared();
         ChatManager.Instance().removeUserInfoUpdateListener(this);
+        ChatManager.Instance().removeDomainInfoUpdateListener(this);
     }
 
     public MutableLiveData<List<UserInfo>> userInfoLiveData() {
@@ -44,6 +50,13 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
             userInfoLiveData = new MutableLiveData<>();
         }
         return userInfoLiveData;
+    }
+
+    public MutableLiveData<DomainInfo> domainInfoLiveData() {
+        if (domainInfoLiveData == null) {
+            domainInfoLiveData = new MutableLiveData<>();
+        }
+        return domainInfoLiveData;
     }
 
     public MutableLiveData<OperateResult<Boolean>> updateUserPortrait(String localImagePath) {
@@ -120,6 +133,15 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
         return ChatManager.Instance().getUserDisplayName(userInfo);
     }
 
+    public CharSequence getUserDisplayNameEx(UserInfo userInfo) {
+        String displayName = ChatManager.Instance().getUserDisplayName(userInfo);
+        if (WfcUtils.isExternalTarget(userInfo.uid)) {
+            return WfcUtils.buildExternalDisplayNameSpannableString(displayName, 14);
+        } else {
+            return displayName;
+        }
+    }
+
     public List<UserInfo> getUserInfos(List<String> userIds) {
         return ChatManager.Instance().getUserInfos(userIds, null);
     }
@@ -154,6 +176,13 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
     public void onUserInfoUpdate(List<UserInfo> userInfos) {
         if (userInfoLiveData != null && userInfos != null && !userInfos.isEmpty()) {
             userInfoLiveData.setValue(userInfos);
+        }
+    }
+
+    @Override
+    public void onDomainInfoUpdate(DomainInfo domainInfo) {
+        if (domainInfo != null && domainInfoLiveData != null) {
+            domainInfoLiveData.setValue(domainInfo);
         }
     }
 }

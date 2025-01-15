@@ -27,6 +27,15 @@ public interface MessageContentType {
     int ContentType_Rich_Notification = 12;
     int ContentType_Articles = 13;
 
+    //流式文本正在生成消息
+    int ContentType_Streaming_Text_Generating = 14;
+    //流式文本消息
+    int ContentType_Streaming_Text_Generated = 15;
+
+    // 消息未能送达
+    int ContentType_NOT_DELIVERED = 16;
+
+
     // 21, 23，24内部使用
     int ContentType_Dumy1 = 21;
     int ContentType_Dumy2 = 22;

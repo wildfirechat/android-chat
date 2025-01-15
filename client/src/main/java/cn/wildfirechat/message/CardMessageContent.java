@@ -8,16 +8,17 @@
 
 package cn.wildfirechat.message;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Card;
+
 import android.os.Parcel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cn.wildfirechat.client.ClientService;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Card;
 
 
 @ContentTag(type = ContentType_Card, flag = PersistFlag.Persist_And_Count)
@@ -114,6 +115,7 @@ public class CardMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         target = payload.content;
         try {
             if (payload.binaryContent != null) {
@@ -121,7 +123,7 @@ public class CardMessageContent extends MessageContent {
                 type = jsonObject.optInt("t");
                 name = jsonObject.optString("n");
                 displayName = jsonObject.optString("d");
-                portrait = jsonObject.optString("p");
+                portrait = ClientService.urlRedirect(jsonObject.optString("p"));
                 from = jsonObject.optString("f");
             }
         } catch (JSONException e) {

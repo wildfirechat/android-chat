@@ -59,6 +59,7 @@ public class MultiCallOngoingMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         this.callId = payload.content;
         try {
             JSONObject object = new JSONObject(new String(payload.binaryContent));

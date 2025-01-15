@@ -4,35 +4,30 @@
 
 package cn.wildfire.chat.app.main;
 
-import android.os.Parcelable;
-
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.List;
 
-public class HomeFragmentPagerAdapter extends FragmentStatePagerAdapter {
+public class HomeFragmentPagerAdapter extends FragmentStateAdapter {
 
     private List<Fragment> mFragments;
 
-    public HomeFragmentPagerAdapter(FragmentManager fm, List<Fragment> fragments) {
+    public HomeFragmentPagerAdapter(FragmentActivity fm, List<Fragment> fragments) {
         super(fm);
         mFragments = fragments;
     }
 
+    @NonNull
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
         return mFragments.get(position);
     }
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return mFragments != null ? mFragments.size() : 0;
-    }
-
-    @Override
-    public Parcelable saveState() {
-        return null;
     }
 }

@@ -4,6 +4,8 @@
 
 package cn.wildfirechat.message;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_Start;
+
 import android.os.Parcel;
 
 import org.json.JSONArray;
@@ -16,8 +18,6 @@ import java.util.List;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_Start;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -46,6 +46,11 @@ public class CallStartMessageContent extends MessageContent {
      * 8, AcceptByOtherClient
      */
     private int status;
+
+    /**
+     * 0，未知；1，多人版音视频；2，高级版音视频
+     */
+    private int type;
 
     public CallStartMessageContent() {
     }
@@ -112,10 +117,19 @@ public class CallStartMessageContent extends MessageContent {
         this.pin = pin;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.content = callId;
+        payload.pushContent = "音视频通话邀请";
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -136,17 +150,19 @@ public class CallStartMessageContent extends MessageContent {
             objWrite.put("ts", ts);
             objWrite.put("a", audioOnly ? 1 : 0);
             objWrite.put("p", pin);
+            if (this.type > 0) {
+                objWrite.put("ty", this.type);
+            }
 
             payload.binaryContent = objWrite.toString().getBytes();
 
             JSONObject pushDataWrite = new JSONObject();
             pushDataWrite.put("callId", callId);
             pushDataWrite.put("audioOnly", audioOnly);
-            if(targetIds != null && targetIds.size() > 0) {
+            if (targetIds != null && targetIds.size() > 0) {
                 pushDataWrite.put("participants", targetIds);
             }
             payload.pushData = pushDataWrite.toString();
-            payload.pushContent = "音视频通话邀请";
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -156,7 +172,9 @@ public class CallStartMessageContent extends MessageContent {
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         callId = payload.content;
+        pushContent = payload.pushContent;
 
         try {
             if (payload.binaryContent != null) {
@@ -165,6 +183,7 @@ public class CallStartMessageContent extends MessageContent {
                 endTime = jsonObject.optLong("e", 0);
                 status = jsonObject.optInt("s", 0);
                 pin = jsonObject.optString("p");
+                type = jsonObject.optInt("ty", 0);
                 JSONArray array = jsonObject.optJSONArray("ts");
                 targetIds = new ArrayList<>();
                 if (array == null) {
@@ -204,6 +223,7 @@ public class CallStartMessageContent extends MessageContent {
         dest.writeByte(this.audioOnly ? (byte) 1 : (byte) 0);
         dest.writeInt(this.status);
         dest.writeString(this.pin);
+        dest.writeInt(this.type);
     }
 
     protected CallStartMessageContent(Parcel in) {
@@ -216,6 +236,7 @@ public class CallStartMessageContent extends MessageContent {
         this.audioOnly = in.readByte() != 0;
         this.status = in.readInt();
         this.pin = in.readString();
+        this.type = in.readInt();
     }
 
     public static final Creator<CallStartMessageContent> CREATOR = new Creator<CallStartMessageContent>() {

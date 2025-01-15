@@ -5,8 +5,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/usersRecyclerView"
+        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
     <cn.wildfire.chat.kit.widget.QuickIndexBar
         android:id="@+id/quickIndexBar"

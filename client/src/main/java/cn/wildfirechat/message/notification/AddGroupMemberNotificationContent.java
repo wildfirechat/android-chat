@@ -6,7 +6,9 @@ package cn.wildfirechat.message.notification;
 
 import static cn.wildfirechat.message.core.MessageContentType.ContentType_ADD_GROUP_MEMBER;
 
+import android.content.Context;
 import android.os.Parcel;
+import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +17,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfirechat.client.GroupMemberSource;
+import cn.wildfirechat.client.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -36,33 +40,34 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
     @Override
     public String formatNotification(Message message) {
         StringBuilder sb = new StringBuilder();
+        Context context = ChatManager.Instance().getApplicationContext();
+        GroupMemberSource source = GroupMemberSource.getGroupMemberSource(this.extra);
+        if (source.type == GroupMemberSource.Type_QRCode && this.invitees.size() == 1) {
+            // 为了支持国际化，故strings.xml
+            return context.getString(R.string.join_group_by_qrcode, getGroupMemberDisplayName(this.invitees.get(0)), getGroupMemberDisplayName(source.targetId));
+        } else if (source.type == GroupMemberSource.Type_Card && this.invitees.size() == 1) {
+            return context.getString(R.string.join_group_by_card, getGroupMemberDisplayName(this.invitees.get(0)), getGroupMemberDisplayName(source.targetId));
+        }
+
         if (invitees.size() == 1 && invitees.get(0).equals(invitor)) {
-            if (ChatManager.Instance().getUserId().equals(invitor)) {
-                sb.append("你加入了群聊");
-            } else {
-                sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, invitor));
-                sb.append("加入了群聊");
-            }
+            sb.append(getGroupMemberDisplayName(invitor));
+            sb.append(" 加入了群聊");
             return sb.toString();
         }
-        if (fromSelf) {
-            sb.append("您邀请");
-        } else {
-            sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, invitor));
-            sb.append("邀请");
-        }
+        sb.append(getGroupMemberDisplayName(invitor));
+        sb.append(" 邀请");
 
         if (invitees != null) {
             for (int i = 0; i < invitees.size() && i < 4; i++) {
                 sb.append(" ");
-                sb.append(ChatManager.Instance().getGroupMemberDisplayName(groupId, invitees.get(i)));
+                sb.append(getGroupMemberDisplayName(invitees.get(i)));
             }
             if (invitees.size() > 4) {
                 sb.append(" 等");
             }
         }
 
-        sb.append(" 加入了群组");
+        sb.append(" 加入了群聊");
         return sb.toString();
     }
 
@@ -90,6 +95,7 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         try {
             if (payload.binaryContent != null) {
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
@@ -106,6 +112,13 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getGroupMemberDisplayName(String userId) {
+        if (TextUtils.equals(ChatManager.Instance().getUserId(), userId)) {
+            return "你";
+        }
+        return ChatManager.Instance().getGroupMemberDisplayName(this.groupId, userId);
     }
 
 

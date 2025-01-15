@@ -17,7 +17,9 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.conversation.mention.Mention;
 import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
+import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.QuoteInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class Draft {
     private String content;
@@ -54,6 +56,13 @@ public class Draft {
         draft.content = content.toString();
         draft.emojiCount = emojiCount;
         draft.quoteInfo = quoteInfo;
+        if (draft.quoteInfo != null) {
+            Message quotedMessage = draft.quoteInfo.getMessage();
+            if (quotedMessage != null) {
+                quoteInfo.setMessageUid(quotedMessage.messageUid);
+                quoteInfo.setMessage(null);
+            }
+        }
 
         List<Mention> mentions;
         MentionSpan[] mentionSpans = content.getSpans(0, content.length(), MentionSpan.class);
@@ -80,10 +89,16 @@ public class Draft {
         if (TextUtils.isEmpty(json)) {
             return null;
         }
-        Draft draft =  null;
+        Draft draft = null;
         try {
             draft = new Gson().fromJson(json, Draft.class);
-        }catch (Exception e){
+            if (draft.quoteInfo != null) {
+                if (draft.quoteInfo.getMessageUid() > 0) {
+                    Message quotedMessage = ChatManager.Instance().getMessageByUid(draft.quoteInfo.getMessageUid());
+                    draft.quoteInfo.setMessage(quotedMessage);
+                }
+            }
+        } catch (Exception e) {
             Log.e("Draft", e.getMessage());
             // fallback
             draft = new Draft();

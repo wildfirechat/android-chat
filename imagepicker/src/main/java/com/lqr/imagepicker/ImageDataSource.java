@@ -3,6 +3,7 @@ package com.lqr.imagepicker;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
 import androidx.fragment.app.FragmentActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
@@ -20,17 +21,20 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final int LOADER_ALL = 0;         //加载所有图片
     public static final int LOADER_CATEGORY = 1;    //分类加载图片
     private final String[] IMAGE_PROJECTION = {     //查询图片需要的数据列
-            MediaStore.Images.Media.DISPLAY_NAME,   //图片的显示名称  aaa.jpg
-            MediaStore.Images.Media.DATA,           //图片的真实路径  /storage/emulated/0/pp/downloader/wallpaper/aaa.jpg
-            MediaStore.Images.Media.SIZE,           //图片的大小，long型  132492
-            MediaStore.Images.Media.WIDTH,          //图片的宽度，int型  1920
-            MediaStore.Images.Media.HEIGHT,         //图片的高度，int型  1080
-            MediaStore.Images.Media.MIME_TYPE,      //图片的类型     image/jpeg
-            MediaStore.Images.Media.DATE_ADDED};    //图片被添加的时间，long型  1450518608
+        MediaStore.Images.Media.DISPLAY_NAME,   //图片的显示名称  aaa.jpg
+        MediaStore.Images.Media.DATA,           //图片的真实路径  /storage/emulated/0/pp/downloader/wallpaper/aaa.jpg
+        MediaStore.Images.Media.SIZE,           //图片的大小，long型  132492
+        MediaStore.Images.Media.WIDTH,          //图片的宽度，int型  1920
+        MediaStore.Images.Media.HEIGHT,         //图片的高度，int型  1080
+        MediaStore.Images.Media.MIME_TYPE,      //图片的类型     image/jpeg
+        MediaStore.Images.Media.DATE_ADDED};    //图片被添加的时间，long型  1450518608
 
     private FragmentActivity activity;
     private OnImageLoadListener loadedListener;                     //图片加载完成的回调接口
     private ArrayList<ImageFolder> imageFolders = new ArrayList<>();   //所有的图片文件夹
+
+    private int loaderId;
+    private Bundle loaderArgs;
 
     /**
      * @param activity       用于初始化LoaderManager，需要兼容到2.3
@@ -41,15 +45,24 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
         this.activity = activity;
         this.loadedListener = loadedListener;
 
-        LoaderManager loaderManager = activity.getSupportLoaderManager();
+        LoaderManager loaderManager = LoaderManager.getInstance(activity);
         if (path == null) {
+            this.loaderId = LOADER_ALL;
             loaderManager.initLoader(LOADER_ALL, null, this);//加载所有的图片
+            this.loaderArgs = null;
         } else {
             //加载指定目录的图片
             Bundle bundle = new Bundle();
             bundle.putString("path", path);
+            this.loaderArgs = bundle;
+            this.loaderId = LOADER_CATEGORY;
             loaderManager.initLoader(LOADER_CATEGORY, bundle, this);
         }
+    }
+
+    public void refresh() {
+        LoaderManager loaderManager = LoaderManager.getInstance(activity);
+        loaderManager.restartLoader(this.loaderId, this.loaderArgs, this);
     }
 
     @Override

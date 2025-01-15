@@ -56,7 +56,12 @@ public class OKHttpHelper {
         builder.addInterceptor(chain -> {
             Request request = chain.request();
             String host = request.url().host();
-            String authToken = sp.getString(AUTHORIZATION_HEADER + ":" + host, null);
+            int port = request.url().port();
+            String authToken = sp.getString(AUTHORIZATION_HEADER + ":" + host + "-" + port, null);
+            // 兼容保存 authToken 时，未考虑端口
+            if (TextUtils.isEmpty(authToken)) {
+                authToken = sp.getString(AUTHORIZATION_HEADER + ":" + host, null);
+            }
             if (!TextUtils.isEmpty(authToken)) {
                 request = request.newBuilder()
                     .addHeader(AUTHORIZATION_HEADER, authToken)
@@ -65,7 +70,7 @@ public class OKHttpHelper {
             Response response = chain.proceed(request);
             String responseAuthToken = response.header(AUTHORIZATION_HEADER, null);
             if (!TextUtils.isEmpty(responseAuthToken)) {
-                sp.edit().putString(AUTHORIZATION_HEADER + ":" + host, responseAuthToken).apply();
+                sp.edit().putString(AUTHORIZATION_HEADER + ":" + host + "-" + port, responseAuthToken).apply();
             }
             return response;
         });

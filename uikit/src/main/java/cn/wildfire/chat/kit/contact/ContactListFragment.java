@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
@@ -30,14 +31,17 @@ import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
 import cn.wildfire.chat.kit.contact.viewholder.footer.ContactCountViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.ChannelViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.DepartViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.ExternalDomainViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.FriendRequestViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
+import cn.wildfire.chat.kit.mesh.DomainListActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
+import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.UserOnlineState;
@@ -54,19 +58,9 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     private OrganizationServiceViewModel organizationServiceViewModel;
 
-    private boolean isVisibleToUser = false;
     private ContactViewModel contactViewModel;
+    private UserViewModel userViewModel;
 
-
-    @Override
-    public void setMenuVisibility(boolean isvisible) {
-        super.setMenuVisibility(isvisible);
-        this.isVisibleToUser = isvisible;
-        if (isvisible && contactViewModel != null) {
-            contactViewModel.reloadContact();
-            contactViewModel.reloadFriendRequestStatus();
-        }
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,12 +73,13 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         }
         organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
         contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (isVisibleToUser) {
+        if (userListAdapter.getUsers() == null) {
             contactViewModel.reloadContact();
             contactViewModel.reloadFriendRequestStatus();
             contactViewModel.reloadFavContact();
@@ -102,8 +97,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             patchUserOnlineState(userInfos);
             userListAdapter.setUsers(userInfos);
         });
-        contactViewModel.friendRequestUpdatedLiveData().observe(getActivity(), integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
-        contactViewModel.favContactListLiveData().observe(getActivity(), uiUserInfos -> {
+        contactViewModel.friendRequestUpdatedLiveData().observe(this, integer -> userListAdapter.updateHeader(0, new FriendRequestValue(integer)));
+        contactViewModel.favContactListLiveData().observe(this, uiUserInfos -> {
             if (filterUserList != null) {
                 uiUserInfos.removeIf(uiUserInfo -> filterUserList.indexOf(uiUserInfo.getUserInfo().uid) > -1);
             }
@@ -111,6 +106,10 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             userListAdapter.setFavUsers(uiUserInfos);
         });
 
+        userViewModel.userInfoLiveData().observe(this, userInfos -> {
+            contactViewModel.reloadContact();
+            contactViewModel.reloadFavContact();
+        });
     }
 
     private void patchUserOnlineState(List<UIUserInfo> userInfos) {
@@ -137,12 +136,14 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     @Override
     public void initHeaderViewHolders() {
         if (!pick) {
-            addHeaderViewHolder(FriendRequestViewHolder.class, R.layout.contact_header_friend, new FriendRequestValue(contactViewModel.getUnreadFriendRequestCount()));
+            addHeaderViewHolder(FriendRequestViewHolder.class, R.layout.contact_header_friend, new FriendRequestValue(0));
             addHeaderViewHolder(GroupViewHolder.class, R.layout.contact_header_group, new GroupValue());
         }
         if (showChannel) {
             addHeaderViewHolder(ChannelViewHolder.class, R.layout.contact_header_channel, new HeaderValue());
         }
+        addHeaderViewHolder(ExternalDomainViewHolder.class, R.layout.contact_header_external_domain, null);
+
         if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
             organizationServiceViewModel.rootOrganizationLiveData().observe(this, new Observer<List<Organization>>() {
                 @Override
@@ -215,6 +216,13 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             showOrganizationMemberList(((OrganizationViewHolder) holder).getOrganization());
         } else if (holder instanceof DepartViewHolder) {
             showOrganizationMemberList(((DepartViewHolder) holder).getOrganization());
+        } else if (holder instanceof ExternalDomainViewHolder) {
+            if (ChatManager.Instance().isEnableMesh()) {
+                Intent intent = new Intent(getContext(), DomainListActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(getContext(), "未开启服务互通功能", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.LayoutRes;
@@ -25,8 +26,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import me.aurelion.x.ui.view.watermark.WaterMarkManager;
+import me.aurelion.x.ui.view.watermark.WaterMarkView;
+
 public abstract class WfcBaseActivity extends AppCompatActivity {
     Toolbar toolbar;
+
+    protected WaterMarkView mWmv;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +54,19 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
             customToolbarAndStatusBarBackgroundColor(false);
         }
         afterViews();
+
+        if (Config.ENABLE_WATER_MARK) {
+            mWmv = WaterMarkManager.getView(this);
+            ((ViewGroup) findViewById(android.R.id.content)).addView(mWmv);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mWmv != null) {
+            mWmv.onDestroy();
+        }
+        super.onDestroy();
     }
 
     protected void bindViews() {

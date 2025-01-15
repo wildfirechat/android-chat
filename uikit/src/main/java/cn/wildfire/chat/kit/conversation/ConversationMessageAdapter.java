@@ -4,7 +4,7 @@
 
 package cn.wildfire.chat.kit.conversation;
 
-import android.os.Build;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
@@ -42,6 +41,8 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderMan
 import cn.wildfire.chat.kit.conversation.message.viewholder.NormalMessageContentViewHolder;
 import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageContentViewHolder;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
+import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -60,9 +61,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     private OnPortraitLongClickListener onPortraitLongClickListener;
     private OnMessageReceiptClickListener onMessageReceiptClickListener;
 
-    long oldestMessageUid = Long.MAX_VALUE;
-    long oldestMessageId = Long.MAX_VALUE;
-
     public ConversationMessageAdapter(ConversationFragment fragment) {
         super();
         this.fragment = fragment;
@@ -74,6 +72,25 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setMode(int mode) {
         this.mode = mode;
+    }
+
+    public long getOldestMessageUid() {
+        if (this.messages == null || this.messages.isEmpty()) {
+            return Long.MAX_VALUE;
+        }
+        return this.messages.get(0).message.messageUid;
+    }
+
+    public long getOldestMessageId() {
+        if (this.messages == null || this.messages.isEmpty()) {
+            return Long.MAX_VALUE;
+        }
+        long id = this.messages.get(0).message.messageId;
+        // 以下是新消息 那条提示消息的 messageId 是 Long.MAX_VALUE
+        if (id == Long.MAX_VALUE && this.messages.size() > 1) {
+            id = this.messages.get(1).message.messageId;
+        }
+        return id;
     }
 
     public void clearMessageCheckStatus() {
@@ -103,23 +120,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setMessages(List<UiMessage> messages) {
         if (messages != null && !messages.isEmpty()) {
-            oldestMessageUid = messages.get(0).message.messageUid;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                messages = messages.stream().filter(m -> m.message.messageId != 0).collect(Collectors.toList());
-                if (!messages.isEmpty()) {
-                    oldestMessageId = messages.get(0).message.messageId;
-                }
-                this.messages = messages;
-            } else {
-                for (UiMessage uiMsg : messages) {
-                    if (uiMsg.message.messageId != 0) {
-                        this.messages.add(uiMsg);
-                    }
-                }
-                if (!this.messages.isEmpty()) {
-                    oldestMessageId = this.messages.get(0).message.messageId;
-                }
-            }
+            this.messages = messages;
         } else {
             this.messages = new ArrayList<>();
         }
@@ -152,11 +153,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     public void addNewMessage(UiMessage message) {
-        if (message == null) {
+        if (message == null || message.message.messageId == 0) {
             return;
         }
-        if (contains(message)) {
-            updateMessage(message);
+        int index = contains(message);
+        if (index >= 0) {
+            updateMessage(index, message);
             return;
         }
         messages.add(message);
@@ -167,18 +169,15 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (newMessages == null || newMessages.isEmpty()) {
             return;
         }
-        oldestMessageUid = newMessages.get(0).message.messageUid;
         List<UiMessage> filteredMsgs = new ArrayList<>();
         for (UiMessage m : newMessages) {
-            if (m.message.messageId != 0) {
+            if (m.message.messageId != 0 && indexOfMessage(m) == -1) {
                 filteredMsgs.add(m);
             }
         }
         newMessages = filteredMsgs;
         if (newMessages.isEmpty()) {
             return;
-        } else {
-            oldestMessageId = newMessages.get(0).message.messageId;
         }
         this.messages.addAll(0, newMessages);
         notifyItemRangeInserted(0, newMessages.size());
@@ -193,11 +192,18 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         notifyItemRangeInserted(insertStartPosition, newMessages.size());
     }
 
+    public void updateMessage(int index, UiMessage message) {
+        if (index >= 0) {
+            messages.set(index, message);
+            notifyItemChanged(index);
+        }
+    }
+
     public void updateMessage(UiMessage message) {
         int index = -1;
         for (int i = messages.size() - 1; i >= 0; i--) {
             if (message.message.messageUid > 0) {
-                // 聊天室消息收到的消息
+                // 聊天室消息收到的消息，或者消息被远程更新
                 if (messages.get(i).message.messageUid == message.message.messageUid) {
                     messages.set(i, message);
                     index = i;
@@ -275,6 +281,17 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (position >= 0) {
             notifyItemRemoved(position);
         }
+    }
+
+    private int indexOfMessage(UiMessage message) {
+        if (this.messages != null) {
+            for (int i = 0; i < this.messages.size(); i++) {
+                if (this.messages.get(i).message.messageUid == message.message.messageUid) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -613,22 +630,42 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         notifyItemChanged(position);
     }
 
-    private boolean contains(UiMessage message) {
-        for (UiMessage msg : messages) {
+    private int contains(UiMessage message) {
+        int index = -1;
+        for (int i = 0; i < messages.size(); i++) {
+            UiMessage msg = messages.get(i);
             // 消息发送成功之前，messageUid都是0
             if (message.message.messageId > 0) {
                 if (msg.message.messageId == message.message.messageId) {
-                    return true;
+                    index = i;
+                    break;
                 }
             }
             // 聊天室里面，由于消息不存储，messageId都是0，被远程更新的消息，也会走这儿
             if (message.message.messageUid > 0) {
                 if (msg.message.messageUid == message.message.messageUid) {
-                    return true;
+                    index = i;
+                    break;
                 }
             }
+            if (msg.message.messageId == 0
+                && msg.message.content instanceof StreamingTextGeneratingMessageContent
+                && (message.message.content instanceof StreamingTextGeneratingMessageContent || message.message.content instanceof StreamingTextGeneratedMessageContent)) {
+                String streamId;
+                if (message.message.content instanceof StreamingTextGeneratingMessageContent) {
+                    streamId = ((StreamingTextGeneratingMessageContent) message.message.content).getStreamId();
+                } else {
+                    streamId = ((StreamingTextGeneratedMessageContent) message.message.content).getStreamId();
+                }
+
+                if (TextUtils.equals(((StreamingTextGeneratingMessageContent) msg.message.content).getStreamId(), streamId)) {
+                    index = i;
+                    break;
+                }
+
+            }
         }
-        return false;
+        return index;
     }
 
     public interface OnPortraitClickListener {

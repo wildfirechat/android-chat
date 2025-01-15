@@ -99,6 +99,7 @@ public class UserOnlineState implements Parcelable {
 
         String onlineClientDesc = "";
         String lastSeenDesc = "";
+        long lastSeen = 0;
         for (ClientState s : clientStates) {
             //
             // /**
@@ -112,6 +113,9 @@ public class UserOnlineState implements Parcelable {
             //  Platform_LINUX = 7;
             //  Platform_iPad = 8;
             //  Platform_APad = 9;
+            //  Platform_HARMONY = 10;
+            //  Platform_HARMONY_PAD = 11;
+            //  Platform_HARMONY_PC = 12;
             //  */
             // platform;
             //
@@ -121,12 +125,16 @@ public class UserOnlineState implements Parcelable {
             // //最后可见
             // lastSeen;
 
-            String[] ps = new String[]{"", "iOS", "Android", "Windows", "mac", "Web", "小程序", "Linux", "iPad", "Android-Pad"};
-            if (s.getState() == 0) {
-                onlineClientDesc += ps[s.getPlatform()] + " ";
-            } else {
-                // TODO
-                lastSeenDesc += ps[s.getPlatform()] + " ";
+            String[] ps = new String[]{"", "iOS", "Android", "Windows", "Mac", "Web", "小程序", "Linux", "iPad", "Android-Pad", "Harmony", "Harmony-Pad", "Harmony-PC"};
+            if(s.getPlatform() > 0 && s.getPlatform() < ps.length) {
+                if (s.getState() == 0) {
+                    onlineClientDesc += ps[s.getPlatform()] + " ";
+                } else {
+                    if(s.getLastSeen() > lastSeen) {
+                        lastSeen = s.getLastSeen();
+                        lastSeenDesc += ps[s.getPlatform()] + " ";
+                    }
+                }
             }
         }
 

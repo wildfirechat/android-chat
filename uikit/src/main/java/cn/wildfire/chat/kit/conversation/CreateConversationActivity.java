@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +26,11 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.UserInfo;
+import cn.wildfirechat.remote.ChatManager;
 
 public class CreateConversationActivity extends PickConversationTargetActivity {
     private GroupViewModel groupViewModel;
@@ -101,7 +103,8 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
                 userMap.put(info.uid, info);
             }
 
-            groupViewModel.createGroup(this, new ArrayList<UserInfo>(userMap.values()), null, Arrays.asList(0)).observe(this, result -> {
+            String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
+            groupViewModel.createGroup(this, new ArrayList<UserInfo>(userMap.values()), null, Collections.singletonList(0), null, memberExtra).observe(this, result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {
                     Toast.makeText(this, getString(R.string.create_group_success), Toast.LENGTH_SHORT).show();

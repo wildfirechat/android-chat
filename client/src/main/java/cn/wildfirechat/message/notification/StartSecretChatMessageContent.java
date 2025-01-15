@@ -18,7 +18,7 @@ import cn.wildfirechat.remote.ChatManager;
 public class StartSecretChatMessageContent extends NotificationMessageContent {
     @Override
     public void decode(MessagePayload payload) {
-
+        super.decode(payload);
     }
 
     @Override

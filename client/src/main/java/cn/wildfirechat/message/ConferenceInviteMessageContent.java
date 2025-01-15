@@ -4,21 +4,16 @@
 
 package cn.wildfirechat.message;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Invite;
+
 import android.os.Parcel;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import cn.wildfirechat.message.core.ContentTag;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Call_Start;
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Conference_Invite;
 
 /**
  * Created by heavyrain lee on 2017/12/6.
@@ -34,14 +29,18 @@ public class ConferenceInviteMessageContent extends MessageContent {
     private long startTime;
     private boolean audioOnly;
     private boolean audience;
+    // 会议PIN码，加入会议时使用
     private String pin;
+    // 会议密码，查询会议时使用
+    private String password;
     private boolean advanced;
+    private String callExtra;
 
 
     public ConferenceInviteMessageContent() {
     }
 
-    public ConferenceInviteMessageContent(String callId, String host, String title, String desc, long startTime, boolean audioOnly, boolean audience, boolean advanced, String pin) {
+    public ConferenceInviteMessageContent(String callId, String host, String title, String desc, long startTime, boolean audioOnly, boolean audience, boolean advanced, String pin, String password) {
         this.callId = callId;
         this.host = host;
         this.title = title;
@@ -51,6 +50,7 @@ public class ConferenceInviteMessageContent extends MessageContent {
         this.audience = audience;
         this.advanced = advanced;
         this.pin = pin;
+        this.password = password;
     }
 
     public String getCallId() {
@@ -126,10 +126,27 @@ public class ConferenceInviteMessageContent extends MessageContent {
         this.advanced = advanced;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getCallExtra() {
+        return callExtra;
+    }
+
+    public void setCallExtra(String callExtra) {
+        this.callExtra = callExtra;
+    }
+
     @Override
     public MessagePayload encode() {
         MessagePayload payload = super.encode();
         payload.content = callId;
+        payload.pushContent = "会议邀请";
 
         try {
             JSONObject objWrite = new JSONObject();
@@ -149,9 +166,15 @@ public class ConferenceInviteMessageContent extends MessageContent {
             if (desc != null) {
                 objWrite.put("d", desc);
             }
+            if (password != null) {
+                objWrite.put("pwd", password);
+            }
+            if (callExtra != null) {
+                objWrite.put("ce", callExtra);
+            }
 
-            objWrite.put("audience", audience?1:0);
-            objWrite.put("advanced", advanced?1:0);
+            objWrite.put("audience", audience ? 1 : 0);
+            objWrite.put("advanced", advanced ? 1 : 0);
 
             objWrite.put("a", audioOnly ? 1 : 0);
             objWrite.put("p", pin);
@@ -160,13 +183,16 @@ public class ConferenceInviteMessageContent extends MessageContent {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        payload.pushContent = "会议邀请";
         return payload;
     }
 
 
     @Override
     public void decode(MessagePayload payload) {
+        super.decode(payload);
         callId = payload.content;
+        pushContent = payload.pushContent;
 
         try {
             if (payload.binaryContent != null) {
@@ -175,9 +201,11 @@ public class ConferenceInviteMessageContent extends MessageContent {
                 title = jsonObject.optString("t");
                 desc = jsonObject.optString("d");
                 pin = jsonObject.optString("p");
+                password = jsonObject.optString("pwd");
+                callExtra = jsonObject.optString("ce");
                 startTime = jsonObject.optLong("s");
-                audience = jsonObject.optInt("audience")>0;
-                advanced = jsonObject.optInt("advanced")>0;
+                audience = jsonObject.optInt("audience") > 0;
+                advanced = jsonObject.optInt("advanced") > 0;
                 audioOnly = jsonObject.optInt("a") > 0;
             }
         } catch (JSONException e) {
@@ -200,14 +228,16 @@ public class ConferenceInviteMessageContent extends MessageContent {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(callId);
-        dest.writeString(host!=null ? host:"");
-        dest.writeString(title!=null?title:"");
-        dest.writeString(desc!=null?desc:"");
+        dest.writeString(host != null ? host : "");
+        dest.writeString(title != null ? title : "");
+        dest.writeString(desc != null ? desc : "");
         dest.writeLong(startTime);
         dest.writeByte(audioOnly ? (byte) 1 : (byte) 0);
         dest.writeByte(audience ? (byte) 1 : (byte) 0);
         dest.writeByte(advanced ? (byte) 1 : (byte) 0);
-        dest.writeString(pin!=null?pin:"");
+        dest.writeString(pin != null ? pin : "");
+        dest.writeString(password != null ? password : "");
+        dest.writeString(callExtra != null ? callExtra : "");
     }
 
     protected ConferenceInviteMessageContent(Parcel in) {
@@ -222,6 +252,8 @@ public class ConferenceInviteMessageContent extends MessageContent {
         audience = in.readByte() != 0;
         advanced = in.readByte() != 0;
         pin = in.readString();
+        password = in.readString();
+        callExtra = in.readString();
     }
 
     public static final Creator<ConferenceInviteMessageContent> CREATOR = new Creator<ConferenceInviteMessageContent>() {
