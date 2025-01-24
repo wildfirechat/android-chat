@@ -597,7 +597,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 remoteUrl = ((RawMessageContent) msg.content).payload.remoteMediaUrl;
             }
 
-            if (!TextUtils.isEmpty(localPath)) {
+            if (!TextUtils.isEmpty(localPath) && TextUtils.isEmpty(remoteUrl)) {
                 file = new File(localPath);
                 if (!file.exists() && TextUtils.isEmpty(remoteUrl)) {
                     android.util.Log.e(TAG, "mediaMessage invalid, file not exist");
