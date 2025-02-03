@@ -47,6 +47,8 @@ public class WfcNotificationManager {
     }
 
     private static WfcNotificationManager notificationManager;
+    // 小米系统上，允许推送时，默认还是没有铃声的。将 wfcChannelId 设置为接入推送时，在小米后台申请的 channelId，可以保证铃声生效
+    private static final String wfcChannelId = "wfc_notification";
 
     private final List<Long> notificationMessages = new ArrayList<>();
     private int friendRequestNotificationId = 10000;
@@ -66,10 +68,9 @@ public class WfcNotificationManager {
 
     private void showNotification(Context context, String tag, int id, String title, String content, PendingIntent pendingIntent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = "wfc_notification";
         Uri notificationRingUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.receive_msg_notification);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId,
+            NotificationChannel channel = new NotificationChannel(wfcChannelId,
                 "野火IM 消息通知",
                 NotificationManager.IMPORTANCE_HIGH);
 
@@ -93,6 +94,7 @@ public class WfcNotificationManager {
             .setAutoCancel(true)
             .setCategory(CATEGORY_MESSAGE)
             .setSound(notificationRingUri)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setDefaults(DEFAULT_ALL);
         builder.setContentIntent(pendingIntent);
         builder.setContentTitle(title);
