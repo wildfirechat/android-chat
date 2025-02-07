@@ -289,7 +289,7 @@ public class ConversationFragment extends Fragment implements
                 adapter.removeMessage(uiMessage);
                 return;
             }
-            if (uiMessage.message.content instanceof RecallMessageContent) {
+            if (uiMessage.message.content instanceof RecallMessageContent && uiMessage.message.conversation.type != Conversation.ConversationType.ChatRoom) {
                 Message msg = ChatManager.Instance().getMessageByUid(uiMessage.message.messageUid);
                 if (msg == null) {
                     adapter.removeMessage(uiMessage);

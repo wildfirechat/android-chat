@@ -42,7 +42,9 @@ import cn.wildfirechat.message.StickerMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.message.notification.RecallMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ReadEntry;
 import cn.wildfirechat.remote.ChatManager;
@@ -196,11 +198,7 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
         ChatManager.Instance().recallMessage(message, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                Message msg = message;
-                if (message.messageId > 0) {
-                    msg = ChatManager.Instance().getMessage(message.messageId);
-                }
-                postMessageUpdate(new UiMessage(msg));
+                postMessageUpdate(new UiMessage(message));
             }
 
             @Override
