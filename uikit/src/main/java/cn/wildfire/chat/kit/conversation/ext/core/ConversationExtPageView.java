@@ -65,6 +65,15 @@ public class ConversationExtPageView extends LinearLayout implements View.OnClic
             TextView titleTextView = findViewWithTag("title_" + index);
             titleTextView.setText(exts.get(index).title(getContext()));
         }
+
+        if(exts.size() < EXT_PER_PAGE){
+            for (int index = exts.size(); index < EXT_PER_PAGE; index++) {
+                ImageView iconImageView = findViewWithTag("icon_" + index);
+                iconImageView.setVisibility(GONE);
+                TextView titleTextView = findViewWithTag("title_" + index);
+                titleTextView.setVisibility(GONE);
+            }
+        }
     }
 
     public int getPageIndex() {
