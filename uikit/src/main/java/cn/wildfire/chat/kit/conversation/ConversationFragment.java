@@ -234,7 +234,7 @@ public class ConversationFragment extends Fragment implements
                     return;
                 }
 
-                if (isDisplayableMessage(uiMessage) && !(content instanceof RecallMessageContent)) {
+                if (isDisplayableMessage(uiMessage) && (!(content instanceof RecallMessageContent) || uiMessage.message.conversation.type == Conversation.ConversationType.ChatRoom)) {
                     // 消息定位时，如果收到新消息、或者发送消息，需要重新加载消息列表
                     if (shouldContinueLoadNewMessage) {
                         shouldContinueLoadNewMessage = false;
