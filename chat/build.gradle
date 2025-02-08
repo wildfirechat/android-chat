@@ -17,7 +17,7 @@ android {
     ndkVersion '18.1.5063045'
     defaultConfig {
         applicationId "cn.wildfirechat.chat.open"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 33
         versionCode 56
         versionName '1.3.1'
