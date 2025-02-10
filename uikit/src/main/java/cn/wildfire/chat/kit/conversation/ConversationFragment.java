@@ -94,6 +94,7 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
+import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.model.UserOnlineState;
 import cn.wildfirechat.remote.ChatManager;
@@ -174,7 +175,7 @@ public class ConversationFragment extends Fragment implements
     private Observer<List<UiMessage>> messageLiveDataObserver = new Observer<List<UiMessage>>() {
         @Override
         public void onChanged(List<UiMessage> uiMessages) {
-            if(conversation == null){
+            if (conversation == null) {
                 return;
             }
 
@@ -891,7 +892,12 @@ public class ConversationFragment extends Fragment implements
                 }
             }
         } else if (conversation.type == Conversation.ConversationType.SecretChat) {
-            String userId = ChatManager.Instance().getSecretChatInfo(conversation.target).getUserId();
+            SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversation.target);
+            if(secretChatInfo == null){
+                getActivity().finish();
+                return;
+            }
+            String userId = secretChatInfo.getUserId();
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(userId, false);
             conversationTitle = userViewModel.getUserDisplayName(userInfo);
         }
