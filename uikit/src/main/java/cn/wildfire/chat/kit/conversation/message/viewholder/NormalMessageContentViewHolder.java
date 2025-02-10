@@ -318,16 +318,6 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
         Message message = uiMessage.message;
 
-        if (message.conversation.type == Conversation.ConversationType.SecretChat) {
-            if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
-                return true;
-            }
-            if (MessageContextMenuItemTags.TAG_FAV.equals(tag)) {
-                return true;
-            }
-            return false;
-        }
-
         if (MessageContextMenuItemTags.TAG_RECALL.equals(tag)) {
             MessageContent messageContent = message.content;
             if (messageContent instanceof CallStartMessageContent) {
@@ -387,6 +377,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
         // 只有部分消息支持收藏
         if (MessageContextMenuItemTags.TAG_FAV.equals(tag)) {
+            if (message.conversation.type == Conversation.ConversationType.SecretChat) {
+                return true;
+            }
             MessageContent messageContent = message.content;
             if (messageContent instanceof TextMessageContent
                 || messageContent instanceof FileMessageContent
@@ -401,6 +394,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         }
 
         if (MessageContextMenuItemTags.TAG_FORWARD.equals(tag)) {
+            if (message.conversation.type == Conversation.ConversationType.SecretChat) {
+                return true;
+            }
             MessageContent messageContent = message.content;
             if (messageContent instanceof SoundMessageContent
                 || messageContent instanceof CallStartMessageContent) {
