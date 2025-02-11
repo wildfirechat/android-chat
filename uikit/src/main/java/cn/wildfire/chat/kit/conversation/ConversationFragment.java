@@ -60,6 +60,7 @@ import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExtension;
 import cn.wildfire.chat.kit.conversation.mention.MentionSpan;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.conversation.multimsg.ForwardMessageAction;
 import cn.wildfire.chat.kit.conversation.multimsg.MultiMessageAction;
 import cn.wildfire.chat.kit.conversation.multimsg.MultiMessageActionManager;
 import cn.wildfire.chat.kit.conversation.receipt.GroupMessageReceiptActivity;
@@ -1289,6 +1290,9 @@ public class ConversationFragment extends Fragment implements
         int width = getResources().getDisplayMetrics().widthPixels;
 
         for (MultiMessageAction action : actions) {
+            if(conversation.type == Conversation.ConversationType.SecretChat && action instanceof ForwardMessageAction){
+                continue;
+            }
             action.onBind(this, conversation);
             ImageView imageView = new ImageView(getActivity());
             imageView.setImageResource(action.iconResId());
