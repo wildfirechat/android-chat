@@ -385,6 +385,12 @@ public class ConversationFragment extends Fragment implements
             }
         }
     };
+    private Observer<Pair<String, ChatManager.SecretChatState>> secretChatStateObserver = new Observer<Pair<String, ChatManager.SecretChatState>>() {
+        @Override
+        public void onChanged(Pair<String, ChatManager.SecretChatState> stringSecretChatStatePair) {
+            updateSecretChatConversationInputStatus();
+        }
+    };
 
     private Observer<Conversation> clearConversationMessageObserver = new Observer<Conversation>() {
         @Override
@@ -663,6 +669,9 @@ public class ConversationFragment extends Fragment implements
             showGroupMemberName = !"1".equals(userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, groupInfo.target));
 
             updateGroupConversationInputStatus();
+        } else if (conversation.type == Conversation.ConversationType.SecretChat) {
+            updateSecretChatConversationInputStatus();
+            conversationViewModel.secretConversationStateLiveData().observeForever(secretChatStateObserver);
         }
         userViewModel.getUserInfo(userViewModel.getUserId(), true);
 
@@ -767,6 +776,15 @@ public class ConversationFragment extends Fragment implements
             inputPanel.disableInput("群组已被解散");
         } else {
             inputPanel.enableInput();
+        }
+    }
+
+    private void updateSecretChatConversationInputStatus() {
+        SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(this.conversation.target);
+        if (secretChatInfo != null && secretChatInfo.getState() == ChatManager.SecretChatState.Established) {
+            inputPanel.enableInput();
+        } else {
+            inputPanel.disableInput("密聊发起中，或已取消");
         }
     }
 
@@ -893,13 +911,13 @@ public class ConversationFragment extends Fragment implements
             }
         } else if (conversation.type == Conversation.ConversationType.SecretChat) {
             SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversation.target);
-            if(secretChatInfo == null){
+            if (secretChatInfo == null) {
                 getActivity().finish();
                 return;
             }
             String userId = secretChatInfo.getUserId();
             UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(userId, false);
-            conversationTitle = userViewModel.getUserDisplayName(userInfo);
+            conversationTitle = userViewModel.getUserDisplayName(userInfo) + "(密聊)";
         }
 
         setActivityTitle(conversationTitle);
@@ -1048,8 +1066,11 @@ public class ConversationFragment extends Fragment implements
         messageViewModel.messageLiveData().removeObserver(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().removeObserver(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().removeObserver(messageRemovedLiveDataObserver);
+        messageViewModel.messageBurnedLiveData().removeObserver(messageBurnedLiveDataObserver);
+        messageViewModel.messageStartBurnLiveData().removeObserver(messageStartBurnLiveDataObserver);
         userViewModel.userInfoLiveData().removeObserver(userInfoUpdateLiveDataObserver);
         conversationViewModel.clearConversationMessageLiveData().removeObserver(clearConversationMessageObserver);
+        conversationViewModel.secretConversationStateLiveData().removeObserver(secretChatStateObserver);
         settingViewModel.settingUpdatedLiveData().removeObserver(settingUpdateLiveDataObserver);
 
         unInitGroupObservers();
