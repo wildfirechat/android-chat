@@ -178,8 +178,10 @@ public class MainActivity extends WfcBaseActivity {
             } else if (status == ConnectionStatus.ConnectionStatusTimeInconsistent) {
                 Toast.makeText(MainActivity.this, "服务器和客户端时间相差太大！！！", Toast.LENGTH_LONG).show();
             } else if (status == ConnectionStatus.ConnectionStatusConnected) {
-                boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
-                secretChatMenuItem.setEnabled(isEnableSecretChat);
+                if (secretChatMenuItem != null) {
+                    boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
+                    secretChatMenuItem.setEnabled(isEnableSecretChat);
+                }
             }
         });
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
