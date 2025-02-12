@@ -1159,6 +1159,10 @@ public class ConversationFragment extends Fragment implements
         if (this.typingMessageMap == null || this.conversation.type == Conversation.ConversationType.Channel || this.conversation.type == Conversation.ConversationType.ChatRoom) {
             return;
         }
+        Activity activity = getActivity();
+        if (activity == null || activity.isFinishing()){
+            return;
+        }
         this.checkUserTyping();
         String typingDesc = "";
         if (typingMessageMap.size() == 0) {
