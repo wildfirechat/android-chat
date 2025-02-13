@@ -24,7 +24,6 @@ import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
 import cn.wildfire.chat.kit.contact.model.GroupValue;
-import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.OrganizationValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
@@ -42,6 +41,7 @@ import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.viewmodel.UserOnlineStateViewModel;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.UserOnlineState;
@@ -59,6 +59,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     private OrganizationServiceViewModel organizationServiceViewModel;
 
     private ContactViewModel contactViewModel;
+    private UserOnlineStateViewModel userOnlineStateViewModel;
     private UserViewModel userViewModel;
 
 
@@ -74,6 +75,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
         contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userOnlineStateViewModel = new ViewModelProvider(this).get(UserOnlineStateViewModel.class);
     }
 
     @Override
@@ -110,6 +112,15 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             contactViewModel.reloadContact();
             contactViewModel.reloadFavContact();
         });
+
+        userOnlineStateViewModel.getUserOnlineStateLiveData().observe(this, new Observer<Map<String, UserOnlineState>>() {
+            @Override
+            public void onChanged(Map<String, UserOnlineState> stringUserOnlineStateMap) {
+                patchUserOnlineState(userListAdapter.getUsers());
+                userListAdapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     private void patchUserOnlineState(List<UIUserInfo> userInfos) {

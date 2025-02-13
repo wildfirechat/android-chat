@@ -9,6 +9,7 @@ import android.os.Parcelable;
 
 public class ClientState implements Parcelable {
     private int platform;
+    //设备的在线状态，0是在线，1是有session但不在线，其它不在线。
     private int state;
     private long lastSeen;
 

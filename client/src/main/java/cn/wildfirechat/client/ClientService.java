@@ -54,7 +54,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -597,7 +596,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 remoteUrl = ((RawMessageContent) msg.content).payload.remoteMediaUrl;
             }
 
-            if (!TextUtils.isEmpty(localPath)) {
+            if (!TextUtils.isEmpty(localPath) && TextUtils.isEmpty(remoteUrl)) {
                 file = new File(localPath);
                 if (!file.exists() && TextUtils.isEmpty(remoteUrl)) {
                     android.util.Log.e(TAG, "mediaMessage invalid, file not exist");
@@ -2078,8 +2077,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 return;
             }
             android.util.Log.d(TAG, "uploadMedia " + fileName + " " + data.length + " " + mediaType);
-            if (isSupportBigFilesUpload()) {
-                android.util.Log.d(TAG, "uploadMedia00");
+            if (ProtoLogic.forcePresignedUrlUpload() || isSupportBigFilesUpload()) {
+                android.util.Log.d(TAG, "uploadMedia");
                 String extension = MimeTypeMap.getFileExtensionFromUrl(fileName);
                 String contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
                 uploadBigFile(-1, fileName, null, data, mediaType, contentType, new UploadMediaCallback() {
@@ -2163,7 +2162,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
 
-                if (tcpShortLink || (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload())) {
+                if (tcpShortLink || ProtoLogic.forcePresignedUrlUpload() || (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload())) {
                     uploadBigFile(-1, file.getName(), mediaPath, null, mediaType, null, new UploadMediaCallback() {
                         @Override
                         public void onSuccess(String result) {

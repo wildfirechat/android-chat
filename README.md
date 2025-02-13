@@ -29,12 +29,13 @@
 ## 关于包名/applicationId
 1. 开发者开发具体产品时，请勿直接使用本 demo 的包名/applicationId，我们会不定期修改包名/applicationId
 2. 禁止将本产品用于非法目的，一经发现，我们将停止任何形式的技术支持
+3. 修改包名时，会导致编译失败，需同步修改`google-services.json`和`agconnect-services.json`文件中的`package_name`字段。对接推送时，需要重新生成对应的`google-services.json`和`agconnect-services.json`文件。
 
 ## 开发调试说明
 1. JDK: 17
 2. 我们采用最新稳定版Android Studio及对应的gradle进行开发，对于旧版本的IDE，我们没有测试，编译之类问题，需自行解决。
 
-##  关于 debug 版 apk 可能不能进行音视频通话的特殊说明
+##  关于 minSdkVersion 设置为 21 时， debug 版 apk 可能不能进行音视频通话的特殊说明
 1. 关闭混淆时，命令行下，通过`./gradlew clean aDebug` 或 Android Studio 里面，通过 `Build App Bundle(s)/APK(s) -> Build APK(s)` 生成的 debug 版本 apk，不支持音视频通话，具体原因请参考[useFullClasspathForDexingTransform](https://issuetracker.google.com/issues/333107832)
 2. 开启混淆，debug 版 apk 一切正常，将`chat/build.gradle#buildTypes#debug#minifyEnabled`置为 true，即为 debug 版也开启混淆
 3. 命令行下，通过`./gradlew clean aR`或 Android Studio 里面，通过`Generate Signed App Bundle/APK...`可生成 release 版 apk，release 版 apk，一切正常

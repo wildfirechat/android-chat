@@ -114,6 +114,7 @@ public class MainActivity extends WfcBaseActivity {
     private ContactViewModel contactViewModel;
     private ConversationListViewModel conversationListViewModel;
     private long lastSelectConversatonListItemTimestamp = 0;
+    private MenuItem secretChatMenuItem;
 
     protected void bindViews() {
         super.bindViews();
@@ -176,6 +177,11 @@ public class MainActivity extends WfcBaseActivity {
                 Toast.makeText(MainActivity.this, "专业版IM服务没有授权或者授权过期！！！", Toast.LENGTH_LONG).show();
             } else if (status == ConnectionStatus.ConnectionStatusTimeInconsistent) {
                 Toast.makeText(MainActivity.this, "服务器和客户端时间相差太大！！！", Toast.LENGTH_LONG).show();
+            } else if (status == ConnectionStatus.ConnectionStatusConnected) {
+                if (secretChatMenuItem != null) {
+                    boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
+                    secretChatMenuItem.setEnabled(isEnableSecretChat);
+                }
             }
         });
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
@@ -227,8 +233,8 @@ public class MainActivity extends WfcBaseActivity {
         super.afterMenus(menu);
         boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
         if (!isEnableSecretChat) {
-            MenuItem menuItem = menu.findItem(R.id.secretChat);
-            menuItem.setEnabled(false);
+            secretChatMenuItem = menu.findItem(R.id.secretChat);
+            secretChatMenuItem.setEnabled(false);
         }
     }
 
