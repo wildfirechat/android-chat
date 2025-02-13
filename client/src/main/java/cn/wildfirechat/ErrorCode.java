@@ -15,7 +15,7 @@ public class ErrorCode {
 
     //0~255 server error
     public static final int SUCCESS = 0;  // //"success");
-    public static final int SECRECT_KEY_MISMATCH = 1;  //"secrect key mismatch");
+    public static final int SECRECT_KEY_MISMATCH = 1;  //"secret key mismatch");
     public static final int INVALID_DATA = 2;  //"invalid data");
     public static final int NODE_NOT_EXIST = 3;  //"node not exist");
     public static final int SERVER_ERROR = 4;  //"server error");

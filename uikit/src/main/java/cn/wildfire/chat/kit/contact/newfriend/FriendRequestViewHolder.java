@@ -59,12 +59,12 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
     }
 
     void accept() {
-        contactViewModel.acceptFriendRequest(friendRequest.target).observe(fragment, aBoolean -> {
-            if (aBoolean) {
+        contactViewModel.acceptFriendRequest(friendRequest.target).observe(fragment, errorCode -> {
+            if (errorCode == 0) {
                 this.friendRequest.status = 1;
                 acceptButton.setVisibility(View.GONE);
             } else {
-                Toast.makeText(fragment.getActivity(), "操作失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getActivity(), "接受好友请求失败, err = " + errorCode, Toast.LENGTH_SHORT).show();
             }
         });
     }
