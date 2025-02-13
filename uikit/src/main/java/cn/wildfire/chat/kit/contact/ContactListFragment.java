@@ -24,6 +24,7 @@ import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
 import cn.wildfire.chat.kit.contact.model.GroupValue;
+import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.OrganizationValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
