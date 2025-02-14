@@ -31,6 +31,7 @@ import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -43,10 +44,16 @@ public class UserCardExt extends ConversationExt {
     @ExtContextMenuItem
     public void pickContact(View containerView, Conversation conversation) {
         Intent intent = new Intent(fragment.getActivity(), ContactListActivity.class);
+        ArrayList<String> filterUserList = new ArrayList<>();
         if (conversation.type == Conversation.ConversationType.Single) {
-            ArrayList<String> filterUserList = new ArrayList<>();
             filterUserList.add(conversation.target);
             intent.putExtra(ContactListActivity.FILTER_USER_LIST, filterUserList);
+        } else if (conversation.type == Conversation.ConversationType.SecretChat) {
+            SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversation.target);
+            if (secretChatInfo != null) {
+                filterUserList.add(secretChatInfo.getUserId());
+                intent.putExtra(ContactListActivity.FILTER_USER_LIST, filterUserList);
+            }
         }
         startActivityForResult(intent, 100);
     }
