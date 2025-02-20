@@ -85,7 +85,7 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment imp
         }
 
         new MaterialDialog.Builder(getActivity())
-            .items(Collections.singleton(groupMuted ? "移除白名单" : "取消禁言"))
+            .items(Collections.singleton(groupMuted ? getString(R.string.remove_whitelist) : getString(R.string.unmute_member)))
             .itemsCallback((dialog, itemView, position, text) -> {
                 if (groupMuted) {
                     groupViewModel.allowGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
@@ -101,15 +101,15 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment imp
     @Override
     public void onUserLongClick(UIUserInfo userInfo) {
         new MaterialDialog.Builder(getActivity())
-            .content(!groupMuted ? "取消禁言" : "取消允许发言")
-            .positiveText("确定")
-            .negativeText("取消")
+            .content(!groupMuted ? getString(R.string.unmute_member) : getString(R.string.remove_whitelist))
+            .positiveText(getString(R.string.confirm))
+            .negativeText(getString(R.string.cancel))
             .onPositive((dialog, which) -> {
                 if (!groupMuted) {
                     groupViewModel.muteGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0))
                         .observe(this, booleanOperateResult -> {
                             if (!booleanOperateResult.isSuccess()) {
-                                Toast.makeText(getActivity(), "操作失败", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string.operation_failed), Toast.LENGTH_SHORT).show();
                             } else {
                                 this.loadAndShowGroupMembers(true);
                             }
@@ -118,7 +118,7 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment imp
                     groupViewModel.allowGroupMember(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0))
                         .observe(this, booleanOperateResult -> {
                             if (!booleanOperateResult.isSuccess()) {
-                                Toast.makeText(getActivity(), "操作失败", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string.operation_failed), Toast.LENGTH_SHORT).show();
                             } else {
                                 this.loadAndShowGroupMembers(true);
                             }

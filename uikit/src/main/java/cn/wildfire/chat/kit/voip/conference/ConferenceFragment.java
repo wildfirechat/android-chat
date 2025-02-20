@@ -275,7 +275,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             return;
         }
         if (session.isAudioOnly()) {
-            Toast.makeText(getActivity(), "音频会议不支持开启摄像头", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.conf_audio_no_camera), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -310,8 +310,8 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         if (session != null) {
             if (ChatManager.Instance().getUserId().equals(conferenceInfo.getOwner())) {
                 new MaterialDialog.Builder(getContext())
-                    .content("如果你想让与会人员继续开会，请选择退出会议")
-                    .negativeText("退出会议")
+                    .content(R.string.conf_leave_allow_continue_prompt)
+                    .negativeText(R.string.conf_leave_conference)
                     .onNegative((dialogInterface, i) -> {
 
                         conferenceManager.addHistory(conferenceInfo, System.currentTimeMillis() - session.getStartTime());
@@ -319,7 +319,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                         if (session.getState() != AVEngineKit.CallState.Idle)
                             session.leaveConference(false);
                     })
-                    .positiveText("结束会议")
+                    .positiveText(R.string.conf_end_conference)
                     .onPositive((dialogInterface, i) -> {
                         conferenceManager.addHistory(conferenceInfo, System.currentTimeMillis() - session.getStartTime());
                         conferenceManager.destroyConference(session.getCallId(), null);
@@ -344,11 +344,11 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
         if (session != null) {
             if (session.isAudioOnly()) {
-                Toast.makeText(voipBaseActivity, "音频会议不支持屏幕共享", Toast.LENGTH_SHORT).show();
+                Toast.makeText(voipBaseActivity, getString(R.string.conf_audio_no_screen_share), Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!session.isScreenSharing()) {
-                Toast.makeText(getContext(), "开启屏幕共享时，将关闭摄像头，并打开麦克风", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), getString(R.string.conf_screen_share_hint), Toast.LENGTH_LONG).show();
                 session.muteAudio(false);
                 session.muteVideo(true);
 
@@ -384,7 +384,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             }
             ClipData clipData = ClipData.newPlainText("conferenceId", callSession.getCallId());
             clipboardManager.setPrimaryClip(clipData);
-            Toast.makeText(getContext(), "已复制到剪贴板", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
 
@@ -395,7 +395,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             }
             ClipData clipData = ClipData.newPlainText("conferenceLink", conferenceLink);
             clipboardManager.setPrimaryClip(clipData);
-            Toast.makeText(getContext(), "已复制到剪贴板", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
 
@@ -415,7 +415,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         ImageView handUpImageView = view.findViewById(R.id.handUpImageView);
         TextView handUpTextView = view.findViewById(R.id.handUpTextView);
         handUpImageView.setSelected(conferenceManager.isHandUp());
-        handUpTextView.setText(conferenceManager.isHandUp() ? "放下" : "举手");
+        handUpTextView.setText(conferenceManager.isHandUp() ? getString(R.string.conf_hand_down) : getString(R.string.conf_hand_up));
 
         view.findViewById(R.id.inviteLinearLayout).setOnClickListener(v -> {
             ConferenceActivity activity = (ConferenceActivity) getContext();
@@ -443,7 +443,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             if (ChatManager.Instance().getUserId().equals(conferenceInfo.getOwner())) {
                 conferenceManager.requestRecord(!conferenceInfo.isRecording());
             } else {
-                Toast.makeText(getActivity(), conferenceInfo.isRecording() ? "请联系主持人关闭录制" : "请联系主持人开启录制", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), conferenceInfo.isRecording() ? getString(R.string.conf_recording_stop_owner) : getString(R.string.conf_recording_start_owner), Toast.LENGTH_SHORT).show();
             }
             dialog.dismiss();
         });
@@ -496,15 +496,15 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         if (audio) {
             if (ConferenceManager.getManager().isApplyingUnmuteAudio()) {
                 new MaterialDialog.Builder(getContext())
-                    .content("主持人不允许解除静音，您已经申请解除静音，正在等待主持人操作")
-                    .negativeText("取消申请")
+                    .content(R.string.conf_unmute_request_in_progress_audio)
+                    .negativeText(R.string.conf_cancel_request)
                     .onNegative((dialog, which) -> {
-                        Toast.makeText(getContext(), "已取消申请", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.conf_request_cancelled, Toast.LENGTH_SHORT).show();
                         ConferenceManager.getManager().applyUnmute(true, true);
                     })
-                    .positiveText("继续申请")
+                    .positiveText(R.string.conf_continue_request)
                     .onPositive((dialog, which) -> {
-                        Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.conf_request_resent, Toast.LENGTH_SHORT).show();
                         ConferenceManager.getManager().applyUnmute(true, false);
                     })
                     .cancelable(false)
@@ -512,14 +512,12 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                     .show();
             } else {
                 new MaterialDialog.Builder(getContext())
-                    .content("主持人不允许解除静音，您可以向主持人申请解除静音")
-                    .negativeText("取消")
-                    .onNegative((dialog, which) -> {
-
-                    })
-                    .positiveText("申请解除静音")
+                    .content(R.string.conf_unmute_not_allowed_audio)
+                    .negativeText(R.string.cancel)
+                    .onNegative((dialog, which) -> {})
+                    .positiveText(R.string.conf_request_unmute_audio)
                     .onPositive((dialog, which) -> {
-                        Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.conf_request_resent, Toast.LENGTH_SHORT).show();
                         ConferenceManager.getManager().applyUnmute(true, false);
                     })
                     .cancelable(false)
@@ -529,15 +527,15 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
         } else {
             if (ConferenceManager.getManager().isApplyingUnmuteAudio()) {
                 new MaterialDialog.Builder(getContext())
-                    .content("主持人不允许打开摄像头，您已经申请解除静音，正在等待主持人操作")
-                    .negativeText("取消申请")
+                    .content(R.string.conf_unmute_request_in_progress_video)
+                    .negativeText(R.string.conf_cancel_request)
                     .onNegative((dialog, which) -> {
-                        Toast.makeText(getContext(), "已取消申请", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.conf_request_cancelled, Toast.LENGTH_SHORT).show();
                         ConferenceManager.getManager().applyUnmute(false, true);
                     })
-                    .positiveText("继续申请")
+                    .positiveText(R.string.conf_continue_request)
                     .onPositive((dialog, which) -> {
-                        Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.conf_request_resent, Toast.LENGTH_SHORT).show();
                         ConferenceManager.getManager().applyUnmute(false, false);
                     })
                     .cancelable(false)
@@ -545,14 +543,12 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                     .show();
             } else {
                 new MaterialDialog.Builder(getContext())
-                    .content("主持人不允许打开摄像头，您可以向主持人申请解除静音")
-                    .negativeText("取消")
-                    .onNegative((dialog, which) -> {
-
-                    })
-                    .positiveText("申请打开摄像头")
+                    .content(R.string.conf_unmute_not_allowed_video)
+                    .negativeText(R.string.cancel)
+                    .onNegative((dialog, which) -> {})
+                    .positiveText(R.string.conf_request_unmute_video)
                     .onPositive((dialog, which) -> {
-                        Toast.makeText(getContext(), "已重新发送申请，请耐心等待主持人操作", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.conf_request_resent, Toast.LENGTH_SHORT).show();
                         ConferenceManager.getManager().applyUnmute(false, false);
                     })
                     .cancelable(false)

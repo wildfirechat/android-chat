@@ -32,7 +32,7 @@
             android:layout_toRightOf="@id/hostPortraitImageView"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="会议主题"
+            android:text="@string/conference_topic_placeholder"
             android:textSize="18sp" />
 
         <TextView
@@ -45,7 +45,7 @@
             android:layout_toRightOf="@id/hostPortraitImageView"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="会议描述"
+            android:text="@string/conference_desc_placeholder"
             android:textSize="12sp" />
 
         <View
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dividerLine"
             android:maxLines="1"
-            android:text="会议邀请"
+            android:text="@string/conference_invitation"
             android:textSize="12sp" />
 
     </RelativeLayout>

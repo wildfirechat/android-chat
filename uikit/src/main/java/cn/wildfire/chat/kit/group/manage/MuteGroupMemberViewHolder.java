@@ -26,6 +26,6 @@ public class MuteGroupMemberViewHolder extends HeaderViewHolder<HeaderValue> {
     @Override
     public void onBind(HeaderValue headerValue) {
         GroupInfo groupInfo = (GroupInfo) headerValue.getValue();
-        titleTextView.setText(headerValue.isBoolValue() ? "发言白名单" : "群成员禁言");
+        titleTextView.setText(headerValue.isBoolValue() ? fragment.getString(R.string.whitelist) : fragment.getString(R.string.group_member_mute));
     }
 }

@@ -13,35 +13,35 @@
         android:background="@drawable/selector_option_item"
         app:desc="野火线上"
         app:show_divider="true"
-        app:title="名称" />
+        app:title="@string/organization_name" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/emailOptionItemView"
         style="@style/OptionItem"
         android:background="@drawable/selector_option_item"
         app:show_divider="true"
-        app:title="邮箱" />
+        app:title="@string/email" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/telOptionItemView"
         style="@style/OptionItem"
         android:background="@drawable/selector_option_item"
         app:show_divider="true"
-        app:title="电话" />
+        app:title="@string/phone" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/addrOptionItemView"
         style="@style/OptionItem"
         android:background="@drawable/selector_option_item"
         app:show_divider="true"
-        app:title="地址" />
+        app:title="@string/address" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/descOptionItemView"
         style="@style/OptionItem"
         android:background="@drawable/selector_option_item"
         app:show_divider="true"
-        app:title="描述" />
+        app:title="@string/description" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -58,7 +58,7 @@
             android:layout_height="50dp"
             android:background="@drawable/selector_option_item"
             android:gravity="center"
-            android:text="在本单位中查找用户"
+            android:text="@string/search_user_in_organization"
             android:textColor="@color/black1"
             android:textSize="16sp" />
 

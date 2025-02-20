@@ -91,10 +91,10 @@ public class SetAliasActivity extends WfcBaseActivity {
             @Override
             public void onChanged(OperateResult<Integer> integerOperateResult) {
                 if (integerOperateResult.isSuccess()) {
-                    Toast.makeText(SetAliasActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SetAliasActivity.this, getString(R.string.modify_success), Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(SetAliasActivity.this, "修改别名错误：" + integerOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SetAliasActivity.this, getString(R.string.modify_alias_error, integerOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                 }
             }
         });

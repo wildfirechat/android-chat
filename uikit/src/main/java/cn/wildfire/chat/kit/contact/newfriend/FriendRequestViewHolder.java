@@ -64,7 +64,9 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
                 this.friendRequest.status = 1;
                 acceptButton.setVisibility(View.GONE);
             } else {
-                Toast.makeText(fragment.getActivity(), "接受好友请求失败, err = " + errorCode, Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getActivity(),
+                    fragment.getString(R.string.contact_request_accept_error, errorCode),
+                    Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -76,7 +78,8 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
         if (userInfo != null) {
             nameTextView.setText(userViewModel.getUserDisplayNameEx(userInfo));
         } else {
-            nameTextView.setText("<" + friendRequest.target + ">");
+            nameTextView.setText(fragment.getString(R.string.contact_unknown,
+                "<" + friendRequest.target + ">"));
         }
         if (!TextUtils.isEmpty(friendRequest.reason)) {
             introTextView.setText(friendRequest.reason);
@@ -90,11 +93,11 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
                 break;
             case 1:
                 acceptButton.setVisibility(View.GONE);
-                acceptStatusTextView.setText("已添加");
+                acceptStatusTextView.setText(R.string.contact_request_accepted);
                 break;
             default:
                 acceptButton.setVisibility(View.GONE);
-                acceptStatusTextView.setText("已拒绝");
+                acceptStatusTextView.setText(R.string.contact_request_rejected);
                 break;
         }
 

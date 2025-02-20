@@ -149,7 +149,7 @@ public class UserInfoActivity extends WfcBaseActivity {
                         Intent intent = new Intent(getPackageName() + ".main");
                         startActivity(intent);
                     } else {
-                        Toast.makeText(this, "delete friend error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.delete_friend_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                     }
                 }
             );
@@ -163,10 +163,10 @@ public class UserInfoActivity extends WfcBaseActivity {
             contactViewModel.setBlacklist(userInfo.uid, true).observe(
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
-                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.set_success), Toast.LENGTH_SHORT).show();
                         invalidateOptionsMenu();
                     } else {
-                        Toast.makeText(this, "add blacklist error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.blacklist_add_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                     }
                 }
             );
@@ -175,10 +175,10 @@ public class UserInfoActivity extends WfcBaseActivity {
             contactViewModel.setBlacklist(userInfo.uid, false).observe(
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
-                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.set_success), Toast.LENGTH_SHORT).show();
                         invalidateOptionsMenu();
                     } else {
-                        Toast.makeText(this, "remove blacklist error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.blacklist_remove_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                     }
                 }
             );
@@ -192,10 +192,10 @@ public class UserInfoActivity extends WfcBaseActivity {
             contactViewModel.setFav(userInfo.uid, true).observe(
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
-                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.set_success), Toast.LENGTH_SHORT).show();
                         invalidateOptionsMenu();
                     } else {
-                        Toast.makeText(this, "set fav error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.fav_set_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                     }
                 }
             );
@@ -205,10 +205,10 @@ public class UserInfoActivity extends WfcBaseActivity {
             contactViewModel.setFav(userInfo.uid, false).observe(
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
-                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.set_success), Toast.LENGTH_SHORT).show();
                         invalidateOptionsMenu();
                     } else {
-                        Toast.makeText(this, "remove fav error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.fav_remove_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                     }
                 }
             );

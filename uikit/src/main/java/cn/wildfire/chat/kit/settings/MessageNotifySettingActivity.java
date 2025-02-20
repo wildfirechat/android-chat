@@ -54,7 +54,7 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
 
                 @Override
                 public void onFail(int errorCode) {
-                    Toast.makeText(MessageNotifySettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+                    Toast.makeText(MessageNotifySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -69,7 +69,7 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
 
                 @Override
                 public void onFail(int errorCode) {
-                    Toast.makeText(MessageNotifySettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+                    Toast.makeText(MessageNotifySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -83,7 +83,7 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
 
                 @Override
                 public void onFail(int errorCode) {
-                    Toast.makeText(MessageNotifySettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+                    Toast.makeText(MessageNotifySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -97,7 +97,7 @@ public class MessageNotifySettingActivity extends WfcBaseActivity {
 
             @Override
             public void onFail(int errorCode) {
-                Toast.makeText(MessageNotifySettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+                Toast.makeText(MessageNotifySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
             }
         }));
 

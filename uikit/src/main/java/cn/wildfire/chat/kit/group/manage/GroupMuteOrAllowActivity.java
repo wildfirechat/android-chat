@@ -68,7 +68,7 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
             groupViewModel.muteAll(groupInfo.target, isChecked, null, Collections.singletonList(0)).observe(this, booleanOperateResult -> {
                 if (!booleanOperateResult.isSuccess()) {
                     switchButton.setChecked(!isChecked);
-                    Toast.makeText(this, "禁言失败 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.mute_operation_failed, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                 } else {
                     initGroupMemberMuteListFragment(true);
                 }

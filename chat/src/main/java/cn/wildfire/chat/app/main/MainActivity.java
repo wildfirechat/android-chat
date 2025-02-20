@@ -345,7 +345,7 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private void initView() {
-        setTitle(getString(R.string.app_name));
+        setTitle(getString(R.string.app_title_chat));
 
         startingTextView.setVisibility(View.GONE);
         contentLinearLayout.setVisibility(View.VISIBLE);
@@ -385,35 +385,35 @@ public class MainActivity extends WfcBaseActivity {
             switch (item.getItemId()) {
                 case R.id.conversation_list:
                     setCurrentViewPagerItem(0, false);
-                    setTitle("野火");
+                    setTitle(R.string.app_title_chat);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.contact:
                     setCurrentViewPagerItem(1, false);
-                    setTitle("通讯录");
+                    setTitle(R.string.app_title_contact);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.workspace:
                     setCurrentViewPagerItem(2, false);
-                    setTitle("工作台");
+                    setTitle(R.string.app_title_workspace);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.discovery:
                     setCurrentViewPagerItem(showWorkSpace ? 3 : 2, false);
-                    setTitle("发现");
+                    setTitle(R.string.app_title_discover);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.me:
                     setCurrentViewPagerItem(showWorkSpace ? 4 : 3, false);
-                    setTitle("我的");
+                    setTitle(R.string.app_title_me);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.white, false);
                     }

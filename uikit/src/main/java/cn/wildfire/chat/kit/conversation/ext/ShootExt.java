@@ -51,7 +51,7 @@ public class ShootExt extends ConversationExt {
         if (resultCode == RESULT_OK) {
             String path = data.getStringExtra("path");
             if (TextUtils.isEmpty(path)) {
-                Toast.makeText(activity, "拍照错误, 请向我们反馈", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, R.string.shoot_error_feedback, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (data.getBooleanExtra("take_photo", true)) {
@@ -80,7 +80,7 @@ public class ShootExt extends ConversationExt {
 
     @Override
     public String title(Context context) {
-        return "拍摄";
+        return context.getString(R.string.shoot_ext_title);
     }
 
     @Override

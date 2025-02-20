@@ -31,7 +31,7 @@
             android:layout_marginLeft="@dimen/item_margin_left_and_right"
             android:layout_weight="1"
             android:singleLine="true"
-            android:text="添加管理员"
+            android:text="@string/add_manager"
             android:textColor="@color/gray0"
             android:textSize="16sp" />
 

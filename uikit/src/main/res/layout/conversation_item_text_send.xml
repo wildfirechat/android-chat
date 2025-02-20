@@ -21,7 +21,7 @@
         android:paddingTop="12dp"
         android:paddingRight="16dp"
         android:paddingBottom="12dp"
-        android:text="text "
+        android:text=""
         android:textColorLink="#3655bf"
         android:textSize="16sp"
         tools:targetApi="q" />
@@ -40,6 +40,6 @@
         android:paddingTop="2dp"
         android:paddingRight="5dp"
         android:paddingBottom="2dp"
-        android:text="refff"
+        android:text=""
         android:visibility="visible" />
 </LinearLayout>

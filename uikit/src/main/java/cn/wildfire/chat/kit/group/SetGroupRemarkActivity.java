@@ -80,7 +80,7 @@ public class SetGroupRemarkActivity extends WfcBaseActivity {
         }
         groupInfo.remark = remark;
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("请稍后...")
+            .content(R.string.processing)
             .progress(true, 100)
             .cancelable(false)
             .build();
@@ -91,10 +91,10 @@ public class SetGroupRemarkActivity extends WfcBaseActivity {
             public void onChanged(@Nullable OperateResult operateResult) {
                 dialog.dismiss();
                 if (operateResult.isSuccess()) {
-                    Toast.makeText(SetGroupRemarkActivity.this, "修改群备注成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SetGroupRemarkActivity.this, getString(R.string.modify_group_remark_success), Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(SetGroupRemarkActivity.this, "修改群备注失败: " + operateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SetGroupRemarkActivity.this, getString(R.string.modify_group_remark_failed, operateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                 }
             }
         });

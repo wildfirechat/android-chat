@@ -28,7 +28,7 @@ public class DeleteMultiMessageAction extends MultiMessageAction {
         MessageViewModel messageViewModel = new ViewModelProvider(fragment).get(MessageViewModel.class);
 
         List<String> items = new ArrayList<>();
-        items.add("删除本地消息");
+        items.add(fragment.getString(R.string.message_delete_local));
         boolean isSuperGroup = false;
         UiMessage message = messages.get(0);
         if (message.message.conversation.type == Conversation.ConversationType.Group) {
@@ -40,9 +40,9 @@ public class DeleteMultiMessageAction extends MultiMessageAction {
         if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup)
             || message.message.conversation.type == Conversation.ConversationType.Single
             || message.message.conversation.type == Conversation.ConversationType.Channel) {
-            items.add("删除远程消息");
+            items.add(fragment.getString(R.string.message_delete_remote));
         } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
-            items.add("删除自己及对方消息");
+            items.add(fragment.getString(R.string.message_delete_both));
         }
 
         new MaterialDialog.Builder(fragment.getContext())
@@ -71,7 +71,7 @@ public class DeleteMultiMessageAction extends MultiMessageAction {
 
     @Override
     public String title(Context context) {
-        return "删除";
+        return context.getString(R.string.message_action_delete);
     }
 
     @Override
@@ -81,6 +81,6 @@ public class DeleteMultiMessageAction extends MultiMessageAction {
 
     @Override
     public String confirmPrompt() {
-        return "确认删除?";
+        return fragment.getString(R.string.message_delete_confirm_prompt);
     }
 }

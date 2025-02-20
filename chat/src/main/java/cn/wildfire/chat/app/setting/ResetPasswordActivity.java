@@ -120,32 +120,31 @@ public class ResetPasswordActivity extends WfcBaseActivity {
             }
         }, 60 * 1000);
 
-        Toast.makeText(this, "请求验证码...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.requesting_reset_code, Toast.LENGTH_SHORT).show();
 
         AppService.Instance().requestResetAuthCode(null, new AppService.SendCodeCallback() {
             @Override
             public void onUiSuccess() {
-                Toast.makeText(ResetPasswordActivity.this, "发送验证码成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ResetPasswordActivity.this, R.string.reset_code_send_success, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                Toast.makeText(ResetPasswordActivity.this, "发送验证码失败: " + code + " " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ResetPasswordActivity.this, getString(R.string.reset_code_send_failure, code, msg), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     void resetPassword() {
-
         String newPassword = newPasswordEditText.getText().toString().trim();
         String confirmPassword = confirmPasswordEditText.getText().toString().trim();
         if (!TextUtils.equals(newPassword, confirmPassword)) {
-            Toast.makeText(this, "两次输入的密码不一致", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.password_not_match, Toast.LENGTH_SHORT).show();
             return;
         }
 
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("正在修改密码...")
+            .content(R.string.reset_password_progress)
             .progress(true, 10)
             .cancelable(false)
             .build();
@@ -154,13 +153,12 @@ public class ResetPasswordActivity extends WfcBaseActivity {
         String code = TextUtils.isEmpty(resetCode) ? authCodeEditText.getText().toString() : resetCode;
 
         AppService.Instance().resetPassword(null, code, newPassword, new SimpleCallback<StatusResult>() {
-
             @Override
             public void onUiSuccess(StatusResult result) {
                 if (isFinishing()) {
                     return;
                 }
-                Toast.makeText(ResetPasswordActivity.this, "重置密码成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ResetPasswordActivity.this, R.string.reset_password_success, Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 finish();
             }
@@ -171,10 +169,8 @@ public class ResetPasswordActivity extends WfcBaseActivity {
                     return;
                 }
                 dialog.dismiss();
-
-                Toast.makeText(ResetPasswordActivity.this, "重置密码失败:" + code + " " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ResetPasswordActivity.this, getString(R.string.reset_password_failure, code, msg), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

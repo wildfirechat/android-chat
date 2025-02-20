@@ -15,7 +15,7 @@
         android:layout_weight="1"
         android:maxLines="3"
         android:paddingLeft="10dp"
-        tool:text="link title 链接标题" />
+        tool:text="@string/link_title_placeholder" />
 
     <ImageView
         android:id="@+id/coverImageView"

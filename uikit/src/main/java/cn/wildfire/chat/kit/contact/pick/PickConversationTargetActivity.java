@@ -42,10 +42,10 @@ public abstract class PickConversationTargetActivity extends WfcBaseActivity imp
 
     protected void updatePickStatus(List<UIUserInfo> userInfos) {
         if (userInfos == null || userInfos.isEmpty()) {
-            confirmTv.setText("完成");
+            confirmTv.setText(R.string.pick_conversation_done);
             menuItem.setEnabled(false);
         } else {
-            confirmTv.setText("完成(" + userInfos.size() + ")");
+            confirmTv.setText(getString(R.string.pick_conversation_done_with_count, userInfos.size()));
             menuItem.setEnabled(true);
         }
     }

@@ -83,8 +83,8 @@ public class GroupMessageReceiptActivity extends WfcBaseActivity {
                         readCount++;
                     }
                 }
-                tabLayout.getTabAt(0).setText("未读(" + unreadCount + ")");
-                tabLayout.getTabAt(1).setText("已读(" + readCount + ")");
+                tabLayout.getTabAt(0).setText(getString(R.string.message_receipt_unread, unreadCount));
+                tabLayout.getTabAt(1).setText(getString(R.string.message_receipt_read, readCount));
             }
 
             @Override
@@ -130,13 +130,7 @@ public class GroupMessageReceiptActivity extends WfcBaseActivity {
         @Nullable
         @Override
         public CharSequence getPageTitle(int position) {
-            String title;
-            if (position == 0) {
-                title = "未读";
-            } else {
-                title = "已读";
-            }
-            return title;
+            return getString(position == 0 ? R.string.message_receipt_unread_tab : R.string.message_receipt_read_tab);
         }
     }
 }

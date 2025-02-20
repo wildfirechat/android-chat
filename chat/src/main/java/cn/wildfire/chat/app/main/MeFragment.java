@@ -139,7 +139,7 @@ public class MeFragment extends Fragment {
             .apply(options)
             .into(portraitImageView);
         nameTextView.setText(userInfo.displayName);
-        accountTextView.setText("账号: " + userInfo.name);
+        accountTextView.setText(getString(R.string.account_label, userInfo.name));
     }
 
     private void init() {

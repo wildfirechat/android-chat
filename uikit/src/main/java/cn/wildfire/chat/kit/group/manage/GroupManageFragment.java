@@ -138,7 +138,7 @@ public class GroupManageFragment extends Fragment {
                         if (booleanOperateResult.isSuccess()) {
                             joinOptionItemView.setDesc((String) text);
                         } else {
-                            Toast.makeText(getActivity(), "修改加群方式失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.modify_group_join_type_failed), Toast.LENGTH_SHORT).show();
                         }
                     });
             })
@@ -154,7 +154,7 @@ public class GroupManageFragment extends Fragment {
                         if (booleanOperateResult.isSuccess()) {
                             searchOptionItemView.setDesc((String) text);
                         } else {
-                            Toast.makeText(getActivity(), "修改群搜索方式失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.modify_group_search_type_failed), Toast.LENGTH_SHORT).show();
                         }
                     });
             })
@@ -172,7 +172,7 @@ public class GroupManageFragment extends Fragment {
                             if (booleanOperateResult.isSuccess()) {
                                 historyOptionItemView.setDesc((String) text);
                             } else {
-                                Toast.makeText(getActivity(), "修改群历史消息失败", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string.modify_group_history_failed), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

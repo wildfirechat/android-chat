@@ -87,7 +87,8 @@ public class ChannelInfoActivity extends AppCompatActivity {
         // FIXME: 2018/12/24 只有应用launcher icon应当反倒mipmap下面，其他还是应当放到drawable下面
         Glide.with(this).load(channelInfo.portrait).apply(new RequestOptions().placeholder(R.mipmap.ic_group_chat)).into(portraitImageView);
         channelTextView.setText(channelInfo.name);
-        channelDescTextView.setText(TextUtils.isEmpty(channelInfo.desc) ? "频道主什么也没写" : channelInfo.desc);
+        channelDescTextView.setText(TextUtils.isEmpty(channelInfo.desc) ?
+            getString(R.string.channel_empty_desc) : channelInfo.desc);
 
 
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
@@ -98,29 +99,31 @@ public class ChannelInfoActivity extends AppCompatActivity {
 
         isFollowed = channelViewModel.isListenedChannel(channelInfo.channelId);
         if (isFollowed) {
-            followChannelButton.setText("取消收听");
+            followChannelButton.setText(R.string.channel_following);
         } else {
-            followChannelButton.setText("收听频道");
+            followChannelButton.setText(R.string.channel_not_following);
         }
     }
 
     void followChannelButtonClick() {
+        String action = isFollowed ? getString(R.string.channel_following) : getString(R.string.channel_not_following);
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content(isFollowed ? "正在取消收听" : "正在收听")
+            .content(getString(R.string.channel_following_status, action))
             .progress(true, 100)
             .cancelable(false)
             .build();
         dialog.show();
-        channelViewModel.listenChannel(channelInfo.channelId, !isFollowed).observe(this, new Observer<OperateResult<Boolean>>() {
-            @Override
-            public void onChanged(@Nullable OperateResult<Boolean> booleanOperateResult) {
-                dialog.dismiss();
-                if (booleanOperateResult.isSuccess()) {
-                    Toast.makeText(ChannelInfoActivity.this, isFollowed ? "取消收听成功" : "收听成功", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(ChannelInfoActivity.this, isFollowed ? "取消收听失败" : "收听失败", Toast.LENGTH_SHORT).show();
-                }
+        channelViewModel.listenChannel(channelInfo.channelId, !isFollowed).observe(this, booleanOperateResult -> {
+            dialog.dismiss();
+            if (booleanOperateResult.isSuccess()) {
+                Toast.makeText(ChannelInfoActivity.this,
+                    getString(R.string.channel_following_success, action),
+                    Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(ChannelInfoActivity.this,
+                    getString(R.string.channel_following_failed, action),
+                    Toast.LENGTH_SHORT).show();
             }
         });
     }

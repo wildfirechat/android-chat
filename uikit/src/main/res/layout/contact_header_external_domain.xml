@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
-            android:text="外部单位"
+            android:text="@string/external_domain"
             android:textColor="@color/black1"
             android:textSize="16sp" />
 

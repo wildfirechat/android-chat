@@ -104,7 +104,7 @@ public class SimpleNotificationMessageContentViewHolder extends NotificationMess
             notification = ((NotificationMessageContent) message.message.content).formatNotification(message.message);
         } catch (Exception e) {
             e.printStackTrace();
-            notification = "message is invalid";
+            notification = fragment.getString(R.string.message_invalid);
         }
         notificationTextView.setText(notification);
     }

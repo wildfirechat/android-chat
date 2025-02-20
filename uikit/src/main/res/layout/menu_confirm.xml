@@ -13,7 +13,7 @@
         android:paddingTop="5dp"
         android:paddingRight="11dp"
         android:paddingBottom="5dp"
-        android:text="完成"
+        android:text="@string/complete"
         android:textColor="@color/white"
         android:textSize="15sp" />
 

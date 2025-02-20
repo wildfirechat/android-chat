@@ -67,7 +67,7 @@ public class LocationExt extends ConversationExt {
 
     @Override
     public String title(Context context) {
-        return "位置";
+        return context.getString(R.string.location_ext_title);
     }
 
     @Override

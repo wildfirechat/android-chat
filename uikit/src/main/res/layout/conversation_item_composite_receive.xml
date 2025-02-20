@@ -20,7 +20,7 @@
         android:linksClickable="true"
         android:maxWidth="202dp"
         android:minHeight="40dp"
-        android:text="title"
+        android:text="@string/title_placeholder"
         android:textColorLink="#3655bf"
         android:textSize="16sp" />
 
@@ -32,7 +32,7 @@
         android:linksClickable="true"
         android:maxWidth="202dp"
         android:minHeight="40dp"
-        android:text="content"
+        android:text="@string/content_placeholder"
         android:textColorLink="#3655bf"
         android:textSize="14sp" />
 
@@ -45,7 +45,7 @@
         android:maxWidth="202dp"
         android:maxLines="2"
         android:paddingTop="2dp"
-        android:text="聊天记录"
+        android:text="@string/chat_records_category"
         android:textSize="12sp"
         android:visibility="visible" />
 </LinearLayout>

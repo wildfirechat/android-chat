@@ -241,7 +241,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
         }
         participants.remove(userId);
 
-        Toast.makeText(getActivity(), "用户" + ChatManager.Instance().getUserDisplayName(userId) + "离开了通话", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.participant_left_call, ChatManager.Instance().getUserDisplayName(userId)), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -285,7 +285,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
         if (voipCallItem != null) {
             if (volume > 1000) {
                 voipCallItem.getStatusTextView().setVisibility(View.VISIBLE);
-                voipCallItem.getStatusTextView().setText("正在说话");
+                voipCallItem.getStatusTextView().setText(R.string.speaking);
             } else {
                 voipCallItem.getStatusTextView().setVisibility(View.GONE);
                 voipCallItem.getStatusTextView().setText("");

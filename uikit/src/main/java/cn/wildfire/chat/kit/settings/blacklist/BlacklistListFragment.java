@@ -99,7 +99,7 @@ public class BlacklistListFragment extends Fragment implements BlacklistListAdap
 
                 @Override
                 public void onFail(int errorCode) {
-                    Toast.makeText(getActivity(), "删除失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getActivity().getString(R.string.blacklist_remove_failed), Toast.LENGTH_SHORT).show();
                 }
             });
             return true;

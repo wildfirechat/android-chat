@@ -10,7 +10,7 @@
         android:layout_height="40dp"
         android:background="#E5E5E5"
         android:gravity="center_vertical"
-        android:text="聊天记录" />
+        android:text="@string/chat_records_category" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
