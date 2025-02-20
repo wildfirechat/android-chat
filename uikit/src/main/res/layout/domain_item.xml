@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:text="组织名称"
+                android:text="@string/organization_name_placeholder"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:text="wfc desc"
+                android:text="@string/description_placeholder"
                 android:textColor="@color/black1"
                 android:textSize="14sp"
                 android:visibility="gone" />

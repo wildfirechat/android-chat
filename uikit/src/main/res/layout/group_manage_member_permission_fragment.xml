@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_weight="1"
-            android:text="允许普通成员发起临时会话"
+            android:text="@string/allow_member_init_temp_chat"
             android:textColor="@color/black0"
             android:textSize="16sp" />
 

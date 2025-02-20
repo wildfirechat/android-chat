@@ -28,6 +28,6 @@ public class FavUnknownContentViewHolder extends FavContentViewHolder {
     @Override
     public void bind(Fragment fragment, FavoriteItem item) {
         super.bind(fragment, item);
-        textView.setText("当前版本不支持，请升级查看");
+        textView.setText(fragment.getString(R.string.version_not_supported));
     }
 }

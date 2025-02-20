@@ -44,10 +44,10 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
         public void onChanged(@Nullable UIUserInfo userInfo) {
             List<UIUserInfo> list = pickUserViewModel.getCheckedUsers();
             if (list == null || list.isEmpty()) {
-                confirmTv.setText("完成");
+                confirmTv.setText(R.string.complete);
                 menuItem.setEnabled(false);
             } else {
-                confirmTv.setText("完成(" + list.size() + ")");
+                confirmTv.setText(getString(R.string.complete_with_count, list.size()));
                 menuItem.setEnabled(true);
             }
         }
@@ -112,7 +112,7 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
 
     void addMember() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("添加中...")
+            .content(R.string.adding)
             .progress(true, 100)
             .cancelable(false)
             .build();

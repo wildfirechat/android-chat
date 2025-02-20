@@ -55,12 +55,15 @@ class FileRecordViewHolder extends RecyclerView.ViewHolder {
         }
         fileFromTextView.setText(" ");
         if(userInfo != null) {
-            if (!TextUtils.isEmpty(userInfo.friendAlias)) {
-                fileFromTextView.setText("来自 " + userInfo.friendAlias);
-            } else if(!TextUtils.isEmpty(userInfo.groupAlias)) {
-                fileFromTextView.setText("来自 " + userInfo.groupAlias);
-            } else if(!TextUtils.isEmpty(userInfo.displayName)) {
-                fileFromTextView.setText("来自 " + userInfo.displayName);
+            String displayName = userInfo.friendAlias;
+            if (TextUtils.isEmpty(displayName)) {
+                displayName = userInfo.groupAlias;
+            }
+            if (TextUtils.isEmpty(displayName)) {
+                displayName = userInfo.displayName;
+            }
+            if (!TextUtils.isEmpty(displayName)) {
+                fileFromTextView.setText(itemView.getContext().getString(R.string.file_record_from, displayName));
             }
         }
         Date currentTime = new Date(fileRecord.timestamp);

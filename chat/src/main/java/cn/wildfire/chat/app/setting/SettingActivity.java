@@ -60,7 +60,7 @@ public class SettingActivity extends WfcBaseActivity {
         switch (requestCode) {
             case REQUEST_IGNORE_BATTERY_CODE:
                 if (resultCode == RESULT_CANCELED) {
-                    Toast.makeText(this, "允许野火IM后台运行，更能保证消息的实时性", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.battery_optimize_tip, Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -105,14 +105,14 @@ public class SettingActivity extends WfcBaseActivity {
             @Override
             public void onUiSuccess(String path) {
                 if (!isFinishing()) {
-                    Toast.makeText(SettingActivity.this, "上传日志" + path + "成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingActivity.this, getString(R.string.upload_log_success, path), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
                 if (!isFinishing()) {
-                    Toast.makeText(SettingActivity.this, "上传日志失败" + code + msg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingActivity.this, getString(R.string.upload_log_failed, code, msg), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -130,13 +130,13 @@ public class SettingActivity extends WfcBaseActivity {
                     intent.setData(Uri.parse("package:" + packageName));
                     startActivityForResult(intent, REQUEST_IGNORE_BATTERY_CODE);
                 } else {
-                    Toast.makeText(this, "已忽略电池优化，允许野火IM后台运行，更能保证消息的实时性", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.battery_optimize_allowed, Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            Toast.makeText(this, "系统不支持", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.system_version_not_support, Toast.LENGTH_SHORT).show();
         }
     }
 

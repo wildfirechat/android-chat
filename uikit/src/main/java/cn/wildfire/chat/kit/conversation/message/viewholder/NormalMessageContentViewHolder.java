@@ -175,9 +175,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     public void onRetryClick(View itemView) {
         new MaterialDialog.Builder(fragment.getContext())
-            .content("重新发送?")
-            .negativeText("取消")
-            .positiveText("重发")
+            .content(R.string.message_resend_title)
+            .negativeText(R.string.forward_cancel)
+            .positiveText(R.string.message_resend)
             .onPositive((dialog, which) -> messageViewModel.resendMessage(message.message))
             .build()
             .show();
@@ -196,7 +196,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     public void removeMessage(View itemView, UiMessage message) {
 
         List<String> items = new ArrayList<>();
-        items.add("删除本地消息");
+        items.add(itemView.getContext().getString(R.string.message_delete_local));
         boolean isSuperGroup = false;
         if (message.message.conversation.type == Conversation.ConversationType.Group) {
             GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.message.conversation.target, false);
@@ -209,9 +209,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             || message.message.conversation.type == Conversation.ConversationType.Single
             || message.message.conversation.type == Conversation.ConversationType.Channel
         ) {
-            items.add("删除远程消息");
+            items.add(itemView.getContext().getString(R.string.message_delete_remote));
         } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
-            items.add("删除自己及对方消息");
+            items.add(itemView.getContext().getString(R.string.message_delete_both));
         }
 
         new MaterialDialog.Builder(fragment.getContext())
@@ -272,28 +272,28 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
-        String title = "未设置";
+        String title = context.getString(R.string.message_unknown_option);
         switch (tag) {
             case MessageContextMenuItemTags.TAG_RECALL:
-                title = "撤回";
+                title = context.getString(R.string.message_recall);
                 break;
             case MessageContextMenuItemTags.TAG_DELETE:
-                title = "删除";
+                title = context.getString(R.string.message_delete);
                 break;
             case MessageContextMenuItemTags.TAG_FORWARD:
-                title = "转发";
+                title = context.getString(R.string.message_forward);
                 break;
             case MessageContextMenuItemTags.TAG_QUOTE:
-                title = "引用";
+                title = context.getString(R.string.message_quote);
                 break;
             case MessageContextMenuItemTags.TAG_MULTI_CHECK:
-                title = "多选";
+                title = context.getString(R.string.message_multi_select);
                 break;
             case MessageContextMenuItemTags.TAG_CHANNEL_PRIVATE_CHAT:
-                title = "私聊";
+                title = context.getString(R.string.message_private_chat);
                 break;
             case MessageContextMenuItemTags.TAG_FAV:
-                title = "收藏";
+                title = context.getString(R.string.message_favorite);
                 break;
             default:
                 break;
@@ -303,10 +303,10 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 
     @Override
     public String contextConfirmPrompt(Context context, String tag) {
-        String title = "未设置";
+        String title = context.getString(R.string.message_unknown_option);
         switch (tag) {
             case MessageContextMenuItemTags.TAG_DELETE:
-                title = "确认删除此消息";
+                title = context.getString(R.string.message_delete_confirm);
                 break;
             default:
                 break;

@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:singleLine="true"
-                android:text="对方请求添加你为朋友"
+                android:text="@string/friend_request_desc"
                 android:textColor="@color/gray11"
                 android:textSize="12sp" />
 
@@ -60,7 +60,7 @@
             android:layout_marginLeft="10dp"
             android:gravity="right"
             android:singleLine="true"
-            android:text="已添加"
+            android:text="@string/contact_request_accepted"
             android:textColor="@color/gray3"
             android:textSize="12sp"
             android:visibility="gone" />
@@ -72,7 +72,7 @@
             android:layout_height="27dp"
             android:layout_marginLeft="10dp"
             android:background="@drawable/shape_new_friend_agree"
-            android:text="接受"
+            android:text="@string/accept"
             android:textColor="@color/white"
             android:textSize="12sp"
             android:visibility="gone"

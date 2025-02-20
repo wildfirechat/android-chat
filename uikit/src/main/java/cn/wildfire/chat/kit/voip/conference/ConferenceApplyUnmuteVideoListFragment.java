@@ -39,7 +39,7 @@ public class ConferenceApplyUnmuteVideoListFragment extends FullScreenBottomShee
 
     @Override
     protected String title() {
-        return "发言申请";
+        return getString(R.string.speaking_requests);
     }
 
     @Override

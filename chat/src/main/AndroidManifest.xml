@@ -84,11 +84,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.SettingActivity"
-            android:label="设置"
+            android:label="@string/setting"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.app.setting.AboutActivity"
-            android:label="关于"
+            android:label="@string/about"
             android:screenOrientation="portrait" />
 
         <activity
@@ -103,7 +103,7 @@
             <intent-filter android:label="分享到野火IM">
                 <action android:name="android.intent.action.SENDTO" />
                 <action android:name="android.intent.action.SEND" />
-<!--                <action android:name="android.intent.action.SEND_MULTIPLE" />-->
+                <!--                <action android:name="android.intent.action.SEND_MULTIPLE" />-->
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="*/*" />
             </intent-filter>
@@ -124,14 +124,16 @@
 
         <activity
             android:name="cn.wildfire.chat.app.setting.ChangePasswordActivity"
-            android:label="设置新密码" />
+            android:label="@string/set_new_password" />
         <activity
             android:name="cn.wildfire.chat.app.setting.ResetPasswordActivity"
-            android:label="设置新密码" />
-        <activity android:name="cn.wildfire.chat.app.setting.AccountActivity" />
+            android:label="@string/set_new_password" />
+        <activity
+            android:name="cn.wildfire.chat.app.setting.AccountActivity"
+            android:label="@string/account_and_security" />
         <activity
             android:name="cn.wildfire.chat.app.misc.DiagnoseActivity"
-            android:label="诊断" />
+            android:label="@string/diagnose" />
 
     </application>
 </manifest>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="av_waiting">Waiting for the other party to accept the invitation...</string>
+    <string name="av_audio_invite">Invite you to a voice call</string>
+    <string name="av_video_invite">Invite you to a video call</string>
+</resources>

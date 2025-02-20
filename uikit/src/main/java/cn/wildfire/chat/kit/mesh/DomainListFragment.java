@@ -62,7 +62,7 @@ public class DomainListFragment extends ProgressFragment implements DomainListAd
                         adapter.setDomainInfos(domainInfos);
                         showContent();
                     } else {
-                        showEmpty("没有外部单位");
+                        showEmpty(getString(R.string.no_external_organization));
                     }
                 }
             });

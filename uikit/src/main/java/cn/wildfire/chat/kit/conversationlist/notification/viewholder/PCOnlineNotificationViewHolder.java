@@ -34,22 +34,22 @@ public class PCOnlineNotificationViewHolder extends StatusNotificationViewHolder
         String desc = "";
         switch (pcOnlineStatusNotification.getPcOnlineInfo().getType()) {
             case PC_Online:
-                desc = "PC 在线";
+                desc = fragment.getString(R.string.pc_online);
                 break;
             case Web_Online:
-                desc = "Web 在线";
+                desc = fragment.getString(R.string.web_online);
                 break;
             case WX_Online:
-                desc = "微信小程序 在线";
+                desc = fragment.getString(R.string.wx_online);
                 break;
             case Pad_Online:
-                desc = "Pad 在线";
+                desc = fragment.getString(R.string.pad_online);
                 break;
             default:
                 break;
         }
         if (ChatManager.Instance().isMuteNotificationWhenPcOnline()) {
-            desc += "，手机通知已关闭";
+            desc += fragment.getString(R.string.notification_muted_when_pc_online);
         }
 
         statusTextView = view.findViewById(R.id.statusTextView);

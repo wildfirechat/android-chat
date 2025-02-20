@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.ChannelViewHolder;
@@ -41,7 +42,7 @@ public class ChannelSearchModule extends SearchableModule<ChannelInfo, ChannelVi
     @Override
     public void onClick(Fragment fragment, ChannelViewHolder holder, View view, ChannelInfo channelInfo) {
         // TODO show channel info
-        Toast.makeText(fragment.getActivity(), "show channel info", Toast.LENGTH_SHORT).show();
+        Toast.makeText(fragment.getActivity(), fragment.getString(R.string.show_channel_info), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(fragment.getActivity(), ChannelInfoActivity.class);
         intent.putExtra("channelInfo", channelInfo);
         fragment.startActivity(intent);
@@ -59,7 +60,7 @@ public class ChannelSearchModule extends SearchableModule<ChannelInfo, ChannelVi
 
     @Override
     public String category() {
-        return "频道";
+        return WfcUIKit.getWfcUIKit().getApplication().getString(R.string.channel_category);
     }
 
     @Override

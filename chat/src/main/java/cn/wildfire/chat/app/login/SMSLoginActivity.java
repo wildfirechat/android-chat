@@ -102,12 +102,11 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
 
         loginButton.setEnabled(false);
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("登录中...")
+            .content(R.string.login_progress)
             .progress(true, 100)
             .cancelable(false)
             .build();
         dialog.show();
-
 
         AppService.Instance().smsLogin(phoneNumber, authCode, new AppService.LoginCallback() {
             @Override
@@ -140,7 +139,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                 if (isFinishing()) {
                     return;
                 }
-                Toast.makeText(SMSLoginActivity.this, "登录失败：" + code + " " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SMSLoginActivity.this, getString(R.string.sms_login_failure, code, msg), Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 loginButton.setEnabled(true);
             }
@@ -151,27 +150,24 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
 
     void requestAuthCode() {
         requestAuthCodeButton.setEnabled(false);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isFinishing()) {
-                    requestAuthCodeButton.setEnabled(true);
-                }
+        handler.postDelayed(() -> {
+            if (!isFinishing()) {
+                requestAuthCodeButton.setEnabled(true);
             }
         }, 60 * 1000);
 
-        Toast.makeText(this, "请求验证码...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.requesting_auth_code, Toast.LENGTH_SHORT).show();
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
 
         AppService.Instance().requestAuthCode(phoneNumber, new AppService.SendCodeCallback() {
             @Override
             public void onUiSuccess() {
-                Toast.makeText(SMSLoginActivity.this, "发送验证码成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SMSLoginActivity.this, R.string.auth_code_request_success, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                Toast.makeText(SMSLoginActivity.this, "发送验证码失败: " + code + " " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SMSLoginActivity.this, getString(R.string.auth_code_request_failure, code, msg), Toast.LENGTH_SHORT).show();
             }
         });
     }

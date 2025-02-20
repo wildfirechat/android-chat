@@ -62,7 +62,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="6dp"
-                        android:text="搜索"
+                        android:text="@string/search"
                         android:textColor="@color/gray23"
                         android:textSize="18sp" />
 

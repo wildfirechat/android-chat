@@ -95,13 +95,13 @@
                 style="@style/OptionItem"
                 android:layout_marginTop="@dimen/option_item_margin_top"
                 app:show_arrow_indicator="true"
-                app:title="查找聊天记录" />
+                app:title="@string/search_message" />
 
             <cn.wildfire.chat.kit.widget.OptionItemView
                 android:id="@+id/fileRecordOptionItemView"
                 style="@style/OptionItem"
                 app:show_arrow_indicator="true"
-                app:title="文件记录" />
+                app:title="@string/file_record" />
 
             <cn.wildfire.chat.kit.widget.OptionItemView
                 android:id="@+id/clearMessagesOptionItemView"

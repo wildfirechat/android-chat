@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
-            android:text="xx部门"
+            android:text="@string/department_name_placeholder"
             android:textColor="@color/black1"
             android:textSize="16sp" />
 

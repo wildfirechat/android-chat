@@ -499,8 +499,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                                 content = viewHolder.contextConfirmPrompt(fragment.getContext(), menuItem.contextMenuItem.tag());
                                 new MaterialDialog.Builder(fragment.getContext())
                                     .content(content)
-                                    .negativeText("取消")
-                                    .positiveText("确认")
+                                    .negativeText(R.string.delete_message_dialog_cancel)
+                                    .positiveText(R.string.delete_message_dialog_confirm)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
                                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {

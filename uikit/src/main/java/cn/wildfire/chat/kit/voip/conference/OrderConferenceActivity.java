@@ -116,9 +116,9 @@ public class OrderConferenceActivity extends WfcBaseActivity {
     protected void afterViews() {
         UserInfo userInfo = ChatManager.Instance().getUserInfo(ChatManager.Instance().getUserId(), false);
         if (userInfo != null) {
-            titleEditText.setText(userInfo.displayName + "的会议");
+            titleEditText.setText(getString(R.string.conference_title_default, userInfo.displayName));
         } else {
-            titleEditText.setText("会议");
+            titleEditText.setText(getString(R.string.conference_title_unnamed));
         }
         advancedSwitch.setChecked(false);
         Calendar calendar = Calendar.getInstance();
@@ -139,8 +139,8 @@ public class OrderConferenceActivity extends WfcBaseActivity {
     void passwordChecked(CompoundButton button, boolean checked) {
         if (checked) {
             new MaterialDialog.Builder(this)
-                .content("请输入密码")
-                .input("请输入6位数字", "123456", false, new MaterialDialog.InputCallback() {
+                .content(R.string.conference_enter_password)
+                .input(getString(R.string.conference_password_hint), "123456", false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         password = input.toString();
@@ -183,7 +183,7 @@ public class OrderConferenceActivity extends WfcBaseActivity {
             @Override
             public void onPick(Date date) {
                 if (date.getTime() < System.currentTimeMillis()) {
-                    Toast.makeText(OrderConferenceActivity.this, "结束时间，不能早于当前时间", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OrderConferenceActivity.this, R.string.conference_end_time_invalid, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 endDateTimeTextView.setText(date.toString());
@@ -202,7 +202,7 @@ public class OrderConferenceActivity extends WfcBaseActivity {
             @Override
             public void onPick(Date date) {
                 if (date.getTime() < System.currentTimeMillis()) {
-                    Toast.makeText(OrderConferenceActivity.this, "开始时间，不能早于当前时间", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OrderConferenceActivity.this, R.string.conference_start_time_invalid, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 startDateTimeTextView.setText(date.toString());
@@ -218,11 +218,11 @@ public class OrderConferenceActivity extends WfcBaseActivity {
 
     private void createConference() {
         if (startDateTime == null || endDateTime == null) {
-            Toast.makeText(this, "请选择开始、结束时间", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.conference_time_required, Toast.LENGTH_SHORT).show();
             return;
         }
         if (endDateTime.before(startDateTime)) {
-            Toast.makeText(this, "结束时间，不能早于开始时间", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.conference_end_before_start_error, Toast.LENGTH_SHORT).show();
             return;
         }
         ConferenceInfo info = new ConferenceInfo();
@@ -239,12 +239,13 @@ public class OrderConferenceActivity extends WfcBaseActivity {
         WfcUIKit.getWfcUIKit().getAppServiceProvider().createConference(info, new GeneralCallback2() {
             @Override
             public void onSuccess(String s) {
-                Toast.makeText(OrderConferenceActivity.this, "预定会议成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OrderConferenceActivity.this, R.string.conference_order_success, Toast.LENGTH_SHORT).show();
                 finish();
             }
 
             @Override
             public void onFail(int i) {
+                Toast.makeText(OrderConferenceActivity.this, getString(R.string.conference_order_failed, i), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "createConference fail" + i);
             }
         });

@@ -45,6 +45,6 @@ public class FavFileContentViewHolder extends FavContentViewHolder {
 
     @Override
     protected void onClick() {
-        Toast.makeText(fragment.getContext(), "暂不支持预览", Toast.LENGTH_SHORT).show();
+        Toast.makeText(fragment.getContext(), fragment.getString(R.string.preview_not_supported), Toast.LENGTH_SHORT).show();
     }
 }

@@ -74,7 +74,7 @@
         app:show_arrow_indicator="true"
         app:show_divider="false"
         app:start_src="@mipmap/ic_account"
-        app:title="账号与安全" />
+        app:title="@string/account_security" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -88,7 +88,7 @@
             app:show_arrow_indicator="true"
             app:show_divider="false"
             app:start_src="@mipmap/ic_notification"
-            app:title="消息与通知" />
+            app:title="@string/message_notification" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/conversationOptionItemView"
@@ -97,7 +97,7 @@
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_create_group_chat"
             app:start_tint="@color/colorPrimary"
-            app:title="聊天背景" />
+            app:title="@string/chat_background" />
 
     </LinearLayout>
 
@@ -115,14 +115,14 @@
             android:background="@drawable/selector_option_item"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_settings_file"
-            app:title="文件" />
+            app:title="@string/file" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/favOptionItemView"
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_star"
-            app:title="收藏" />
+            app:title="@string/favorites" />
     </LinearLayout>
 
     <LinearLayout
@@ -137,7 +137,7 @@
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_theme"
-            app:title="主题" />
+            app:title="@string/theme" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/settingOptionItemView"

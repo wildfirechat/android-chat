@@ -88,7 +88,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     public void attach(View rootView, Button button) {
         this.rootView = rootView;
         this.button = button;
-        this.button.setText("按住 说话");
+        this.button.setText(R.string.voice_rec);
         this.button.setOnTouchListener(this);
 
         this.sendAudioMessageSuccessSoundId = this.soundPool.load(context, R.raw.audido_msg_send_success, 0);

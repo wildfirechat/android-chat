@@ -58,7 +58,7 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        descTextView.setText("允许 " + platform.getPlatFormName() + " 登录");
+        descTextView.setText(getString(R.string.pc_login_allow, platform.getPlatFormName()));
         if (isConfirmPcLogin) {
             confirmButton.setEnabled(true);
         } else {
@@ -93,7 +93,7 @@ public class PCLoginActivity extends WfcBaseActivity {
 
     private void scanPCLogin(String token) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("处理中")
+            .content(R.string.pc_login_processing)
             .progress(true, 100)
             .build();
         dialog.show();
@@ -108,7 +108,7 @@ public class PCLoginActivity extends WfcBaseActivity {
                 if (pcSession.getStatus() == 1) {
                     confirmButton.setEnabled(true);
                 } else {
-                    Toast.makeText(PCLoginActivity.this, "status: " + pcSession.getStatus(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PCLoginActivity.this, getString(R.string.pc_login_status, pcSession.getStatus()), Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }
@@ -131,7 +131,7 @@ public class PCLoginActivity extends WfcBaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                Toast.makeText(PCLoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PCLoginActivity.this, R.string.pc_login_success, Toast.LENGTH_SHORT).show();
                 finish();
             }
 

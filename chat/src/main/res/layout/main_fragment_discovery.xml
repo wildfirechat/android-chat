@@ -11,7 +11,7 @@
         android:layout_marginBottom="10dp"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_moment"
-        app:title="朋友圈" />
+        app:title="@string/moment" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,21 +24,21 @@
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_chatroom"
-            app:title="聊天室" />
+            app:title="@string/chatroom" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/robotOptionItemView"
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_robot"
-            app:title="机器人" />
+            app:title="@string/robot" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/channelOptionItemView"
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_channel"
-            app:title="频道" />
+            app:title="@string/channel" />
     </LinearLayout>
 
     <cn.wildfire.chat.kit.widget.OptionItemView
@@ -47,7 +47,7 @@
         android:layout_marginBottom="10dp"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_dev_docs"
-        app:title="开发手册" />
+        app:title="@string/dev_guide" />
 
     <cn.wildfire.chat.kit.widget.OptionItemView
         android:id="@+id/conferenceOptionItemView"
@@ -55,6 +55,6 @@
         android:layout_marginBottom="10dp"
         app:show_arrow_indicator="true"
         app:start_src="@mipmap/ic_conference"
-        app:title="会议" />
+        app:title="@string/conference" />
 
 </LinearLayout>

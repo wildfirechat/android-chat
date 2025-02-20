@@ -233,7 +233,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
                 Intent intent = new Intent(getContext(), DomainListActivity.class);
                 startActivity(intent);
             } else {
-                Toast.makeText(getContext(), "未开启服务互通功能", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.mesh_service_not_enabled, Toast.LENGTH_SHORT).show();
             }
         }
     }

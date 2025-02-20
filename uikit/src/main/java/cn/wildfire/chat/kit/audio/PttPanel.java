@@ -62,7 +62,7 @@ public class PttPanel implements View.OnTouchListener {
     public void attach(View rootView, Button button, Conversation conversation) {
         this.rootView = rootView;
         this.button = button;
-        this.button.setText("按住 对讲");
+        this.button.setText(R.string.ptt_hold_to_talk);
         this.button.setOnTouchListener(this);
         this.conversation = conversation;
         this.maxDuration = PTTClient.getInstance().getMaxSpeakTime(conversation) * 1000;
@@ -106,7 +106,7 @@ public class PttPanel implements View.OnTouchListener {
         return true;
     }
 
-    private void requestTalk() {
+    public void requestTalk() {
         handler.removeCallbacks(this::tick);
         // TODO 开始、结束、失败，播放对应的声音提示
         PTTClient.getInstance().requestTalk(conversation, new TalkingCallback() {
@@ -134,7 +134,7 @@ public class PttPanel implements View.OnTouchListener {
             @Override
             public void onRequestFail(Conversation conversation, int errorCode) {
                 // do nothing
-                Toast.makeText(context, "请求对讲失败 " + errorCode, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.ptt_request_failed, errorCode), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -188,7 +188,7 @@ public class PttPanel implements View.OnTouchListener {
             countDownTextView.setVisibility(View.GONE);
         }
         stateTextView.setVisibility(View.VISIBLE);
-        stateTextView.setText("松手结束对讲");
+        stateTextView.setText(R.string.ptt_release_to_end);
         stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
     }
 

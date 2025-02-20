@@ -81,7 +81,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
         GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userInfo.getUserInfo().uid);
         if (groupMember.type == GroupMember.GroupMemberType.Manager) {
             new MaterialDialog.Builder(getActivity())
-                .items(Collections.singleton("移除群管理"))
+                .items(Collections.singleton(getString(R.string.remove_group_manager)))
                 .itemsCallback((dialog, itemView, position, text) -> {
                     groupViewModel.setGroupManager(groupInfo.target, false, Collections.singletonList(userInfo.getUserInfo().uid), null, Collections.singletonList(0));
                 })

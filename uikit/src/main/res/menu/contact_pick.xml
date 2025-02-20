@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/confirm"
-        android:title="完成"
+        android:title="@string/complete"
         app:actionLayout="@layout/menu_confirm"
         app:showAsAction="always" />
 </menu>

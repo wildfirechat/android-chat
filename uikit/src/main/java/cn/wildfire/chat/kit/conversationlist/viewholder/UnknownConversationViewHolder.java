@@ -34,7 +34,9 @@ public class UnknownConversationViewHolder extends ConversationViewHolder {
                 .load(R.mipmap.avatar_def)
                 .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(4)))
                 .into(portraitImageView);
-        nameTextView.setText("未知会话类型(" + conversationInfo.conversation.type.getValue() + ")或线路(" + conversationInfo.conversation.line + ")");
+        nameTextView.setText(fragment.getString(R.string.unknown_conversation_type,
+                             conversationInfo.conversation.type.getValue(),
+                             conversationInfo.conversation.line));
     }
 
 }

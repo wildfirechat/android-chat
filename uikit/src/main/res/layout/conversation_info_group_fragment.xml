@@ -45,7 +45,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/selector_common_item"
                 android:gravity="center"
-                android:text="查看全部成员"
+                android:text="@string/show_all_members"
                 android:textSize="15sp"
                 android:visibility="gone" />
 
@@ -78,7 +78,7 @@
                     style="@style/OptionItem"
                     app:end_src="@mipmap/qr_code"
                     app:show_arrow_indicator="true"
-                    app:title="二维码" />
+                    app:title="@string/qrcode" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -132,7 +132,7 @@
                     style="@style/OptionItem"
                     app:desc="@string/untitled"
                     app:show_arrow_indicator="true"
-                    app:title="群备注" />
+                    app:title="@string/group_remark" />
 
                 <View
                     android:id="@+id/groupManageDividerLine"
@@ -146,7 +146,7 @@
                     style="@style/OptionItem"
                     android:visibility="gone"
                     app:show_arrow_indicator="true"
-                    app:title="群管理" />
+                    app:title="@string/group_manage" />
             </LinearLayout>
 
 
@@ -155,13 +155,13 @@
                 style="@style/OptionItem"
                 android:layout_marginTop="@dimen/option_item_margin_top"
                 app:show_arrow_indicator="true"
-                app:title="查找聊天记录" />
+                app:title="@string/search_message" />
 
             <cn.wildfire.chat.kit.widget.OptionItemView
                 android:id="@+id/fileRecordOptionItemView"
                 style="@style/OptionItem"
                 app:show_arrow_indicator="true"
-                app:title="文件记录" />
+                app:title="@string/file_record" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -228,7 +228,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="15dp"
                         android:layout_weight="1"
-                        android:text="保存到通讯录"
+                        android:text="@string/save_to_contact"
                         android:textColor="@color/black0"
                         android:textSize="16sp" />
 

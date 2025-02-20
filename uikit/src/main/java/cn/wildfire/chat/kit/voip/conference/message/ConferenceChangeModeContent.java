@@ -87,7 +87,7 @@ public class ConferenceChangeModeContent extends MessageContent {
 
     @Override
     public String digest(Message message) {
-        return "[网络电话]";
+        return message.content.getClass().getSimpleName();
     }
 
 

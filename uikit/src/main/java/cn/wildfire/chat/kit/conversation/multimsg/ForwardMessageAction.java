@@ -26,10 +26,13 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ForwardMessageAction extends MultiMessageAction {
-    @Override
+  @Override
     public void onClick(List<UiMessage> messages) {
         new MaterialDialog.Builder(fragment.getActivity())
-            .items("逐条转发", "合并转发")
+            .items(new String[]{
+                fragment.getString(R.string.forward_one_by_one),
+                fragment.getString(R.string.forward_merge)
+            })
             .itemsCallback((dialog, itemView, position, text) -> {
                 switch (position) {
                     case 0:
@@ -58,15 +61,15 @@ public class ForwardMessageAction extends MultiMessageAction {
     }
 
     private void forward(List<UiMessage> messages) {
-        Toast.makeText(fragment.getActivity(), "合并转发", Toast.LENGTH_SHORT).show();
+        Toast.makeText(fragment.getActivity(), R.string.forward_merge, Toast.LENGTH_SHORT).show();
         CompositeMessageContent content = new CompositeMessageContent();
-        String title = "聊天记录";
+        String title = fragment.getString(R.string.forward_chat_record_title);
         if (conversation.type == Conversation.ConversationType.Single) {
             UserInfo userInfo1 = ChatManager.Instance().getUserInfo(ChatManager.Instance().getUserId(), false);
             UserInfo userInfo2 = ChatManager.Instance().getUserInfo(conversation.target, false);
-            title = userInfo1.displayName + "和" + userInfo2.displayName + "的聊天记录";
+            title = fragment.getString(R.string.forward_chat_with, userInfo1.displayName, userInfo2.displayName);
         } else if (conversation.type == Conversation.ConversationType.Group) {
-            title = "群的聊天记录";
+            title = fragment.getString(R.string.forward_group_chat);
         }
         content.setTitle(title);
         ForwardViewModel forwardViewModel = new ViewModelProvider(fragment).get(ForwardViewModel.class);
@@ -92,7 +95,7 @@ public class ForwardMessageAction extends MultiMessageAction {
 
     @Override
     public String title(Context context) {
-        return "转发";
+        return context.getString(R.string.message_action_forward);
     }
 
     @Override

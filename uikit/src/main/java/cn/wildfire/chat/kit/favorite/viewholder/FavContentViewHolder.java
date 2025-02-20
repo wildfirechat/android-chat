@@ -45,7 +45,7 @@ public abstract class FavContentViewHolder extends RecyclerView.ViewHolder {
     }
 
     public boolean onLongClick() {
-        new MaterialDialog.Builder(fragment.getActivity()).items("删除").itemsCallback(new MaterialDialog.ListCallback() {
+        new MaterialDialog.Builder(fragment.getActivity()).items(R.string.message_delete).itemsCallback(new MaterialDialog.ListCallback() {
             @Override
             public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {
                 if (position == 0) {
