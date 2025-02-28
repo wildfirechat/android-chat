@@ -91,6 +91,7 @@ public abstract class SearchActivity extends WfcBaseNoToolbarActivity {
     }
 
     void search(String keyword) {
+        keyword = keyword.trim();
         if (!TextUtils.isEmpty(keyword)) {
             searchFragment.search(keyword, modules);
         } else {
