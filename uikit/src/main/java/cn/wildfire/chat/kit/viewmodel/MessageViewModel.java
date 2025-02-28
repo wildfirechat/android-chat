@@ -527,7 +527,9 @@ public class MessageViewModel extends ViewModel implements OnReceiveMessageListe
     }
 
     private void postNewMessage(List<UiMessage> messages) {
-        messageLiveData.setValue(messages);
+        if(messageLiveData != null){
+            messageLiveData.setValue(messages);
+        }
     }
 
     @Override
