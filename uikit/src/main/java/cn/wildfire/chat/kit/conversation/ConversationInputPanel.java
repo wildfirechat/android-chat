@@ -432,7 +432,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     public void showChannelMenu() {
         ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(conversation.target, false);
         if (channelInfo.menus == null || channelInfo.menus.isEmpty()) {
-            Toast.makeText(activity, "频道暂未配置菜单", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, fragment.getString(R.string.channel_no_menu), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -497,6 +497,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 fragment.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 100);
+                Toast.makeText(activity, fragment.getString(R.string.audio_permission_required), Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -740,7 +741,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             editText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
         } else {
             if (messageEmojiCount >= MAX_EMOJI_PER_MESSAGE) {
-                Toast.makeText(activity, "最多允许输入" + MAX_EMOJI_PER_MESSAGE + "个表情符号", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, fragment.getString(R.string.max_emoji_per_message, MAX_EMOJI_PER_MESSAGE), Toast.LENGTH_SHORT).show();
                 return;
             }
             messageEmojiCount++;

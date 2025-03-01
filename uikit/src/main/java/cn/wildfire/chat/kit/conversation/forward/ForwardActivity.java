@@ -18,6 +18,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -87,17 +88,17 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
             } else if (message.content instanceof VideoMessageContent) {
                 view.bind(targetName, targetPortrait, ((VideoMessageContent) message.content).getThumbnail());
             } else if (message.content instanceof CompositeMessageContent) {
-                view.bind(targetName, targetPortrait, "[聊天记录]: " + ((CompositeMessageContent) message.content).getTitle());
+                view.bind(targetName, targetPortrait, getString(R.string.forward_chat_record, ((CompositeMessageContent) message.content).getTitle()));
             } else {
                 view.bind(targetName, targetPortrait, WfcTextUtils.htmlToText(message.digest()));
             }
         } else {
-            view.bind(targetName, targetPortrait, "[逐条转发]共" + messages.size() + "条消息");
+            view.bind(targetName, targetPortrait, getString(R.string.forward_batch_messages, messages.size()));
         }
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .customView(view, false)
-            .negativeText("取消")
-            .positiveText("发送")
+            .negativeText(R.string.forward_cancel)
+            .positiveText(R.string.forward_send)
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -115,10 +116,10 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
                             @Override
                             public void onChanged(@Nullable OperateResult<Integer> integerOperateResult) {
                                 if (integerOperateResult.isSuccess()) {
-                                    Toast.makeText(ForwardActivity.this, "转发成功", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ForwardActivity.this, R.string.forward_success, Toast.LENGTH_SHORT).show();
                                     finish();
                                 } else {
-                                    Toast.makeText(ForwardActivity.this, "转发失败" + integerOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ForwardActivity.this, getString(R.string.forward_failed, integerOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });

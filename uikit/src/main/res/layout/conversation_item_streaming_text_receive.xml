@@ -20,7 +20,7 @@
         android:linksClickable="true"
         android:maxWidth="240dp"
         android:minHeight="40dp"
-        android:text="text message content"
+        android:text=""
         android:textColorLink="#3655bf"
         android:textSize="16sp" />
 

@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.voip.conference.ConferenceActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.Conversation;
@@ -23,7 +24,7 @@ public class VoipDummyActivity extends FragmentActivity {
         if (session == null || session.getState() == AVEngineKit.CallState.Idle) {
             finish();
         } else if (session.isScreenSharing()){
-            Toast.makeText(this, "屏幕共享中，不支持返回通话界面，请先停止屏幕共享", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.screen_sharing_in_progress_warning), Toast.LENGTH_LONG).show();
             finish();
         }else if (session.isConference()) {
             Intent intent = new Intent(this, ConferenceActivity.class);

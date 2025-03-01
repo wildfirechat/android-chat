@@ -85,7 +85,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
             return;
         }
         if (userInfos.size() == 1) {
-            Toast.makeText(this, "选择多位联系人时，才会发起群聊", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.create_conversation_multi_contact_hint, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, ConversationActivity.class);
             Conversation conversation = new Conversation(Conversation.ConversationType.Single, userInfos.get(0).uid);
             intent.putExtra("conversation", conversation);
@@ -93,7 +93,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
             finish();
         } else {
             MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("创建中...")
+                .content(R.string.creating_conversation)
                 .progress(true, 100)
                 .build();
             dialog.show();

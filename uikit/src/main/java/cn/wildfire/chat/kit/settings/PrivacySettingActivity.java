@@ -42,7 +42,7 @@ public class PrivacySettingActivity extends WfcBaseActivity {
                 @Override
                 public void onFail(int errorCode) {
                     if (!isFinishing()) {
-                        Toast.makeText(PrivacySettingActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PrivacySettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                     }
                 }
             });

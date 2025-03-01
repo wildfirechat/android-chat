@@ -13,7 +13,7 @@
         android:background="#FFFFFF"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_margin_left_and_right"
-        android:text="点击查看更多"
+        android:text="@string/click_to_expand_more"
         android:textColor="@color/blue3"
         android:textSize="12sp"
         android:visibility="visible" />

@@ -55,12 +55,7 @@ public class DiagnoseActivity extends WfcBaseActivity {
     }
 
     private void diagnose() {
-        // 1. app-server
-        // 2. api/version
-        // 3. tcping
-
-        Toast.makeText(this, "开始进行网络诊断，请稍后", Toast.LENGTH_SHORT).show();
-
+        Toast.makeText(this, R.string.diagnose_start, Toast.LENGTH_SHORT).show();
         diagnoseResultSB = new StringBuffer();
         checkAppServer();
         checkApiVersion();
@@ -69,26 +64,23 @@ public class DiagnoseActivity extends WfcBaseActivity {
 
     private void updateConfigInfo() {
         StringBuilder sb = new StringBuilder();
-        sb.append("当前时间：" + new Date().toString());
-        sb.append("\n");
-        sb.append("APP-Sever: " + AppService.APP_SERVER_ADDRESS);
-        sb.append("\n");
-        sb.append("Route-Host: " + Config.IM_SERVER_HOST);
-        sb.append("\n");
-        sb.append("Route-Port: " + MyApp.routePort);
-        sb.append("\n");
-        sb.append("Long-Link-Host: " + MyApp.longLinkHost);
-        sb.append("\n");
-        sb.append("Long-Link-Port: " + ChatManager.Instance().getLongLinkPort());
-        sb.append("\n");
-        sb.append("音视频 SDK: " + (AVEngineKit.isSupportConference() ? "高级版" : "多人版") + "\n");
+        sb.append(getString(R.string.diagnose_current_time, new Date().toString())).append("\n");
+        sb.append(getString(R.string.diagnose_app_server, AppService.APP_SERVER_ADDRESS)).append("\n");
+        sb.append(getString(R.string.diagnose_route_host, Config.IM_SERVER_HOST)).append("\n");
+        sb.append(getString(R.string.diagnose_route_port, MyApp.routePort)).append("\n");
+        sb.append(getString(R.string.diagnose_longlink_host, MyApp.longLinkHost)).append("\n");
+        sb.append(getString(R.string.diagnose_longlink_port, ChatManager.Instance().getLongLinkPort())).append("\n");
+        sb.append(getString(R.string.diagnose_av_sdk,
+            AVEngineKit.isSupportConference() ?
+            getString(R.string.diagnose_av_sdk_pro) :
+            getString(R.string.diagnose_av_sdk_basic))).append("\n");
+
         String ices = "";
         for (String[] ice : Config.ICE_SERVERS) {
             ices += ice[0] + " " + ice[1] + " " + ice[2] + "\n";
         }
-        sb.append("Turn-Server: " + ices);
-        sb.append("协议栈版本：" + ChatManager.Instance().getProtoRevision());
-        sb.append("\n");
+        sb.append(getString(R.string.diagnose_turnserver, ices));
+        sb.append(getString(R.string.diagnose_proto_version, ChatManager.Instance().getProtoRevision())).append("\n");
 
         configInfoTextView.setText(sb.toString());
     }
@@ -102,21 +94,16 @@ public class DiagnoseActivity extends WfcBaseActivity {
             @Override
             public void onUiSuccess(String s) {
                 if ("Ok".equals(s)) {
-                    diagnoseResultSB.append("APP-Server 正常");
-                    diagnoseResultSB.append("\n\n");
-
+                    diagnoseResultSB.append(getString(R.string.diagnose_app_server_ok)).append("\n\n");
                     updateDiagnoseResult();
                 } else {
-                    diagnoseResultSB.append("APP-Server 异常: " + s);
-                    diagnoseResultSB.append("\n\n");
+                    diagnoseResultSB.append(getString(R.string.diagnose_app_server_error, s)).append("\n\n");
                 }
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                diagnoseResultSB.append("APP-Server 异常: " + code + " " + msg);
-                diagnoseResultSB.append("\n\n");
-
+                diagnoseResultSB.append(getString(R.string.diagnose_app_server_error, code + " " + msg)).append("\n\n");
                 updateDiagnoseResult();
             }
         });
@@ -129,25 +116,19 @@ public class DiagnoseActivity extends WfcBaseActivity {
             public void onUiSuccess(String s) {
                 try {
                     JSONObject json = new JSONObject(s);
-                    diagnoseResultSB.append("IM-Server api/version 正常\n");
-                    diagnoseResultSB.append("remoteOriginUrl: " + json.getString("remoteOriginUrl"));
-                    diagnoseResultSB.append("\n");
-                    diagnoseResultSB.append("commitMessageShort: " + json.getString("commitMessageShort"));
-                    diagnoseResultSB.append("\n");
-                    diagnoseResultSB.append("commitTime: " + json.getString("commitTime"));
-                    diagnoseResultSB.append("\n\n");
+                    diagnoseResultSB.append(getString(R.string.diagnose_im_server_ok));
+                    diagnoseResultSB.append(getString(R.string.diagnose_remote_origin, json.getString("remoteOriginUrl"))).append("\n");
+                    diagnoseResultSB.append(getString(R.string.diagnose_commit_message, json.getString("commitMessageShort"))).append("\n");
+                    diagnoseResultSB.append(getString(R.string.diagnose_commit_time, json.getString("commitTime"))).append("\n\n");
+                    updateDiagnoseResult();
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
-
-                updateDiagnoseResult();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                diagnoseResultSB.append("IM-Server api/version 异常: " + code + " " + msg);
-                diagnoseResultSB.append("\n");
-
+                diagnoseResultSB.append(getString(R.string.diagnose_im_server_error, code, msg)).append("\n");
                 updateDiagnoseResult();
             }
         });
@@ -155,20 +136,17 @@ public class DiagnoseActivity extends WfcBaseActivity {
 
     private void tcping() {
         if (TextUtils.isEmpty(MyApp.longLinkHost)) {
-            Toast.makeText(this, "长连接地址为空，route 请求可能已异常", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.diagnose_longlink_empty, Toast.LENGTH_SHORT).show();
             return;
         }
         String host = MyApp.longLinkHost;
         int port = ChatManager.Instance().getLongLinkPort();
         ChatManager.Instance().getWorkHandler().post(() -> {
             try (Socket socket = new Socket(host, port)) {
-                diagnoseResultSB.append("IM-Server 长连接 tcp ping 正常");
-                diagnoseResultSB.append("\n\n");
-
+                diagnoseResultSB.append(getString(R.string.diagnose_tcp_ping_ok)).append("\n\n");
                 ChatManager.Instance().getMainHandler().post(this::updateDiagnoseResult);
             } catch (IOException e) {
-                diagnoseResultSB.append("IM-Server 长连接 tcp ping 异常: " + e.getMessage());
-                diagnoseResultSB.append("\n\n");
+                diagnoseResultSB.append(getString(R.string.diagnose_tcp_ping_error, e.getMessage())).append("\n\n");
                 ChatManager.Instance().getMainHandler().post(this::updateDiagnoseResult);
             }
         });

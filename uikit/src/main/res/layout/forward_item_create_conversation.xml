@@ -14,7 +14,7 @@
         android:layout_marginRight="@dimen/item_margin_left_and_right"
         android:background="@drawable/selector_common_item"
         android:gravity="center_vertical"
-        android:text="创建新聊天"
+        android:text="@string/create_new_conversation"
         android:textColor="#989898"
         android:textSize="13sp"
         android:visibility="visible" />

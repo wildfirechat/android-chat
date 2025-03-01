@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
@@ -57,7 +58,7 @@ public class ContactSearchModule extends SearchableModule<UserInfo, UserViewHold
 
     @Override
     public String category() {
-        return "联系人";
+        return WfcUIKit.getWfcUIKit().getApplication().getString(R.string.contact_category);
     }
 
     @Override

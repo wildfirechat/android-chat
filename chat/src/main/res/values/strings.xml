@@ -3,7 +3,6 @@
 
     <!--我-->
     <string name="my_chat_account">账号:%1$s</string>
-    <string name="setting">设置</string>
 
     <!--设置-->
     <string name="new_message_remind">新消息提醒</string>
@@ -17,5 +16,210 @@
     <string name="terms_of_use_and_privacy_policy">使用条款和隐私政策</string>
     <string name="name">野火IM</string>
     <string name="slogan">沟通如此简单</string>
+    <string name="about_intro_title">野火IM功能介绍</string>
+    <string name="about_intro_url">https://docs.wildfirechat.cn/</string>
+    <string name="about_agreement_title">野火IM用户协议</string>
+    <string name="about_agreement_url">https://www.wildfirechat.net/wildfirechat_user_agreement.html</string>
+    <string name="about_privacy_title">野火IM个人信息保护政策</string>
+    <string name="about_privacy_url">https://www.wildfirechat.net/wildfirechat_user_privacy.html</string>
 
+    <!--Login-->
+    <string name="mobile_number">手机号</string>
+    <string name="mobile_number_hint">请输入手机号</string>
+    <string name="mobile_number_error_mobile_empty">手机号不能为空</string>
+    <string name="mobile_number_error_format">手机号格式不正确</string>
+    <string name="verify_code">验证码</string>
+    <string name="verify_code_hint">请输入验证码</string>
+    <string name="get_verify_code">获取验证码</string>
+    <string name="login_button">登录</string>
+    <string name="login_use_password">使用密码登录</string>
+    <string name="login_success">登录成功</string>
+    <string name="sms_send_success">验证码发送成功</string>
+    <string name="password">密码</string>
+    <string name="password_hint">请输入密码</string>
+    <string name="kicked_off_title">提示</string>
+    <string name="kicked_off_message">你的账号已在其他手机登录</string>
+    <string name="kicked_off_confirm">知道了</string>
+    <string name="register_tip_title">提示</string>
+    <string name="register_tip_message">使用短信验证码登录，将会为您创建账户，请使用短信验证码登录</string>
+    <string name="login_progress">登录中...</string>
+    <string name="login_error_hint">网络出问题了:%1$d %2$s</string>
+    <string name="requesting_auth_code">请求验证码...</string>
+    <string name="auth_code_request_success">发送验证码成功</string>
+    <string name="auth_code_request_failure">发送验证码失败: %1$d %2$s</string>
+    <string name="sms_login_failure">登录失败：%1$d %2$s</string>
+
+    <!-- Login Activity Password Strings -->
+    <string name="login_password_title">密码登录</string>
+    <string name="login_phone_label">手机号</string>
+    <string name="login_phone_hint">请输入手机号(仅支持中国大陆手机号)</string>
+    <string name="login_password_label">密码</string>
+    <string name="login_password_hint">请输入密码</string>
+    <string name="login_use_auth_code">使用验证码登录</string>
+    <string name="login_register">注册</string>
+    <string name="login_button_text">登录</string>
+
+    <!--Main-->
+    <string name="chat">聊天</string>
+    <string name="contacts">通讯录</string>
+    <string name="discover">发现</string>
+    <string name="me">我</string>
+
+    <!--Main Activity-->
+    <string name="update_display_name_title">修改个人昵称？</string>
+    <string name="update_display_name_positive">修改</string>
+    <string name="notification_permission_needed">需要通知权限，否则无法正常接收消息通知</string>
+    <string name="alarm_permission_needed">需要精确闹钟权限，否则不能正常使用 IM 功能</string>
+    <string name="overlay_permission_needed">需要后台弹出界面和显示悬浮窗权限，否则后台运行时，无法弹出音视频界面</string>
+    <string name="no_license">专业版IM服务没有授权或者授权过期！！！</string>
+    <string name="time_inconsistent">服务器和客户端时间相差太大！！！</string>
+    <string name="address_book">通讯录</string>
+    <string name="workspace">工作台</string>
+    <string name="error_selecting_file">Error selecting file</string>
+
+    <!--Main Navigation-->
+    <string name="app_title_chat">野火</string>
+    <string name="app_title_contact">通讯录</string>
+    <string name="app_title_workspace">工作台</string>
+    <string name="app_title_discover">发现</string>
+    <string name="app_title_me">我的</string>
+
+    <!--Voip-->
+    <string name="voip_audio_chat">语音聊天</string>
+    <string name="voip_video_chat">视频聊天</string>
+    <string name="voip_switch_camera">切换摄像头</string>
+    <string name="voip_hangup">挂断</string>
+    <string name="voip_accept">接听</string>
+    <string name="voip_connecting">连接中...</string>
+    <string name="voip_call_duration">通话时长: %1$s</string>
+
+    <!--Conference-->
+    <string name="conference_create">发起会议</string>
+    <string name="conference_join">加入会议</string>
+    <string name="conference_title">会议主题</string>
+    <string name="conference_id">会议ID</string>
+    <string name="conference_join_hint">请输入会议ID</string>
+    <string name="conference_participants">参会人</string>
+
+    <!--Common-->
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="loading">加载中...</string>
+    <string name="error_network">网络错误，请检查网络连接</string>
+    <string name="error_server">服务器错误，请稍后重试</string>
+
+    <!--System-->
+    <string name="av_init_failed">音视频引擎初始化失败</string>
+    <string name="permission_background_overlay_denied">缺少后台弹出界面权限和显示悬浮窗权限</string>
+    <string name="voip_notification_silenced">用户设置禁止通话通知，忽略来电提醒</string>
+    <string name="init_success">初始化完成</string>
+
+    <!-- Commercial -->
+    <string name="commercial_not_support">商业版不支持此功能</string>
+    <string name="commercial_multicall_not_support">当前版本不支持多人通话</string>
+
+    <!-- Errors -->
+    <string name="delete_message_error">删除消息失败: %1$d</string>
+    <string name="message_recall_failed">撤回消息失败: %1$d</string>
+    <string name="send_audio_file_error">发送语音文件失败</string>
+
+    <!-- Chat Input Panel -->
+    <string name="channel_no_menu">频道暂未配置菜单</string>
+    <string name="max_emoji_limit">最多允许输入%1$d个表情符号</string>
+    <string name="audio_record_permission">需要录音权限</string>
+
+    <!-- Common -->
+    <string name="add">添加</string>
+    <string name="setting">设置</string>
+    <string name="resend_message">重新发送?</string>
+    <string name="message_content">消息内容</string>
+
+    <!-- Error -->
+    <string name="decode_secret_error">解密数据错误 %1$d</string>
+    <string name="audio_not_exist">音频文件不存在</string>
+
+    <!--Discovery-->
+    <string name="wfc_doc_title">野火IM开发文档</string>
+    <string name="wfc_doc_url">https://docs.wildfirechat.cn</string>
+
+    <!--Me Fragment-->
+    <string name="account_label">账号: %1$s</string>
+
+    <!--PC Login-->
+    <string name="pc_login_allow">允许 %1$s 登录</string>
+    <string name="pc_login_processing">处理中</string>
+    <string name="pc_login_success">登录成功</string>
+    <string name="pc_login_status">状态: %1$d</string>
+
+    <!-- Change Password -->
+    <string name="password_not_match">两次输入的密码不一致</string>
+    <string name="password_changing">正在修改密码...</string>
+    <string name="password_change_success">修改密码成功</string>
+    <string name="password_change_failed">修改密码失败:%1$d %2$s</string>
+
+    <!-- Reset Password -->
+    <string name="requesting_reset_code">请求验证码...</string>
+    <string name="reset_code_send_success">发送验证码成功</string>
+    <string name="reset_code_send_failure">发送验证码失败: %1$d %2$s</string>
+    <string name="reset_password_progress">正在修改密码...</string>
+    <string name="reset_password_success">重置密码成功</string>
+    <string name="reset_password_failure">重置密码失败: %1$d %2$s</string>
+
+    <!-- Setting -->
+    <string name="upload_log_success">上传日志 %1$s 成功</string>
+    <string name="upload_log_failed">上传日志失败 %1$d %2$s</string>
+    <string name="battery_optimize_allowed">已忽略电池优化，允许野火IM后台运行，更能保证消息的实时性</string>
+    <string name="battery_optimize_tip">允许野火IM后台运行，更能保证消息的实时性</string>
+    <string name="system_version_not_support">系统不支持</string>
+
+    <!-- Diagnose -->
+    <string name="diagnose_start">开始进行网络诊断，请稍后</string>
+    <string name="diagnose_current_time">当前时间：%1$s</string>
+    <string name="diagnose_app_server">APP-Server: %1$s</string>
+    <string name="diagnose_route_host">Route-Host: %1$s</string>
+    <string name="diagnose_route_port">Route-Port: %1$s</string>
+    <string name="diagnose_longlink_host">Long-Link-Host: %1$s</string>
+    <string name="diagnose_longlink_port">Long-Link-Port: %1$s</string>
+    <string name="diagnose_av_sdk">音视频 SDK: %1$s</string>
+    <string name="diagnose_av_sdk_pro">高级版</string>
+    <string name="diagnose_av_sdk_basic">多人版</string>
+    <string name="diagnose_turnserver">Turn-Server: %1$s</string>
+    <string name="diagnose_proto_version">协议栈版本：%1$s</string>
+    <string name="diagnose_app_server_ok">APP-Server 正常</string>
+    <string name="diagnose_app_server_error">APP-Server 异常: %1$s</string>
+    <string name="diagnose_im_server_ok">IM-Server api/version 正常\n</string>
+    <string name="diagnose_remote_origin">remoteOriginUrl: %1$s</string>
+    <string name="diagnose_commit_message">commitMessageShort: %1$s</string>
+    <string name="diagnose_commit_time">commitTime: %1$s</string>
+    <string name="diagnose_im_server_error">IM-Server api/version 异常: %1$d %2$s</string>
+    <string name="diagnose_longlink_empty">长连接地址为空，route 请求可能已异常</string>
+    <string name="diagnose_tcp_ping_ok">IM-Server 长连接 tcp ping 正常</string>
+    <string name="diagnose_tcp_ping_error">IM-Server 长连接 tcp ping 异常: %1$s</string>
+
+    <!-- Main Menu -->
+    <string name="more">更多</string>
+    <string name="start_group_chat">发起群聊</string>
+    <string name="start_secret_chat">发起密聊</string>
+    <string name="scan_qrcode">扫一扫</string>
+    <string name="moment">朋友圈</string>
+    <string name="chatroom">聊天室</string>
+    <string name="robot">机器人</string>
+    <string name="channel">频道</string>
+    <string name="dev_guide">开发手册</string>
+    <string name="conference">会议</string>
+    <!-- 添加以下字符串资源 -->
+    <string name="chat_background">聊天背景</string>
+    <string name="favorites">收藏</string>
+    <string name="account_security">账号与安全</string>
+    <string name="theme">主题</string>
+    <!-- 添加以下字符串资源 -->
+    <string name="about">关于</string>
+    <string name="diagnose">诊断</string>
+    <string name="upload_log">上传日志</string>
+    <string name="battery_optimization">电池优化</string>
+    <!-- 添加以下字符串资源 -->
+    <string name="change_password">修改密码</string>
+    <!-- 添加以下字符串资源 -->
+    <string name="set_new_password">设置新密码</string>
+    <string name="account_and_security">账号与密码</string>
 </resources>

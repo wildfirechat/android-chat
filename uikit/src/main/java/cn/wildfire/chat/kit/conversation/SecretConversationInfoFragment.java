@@ -138,7 +138,7 @@ public class SecretConversationInfoFragment extends Fragment implements Conversa
 
     void clearMessage() {
         new MaterialDialog.Builder(getActivity())
-            .items("清空会话")
+            .items(getString(R.string.clear_conversation))
             .itemsCallback(new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {

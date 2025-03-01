@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:gravity="center"
-            android:text="输入关键词开始搜索" />
+            android:text="@string/search_tip" />
 
     </LinearLayout>
 
@@ -40,7 +40,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="没有搜索结果" />
+            android:text="@string/search_no_result" />
 
     </LinearLayout>
 

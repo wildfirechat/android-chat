@@ -29,10 +29,10 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
         this.checkedGroupMembers = checkedUserInfos;
         if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
-            menuItem.setTitle("确定");
+            menuItem.setTitle(R.string.contact_pick_confirm);
             menuItem.setEnabled(false);
         } else {
-            menuItem.setTitle("确定(" + checkedUserInfos.size() + ")");
+            menuItem.setTitle(getString(R.string.contact_pick_confirm_with_count, checkedUserInfos.size()));
             menuItem.setEnabled(true);
         }
     }
@@ -64,7 +64,7 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
             memberIds.add(info.getUserInfo().uid);
         }
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("添加中...")
+                .content(R.string.adding)
                 .progress(true, 100)
                 .cancelable(false)
                 .build();
@@ -75,7 +75,7 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
                     if (booleanOperateResult.isSuccess()) {
                         finish();
                     } else {
-                        Toast.makeText(this, "设置管理员错误 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.set_group_manager_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

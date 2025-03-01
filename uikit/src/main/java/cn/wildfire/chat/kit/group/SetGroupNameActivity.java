@@ -97,7 +97,7 @@ public class SetGroupNameActivity extends WfcBaseActivity {
     private void setGroupName() {
         groupInfo.name = nameEditText.getText().toString().trim();
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("请稍后...")
+            .content(R.string.processing)
             .progress(true, 100)
             .cancelable(false)
             .build();
@@ -108,13 +108,13 @@ public class SetGroupNameActivity extends WfcBaseActivity {
             public void onChanged(@Nullable OperateResult operateResult) {
                 dialog.dismiss();
                 if (operateResult.isSuccess()) {
-                    Toast.makeText(SetGroupNameActivity.this, "修改群名称成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SetGroupNameActivity.this, getString(R.string.modify_group_name_success), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.putExtra("groupName", groupInfo.name);
                     setResult(RESULT_SET_GROUP_NAME_SUCCESS, intent);
                     finish();
                 } else {
-                    Toast.makeText(SetGroupNameActivity.this, "修改群名称失败: " + operateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SetGroupNameActivity.this, getString(R.string.modify_group_name_failed, operateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                 }
             }
         });

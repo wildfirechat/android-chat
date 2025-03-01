@@ -100,7 +100,7 @@ public class ConferenceHistoryListFragment extends Fragment {
                 duration = "-";
             }
 
-            String desc = String.format("时间: %s 发起人: %s 时长: %s", startDateStr, hostDisplayName, duration);
+            String desc = String.format(itemView.getContext().getString(R.string.conf_history_desc_format), startDateStr, hostDisplayName, duration);
             return desc;
         }
     }

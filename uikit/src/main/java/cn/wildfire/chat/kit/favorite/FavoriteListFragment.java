@@ -101,7 +101,7 @@ public class FavoriteListFragment extends ProgressFragment {
                 if (getActivity() == null || getActivity().isFinishing()) {
                     return;
                 }
-                Toast.makeText(getActivity(), "加载收藏失败 " + code, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.load_favorite_failed, code), Toast.LENGTH_SHORT).show();
                 isLoading = false;
             }
         });
@@ -113,12 +113,12 @@ public class FavoriteListFragment extends ProgressFragment {
             @Override
             public void onUiSuccess(Void aVoid) {
                 favoriteListAdapter.removeFavoriteItem(item.getFavId());
-                Toast.makeText(getContext(), "删除收藏成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.delete_favorite_success), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                Toast.makeText(getContext(), "删除收藏失败: " + code, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.delete_favorite_failed, code), Toast.LENGTH_SHORT).show();
             }
         });
     }

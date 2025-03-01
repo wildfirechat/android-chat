@@ -18,27 +18,27 @@
             android:paddingLeft="@dimen/option_item_margin_left"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="成员管理" />
+            android:text="@string/group_member_management" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/managerOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
             app:divider_align_to_title="true"
-            app:title="管理员" />
+            app:title="@string/group_managers" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/muteOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
             app:divider_align_to_title="true"
-            app:title="设置禁言" />
+            app:title="@string/set_group_mute" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/permissionOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
-            app:title="成员权限" />
+            app:title="@string/group_member_permission" />
     </LinearLayout>
 
     <LinearLayout
@@ -54,28 +54,28 @@
             android:paddingLeft="@dimen/option_item_margin_left"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="群基本设置" />
+            android:text="@string/group_basic_settings" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/joinOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
-            app:desc="不限制加入"
+            app:desc="@string/group_join_type_no_limit"
             app:divider_align_to_title="true"
-            app:title="加群方式" />
+            app:title="@string/group_join_type" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/searchOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
-            app:desc="不允许查找"
-            app:title="查找方式" />
+            app:desc="@string/group_search_type_not_allowed"
+            app:title="@string/group_search_type" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/historyMessageOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_common_item"
-            app:desc="不允许新成员查看历史消息"
-            app:title="群历史消息" />
+            app:desc="@string/group_history_message_not_allowed"
+            app:title="@string/group_history_message" />
     </LinearLayout>
 </LinearLayout>

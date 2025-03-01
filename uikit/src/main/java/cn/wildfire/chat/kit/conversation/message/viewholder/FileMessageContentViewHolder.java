@@ -71,7 +71,7 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
     public void saveFile(View itemView, UiMessage message) {
         File file = DownloadManager.mediaMessageContentFile(message.message);
         if (file == null || !file.exists()) {
-            Toast.makeText(fragment.getContext(), "请先点击下载文件", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getContext(), R.string.file_need_download, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -86,16 +86,16 @@ public class FileMessageContentViewHolder extends MediaMessageContentViewHolder 
 
         boolean result = FileUtils.copyFile(file, dstFile);
         if (result) {
-            Toast.makeText(fragment.getContext(), "文件保存成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getContext(), R.string.file_save_success, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(fragment.getContext(), "文件保存失败", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getContext(), R.string.file_save_failed, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
         if (MessageContextMenuItemTags.TAG_SAVE_FILE.equals(tag)) {
-            return "存储到手机";
+            return context.getString(R.string.file_save_to_phone);
         }
         return super.contextMenuTitle(context, tag);
     }

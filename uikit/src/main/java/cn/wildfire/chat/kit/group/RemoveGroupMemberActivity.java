@@ -33,10 +33,10 @@ public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
         this.checkedGroupMembers = checkedUserInfos;
         if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
-            menuItem.setTitle("删除");
+            menuItem.setTitle(R.string.delete);
             menuItem.setEnabled(false);
         } else {
-            menuItem.setTitle("删除(" + checkedUserInfos.size() + ")");
+            menuItem.setTitle(getString(R.string.delete_with_count, checkedUserInfos.size()));
             menuItem.setEnabled(true);
         }
     }
@@ -73,7 +73,7 @@ public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
 
     void removeMember(List<UIUserInfo> checkedUsers) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("删除中...")
+                .content(R.string.deleting)
                 .progress(true, 100)
                 .cancelable(false)
                 .build();

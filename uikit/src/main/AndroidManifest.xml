@@ -58,11 +58,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.kit.user.SetAliasActivity"
-            android:label="设置用户备注"
+            android:label="@string/set_user_alias"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.kit.user.ChangeMyNameActivity"
-            android:label="修改昵称"
+            android:label="@string/modify_nickname"
             android:screenOrientation="portrait" />
 
         <activity
@@ -71,15 +71,15 @@
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name="cn.wildfire.chat.kit.group.SetGroupNameActivity"
-            android:label="修改群名称"
+            android:label="@string/modify_group_name"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.kit.group.SetGroupRemarkActivity"
-            android:label="修改群备注"
+            android:label="@string/modify_group_remark"
             android:screenOrientation="portrait" />
         <activity
             android:name=".group.SetGroupAnnouncementActivity"
-            android:label="修改群公告"
+            android:label="@string/modify_group_announcement"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.kit.third.location.ui.activity.ShowLocationActivity"
@@ -101,77 +101,76 @@
         </activity>
         <activity
             android:name="cn.wildfire.chat.kit.conversation.CreateConversationActivity"
-            android:label="创建会话" />
+            android:label="@string/create_conversation" />
         <activity
             android:name="cn.wildfire.chat.kit.group.AddGroupMemberActivity"
-            android:label="添加新成员" />
+            android:label="@string/add_new_member" />
         <activity
             android:name="cn.wildfire.chat.kit.group.RemoveGroupMemberActivity"
-            android:label="删除群成员" />
+            android:label="@string/remove_group_member" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.mention.MentionGroupMemberActivity"
-            android:label="选择群成员" />
+            android:label="@string/select_group_member" />
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupListActivity"
-            android:label="群列表" />
+            android:label="@string/group_list" />
         <activity
             android:name="cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity"
-            android:label="好友请求" />
+            android:label="@string/friend_request" />
         <activity
             android:name="cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity"
-            android:label="搜索用户" />
+            android:label="@string/search_user" />
         <activity
             android:name="cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity"
-            android:label="邀请好友" />
+            android:label="@string/invite_friend" />
         <activity
             android:name="cn.wildfire.chat.kit.user.UserInfoActivity"
-            android:label="用户信息" />
+            android:label="@string/user_info" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.PrivacySettingActivity"
-            android:label="隐私设置" />
+            android:label="@string/privacy_setting" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.PrivacyFindMeSettingActivity"
-            android:label="隐私设置" />
+            android:label="@string/privacy_setting" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.blacklist.BlacklistListActivity"
-            android:label="黑名单" />
+            android:label="@string/blacklist" />
         <activity
             android:name="cn.wildfire.chat.kit.settings.MessageNotifySettingActivity"
-            android:label="消息与通知" />
+            android:label="@string/message_notification" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.ConversationInfoActivity"
-            android:label="会话详情" />
+            android:label="@string/conversation_info" />
         <activity
             android:name="cn.wildfire.chat.kit.chatroom.ChatRoomListActivity"
-            android:label="聊天室列表" />
+            android:label="@string/chatroom_list" />
         <activity
             android:name="cn.wildfire.chat.kit.search.SearchPortalActivity"
-            android:label="搜索中心" />
+            android:label="@string/search_portal" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.forward.ForwardActivity"
-            android:label="选择一个聊天" />
+            android:label="@string/select_a_chat" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationTargetActivity"
-            android:label="选择联系人" />
+            android:label="@string/select_contact" />
         <activity
             android:name="cn.wildfire.chat.kit.conversation.pick.PickConversationActivity"
-            android:label="选择会话" />
+            android:label="@string/select_conversation" />
         <activity
             android:name=".conversation.receipt.GroupMessageReceiptActivity"
-            android:label="消息阅读状态" />
+            android:label="@string/message_read_status" />
         <activity
             android:name="cn.wildfire.chat.kit.channel.ChannelListActivity"
-            android:label="频道列表" />
-
+            android:label="@string/channel_list" />
         <activity
             android:name="cn.wildfire.chat.kit.channel.CreateChannelActivity"
-            android:label="创建频道"
+            android:label="@string/create_channel"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan|stateHidden|adjustResize" />
 
         <activity
             android:name="cn.wildfire.chat.kit.channel.ChannelInfoActivity"
-            android:label="频道信息" />
+            android:label="@string/channel_info" />
         <activity
             android:name="cn.wildfire.chat.kit.WfcWebViewActivity"
             android:exported="false">
@@ -186,63 +185,63 @@
         <activity android:name="cn.wildfire.chat.kit.qrcode.QRCodeActivity" />
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupInfoActivity"
-            android:label="群信息" />
+            android:label="@string/group_info" />
         <activity
             android:name="cn.wildfire.chat.kit.qrcode.ScanQRCodeActivity"
-            android:label="扫一扫" />
+            android:label="@string/scan_qrcode" />
         <activity
             android:name="cn.wildfire.chat.kit.group.manage.GroupManageActivity"
-            android:label="群管理" />
+            android:label="@string/group_manage" />
         <activity
             android:name="cn.wildfire.chat.kit.group.manage.GroupManagerListActivity"
-            android:label="管理员列表" />
+            android:label="@string/manager_list" />
         <activity
             android:name="cn.wildfire.chat.kit.group.manage.AddGroupManagerActivity"
-            android:label="添加管理员" />
+            android:label="@string/add_manager" />
         <activity
             android:name="cn.wildfire.chat.kit.group.manage.GroupMuteOrAllowActivity"
-            android:label="群禁言" />
+            android:label="@string/group_mute" />
         <activity
             android:name="cn.wildfire.chat.kit.group.manage.GroupMemberPermissionActivity"
-            android:label="群成员权限" />
+            android:label="@string/group_member_permission" />
 
         <activity
             android:name="cn.wildfire.chat.kit.group.GroupMemberListActivity"
-            android:label="群成员列表"
+            android:label="@string/group_member_list"
             android:screenOrientation="portrait" />
         <activity
             android:name="cn.wildfire.chat.kit.contact.pick.PickContactActivity"
-            android:label="联系人选择" />
+            android:label="@string/contact_selection" />
 
         <activity
             android:name="cn.wildfire.chat.kit.voip.conference.CreateConferenceActivity"
-            android:label="发起会议" />
+            android:label="@string/start_conference" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity"
             android:excludeFromRecents="true"
-            android:label="会议"
+            android:label="@string/conference"
             android:launchMode="singleTask"
             android:taskAffinity=".conference"
             android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".voip.conference.ConferencePortalActivity"
-            android:label="会议" />
+            android:label="@string/conference" />
         <activity
             android:name=".voip.conference.OrderConferenceActivity"
-            android:label="预定会议" />
+            android:label="@string/schedule_conference" />
         <activity
             android:name=".voip.conference.ConferenceInfoActivity"
-            android:label="会议详情" />
+            android:label="@string/conference_details" />
         <activity
             android:name=".voip.conference.ConferenceInviteActivity"
-            android:label="会议邀请" />
+            android:label="@string/conference_invitation" />
         <activity
             android:name=".voip.conference.ConferenceParticipantListActivity"
-            android:label="参会人员" />
+            android:label="@string/conference_participants" />
         <activity
             android:name=".voip.conference.ConferenceHistoryListActivity"
-            android:label="会议记录" />
+            android:label="@string/conference_records" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
             android:exported="false"
@@ -258,10 +257,10 @@
         <activity android:name=".third.location.ui.activity.MyLocationActivity" />
         <activity
             android:name=".conversation.file.FileRecordActivity"
-            android:label="文件记录" />
+            android:label="@string/file_record" />
         <activity
             android:name=".conversation.file.FileRecordListActivity"
-            android:label="文件记录" />
+            android:label="@string/file_record" />
 
 
         <!--moment start-->
@@ -282,38 +281,38 @@
         <activity android:name=".group.manage.MuteGroupMemberActivity" />
         <activity
             android:name=".contact.ContactListActivity"
-            android:label="联系人" />
+            android:label="@string/contacts" />
         <activity
             android:name=".user.SetNameActivity"
-            android:label="修改野火ID" />
+            android:label="@string/modify_wildfire_id" />
         <activity
             android:name=".conversation.message.CompositeMessageContentActivity"
-            android:label="组合消息" />
+            android:label="@string/composite_message" />
         <activity
             android:name=".favorite.FavoriteListActivity"
-            android:label="我的收藏" />
+            android:label="@string/my_favorites" />
         <activity
             android:name=".group.GroupMemberMessageHistoryActivity"
-            android:label="用户消息" />
+            android:label="@string/user_messages" />
         <activity
             android:name=".widget.AlertDialogActivity"
             android:theme="@style/AppThemeDialog" />
         <activity
             android:name=".organization.OrganizationMemberListActivity"
-            android:label="组织通讯录" />
+            android:label="@string/organization_directory" />
         <activity
             android:name=".organization.EmployeeInfoActivity"
-            android:label="员工信息" />
+            android:label="@string/employee_info" />
         <activity
             android:name=".organization.pick.PickOrganizationMemberActivity"
-            android:label="选取组织成员" />
+            android:label="@string/select_organization_member" />
 
         <activity
             android:name=".mesh.DomainListActivity"
-            android:label="外部单位列表" />
+            android:label="@string/external_domain_list" />
         <activity
             android:name=".mesh.DomainInfoActivity"
-            android:label="外部单位详情" />
+            android:label="@string/external_domain_details" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

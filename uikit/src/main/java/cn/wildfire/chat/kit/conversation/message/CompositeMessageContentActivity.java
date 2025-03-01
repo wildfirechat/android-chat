@@ -59,7 +59,7 @@ public class CompositeMessageContentActivity extends WfcBaseActivity implements 
                 if (message.conversation.type == Conversation.ConversationType.SecretChat) {
                     fileUrl = DownloadManager.buildSecretChatMediaUrl(message);
                 }
-                Toast.makeText(this, "消息加载中，请稍后", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_loading, Toast.LENGTH_SHORT).show();
                 DownloadManager.download(fileUrl, Config.FILE_SAVE_DIR, new DownloadManager.OnDownloadListener() {
                     @Override
                     public void onSuccess(File file) {
@@ -78,7 +78,7 @@ public class CompositeMessageContentActivity extends WfcBaseActivity implements 
                     @Override
                     public void onFail() {
                         UIUtils.postTaskSafely(() -> {
-                            Toast.makeText(CompositeMessageContentActivity.this, "加载消息失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CompositeMessageContentActivity.this, R.string.message_load_failed, Toast.LENGTH_SHORT).show();
                         });
                     }
                 });

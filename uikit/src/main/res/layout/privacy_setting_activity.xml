@@ -19,7 +19,7 @@
             android:id="@+id/blacklistOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
-            app:title="黑名单" />
+            app:title="@string/blacklist" />
     </LinearLayout>
 
     <LinearLayout
@@ -34,7 +34,7 @@
             android:id="@+id/momentsPrivacyOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
-            app:title="朋友圈" />
+            app:title="@string/moments" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,7 +48,7 @@
             android:id="@+id/findMeOptionItemView"
             style="@style/OptionItem"
             android:background="@drawable/selector_option_item"
-            app:title="找到我的方式" />
+            app:title="@string/find_me_ways" />
     </LinearLayout>
 
     <FrameLayout
@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="加我为好友时，需要验证"
+            android:text="@string/add_friend_verify"
             android:textColor="@color/black1"
             android:textSize="16sp" />
 

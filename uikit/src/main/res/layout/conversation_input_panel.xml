@@ -183,7 +183,7 @@
             android:layout_height="40dp"
             android:background="@color/gray5"
             android:gravity="center"
-            android:text="全员禁言中"
+            android:text="@string/all_group_member_muted"
             android:visibility="gone" />
 
         <View style="@style/Line" />

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.AppServiceProvider;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.livebus.LiveDataBus;
 import cn.wildfire.chat.kit.voip.conference.message.ConferenceChangeModeContent;
@@ -175,14 +176,14 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                 }
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST_AUDIO:
-                                Toast.makeText(context, "主持人拒绝了你的发言请求", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, context.getString(R.string.conf_reject_unmute_audio), Toast.LENGTH_SHORT).show();
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST_VIDEO:
-                                Toast.makeText(context, "主持人拒绝了你的打开摄像头请求", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, context.getString(R.string.conf_reject_unmute_video), Toast.LENGTH_SHORT).show();
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE_AUDIO:
                                 senderName = ChatManager.Instance().getUserDisplayName(msg.sender);
-                                Toast.makeText(context, senderName + " 请求发言", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, context.getString(R.string.conf_request_speak, senderName), Toast.LENGTH_SHORT).show();
                                 if (commandContent.getBoolValue()) {
                                     this.applyingUnmuteAudioMembers.remove(msg.sender);
                                 } else {
@@ -194,7 +195,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.APPLY_UNMUTE_VIDEO:
                                 senderName = ChatManager.Instance().getUserDisplayName(msg.sender);
-                                Toast.makeText(context, senderName + " 请求打开摄像头", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, context.getString(R.string.conf_request_camera, senderName), Toast.LENGTH_SHORT).show();
                                 if (commandContent.getBoolValue()) {
                                     this.applyingUnmuteVideoMembers.remove(msg.sender);
                                 } else {
@@ -210,7 +211,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                     this.isApplyingUnmuteAudio = false;
                                     if (commandContent.getBoolValue()) {
                                         this.muteAudio(false);
-                                        Toast.makeText(context, "主持人同意了你的发言请求", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, context.getString(R.string.conf_approve_speak), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 break;
@@ -220,7 +221,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                     this.isApplyingUnmuteVideo = false;
                                     if (commandContent.getBoolValue()) {
                                         this.muteVideo(false);
-                                        Toast.makeText(context, "主持人同意了你的打开摄像头请求", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, context.getString(R.string.conf_approve_camera), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 break;
@@ -234,9 +235,9 @@ public class ConferenceManager implements OnReceiveMessageListener {
                                 }
                                 senderName = ChatManager.Instance().getUserDisplayName(msg.sender);
                                 if (commandContent.getBoolValue()) {
-                                    Toast.makeText(context, senderName + " 举手", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, context.getString(R.string.conf_somebody_hand_up, senderName), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(context, senderName + " 放下举手", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, context.getString(R.string.conf_somebody_hand_down, senderName), Toast.LENGTH_SHORT).show();
                                 }
 
                                 LiveDataBus.setValue("kConferenceCommandStateChanged", new Object());
@@ -246,24 +247,24 @@ public class ConferenceManager implements OnReceiveMessageListener {
                             case ConferenceCommandContent.ConferenceCommandType.PUT_ALL_HAND_DOWN:
                                 if (this.isHandUp) {
                                     this.isHandUp = false;
-                                    Toast.makeText(context, "主持人放下你的举手", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, context.getString(R.string.conf_host_put_your_hand_down), Toast.LENGTH_SHORT).show();
                                 }
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.RECORDING:
                                 this.reloadConferenceInfo();
-                                Toast.makeText(context, commandContent.getBoolValue() ? "主持人开始录制" : "主持人结束录制", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, commandContent.getBoolValue() ? context.getString(R.string.conf_host_start_recording) : context.getString(R.string.conf_host_stop_recording), Toast.LENGTH_SHORT).show();
                                 break;
 
                             case ConferenceCommandContent.ConferenceCommandType.FOCUS:
                                 this.currentConferenceInfo.setFocus(commandContent.getTargetUserId());
                                 this.reloadConferenceInfo();
-                                Toast.makeText(context, "主持人锁定焦点用户", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, context.getString(R.string.conf_host_focus_user), Toast.LENGTH_SHORT).show();
                                 LiveDataBus.setValue("kConferenceCommandStateChanged", commandContent);
                                 break;
                             case ConferenceCommandContent.ConferenceCommandType.CANCEL_FOCUS:
                                 this.currentConferenceInfo.setFocus(null);
                                 this.reloadConferenceInfo();
-                                Toast.makeText(context, "主持人取消锁定焦点用户", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, context.getString(R.string.conf_host_cancel_focus), Toast.LENGTH_SHORT).show();
                                 LiveDataBus.setValue("kConferenceCommandStateChanged", commandContent);
                                 break;
 
@@ -359,7 +360,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                 session.muteVideo(true);
             } else {
                 if (session.isAudience() && isParticipantFull(session)) {
-                    Toast.makeText(context, "发言人数已满，无法切换到发言人！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, context.getString(R.string.conf_max_participants_reached), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 session.muteVideo(false);
@@ -452,7 +453,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
     public void handUp(boolean isHandUp) {
         this.isHandUp = isHandUp;
         this.sendCommandMessage(ConferenceCommandContent.ConferenceCommandType.HANDUP, null, isHandUp);
-        Toast.makeText(context, isHandUp ? "已举手，等待管理员处理" : "已放下举手", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, isHandUp ? context.getString(R.string.conf_hand_up_waiting) : context.getString(R.string.conf_hand_down_message), Toast.LENGTH_SHORT).show();
     }
 
     public void putMemberHandDown(String memberId) {
@@ -482,7 +483,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
             @Override
             public void onSuccess() {
                 currentConferenceInfo.setRecording(record);
-                Toast.makeText(context, record ? "开始录制" : "结束录制", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, record ? context.getString(R.string.conf_start_recording) : context.getString(R.string.conf_stop_recording), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -623,7 +624,7 @@ public class ConferenceManager implements OnReceiveMessageListener {
                 muteVideo(true);
             }
         }
-        Toast.makeText(context, audio ? "主持人开启了全员静音" : "主持人关闭了所有人的摄像头", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, audio ? context.getString(R.string.conf_host_muted_all_audio) : context.getString(R.string.conf_host_muted_all_video), Toast.LENGTH_SHORT).show();
     }
 
     private void reloadConferenceInfo() {

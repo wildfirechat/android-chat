@@ -51,13 +51,13 @@ public class GroupViewHolder extends ResultItemViewHolder<GroupSearchResult> {
 
         String desc = "";
         if ((groupSearchResult.marchedType & GroupSearchResult.GroupSearchMarchTypeMask.Group_Name_Mask) > 0) {
-            desc = "群名称包含: " + keyword;
+            desc = fragment.getString(R.string.group_name_contains, keyword);
         } else if ((groupSearchResult.marchedType & GroupSearchResult.GroupSearchMarchTypeMask.Group_Remark_Mask) > 0) {
-            desc = "群备注包含: " + keyword;
+            desc = fragment.getString(R.string.group_remark_contains, keyword);
         } else if ((groupSearchResult.marchedType & GroupSearchResult.GroupSearchMarchTypeMask.Member_Name_Mask) > 0) {
-            desc = "群成员名包含: " + keyword;
+            desc = fragment.getString(R.string.group_member_name_contains, keyword);
         } else if ((groupSearchResult.marchedType & GroupSearchResult.GroupSearchMarchTypeMask.Member_Alias_Mask) > 0) {
-            desc = "群成员备注包含: " + keyword;
+            desc = fragment.getString(R.string.group_member_alias_contains, keyword);
         }
         descTextView.setText(desc);
     }

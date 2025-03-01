@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
-import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfirechat.model.Conversation;
 
@@ -109,26 +107,27 @@ public class CreateChannelActivity extends WfcBaseActivity {
         String channelName = nameInputEditText.getEditableText().toString().trim();
         String desc = descInputEditText.getEditableText().toString().trim();
         if (TextUtils.isEmpty(portraitPath)) {
-            Toast.makeText(this, "请设置头像", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.channel_set_portrait, Toast.LENGTH_SHORT).show();
             return;
         }
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("创建频道中...")
+            .content(R.string.channel_create_processing)
             .progress(true, 10)
             .cancelable(false)
             .show();
-        channelViewModel.createChannel(null, channelName, portraitPath, desc, null).observe(this, new Observer<OperateResult<String>>() {
-            @Override
-            public void onChanged(@Nullable OperateResult<String> result) {
+
+        channelViewModel.createChannel(null, channelName, portraitPath, desc, null)
+            .observe(this, result -> {
                 dialog.dismiss();
                 if (result.isSuccess()) {
                     Intent intent = ConversationActivity.buildConversationIntent(CreateChannelActivity.this, Conversation.ConversationType.Channel, result.getResult(), 0);
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(CreateChannelActivity.this, "create channel failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateChannelActivity.this,
+                        R.string.channel_create_failed,
+                        Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
+            });
     }
 }

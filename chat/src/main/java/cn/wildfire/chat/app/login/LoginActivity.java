@@ -69,8 +69,8 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         setStatusBarColor(R.color.gray14);
         if (getIntent().getBooleanExtra("isKickedOff", false)) {
             new MaterialDialog.Builder(this)
-                .content("你的账号已在其他手机登录")
-                .negativeText("知道了")
+                .content(R.string.kicked_off_message)
+                .negativeText(R.string.kicked_off_confirm)
                 .build()
                 .show();
         }
@@ -100,11 +100,11 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
 
     void register() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .title("提示")
-            .content("使用短信验证码登录，将会为您创建账户，请使用短信验证码登录")
+            .title(R.string.register_tip_title)
+            .content(R.string.register_tip_message)
             .cancelable(true)
-            .positiveText("确定")
-            .negativeText("取消")
+            .positiveText(R.string.confirm)
+            .negativeText(R.string.cancel)
             .onPositive((dialog1, which) -> {
                 Intent intent = new Intent(LoginActivity.this, SMSLoginActivity.class);
                 Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
@@ -122,7 +122,7 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
         String password = passwordEditText.getText().toString().trim();
 
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("登录中...")
+            .content(R.string.login_progress)
             .progress(true, 10)
             .cancelable(false)
             .build();
@@ -157,7 +157,7 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
                 }
                 dialog.dismiss();
 
-                Toast.makeText(LoginActivity.this, "网络出问题了:" + code + " " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, getString(R.string.login_error_hint, code, msg), Toast.LENGTH_SHORT).show();
             }
         });
 

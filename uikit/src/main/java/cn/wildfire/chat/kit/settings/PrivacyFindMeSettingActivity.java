@@ -58,7 +58,7 @@ public class PrivacyFindMeSettingActivity extends WfcBaseActivity {
                 @Override
                 public void onFail(int errorCode) {
                     displayNameSwitch.setChecked(isChecked);
-                    Toast.makeText(PrivacyFindMeSettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+                    Toast.makeText(PrivacyFindMeSettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -80,7 +80,7 @@ public class PrivacyFindMeSettingActivity extends WfcBaseActivity {
                 @Override
                 public void onFail(int errorCode) {
                     nameSwitch.setChecked(isChecked);
-                    Toast.makeText(PrivacyFindMeSettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+                    Toast.makeText(PrivacyFindMeSettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -102,7 +102,7 @@ public class PrivacyFindMeSettingActivity extends WfcBaseActivity {
                 @Override
                 public void onFail(int errorCode) {
                     mobileSwitch.setChecked(isChecked);
-                    Toast.makeText(PrivacyFindMeSettingActivity.this, "网络错误", Toast.LENGTH_SHORT);
+                    Toast.makeText(PrivacyFindMeSettingActivity.this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                 }
             });
         });

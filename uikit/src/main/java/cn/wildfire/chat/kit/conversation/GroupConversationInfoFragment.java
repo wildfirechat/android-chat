@@ -213,14 +213,14 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
             }
 
             if (groupInfo.deleted == 1) {
-                Toast.makeText(getActivity(), "群组已被解散", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.group_dismissed_toast), Toast.LENGTH_SHORT).show();
                 getActivity().finish();
                 return;
             }
         }
 
         if (selfGroupMember == null || selfGroupMember.type == GroupMember.GroupMemberType.Removed) {
-            Toast.makeText(getActivity(), "你不在群组或发生错误, 请稍后再试", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.group_not_member_error), Toast.LENGTH_SHORT).show();
             getActivity().finish();
             return;
         }
@@ -263,7 +263,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                 if (groupInfo.target.equals(this.groupInfo.target)) {
                     this.groupInfo = groupInfo;
                     if (groupInfo.deleted == 1) {
-                        Toast.makeText(getActivity(), "群组已被解散", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.group_dismissed_toast), Toast.LENGTH_SHORT).show();
                         getActivity().finish();
                         return;
                     }
@@ -274,10 +274,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     break;
                 }
             }
-
         });
     }
-
 
     private void loadAndShowGroupMembers(boolean refresh) {
         groupViewModel.getGroupMembersLiveData(conversationInfo.conversation.target, maxShowGroupMemberCount)
@@ -430,7 +428,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     void updateMyGroupAlias() {
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-            .input("请输入你的群昵称", selfGroupMember.alias, true, (dialog1, input) -> {
+            .input(getString(R.string.my_group_nickname_dialog_title), selfGroupMember.alias, true, (dialog1, input) -> {
                 if (TextUtils.isEmpty(selfGroupMember.alias)) {
                     if (TextUtils.isEmpty(input.toString().trim())) {
                         return;
@@ -449,8 +447,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                         }
                     });
             })
-            .negativeText("取消")
-            .positiveText("确定")
+            .negativeText(getString(R.string.action_cancel))
+            .positiveText(getString(R.string.action_confirm))
             .onPositive((dialog12, which) -> {
                 dialog12.dismiss();
             })
@@ -466,23 +464,23 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         String title;
         String content;
         if (userViewModel.getUserId().equals(groupInfo.owner)) {
-            title = "解散群组";
-            content = "确定解散群组？";
+            title = getString(R.string.dismiss_group_title);
+            content = getString(R.string.dismiss_group_confirm_message);
         } else {
-            title = "退出群组";
-            content = "确定退出群组？";
+            title = getString(R.string.quit_group_title);
+            content = getString(R.string.quit_group_confirm_message);
         }
         new AlertDialog.Builder(getActivity())
             .setTitle(title)
             .setMessage(content)
-            .setPositiveButton("确定", (dialog, which) -> {
+            .setPositiveButton(getString(R.string.action_confirm), (dialog, which) -> {
                 if (userViewModel.getUserId().equals(groupInfo.owner)) {
                     groupViewModel.dismissGroup(conversationInfo.conversation.target, Collections.singletonList(0), null).observe(this, aBoolean -> {
                         if (aBoolean != null && aBoolean) {
                             Intent intent = new Intent(getContext().getPackageName() + ".main");
                             startActivity(intent);
                         } else {
-                            Toast.makeText(getActivity(), "解散群组失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.dismiss_group_failed), Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {
@@ -491,13 +489,13 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                             Intent intent = new Intent(getContext().getPackageName() + ".main");
                             startActivity(intent);
                         } else {
-                            Toast.makeText(getActivity(), "退出群组失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.quit_group_failed), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
 
             })
-            .setNegativeButton("取消", (dialog, which) -> {
+            .setNegativeButton(getString(R.string.action_cancel), (dialog, which) -> {
                 // do nothing
             })
             .show();
@@ -505,9 +503,9 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     void clearMessage() {
         List<String> items = new ArrayList<>();
-        items.add("清空本地会话");
+        items.add(getString(R.string.clear_local_chat));
         if (this.groupInfo.superGroup != 1) {
-            items.add("清空远程会话");
+            items.add(getString(R.string.clear_remote_chat));
         }
         new MaterialDialog.Builder(getActivity())
             .items(items)
@@ -545,7 +543,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     @Override
     public void onUserMemberClick(UserInfo userInfo) {
         if (groupInfo != null && groupInfo.privateChat == 1 && selfGroupMember.type != GroupMember.GroupMemberType.Owner && selfGroupMember.type != GroupMember.GroupMemberType.Manager && !userInfo.uid.equals(groupInfo.owner)) {
-            Toast.makeText(getActivity(), "禁止群成员私聊", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.group_member_disable_chat), Toast.LENGTH_SHORT).show();
             return;
         }
         Intent intent = new Intent(getActivity(), UserInfoActivity.class);
@@ -556,6 +554,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         intent.putExtra("groupMemberSource", source);
         startActivity(intent);
     }
+
 
     @Override
     public void onAddMemberClick() {
@@ -578,21 +577,21 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
             if (images == null || images.isEmpty()) {
-                Toast.makeText(getActivity(), "更新头像失败: 选取文件失败 ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.update_portrait_failed), Toast.LENGTH_SHORT).show();
                 return;
             }
             File thumbImgFile = ImageUtils.genThumbImgFile(images.get(0).path);
             if (thumbImgFile == null) {
-                Toast.makeText(getActivity(), "更新头像失败: 生成缩略图失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.update_portrait_failed), Toast.LENGTH_SHORT).show();
                 return;
             }
             String imagePath = thumbImgFile.getAbsolutePath();
             MutableLiveData<OperateResult<Boolean>> result = groupViewModel.updateGroupPortrait(groupInfo.target, imagePath);
             result.observe(this, booleanOperateResult -> {
                 if (booleanOperateResult.isSuccess()) {
-                    Toast.makeText(getActivity(), "更新头像成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.update_portrait_success), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getActivity(), "更新头像失败: " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.update_portrait_failed, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -627,6 +626,5 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         } else if (id == R.id.silentSwitchButton) {
             silent(isChecked);
         }
-
     }
 }

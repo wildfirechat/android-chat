@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.GroupViewHolder;
@@ -56,7 +57,7 @@ public class GroupSearchViewModule extends SearchableModule<GroupSearchResult, G
 
     @Override
     public String category() {
-        return "群组";
+        return WfcUIKit.getWfcUIKit().getApplication().getString(R.string.group_category);
     }
 
     @Override

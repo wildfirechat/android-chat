@@ -73,7 +73,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         assert args != null;
         conversationInfo = args.getParcelable("conversationInfo");
         assert conversationInfo != null;
-        getActivity().setTitle("频道详情");
+        getActivity().setTitle(getString(R.string.channel_details));
     }
 
     @Nullable
@@ -149,7 +149,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
 
     void clearMessage() {
         new MaterialDialog.Builder(getActivity())
-            .items("清空本地会话", "清空远程会话")
+            .items(getString(R.string.clear_local_conversation), getString(R.string.clear_remote_conversation))
             .itemsCallback(new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
@@ -165,7 +165,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
 
     void showChannelQRCode() {
         String qrCodeValue = WfcScheme.QR_CODE_PREFIX_CHANNEL + channelInfo.channelId;
-        Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), "频道二维码", channelInfo.portrait, qrCodeValue);
+        Intent intent = QRCodeActivity.buildQRCodeIntent(getActivity(), getString(R.string.channel_qr_code_title), channelInfo.portrait, qrCodeValue);
         startActivity(intent);
     }
 
@@ -183,8 +183,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
                     Intent intent = new Intent(getContext().getPackageName() + ".main");
                     startActivity(intent);
                 } else {
-                    Toast.makeText(getActivity(), "取消订阅失败 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(getActivity(), getString(R.string.unsubscribe_failed, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                 }
             }
         });

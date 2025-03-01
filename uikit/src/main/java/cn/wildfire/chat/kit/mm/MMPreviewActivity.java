@@ -335,7 +335,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
             } else {
                 saveImageView.setVisibility(View.VISIBLE);
                 saveImageView.setOnClickListener(v -> {
-                    Toast.makeText(this, "图片保存中", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.saving_image), Toast.LENGTH_SHORT).show();
                     File file = null;
                     if (entry.getMessage() != null) {
                         file = DownloadManager.mediaMessageContentFile(entry.getMessage());
@@ -345,7 +345,7 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
                         file = new File(Config.FILE_SAVE_DIR, name);
                     }
                     if (file == null) {
-                        Toast.makeText(MMPreviewActivity.this, "图片保存失败 file == null", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MMPreviewActivity.this, getString(R.string.image_save_failed_null_file), Toast.LENGTH_LONG).show();
                         return;
                     }
 
@@ -442,14 +442,14 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
             boolean granted = checkSelfPermission(permissions[0]) == PackageManager.PERMISSION_GRANTED;
             if (granted) {
                 ImageUtils.saveMedia2Album(this, file, isImage);
-                Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+                Toast.makeText(MMPreviewActivity.this, getString(R.string.image_save_success), Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(MMPreviewActivity.this, "请授权访问外部存储设备权限", Toast.LENGTH_LONG).show();
+                Toast.makeText(MMPreviewActivity.this, getString(R.string.storage_permission_required), Toast.LENGTH_LONG).show();
                 requestPermissions(permissions, 100);
             }
         } else {
             ImageUtils.saveMedia2Album(this, file, isImage);
-            Toast.makeText(MMPreviewActivity.this, "图片保存成功", Toast.LENGTH_LONG).show();
+            Toast.makeText(MMPreviewActivity.this, getString(R.string.image_save_success), Toast.LENGTH_LONG).show();
         }
     }
 

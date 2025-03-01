@@ -133,19 +133,17 @@ public class VoipExt extends ConversationExt {
         return true;
     }
 
-
     @Override
     public String title(Context context) {
-        return "视频通话";
+        return context.getString(R.string.voip_ext_video);
     }
-
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
         if (ConversationExtMenuTags.TAG_VOIP_AUDIO.equals(tag)) {
-            return "语音通话";
+            return context.getString(R.string.voip_ext_audio);
         } else {
-            return "视频通话";
+            return context.getString(R.string.voip_ext_video);
         }
     }
 }

@@ -127,9 +127,9 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(ChatManager.Instance().getUserId(), false);
         if (userInfo != null) {
-            titleEditText.setText(userInfo.displayName + "的会议");
+            titleEditText.setText(getString(R.string.conference_title_default, userInfo.displayName));
         } else {
-            titleEditText.setText("会议");
+            titleEditText.setText(getString(R.string.conference_title_unnamed));
         }
         advancedSwitch.setChecked(false);
         Calendar calendar = Calendar.getInstance();
@@ -151,8 +151,8 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     void passwordChecked(CompoundButton button, boolean checked) {
         if (checked) {
             new MaterialDialog.Builder(this)
-                .content("请输入密码")
-                .input("请输入6位数字", "123456", false, new MaterialDialog.InputCallback() {
+                .content(R.string.conference_enter_password)
+                .input(getString(R.string.conference_password_hint), "123456", false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         password = input.toString();
@@ -196,7 +196,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
             @Override
             public void onPick(Date date) {
                 if (date.getTime() < System.currentTimeMillis()) {
-                    Toast.makeText(CreateConferenceActivity.this, "结束时间不能早于当前时间", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateConferenceActivity.this, R.string.conference_end_time_invalid, Toast.LENGTH_SHORT).show();
                 } else {
                     endDateTimeTextView.setText(date.toString());
                     endDateTime = date;
@@ -217,7 +217,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
     private void createConference(boolean join) {
         joinConferenceButton.setEnabled(false);
         ConferenceInfo info = new ConferenceInfo();
-        Toast.makeText(this, "创建会议中...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.conference_creating, Toast.LENGTH_SHORT).show();
         info.setPassword(password);
         info.setConferenceTitle(titleEditText.getText().toString());
         Random random = new Random();
@@ -245,7 +245,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
                         ConferenceManager.getManager().setCurrentConferenceInfo(info);
                         finish();
                     } else {
-                        Toast.makeText(CreateConferenceActivity.this, "创建会议失败", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateConferenceActivity.this, R.string.conference_create_failed, Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     finish();
@@ -254,12 +254,10 @@ public class CreateConferenceActivity extends WfcBaseActivity {
 
             @Override
             public void onFail(int i) {
-                Toast.makeText(CreateConferenceActivity.this, "创建会议失败: " + i, Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateConferenceActivity.this, getString(R.string.conference_create_failed_code, i), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "createConference fail" + i);
                 joinConferenceButton.setEnabled(true);
             }
         });
     }
-
-
 }
