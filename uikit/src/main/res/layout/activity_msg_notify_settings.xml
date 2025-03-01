@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="接收新消息通知"
+                android:text="@string/receive_new_msg_notification"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="接收语音或视频来电通知"
+                android:text="@string/receive_voip_notification"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -70,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="通知显示消息详情"
+                android:text="@string/notification_show_msg_detail"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -91,7 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="消息回执"
+                android:text="@string/message_receipt"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -117,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="草稿同步"
+                android:text="@string/draft_sync"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -143,7 +143,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="开启对讲功能"
+                android:text="@string/enable_ptt"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -164,7 +164,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="语音消息音量增强"
+                android:text="@string/audio_msg_volume_amplification"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 

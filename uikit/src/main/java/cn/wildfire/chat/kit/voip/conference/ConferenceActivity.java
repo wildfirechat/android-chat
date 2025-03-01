@@ -103,14 +103,14 @@ public class ConferenceActivity extends VoipBaseActivity {
             boolean mute = value.second;
             if (!mute) {
                 preventShowFloatingViewOnStop = true;
-                AlertDialogActivity.showAlterDialog(this, audio ? "主持人邀请你发言" : "主持人邀请你打开摄像头", false, "拒绝", "接受",
+                AlertDialogActivity.showAlterDialog(this, audio ? getString(R.string.host_invite_speak) : getString(R.string.host_invite_camera), false, getString(R.string.reject), getString(R.string.accept),
                     () -> {
                         preventShowFloatingViewOnStop = false;
-                        Toast.makeText(this, audio ? "你拒绝了发言邀请" : "你拒绝了打开摄像头邀请", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, audio ? getString(R.string.rejected_speak_invite) : getString(R.string.rejected_camera_invite), Toast.LENGTH_SHORT).show();
                     },
                     () -> {
                         preventShowFloatingViewOnStop = false;
-                        Toast.makeText(this, audio ? "你接受了发言邀请" : "你接受了打开摄像头邀请", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, audio ? getString(R.string.accepted_speak_invite) : getString(R.string.accepted_camera_invite), Toast.LENGTH_SHORT).show();
                         if (audio) {
                             manager.muteAudio(false);
                         } else {
@@ -118,7 +118,7 @@ public class ConferenceActivity extends VoipBaseActivity {
                         }
                     });
             } else {
-                Toast.makeText(this, "主持人关闭了你的发言", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.host_closed_your_speech), Toast.LENGTH_SHORT).show();
                 if (audio) {
                     manager.muteAudio(true);
                 } else {
@@ -134,7 +134,7 @@ public class ConferenceActivity extends VoipBaseActivity {
             ConferenceManager manager = ConferenceManager.getManager();
             if (requestUnmute) {
                 preventShowFloatingViewOnStop = true;
-                AlertDialogActivity.showAlterDialog(this, audio ? "主持人关闭了全员静音，是否要打开麦克风" : "管理员取消了全体成员关闭摄像头，是否打开摄像头", false, "忽略", "打开",
+                AlertDialogActivity.showAlterDialog(this, audio ? getString(R.string.host_unmuted_all_mic) : getString(R.string.host_unmuted_all_camera), false, getString(R.string.ignore), getString(R.string.open),
                     () -> {
                         preventShowFloatingViewOnStop = false;
                     },
@@ -147,7 +147,7 @@ public class ConferenceActivity extends VoipBaseActivity {
                         }
                     });
             }
-            Toast.makeText(this, "主持人关闭了全员静音", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.host_muted_all), Toast.LENGTH_SHORT).show();
         };
         LiveDataBus.subscribe("onCancelMuteAll", this, onCancelMuteAllObserver);
     }
@@ -183,15 +183,15 @@ public class ConferenceActivity extends VoipBaseActivity {
                 String selfUid = ChatManager.Instance().getUserId();
                 if (selfUid.equals(host)) {
                     new MaterialDialog.Builder(this)
-                        .content("会议已结束，是否重新开启会议")
-                        .negativeText("否")
-                        .positiveText("是")
+                        .content(R.string.conf_ended_restart_prompt)
+                        .negativeText(R.string.no)
+                        .positiveText(R.string.yes)
                         .onPositive((dialog, which) -> {
                             finish();
                             new Handler().postDelayed(() -> {
                                 AVEngineKit.CallSession newSession = AVEngineKit.Instance().startConference(callId, audioOnly, pin, host, title, desc, audience, advanced, false, this);
                                 if (newSession == null) {
-                                    Toast.makeText(this, "创建会议失败", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, R.string.create_conf_failed, Toast.LENGTH_SHORT).show();
                                 } else {
                                     Intent intent = new Intent(getApplicationContext(), ConferenceActivity.class);
                                     startActivity(intent);
@@ -201,20 +201,20 @@ public class ConferenceActivity extends VoipBaseActivity {
                         .onNegative((dialog, which) -> finish())
                         .show();
                 } else {
-                    Toast.makeText(this, "请联系主持人开启会议", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.contact_host_start_conf, Toast.LENGTH_SHORT).show();
                     finish();
                 }
             } else if (callEndReason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
                 new MaterialDialog.Builder(this)
-                    .content("互动者已满，是否已观众模式加入会议")
-                    .negativeText("否")
-                    .positiveText("是")
+                    .content(R.string.join_as_audience_prompt)
+                    .negativeText(R.string.no)
+                    .positiveText(R.string.yes)
                     .onPositive((dialog, which) -> {
                         finish();
                         new Handler().postDelayed(() -> {
                             AVEngineKit.CallSession newSession = AVEngineKit.Instance().joinConference(callId, audioOnly, pin, host, title, desc, true, advanced, false, false, this);
                             if (newSession == null) {
-                                Toast.makeText(this, "加入会议失败", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, R.string.join_conf_failed, Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
                                 Intent intent = new Intent(getApplicationContext(), ConferenceActivity.class);

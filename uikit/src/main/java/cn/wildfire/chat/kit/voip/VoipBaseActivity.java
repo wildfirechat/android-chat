@@ -137,7 +137,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int result : grantResults) {
             if (result != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "需要录音、摄像头等权限，才能进行音视频通话", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.voip_permission_required), Toast.LENGTH_SHORT).show();
                 if (gEngineKit.getCurrentSession() != null || gEngineKit.getCurrentSession().getState() != AVEngineKit.CallState.Idle) {
                     gEngineKit.getCurrentSession().endCall();
                 }
@@ -146,7 +146,6 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             }
         }
     }
-
 
     @Override
     protected void onResume() {
@@ -194,7 +193,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
 
     public void startScreenShare() {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
-            Toast.makeText(this, "系统不支持屏幕共享", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.screen_share_not_supported), Toast.LENGTH_SHORT).show();
             return;
         }
         MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
@@ -220,7 +219,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
                 // 开始屏幕共享是，voip最小化
                 finish();
             } else {
-                Toast.makeText(this, "屏幕共享授权失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.screen_share_permission_denied), Toast.LENGTH_SHORT).show();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -294,7 +293,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         postAction(() -> {
             //发送方丢包超过6为网络不好
             if (lostPacket > 6) {
-                Toast.makeText(this, "您的网络不好", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.your_network_poor), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -307,9 +306,9 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             if (lostPacket > 10) {
                 if (uplink) {
                     UserInfo userInfo = ChatManager.Instance().getUserInfo(userId, false);
-                    Toast.makeText(this, userInfo.displayName + " 的网络不好", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.user_network_poor, userInfo.displayName), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, "您的网络不好", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.your_network_poor), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -329,7 +328,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     public boolean checkOverlayPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "需要悬浮窗权限", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.floating_window_permission_required), Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
 
                 List<ResolveInfo> infos = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);

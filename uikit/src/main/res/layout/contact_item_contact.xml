@@ -12,7 +12,7 @@
         android:background="@color/gray5"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_margin_left_and_right"
-        android:text="群主"
+        android:text="@string/group_owner"
         android:textColor="@color/gray12"
         android:textSize="13sp"
         android:visibility="visible" />

@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:text="取消" />
+            android:text="@string/cancel" />
 
         <TextView
             android:id="@+id/confirmTextView"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:padding="5dp"
-            android:text="确定" />
+            android:text="@string/confirm" />
 
     </RelativeLayout>
 

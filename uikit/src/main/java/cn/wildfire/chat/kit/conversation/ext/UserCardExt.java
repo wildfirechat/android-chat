@@ -83,16 +83,16 @@ public class UserCardExt extends ConversationExt {
         String desc = "";
         switch (type) {
             case 0:
-                desc = "[个人名片]";
+                desc = fragment.getString(R.string.user_card_personal);
                 break;
             case 1:
-                desc = "[群组]";
+                desc = fragment.getString(R.string.user_card_group);
                 break;
             case 2:
-                desc = "[聊天室]";
+                desc = fragment.getString(R.string.user_card_chatroom);
                 break;
             case 3:
-                desc = "[频道]";
+                desc = fragment.getString(R.string.user_card_channel);
                 break;
             default:
                 break;
@@ -109,8 +109,8 @@ public class UserCardExt extends ConversationExt {
         }
         MaterialDialog dialog = new MaterialDialog.Builder(fragment.getActivity())
             .customView(view, false)
-            .negativeText("取消")
-            .positiveText("发送")
+            .negativeText(R.string.user_card_cancel)
+            .positiveText(R.string.user_card_send)
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -140,7 +140,7 @@ public class UserCardExt extends ConversationExt {
 
     @Override
     public String title(Context context) {
-        return "名片";
+        return context.getString(R.string.user_card_title);
     }
 
     @Override

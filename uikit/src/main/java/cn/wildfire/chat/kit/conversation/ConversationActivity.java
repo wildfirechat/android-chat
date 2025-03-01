@@ -79,7 +79,7 @@ public class ConversationActivity extends WfcBaseActivity {
         Intent intent = new Intent(this, ConversationInfoActivity.class);
         ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
         if (conversationInfo == null) {
-            Toast.makeText(this, "获取会话信息失败", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.get_conversation_info_failed, Toast.LENGTH_SHORT).show();
             return;
         }
         intent.putExtra("conversationInfo", conversationInfo);

@@ -96,9 +96,8 @@ public class DiscoveryFragment extends Fragment {
     }
 
     void cookbook() {
-        WfcWebViewActivity.loadUrl(getContext(), "野火IM开发文档", "https://docs.wildfirechat.cn");
+        WfcWebViewActivity.loadUrl(getContext(), getString(R.string.wfc_doc_title), getString(R.string.wfc_doc_url));
     }
-
 
     private void initMoment() {
         if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {

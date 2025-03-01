@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WildFireIM</string>
+
+    <!--Me-->
+    <string name="my_chat_account">Account:%1$s</string>
+
+    <!--Me Fragment-->
+    <string name="account_label">Account: %1$s</string>
+
+    <!--Settings-->
+    <string name="new_message_remind">New Message Notification</string>
+    <string name="exit">Sign Out</string>
+
+    <!--About-->
+    <string name="app_name_in_about">WildFire Instant Messaging</string>
+    <string name="function_introduction">Features</string>
+    <string name="complaint">Feedback</string>
+    <string name="check_update">Check for Updates</string>
+    <string name="terms_of_use_and_privacy_policy">Terms of Use and Privacy Policy</string>
+    <string name="name">WildFireIM</string>
+    <string name="slogan">Communication Made Simple</string>
+    <string name="about_intro_title">WildFire IM Features</string>
+    <string name="about_intro_url">https://docs.wildfirechat.cn/</string>
+    <string name="about_agreement_title">WildFire IM User Agreement</string>
+    <string name="about_agreement_url">https://www.wildfirechat.net/wildfirechat_user_agreement.html</string>
+    <string name="about_privacy_title">WildFire IM Privacy Policy</string>
+    <string name="about_privacy_url">https://www.wildfirechat.net/wildfirechat_user_privacy.html</string>
+
+    <!--Login-->
+    <string name="mobile_number">Phone Number</string>
+    <string name="mobile_number_hint">Please enter phone number</string>
+    <string name="mobile_number_error_mobile_empty">Phone number cannot be empty</string>
+    <string name="mobile_number_error_format">Invalid phone number format</string>
+    <string name="verify_code">Verification Code</string>
+    <string name="verify_code_hint">Please enter verification code</string>
+    <string name="get_verify_code">Get Code</string>
+    <string name="login_button">Login</string>
+    <string name="login_use_password">Login with Password</string>
+    <string name="login_success">Login successful</string>
+    <string name="sms_send_success">Verification code sent</string>
+    <string name="password">Password</string>
+    <string name="password_hint">Please enter password</string>
+    <string name="kicked_off_title">Notice</string>
+    <string name="kicked_off_message">Your account has been logged in on another device</string>
+    <string name="kicked_off_confirm">OK</string>
+    <string name="register_tip_title">Notice</string>
+    <string name="register_tip_message">Using SMS verification code to login will create an account for you. Please proceed with SMS verification code login</string>
+    <string name="login_progress">Logging in...</string>
+    <string name="login_error_hint">Network error:%1$d %2$s</string>
+    <string name="requesting_auth_code">Requesting verification code...</string>
+    <string name="auth_code_request_success">Verification code sent successfully</string>
+    <string name="auth_code_request_failure">Failed to send verification code: %1$d %2$s</string>
+    <string name="sms_login_failure">Login failed: %1$d %2$s</string>
+
+    <!-- Login Activity Password Strings -->
+    <string name="login_password_title">Password Login</string>
+    <string name="login_phone_label">Phone</string>
+    <string name="login_phone_hint">Enter phone number (China mainland only)</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_password_hint">Enter password</string>
+    <string name="login_use_auth_code">Login with verification code</string>
+    <string name="login_register">Register</string>
+    <string name="login_button_text">Login</string>
+
+    <!--Main-->
+    <string name="chat">Chat</string>
+    <string name="contacts">Contacts</string>
+    <string name="discover">Discover</string>
+    <string name="me">Me</string>
+
+    <!--Main Navigation-->
+    <string name="app_title_chat">Chats</string>
+    <string name="app_title_contact">Contacts</string>
+    <string name="app_title_workspace">Workspace</string>
+    <string name="app_title_discover">Discover</string>
+    <string name="app_title_me">Me</string>
+
+    <!--Voip-->
+    <string name="voip_audio_chat">Voice Call</string>
+    <string name="voip_video_chat">Video Call</string>
+    <string name="voip_switch_camera">Switch Camera</string>
+    <string name="voip_hangup">Hang Up</string>
+    <string name="voip_accept">Accept</string>
+    <string name="voip_connecting">Connecting...</string>
+    <string name="voip_call_duration">Duration: %1$s</string>
+
+    <!--Conference-->
+    <string name="conference_create">Create Meeting</string>
+    <string name="conference_join">Join Meeting</string>
+    <string name="conference_title">Meeting Title</string>
+    <string name="conference_id">Meeting ID</string>
+    <string name="conference_join_hint">Please enter meeting ID</string>
+    <string name="conference_participants">Participants</string>
+
+    <!--System-->
+    <string name="av_init_failed">Failed to initialize audio/video engine</string>
+    <string name="permission_background_overlay_denied">Missing permission for background popup and overlay display</string>
+    <string name="voip_notification_silenced">Call notifications disabled by user settings, ignoring incoming call</string>
+    <string name="init_success">Initialization complete</string>
+
+    <!-- Commercial -->
+    <string name="commercial_not_support">This feature is not supported in commercial version</string>
+    <string name="commercial_multicall_not_support">Multi-party calls not supported in current version</string>
+
+    <!-- Errors -->
+    <string name="delete_message_error">Failed to delete message: %1$d</string>
+    <string name="message_recall_failed">Failed to recall message: %1$d</string>
+    <string name="send_audio_file_error">Failed to send voice message</string>
+
+    <!--Common-->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="loading">Loading...</string>
+    <string name="error_network">Network error, please check your connection</string>
+    <string name="error_server">Server error, please try again later</string>
+
+    <!-- Chat Input Panel -->
+    <string name="channel_no_menu">Channel menu not configured</string>
+    <string name="max_emoji_limit">Maximum %1$d emoji allowed</string>
+    <string name="audio_record_permission">Audio recording permission required</string>
+
+    <!-- Common -->
+    <string name="add">Add</string>
+    <string name="setting">Setting</string>
+    <string name="resend_message">Resend?</string>
+    <string name="message_content">Message Content</string>
+
+    <!-- Error -->
+    <string name="decode_secret_error">Failed to decode secret data %1$d</string>
+    <string name="audio_not_exist">Audio file does not exist</string>
+
+    <!--Discovery-->
+    <string name="wfc_doc_title">WildFire IM Documentation</string>
+    <string name="wfc_doc_url">https://docs.wildfirechat.cn</string>
+
+    <!--Main Activity-->
+    <string name="update_display_name_title">Update your nickname?</string>
+    <string name="update_display_name_positive">Update</string>
+    <string name="notification_permission_needed">Notification permission required to receive message notifications</string>
+    <string name="alarm_permission_needed">Exact alarm permission required for proper IM functionality</string>
+    <string name="overlay_permission_needed">Overlay permission required for audio/video calls in background</string>
+    <string name="no_license">Professional IM service is not licensed or has expired!</string>
+    <string name="time_inconsistent">Large time difference between server and client!</string>
+    <string name="address_book">Address Book</string>
+    <string name="workspace">Workspace</string>
+    <string name="error_selecting_file">Error selecting file</string>
+
+    <!--PC Login-->
+    <string name="pc_login_allow">Allow %1$s to login</string>
+    <string name="pc_login_processing">Processing</string>
+    <string name="pc_login_success">Login successful</string>
+    <string name="pc_login_status">Status: %1$d</string>
+
+    <!-- Change Password -->
+    <string name="password_not_match">The passwords you entered do not match</string>
+    <string name="password_changing">Changing password...</string>
+    <string name="password_change_success">Password changed successfully</string>
+    <string name="password_change_failed">Failed to change password: %1$d %2$s</string>
+
+    <!-- Reset Password -->
+    <string name="requesting_reset_code">Requesting verification code...</string>
+    <string name="reset_code_send_success">Verification code sent successfully</string>
+    <string name="reset_code_send_failure">Failed to send verification code: %1$d %2$s</string>
+    <string name="reset_password_progress">Resetting password...</string>
+    <string name="reset_password_success">Password reset successful</string>
+    <string name="reset_password_failure">Failed to reset password: %1$d %2$s</string>
+
+    <!-- Setting -->
+    <string name="upload_log_success">Successfully uploaded log %1$s</string>
+    <string name="upload_log_failed">Failed to upload log %1$d %2$s</string>
+    <string name="battery_optimize_allowed">Battery optimization ignored, allowing WildFire IM to run in background for better message delivery</string>
+    <string name="battery_optimize_tip">Please allow WildFire IM to run in background for better message delivery</string>
+    <string name="system_version_not_support">Not supported by system version</string>
+
+    <!-- Diagnose -->
+    <string name="diagnose_start">Starting network diagnosis, please wait</string>
+    <string name="diagnose_current_time">Current Time: %1$s</string>
+    <string name="diagnose_app_server">APP-Server: %1$s</string>
+    <string name="diagnose_route_host">Route-Host: %1$s</string>
+    <string name="diagnose_route_port">Route-Port: %1$s</string>
+    <string name="diagnose_longlink_host">Long-Link-Host: %1$s</string>
+    <string name="diagnose_longlink_port">Long-Link-Port: %1$s</string>
+    <string name="diagnose_av_sdk">AV SDK: %1$s</string>
+    <string name="diagnose_av_sdk_pro">Pro Version</string>
+    <string name="diagnose_av_sdk_basic">Basic Version</string>
+    <string name="diagnose_turnserver">Turn-Server: %1$s</string>
+    <string name="diagnose_proto_version">Protocol Version: %1$s</string>
+    <string name="diagnose_app_server_ok">APP-Server OK</string>
+    <string name="diagnose_app_server_error">APP-Server Error: %1$s</string>
+    <string name="diagnose_im_server_ok">IM-Server api/version OK\n</string>
+    <string name="diagnose_remote_origin">remoteOriginUrl: %1$s</string>
+    <string name="diagnose_commit_message">commitMessageShort: %1$s</string>
+    <string name="diagnose_commit_time">commitTime: %1$s</string>
+    <string name="diagnose_im_server_error">IM-Server api/version Error: %1$d %2$s</string>
+    <string name="diagnose_longlink_empty">Long link address is empty, route request may be abnormal</string>
+    <string name="diagnose_tcp_ping_ok">IM-Server long connection tcp ping OK</string>
+    <string name="diagnose_tcp_ping_error">IM-Server long connection tcp ping Error: %1$s</string>
+
+    <!-- Main Menu -->
+    <string name="more">More</string>
+    <string name="start_group_chat">Start Group Chat</string>
+    <string name="start_secret_chat">Start Secret Chat</string>
+    <string name="scan_qrcode">Scan QR Code</string>
+    <string name="moment">Moment</string>
+    <string name="chatroom">Chatroom</string>
+    <string name="robot">Robot</string>
+    <string name="channel">Channel</string>
+    <string name="dev_guide">Develop Guide</string>
+    <string name="conference">Conference</string>
+    <string name="chat_background">Chat Background</string>
+    <string name="favorites">Favorites</string>
+    <string name="account_security">Account and Security</string>
+    <string name="theme">Theme</string>
+    <string name="about">About</string>
+    <string name="diagnose">Diagnose</string>
+    <string name="upload_log">Upload Log</string>
+    <string name="battery_optimization">Battery Optimization</string>
+    <string name="change_password">Change Password</string>
+    <string name="set_new_password">Set New Password</string>
+    <string name="account_and_security">Account and Password</string>
+</resources>

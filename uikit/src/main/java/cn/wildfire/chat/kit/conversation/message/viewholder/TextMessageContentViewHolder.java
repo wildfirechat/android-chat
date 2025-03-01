@@ -110,21 +110,20 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
         String desc;
         if (message != null) {
             if (message.content instanceof RecallMessageContent) {
-                desc = "消息已被撤回";
+                desc = fragment.getString(R.string.message_recalled);
             } else {
                 desc = message.content.digest(message);
             }
         } else {
-            desc = "消息不可用，可能被删除或者过期";
+            desc = fragment.getString(R.string.message_not_available);
             ChatManager.Instance().loadRemoteQuotedMessage(this.message.message);
         }
-
         return desc;
     }
 
     public void onClick(View view) {
         String content = ((TextMessageContent) message.message.content).getContent();
-        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", content);
+        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), fragment.getString(R.string.message_detail_title), content);
     }
 
     public void onRefClick(View view) {
@@ -133,7 +132,7 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
             // TODO previewMessageActivity
             MessageContent messageContent = message.content;
             if (messageContent instanceof TextMessageContent) {
-                WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", ((TextMessageContent) messageContent).getContent());
+                WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), fragment.getString(R.string.message_detail_title), ((TextMessageContent) messageContent).getContent());
             } else {
                 if (messageContent instanceof VideoMessageContent) {
                     MMPreviewActivity.previewVideo(fragment.getActivity(), message);
@@ -159,7 +158,7 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
     @Override
     public String contextMenuTitle(Context context, String tag) {
         if (MessageContextMenuItemTags.TAG_CLIP.equals(tag)) {
-            return "复制";
+            return context.getString(R.string.message_copy);
         }
         return super.contextMenuTitle(context, tag);
     }

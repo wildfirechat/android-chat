@@ -58,7 +58,7 @@ public class ChangeMyNameActivity extends WfcBaseActivity {
 
         userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         if (userInfo == null) {
-            Toast.makeText(this, "用户不存在", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.user_no_found), Toast.LENGTH_SHORT).show();
             finish();
         }
         initView();
@@ -109,7 +109,7 @@ public class ChangeMyNameActivity extends WfcBaseActivity {
 
     private void changeMyName() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("修改中...")
+            .content(getString(R.string.creating))
             .progress(true, 100)
             .build();
         dialog.show();
@@ -119,9 +119,9 @@ public class ChangeMyNameActivity extends WfcBaseActivity {
             @Override
             public void onChanged(@Nullable OperateResult<Boolean> booleanOperateResult) {
                 if (booleanOperateResult.isSuccess()) {
-                    Toast.makeText(ChangeMyNameActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChangeMyNameActivity.this, getString(R.string.modify_success), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(ChangeMyNameActivity.this, "修改失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChangeMyNameActivity.this, getString(R.string.modify_fail), Toast.LENGTH_SHORT).show();
                 }
                 dialog.dismiss();
                 finish();

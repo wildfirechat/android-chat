@@ -100,31 +100,28 @@ public class ChangePasswordActivity extends WfcBaseActivity {
     }
 
     void resetPassword() {
-
         String oldPassword = oldPasswordEditText.getText().toString().trim();
         String newPassword = newPasswordEditText.getText().toString().trim();
         String confirmPassword = confirmPasswordEditText.getText().toString().trim();
         if (!TextUtils.equals(newPassword, confirmPassword)) {
-            Toast.makeText(this, "两次输入的密码不一致", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.password_not_match, Toast.LENGTH_SHORT).show();
             return;
         }
 
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("正在修改密码...")
+            .content(R.string.password_changing)
             .progress(true, 10)
             .cancelable(false)
             .build();
         dialog.show();
 
         AppService.Instance().changePassword(oldPassword, newPassword, new SimpleCallback<StatusResult>() {
-
             @Override
             public void onUiSuccess(StatusResult result) {
                 if (isFinishing()) {
                     return;
                 }
-                Toast.makeText(ChangePasswordActivity.this, "修改密码成功", Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(ChangePasswordActivity.this, R.string.password_change_success, Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 finish();
             }
@@ -135,10 +132,8 @@ public class ChangePasswordActivity extends WfcBaseActivity {
                     return;
                 }
                 dialog.dismiss();
-
-                Toast.makeText(ChangePasswordActivity.this, "修改密码失败:" + code + " " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChangePasswordActivity.this, getString(R.string.password_change_failed, code, msg), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

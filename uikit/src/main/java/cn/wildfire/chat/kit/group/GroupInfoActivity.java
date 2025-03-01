@@ -89,14 +89,14 @@ public class GroupInfoActivity extends WfcBaseActivity {
     private void updateActionButtonStatus() {
         if (groupInfo.memberDt < -1) {
             // 已退出群组
-            actionButton.setText("加入群聊");
+            actionButton.setText(R.string.join_group_chat);
         } else if (groupInfo.memberDt == -1) {
             // 未加入
-            actionButton.setText("加入群聊");
+            actionButton.setText(R.string.join_group_chat);
         } else {
             // 已加入群组
             this.isJoined = true;
-            actionButton.setText("进入群聊");
+            actionButton.setText(R.string.enter_group_chat);
         }
     }
 

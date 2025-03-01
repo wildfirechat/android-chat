@@ -57,9 +57,9 @@ public class PCSessionActivity extends WfcBaseActivity {
             return;
         }
         Platform platform = pcOnlineInfo.getPlatform();
-        setTitle(platform.getPlatFormName() + " 已登录");
-        kickOffPCButton.setText("退出 " + platform.getPlatFormName() + " 登录");
-        descTextView.setText(platform.getPlatFormName() + " 已登录");
+        setTitle(platform.getPlatFormName() + " " + getString(R.string.pc_online_status_logged_in));
+        kickOffPCButton.setText(getString(R.string.pc_session_logout_button, platform.getPlatFormName()));
+        descTextView.setText(platform.getPlatFormName() + " " + getString(R.string.pc_online_status_logged_in));
 
         isMuteWhenPCOnline = ChatManager.Instance().isMuteNotificationWhenPcOnline();
         muteImageView.setImageResource(isMuteWhenPCOnline ? R.mipmap.ic_turn_off_ringer_hover : R.mipmap.ic_turn_off_ringer);
@@ -77,7 +77,7 @@ public class PCSessionActivity extends WfcBaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                Toast.makeText(PCSessionActivity.this, pcOnlineInfo.getPlatform() + " 已踢下线", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PCSessionActivity.this, pcOnlineInfo.getPlatform() + " " + getString(R.string.pc_kicked_offline), Toast.LENGTH_SHORT).show();
                 finish();
             }
 
@@ -98,7 +98,7 @@ public class PCSessionActivity extends WfcBaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                Toast.makeText(PCSessionActivity.this, "操作成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PCSessionActivity.this, getString(R.string.operation_success), Toast.LENGTH_SHORT).show();
                 isMuteWhenPCOnline = !isMuteWhenPCOnline;
                 muteImageView.setImageResource(isMuteWhenPCOnline ? R.mipmap.ic_turn_off_ringer_hover : R.mipmap.ic_turn_off_ringer);
             }
@@ -108,7 +108,7 @@ public class PCSessionActivity extends WfcBaseActivity {
                 if (isFinishing()) {
                     return;
                 }
-                Toast.makeText(PCSessionActivity.this, "操作失败 " + errorCode, Toast.LENGTH_SHORT).show();
+                Toast.makeText(PCSessionActivity.this, getString(R.string.operation_failed) + " " + errorCode, Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -128,13 +128,13 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
         if (draft != null) {
-            String draftString = draft.getContent() != null ? draft.getContent() : "[草稿]";
+            String draftString = draft.getContent() != null ? draft.getContent() : fragment.getString(R.string.draft);
             MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, draft.getContent(), ImageSpan.ALIGN_BOTTOM);
             setViewVisibility(R.id.promptTextView, View.VISIBLE);
             setViewVisibility(R.id.contentTextView, View.VISIBLE);
         } else {
             if (conversationInfo.unreadCount.unreadMentionAll > 0 || conversationInfo.unreadCount.unreadMention > 0) {
-                promptTextView.setText("[有人@我]");
+                promptTextView.setText(fragment.getString(R.string.mention_you));
                 promptTextView.setVisibility(View.VISIBLE);
             } else {
                 promptTextView.setVisibility(View.GONE);
@@ -221,25 +221,26 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
      * @return
      */
     public String contextMenuTitle(Context context, String tag) {
-        String title = "未设置";
+        String title;
         switch (tag) {
             case ConversationContextMenuItemTags.TAG_REMOVE:
-                title = "删除会话";
+                title = context.getString(R.string.delete_conversation);
                 break;
             case ConversationContextMenuItemTags.TAG_TOP:
-                title = "置顶";
+                title = context.getString(R.string.stick_on_top);
                 break;
             case ConversationContextMenuItemTags.TAG_CANCEL_TOP:
-                title = "取消置顶";
+                title = context.getString(R.string.cancel_stick_on_top);
                 break;
             case ConversationContextMenuItemTags.TAG_MarkAsRead:
-                title = "设为已读";
+                title = context.getString(R.string.mark_as_read);
                 break;
             case ConversationContextMenuItemTags.TAG_MarkAsUnread:
-                title = "标记未读";
-            default:
+                title = context.getString(R.string.mark_as_unread);
                 break;
-
+            default:
+                title = context.getString(R.string.message_unknown_option);
+                break;
         }
         return title;
     }
@@ -251,10 +252,13 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
      * @return
      */
     public String contextConfirmPrompt(Context context, String tag) {
-        String title = "未设置";
+        String title;
         switch (tag) {
             case ConversationContextMenuItemTags.TAG_REMOVE:
-                title = "确认删除会话?";
+                title = context.getString(R.string.delete_conversation_confirm);
+                break;
+            default:
+                title = context.getString(R.string.message_unknown_option);
                 break;
         }
         return title;

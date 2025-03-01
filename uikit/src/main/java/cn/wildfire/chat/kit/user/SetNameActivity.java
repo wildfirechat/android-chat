@@ -81,20 +81,20 @@ public class SetNameActivity extends WfcBaseActivity {
     private void changeAlias() {
         String displayName = nameEditText.getText().toString().trim();
         if (TextUtils.isEmpty(displayName)) {
-            Toast.makeText(this, "野火ID不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.wildfire_id_not_empty), Toast.LENGTH_SHORT).show();
             return;
         }
         WfcUIKit.getWfcUIKit().getAppServiceProvider().changeName(displayName, new SimpleCallback<Void>() {
             @Override
             public void onUiSuccess(Void aVoid) {
 
-                Toast.makeText(SetNameActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SetNameActivity.this, getString(R.string.modify_success), Toast.LENGTH_SHORT).show();
                 finish();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                Toast.makeText(SetNameActivity.this, "修改账号错误：" + code + " " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SetNameActivity.this, getString(R.string.modify_account_error, code, msg), Toast.LENGTH_SHORT).show();
             }
         });
     }

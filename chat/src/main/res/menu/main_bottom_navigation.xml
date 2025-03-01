@@ -5,23 +5,23 @@
     <item
         android:id="@+id/conversation_list"
         android:icon="@drawable/bottom_conversation_menu_selector"
-        android:title="野火"
+        android:title="@string/app_title_chat"
         app:showAsAction="never" />
     <item
         android:id="@+id/contact"
         android:icon="@drawable/bottom_contact_menu_selector"
-        android:title="通讯录" />
+        android:title="@string/app_title_contact" />
     <item
         android:id="@+id/workspace"
         android:icon="@drawable/bottom_work_menu_selector"
-        android:title="工作台" />
+        android:title="@string/app_title_workspace" />
     <item
         android:id="@+id/discovery"
         android:icon="@drawable/bottom_discovery_menu_selector"
-        android:title="发现" />
+        android:title="@string/app_title_discover" />
     <item
         android:id="@+id/me"
         android:icon="@drawable/bottom_me_menu_selector"
-        android:title="我的" />
+        android:title="@string/app_title_me" />
 
 </menu>

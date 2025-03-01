@@ -14,7 +14,7 @@
         android:paddingLeft="@dimen/item_margin_left_and_right"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:text="可以通过一下方式找到我"
+        android:text="@string/find_me_ways_header"
         android:textColor="@color/black6"
         android:textSize="14sp" />
 
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="昵称"
+                android:text="@string/nickname"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="账号"
+                android:text="@string/account"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -78,7 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="手机号码"
+                android:text="@string/mobile_number"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 

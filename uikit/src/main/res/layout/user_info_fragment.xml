@@ -114,7 +114,7 @@
         style="@style/OptionItem"
         android:background="@drawable/selector_common_item"
         app:show_arrow_indicator="true"
-        app:title="设置昵称或别名" />
+        app:title="@string/set_alias_and_tag" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -130,21 +130,21 @@
             android:visibility="gone"
             app:desc="前端研发组"
             app:show_arrow_indicator="true"
-            app:title="部门" />
+            app:title="@string/department" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/groupMemberSourceOptionItemView"
             style="@style/OptionItem"
             android:clickable="true"
-            app:desc="扫码进群"
+            app:desc="@string/scan_qrcode_join_group"
             app:show_arrow_indicator="false"
-            app:title="进群方式" />
+            app:title="@string/join_group_method" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/messagesOptionItemView"
             style="@style/OptionItem"
             app:show_arrow_indicator="true"
-            app:title="查看他（她）的消息" />
+            app:title="@string/view_user_messages" />
 
     </LinearLayout>
 
@@ -155,7 +155,7 @@
         android:layout_marginTop="20dp"
         android:visibility="gone"
         app:end_src="@mipmap/qr_code"
-        app:title="二维码" />
+        app:title="@string/qrcode" />
 
     <LinearLayout
         android:id="@+id/momentButton"
@@ -176,7 +176,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="朋友圈"
+                android:text="@string/moments"
                 android:textColor="@color/black1"
                 android:textSize="16sp" />
 
@@ -246,7 +246,7 @@
             android:background="@color/white"
             android:drawableLeft="@mipmap/ic_start_voip"
             android:drawablePadding="6dp"
-            android:text="视频聊天"
+            android:text="@string/video_chat"
             android:textColor="@color/blue3"
             android:textSize="16sp"
             android:textStyle="bold" />

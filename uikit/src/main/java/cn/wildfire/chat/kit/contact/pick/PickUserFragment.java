@@ -172,16 +172,16 @@ public abstract class PickUserFragment extends BaseUserListFragment implements Q
     public void onUserClick(UIUserInfo userInfo) {
         if (userInfo.isCheckable()) {
             if (!pickUserViewModel.checkUser(userInfo, !userInfo.isChecked())) {
-                Toast.makeText(getActivity(), "选人超限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.pick_user_limit_exceeded, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     protected void handleEditText() {
         if (pickedUserAdapter.getItemCount() == 0) {
-            searchEditText.setHint("");
+            searchEditText.setHint(R.string.pick_user_empty_hint);
         } else {
-            searchEditText.setHint("搜索");
+            searchEditText.setHint(R.string.pick_user_search_hint);
         }
     }
 

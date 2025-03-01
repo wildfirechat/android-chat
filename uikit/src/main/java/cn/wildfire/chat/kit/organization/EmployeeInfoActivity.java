@@ -159,7 +159,7 @@ public class EmployeeInfoActivity extends WfcBaseActivity {
             contactViewModel.setBlacklist(userInfo.uid, true).observe(
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
-                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.set_success), Toast.LENGTH_SHORT).show();
                         invalidateOptionsMenu();
                     } else {
                         Toast.makeText(this, "add blacklist error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
@@ -171,7 +171,7 @@ public class EmployeeInfoActivity extends WfcBaseActivity {
             contactViewModel.setBlacklist(userInfo.uid, false).observe(
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
-                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.set_success), Toast.LENGTH_SHORT).show();
                         invalidateOptionsMenu();
                     } else {
                         Toast.makeText(this, "remove blacklist error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
@@ -188,7 +188,7 @@ public class EmployeeInfoActivity extends WfcBaseActivity {
             contactViewModel.setFav(userInfo.uid, true).observe(
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
-                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.set_success), Toast.LENGTH_SHORT).show();
                         invalidateOptionsMenu();
                     } else {
                         Toast.makeText(this, "set fav error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
@@ -201,7 +201,7 @@ public class EmployeeInfoActivity extends WfcBaseActivity {
             contactViewModel.setFav(userInfo.uid, false).observe(
                 this, booleanOperateResult -> {
                     if (booleanOperateResult.isSuccess()) {
-                        Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.set_success), Toast.LENGTH_SHORT).show();
                         invalidateOptionsMenu();
                     } else {
                         Toast.makeText(this, "remove fav error " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();

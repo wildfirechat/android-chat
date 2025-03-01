@@ -250,7 +250,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     void shareScreen() {
         if (!AVEngineKit.isSupportConference()) {
-            Toast.makeText(getActivity(), "当前版本不支持屏幕共享", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.conference_not_supported), Toast.LENGTH_SHORT).show();
             return;
         }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
@@ -258,7 +258,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             return;
         }
         if (!session.isScreenSharing()) {
-            Toast.makeText(getContext(), "开启屏幕共享时，将关闭摄像头，并打开麦克风", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), getString(R.string.conf_screen_share_hint), Toast.LENGTH_LONG).show();
             session.muteAudio(false);
             session.muteVideo(true);
 
@@ -341,9 +341,9 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             focusUserId = targetId;
 
             if (session.isScreenSharing()) {
-                shareScreenTextView.setText("结束屏幕共享");
+                shareScreenTextView.setText(R.string.stop_screen_sharing);
             } else {
-                shareScreenTextView.setText("开始屏幕共享");
+                shareScreenTextView.setText(R.string.start_screen_sharing);
             }
 
             session.setupLocalVideoView(pipVideoContainer, scalingType);

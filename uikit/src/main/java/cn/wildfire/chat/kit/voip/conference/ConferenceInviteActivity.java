@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.forward.ForwardPromptView;
 import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -63,11 +64,11 @@ public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
 
     private void invite(String targetName, String targetPortrait, Conversation targetConversation) {
         ForwardPromptView view = new ForwardPromptView(this);
-        view.bind(targetName, targetPortrait, "会议邀请");
+        view.bind(targetName, targetPortrait, getString(R.string.conf_invite_title));
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .customView(view, false)
-            .negativeText("取消")
-            .positiveText("发送")
+            .negativeText(R.string.cancel)
+            .positiveText(R.string.send)
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -78,7 +79,7 @@ public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
                         extraMsg.content = content;
                     }
                     messageViewModel.sendMessage(targetConversation, inviteMessage);
-                    Toast.makeText(ConferenceInviteActivity.this, "邀请成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConferenceInviteActivity.this, getString(R.string.conf_invite_success), Toast.LENGTH_SHORT).show();
                     finish();
 //                        .observe(ConferenceInviteActivity.this, new Observer<OperateResult<Integer>>() {
 //                            @Override

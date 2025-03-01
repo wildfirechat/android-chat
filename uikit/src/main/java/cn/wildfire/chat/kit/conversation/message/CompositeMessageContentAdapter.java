@@ -275,8 +275,11 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
             if (messages.size() > 1) {
                 endDate = new DateTime(messages.get(messages.size() - 1).serverTime);
             }
-            String pattern = "yyyy年MM月dd日";
-            compositeDurationTextView.setText(startDate.toString(pattern) + " 至 " + endDate.toString(pattern));
+            String pattern = itemView.getContext().getString(R.string.date_pattern);
+            String text = itemView.getContext().getString(R.string.date_range_format,
+                startDate.toString(pattern),
+                endDate.toString(pattern));
+            compositeDurationTextView.setText(text);
         }
     }
 

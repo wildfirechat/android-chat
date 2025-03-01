@@ -223,16 +223,16 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         if (session != null) {
             switch (session.getState()) {
                 case Outgoing:
-                    title = "等待对方接听...";
+                    title = getString(R.string.call_waiting_for_answer);
                     break;
                 case Incoming:
-                    title = "邀请您进行通话...";
+                    title = getString(R.string.call_invitation);
                     break;
                 case Connecting:
-                    title = "接听中...";
+                    title = getString(R.string.call_connecting);
                     break;
                 default:
-                    title = "通话中...";
+                    title = getString(R.string.call_in_progress);
                     break;
             }
         } else {

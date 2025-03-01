@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.viewholder.UserViewHolder;
 import cn.wildfire.chat.kit.search.SearchableModule;
@@ -73,7 +74,9 @@ public class UserSearchModule extends SearchableModule<UserInfo, UserViewHolder>
 
     @Override
     public String category() {
-        return this.domainInfo == null ? "在本单位搜索用户" : "在 " + domainInfo.name + " 搜索用户";
+        return this.domainInfo == null ?
+            WfcUIKit.getWfcUIKit().getApplication().getString(R.string.search_user_category_local) :
+            WfcUIKit.getWfcUIKit().getApplication().getString(R.string.search_user_category_domain, domainInfo.name);
     }
 
     @Override

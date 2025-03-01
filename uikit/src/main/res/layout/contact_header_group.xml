@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
-            android:text="(保存到通讯录的群组)"
+            android:text="@string/saved_groups_hint"
             android:textColor="@color/gray0"
             android:textSize="11sp" />
     </LinearLayout>

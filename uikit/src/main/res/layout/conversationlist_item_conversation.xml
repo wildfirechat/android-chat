@@ -92,7 +92,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:text="会话名称"
+                        tools:text="会话名称"
                         android:textColor="@color/black1"
                         android:textSize="16sp" />
 
@@ -107,7 +107,7 @@
                         android:paddingTop="1dp"
                         android:paddingRight="2dp"
                         android:paddingBottom="1dp"
-                        android:text="官方"
+                        tools:text="官方"
                         android:textColor="@color/white"
                         android:textSize="10sp"
                         android:visibility="gone" />

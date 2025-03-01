@@ -74,7 +74,7 @@ public class PickOrCreateConversationTargetActivity extends PickConversationTarg
             finish();
         } else {
             MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("创建中...")
+                .content(R.string.creating)
                 .progress(true, 100)
                 .build();
             dialog.show();

@@ -1,5 +1,6 @@
 package cn.wildfire.chat.kit.voip.conference;
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -78,8 +79,8 @@ public class ConferencePortalActivity extends WfcBaseActivity {
         new MaterialDialog.Builder(this)
             .customView(view, false)
             .cancelable(false)
-            .negativeText("取消")
-            .positiveText("确认")
+            .negativeText(R.string.cancel)
+            .positiveText(R.string.confirm)
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -173,32 +174,32 @@ public class ConferencePortalActivity extends WfcBaseActivity {
 
         public void onBind(ConferenceInfo info) {
             titleTextView.setText(info.getConferenceTitle());
-            startDateTimeTextView.setText(buildStartDateTimeDesc(info));
+            startDateTimeTextView.setText(buildStartDateTimeDesc(itemView.getContext(), info));
             this.conferenceInfo = info;
         }
 
     }
 
-    private static String buildStartDateTimeDesc(ConferenceInfo info) {
+    private static String buildStartDateTimeDesc(Context context, ConferenceInfo info) {
         long now = System.currentTimeMillis() / 1000;
         String desc;
         if (now > info.getEndTime()) {
-            desc = "会议已结束";
+            desc = context.getString(R.string.conf_ended);
         } else if (now > info.getStartTime()) {
-            desc = "会议已开始，请尽快加入";
+            desc = context.getString(R.string.conf_started_join_prompt);
         } else {
             Calendar date = Calendar.getInstance();
             date.setTime(new Date(now * 1000));
             Calendar startDate = Calendar.getInstance();
             startDate.setTime(new Date(info.getStartTime() * 1000));
             if (date.get(Calendar.YEAR) == startDate.get(Calendar.YEAR) && date.get(Calendar.DAY_OF_YEAR) == startDate.get(Calendar.DAY_OF_YEAR)) {
-                desc = "今天";
+                desc = context.getString(R.string.conf_today);
             } else {
-                desc = (String) DateFormat.format("MM月dd日", startDate);
+                desc = (String) DateFormat.format(context.getString(R.string.conf_date_format), startDate);
             }
             desc += " ";
             desc += DateFormat.format("HH:mm", startDate);
-            desc += " 开始会议";
+            desc += " " + context.getString(R.string.conf_start_meeting);
         }
 
         return desc;

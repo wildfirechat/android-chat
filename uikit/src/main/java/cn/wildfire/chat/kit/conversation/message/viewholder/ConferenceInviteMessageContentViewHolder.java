@@ -71,7 +71,7 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
 
     void joinConference() {
         if (!AVEngineKit.isSupportConference()) {
-            Toast.makeText(fragment.getActivity(), "本版本不支持会议功能", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getActivity(), R.string.conference_not_supported, Toast.LENGTH_SHORT).show();
             return;
         }
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};

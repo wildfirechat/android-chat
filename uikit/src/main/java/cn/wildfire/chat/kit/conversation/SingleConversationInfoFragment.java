@@ -135,7 +135,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
 
     void clearMessage() {
         new MaterialDialog.Builder(getActivity())
-            .items("清空本地会话", "清空远程会话")
+            .items(getString(R.string.clear_local_chat), getString(R.string.clear_remote_chat))
             .itemsCallback(new MaterialDialog.ListCallback() {
                 @Override
                 public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {

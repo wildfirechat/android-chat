@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.search.SearchableModule;
 import cn.wildfire.chat.kit.search.viewHolder.MessageViewHolder;
@@ -61,7 +62,7 @@ public class ConversationMessageSearchModule extends SearchableModule<Message, M
 
     @Override
     public String category() {
-        return "聊天记录";
+        return WfcUIKit.getWfcUIKit().getApplication().getString(R.string.chat_records_category);
     }
 
     @Override
