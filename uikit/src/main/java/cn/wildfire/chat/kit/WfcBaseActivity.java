@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import cn.wildfire.chat.kit.utils.LocaleUtils;
 import me.aurelion.x.ui.view.watermark.WaterMarkManager;
 import me.aurelion.x.ui.view.watermark.WaterMarkView;
 
@@ -59,6 +60,14 @@ public abstract class WfcBaseActivity extends AppCompatActivity {
             mWmv = WaterMarkManager.getView(this);
             ((ViewGroup) findViewById(android.R.id.content)).addView(mWmv);
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        // 确保在 MainActivity 中也应用正确的语言设置
+        String language = LocaleUtils.getLanguage(newBase);
+        Context context = LocaleUtils.updateResources(newBase, language);
+        super.attachBaseContext(context);
     }
 
     @Override

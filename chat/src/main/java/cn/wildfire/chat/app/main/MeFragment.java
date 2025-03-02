@@ -31,6 +31,7 @@ import java.util.List;
 
 import cn.wildfire.chat.app.setting.AccountActivity;
 import cn.wildfire.chat.app.setting.SettingActivity;
+import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteListActivity;
 import cn.wildfire.chat.kit.settings.MessageNotifySettingActivity;
@@ -114,6 +115,7 @@ public class MeFragment extends Fragment {
         view.findViewById(R.id.accountOptionItemView).setOnClickListener(v -> account());
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(v -> files());
         view.findViewById(R.id.themeOptionItemView).setOnClickListener(v -> theme());
+        view.findViewById(R.id.languageOptionItemView).setOnClickListener(v -> selectLanguage());
         view.findViewById(R.id.settingOptionItemView).setOnClickListener(v -> setting());
         view.findViewById(R.id.notificationOptionItemView).setOnClickListener(v -> msgNotifySetting());
         view.findViewById(R.id.conversationOptionItemView).setOnClickListener(v -> conversationSetting());
@@ -206,10 +208,30 @@ public class MeFragment extends Fragment {
         }).show();
     }
 
-    private void restart() {
-        Intent i = getActivity().getApplicationContext().getPackageManager().getLaunchIntentForPackage(getActivity().getApplicationContext().getPackageName());
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
+    void selectLanguage() {
+        String currentLanguage = LocaleUtils.getLanguage(getContext());
+        boolean isChinese = LocaleUtils.LANGUAGE_CHINESE.equals(currentLanguage);
+
+        new MaterialDialog.Builder(getContext()).items(R.array.languages).itemsCallback(new MaterialDialog.ListCallback() {
+            @Override
+            public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {
+                if (position == 0 && !isChinese) {
+                    // 选择中文
+                    changeLanguage(LocaleUtils.LANGUAGE_CHINESE);
+                    return;
+                }
+                if (position == 1 && isChinese) {
+                    // 选择英文
+                    changeLanguage(LocaleUtils.LANGUAGE_ENGLISH);
+                }
+            }
+        }).show();
+    }
+
+    private void changeLanguage(String languageCode) {
+        LocaleUtils.setLocale(getContext(), languageCode);
+        // 重启应用以应用语言更改
+        restart();
     }
 
     void setting() {
@@ -225,5 +247,16 @@ public class MeFragment extends Fragment {
     void conversationSetting() {
         // TODO
         // 设置背景等
+    }
+
+    private void restart() {
+        // 创建一个指向主活动的新意图，并清除任务栈
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        // 结束当前活动
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
     }
 }

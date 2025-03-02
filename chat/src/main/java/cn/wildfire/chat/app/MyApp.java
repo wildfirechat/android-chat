@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
+import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -94,8 +95,12 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
 
     @Override
     protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-//        Reflection.unseal(base);
+        // 获取用户语言偏好
+        String language = LocaleUtils.getLanguage(base);
+        // 应用用户语言设置
+        Context context = LocaleUtils.updateResources(base, language);
+        // 调用父类方法
+        super.attachBaseContext(context);
     }
 
     private void setupWFCDirs() {

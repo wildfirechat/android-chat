@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -18,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import cn.wildfire.chat.kit.utils.LocaleUtils;
 import me.aurelion.x.ui.view.watermark.WaterMarkManager;
 import me.aurelion.x.ui.view.watermark.WaterMarkView;
 
@@ -37,6 +39,14 @@ public abstract class WfcBaseNoToolbarActivity extends AppCompatActivity {
             mWmv = WaterMarkManager.getView(this);
             ((ViewGroup) findViewById(android.R.id.content)).addView(mWmv);
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        // 确保在 MainActivity 中也应用正确的语言设置
+        String language = LocaleUtils.getLanguage(newBase);
+        Context context = LocaleUtils.updateResources(newBase, language);
+        super.attachBaseContext(context);
     }
 
     @Override
