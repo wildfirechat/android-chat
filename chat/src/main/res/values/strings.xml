@@ -207,22 +207,17 @@
     <string name="channel">频道</string>
     <string name="dev_guide">开发手册</string>
     <string name="conference">会议</string>
-    <!-- 添加以下字符串资源 -->
     <string name="chat_background">聊天背景</string>
     <string name="favorites">收藏</string>
     <string name="account_security">账号与安全</string>
     <string name="theme">主题</string>
-    <!-- 添加以下字符串资源 -->
     <string name="about">关于</string>
     <string name="diagnose">诊断</string>
     <string name="upload_log">上传日志</string>
     <string name="battery_optimization">电池优化</string>
-    <!-- 添加以下字符串资源 -->
     <string name="change_password">修改密码</string>
-    <!-- 添加以下字符串资源 -->
     <string name="set_new_password">设置新密码</string>
     <string name="account_and_security">账号与密码</string>
-    <!-- 添加以下字符串资源 -->
     <string name="language">语言</string>
     <string name="language_chinese">中文</string>
     <string name="language_english">English</string>
