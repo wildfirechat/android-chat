@@ -140,6 +140,13 @@
             app:title="@string/theme" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
+            android:id="@+id/languageOptionItemView"
+            style="@style/OptionItem"
+            app:show_arrow_indicator="true"
+            app:start_src="@mipmap/ic_lang"
+            app:title="@string/language" />
+
+        <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/settingOptionItemView"
             style="@style/OptionItem"
             app:show_arrow_indicator="true"

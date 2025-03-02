@@ -18,7 +18,7 @@
     <string name="complaint">Feedback</string>
     <string name="check_update">Check for Updates</string>
     <string name="terms_of_use_and_privacy_policy">Terms of Use and Privacy Policy</string>
-    <string name="name">WildFireIM</string>
+    <string name="name">WildFire IM</string>
     <string name="slogan">Communication Made Simple</string>
     <string name="about_intro_title">WildFire IM Features</string>
     <string name="about_intro_url">https://docs.wildfirechat.cn/</string>
@@ -219,4 +219,13 @@
     <string name="change_password">Change Password</string>
     <string name="set_new_password">Set New Password</string>
     <string name="account_and_security">Account and Password</string>
+
+    <!-- Language Settings -->
+    <string name="language">Language</string>
+    <string name="language_auto">Auto</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">English</string>
+    <string name="language_change_tip">Language settings will take effect after restarting the app</string>
+    <string name="language_system">Follow System</string>
+    <string name="confirm">Confirm</string>
 </resources>
