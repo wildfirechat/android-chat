@@ -5,48 +5,48 @@
     <item
         android:id="@+id/delete"
         android:orderInCategory="100"
-        android:title="删除好友"
+        android:title="@string/delete_friend"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/addFriend"
         android:orderInCategory="100"
-        android:title="添加好友"
+        android:title="@string/add_friend"
         app:showAsAction="never" />
     <item
         android:id="@+id/addBlacklist"
         android:orderInCategory="100"
-        android:title="加入黑名单"
+        android:title="@string/add_to_blacklist"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/removeBlacklist"
         android:orderInCategory="100"
-        android:title="移出黑名单"
+        android:title="@string/remove_from_blacklist"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/setAlias"
         android:orderInCategory="100"
-        android:title="设置备注名"
+        android:title="@string/set_alias"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/setName"
         android:visible="false"
         android:orderInCategory="100"
-        android:title="修改野火ID"
+        android:title="@string/modify_wildfire_id"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/setFav"
         android:orderInCategory="100"
-        android:title="设为星标好友"
+        android:title="@string/set_star_friend"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/removeFav"
         android:orderInCategory="100"
-        android:title="取消星标好友"
+        android:title="@string/remove_star_friend"
         app:showAsAction="never" />
 </menu>

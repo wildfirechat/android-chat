@@ -36,7 +36,6 @@
     <string name="set_alias_and_tag">Set Alias and Tags</string>
     <string name="send_message">Send Message</string>
     <string name="video_chat">Video Chat</string>
-    <string name="add_to_contact">Add to Contacts</string>
     <string name="change_my_name_tip">A good nickname helps your friends remember you better.</string>
 
     <!--Edit Alias-->
@@ -727,4 +726,12 @@
     <string name="my_subscribed_channels">My Subscribed Channels</string>
     <string name="conf_leave_allow_continue_prompt">" If you want to keep participants in the meeting, select Leave the meeting"</string>
     <string name="conf_leave_conference">"Exit meeting "</string>
+
+    <!-- User Info Menu -->
+    <string name="delete_friend">Delete Friend</string>
+    <string name="add_to_blacklist">Add to Blacklist</string>
+    <string name="remove_from_blacklist">Remove from Blacklist</string>
+    <string name="set_alias">Set Nickname</string>
+    <string name="set_star_friend">Star Friend</string>
+    <string name="remove_star_friend">Unstar Friend</string>
 </resources>

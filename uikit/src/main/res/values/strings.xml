@@ -695,7 +695,6 @@
     <!-- Friend Request -->
     <string name="friend_request_desc">请求添加您为好友</string>
 
-    <!-- 添加以下国际化字符串 -->
     <string name="show_all_members">查看全部成员</string>
     <string name="group_remark">群备注</string>
     <string name="save_to_contact">保存到通讯录</string>
@@ -728,7 +727,6 @@
     <string name="mobile_number">手机号</string>
     <string name="moments">朋友圈</string>
 
-    <!-- 添加以下字符串资源 -->
     <string name="find_me_ways">找到我的方式</string>
     <string name="add_friend_verify">加我为好友时，需要验证</string>
     <string name="department">部门</string>
@@ -736,4 +734,12 @@
     <string name="join_group_method">进群方式</string>
     <string name="view_user_messages">查看他（她）的消息</string>
     <string name="my_subscribed_channels">我订阅的频道</string>
+
+    <!-- User Info Menu -->
+    <string name="delete_friend">删除好友</string>
+    <string name="add_to_blacklist">加入黑名单</string>
+    <string name="remove_from_blacklist">移出黑名单</string>
+    <string name="set_alias">设置备注名</string>
+    <string name="set_star_friend">设为星标好友</string>
+    <string name="remove_star_friend">取消星标好友</string>
 </resources>
