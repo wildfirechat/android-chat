@@ -56,6 +56,7 @@
     <string name="set_alias_and_tag">Set Alias and Tags</string>
     <string name="send_message">Send Message</string>
     <string name="video_chat">Video Chat</string>
+    <string name="add_to_contact">Add to contacts</string>
     <string name="change_my_name_tip">A good nickname helps your friends remember you better.</string>
 
     <!--Edit Alias-->
@@ -178,7 +179,7 @@
 
     <!-- Pick User -->
     <string name="pick_user_limit_exceeded">Selection limit exceeded</string>
-    <string name="pick_user_empty_hint"></string>
+    <string name="pick_user_empty_hint">Please pick user</string>
     <string name="pick_user_search_hint">Search</string>
 
     <!-- Friend Request -->
