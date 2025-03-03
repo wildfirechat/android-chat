@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WildFireIM</string>
+    <string name="app_name">BizLink</string>
 
     <!--Me-->
     <string name="my_chat_account">Account:%1$s</string>
