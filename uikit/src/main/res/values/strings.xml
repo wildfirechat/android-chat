@@ -196,7 +196,7 @@
 
     <!-- Pick User -->
     <string name="pick_user_limit_exceeded">选人超限</string>
-    <string name="pick_user_empty_hint"></string>
+    <string name="pick_user_empty_hint">请选择用户</string>
     <string name="pick_user_search_hint">搜索</string>
 
     <!-- Contact Count -->
