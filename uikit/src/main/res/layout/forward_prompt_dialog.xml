@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="发送给:"
+        android:text="@string/forward_send_to"
         android:textSize="18sp" />
 
     <LinearLayout
@@ -78,7 +78,7 @@
         android:layout_marginTop="20dp"
         android:background="@null"
         android:drawableBottom="@drawable/selector_edit_focus"
-        android:hint="给朋友留言"
+        android:hint="@string/forward_leave_message"
         android:paddingLeft="5dp"
         android:visibility="visible" />
 
