@@ -742,4 +742,9 @@
     <string name="set_alias">设置备注名</string>
     <string name="set_star_friend">设为星标好友</string>
     <string name="remove_star_friend">取消星标好友</string>
+    <string name="recent_chats">最近聊天</string>
+
+    <!-- Forward Dialog -->
+    <string name="forward_send_to">发送给:</string>
+    <string name="forward_leave_message">给朋友留言</string>
 </resources>
