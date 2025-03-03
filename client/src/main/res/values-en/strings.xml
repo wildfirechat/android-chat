@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WildFireChatClient</string>
+    <string name="join_group_by_qrcode">%1$s scanned the QR code shared by %2$s and joined the group chat</string>
+    <string name="join_group_by_card">>%1$s joined the group chat via the group card shared by %2$s</string>
+</resources>
