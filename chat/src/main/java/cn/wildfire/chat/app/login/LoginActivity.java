@@ -73,6 +73,8 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
                 .negativeText(R.string.kicked_off_confirm)
                 .build()
                 .show();
+        } else {
+            this.showAntiFraudTip();
         }
     }
 
@@ -161,5 +163,17 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
             }
         });
 
+    }
+
+    private void showAntiFraudTip() {
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+            .content(R.string.anti_fraud_tip_1)
+            .positiveText(R.string.got_it)
+            .negativeText(R.string.exit_app)
+            .onNegative((dialog1, which) -> {
+                System.exit(0);
+            })
+            .build();
+        dialog.show();
     }
 }

@@ -71,6 +71,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         bindEvents();
         setStatusBarTheme(this, false);
         setStatusBarColor(R.color.gray14);
+        showAntiFraudTip();
     }
 
     void inputPhoneNumber(Editable editable) {
@@ -170,5 +171,17 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                 Toast.makeText(SMSLoginActivity.this, getString(R.string.auth_code_request_failure, code, msg), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showAntiFraudTip() {
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+            .content(R.string.anti_fraud_tip_1)
+            .positiveText(R.string.got_it)
+            .negativeText(R.string.exit_app)
+            .onNegative((dialog1, which) -> {
+                System.exit(0);
+            })
+            .build();
+        dialog.show();
     }
 }

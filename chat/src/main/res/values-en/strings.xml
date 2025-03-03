@@ -226,6 +226,10 @@
     <string name="language_chinese">中文</string>
     <string name="language_english">English</string>
     <string name="language_change_tip">Language settings will take effect after restarting the app</string>
-    <string name="language_system">Follow System</string>
     <string name="confirm">Confirm</string>
+
+    <!-- Anti-fraud dialog -->
+    <string name="anti_fraud_tip_1">If you are not using this software for development or testing purposes, it must be a scam</string>
+    <string name="got_it">Got it</string>
+    <string name="exit_app">Exit</string>
 </resources>

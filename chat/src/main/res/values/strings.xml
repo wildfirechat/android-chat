@@ -222,4 +222,9 @@
     <string name="language_chinese">中文</string>
     <string name="language_english">English</string>
     <string name="language_change_tip">语言设置将在重启应用后生效</string>
+
+    <!-- Anti-fraud dialog -->
+    <string name="anti_fraud_tip_1">如果不是开发、测试目的使用本软件，那一定是诈骗</string>
+    <string name="got_it">明白</string>
+    <string name="exit_app">退出</string>
 </resources>
