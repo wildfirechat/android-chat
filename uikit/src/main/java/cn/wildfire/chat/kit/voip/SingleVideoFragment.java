@@ -253,6 +253,10 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
             Toast.makeText(getActivity(), getString(R.string.conference_not_supported), Toast.LENGTH_SHORT).show();
             return;
         }
+        if(true){
+            Toast.makeText(getActivity(), R.string.anti_fraud_tip, Toast.LENGTH_LONG).show();
+            return;
+        }
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session == null || session.getState() != AVEngineKit.CallState.Connected) {
             return;

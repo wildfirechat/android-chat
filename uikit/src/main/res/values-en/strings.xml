@@ -737,4 +737,6 @@
     <string name="set_star_friend">Star Friend</string>
     <string name="remove_star_friend">Unstar Friend</string>
     <string name="recent_chats">Recent Conversations</string>
+
+    <string name="anti_fraud_tip">In order to avoid being used for fraud and other purposes, this function has been blocked.</string>
 </resources>

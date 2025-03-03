@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,7 +45,12 @@ public class ChatRoomListFragment extends Fragment {
             title = "野火IM聊天室3";
         }
 
-        //todo 这里应该是先进入到ConversationActivity界面，然后在界面内joinchatroom？
+        if(true){
+            Toast.makeText(getActivity(), R.string.anti_fraud_tip, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //这里应该是先进入到ConversationActivity界面，然后在界面内joinchatroom？
         Intent intent = new Intent(getActivity(), ConversationActivity.class);
         Conversation conversation = new Conversation(Conversation.ConversationType.ChatRoom, roomId);
         intent.putExtra("conversation", conversation);

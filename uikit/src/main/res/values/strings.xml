@@ -747,4 +747,6 @@
     <!-- Forward Dialog -->
     <string name="forward_send_to">发送给:</string>
     <string name="forward_leave_message">给朋友留言</string>
+
+    <string name="anti_fraud_tip">为了避免被用于诈骗等目的，本功能已被屏蔽</string>
 </resources>

@@ -336,6 +336,11 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
     }
 
     void shareScreen() {
+        if(true){
+            Toast.makeText(getActivity(), R.string.anti_fraud_tip, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         VoipBaseActivity voipBaseActivity = ((VoipBaseActivity) getActivity());
         if (!voipBaseActivity.checkOverlayPermission()) {
             return;
