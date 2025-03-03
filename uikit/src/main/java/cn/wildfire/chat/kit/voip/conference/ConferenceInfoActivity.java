@@ -114,7 +114,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
 
             @Override
             public void onFail(int code, String msg) {
-                Toast.makeText(ConferenceInfoActivity.this, "获取会议详情失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ConferenceInfoActivity.this, getString(R.string.conf_get_info_failed), Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -126,13 +126,13 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
             ConferenceManager.getManager().destroyConference(conferenceId, new GeneralCallback() {
                 @Override
                 public void onSuccess() {
-                    Toast.makeText(ConferenceInfoActivity.this, "销毁会议成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConferenceInfoActivity.this, getString(R.string.conf_destroy_success), Toast.LENGTH_SHORT).show();
                     finish();
                 }
 
                 @Override
                 public void onFail(int i) {
-                    Toast.makeText(ConferenceInfoActivity.this, "销毁会议失败 " + i, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConferenceInfoActivity.this, getString(R.string.conf_destroy_failed, i), Toast.LENGTH_SHORT).show();
                 }
             });
             return true;
@@ -146,7 +146,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
 
     void showConferenceQRCode() {
         String qrcodeValue = WfcScheme.buildConferenceScheme(conferenceId, password);
-        Intent intent = QRCodeActivity.buildQRCodeIntent(this, "会议二维码", null, qrcodeValue);
+        Intent intent = QRCodeActivity.buildQRCodeIntent(this, getString(R.string.conf_qrcode_title), null, qrcodeValue);
         startActivity(intent);
     }
 
@@ -169,7 +169,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
             startActivity(intent);
             finish();
         } else {
-            Toast.makeText(this, "加入会议失败", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.join_conf_failed), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -184,7 +184,7 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         String ownerName = ChatManager.Instance().getUserDisplayName(owner);
         ownerTextView.setText(ownerName);
         callIdTextView.setText(info.getConferenceId());
-        startDateTimeView.setText(info.getStartTime() == 0 ? "现在" : new Date(info.getStartTime() * 1000).toString());
+        startDateTimeView.setText(info.getStartTime() == 0 ? getString(R.string.conf_start_time_now) : new Date(info.getStartTime() * 1000).toString());
         endDateTimeView.setText(new Date(info.getEndTime() * 1000).toString());
 
         if (info.isAudience() && !info.isAllowTurnOnMic() && !owner.equals(ChatManager.Instance().getUserId())) {
@@ -196,13 +196,13 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
         long now = System.currentTimeMillis() / 1000;
         if (now > info.getEndTime()) {
             joinConferenceButton.setEnabled(false);
-            joinConferenceButton.setText("会议已结束");
+            joinConferenceButton.setText(R.string.conf_ended);
         } else if (now < info.getStartTime()) {
             joinConferenceButton.setEnabled(false);
-            joinConferenceButton.setText("会议未开始");
+            joinConferenceButton.setText(R.string.conf_not_started);
         } else {
             joinConferenceButton.setEnabled(true);
-            joinConferenceButton.setText("加入会议");
+            joinConferenceButton.setText(R.string.conf_join);
         }
 
         if (destroyItem != null) {

@@ -29,6 +29,6 @@ public class ExpandViewHolder extends RecyclerView.ViewHolder {
      */
     public void onBind(String category, int count) {
         // todo
-        expandTextView.setText("点击展开剩余" + count + "项");
+        expandTextView.setText(itemView.getContext().getString(R.string.click_to_expand_more, count));
     }
 }

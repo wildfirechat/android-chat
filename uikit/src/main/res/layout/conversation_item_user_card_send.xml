@@ -31,7 +31,7 @@
             android:layout_toRightOf="@id/userCardPortraitImageView"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="用用户名用户名用户名用户名用户名用户名用户名用户名户名"
+            android:text=""
             android:textSize="18sp" />
 
         <TextView
@@ -44,7 +44,7 @@
             android:layout_toRightOf="@id/userCardPortraitImageView"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="wfchat_id"
+            android:text=""
             android:textSize="12sp" />
 
         <View
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dividerLine"
             android:maxLines="1"
-            android:text="个人名片"
+            android:text="@string/user_card_personal"
             android:textSize="12sp" />
 
     </RelativeLayout>

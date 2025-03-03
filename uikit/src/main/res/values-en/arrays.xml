@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="group_join_type">
+        <item>Open to Join</item>
+        <item>Members Can Invite</item>
+        <item>Admin Only Invitation</item>
+    </string-array>
+
+    <string-array name="group_history_message">
+        <item>New members cannot view history</item>
+        <item>New members can view history</item>
+    </string-array>
+
+    <string-array name="group_search_type">
+        <item>Searchable</item>
+        <item>Not Searchable</item>
+    </string-array>
+
+    <string-array name="themes">
+        <item>Light Theme</item>
+        <item>Dark Theme</item>
+    </string-array>
+
+    <string-array name="change_password">
+        <item>SMS Verification</item>
+        <item>Password Verification</item>
+    </string-array>
+
+    <string-array name="secret_chat_message_burn_time_desc">
+        <item>Never</item>
+        <item>3 seconds</item>
+        <item>10 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>10 minutes</item>
+    </string-array>
+</resources>

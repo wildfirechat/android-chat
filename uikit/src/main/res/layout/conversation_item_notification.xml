@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
@@ -13,7 +14,7 @@
         android:background="@drawable/shape_notification_bg"
         android:gravity="center"
         android:padding="5dp"
-        android:text="你邀请了xx加入"
+        tools:text="你邀请了xx加入"
         android:textColor="#fff" />
 
 </LinearLayout>

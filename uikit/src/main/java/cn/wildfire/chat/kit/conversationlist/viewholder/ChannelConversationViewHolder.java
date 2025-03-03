@@ -63,7 +63,7 @@ public class ChannelConversationViewHolder extends ConversationViewHolder {
     @Override
     public String contextMenuTitle(Context context, String tag) {
         if (ConversationContextMenuItemTags.TAG_UNSUBSCRIBE.equals(tag)) {
-            return "取消收听";
+            return context.getString(R.string.channel_following);
         }
         return super.contextMenuTitle(context, tag);
     }
@@ -71,7 +71,7 @@ public class ChannelConversationViewHolder extends ConversationViewHolder {
     @Override
     public String contextConfirmPrompt(Context context, String tag) {
         if (ConversationContextMenuItemTags.TAG_UNSUBSCRIBE.equals(tag)) {
-            return "确认取消订阅频道?";
+            return context.getString(R.string.channel_unsubscribe_confirm);
         }
         return super.contextConfirmPrompt(context, tag);
     }

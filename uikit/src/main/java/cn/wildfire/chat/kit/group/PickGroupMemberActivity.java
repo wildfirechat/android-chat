@@ -39,11 +39,11 @@ public class PickGroupMemberActivity extends BasePickGroupMemberActivity {
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
         this.checkedGroupMembers = checkedUserInfos;
         if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
-            confirmTv.setText("完成");
+            confirmTv.setText(R.string.complete);
             confirmTv.setEnabled(false);
             menuItem.setEnabled(false);
         } else {
-            confirmTv.setText("完成(" + checkedUserInfos.size() + ")");
+            confirmTv.setText(getString(R.string.complete_with_count, checkedUserInfos.size()));
             confirmTv.setEnabled(true);
             menuItem.setEnabled(true);
         }

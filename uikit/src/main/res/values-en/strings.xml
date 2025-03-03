@@ -1,0 +1,740 @@
+<resources>
+    <string name="complete">Done</string>
+    <string name="complete_with_count">Done(%d)</string>
+
+    <string name="draft">[Draft]</string>
+    <string name="video">Video</string>
+    <string name="set_conversation_to_top">Pin Chat</string>
+
+    <!--Contacts-->
+    <string name="new_friend">New Friends</string>
+    <string name="group_chat">Group Chat</string>
+    <string name="join_group_chat">Join Group Chat</string>
+    <string name="enter_group_chat">Enter Group Chat</string>
+    <string name="contact_category">Contacts</string>
+    <string name="group_category">Groups</string>
+
+    <!-- Contact Count -->
+    <string name="contact_count_empty">No contacts</string>
+    <string name="contact_count_format">%d Contacts</string>
+
+    <!--New Friends-->
+    <string name="add_friend">Add Friend</string>
+    <string name="no_recommend_friend">No recommended friends yet</string>
+
+    <!--Search User-->
+    <string name="user_no_found">User does not exist</string>
+    <string name="search">Search</string>
+    <string name="search_user_tip_local">Search users in local organization\nEnter keywords to start</string>
+    <string name="search_user_tip_domain">Search users in %1$s\nEnter keywords to start</string>
+    <!-- Search User Category -->
+    <string name="search_user_category_local">Search Users in Local Organization</string>
+    <string name="search_user_category_domain">Search Users in %1$s</string>
+
+    <!--User Info-->
+    <string name="nickname_colon">Nickname:%1$s</string>
+    <string name="set_alias_and_tag">Set Alias and Tags</string>
+    <string name="send_message">Send Message</string>
+    <string name="video_chat">Video Chat</string>
+    <string name="change_my_name_tip">A good nickname helps your friends remember you better.</string>
+
+    <!--Edit Alias-->
+    <string name="alias">Alias</string>
+    <string name="alias_no_empty">Alias cannot be empty</string>
+    <string name="modify_alias_error">Failed to modify alias: %d</string>
+
+    <!--Message Verification-->
+    <string name="postscript_tip">You need to send a verification request and wait for approval</string>
+    <string name="send">Send</string>
+
+    <!--Chat Interface-->
+    <string name="please_to_talk">Hold to Talk</string>
+    <string name="shot">Camera</string>
+    <string name="location">Location</string>
+    <string name="file">File</string>
+
+    <!-- Shoot Extension -->
+    <string name="shoot_ext_title">Camera</string>
+    <string name="shoot_error_feedback">Camera error, please contact us</string>
+
+    <!--Create Group-->
+    <string name="create_group_success">Group created successfully</string>
+    <string name="create_group_fail">Failed to create group</string>
+    <string name="no_group_now">No groups yet</string>
+
+    <!--Group Info-->
+    <string name="group_name">Group Name</string>
+    <string name="group_portrait">Group Portrait</string>
+    <string name="untitled">Untitled</string>
+    <string name="group_announcement">Group Announcement</string>
+    <string name="message_free">Mute Notifications</string>
+    <string name="my_nickname_in_this_group">My Group Nickname</string>
+    <string name="show_group_member_name">Show Group Member Nicknames</string>
+    <string name="clear_chat_log">Clear Chat History</string>
+    <string name="delete_and_exit">Delete and Leave</string>
+    <string name="delete_and_dismiss">Dismiss Group</string>
+    <string name="add_member_success">Members added successfully</string>
+    <string name="add_member_fail">Failed to add members</string>
+    <string name="del_member_success">Members removed successfully</string>
+    <string name="del_member_fail">Failed to remove members</string>
+    <string name="modify_group_join_type_failed">Failed to modify group join type</string>
+    <string name="modify_group_search_type_failed">Failed to modify group search type</string>
+    <string name="modify_group_history_failed">Failed to modify group history messages</string>
+    <string name="set_group_permission_error">Failed to set group member permissions: %d</string>
+    <string name="mute_operation_failed">Mute operation failed %d</string>
+    <string name="group_announcement_max_length">Group announcement limited to 2000 characters</string>
+    <string name="processing">Processing...</string>
+    <string name="set_group_announcement_success">Group announcement set successfully</string>
+    <string name="set_group_announcement_failed">Failed to set group announcement: %1$d %2$s</string>
+    <string name="modify_group_name_success">Group name changed successfully</string>
+    <string name="modify_group_name_failed">Failed to change group name: %d</string>
+    <string name="modify_group_remark_success">Group remark changed successfully</string>
+    <string name="modify_group_remark_failed">Failed to change group remark: %d</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="unsubscribe_failed">Failed to unsubscribe %d</string>
+    <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
+    <string name="group_name_contains">Group name contains: %s</string>
+    <string name="group_remark_contains">Group remark contains: %s</string>
+    <string name="group_member_name_contains">Group member name contains: %s</string>
+    <string name="group_member_alias_contains">Group member alias contains: %s</string>
+    <string name="modify_success">Modified successfully</string>
+    <string name="modify_fail">Modification failed</string>
+    <string name="group_owner">Group Owner</string>
+
+    <!-- Audio -->
+    <string name="audio_volume_increase_error">Failed to increase audio volume</string>
+    <string name="audio_record_init_error">Failed to initialize audio recorder</string>
+    <string name="audio_record_stop_error">Failed to stop audio recorder</string>
+    <string name="audio_record_loss_error">Audio focus lost</string>
+    <string name="audio_permission_required">Audio recording permission required</string>
+
+    <!-- Audio Recorder -->
+    <string name="voice_rec">Hold to Talk</string>
+    <string name="voice_cancel">Release to Cancel</string>
+    <string name="voice_short">Message too short</string>
+
+    <!-- PTT -->
+    <string name="ptt_hold_to_talk">Hold to Talk</string>
+    <string name="ptt_release_to_end">Release to End</string>
+    <string name="ptt_request_failed">Failed to request PTT %1$d</string>
+
+    <!-- Channel -->
+    <string name="channel">Channel</string>
+    <string name="channel_subscribe">Subscribe</string>
+    <string name="channel_subscribe_failed">Failed to subscribe: %1$d %2$s</string>
+    <string name="channel_subscribe_success">Subscribed successfully</string>
+    <string name="channel_not_exist">Channel does not exist or has been destroyed</string>
+    <string name="channel_name">Name: %1$s</string>
+    <string name="channel_desc">Description: %1$s</string>
+    <string name="channel_owner">Owner: %1$s</string>
+    <string name="channel_subscription_count">Subscribers: %1$d</string>
+    <string name="channel_empty_desc">Channel owner left no description</string>
+    <string name="channel_following">Unfollow</string>
+    <string name="channel_not_following">Follow</string>
+    <string name="channel_following_status">%1$s in progress</string>
+    <string name="channel_following_success">%1$s successful</string>
+    <string name="channel_following_failed">%1$s failed</string>
+    <string name="channel_menu_title">Channels</string>
+    <string name="channel_create_title">Create Channel</string>
+    <string name="channel_create_processing">Creating channel...</string>
+    <string name="channel_create_success">Channel created successfully</string>
+    <string name="channel_create_failed">Failed to create channel</string>
+    <string name="channel_set_portrait">Please set a profile picture</string>
+    <string name="channel_details">Channel Details</string>
+    <string name="channel_qr_code_title">Channel QR Code</string>
+    <string name="channel_no_menu">Channel menu not configured</string>
+    <string name="channel_unsubscribe_confirm">Confirm unsubscribe from channel?</string>
+    <string name="show_channel_info">Show channel info</string>
+    <string name="channel_category">Channels</string>
+    <string name="channel_name_title">Channel Name</string>
+    <string name="channel_desc_title">Channel Description</string>
+    <string name="qrcode">QR Code</string>
+    <string name="search_message">Search Messages</string>
+
+    <!-- Pick Conversation -->
+    <string name="pick_conversation_done">Done</string>
+    <string name="pick_conversation_done_with_count">Done(%d)</string>
+
+    <!-- Pick User -->
+    <string name="pick_user_limit_exceeded">Selection limit exceeded</string>
+    <string name="pick_user_empty_hint"></string>
+    <string name="pick_user_search_hint">Search</string>
+
+    <!-- Friend Request -->
+    <string name="contact_request_accepted">Added</string>
+    <string name="contact_request_rejected">Rejected</string>
+    <string name="contact_request_accept_error">Failed to accept friend request, err = %1$d</string>
+    <string name="contact_unknown">%1$s</string>
+
+    <!-- Friend Invite -->
+    <string name="invite_default_message">I am %1$s</string>
+    <string name="invite_sent">Friend request sent</string>
+    <string name="invite_error">Failed to add friend, errorCode = %1$d</string>
+
+    <!-- Contact Pick -->
+    <string name="contact_pick_confirm">Confirm</string>
+    <string name="contact_pick_confirm_with_count">Confirm(%d)</string>
+
+    <!-- External Domain -->
+    <string name="mesh_service_not_enabled">Mesh service is not enabled</string>
+    <string name="no_external_organization">No external organizations</string>
+
+    <!-- File Extension -->
+    <string name="file_type_any">*/*</string>
+    <string name="file_select_error">Error selecting file</string>
+    <string name="file_ext_title">File</string>
+
+    <!-- File Record -->
+    <string name="file_record_from">From %s</string>
+    <string name="all_files">All Files</string>
+    <string name="my_files">My Files</string>
+    <string name="conversation_files">Conversation Files</string>
+    <string name="user_files">User Files</string>
+
+    <!-- Image Extension -->
+    <string name="image_ext_title">Photo</string>
+
+    <!-- Location Extension -->
+    <string name="location_ext_title">Location</string>
+
+    <!-- User Card Extension -->
+    <string name="user_card_personal">[Contact Card]</string>
+    <string name="user_card_group">[Group]</string>
+    <string name="user_card_chatroom">[Chat Room]</string>
+    <string name="user_card_channel">[Channel]</string>
+    <string name="user_card_cancel">Cancel</string>
+    <string name="user_card_send">Send</string>
+    <string name="user_card_title">Card</string>
+
+    <!-- Voip Extension -->
+    <string name="voip_ext_video">Video Call</string>
+    <string name="voip_ext_audio">Voice Call</string>
+
+    <!-- Voip Message -->
+    <string name="call_unknown">Call Failed</string>
+    <string name="call_busy">Line Busy</string>
+    <string name="call_error">Network Error</string>
+    <string name="call_hangup">Cancelled</string>
+    <string name="call_remote_hangup">Call Cancelled by Other Party</string>
+    <string name="call_no_answer">No Answer</string>
+    <string name="call_remote_no_answer">No Answer from Other Party</string>
+    <string name="call_accept_other">Answered on Another Device</string>
+    <string name="call_ended">Call Ended</string>
+    <string name="call_remote_error">Network Error from Other Party</string>
+    <string name="call_full">Maximum Call Participants Reached</string>
+    <string name="call_duration_hours">Call Duration %d:%02d:%02d</string>
+    <string name="call_duration_minutes">Call Duration %02d:%02d</string>
+
+    <!-- Forward -->
+    <string name="forward_chat_record">[Chat Record]: %s</string>
+    <string name="forward_batch_messages">[Forward] %d Messages</string>
+    <string name="forward_cancel">Cancel</string>
+    <string name="forward_send">Send</string>
+    <string name="forward_success">Forwarded successfully</string>
+    <string name="forward_failed">Forward failed: %d</string>
+    <string name="forward_one_by_one">Forward One by One</string>
+    <string name="forward_merge">Merge Forward</string>
+    <string name="forward_chat_record_title">Chat History</string>
+    <string name="forward_chat_with">Chat History between %1$s and %2$s</string>
+    <string name="forward_group_chat">Group Chat History</string>
+    <string name="forward_send_to">Send to:</string>
+    <string name="forward_leave_message">Leave a message</string>
+
+    <!-- Conference -->
+    <string name="conference_not_supported">Conference feature is not supported in this version</string>
+    <string name="host_invite_speak">Host invites you to speak</string>
+    <string name="host_invite_camera">Host invites you to turn on camera</string>
+    <string name="reject">Reject</string>
+    <string name="accept">Accept</string>
+    <string name="rejected_speak_invite">You rejected the speaking invitation</string>
+    <string name="rejected_camera_invite">You rejected the camera invitation</string>
+    <string name="accepted_speak_invite">You accepted the speaking invitation</string>
+    <string name="accepted_camera_invite">You accepted the camera invitation</string>
+    <string name="host_closed_your_speech">Host closed your speech</string>
+    <string name="host_unmuted_all_mic">Host disabled all mute, open your microphone?</string>
+    <string name="host_unmuted_all_camera">Host enabled all cameras, turn on your camera?</string>
+    <string name="ignore">Ignore</string>
+    <string name="open">Open</string>
+    <string name="host_muted_all">Host muted everyone</string>
+    <string name="conf_ended_restart_prompt">Conference ended. Restart the conference?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="create_conf_failed">Failed to create conference</string>
+    <string name="contact_host_start_conf">Please contact the host to start the conference</string>
+    <string name="join_as_audience_prompt">Interactive participants are full, join as audience?</string>
+    <string name="join_conf_failed">Failed to join conference</string>
+    <string name="speaking_requests">Speaking Requests</string>
+
+    <!-- Conference Invite -->
+    <string name="conf_invite_title">Conference Invitation</string>
+    <string name="conf_invite_success">Invitation sent successfully</string>
+    <string name="conf_invite_failed">Invitation failed %d</string>
+
+    <!-- Conference Additional Strings -->
+    <string name="conf_audio_no_camera">Camera not supported in audio conference</string>
+    <string name="conf_audio_no_screen_share">Screen sharing not supported in audio conference</string>
+    <string name="conf_screen_share_hint">When enabling screen sharing, your camera will be turned off and microphone turned on</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="conf_hand_up">Raise Hand</string>
+    <string name="conf_hand_down">Lower Hand</string>
+    <string name="conf_recording_start_owner">Please contact the host to start recording</string>
+    <string name="conf_recording_stop_owner">Please contact the host to stop recording</string>
+    <string name="conf_unmute_request_in_progress_audio">Host has disabled unmuting, your request to unmute is pending host approval</string>
+    <string name="conf_unmute_request_in_progress_video">Host has disabled camera, your request to turn on camera is pending host approval</string>
+    <string name="conf_cancel_request">Cancel Request</string>
+    <string name="conf_continue_request">Continue Request</string>
+    <string name="conf_request_cancelled">Request cancelled</string>
+    <string name="conf_request_resent">Request resent, please wait for host approval</string>
+    <string name="conf_unmute_not_allowed_audio">Host has disabled unmuting, you can request permission to unmute</string>
+    <string name="conf_unmute_not_allowed_video">Host has disabled camera, you can request permission to turn on camera</string>
+    <string name="conf_request_unmute_audio">Request to Unmute</string>
+    <string name="conf_request_unmute_video">Request to Turn On Camera</string>
+
+    <!-- Conference History -->
+    <string name="conf_history_desc_format">Time: %s Host: %s Duration: %s</string>
+
+    <!-- Message Context Menu -->
+    <string name="conf_end_conference">"End meeting "</string>
+    <string name="message_delete_local">Delete Local Message</string>
+    <string name="message_delete_remote">Delete Remote Message</string>
+    <string name="message_delete_both">Delete Message for Both</string>
+    <string name="message_forward">Forward</string>
+    <string name="message_multi_select">Multi Select</string>
+    <string name="message_favorite">Favorite</string>
+    <string name="message_delete">Delete</string>
+    <string name="message_favorite_success">Added to favorites</string>
+    <string name="message_favorite_error">Failed to add favorite: %d</string>
+    <string name="message_delete_confirm">Confirm delete this message</string>
+    <string name="message_unknown_option">Not set</string>
+    <string name="load_favorite_failed">Failed to load favorites %d</string>
+    <string name="delete_favorite_success">Favorite deleted successfully</string>
+    <string name="delete_favorite_failed">Failed to delete favorite: %d</string>
+
+    <!-- Delete Message Action -->
+    <string name="message_action_delete">Delete</string>
+    <string name="message_delete_confirm_prompt">Confirm delete?</string>
+    <string name="message_action_forward">Forward</string>
+    <string name="delete_message_dialog_cancel">Cancel</string>
+    <string name="delete_message_dialog_confirm">Confirm</string>
+
+    <!-- Normal Message -->
+    <string name="message_resend">Resend</string>
+    <string name="message_resend_title">Resend message?</string>
+    <string name="message_recall">Recall</string>
+    <string name="message_quote">Quote</string>
+    <string name="message_private_chat">Private Chat</string>
+
+    <!-- File Message -->
+    <string name="file_save_success">File saved successfully</string>
+    <string name="file_save_failed">Failed to save file</string>
+    <string name="file_need_download">Please download the file first</string>
+    <string name="file_save_to_phone">Save to Phone</string>
+
+    <!-- Media Message -->
+    <string name="media_cancel_send">Cancel Send</string>
+    <string name="media_cancel_failed">Cancel failed</string>
+
+    <!-- Notification Message -->
+    <string name="message_invalid">Message is invalid</string>
+
+    <!-- Streaming Message -->
+    <string name="message_copy">Copy</string>
+    <string name="message_detail_title">Message Content</string>
+
+    <!-- Text Message -->
+    <string name="message_recalled">Message has been recalled</string>
+    <string name="message_not_available">Message unavailable, may have been deleted or expired</string>
+
+    <!-- Unknown Message -->
+    <string name="message_unsupported">Message type not supported, please update to latest version!</string>
+
+    <!-- Composite Message -->
+    <string name="message_loading">Loading message, please wait</string>
+    <string name="message_load_failed">Failed to load message</string>
+    <string name="date_pattern">yyyy/MM/dd</string>
+    <string name="date_range_format">%1$s to %2$s</string>
+    <string name="creating">Creating...</string>
+    <string name="message_receipt_unread">Unread(%d)</string>
+    <string name="message_receipt_read">Read(%d)</string>
+    <string name="message_receipt_unread_tab">Unread</string>
+    <string name="message_receipt_read_tab">Read</string>
+    <string name="get_conversation_info_failed">Failed to get conversation info</string>
+
+    <!-- Typing Status -->
+    <string name="typing_someone">Someone</string>
+    <string name="typing_text">is typing</string>
+    <string name="typing_voice">is recording audio</string>
+    <string name="typing_camera">is taking photo</string>
+    <string name="typing_file">is sending file</string>
+    <string name="typing_location">is sending location</string>
+    <string name="typing_unknown">unknown</string>
+    <string name="typing_people_count">%d people are typing</string>
+    <string name="typing_remote_text">The other party is typing</string>
+    <string name="typing_remote_voice">The other party is recording audio</string>
+    <string name="typing_remote_camera">The other party is taking photo</string>
+    <string name="typing_remote_file">The other party is sending file</string>
+    <string name="typing_remote_location">The other party is sending location</string>
+    <string name="all_group_member_muted">All members are muted</string>
+    <string name="you_are_muted">You are muted</string>
+    <string name="group_dismissed">Group has been dismissed</string>
+    <string name="group_dismissed_toast">Group has been dismissed</string>
+    <string name="group_not_member_error">You are not in the group or an error occurred, please try again later</string>
+    <string name="update_portrait_success">Profile picture updated successfully</string>
+    <string name="update_portrait_failed">Failed to update profile picture: %d</string>
+    <string name="install_webview_prompt">Please install: Android System WebView</string>
+    <string name="my_group_nickname_dialog_title">Enter your group nickname</string>
+    <string name="dismiss_group_title">Dismiss Group</string>
+    <string name="dismiss_group_confirm_message">Are you sure you want to dismiss this group?</string>
+    <string name="quit_group_title">Leave Group</string>
+    <string name="quit_group_confirm_message">Are you sure you want to leave this group?</string>
+    <string name="dismiss_group_failed">Failed to dismiss group</string>
+    <string name="quit_group_failed">Failed to leave group</string>
+    <string name="creating_conversation">Creating...</string>
+    <string name="secret_chat_establishing">Secret chat is being initiated or has been canceled</string>
+    <string name="welcome_join_chatroom">Welcome %s to the chat room</string>
+    <string name="group_member_disable_chat">Group member private chat is disabled</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="join_chatroom_error">Failed to join chat room</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="secret_chat_postfix">(Secret)</string>
+    <string name="message_mention_count">%d mention messages</string>
+    <string name="message_unread_count">%d messages</string>
+    <string name="clear_local_conversation">Clear Local Conversation</string>
+    <string name="clear_remote_conversation">Clear Remote Conversation</string>
+    <string name="max_emoji_per_message">Maximum %d emoji allowed</string>
+    <string name="create_conversation_multi_contact_hint">Select multiple contacts to start a group chat</string>
+    <string name="modify_group_alias_failed">Failed to modify group nickname: %d</string>
+    <string name="clear_local_chat">Clear Local Chat</string>
+    <string name="clear_remote_chat">Clear Remote Chat</string>
+    <string name="group_qrcode">Group QR Code</string>
+    <string name="leave_chatroom">%s left the chat room</string>
+    <string name="clear_conversation">Clear Conversation</string>
+    <string name="pc_online">PC Online</string>
+    <string name="web_online">Web Online</string>
+    <string name="wx_online">WeChat Mini Program Online</string>
+    <string name="pad_online">Pad Online</string>
+    <string name="notification_muted_when_pc_online">, Mobile notifications disabled</string>
+    <string name="delete_conversation">Delete Conversation</string>
+    <string name="stick_on_top">Pin</string>
+    <string name="cancel_stick_on_top">Unpin</string>
+    <string name="mark_as_read">Mark as Read</string>
+    <string name="mark_as_unread">Mark as Unread</string>
+    <string name="delete_conversation_confirm">Confirm delete conversation?</string>
+    <string name="mention_you">[Mentioned you]</string>
+    <string name="unknown_conversation_type">Unknown conversation type(%1$d) or line(%2$d)</string>
+    <string name="connecting">Connecting...</string>
+    <string name="syncing">Syncing...</string>
+    <string name="connection_failed">Connection Failed</string>
+    <string name="preview_not_supported">Preview not supported</string>
+    <string name="favorite_content">Favorite Content</string>
+    <string name="version_not_supported">Current version not supported, please update to view</string>
+    <string name="adding">Adding...</string>
+    <string name="set_group_manager_error">Error setting manager: %d</string>
+    <string name="remove_group_manager">Remove Group Manager</string>
+    <string name="adding_whitelist">Adding to whitelist...</string>
+    <string name="muting_group_member">Muting...</string>
+    <string name="add_whitelist_error">Failed to add to whitelist: %d</string>
+    <string name="set_mute_error">Failed to mute: %d</string>
+    <string name="remove_whitelist">Remove from whitelist</string>
+    <string name="unmute_member">Unmute</string>
+    <string name="operation_failed">Operation failed</string>
+    <string name="whitelist">Whitelist</string>
+    <string name="group_member_mute">Group Member Mute</string>
+    <string name="delete">Delete</string>
+    <string name="delete_with_count">Delete(%d)</string>
+    <string name="deleting">Deleting...</string>
+    <string name="saving_image">Saving image...</string>
+    <string name="image_save_failed_null_file">Failed to save image: file == null</string>
+    <string name="image_save_success">Image saved successfully</string>
+    <string name="storage_permission_required">Please grant storage permission</string>
+    <string name="set_success">Set successfully</string>
+    <string name="blacklist_add_error">Failed to add to blacklist: %d</string>
+    <string name="blacklist_remove_error">Failed to remove from blacklist: %d</string>
+    <string name="blacklist_remove_failed">Removal failed</string>
+    <string name="fav_set_error">Failed to set favorite: %d</string>
+    <string name="fav_remove_error">Failed to remove favorite: %d</string>
+    <string name="cancel">Cancel</string>
+    <string name="pc_online_status_logged_in">Logged In</string>
+    <string name="pc_session_logout_button">Logout %s</string>
+    <string name="pc_kicked_offline">Kicked Offline</string>
+    <string name="operation_success">Operation Successful</string>
+    <string name="qr_code_recognition_failed">Failed to recognize QR code</string>
+    <string name="chat_records_category">Chat Records</string>
+    <string name="matched_records_count">%d matches</string>
+    <string name="click_to_expand_more">Click to expand %d more items</string>
+    <string name="click_to_expand">Click to expand</string>
+    <string name="network_error">Network Error</string>
+    <string name="wildfire_id_not_empty">WildFire ID cannot be empty</string>
+    <string name="modify_account_error">Account modification error: %1$d %2$s</string>
+    <string name="join_by_qrcode">Joined by scanning %s\'s shared QR code</string>
+    <string name="join_by_card">Joined via %s\'s shared group card</string>
+    <string name="invited_by">Invited by %s</string>
+    <string name="join_by_search">Joined by searching</string>
+    <string name="unknown">Unknown</string>
+    <string name="network_call">[Network Call]</string>
+
+    <!-- Conference Info Activity -->
+    <string name="conf_get_info_failed">Failed to get conference details</string>
+    <string name="conf_destroy_success">Conference destroyed successfully</string>
+    <string name="conf_destroy_failed">Failed to destroy conference %d</string>
+    <string name="conf_qrcode_title">Conference QR Code</string>
+    <string name="conf_start_time_now">Now</string>
+    <string name="conf_not_started">Conference Not Started</string>
+    <string name="conf_join">Join Conference</string>
+
+    <!-- Conference Command Responses -->
+    <string name="conf_reject_unmute_audio">Host rejected your speaking request</string>
+    <string name="conf_reject_unmute_video">Host rejected your camera request</string>
+    <string name="conf_request_speak">%s requests to speak</string>
+    <string name="conf_request_camera">%s requests to turn on camera</string>
+    <string name="conf_approve_speak">Host approved your speaking request</string>
+    <string name="conf_approve_camera">Host approved your camera request</string>
+    <string name="conf_somebody_hand_up">%s raised hand</string>
+    <string name="conf_somebody_hand_down">%s lowered hand</string>
+    <string name="conf_host_put_your_hand_down">Host lowered your hand</string>
+    <string name="conf_host_start_recording">Host started recording</string>
+    <string name="conf_host_stop_recording">Host stopped recording</string>
+    <string name="conf_host_focus_user">Host locked focus on user</string>
+    <string name="conf_host_cancel_focus">Host canceled focus lock</string>
+
+    <!-- Conference Hand Up/Down -->
+    <string name="conf_hand_up_waiting">Hand raised, waiting for host response</string>
+    <string name="conf_hand_down_message">Hand lowered</string>
+
+    <!-- Conference Mute/Unmute -->
+    <string name="conf_max_participants_reached">Maximum number of speakers reached, cannot switch to speaker role!</string>
+    <string name="conf_host_muted_all_audio">Host muted everyone</string>
+    <string name="conf_host_muted_all_video">Host turned off everyone\'s camera</string>
+
+    <!-- Conference Recording -->
+    <string name="conf_start_recording">Start recording</string>
+    <string name="conf_stop_recording">Stop recording</string>
+
+    <!-- Conference Participant List -->
+    <string name="conf_mute_all_audio_title">All members will be muted</string>
+    <string name="conf_mute_all_video_title">All members will have camera turned off</string>
+    <string name="conf_allow_unmute_audio">Allow members to unmute themselves</string>
+    <string name="conf_allow_unmute_video">Allow members to turn on camera themselves</string>
+    <string name="conf_unmute_all_audio_title">Allow all members to unmute</string>
+    <string name="conf_unmute_all_video_title">Allow members to turn on camera</string>
+    <string name="conf_require_unmute_audio">Request members to unmute</string>
+    <string name="conf_require_unmute_video">Request members to turn on camera</string>
+
+    <!-- Conference Participant List Text -->
+    <string name="conf_etc"> and others</string>
+    <string name="conf_requesting_unmute_audio">requesting to unmute</string>
+    <string name="conf_requesting_unmute_video">requesting to turn on camera</string>
+    <string name="conf_hand_raising">raising hand</string>
+    <string name="conf_view_user_info">View user info</string>
+    <string name="conf_enable_audio">Enable audio</string>
+    <string name="conf_disable_audio">Disable audio</string>
+    <string name="conf_enable_video">Enable video</string>
+    <string name="conf_disable_video">Disable video</string>
+    <string name="conf_enable_audio_video">Enable audio and video</string>
+    <string name="conf_invite_to_speak">Invite to speak</string>
+    <string name="conf_cancel_speak">Cancel speaking</string>
+    <string name="conf_invite_turn_on_camera">Invite to turn on camera</string>
+    <string name="conf_turn_off_camera">Turn off camera</string>
+    <string name="conf_remove_member">Remove member</string>
+    <string name="conf_cancel_focus_user">Cancel focus user</string>
+    <string name="conf_set_as_focus_user">Set as focus user</string>
+    <string name="conf_host_me">Host, me</string>
+    <string name="conf_me">me</string>
+    <string name="conf_host">Host</string>
+    <string name="conf_screen_sharing_suffix">, screen sharing</string>
+    <string name="conf_screen_sharing">screen sharing</string>
+
+    <!-- Conference Portal -->
+    <string name="conf_ended">Conference has ended</string>
+    <string name="conf_started_join_prompt">Conference has started, please join soon</string>
+    <string name="conf_today">Today</string>
+    <string name="conf_date_format">MM/dd</string>
+    <string name="conf_start_meeting">start meeting</string>
+
+    <!-- Conference Create Activity -->
+    <string name="conference_title_default">%s\'s Conference</string>
+    <string name="conference_title_unnamed">Conference</string>
+    <string name="conference_enter_password">Enter password</string>
+    <string name="conference_password_hint">Enter 6-digit number</string>
+    <string name="conference_end_time_invalid">End time cannot be earlier than current time</string>
+    <string name="conference_creating">Creating conference...</string>
+    <string name="conference_create_failed">Failed to create conference</string>
+    <string name="conference_create_failed_code">Failed to create conference: %d</string>
+
+    <!-- Order Conference -->
+    <string name="conference_start_time_invalid">Start time cannot be earlier than current time</string>
+    <string name="conference_time_required">Please select start and end time</string>
+    <string name="conference_end_before_start_error">End time cannot be earlier than start time</string>
+    <string name="conference_order_success">Conference scheduled successfully</string>
+    <string name="conference_order_failed">Failed to schedule conference: %d</string>
+
+    <!-- Multi Call -->
+    <string name="participant_left_call">User %s left the call</string>
+    <string name="speaking">Speaking</string>
+
+    <!-- Video Call -->
+    <string name="camera_off">Camera Off</string>
+    <string name="stop_screen_sharing">Stop Screen Sharing</string>
+    <string name="start_screen_sharing">Start Screen Sharing</string>
+    <!-- VoIP -->
+    <string name="voip_permission_required">Audio and camera permissions are required for voice and video calls</string>
+    <string name="screen_share_not_supported">Your system does not support screen sharing</string>
+    <string name="screen_share_permission_denied">Screen sharing permission denied</string>
+    <string name="your_network_poor">Your network connection is poor</string>
+    <string name="user_network_poor">%s\'s network connection is poor</string>
+    <string name="floating_window_permission_required">Floating window permission is required</string>
+
+    <!-- VoIP Call Service -->
+    <string name="call_waiting_for_answer">Waiting for answer...</string>
+    <string name="call_invitation">Call invitation...</string>
+    <string name="call_connecting">Connecting...</string>
+    <string name="call_in_progress">Call in progress...</string>
+
+    <!-- VoIP Dummy Activity -->
+    <string name="screen_sharing_in_progress_warning">Screen sharing in progress, returning to call UI is not supported. Please stop screen sharing first.</string>
+    <string name="delete_friend_error">Delete friend error</string>
+    <string name="external_domain">External Organization</string>
+    <string name="fav_friends">Fav Friends</string>
+
+    <string name="search_tip">Enter keywords to start searching</string>
+    <string name="search_no_result">No search results</string>
+    <string name="mute_mobile">Mute Mobile</string>
+    <string name="send_file">Send File</string>
+    <string name="logout_pc">Logout PC</string>
+    <string name="create_conversation">Create Conversation</string>
+    <string name="create_new_conversation">Create New Conversation</string>
+
+    <!-- AndroidManifest Activity Labels -->
+    <string name="set_user_alias">Set User Alias</string>
+    <string name="modify_nickname">Modify Nickname</string>
+    <string name="modify_group_name">Modify Group Name</string>
+    <string name="modify_group_remark">Modify Group Remark</string>
+    <string name="modify_group_announcement">Modify Group Announcement</string>
+    <string name="group_list">Group List</string>
+    <string name="friend_request">Friend Requests</string>
+    <string name="search_user">Search User</string>
+    <string name="invite_friend">Invite Friend</string>
+    <string name="user_info">User Info</string>
+    <string name="privacy_setting">Privacy Settings</string>
+    <string name="blacklist">Blacklist</string>
+    <string name="message_notification">Messages and Notifications</string>
+    <string name="conversation_info">Conversation Details</string>
+    <string name="chatroom_list">Chat Room List</string>
+    <string name="search_portal">Search Center</string>
+    <string name="add_new_member">Add New Members</string>
+    <string name="remove_group_member">Remove Group Members</string>
+    <string name="select_group_member">Select Group Members</string>
+    <string name="create_channel">Create Channel</string>
+    <string name="channel_info">Channel Info</string>
+    <string name="group_manage">Group Management</string>
+    <string name="manager_list">Manager List</string>
+    <string name="add_manager">Add Manager</string>
+    <string name="group_mute">Group Mute</string>
+    <string name="group_member_permission">Member Permissions</string>
+    <string name="group_member_list">Group Member List</string>
+    <string name="contact_selection">Select Contact</string>
+    <string name="file_record">File Records</string>
+    <string name="select_a_chat">Select a Chat</string>
+    <string name="select_contact">Select Contact</string>
+    <string name="select_conversation">Select Conversation</string>
+    <string name="message_read_status">Message Read Status</string>
+    <string name="channel_list">Channel List</string>
+    <string name="group_info">Group Info</string>
+    <string name="start_conference">Start Conference</string>
+    <string name="conference">Conference</string>
+    <string name="schedule_conference">Schedule Conference</string>
+    <string name="conference_details">Conference Details</string>
+    <string name="conference_invitation">Conference Invitation</string>
+    <string name="conference_records">Conference Records</string>
+    <string name="modify_wildfire_id">Modify WildFire ID</string>
+    <string name="composite_message">Composite Message</string>
+    <string name="my_favorites">My Favorites</string>
+    <string name="user_messages">User Messages</string>
+    <string name="organization_directory">Organization Directory</string>
+    <string name="employee_info">Employee Info</string>
+    <string name="select_organization_member">Select Organization Member</string>
+    <string name="external_domain_list">External Organizations</string>
+    <string name="external_domain_details">External Organization Details</string>
+
+    <!-- 消息通知设置 -->
+    <string name="receive_new_msg_notification">Receive New Message Notifications</string>
+    <string name="receive_voip_notification">Receive Voice/Video Call Notifications</string>
+    <string name="notification_show_msg_detail">Show Message Details in Notifications</string>
+    <string name="message_receipt">Message Receipt</string>
+    <string name="draft_sync">Sync Drafts</string>
+    <string name="enable_ptt">Enable Push-to-Talk</string>
+    <string name="audio_msg_volume_amplification">Audio Message Volume Boost</string>
+
+    <!-- 主体布局中的各种标签和按钮 -->
+    <string name="find_me_ways_header">I can be found by the following methods</string>
+    <string name="nickname">Nickname</string>
+    <string name="account">Account</string>
+    <string name="organization_name">Organization Name</string>
+    <string name="subordinate">Subordinate</string>
+    <string name="group_name_placeholder">Group Name</string>
+    <string name="contact_count_placeholder">hello world</string>
+
+    <!-- Organization and Department Headers -->
+    <string name="organization_name_placeholder">XX Company</string>
+    <string name="department_name_placeholder">XX Department</string>
+    <string name="saved_groups_hint">(Groups saved to contacts)</string>
+
+    <!-- Wildfire ID -->
+    <string name="wildfire_id">Wildfire ID</string>
+
+    <!-- Friend Request -->
+    <string name="friend_request_desc">Requests to add you as a friend</string>
+
+    <!-- 添加以下国际化字符串 -->
+    <string name="show_all_members">View All Members</string>
+    <string name="group_remark">Group Remark</string>
+    <string name="save_to_contact">Save to Contacts</string>
+    <string name="not_destroy">No Destruction</string>
+    <string name="set_secret_chat_burn_time">Set Secret Chat Burn Time</string>
+    <string name="destroy_secret_chat">Destroy Secret Chat</string>
+    <string name="title_placeholder">title</string>
+    <string name="content_placeholder">content</string>
+    <string name="link_title_placeholder">link title</string>
+    <string name="conference_topic_placeholder">Conference Topic</string>
+    <string name="conference_desc_placeholder">Conference Description</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone</string>
+    <string name="address">Address</string>
+    <string name="description">Description</string>
+    <string name="search_user_in_organization">Search users in this organization</string>
+    <string name="description_placeholder">wfc desc</string>
+    <string name="group_member_management">Member Management</string>
+    <string name="group_managers">Managers</string>
+    <string name="set_group_mute">Set Mute</string>
+    <string name="group_basic_settings">Group Basic Settings</string>
+    <string name="group_join_type">Join Method</string>
+    <string name="group_join_type_no_limit">No restrictions</string>
+    <string name="group_search_type">Search Method</string>
+    <string name="group_search_type_not_allowed">Search not allowed</string>
+    <string name="group_history_message">Group History Messages</string>
+    <string name="group_history_message_not_allowed">New members cannot view history</string>
+    <string name="allow_member_init_temp_chat">Allow members to start temporary chats</string>
+    <string name="all_group_mute">Mute All Members</string>
+    <string name="mobile_number">Phone Number</string>
+    <string name="moments">Moments</string>
+    <!-- 添加以下字符串资源 -->
+    <string name="find_me_ways">How to Find Me</string>
+    <string name="add_friend_verify">Verify friend requests</string>
+    <string name="department">Department</string>
+    <string name="scan_qrcode_join_group">Scan QR code to join</string>
+    <string name="join_group_method">Join Method</string>
+    <string name="view_user_messages">View User Messages</string>
+    <string name="my_subscribed_channels">My Subscribed Channels</string>
+    <string name="conf_leave_allow_continue_prompt">" If you want to keep participants in the meeting, select Leave the meeting"</string>
+    <string name="conf_leave_conference">"Exit meeting "</string>
+
+    <!-- User Info Menu -->
+    <string name="delete_friend">Delete Friend</string>
+    <string name="add_to_blacklist">Add to Blacklist</string>
+    <string name="remove_from_blacklist">Remove from Blacklist</string>
+    <string name="set_alias">Set Nickname</string>
+    <string name="set_star_friend">Star Friend</string>
+    <string name="remove_star_friend">Unstar Friend</string>
+    <string name="recent_chats">Recent Conversations</string>
+</resources>

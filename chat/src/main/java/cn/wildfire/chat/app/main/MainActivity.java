@@ -70,15 +70,19 @@ import cn.wildfire.chat.kit.search.SearchPortalActivity;
 import cn.wildfire.chat.kit.user.ChangeMyNameActivity;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.utils.FileUtils;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
 import cn.wildfire.chat.kit.workspace.WebViewFragment;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.ConnectionStatus;
+import cn.wildfirechat.message.FileMessageContent;
+import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.TextMessageContent;
+import cn.wildfirechat.message.VideoMessageContent;
 import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.message.core.MessageStatus;
 import cn.wildfirechat.model.Conversation;
@@ -110,6 +114,7 @@ public class MainActivity extends WfcBaseActivity {
     private ContactViewModel contactViewModel;
     private ConversationListViewModel conversationListViewModel;
     private long lastSelectConversatonListItemTimestamp = 0;
+    private MenuItem secretChatMenuItem;
 
     protected void bindViews() {
         super.bindViews();
@@ -172,6 +177,11 @@ public class MainActivity extends WfcBaseActivity {
                 Toast.makeText(MainActivity.this, "专业版IM服务没有授权或者授权过期！！！", Toast.LENGTH_LONG).show();
             } else if (status == ConnectionStatus.ConnectionStatusTimeInconsistent) {
                 Toast.makeText(MainActivity.this, "服务器和客户端时间相差太大！！！", Toast.LENGTH_LONG).show();
+            } else if (status == ConnectionStatus.ConnectionStatusConnected) {
+                if (secretChatMenuItem != null) {
+                    boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
+                    secretChatMenuItem.setEnabled(isEnableSecretChat);
+                }
             }
         });
         MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
@@ -189,8 +199,13 @@ public class MainActivity extends WfcBaseActivity {
         String type = intent.getType();
         if (Intent.ACTION_SEND.equals(action)) {
             if ("text/plain".equals(type)) {
-                handleSend(intent);
+                handleSendText(intent);
+            } else {
+                Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                handleSendFile(fileUri);
             }
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+            handleSendMultiple(intent);
         }
 
         requestMandatoryPermissions();
@@ -203,8 +218,13 @@ public class MainActivity extends WfcBaseActivity {
         String type = intent.getType();
         if (Intent.ACTION_SEND.equals(action)) {
             if ("text/plain".equals(type)) {
-                handleSend(intent);
+                handleSendText(intent);
+            } else {
+                Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                handleSendFile(fileUri);
             }
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+            handleSendMultiple(intent); // Handle multiple items being sent
         }
     }
 
@@ -213,8 +233,8 @@ public class MainActivity extends WfcBaseActivity {
         super.afterMenus(menu);
         boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
         if (!isEnableSecretChat) {
-            MenuItem menuItem = menu.findItem(R.id.secretChat);
-            menuItem.setEnabled(false);
+            secretChatMenuItem = menu.findItem(R.id.secretChat);
+            secretChatMenuItem.setEnabled(false);
         }
     }
 
@@ -325,7 +345,7 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private void initView() {
-        setTitle(getString(R.string.app_name));
+        setTitle(getString(R.string.app_title_chat));
 
         startingTextView.setVisibility(View.GONE);
         contentLinearLayout.setVisibility(View.VISIBLE);
@@ -352,7 +372,7 @@ public class MainActivity extends WfcBaseActivity {
             switch (item.getItemId()) {
                 case R.id.conversation_list:
                     long now = System.currentTimeMillis();
-                    if(now - lastSelectConversatonListItemTimestamp < 200){
+                    if (now - lastSelectConversatonListItemTimestamp < 200) {
                         conversationListFragment.scrollToNextUnreadConversation();
                     }
                     lastSelectConversatonListItemTimestamp = now;
@@ -365,35 +385,35 @@ public class MainActivity extends WfcBaseActivity {
             switch (item.getItemId()) {
                 case R.id.conversation_list:
                     setCurrentViewPagerItem(0, false);
-                    setTitle("野火");
+                    setTitle(R.string.app_title_chat);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.contact:
                     setCurrentViewPagerItem(1, false);
-                    setTitle("通讯录");
+                    setTitle(R.string.app_title_contact);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.workspace:
                     setCurrentViewPagerItem(2, false);
-                    setTitle("工作台");
+                    setTitle(R.string.app_title_workspace);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.discovery:
                     setCurrentViewPagerItem(showWorkSpace ? 3 : 2, false);
-                    setTitle("发现");
+                    setTitle(R.string.app_title_discover);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.gray5, false);
                     }
                     break;
                 case R.id.me:
                     setCurrentViewPagerItem(showWorkSpace ? 4 : 3, false);
-                    setTitle("我的");
+                    setTitle(R.string.app_title_me);
                     if (!isDarkTheme()) {
                         setTitleBackgroundResource(R.color.white, false);
                     }
@@ -617,8 +637,8 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     // 分享
-    private void handleSend(Intent intent) {
-        String sharedText = intent.getStringExtra(Intent.EXTRA_INTENT);
+    private void handleSendText(Intent intent) {
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (!TextUtils.isEmpty(sharedText)) {
             MessageContent content = new TextMessageContent(sharedText);
             shareMessage(content);
@@ -640,6 +660,49 @@ public class MainActivity extends WfcBaseActivity {
                 }
             }
         }
+    }
+
+    private void handleSendMultiple(Intent intent) {
+        // TODO 暂不支持一次分享多个文件，分享页面不支持，没有相关 UI
+//        ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+//        if (imageUris != null) {
+//            for (Uri uri : imageUris) {
+//                handleSendFile(uri);
+//            }
+//        }
+    }
+
+    private void handleSendFile(Uri fileUri) {
+        if (fileUri == null) {
+            return;
+        }
+        String filePath = FileUtils.getPath(this, fileUri);
+        if (TextUtils.isEmpty(filePath)) {
+            Toast.makeText(this, "Error selecting file", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String suffix = filePath.substring(filePath.lastIndexOf("."));
+        MessageContent content;
+        switch (suffix) {
+            case ".png":
+            case ".jpg":
+            case ".jpeg":
+            case ".gif":
+                content = new ImageMessageContent(filePath);
+                break;
+            case ".3gp":
+            case ".mpg":
+            case ".mpeg":
+            case ".mpe":
+            case ".mp4":
+            case ".avi":
+                content = new VideoMessageContent(filePath);
+                break;
+            default:
+                content = new FileMessageContent(filePath);
+                break;
+        }
+        shareMessage(content);
     }
 
     private void shareMessage(MessageContent content) {

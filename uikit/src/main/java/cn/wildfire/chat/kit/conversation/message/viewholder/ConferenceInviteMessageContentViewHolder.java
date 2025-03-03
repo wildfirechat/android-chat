@@ -71,7 +71,7 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
 
     void joinConference() {
         if (!AVEngineKit.isSupportConference()) {
-            Toast.makeText(fragment.getActivity(), "本版本不支持会议功能", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getActivity(), R.string.conference_not_supported, Toast.LENGTH_SHORT).show();
             return;
         }
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
@@ -84,7 +84,7 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
 //        AVEngineKit.Instance().joinConference(inviteMessageContent.getCallId(), inviteMessageContent.isAudioOnly(), inviteMessageContent.getPin(), inviteMessageContent.getHost(), inviteMessageContent.getTitle(), inviteMessageContent.getDesc(), inviteMessageContent.isAudience(), inviteMessageContent.isAdvanced(), false, false, null);
         Intent intent = new Intent(fragment.getActivity(), ConferenceInfoActivity.class);
         intent.putExtra("conferenceId", inviteMessageContent.getCallId());
-        intent.putExtra("password", inviteMessageContent.getPin());
+        intent.putExtra("password", inviteMessageContent.getPassword());
         fragment.startActivity(intent);
     }
 }

@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_weight="1"
-            android:text="全员禁言"
+            android:text="@string/all_group_mute"
             android:textColor="@color/black0"
             android:textSize="16sp" />
 

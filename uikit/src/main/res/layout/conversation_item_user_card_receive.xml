@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/img_bubble_receive"
@@ -31,8 +32,8 @@
             android:layout_toRightOf="@id/userCardPortraitImageView"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="用用户名用户名用户名用户名用户名用户名用户名用户名户名"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="用用户名用户名用户名用户名用户名用户名用户名用户名户名" />
 
         <TextView
             android:id="@+id/userIdTextView"
@@ -62,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dividerLine"
             android:maxLines="1"
-            android:text="个人名片"
+            android:text="@string/user_card_title"
             android:textSize="12sp" />
 
     </RelativeLayout>

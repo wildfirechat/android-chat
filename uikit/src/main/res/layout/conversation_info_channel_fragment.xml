@@ -37,7 +37,7 @@
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
                     app:desc="channel name"
-                    app:title="频道名称" />
+                    app:title="@string/channel_name_title" />
 
                 <View
                     style="@style/Line"
@@ -49,14 +49,14 @@
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
                     app:desc="channel desc"
-                    app:title="频道描述" />
+                    app:title="@string/channel_desc_title" />
 
                 <cn.wildfire.chat.kit.widget.OptionItemView
                     android:id="@+id/channelQRCodeOptionItemView"
                     style="@style/OptionItem"
                     android:background="@drawable/selector_option_item"
                     app:end_src="@mipmap/qr_code"
-                    app:title="二维码" />
+                    app:title="@string/qrcode" />
 
             </LinearLayout>
 
@@ -127,13 +127,13 @@
                 style="@style/OptionItem"
                 android:layout_marginTop="@dimen/option_item_margin_top"
                 android:background="@drawable/selector_option_item"
-                app:title="查找聊天记录" />
+                app:title="@string/search_message" />
 
             <cn.wildfire.chat.kit.widget.OptionItemView
                 android:id="@+id/fileRecordOptionItemView"
                 style="@style/OptionItem"
                 android:background="@drawable/selector_option_item"
-                app:title="文件记录" />
+                app:title="@string/file_record" />
 
             <cn.wildfire.chat.kit.widget.OptionItemView
                 android:id="@+id/clearMessagesOptionItemView"

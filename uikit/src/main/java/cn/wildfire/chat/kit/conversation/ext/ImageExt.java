@@ -162,7 +162,7 @@ public class ImageExt extends ConversationExt {
 
     @Override
     public String title(Context context) {
-        return "照片";
+        return context.getString(R.string.image_ext_title);
     }
 
     @Override

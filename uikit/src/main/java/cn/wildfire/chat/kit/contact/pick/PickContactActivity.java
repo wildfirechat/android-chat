@@ -43,10 +43,10 @@ public class PickContactActivity extends WfcBaseActivity {
 
     protected void updatePickStatus(List<UIUserInfo> userInfos) {
         if (userInfos == null || userInfos.isEmpty()) {
-            confirmTv.setText("确定");
+            confirmTv.setText(R.string.contact_pick_confirm);
             menuItem.setEnabled(false);
         } else {
-            confirmTv.setText("确定(" + userInfos.size() + ")");
+            confirmTv.setText(getString(R.string.contact_pick_confirm_with_count, userInfos.size()));
             menuItem.setEnabled(true);
         }
     }

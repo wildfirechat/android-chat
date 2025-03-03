@@ -17,4 +17,4 @@
     android:textColor="#444444"
     android:textColorLink="#666666"
     android:textSize="16sp"
-    tools:text="嗯嗯嗯嗯嗯嗯嗯" />
+    tools:text="@string/message_unsupported" />

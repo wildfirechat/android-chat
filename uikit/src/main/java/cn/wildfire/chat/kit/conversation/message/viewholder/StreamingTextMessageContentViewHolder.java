@@ -91,7 +91,7 @@ public class StreamingTextMessageContentViewHolder extends NormalMessageContentV
 
     public void onClick(View view) {
         String content = this.streamingTextContent();
-        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", content);
+        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), fragment.getString(R.string.message_detail_title), content);
     }
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, confirm = false, priority = 12)
@@ -107,7 +107,7 @@ public class StreamingTextMessageContentViewHolder extends NormalMessageContentV
     @Override
     public String contextMenuTitle(Context context, String tag) {
         if (MessageContextMenuItemTags.TAG_CLIP.equals(tag)) {
-            return "复制";
+            return context.getString(R.string.message_copy);
         }
         return super.contextMenuTitle(context, tag);
     }

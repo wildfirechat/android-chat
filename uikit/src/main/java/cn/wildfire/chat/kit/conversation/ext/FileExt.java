@@ -44,7 +44,7 @@ public class FileExt extends ConversationExt {
             Uri uri = data.getData();
             String path = FileUtils.getPath(activity, uri);
             if (TextUtils.isEmpty(path)) {
-                Toast.makeText(activity, "选择文件错误", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, R.string.file_select_error, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -86,7 +86,7 @@ public class FileExt extends ConversationExt {
 
     @Override
     public String title(Context context) {
-        return "文件";
+        return context.getString(R.string.file_ext_title);
     }
 
     @Override

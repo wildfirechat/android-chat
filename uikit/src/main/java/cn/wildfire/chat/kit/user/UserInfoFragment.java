@@ -245,15 +245,15 @@ public class UserInfoFragment extends Fragment {
             String desc;
             if (groupMemberSource.type == GroupMemberSource.Type_QRCode) {
                 // 为了支持国际化，故strings.xml
-                desc = "通过扫描" + ChatManager.Instance().getGroupMemberDisplayName(this.groupId, groupMemberSource.targetId) + "分享的二维码加入";
+                desc = getString(R.string.join_by_qrcode, ChatManager.Instance().getGroupMemberDisplayName(this.groupId, groupMemberSource.targetId));
             } else if (groupMemberSource.type == GroupMemberSource.Type_Card) {
-                desc = "通过" + ChatManager.Instance().getGroupMemberDisplayName(this.groupId, groupMemberSource.targetId) + " 分享的群名片加入";
+                desc = getString(R.string.join_by_card, ChatManager.Instance().getGroupMemberDisplayName(this.groupId, groupMemberSource.targetId));
             } else if (groupMemberSource.type == GroupMemberSource.Type_Invite) {
-                desc = ChatManager.Instance().getGroupMemberDisplayName(this.groupId, groupMemberSource.targetId) + " 邀请加入";
+                desc = getString(R.string.invited_by, ChatManager.Instance().getGroupMemberDisplayName(this.groupId, groupMemberSource.targetId));
             } else if (groupMemberSource.type == GroupMemberSource.Type_Search) {
-                desc = "搜索群聊加入";
+                desc = getString(R.string.join_by_search);
             } else {
-                desc = "未知";
+                desc = getString(R.string.unknown);
             }
             groupSourceItemView.setVisibility(View.VISIBLE);
             groupSourceItemView.setDesc(desc);

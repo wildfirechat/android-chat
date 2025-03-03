@@ -110,7 +110,7 @@ public class ScanQRCodeActivity extends WfcBaseActivity {
                 Result result = QRCodeHelper.decodeQR(path);
                 Intent intent = new Intent();
                 if (result == null) {
-                    Toast.makeText(this, "识别二维码失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.qr_code_recognition_failed), Toast.LENGTH_SHORT).show();
                 } else {
                     intent.putExtra(Intents.Scan.RESULT, result.getText());
                     setResult(Activity.RESULT_OK, intent);

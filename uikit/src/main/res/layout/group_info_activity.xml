@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        tools:text="群名称" />
+        tools:text="@string/group_name_placeholder" />
 
     <Button
         android:id="@+id/actionButton"
@@ -36,5 +36,5 @@
         android:background="@drawable/shape_user_info_send_msg"
         android:textColor="@color/white"
         android:textSize="16sp"
-        tools:text="加入群聊" />
+        tools:text="@string/join_group_chat" />
 </LinearLayout>

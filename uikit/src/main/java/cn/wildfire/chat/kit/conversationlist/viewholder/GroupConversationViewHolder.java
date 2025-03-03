@@ -63,7 +63,7 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
                     }
 
                 } else {
-                    name = "群聊";
+                    name = fragment.getString(R.string.group_chat);
                     portrait = null;
                 }
 

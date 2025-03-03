@@ -55,7 +55,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder.getItemViewType() == R.layout.channel_item_category) {
             if (position == 0) {
-                ((CategoryViewHolder) holder).bind("我订阅的频道");
+                ((CategoryViewHolder) holder).bind(holder.itemView.getContext().getString(R.string.my_subscribed_channels));
             }
         } else {
             ((ChannelViewHolder) holder).bind(followedChannels.get(position - 1));

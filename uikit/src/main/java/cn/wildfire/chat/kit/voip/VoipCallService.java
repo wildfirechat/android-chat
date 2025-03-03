@@ -121,6 +121,14 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             return START_NOT_STICKY;
         }
 
+        // 录制系统音频示例代码
+//        boolean screenShareForRecord = intent.getBooleanExtra("screenShareForSystemAudioRecord", false);
+//        if (screenShareForRecord) {
+//            Intent data = intent.getParcelableExtra("data");
+//            session.startRecordSystemAudio(data);
+//            return START_NOT_STICKY;
+//        }
+
         focusTargetId = intent.getStringExtra("focusTargetId");
         Log.e("wfc", "on startCommand " + focusTargetId);
         checkCallState();
@@ -215,16 +223,16 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         if (session != null) {
             switch (session.getState()) {
                 case Outgoing:
-                    title = "等待对方接听...";
+                    title = getString(R.string.call_waiting_for_answer);
                     break;
                 case Incoming:
-                    title = "邀请您进行通话...";
+                    title = getString(R.string.call_invitation);
                     break;
                 case Connecting:
-                    title = "接听中...";
+                    title = getString(R.string.call_connecting);
                     break;
                 default:
-                    title = "通话中...";
+                    title = getString(R.string.call_in_progress);
                     break;
             }
         } else {

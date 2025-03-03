@@ -117,15 +117,14 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
     public void cancelSend(View itemView, UiMessage message) {
         boolean canceled = ChatManager.Instance().cancelSendingMessage(message.message.messageId);
         if (!canceled) {
-            Toast.makeText(fragment.getContext(), "取消失败", Toast.LENGTH_SHORT).show();
+            Toast.makeText(fragment.getContext(), R.string.media_cancel_failed, Toast.LENGTH_SHORT).show();
         }
     }
-
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
         if (MessageContextMenuItemTags.TAG_CANCEL_SEND.equals(tag)) {
-            return " 取消发送";
+            return context.getString(R.string.media_cancel_send);
         }
         return super.contextMenuTitle(context, tag);
     }

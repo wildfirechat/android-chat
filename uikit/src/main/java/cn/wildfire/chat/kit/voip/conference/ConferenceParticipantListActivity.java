@@ -44,7 +44,7 @@ public class ConferenceParticipantListActivity extends WfcBaseActivity {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         ConferenceManager conferenceManager = ConferenceManager.getManager();
         ConferenceInfo conferenceInfo = conferenceManager.getCurrentConferenceInfo();
-        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), conferenceInfo.getOwner(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin());
+        ConferenceInviteMessageContent invite = new ConferenceInviteMessageContent(session.getCallId(), conferenceInfo.getOwner(), session.getTitle(), session.getDesc(), session.getStartTime(), session.isAudioOnly(), session.isDefaultAudience(), session.isAdvanced(), session.getPin(), conferenceInfo.getPassword());
 
         Intent intent = new Intent(this, ConferenceInviteActivity.class);
         intent.putExtra("inviteMessage", invite);

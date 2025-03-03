@@ -8,8 +8,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.R;
@@ -41,7 +39,7 @@ public class InviteFriendActivity extends WfcBaseActivity {
         }
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         UserInfo me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
-        introTextView.setText("我是 " + (me == null ? "" : me.displayName));
+        introTextView.setText(getString(R.string.invite_default_message, (me == null ? "" : me.displayName)));
     }
 
     @Override
@@ -70,15 +68,12 @@ public class InviteFriendActivity extends WfcBaseActivity {
     void invite() {
         ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         contactViewModel.invite(userInfo.uid, introTextView.getText().toString())
-            .observe(this, new Observer<Boolean>() {
-                @Override
-                public void onChanged(@Nullable Boolean aBoolean) {
-                    if (aBoolean) {
-                        Toast.makeText(InviteFriendActivity.this, "好友邀请已发送", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } else {
-                        Toast.makeText(InviteFriendActivity.this, "添加好友失败", Toast.LENGTH_SHORT).show();
-                    }
+            .observe(this, errorCode -> {
+                if (errorCode == 0) {
+                    Toast.makeText(InviteFriendActivity.this, R.string.invite_sent, Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(InviteFriendActivity.this, getString(R.string.invite_error, errorCode), Toast.LENGTH_SHORT).show();
                 }
             });
     }

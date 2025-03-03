@@ -7,6 +7,7 @@ package cn.wildfire.chat.app.main;
 import static cn.wildfire.chat.app.BaseApp.getContext;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import androidx.core.content.ContextCompat;
 
 import cn.wildfire.chat.app.login.LoginActivity;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
+import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfirechat.chat.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -47,6 +49,14 @@ public class SplashActivity extends AppCompatActivity {
 
         new Handler().postDelayed(this::showNextScreen, 1000);
     }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        String language = LocaleUtils.getLanguage(newBase);
+        Context context = LocaleUtils.updateResources(newBase, language);
+        super.attachBaseContext(context);
+    }
+
 
     private void showNextScreen() {
         if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(token)) {

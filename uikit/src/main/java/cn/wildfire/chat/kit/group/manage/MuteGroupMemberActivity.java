@@ -32,10 +32,10 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
         this.checkedGroupMembers = checkedUserInfos;
         if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
-            menuItem.setTitle("确定");
+            menuItem.setTitle(R.string.contact_pick_confirm);
             menuItem.setEnabled(false);
         } else {
-            menuItem.setTitle("确定(" + checkedUserInfos.size() + ")");
+            menuItem.setTitle(getString(R.string.contact_pick_confirm_with_count, checkedUserInfos.size()));
             menuItem.setEnabled(true);
         }
     }
@@ -73,7 +73,7 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
             memberIds.add(info.getUserInfo().uid);
         }
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content(groupMuted ? "加入白名单中..." : "禁言中...")
+            .content(groupMuted ? R.string.adding_whitelist : R.string.muting_group_member)
             .progress(true, 100)
             .cancelable(false)
             .build();
@@ -84,7 +84,7 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
                 if (booleanOperateResult.isSuccess()) {
                     finish();
                 } else {
-                    Toast.makeText(this, groupMuted ? "添加白名单错误" : "设置禁言错误 " + booleanOperateResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(groupMuted ? R.string.add_whitelist_error : R.string.set_mute_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
                 }
             };
         if (groupMuted) {

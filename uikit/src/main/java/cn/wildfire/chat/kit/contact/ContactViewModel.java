@@ -170,26 +170,18 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return ChatManager.Instance().getFriendRequest(true);
     }
 
-    public MutableLiveData<Boolean> acceptFriendRequest(String friendId) {
+    public MutableLiveData<Integer> acceptFriendRequest(String friendId) {
 
-        MutableLiveData<Boolean> result = new MutableLiveData<>();
+        MutableLiveData<Integer> result = new MutableLiveData<>();
         ChatManager.Instance().handleFriendRequest(friendId, true, null, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                ChatManager.Instance().loadFriendRequestFromRemote();
-                List<FriendRequest> inComingFriendRequests = ChatManager.Instance().getFriendRequest(true);
-                for (FriendRequest request : inComingFriendRequests) {
-                    if (request.target.equals(friendId)) {
-                        result.setValue(true);
-                        return;
-                    }
-                }
-                result.setValue(false);
+                result.setValue(0);
             }
 
             @Override
             public void onFail(int errorCode) {
-                result.setValue(false);
+                result.setValue(errorCode);
             }
         });
         return result;
@@ -276,17 +268,17 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return result;
     }
 
-    public MutableLiveData<Boolean> invite(String targetUid, String message) {
-        MutableLiveData<Boolean> result = new MutableLiveData<>();
+    public MutableLiveData<Integer> invite(String targetUid, String message) {
+        MutableLiveData<Integer> result = new MutableLiveData<>();
         ChatManager.Instance().sendFriendRequest(targetUid, message, null, new GeneralCallback() {
             @Override
             public void onSuccess() {
-                result.setValue(true);
+                result.setValue(0);
             }
 
             @Override
             public void onFail(int errorCode) {
-                result.setValue(false);
+                result.setValue(errorCode);
             }
         });
         return result;

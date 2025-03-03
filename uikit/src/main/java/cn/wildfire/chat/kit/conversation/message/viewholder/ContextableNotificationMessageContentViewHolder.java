@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.AppServiceProvider;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
@@ -47,7 +48,7 @@ public abstract class ContextableNotificationMessageContentViewHolder extends No
     public void removeMessage(View itemView, UiMessage message) {
 
         List<String> items = new ArrayList<>();
-        items.add("删除本地消息");
+        items.add(fragment.getString(R.string.message_delete_local));
         boolean isSuperGroup = false;
         if (message.message.conversation.type == Conversation.ConversationType.Group) {
             GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(message.message.conversation.target, false);
@@ -58,9 +59,9 @@ public abstract class ContextableNotificationMessageContentViewHolder extends No
         if ((message.message.conversation.type == Conversation.ConversationType.Group && !isSuperGroup)
             || message.message.conversation.type == Conversation.ConversationType.Single
             || message.message.conversation.type == Conversation.ConversationType.Channel) {
-            items.add("删除远程消息");
+            items.add(fragment.getString(R.string.message_delete_remote));
         } else if (message.message.conversation.type == Conversation.ConversationType.SecretChat) {
-            items.add("删除自己及对方消息");
+            items.add(fragment.getString(R.string.message_delete_both));
         }
 
         new MaterialDialog.Builder(fragment.getContext())
@@ -98,31 +99,31 @@ public abstract class ContextableNotificationMessageContentViewHolder extends No
         appServiceProvider.addFavoriteItem(favoriteItem, new SimpleCallback<Void>() {
             @Override
             public void onUiSuccess(Void aVoid) {
-                Toast.makeText(fragment.getContext(), "fav ok", Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getContext(), R.string.message_favorite_success, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                Toast.makeText(fragment.getContext(), "fav error: " + code, Toast.LENGTH_SHORT).show();
+                Toast.makeText(fragment.getContext(), fragment.getString(R.string.message_favorite_error, code), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
-        String title = "未设置";
+        String title = context.getString(R.string.message_unknown_option);
         switch (tag) {
             case MessageContextMenuItemTags.TAG_DELETE:
-                title = "删除";
+                title = context.getString(R.string.message_delete);
                 break;
             case MessageContextMenuItemTags.TAG_FORWARD:
-                title = "转发";
+                title = context.getString(R.string.message_forward);
                 break;
             case MessageContextMenuItemTags.TAG_MULTI_CHECK:
-                title = "多选";
+                title = context.getString(R.string.message_multi_select);
                 break;
             case MessageContextMenuItemTags.TAG_FAV:
-                title = "收藏";
+                title = context.getString(R.string.message_favorite);
                 break;
             default:
                 break;
@@ -132,10 +133,10 @@ public abstract class ContextableNotificationMessageContentViewHolder extends No
 
     @Override
     public String contextConfirmPrompt(Context context, String tag) {
-        String title = "未设置";
+        String title = context.getString(R.string.message_unknown_option);
         switch (tag) {
             case MessageContextMenuItemTags.TAG_DELETE:
-                title = "确认删除此消息";
+                title = context.getString(R.string.message_delete_confirm);
                 break;
             default:
                 break;

@@ -34,7 +34,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
         announcementEditText = findViewById(R.id.announcementEditText);
         announcementEditText.setFilters(new InputFilter[]{
             new LengthFilter(2000, maxTextLength -> {
-                Toast.makeText(this, "群公告最多允许 2000 个字符", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.group_announcement_max_length), Toast.LENGTH_SHORT).show();
             })
         });
         announcementEditText.addTextChangedListener(new SimpleTextWatcher() {
@@ -112,7 +112,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
     private void setGroupName() {
         String announcement = announcementEditText.getText().toString().trim();
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("请稍后...")
+            .content(R.string.processing)
             .progress(true, 100)
             .cancelable(false)
             .build();
@@ -125,7 +125,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
                     return;
                 }
                 dialog.dismiss();
-                Toast.makeText(SetGroupAnnouncementActivity.this, "设置群公告成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SetGroupAnnouncementActivity.this, getString(R.string.set_group_announcement_success), Toast.LENGTH_SHORT).show();
                 finish();
             }
 
@@ -135,7 +135,7 @@ public class SetGroupAnnouncementActivity extends WfcBaseActivity {
                     return;
                 }
                 dialog.dismiss();
-                Toast.makeText(SetGroupAnnouncementActivity.this, "设置群公告失败: " + code + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SetGroupAnnouncementActivity.this, getString(R.string.set_group_announcement_failed, code, msg), Toast.LENGTH_SHORT).show();
             }
         });
     }

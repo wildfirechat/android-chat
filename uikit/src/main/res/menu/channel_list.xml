@@ -11,7 +11,7 @@
                 android:id="@+id/subscribe"
                 android:icon="@mipmap/ic_subscribe_chanel"
                 android:orderInCategory="101"
-                android:title="订阅频道"
+                android:title="@string/channel_subscribe"
                 app:iconTint="@color/colorPrimary" />
         </menu>
     </item>

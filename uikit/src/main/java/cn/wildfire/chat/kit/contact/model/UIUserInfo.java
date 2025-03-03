@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.utils.PinyinUtils;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -127,7 +129,7 @@ public class UIUserInfo {
             if (isFavUser) {
                 UIUserInfo uiUserInfo = uiUserInfos.get(0);
                 uiUserInfo.setShowCategory(true);
-                uiUserInfo.setCategory("星标朋友");
+                uiUserInfo.setCategory(WfcUIKit.getWfcUIKit().getApplication().getString(R.string.fav_friends));
             } else {
                 String preIndexLetter = null;
                 for (UIUserInfo info : uiUserInfos) {

@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
-                    android:text="手机静音" />
+                    android:text="@string/mute_mobile" />
 
             </LinearLayout>
 
@@ -105,7 +105,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
-                    android:text="传文件" />
+                    android:text="@string/send_file" />
 
             </LinearLayout>
 
@@ -122,7 +122,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="50dp"
             android:enabled="true"
-            android:text="退出电脑登录"
+            android:text="@string/logout_pc"
             android:textSize="20sp" />
 
     </LinearLayout>

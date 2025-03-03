@@ -31,7 +31,7 @@
             android:layout_marginLeft="@dimen/item_margin_left_and_right"
             android:layout_weight="1"
             android:singleLine="true"
-            android:text="群成员禁言"
+            android:text="@string/group_member_mute"
             android:textColor="@color/gray0"
             android:textSize="16sp" />
 

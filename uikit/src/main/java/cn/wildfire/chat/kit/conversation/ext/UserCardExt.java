@@ -31,6 +31,7 @@ import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -43,10 +44,16 @@ public class UserCardExt extends ConversationExt {
     @ExtContextMenuItem
     public void pickContact(View containerView, Conversation conversation) {
         Intent intent = new Intent(fragment.getActivity(), ContactListActivity.class);
+        ArrayList<String> filterUserList = new ArrayList<>();
         if (conversation.type == Conversation.ConversationType.Single) {
-            ArrayList<String> filterUserList = new ArrayList<>();
             filterUserList.add(conversation.target);
             intent.putExtra(ContactListActivity.FILTER_USER_LIST, filterUserList);
+        } else if (conversation.type == Conversation.ConversationType.SecretChat) {
+            SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversation.target);
+            if (secretChatInfo != null) {
+                filterUserList.add(secretChatInfo.getUserId());
+                intent.putExtra(ContactListActivity.FILTER_USER_LIST, filterUserList);
+            }
         }
         startActivityForResult(intent, 100);
     }
@@ -76,16 +83,16 @@ public class UserCardExt extends ConversationExt {
         String desc = "";
         switch (type) {
             case 0:
-                desc = "[个人名片]";
+                desc = fragment.getString(R.string.user_card_personal);
                 break;
             case 1:
-                desc = "[群组]";
+                desc = fragment.getString(R.string.user_card_group);
                 break;
             case 2:
-                desc = "[聊天室]";
+                desc = fragment.getString(R.string.user_card_chatroom);
                 break;
             case 3:
-                desc = "[频道]";
+                desc = fragment.getString(R.string.user_card_channel);
                 break;
             default:
                 break;
@@ -102,8 +109,8 @@ public class UserCardExt extends ConversationExt {
         }
         MaterialDialog dialog = new MaterialDialog.Builder(fragment.getActivity())
             .customView(view, false)
-            .negativeText("取消")
-            .positiveText("发送")
+            .negativeText(R.string.user_card_cancel)
+            .positiveText(R.string.user_card_send)
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -133,7 +140,7 @@ public class UserCardExt extends ConversationExt {
 
     @Override
     public String title(Context context) {
-        return "名片";
+        return context.getString(R.string.user_card_title);
     }
 
     @Override

@@ -2869,31 +2869,26 @@ public class ChatManager {
                 @Override
                 public void onSuccess() throws RemoteException {
                     Message recallMsg = mClient.getMessage(msg.messageId);
-                    if (recallMsg == null) {
-                        msg.messageId = 0;
-                        msg.conversation = null;
-                        msg.content = null;
+                    if (recallMsg != null) {
+                        msg.content = recallMsg.content;
+                        msg.sender = recallMsg.sender;
+                        msg.serverTime = recallMsg.serverTime;
+                        msg.messageUid = recallMsg.messageUid;
                     } else {
-                        if (msg.messageId > 0) {
-                            msg.content = recallMsg.content;
-                            msg.sender = recallMsg.sender;
-                            msg.serverTime = recallMsg.serverTime;
-                        } else {
-                            MessagePayload payload = msg.content.encode();
-                            RecallMessageContent recallCnt = new RecallMessageContent();
-                            recallCnt.setOperatorId(userId);
-                            recallCnt.setMessageUid(msg.messageUid);
-                            recallCnt.fromSelf = true;
-                            recallCnt.setOriginalSender(msg.sender);
-                            recallCnt.setOriginalContent(payload.content);
-                            recallCnt.setOriginalContentType(payload.type);
-                            recallCnt.setOriginalExtra(payload.extra);
-                            recallCnt.setOriginalSearchableContent(payload.searchableContent);
-                            recallCnt.setOriginalMessageTimestamp(msg.serverTime);
-                            msg.content = recallCnt;
-                            msg.sender = userId;
-                            msg.serverTime = System.currentTimeMillis();
-                        }
+                        MessagePayload payload = msg.content.encode();
+                        RecallMessageContent recallCnt = new RecallMessageContent();
+                        recallCnt.setOperatorId(userId);
+                        recallCnt.setMessageUid(msg.messageUid);
+                        recallCnt.fromSelf = true;
+                        recallCnt.setOriginalSender(msg.sender);
+                        recallCnt.setOriginalContent(payload.content);
+                        recallCnt.setOriginalContentType(payload.type);
+                        recallCnt.setOriginalExtra(payload.extra);
+                        recallCnt.setOriginalSearchableContent(payload.searchableContent);
+                        recallCnt.setOriginalMessageTimestamp(msg.serverTime);
+                        msg.content = recallCnt;
+                        msg.sender = userId;
+                        msg.serverTime = System.currentTimeMillis();
                     }
                     mainHandler.post(() -> {
                         if (callback != null) {
@@ -8663,6 +8658,25 @@ public class ChatManager {
                 }
             }
         }
+
+        String xlogMMapDir = gContext.getFilesDir().getAbsolutePath() + "/xlog";
+        subFile = new File(xlogMMapDir).listFiles();
+        if (subFile != null) {
+            for (File file : subFile) {
+                //wflog为ChatService中定义的，如果修改需要对应修改
+                if (file.isFile() && file.getName().startsWith("wflog_")) {
+                    paths.add(file.getAbsolutePath());
+                }
+            }
+        }
+
+        // sort paths
+        Collections.sort(paths, (f1, f2) -> {
+            String n1 = f1.substring(f1.lastIndexOf("/") + 1);
+            String n2 = f2.substring(f2.lastIndexOf("/") + 1);
+            return n1.compareTo(n2);
+        });
+
         return paths;
     }
 
