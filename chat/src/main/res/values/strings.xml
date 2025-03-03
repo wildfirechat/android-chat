@@ -61,7 +61,6 @@
 
     <!--Main-->
     <string name="chat">聊天</string>
-    <string name="contacts">通讯录</string>
     <string name="discover">发现</string>
     <string name="me">我</string>
 
@@ -83,23 +82,6 @@
     <string name="app_title_workspace">工作台</string>
     <string name="app_title_discover">发现</string>
     <string name="app_title_me">我的</string>
-
-    <!--Voip-->
-    <string name="voip_audio_chat">语音聊天</string>
-    <string name="voip_video_chat">视频聊天</string>
-    <string name="voip_switch_camera">切换摄像头</string>
-    <string name="voip_hangup">挂断</string>
-    <string name="voip_accept">接听</string>
-    <string name="voip_connecting">连接中...</string>
-    <string name="voip_call_duration">通话时长: %1$s</string>
-
-    <!--Conference-->
-    <string name="conference_create">发起会议</string>
-    <string name="conference_join">加入会议</string>
-    <string name="conference_title">会议主题</string>
-    <string name="conference_id">会议ID</string>
-    <string name="conference_join_hint">请输入会议ID</string>
-    <string name="conference_participants">参会人</string>
 
     <!--Common-->
     <string name="save">保存</string>
@@ -200,7 +182,6 @@
     <string name="more">更多</string>
     <string name="start_group_chat">发起群聊</string>
     <string name="start_secret_chat">发起密聊</string>
-    <string name="scan_qrcode">扫一扫</string>
     <string name="moment">朋友圈</string>
     <string name="chatroom">聊天室</string>
     <string name="robot">机器人</string>
@@ -222,4 +203,5 @@
     <string name="language_chinese">中文</string>
     <string name="language_english">English</string>
     <string name="language_change_tip">语言设置将在重启应用后生效</string>
+    <string name="confirm">确认</string>
 </resources>

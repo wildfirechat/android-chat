@@ -5,8 +5,28 @@
     <string name="draft">[Draft]</string>
     <string name="video">Video</string>
     <string name="set_conversation_to_top">Pin Chat</string>
+    <string name="scan_qrcode">Scan QR Code</string>
+
+    <!--Voip-->
+    <string name="voip_audio_chat">Voice Call</string>
+    <string name="voip_video_chat">Video Call</string>
+    <string name="voip_switch_camera">Switch Camera</string>
+    <string name="voip_hangup">Hang Up</string>
+    <string name="voip_accept">Accept</string>
+    <string name="voip_connecting">Connecting...</string>
+    <string name="voip_call_duration">Duration: %1$s</string>
+
+    <!--Conference-->
+    <string name="conference_create">Create Meeting</string>
+    <string name="conference_join">Join Meeting</string>
+    <string name="conference_title">Meeting Title</string>
+    <string name="conference_id">Meeting ID</string>
+    <string name="conference_join_hint">Please enter meeting ID</string>
+    <string name="conference_participants">Participants</string>
+
 
     <!--Contacts-->
+    <string name="contacts">Contacts</string>
     <string name="new_friend">New Friends</string>
     <string name="group_chat">Group Chat</string>
     <string name="join_group_chat">Join Group Chat</string>
@@ -223,8 +243,8 @@
     <string name="call_ended">Call Ended</string>
     <string name="call_remote_error">Network Error from Other Party</string>
     <string name="call_full">Maximum Call Participants Reached</string>
-    <string name="call_duration_hours">Call Duration %d:%02d:%02d</string>
-    <string name="call_duration_minutes">Call Duration %02d:%02d</string>
+    <string name="call_duration_hours" formatted="false">Call Duration %d:%02d:%02d</string>
+    <string name="call_duration_minutes" formatted="false">Call Duration %02d:%02d</string>
 
     <!-- Forward -->
     <string name="forward_chat_record">[Chat Record]: %s</string>
@@ -292,7 +312,7 @@
     <string name="conf_request_unmute_video">Request to Turn On Camera</string>
 
     <!-- Conference History -->
-    <string name="conf_history_desc_format">Time: %s Host: %s Duration: %s</string>
+    <string name="conf_history_desc_format" formatted="false">Time: %s Host: %s Duration: %s</string>
 
     <!-- Message Context Menu -->
     <string name="conf_end_conference">"End meeting "</string>

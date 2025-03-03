@@ -65,7 +65,6 @@
 
     <!--Main-->
     <string name="chat">Chat</string>
-    <string name="contacts">Contacts</string>
     <string name="discover">Discover</string>
     <string name="me">Me</string>
 
@@ -75,23 +74,6 @@
     <string name="app_title_workspace">Workspace</string>
     <string name="app_title_discover">Discover</string>
     <string name="app_title_me">Me</string>
-
-    <!--Voip-->
-    <string name="voip_audio_chat">Voice Call</string>
-    <string name="voip_video_chat">Video Call</string>
-    <string name="voip_switch_camera">Switch Camera</string>
-    <string name="voip_hangup">Hang Up</string>
-    <string name="voip_accept">Accept</string>
-    <string name="voip_connecting">Connecting...</string>
-    <string name="voip_call_duration">Duration: %1$s</string>
-
-    <!--Conference-->
-    <string name="conference_create">Create Meeting</string>
-    <string name="conference_join">Join Meeting</string>
-    <string name="conference_title">Meeting Title</string>
-    <string name="conference_id">Meeting ID</string>
-    <string name="conference_join_hint">Please enter meeting ID</string>
-    <string name="conference_participants">Participants</string>
 
     <!--System-->
     <string name="av_init_failed">Failed to initialize audio/video engine</string>
@@ -201,7 +183,6 @@
     <string name="more">More</string>
     <string name="start_group_chat">Start Group Chat</string>
     <string name="start_secret_chat">Start Secret Chat</string>
-    <string name="scan_qrcode">Scan QR Code</string>
     <string name="moment">Moment</string>
     <string name="chatroom">Chatroom</string>
     <string name="robot">Robot</string>
@@ -222,10 +203,8 @@
 
     <!-- Language Settings -->
     <string name="language">Language</string>
-    <string name="language_auto">Auto</string>
     <string name="language_chinese">中文</string>
     <string name="language_english">English</string>
     <string name="language_change_tip">Language settings will take effect after restarting the app</string>
-    <string name="language_system">Follow System</string>
     <string name="confirm">Confirm</string>
 </resources>
