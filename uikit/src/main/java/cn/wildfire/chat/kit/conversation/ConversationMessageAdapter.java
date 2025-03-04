@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.conversation;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final String TAG = "ConvMsgAdapter";
     private ConversationFragment fragment;
 
     public static int MODE_NORMAL = 0;
@@ -160,6 +162,11 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (index >= 0) {
             updateMessage(index, message);
             return;
+        }else {
+            if(!messages.isEmpty() && messages.get(0).message.serverTime > message.message.serverTime){
+                Log.d(TAG, "msg timestamp < the first msg's timestamp, maybe update old message content, ignore");
+                return;
+            }
         }
         messages.add(message);
         notifyItemInserted(messages.size() - 1);
