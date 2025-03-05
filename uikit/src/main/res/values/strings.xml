@@ -5,14 +5,34 @@
     <string name="draft">[草稿]</string>
     <string name="video">视频</string>
     <string name="set_conversation_to_top">置顶聊天</string>
+    <string name="scan_qrcode">扫一扫</string>
 
     <!--联系人-->
+    <string name="contacts">联系人</string>
     <string name="new_friend">新的朋友</string>
     <string name="group_chat">群聊</string>
     <string name="join_group_chat">加入群聊</string>
     <string name="enter_group_chat">进入群聊</string>
     <string name="contact_category">联系人</string>
     <string name="group_category">群组</string>
+
+    <!--Voip-->
+    <string name="voip_audio_chat">语音聊天</string>
+    <string name="voip_video_chat">视频聊天</string>
+    <string name="voip_switch_camera">切换摄像头</string>
+    <string name="voip_hangup">挂断</string>
+    <string name="voip_accept">接听</string>
+    <string name="voip_connecting">连接中...</string>
+    <string name="voip_call_duration">通话时长: %1$s</string>
+
+
+    <!--Conference-->
+    <string name="conference_create">发起会议</string>
+    <string name="conference_join">加入会议</string>
+    <string name="conference_title">会议主题</string>
+    <string name="conference_id">会议ID</string>
+    <string name="conference_join_hint">请输入会议ID</string>
+    <string name="conference_participants">参会人</string>
 
     <!--新的朋友-->
     <string name="add_friend">添加朋友</string>
@@ -176,7 +196,7 @@
 
     <!-- Pick User -->
     <string name="pick_user_limit_exceeded">选人超限</string>
-    <string name="pick_user_empty_hint"></string>
+    <string name="pick_user_empty_hint">请选择用户</string>
     <string name="pick_user_search_hint">搜索</string>
 
     <!-- Contact Count -->
@@ -224,8 +244,8 @@
     <string name="call_ended">通话已结束</string>
     <string name="call_remote_error">对方网络错误</string>
     <string name="call_full">已达到最大通话人数</string>
-    <string name="call_duration_hours">通话时长 %d:%02d:%02d</string>
-    <string name="call_duration_minutes">通话时长 %02d:%02d</string>
+    <string name="call_duration_hours" formatted="false">通话时长 %d:%02d:%02d</string>
+    <string name="call_duration_minutes" formatted="false">通话时长 %02d:%02d</string>
 
     <!-- VoIP Call Service -->
     <string name="call_waiting_for_answer">等待对方接听...</string>
@@ -484,7 +504,7 @@
     <string name="conf_request_unmute_video">申请打开摄像头</string>
 
     <!-- Conference History -->
-    <string name="conf_history_desc_format">时间: %s 发起人: %s 时长: %s</string>
+    <string name="conf_history_desc_format" formatted="false">时间: %s 发起人: %s 时长: %s</string>
 
     <!-- Conference Info Activity -->
     <string name="conf_get_info_failed">获取会议详情失败</string>
