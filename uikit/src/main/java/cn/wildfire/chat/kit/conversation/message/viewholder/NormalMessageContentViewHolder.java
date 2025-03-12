@@ -18,7 +18,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
@@ -79,15 +78,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     ProgressBar progressBar;
     CheckBox checkBox;
 
-    @Nullable
     ImageView singleReceiptImageView;
-
-    @Nullable
     FrameLayout groupReceiptFrameLayout;
-
-    @Nullable
     ProgressBar deliveryProgressBar;
-    @Nullable
     ProgressBar readProgressBar;
 
     public NormalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
@@ -496,7 +489,13 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             return;
         }
 
-        if (!ChatManager.Instance().isReceiptEnabled() || !ChatManager.Instance().isUserEnableReceipt() || !showMessageReceipt(message.message)) {
+        if (!ChatManager.Instance().isReceiptEnabled()
+            || !ChatManager.Instance().isUserEnableReceipt()
+            || (item.conversation.type == Conversation.ConversationType.Group && !ChatManager.Instance().isGroupReceiptEnabled())
+            || !showMessageReceipt(message.message)) {
+
+            singleReceiptImageView.setVisibility(View.GONE);
+            groupReceiptFrameLayout.setVisibility(View.GONE);
             return;
         }
 
