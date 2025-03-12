@@ -173,6 +173,7 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
             .onNegative((dialog1, which) -> {
                 System.exit(0);
             })
+            .cancelable(false)
             .build();
         dialog.show();
     }
