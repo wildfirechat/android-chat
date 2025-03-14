@@ -62,7 +62,8 @@ public class Config {
      * <p>
      * 如果不想显示工作台，置为 null 即可
      */
-    public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
+    public static String WORKSPACE_URL = null;
+//    public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
 
     /**
      * 组织通讯录服务地址，如果没有部署，可以设置为null
