@@ -3885,6 +3885,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         channelInfo.name = protoChannelInfo.getName();
         channelInfo.desc = protoChannelInfo.getDesc();
         channelInfo.portrait = protoChannelInfo.getPortrait();
+        if (!TextUtils.isEmpty(channelInfo.portrait)) {
+            channelInfo.portrait = ClientService.urlRedirect(channelInfo.portrait);
+        }
         channelInfo.extra = protoChannelInfo.getExtra();
         channelInfo.owner = protoChannelInfo.getOwner();
         channelInfo.status = protoChannelInfo.getStatus();
@@ -3961,6 +3964,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         groupInfo.deleted = protoGroupInfo.getDeleted();
 
         groupInfo.portrait = protoGroupInfo.getPortrait();
+
+        if(!TextUtils.isEmpty(groupInfo.portrait)) {
+            groupInfo.portrait = ClientService.urlRedirect(groupInfo.portrait);
+        }
         if (TextUtils.isEmpty(groupInfo.portrait) && defaultPortraitProvider != null) {
             ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembersByCount(protoGroupInfo.getTarget(), 9);
             String[] memberIds = new String[protoGroupMembers.length];
@@ -4053,6 +4060,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         userInfo.groupAlias = protoUserInfo.getGroupAlias();
 
         userInfo.portrait = protoUserInfo.getPortrait();
+        if (!TextUtils.isEmpty(userInfo.portrait)) {
+            userInfo.portrait = ClientService.urlRedirect(userInfo.portrait);
+        }
+
         if (TextUtils.isEmpty(userInfo.portrait) && defaultPortraitProvider != null) {
             userInfo.portrait = defaultPortraitProvider.userDefaultPortrait(userInfo);
         }
