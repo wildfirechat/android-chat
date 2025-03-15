@@ -28,8 +28,8 @@
     <string name="mobile_number_hint">请输入手机号</string>
     <string name="mobile_number_error_mobile_empty">手机号不能为空</string>
     <string name="mobile_number_error_format">手机号格式不正确</string>
-    <string name="verify_code">验证码</string>
-    <string name="verify_code_hint">请输入验证码</string>
+    <string name="verify_code">激活码</string>
+    <string name="verify_code_hint">请输入激活码</string>
     <string name="get_verify_code">获取验证码</string>
     <string name="login_button">登录</string>
     <string name="login_use_password">使用密码登录</string>
@@ -41,14 +41,16 @@
     <string name="kicked_off_message">你的账号已在其他手机登录</string>
     <string name="kicked_off_confirm">知道了</string>
     <string name="register_tip_title">提示</string>
-    <string name="register_tip_message">使用短信验证码登录，将会为您创建账户，请使用短信验证码登录</string>
+<!--    <string name="register_tip_message">使用短信验证码登录，将会为您创建账户，请使用短信验证码登录</string>-->
+    <string name="register_tip_message">需要先购买激活码</string>
     <string name="login_progress">登录中...</string>
     <string name="login_error_hint">网络出问题了:%1$d %2$s</string>
     <string name="requesting_auth_code">请求验证码...</string>
     <string name="auth_code_request_success">发送验证码成功</string>
     <string name="auth_code_request_failure">发送验证码失败: %1$d %2$s</string>
     <string name="sms_login_failure">登录失败：%1$d %2$s</string>
-    <string name="sms_login_title">验证码登录</string>
+<!--    <string name="sms_login_title">验证码登录</string>-->
+    <string name="sms_login_title">激活码注册登录</string>
 
     <!-- Login Activity Password Strings -->
     <string name="login_password_title">密码登录</string>
