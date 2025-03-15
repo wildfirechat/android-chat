@@ -68,7 +68,7 @@
                 android:focusableInTouchMode="true"
                 android:gravity="center_vertical"
                 android:hint="@string/verify_code_hint"
-                android:inputType="number"
+                android:inputType="text"
                 android:maxLines="1"
                 android:paddingLeft="87dp"
                 android:textColor="@color/black"
