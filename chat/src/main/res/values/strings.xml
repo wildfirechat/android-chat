@@ -24,10 +24,10 @@
     <string name="about_privacy_url">https://www.wildfirechat.net/wildfirechat_user_privacy.html</string>
 
     <!--Login-->
-    <string name="mobile_number">手机号</string>
-    <string name="mobile_number_hint">请输入手机号</string>
-    <string name="mobile_number_error_mobile_empty">手机号不能为空</string>
-    <string name="mobile_number_error_format">手机号格式不正确</string>
+    <string name="mobile_number">账号</string>
+    <string name="mobile_number_hint">请输入账号</string>
+    <string name="mobile_number_error_mobile_empty">账号不能为空</string>
+    <string name="mobile_number_error_format">账号格式不正确</string>
     <string name="verify_code">激活码</string>
     <string name="verify_code_hint">请输入激活码</string>
     <string name="get_verify_code">获取验证码</string>
@@ -54,8 +54,8 @@
 
     <!-- Login Activity Password Strings -->
     <string name="login_password_title">密码登录</string>
-    <string name="login_phone_label">手机号</string>
-    <string name="login_phone_hint">请输入手机号(仅支持中国大陆手机号)</string>
+    <string name="login_phone_label">账号</string>
+    <string name="login_phone_hint">请输入账号</string>
     <string name="login_password_label">密码</string>
     <string name="login_password_hint">请输入密码</string>
     <string name="login_use_auth_code">使用验证码登录</string>

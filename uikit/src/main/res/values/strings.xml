@@ -744,7 +744,7 @@
     <string name="group_history_message_not_allowed">不允许新成员查看历史消息</string>
     <string name="allow_member_init_temp_chat">允许普通成员发起临时会话</string>
     <string name="all_group_mute">全员禁言</string>
-    <string name="mobile_number">手机号</string>
+    <string name="mobile_number">账号</string>
     <string name="moments">朋友圈</string>
 
     <string name="find_me_ways">找到我的方式</string>
