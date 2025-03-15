@@ -92,9 +92,9 @@
                 android:enabled="false"
                 android:gravity="center"
                 android:text="@string/get_verify_code"
+                android:visibility="gone"
                 android:textColor="@color/request_auth_code_text_color"
-                android:textSize="12sp"
-                android:visibility="gone"/>
+                android:textSize="12sp" />
         </FrameLayout>
 
         <TextView
