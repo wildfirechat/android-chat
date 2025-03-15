@@ -37,7 +37,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     private void bindEvents() {
         findViewById(R.id.passwordLoginTextView).setOnClickListener(v -> authCodeLogin());
         findViewById(R.id.loginButton).setOnClickListener(v -> login());
-//        findViewById(R.id.requestAuthCodeButton).setOnClickListener(v -> requestAuthCode());
+        findViewById(R.id.requestAuthCodeButton).setOnClickListener(v -> requestAuthCode());
         phoneNumberEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
@@ -57,7 +57,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         loginButton = findViewById(R.id.loginButton);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
         authCodeEditText = findViewById(R.id.authCodeEditText);
-//        requestAuthCodeButton = findViewById(R.id.requestAuthCodeButton);
+        requestAuthCodeButton = findViewById(R.id.requestAuthCodeButton);
     }
 
     @Override
@@ -76,9 +76,9 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     void inputPhoneNumber(Editable editable) {
         String phone = editable.toString().trim();
         if (phone.length() == 11 && countdownRunnable == null) {
-//            requestAuthCodeButton.setEnabled(true);
+            requestAuthCodeButton.setEnabled(true);
         } else {
-//            requestAuthCodeButton.setEnabled(false);
+            requestAuthCodeButton.setEnabled(false);
             loginButton.setEnabled(false);
         }
     }
@@ -154,7 +154,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
 
         // Disable button immediately
-//        requestAuthCodeButton.setEnabled(false);
+        requestAuthCodeButton.setEnabled(false);
 
         // Start countdown
         countdownSeconds = 60;
@@ -175,8 +175,8 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                         handler.postDelayed(this, 1000);
                     } else {
                         // Reset button text and enable it
-//                        requestAuthCodeButton.setText(getString(R.string.requesting_auth_code));
-//                        requestAuthCodeButton.setEnabled(true);
+                        requestAuthCodeButton.setText(getString(R.string.requesting_auth_code));
+                        requestAuthCodeButton.setEnabled(true);
                     }
                 }
             };
@@ -205,7 +205,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
 
     private void updateCountdownText() {
         if (countdownSeconds > 0) {
-//            requestAuthCodeButton.setText(getString(R.string.retry_after_seconds, countdownSeconds));
+            requestAuthCodeButton.setText(getString(R.string.retry_after_seconds, countdownSeconds));
         }
     }
 
@@ -215,8 +215,8 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
             handler.removeCallbacks(countdownRunnable);
         }
         // Reset button
-//        requestAuthCodeButton.setText(R.string.requesting_auth_code);
-//        requestAuthCodeButton.setEnabled(true);
+        requestAuthCodeButton.setText(R.string.requesting_auth_code);
+        requestAuthCodeButton.setEnabled(true);
         countdownSeconds = 60;
         countdownRunnable = null;
     }

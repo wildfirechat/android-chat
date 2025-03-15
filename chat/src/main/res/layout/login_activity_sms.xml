@@ -83,7 +83,7 @@
                 android:textColor="@color/black3"
                 android:textSize="17sp" />
 
-         <!--   <TextView
+            <TextView
                 android:id="@+id/requestAuthCodeButton"
                 android:layout_width="72dp"
                 android:layout_height="23dp"
@@ -93,7 +93,8 @@
                 android:gravity="center"
                 android:text="@string/get_verify_code"
                 android:textColor="@color/request_auth_code_text_color"
-                android:textSize="12sp" />-->
+                android:textSize="12sp"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <TextView
