@@ -33,7 +33,7 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
     EditText passwordEditText;
 
     private void bindEvents() {
-//        findViewById(R.id.authCodeLoginTextView).setOnClickListener(v -> authCodeLogin());
+        findViewById(R.id.authCodeLoginTextView).setOnClickListener(v -> authCodeLogin());
         findViewById(R.id.registerTextView).setOnClickListener(v -> register());
         findViewById(R.id.loginButton).setOnClickListener(v -> login());
         accountEditText.addTextChangedListener(new SimpleTextWatcher() {
