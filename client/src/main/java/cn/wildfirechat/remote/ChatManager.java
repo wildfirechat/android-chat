@@ -288,6 +288,7 @@ public class ChatManager {
 
     private Class<? extends DefaultPortraitProvider> defaultPortraitProviderClazz;
     private Class<? extends UrlRedirector> urlRedirectorClazz;
+    private UrlRedirector urlRedirector;
 
     public enum SearchUserType {
         //模糊搜索displayName，精确搜索name或电话号码
@@ -2537,9 +2538,9 @@ public class ChatManager {
                     msg.messageUid = messageUid;
                     msg.serverTime = timestamp;
                     msg.status = MessageStatus.Sent;
-                    if (msg.content instanceof MediaMessageContent) {
+                    if (msg.content instanceof MediaMessageContent && urlRedirector != null) {
                         String remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
-                        ((MediaMessageContent) msg.content).remoteUrl = ClientService.urlRedirect(remoteUrl);
+                        ((MediaMessageContent) msg.content).remoteUrl = urlRedirector.urlRedirect(remoteUrl);
                     }
                     mainHandler.post(new Runnable() {
                         @Override
@@ -2744,9 +2745,9 @@ public class ChatManager {
                     msg.messageUid = messageUid;
                     msg.serverTime = timestamp;
                     msg.status = MessageStatus.Sent;
-                    if (msg.content instanceof MediaMessageContent) {
+                    if (msg.content instanceof MediaMessageContent && urlRedirector != null) {
                         String remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
-                        ((MediaMessageContent) msg.content).remoteUrl = ClientService.urlRedirect(remoteUrl);
+                        ((MediaMessageContent) msg.content).remoteUrl = urlRedirector.urlRedirect(remoteUrl);
                     }
                     mainHandler.post(new Runnable() {
                         @Override
@@ -9693,6 +9694,11 @@ public class ChatManager {
      */
     public void setUrlRedirectorClazz(Class<? extends UrlRedirector> clazz) {
         this.urlRedirectorClazz = clazz;
+        try {
+            this.urlRedirector = clazz.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (mClient != null) {
             try {
                 mClient.setUrlRedirectorClass(clazz.getName());
