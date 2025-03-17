@@ -2741,6 +2741,10 @@ public class ChatManager {
                     msg.messageUid = messageUid;
                     msg.serverTime = timestamp;
                     msg.status = MessageStatus.Sent;
+                    if (msg.content instanceof MediaMessageContent) {
+                        String remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
+                        ((MediaMessageContent) msg.content).remoteUrl = ClientService.urlRedirect(remoteUrl);
+                    }
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
