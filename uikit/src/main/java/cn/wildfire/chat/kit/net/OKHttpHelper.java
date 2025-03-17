@@ -201,6 +201,7 @@ public class OKHttpHelper {
         if (callback != null) {
             if (!response.isSuccessful()) {
                 callback.onFailure(response.code(), response.message());
+                response.close();
                 return;
             }
 
@@ -214,6 +215,7 @@ public class OKHttpHelper {
             }
 
             if (type.equals(Void.class)) {
+                response.close();
                 callback.onSuccess((T) null);
                 return;
             }
