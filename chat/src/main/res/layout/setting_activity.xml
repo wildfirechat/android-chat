@@ -38,12 +38,14 @@
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/diagnoseOptionItemView"
             style="@style/OptionItem"
+            android:visible="false"
             app:show_arrow_indicator="true"
             app:title="@string/diagnose" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/uploadLogOptionItemView"
             style="@style/OptionItem"
+            android:visible="false"
             app:show_arrow_indicator="true"
             app:title="@string/upload_log" />
 

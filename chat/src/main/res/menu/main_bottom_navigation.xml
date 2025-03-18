@@ -18,7 +18,8 @@
     <item
         android:id="@+id/discovery"
         android:icon="@drawable/bottom_discovery_menu_selector"
-        android:title="@string/app_title_discover" />
+        android:title="@string/app_title_discover"
+        android:visible="false" /> <!-- 设置该菜单项不可见 -->
     <item
         android:id="@+id/me"
         android:icon="@drawable/bottom_me_menu_selector"
