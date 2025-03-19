@@ -43,6 +43,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="野火IM初始化中" />
+            android:text="悟聊初始化中" />
     </FrameLayout>
 </LinearLayout>

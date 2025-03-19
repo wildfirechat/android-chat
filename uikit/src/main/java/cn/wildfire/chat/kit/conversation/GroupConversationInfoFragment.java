@@ -542,7 +542,8 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
 
     @Override
     public void onUserMemberClick(UserInfo userInfo) {
-        if (groupInfo != null && groupInfo.privateChat == 1 && selfGroupMember.type != GroupMember.GroupMemberType.Owner && selfGroupMember.type != GroupMember.GroupMemberType.Manager && !userInfo.uid.equals(groupInfo.owner)) {
+//        if (groupInfo != null && groupInfo.privateChat == 1 && selfGroupMember.type != GroupMember.GroupMemberType.Owner && selfGroupMember.type != GroupMember.GroupMemberType.Manager && !userInfo.uid.equals(groupInfo.owner)) {
+        if (groupInfo != null && groupInfo.privateChat == 1 && selfGroupMember.type != GroupMember.GroupMemberType.Owner && !userInfo.uid.equals(groupInfo.owner)) {
             Toast.makeText(getActivity(), getString(R.string.group_member_disable_chat), Toast.LENGTH_SHORT).show();
             return;
         }

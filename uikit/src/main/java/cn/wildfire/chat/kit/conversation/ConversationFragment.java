@@ -953,10 +953,12 @@ public class ConversationFragment extends Fragment implements
             GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
             if (groupMember != null && groupMember.type == GroupMember.GroupMemberType.Normal) {
                 targetGroupMember = groupViewModel.getGroupMember(groupInfo.target, userInfo.uid);
-                if (targetGroupMember != null && (targetGroupMember.type == GroupMember.GroupMemberType.Owner || targetGroupMember.type == GroupMember.GroupMemberType.Manager)) {
+//                if (targetGroupMember != null && (targetGroupMember.type == GroupMember.GroupMemberType.Owner || targetGroupMember.type == GroupMember.GroupMemberType.Manager)) {
+                if (targetGroupMember != null && (targetGroupMember.type == GroupMember.GroupMemberType.Owner)) {
                     allowPrivateChat = true;
                 }
-            } else if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager)) {
+//            } else if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Owner || groupMember.type == GroupMember.GroupMemberType.Manager)) {
+            } else if (groupMember != null && (groupMember.type == GroupMember.GroupMemberType.Owner)) {
                 allowPrivateChat = true;
             }
 
