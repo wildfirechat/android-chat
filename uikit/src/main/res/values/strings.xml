@@ -768,4 +768,5 @@
     <string name="forward_send_to">发送给:</string>
     <string name="forward_leave_message">给朋友留言</string>
     <string name="official">官方</string>
+    <string name="mute_group_member">群成员禁言</string>
 </resources>

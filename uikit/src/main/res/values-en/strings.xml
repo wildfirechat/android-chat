@@ -759,4 +759,5 @@
     <string name="remove_star_friend">Unstar Friend</string>
     <string name="recent_chats">Recent Conversations</string>
     <string name="official">Official</string>
+    <string name="mute_group_member">Mute Group Member</string>
 </resources>

@@ -28,13 +28,7 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
     @Override
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
         this.checkedGroupMembers = checkedUserInfos;
-        if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
-            menuItem.setTitle(R.string.contact_pick_confirm);
-            menuItem.setEnabled(false);
-        } else {
-            menuItem.setTitle(getString(R.string.contact_pick_confirm_with_count, checkedUserInfos.size()));
-            menuItem.setEnabled(true);
-        }
+        this.updateMenuItemState();
     }
 
     @Override
@@ -45,7 +39,7 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
     @Override
     protected void afterMenus(Menu menu) {
         menuItem = menu.findItem(R.id.confirm);
-        menuItem.setEnabled(false);
+        this.updateMenuItemState();
     }
 
     @Override
@@ -64,19 +58,32 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
             memberIds.add(info.getUserInfo().uid);
         }
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content(R.string.adding)
-                .progress(true, 100)
-                .cancelable(false)
-                .build();
+            .content(R.string.adding)
+            .progress(true, 100)
+            .cancelable(false)
+            .build();
         dialog.show();
         groupViewModel.setGroupManager(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
-                .observe(this, booleanOperateResult -> {
-                    dialog.dismiss();
-                    if (booleanOperateResult.isSuccess()) {
-                        finish();
-                    } else {
-                        Toast.makeText(this, getString(R.string.set_group_manager_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
-                    }
-                });
+            .observe(this, booleanOperateResult -> {
+                dialog.dismiss();
+                if (booleanOperateResult.isSuccess()) {
+                    finish();
+                } else {
+                    Toast.makeText(this, getString(R.string.set_group_manager_error, booleanOperateResult.getErrorCode()), Toast.LENGTH_SHORT).show();
+                }
+            });
+    }
+
+    private void updateMenuItemState() {
+        if (menuItem == null) {
+            return;
+        }
+        if (checkedGroupMembers == null || checkedGroupMembers.isEmpty()) {
+            menuItem.setTitle(R.string.contact_pick_confirm);
+            menuItem.setEnabled(false);
+        } else {
+            menuItem.setTitle(getString(R.string.contact_pick_confirm_with_count, checkedGroupMembers.size()));
+            menuItem.setEnabled(true);
+        }
     }
 }
