@@ -43,6 +43,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.FileRecord;
 import cn.wildfirechat.remote.ChatManager;
 import okhttp3.ResponseBody;
 
@@ -904,6 +905,54 @@ public class FileUtils {
         return file.exists();
     }
 
+    private static void downloadAndOpen(final Context context, final String url, final String saveDir, String name) {
+        Toast.makeText(context, "文件下载中，请稍候...", Toast.LENGTH_LONG).show();
+        DownloadManager.download(url, saveDir, name, new DownloadManager.OnDownloadListener() {
+            @Override
+            public void onSuccess(File file) {
+                ChatManager.Instance().getMainHandler().post(() -> {
+                    if (context instanceof Activity) {
+                        if (((Activity) context).isFinishing()) {
+                            return;
+                        }
+                    }
+                    try {
+                        Intent intent = FileUtils.getViewIntent(context, file);
+                        context.startActivity(intent);
+                    } catch (Exception e) {
+                        Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(int progress) {
+
+            }
+
+            @Override
+            public void onFail() {
+
+            }
+        });
+    }
+
+
+    public static void openFile(Context context, FileRecord fileRecord) {
+        File file = DownloadManager.fileRecordFile(fileRecord);
+
+        if (file.exists()) {
+            Intent intent = FileUtils.getViewIntent(context, file);
+            try {
+                context.startActivity(intent);
+            } catch (Exception e) {
+                Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            downloadAndOpen(context, fileRecord.url, file.getParent(), file.getName());
+        }
+    }
+
     public static void openFile(Context context, Message message) {
         if (context == null || message == null) {
             return;
@@ -929,35 +978,7 @@ public class FileUtils {
             } else {
                 fileUrl = ((FileMessageContent) message.content).remoteUrl;
             }
-            Toast.makeText(context, "文件下载中，请稍候...", Toast.LENGTH_LONG).show();
-            DownloadManager.download(fileUrl, file.getParent(), file.getName(), new DownloadManager.OnDownloadListener() {
-                @Override
-                public void onSuccess(File file) {
-                    ChatManager.Instance().getMainHandler().post(() -> {
-                        if (context instanceof Activity) {
-                            if (((Activity) context).isFinishing()) {
-                                return;
-                            }
-                        }
-                        try {
-                            Intent intent = FileUtils.getViewIntent(context, file);
-                            context.startActivity(intent);
-                        } catch (Exception e) {
-                            Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onProgress(int progress) {
-
-                }
-
-                @Override
-                public void onFail() {
-
-                }
-            });
+            downloadAndOpen(context, fileUrl, file.getParent(), file.getName());
         }
     }
 
