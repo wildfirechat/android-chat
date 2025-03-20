@@ -26,6 +26,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.contact.ContactListActivity;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.conversation.forward.ForwardPromptView;
+import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfirechat.message.CardMessageContent;
 import cn.wildfirechat.message.TextMessageContent;
 import cn.wildfirechat.model.ChannelInfo;
@@ -63,10 +64,13 @@ public class UserCardExt extends ConversationExt {
         if (resultCode == Activity.RESULT_OK) {
             UserInfo userInfo = data.getParcelableExtra("userInfo");
             ChannelInfo channelInfo = data.getParcelableExtra("channelInfo");
+            Employee employee = data.getParcelableExtra("employee");
             if (userInfo != null) {
                 sendUserCard(0, userInfo.uid, userInfo.name, userInfo.displayName, userInfo.portrait);
             } else if (channelInfo != null) {
                 sendUserCard(3, channelInfo.channelId, channelInfo.name, channelInfo.name, channelInfo.portrait);
+            } else if (employee != null) {
+                sendUserCard(0, employee.employeeId, employee.name, employee.name, employee.portraitUrl);
             }
         }
     }
