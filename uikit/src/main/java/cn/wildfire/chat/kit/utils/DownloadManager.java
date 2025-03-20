@@ -24,6 +24,7 @@ import cn.wildfirechat.message.MediaMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.FileRecord;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallbackBytes;
 import okhttp3.Call;
@@ -166,6 +167,12 @@ public class DownloadManager {
         } else {
             return remoteUrl + "?target=" + mediaMessage.conversation.target + "&secret=true";
         }
+    }
+
+    public static File fileRecordFile(FileRecord fileRecord) {
+        String dir = Config.FILE_SAVE_DIR;
+        String name = fileRecord.messageUid + "-" + fileRecord.name;
+        return new File(dir, name);
     }
 
     public static File mediaMessageContentFile(Message message) {
