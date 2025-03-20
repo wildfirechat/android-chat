@@ -5,6 +5,8 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.contact.pick.PickContactActivity;
@@ -58,15 +60,14 @@ public class FileRecordListActivity extends WfcBaseActivity {
     }
 
     void userFiles() {
-        //Todo Select a user first.
-        Intent intent = new Intent(this, PickContactActivity.class);
+        Intent intent = PickContactActivity.buildPickIntent(this, 1, null, null);
         intent.putExtra("showChannel", false);
         startActivityForResult(intent, PICK_CONTACT_REQUEST);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
+        if (resultCode != Activity.RESULT_OK || data == null) {
             super.onActivityResult(requestCode, resultCode, data);
             return;
         }
@@ -78,10 +79,10 @@ public class FileRecordListActivity extends WfcBaseActivity {
                 startActivity(intent);
             }
         } else if (requestCode == PICK_CONTACT_REQUEST) {
-            UserInfo userInfo = data.getParcelableExtra("userInfo");
-            if (userInfo != null) {
+           ArrayList<UserInfo> userInfos = data.getParcelableArrayListExtra(PickContactActivity.RESULT_PICKED_USERS);
+            if (userInfos != null && !userInfos.isEmpty()) {
                 Intent intent = new Intent(this, FileRecordActivity.class);
-                intent.putExtra("fromUser", userInfo.uid);
+                intent.putExtra("fromUser", userInfos.get(0).uid);
                 startActivity(intent);
             }
         } else {

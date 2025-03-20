@@ -21,7 +21,7 @@ import cn.wildfirechat.remote.GetFileRecordCallback;
 public class FileRecordViewModel extends ViewModel {
     public LiveData<OperateResult<List<FileRecord>>> getConversationFileRecords(Conversation conversation, String fromUser, long beforeMessageUid, int count) {
         MutableLiveData<OperateResult<List<FileRecord>>> data = new MutableLiveData<>();
-        ChatManager.Instance().getConversationFileRecords(conversation, fromUser, beforeMessageUid, FileRecordOrder.By_Size_Desc, count, new GetFileRecordCallback() {
+        ChatManager.Instance().getConversationFileRecords(conversation, fromUser, beforeMessageUid, FileRecordOrder.By_Time_Desc, count, new GetFileRecordCallback() {
             @Override
             public void onSuccess(List<FileRecord> records) {
                 data.postValue(new OperateResult<>(records, 0));
@@ -37,7 +37,7 @@ public class FileRecordViewModel extends ViewModel {
 
     public LiveData<OperateResult<List<FileRecord>>> getMyFileRecords(long beforeMessageUid, int count) {
         MutableLiveData<OperateResult<List<FileRecord>>> data = new MutableLiveData<>();
-        ChatManager.Instance().getMyFileRecords(beforeMessageUid, FileRecordOrder.By_Size_Desc, count, new GetFileRecordCallback() {
+        ChatManager.Instance().getMyFileRecords(beforeMessageUid, FileRecordOrder.By_Time_Desc, count, new GetFileRecordCallback() {
             @Override
             public void onSuccess(List<FileRecord> records) {
                 data.postValue(new OperateResult<>(records, 0));
