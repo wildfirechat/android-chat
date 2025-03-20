@@ -11,13 +11,16 @@ import cn.wildfire.chat.kit.WfcBaseActivity;
 
 public class OrganizationMemberListActivity extends WfcBaseActivity {
     private int organizationId;
+    private boolean pick;
 
     @Override
     protected void afterViews() {
         this.organizationId = getIntent().getIntExtra("organizationId", 0);
+        this.pick = getIntent().getBooleanExtra("pick", false);
         OrganizationMemberListFragment fragment = new OrganizationMemberListFragment();
         Bundle args = new Bundle();
         args.putInt("organizationId", organizationId);
+        args.putBoolean("pick", pick);
         fragment.setArguments(args);
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, fragment)
