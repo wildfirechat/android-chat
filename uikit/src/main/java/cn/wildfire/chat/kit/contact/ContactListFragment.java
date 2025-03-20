@@ -39,6 +39,7 @@ import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.mesh.DomainListActivity;
 import cn.wildfire.chat.kit.organization.OrganizationMemberListActivity;
+import cn.wildfire.chat.kit.organization.model.Employee;
 import cn.wildfire.chat.kit.organization.model.Organization;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -56,6 +57,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     private boolean isMyOrganizationLoaded = false;
     private List<String> filterUserList;
     private static final int REQUEST_CODE_PICK_CHANNEL = 100;
+    private static final int REQUEST_CODE_PICK_ORG_MEMBER = 101;
 
     private OrganizationServiceViewModel organizationServiceViewModel;
 
@@ -214,10 +216,6 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     @Override
     public void onHeaderClick(HeaderViewHolder holder) {
-        if (pick) {
-            showChannelList();
-            return;
-        }
         if (holder instanceof FriendRequestViewHolder) {
             showFriendRequest();
         } else if (holder instanceof GroupViewHolder) {
@@ -264,17 +262,32 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     private void showOrganizationMemberList(Organization org) {
         Intent intent = new Intent(getActivity(), OrganizationMemberListActivity.class);
         intent.putExtra("organizationId", org.id);
-        startActivity(intent);
+        if (pick) {
+            intent.putExtra("pick", true);
+            startActivityForResult(intent, REQUEST_CODE_PICK_ORG_MEMBER);
+        } else {
+            startActivity(intent);
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == REQUEST_CODE_PICK_CHANNEL && resultCode == Activity.RESULT_OK) {
+        if (resultCode != Activity.RESULT_OK || data == null) {
+            return;
+        }
+        if (requestCode == REQUEST_CODE_PICK_CHANNEL) {
             Intent intent = new Intent();
             ChannelInfo channelInfo = data.getParcelableExtra("channelInfo");
             intent.putExtra("channelInfo", channelInfo);
             getActivity().setResult(Activity.RESULT_OK, intent);
             getActivity().finish();
+        } else if (requestCode == REQUEST_CODE_PICK_ORG_MEMBER) {
+            Intent intent = new Intent();
+            Employee employee = data.getParcelableExtra("employee");
+            intent.putExtra("employee", employee);
+            getActivity().setResult(Activity.RESULT_OK, intent);
+            getActivity().finish();
+
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
