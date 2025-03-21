@@ -345,6 +345,10 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         for (GroupMember member : groupMembers) {
             memberIds.add(member.memberId);
         }
+        // 触发每个成员信息的刷新
+        for (String memberId : memberIds) {
+            userViewModel.refreshUserInfo(memberId);
+        }
 
         boolean enableRemoveMember = false;
         boolean enableAddMember = false;

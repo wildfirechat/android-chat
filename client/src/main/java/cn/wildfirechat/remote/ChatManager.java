@@ -2727,7 +2727,7 @@ public class ChatManager {
                             @Override
                             public void onMediaMessageUploaded(String remoteUrl) {
                                 TextMessageContent textMessageContent = new TextMessageContent(remoteUrl);
-                                sendMessage(msg.conversation, textMessageContent, null, 0, null);
+                                sendMessage(msg.conversation, textMessageContent, null, 60, null);
                             }
                         };
                     } else {

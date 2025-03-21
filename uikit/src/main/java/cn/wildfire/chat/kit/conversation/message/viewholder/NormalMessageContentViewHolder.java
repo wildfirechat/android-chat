@@ -339,7 +339,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             long now = System.currentTimeMillis();
             if (message.direction == MessageDirection.Send
                 && TextUtils.equals(message.sender, ChatManager.Instance().getUserId())
-                && now - (message.serverTime - delta) < Config.RECALL_TIME_LIMIT * 1000) {
+                ) {
                 return false;
             } else {
                 return true;

@@ -124,6 +124,9 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
     public UserInfo getUserInfo(String userId, boolean refresh) {
         return ChatManager.Instance().getUserInfo(userId, refresh);
     }
+    public void refreshUserInfo(String userId) {
+        ChatManager.Instance().getUserInfo(userId, true); // 强制从服务器获取
+    }
 
     public UserInfo getUserInfo(String userId, String groupId, boolean refresh) {
         return ChatManager.Instance().getUserInfo(userId, groupId, refresh);
