@@ -34,6 +34,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 访问网络. 某些位置信息需要从网络服务器获取 -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <!-- 访问网络状态, 检测网络的可用性. 需要网络运营商相关信息用于网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 访问网络的变化, 需要某些信息用于网络定位 -->
@@ -94,13 +96,13 @@
         <activity
             android:name="cn.wildfire.chat.app.main.MainActivity"
             android:exported="true"
-            android:label="野火IM"
+            android:label="悟聊"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="${applicationId}.main" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <intent-filter android:label="分享到野火IM">
+            <intent-filter android:label="分享到悟聊">
                 <action android:name="android.intent.action.SENDTO" />
                 <action android:name="android.intent.action.SEND" />
                 <!--                <action android:name="android.intent.action.SEND_MULTIPLE" />-->
@@ -134,6 +136,18 @@
         <activity
             android:name="cn.wildfire.chat.app.misc.DiagnoseActivity"
             android:label="@string/diagnose" />
+
+        <!-- 正确的FileProvider配置 -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities,android:resource">
+            <meta-data
+                android:name="androidx.core.content.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
 
     </application>
 </manifest>

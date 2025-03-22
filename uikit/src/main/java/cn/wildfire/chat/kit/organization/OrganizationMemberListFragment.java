@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.organization;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +31,7 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class OrganizationMemberListFragment extends ProgressFragment implements OrganizationMemberListAdapter.OnOrganizationMemberClickListener, BreadCrumbsView.OnTabListener {
     private int orgId;
+    private boolean pick;
     private RecyclerView recyclerView;
     private BreadCrumbsView breadCrumbsView;
     private OrganizationMemberListAdapter adapter;
@@ -49,6 +51,7 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
         Bundle bundle = getArguments();
         if (bundle != null) {
             orgId = bundle.getInt("organizationId");
+            pick = bundle.getBoolean("pick", false);
         }
         recyclerView = view.findViewById(R.id.recyclerView);
         adapter = new OrganizationMemberListAdapter(this);
@@ -73,10 +76,17 @@ public class OrganizationMemberListFragment extends ProgressFragment implements 
 
     @Override
     public void onEmployeeClick(Employee employee) {
-        Intent intent = new Intent(getContext(), EmployeeInfoActivity.class);
-        UserInfo userInfo = ChatManager.Instance().getUserInfo(employee.employeeId, false);
-        intent.putExtra("userInfo", userInfo);
-        startActivity(intent);
+        if (pick) {
+            Intent intent = new Intent();
+            intent.putExtra("employee", employee);
+            getActivity().setResult(Activity.RESULT_OK, intent);
+            getActivity().finish();
+        } else {
+            Intent intent = new Intent(getContext(), EmployeeInfoActivity.class);
+            UserInfo userInfo = ChatManager.Instance().getUserInfo(employee.employeeId, false);
+            intent.putExtra("userInfo", userInfo);
+            startActivity(intent);
+        }
     }
 
     private void loadAndShowOrganizationMemberList(int orgId) {

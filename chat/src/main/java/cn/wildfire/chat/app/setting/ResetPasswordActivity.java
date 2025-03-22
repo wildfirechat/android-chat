@@ -144,10 +144,10 @@ public class ResetPasswordActivity extends WfcBaseActivity {
         }
 
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content(R.string.reset_password_progress)
-            .progress(true, 10)
-            .cancelable(false)
-            .build();
+                .content(R.string.reset_password_progress)
+                .progress(true, 10)
+                .cancelable(false)
+                .build();
         dialog.show();
 
         String code = TextUtils.isEmpty(resetCode) ? authCodeEditText.getText().toString() : resetCode;

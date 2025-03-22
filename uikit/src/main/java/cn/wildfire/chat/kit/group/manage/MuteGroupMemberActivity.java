@@ -31,13 +31,7 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
     @Override
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
         this.checkedGroupMembers = checkedUserInfos;
-        if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
-            menuItem.setTitle(R.string.contact_pick_confirm);
-            menuItem.setEnabled(false);
-        } else {
-            menuItem.setTitle(getString(R.string.contact_pick_confirm_with_count, checkedUserInfos.size()));
-            menuItem.setEnabled(true);
-        }
+        this.updateMenuItemState();
     }
 
     @Override
@@ -51,10 +45,11 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
         return R.menu.group_manage_add_manager;
     }
 
+    // 有点神奇，搜索用户之后，会触发这个调用
     @Override
     protected void afterMenus(Menu menu) {
         menuItem = menu.findItem(R.id.confirm);
-        menuItem.setEnabled(false);
+        updateMenuItemState();
     }
 
     @Override
@@ -93,6 +88,19 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
         } else {
             groupViewModel.muteGroupMember(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
                 .observe(this, observer);
+        }
+    }
+
+    private void updateMenuItemState() {
+        if (menuItem == null) {
+            return;
+        }
+        if (checkedGroupMembers == null || checkedGroupMembers.isEmpty()) {
+            menuItem.setTitle(R.string.contact_pick_confirm);
+            menuItem.setEnabled(false);
+        } else {
+            menuItem.setTitle(getString(R.string.contact_pick_confirm_with_count, checkedGroupMembers.size()));
+            menuItem.setEnabled(true);
         }
     }
 }

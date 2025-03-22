@@ -4,9 +4,13 @@
 
 package cn.wildfire.chat.app;
 
+import static cn.wildfire.chat.app.BaseApp.getContext;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -24,6 +28,8 @@ import java.util.Map;
 
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.login.model.PCSession;
+import cn.wildfire.chat.app.login.model.Result;
+import cn.wildfire.chat.app.login.model.Version;
 import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
@@ -56,6 +62,7 @@ public class AppService implements AppServiceProvider {
      */
 //    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://wildfirechat.net:8888";
     public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://1.94.177.77:8888";
+    public static String RY_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://1.94.177.77:8080";
 
     private AppService() {
 
@@ -69,6 +76,46 @@ public class AppService implements AppServiceProvider {
         void onUiSuccess(LoginResult loginResult);
 
         void onUiFailure(int code, String msg);
+    }
+
+    public interface VersionCallback {
+        void onUiSuccess(Result<Version> versionResult);
+
+        void onUiFailure(int code, String msg);
+    }
+
+    public void checkVersion(VersionCallback versionCallback) {
+        String url = RY_SERVER_ADDRESS + "/api/version/check";
+        Map<String, Object> params = new HashMap<>();
+
+        try {
+            PackageInfo packageInfo = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
+            int versionCode = packageInfo.versionCode;
+            params.put("currentVersion", versionCode);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        OKHttpHelper.post(url, params, new SimpleCallback<Result<Version>>() {
+
+
+            @Override
+            public void onUiSuccess(Result<Version> versionResult) {
+                if (versionResult.getCode() == 200) {
+                    versionCallback.onUiSuccess(versionResult);
+                } else {
+                    versionCallback.onUiFailure(versionResult.getCode(), versionResult.getMsg());
+
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                versionCallback.onUiFailure(code, msg);
+            }
+        });
+
+
     }
 
     public void passwordLogin(String mobile, String password, LoginCallback callback) {
@@ -458,16 +505,16 @@ public class AppService implements AppServiceProvider {
                         JSONObject itemObj = items.getJSONObject(i);
                         Conversation conversation = new Conversation(Conversation.ConversationType.type(itemObj.getInt("convType")), itemObj.getString("convTarget"), itemObj.getInt("convLine"));
                         FavoriteItem item = new FavoriteItem(itemObj.getInt("id"),
-                            itemObj.optLong("messageUid"),
-                            itemObj.getInt("type"),
-                            itemObj.getLong("timestamp"),
-                            conversation,
-                            itemObj.getString("origin"),
-                            itemObj.getString("sender"),
-                            itemObj.getString("title"),
-                            itemObj.getString("url"),
-                            itemObj.getString("thumbUrl"),
-                            itemObj.getString("data")
+                                itemObj.optLong("messageUid"),
+                                itemObj.getInt("type"),
+                                itemObj.getLong("timestamp"),
+                                conversation,
+                                itemObj.getString("origin"),
+                                itemObj.getString("sender"),
+                                itemObj.getString("title"),
+                                itemObj.getString("url"),
+                                itemObj.getString("thumbUrl"),
+                                itemObj.getString("data")
                         );
 
                         favoriteItems.add(item);
@@ -515,14 +562,14 @@ public class AppService implements AppServiceProvider {
 
     public static void validateConfig(Context context) {
         if (TextUtils.isEmpty(Config.IM_SERVER_HOST)
-            || Config.IM_SERVER_HOST.startsWith("http")
-            || Config.IM_SERVER_HOST.contains(":")
-            || TextUtils.isEmpty(APP_SERVER_ADDRESS)
-            || (!APP_SERVER_ADDRESS.startsWith("http") && !APP_SERVER_ADDRESS.startsWith("https"))
-            || Config.IM_SERVER_HOST.equals("127.0.0.1")
-            || APP_SERVER_ADDRESS.contains("127.0.0.1")
-            || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && APP_SERVER_ADDRESS.contains("wildfirechat.net"))
-            || (Config.IM_SERVER_HOST.contains("wildfirechat.net") && !APP_SERVER_ADDRESS.contains("wildfirechat.net"))
+                || Config.IM_SERVER_HOST.startsWith("http")
+                || Config.IM_SERVER_HOST.contains(":")
+                || TextUtils.isEmpty(APP_SERVER_ADDRESS)
+                || (!APP_SERVER_ADDRESS.startsWith("http") && !APP_SERVER_ADDRESS.startsWith("https"))
+                || Config.IM_SERVER_HOST.equals("127.0.0.1")
+                || APP_SERVER_ADDRESS.contains("127.0.0.1")
+                || (!Config.IM_SERVER_HOST.contains("wildfirechat.net") && APP_SERVER_ADDRESS.contains("wildfirechat.net"))
+                || (Config.IM_SERVER_HOST.contains("wildfirechat.net") && !APP_SERVER_ADDRESS.contains("wildfirechat.net"))
         ) {
             Toast.makeText(context, "配置错误，请检查配置，应用即将关闭...", Toast.LENGTH_LONG).show();
             new Handler().postDelayed(() -> {
@@ -542,7 +589,7 @@ public class AppService implements AppServiceProvider {
         }
 
         if (!BuildConfig.DEBUG && BuildConfig.APPLICATION_ID.startsWith("cn.wildfire")) {
-            Toast.makeText(context, "上线时，请勿直接使用野火的包名！！！", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "上线时，请勿直接使用悟聊的包名！！！", Toast.LENGTH_LONG).show();
         }
     }
 

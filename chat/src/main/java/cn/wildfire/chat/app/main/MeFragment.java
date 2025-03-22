@@ -4,9 +4,14 @@
 
 package cn.wildfire.chat.app.main;
 
+import static cn.wildfire.chat.app.BaseApp.getContext;
+import static cn.wildfire.chat.kit.third.utils.UIUtils.getPackageName;
+
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,9 +34,14 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
+import java.util.Objects;
 
+import cn.wildfire.chat.app.AppService;
+import cn.wildfire.chat.app.login.model.Result;
+import cn.wildfire.chat.app.login.model.Version;
 import cn.wildfire.chat.app.setting.AccountActivity;
 import cn.wildfire.chat.app.setting.SettingActivity;
+import cn.wildfire.chat.app.util.DownloadUtil;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteListActivity;
@@ -115,6 +126,7 @@ public class MeFragment extends Fragment {
         view.findViewById(R.id.accountOptionItemView).setOnClickListener(v -> account());
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(v -> files());
         view.findViewById(R.id.themeOptionItemView).setOnClickListener(v -> theme());
+        view.findViewById(R.id.checkVersion).setOnClickListener(v -> check());
         view.findViewById(R.id.languageOptionItemView).setOnClickListener(v -> selectLanguage());
         view.findViewById(R.id.settingOptionItemView).setOnClickListener(v -> setting());
         view.findViewById(R.id.notificationOptionItemView).setOnClickListener(v -> msgNotifySetting());
@@ -188,6 +200,30 @@ public class MeFragment extends Fragment {
         startActivity(intent);
     }
 
+    void check(){
+        AppService.Instance().checkVersion(new AppService.VersionCallback() {
+            @Override
+            public void onUiSuccess(Result<Version> versionResult) {
+                Context context = getContext();
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                Version version = versionResult.getData();
+                builder.setTitle("发现新版本 " + version.getVersionName())
+                        .setMessage(version.getUpdateDesc())
+                        .setPositiveButton("立即更新", (d, w) -> DownloadUtil.downloadApk(Objects.requireNonNull(context), version.getApkUrl(),version.getMd5()));
+
+
+                builder.setCancelable(false)
+                        .show();
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                Toast.makeText(getContext(), "更新版本失败，请联系管理员！", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+    }
 
     void theme() {
         SharedPreferences sp = getActivity().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);

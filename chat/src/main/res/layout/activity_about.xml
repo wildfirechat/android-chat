@@ -11,7 +11,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="150dp">
+        android:minHeight="150dp"
+        android:visible="false" >
 
         <LinearLayout
             android:layout_width="wrap_content"

@@ -29,6 +29,7 @@ class FileRecordViewHolder extends RecyclerView.ViewHolder {
     ImageView fileIconImageView;
     TextView fileFromTextView;
     TextView fileTimeTextView;
+    FileRecord fileRecord;
 
     public FileRecordViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -41,20 +42,26 @@ class FileRecordViewHolder extends RecyclerView.ViewHolder {
         fileIconImageView = itemView.findViewById(R.id.fileIconImageView);
         fileFromTextView = itemView.findViewById(R.id.fileFromTextView);
         fileTimeTextView = itemView.findViewById(R.id.fileTimeTextView);
+        itemView.setOnClickListener(v -> {
+            if (fileRecord != null) {
+                FileUtils.openFile(itemView.getContext(), fileRecord);
+            }
+        });
     }
 
     public void onBind(FileRecord fileRecord) {
+        this.fileRecord = fileRecord;
         fileNameTextView.setText(fileRecord.name);
         fileSizeTextView.setText(FileUtils.getReadableFileSize(fileRecord.size));
         fileIconImageView.setImageResource(FileUtils.getFileTypeImageResId(fileRecord.name));
         UserInfo userInfo;
-        if(fileRecord.conversation.type != Conversation.ConversationType.Group) {
+        if (fileRecord.conversation.type != Conversation.ConversationType.Group) {
             userInfo = ChatManager.Instance().getUserInfo(fileRecord.userId, false);
         } else {
             userInfo = ChatManager.Instance().getUserInfo(fileRecord.userId, fileRecord.conversation.target, false);
         }
         fileFromTextView.setText(" ");
-        if(userInfo != null) {
+        if (userInfo != null) {
             String displayName = userInfo.friendAlias;
             if (TextUtils.isEmpty(displayName)) {
                 displayName = userInfo.groupAlias;
@@ -74,7 +81,7 @@ class FileRecordViewHolder extends RecyclerView.ViewHolder {
         int nowYear = c.get(Calendar.YEAR);
 
         SimpleDateFormat formatter;
-        if(nowYear > year) {
+        if (nowYear > year) {
             formatter = new SimpleDateFormat("yyyy-MM-dd");
         } else {
             formatter = new SimpleDateFormat("MM-dd");
