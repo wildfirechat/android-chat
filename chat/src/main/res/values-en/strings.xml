@@ -191,6 +191,7 @@
     <string name="conference">Conference</string>
     <string name="chat_background">Chat Background</string>
     <string name="favorites">Favorites</string>
+    <string name="check_version">Check Version</string>
     <string name="account_security">Account and Security</string>
     <string name="theme">Theme</string>
     <string name="about">About</string>

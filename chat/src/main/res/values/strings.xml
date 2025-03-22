@@ -193,6 +193,7 @@
     <string name="conference">会议</string>
     <string name="chat_background">聊天背景</string>
     <string name="favorites">收藏</string>
+    <string name="check_version">检测更新</string>
     <string name="account_security">账号与安全</string>
     <string name="theme">主题</string>
     <string name="about">关于</string>

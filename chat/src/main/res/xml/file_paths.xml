@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- 适配Android 10+ -->
+    <external-path
+        name="download"
+        path="Download" />
+    <!-- 适配老版本 -->
+    <external-path
+        name="external_storage_root"
+        path="." />
+</paths>
