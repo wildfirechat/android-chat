@@ -38,7 +38,7 @@ public class ResetPasswordActivity extends WfcBaseActivity {
 
     protected void bindEvents() {
         super.bindEvents();
-//        requestAuthCodeButton.setOnClickListener(v -> requestAuthCode());
+        requestAuthCodeButton.setOnClickListener(v -> requestAuthCode());
         confirmButton.setOnClickListener(v -> resetPassword());
         authCodeEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
@@ -66,7 +66,7 @@ public class ResetPasswordActivity extends WfcBaseActivity {
         authCodeEditText = findViewById(R.id.authCodeEditText);
         newPasswordEditText = findViewById(R.id.newPasswordEditText);
         confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText);
-//        requestAuthCodeButton = findViewById(R.id.requestAuthCodeButton);
+        requestAuthCodeButton = findViewById(R.id.requestAuthCodeButton);
         authCodeFrameLayout = findViewById(R.id.authCodeFrameLayout);
     }
 
