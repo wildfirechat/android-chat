@@ -51,6 +51,7 @@
     <string name="sms_login_failure">登录失败：%1$d %2$s</string>
 <!--    <string name="sms_login_title">验证码登录</string>-->
     <string name="sms_login_title">激活码登录</string>
+    <string name="update_tip">检测到新版本，请更新！</string>
 
     <!-- Login Activity Password Strings -->
     <string name="login_password_title">密码登录</string>

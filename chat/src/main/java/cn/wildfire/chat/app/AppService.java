@@ -82,7 +82,6 @@ public class AppService implements AppServiceProvider {
 
     public interface VersionCallback {
         void onUiSuccess(Version versionResult);
-
         void onUiFailure(int code, String msg);
     }
 

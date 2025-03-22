@@ -5,10 +5,13 @@
 package cn.wildfire.chat.app.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -20,6 +23,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +48,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.wildfire.chat.app.AppService;
+import cn.wildfire.chat.app.login.model.Version;
+import cn.wildfire.chat.app.util.DownloadUtil;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.IMConnectionStatusViewModel;
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
@@ -91,7 +98,8 @@ import cn.wildfirechat.remote.ChatManager;
 import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends WfcBaseActivity {
-
+    private ViewFlipper updateFlipper;
+    private boolean hasNewVersion = false;
     private List<Fragment> mFragmentList = new ArrayList<>(4);
 
     BottomNavigationView bottomNavigationView;
@@ -122,6 +130,8 @@ public class MainActivity extends WfcBaseActivity {
         contentViewPager = findViewById(R.id.contentViewPager);
         startingTextView = findViewById(R.id.startingTextView);
         contentLinearLayout = findViewById(R.id.contentLinearLayout);
+        updateFlipper = findViewById(R.id.updateFlipper);
+
     }
 
     private Observer<Boolean> imStatusLiveDataObserver = status -> {
@@ -145,10 +155,22 @@ public class MainActivity extends WfcBaseActivity {
             conversationListViewModel.reloadConversationUnreadStatus();
         }
         updateMomentBadgeView();
+        if (updateFlipper != null) {
+            if (hasNewVersion) {
+                updateFlipper.setVisibility(View.VISIBLE);
+                updateFlipper.startFlipping();
+            } else {
+                updateFlipper.setVisibility(View.GONE);
+                updateFlipper.stopFlipping();
+            }
+        }
     }
 
     @Override
     protected void afterViews() {
+
+        super.afterViews();
+
         bottomNavigationView.setItemIconTintList(null);
         if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
             bottomNavigationView.getMenu().removeItem(R.id.workspace);
@@ -158,10 +180,10 @@ public class MainActivity extends WfcBaseActivity {
         IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
         connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
             if (status == ConnectionStatus.ConnectionStatusTokenIncorrect
-                || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch
-                || status == ConnectionStatus.ConnectionStatusRejected
-                || status == ConnectionStatus.ConnectionStatusLogout
-                || status == ConnectionStatus.ConnectionStatusKickedoff) {
+                    || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch
+                    || status == ConnectionStatus.ConnectionStatusRejected
+                    || status == ConnectionStatus.ConnectionStatusLogout
+                    || status == ConnectionStatus.ConnectionStatusKickedoff) {
                 SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
                 sp.edit().clear().apply();
                 OKHttpHelper.clearCookies();
@@ -188,7 +210,7 @@ public class MainActivity extends WfcBaseActivity {
         messageViewModel.messageLiveData().observe(this, uiMessages -> {
             for (UiMessage uiMessage : uiMessages) {
                 if (uiMessage.message.messageId > 0 && (uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
-                    || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT)) {
+                        || uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED_COMMENT)) {
                     updateMomentBadgeView();
                 }
             }
@@ -209,6 +231,52 @@ public class MainActivity extends WfcBaseActivity {
         }
 
         requestMandatoryPermissions();
+
+        checkAppVersion();
+
+    }
+
+    private void checkAppVersion() {
+        AppService.Instance().checkVersion(new AppService.VersionCallback() {
+            @Override
+            public void onUiSuccess(Version versionResult) {
+                try {
+                    PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                    int currentVersionCode = pInfo.versionCode;
+
+                    if (versionResult.getVersionCode() > currentVersionCode) {
+                        hasNewVersion = true;
+                        runOnUiThread(() -> {
+                            updateFlipper.setVisibility(View.VISIBLE);
+                            updateFlipper.startFlipping();
+
+                            // 添加点击事件
+                            updateFlipper.setOnClickListener(v -> showUpdateDialog(versionResult));
+                        });
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                // 失败时不处理
+            }
+        });
+    }
+
+    private void showUpdateDialog(Version version) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("发现新版本 " + version.getVersionName())
+                .setMessage(version.getUpdateDesc())
+                .setPositiveButton("立即更新", (d, w) -> {
+                    Toast.makeText(MainActivity.this, "更新包正在下载中，若自动安装失败请手动安装。", Toast.LENGTH_LONG).show();
+                    DownloadUtil.downloadApk(MainActivity.this, version.getApkUrl());
+                })
+                .setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
     }
 
     @Override
@@ -250,7 +318,7 @@ public class MainActivity extends WfcBaseActivity {
         initView();
 
         conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel, Conversation.ConversationType.SecretChat), Arrays.asList(0)))
-            .get(ConversationListViewModel.class);
+                .get(ConversationListViewModel.class);
         conversationListViewModel.unreadCountLiveData().observe(this, unreadCount -> {
 
             if (unreadCount != null && unreadCount.unread > 0) {
@@ -274,7 +342,7 @@ public class MainActivity extends WfcBaseActivity {
 
     private void showUnreadMessageBadgeView(int count) {
         if (unreadMessageUnreadBadgeView == null) {
-            BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
+            @SuppressLint("RestrictedApi") BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
             View view = bottomNavigationMenuView.getChildAt(0);
             unreadMessageUnreadBadgeView = new QBadgeView(MainActivity.this);
             unreadMessageUnreadBadgeView.bindTarget(view);
@@ -297,7 +365,7 @@ public class MainActivity extends WfcBaseActivity {
         int count = messages == null ? 0 : messages.size();
         if (count > 0) {
             if (discoveryBadgeView == null) {
-                BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
+                @SuppressLint("RestrictedApi") BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
                 int index = TextUtils.isEmpty(Config.WORKSPACE_URL) ? 2 : 3;
                 View view = bottomNavigationMenuView.getChildAt(index);
                 discoveryBadgeView = new QBadgeView(MainActivity.this);
@@ -314,7 +382,7 @@ public class MainActivity extends WfcBaseActivity {
 
     private void showUnreadFriendRequestBadgeView(int count) {
         if (unreadFriendRequestBadgeView == null) {
-            BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
+            @SuppressLint("RestrictedApi") BottomNavigationMenuView bottomNavigationMenuView = ((BottomNavigationMenuView) bottomNavigationView.getChildAt(0));
             View view = bottomNavigationMenuView.getChildAt(1);
             unreadFriendRequestBadgeView = new QBadgeView(MainActivity.this);
             unreadFriendRequestBadgeView.bindTarget(view);
@@ -341,6 +409,7 @@ public class MainActivity extends WfcBaseActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         moveTaskToBack(true);
     }
 
@@ -523,7 +592,7 @@ public class MainActivity extends WfcBaseActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100 && grantResults.length > 0
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startActivityForResult(new Intent(this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
         }
     }
@@ -532,7 +601,7 @@ public class MainActivity extends WfcBaseActivity {
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(
-            getBaseContext().getPackageName());
+                getBaseContext().getPackageName());
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
         finish();
@@ -623,16 +692,16 @@ public class MainActivity extends WfcBaseActivity {
 
     private void updateDisplayName() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-            .content("修改个人昵称？")
-            .positiveText("修改")
-            .negativeText("取消")
-            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                @Override
-                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                    Intent intent = new Intent(MainActivity.this, ChangeMyNameActivity.class);
-                    startActivity(intent);
-                }
-            }).build();
+                .content("修改个人昵称？")
+                .positiveText("修改")
+                .negativeText("取消")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent intent = new Intent(MainActivity.this, ChangeMyNameActivity.class);
+                        startActivity(intent);
+                    }
+                }).build();
         dialog.show();
     }
 
@@ -722,7 +791,7 @@ public class MainActivity extends WfcBaseActivity {
         }
 
         if (text.startsWith("我分享了【")
-            && text.indexOf("】, 快来看吧！@小米浏览器 | http") > 1) {
+                && text.indexOf("】, 快来看吧！@小米浏览器 | http") > 1) {
             return true;
         }
         return false;

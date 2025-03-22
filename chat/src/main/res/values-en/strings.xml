@@ -52,6 +52,7 @@
     <string name="auth_code_request_failure">Failed to send verification code: %1$d %2$s</string>
     <string name="sms_login_failure">Login failed: %1$d %2$s</string>
     <string name="sms_login_title">SMS Code Login</string>
+    <string name="update_tip">Update Tip</string>
 
     <!-- Login Activity Password Strings -->
     <string name="login_password_title">Password Login</string>
