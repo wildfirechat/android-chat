@@ -6,12 +6,15 @@ package cn.wildfire.chat.app.main;
 
 import static cn.wildfire.chat.app.BaseApp.getContext;
 import static cn.wildfire.chat.kit.third.utils.UIUtils.getPackageName;
+// 添加在文件开头的import区域
+import cn.wildfire.chat.app.util.DownloadUtil;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +44,6 @@ import cn.wildfire.chat.app.login.model.Result;
 import cn.wildfire.chat.app.login.model.Version;
 import cn.wildfire.chat.app.setting.AccountActivity;
 import cn.wildfire.chat.app.setting.SettingActivity;
-import cn.wildfire.chat.app.util.DownloadUtil;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteListActivity;
@@ -111,12 +113,12 @@ public class MeFragment extends Fragment {
         super.onResume();
         if (this.isVisibleToUser && userViewModel != null) {
             userViewModel.getUserInfoAsync(userViewModel.getUserId(), true)
-                .observe(getViewLifecycleOwner(), info -> {
-                    userInfo = info;
-                    if (userInfo != null) {
-                        updateUserInfo(userInfo);
-                    }
-                });
+                    .observe(getViewLifecycleOwner(), info -> {
+                        userInfo = info;
+                        if (userInfo != null) {
+                            updateUserInfo(userInfo);
+                        }
+                    });
         }
     }
 
@@ -146,12 +148,12 @@ public class MeFragment extends Fragment {
 
     private void updateUserInfo(UserInfo userInfo) {
         RequestOptions options = new RequestOptions()
-            .placeholder(R.mipmap.avatar_def)
-            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(getContext(), 10)));
+                .placeholder(R.mipmap.avatar_def)
+                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(getContext(), 10)));
         Glide.with(this)
-            .load(userInfo.portrait)
-            .apply(options)
-            .into(portraitImageView);
+                .load(userInfo.portrait)
+                .apply(options)
+                .into(portraitImageView);
         nameTextView.setText(userInfo.displayName);
         accountTextView.setText(getString(R.string.account_label, userInfo.name));
     }
@@ -159,12 +161,12 @@ public class MeFragment extends Fragment {
     private void init() {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.getUserInfoAsync(userViewModel.getUserId(), true)
-            .observe(getViewLifecycleOwner(), info -> {
-                userInfo = info;
-                if (userInfo != null) {
-                    updateUserInfo(userInfo);
-                }
-            });
+                .observe(getViewLifecycleOwner(), info -> {
+                    userInfo = info;
+                    if (userInfo != null) {
+                        updateUserInfo(userInfo);
+                    }
+                });
         userViewModel.userInfoLiveData().observeForever(userInfoLiveDataObserver);
         if (ChatManager.Instance().isCommercialServer()) {
             fileRecordOptionItem.setVisibility(View.VISIBLE);
@@ -200,29 +202,35 @@ public class MeFragment extends Fragment {
         startActivity(intent);
     }
 
-    void check(){
+    void check() {
         AppService.Instance().checkVersion(new AppService.VersionCallback() {
             @Override
-            public void onUiSuccess(Result<Version> versionResult) {
+            public void onUiSuccess(Version versionResult) {
                 Context context = getContext();
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                Version version = versionResult.getData();
-                builder.setTitle("发现新版本 " + version.getVersionName())
-                        .setMessage(version.getUpdateDesc())
-                        .setPositiveButton("立即更新", (d, w) -> DownloadUtil.downloadApk(Objects.requireNonNull(context), version.getApkUrl(),version.getMd5()));
+                builder.setTitle("发现新版本 " + versionResult.getVersionName())
+                        .setMessage(versionResult.getUpdateDesc())
+                        .setPositiveButton("立即更新", (d, w) -> {
+                            Toast.makeText(context, "更新包正在下载中，若自动安装失败请手动安装。", Toast.LENGTH_LONG).show();
 
+                            // 添加版本号参数（需要确保Version对象包含versionCode字段）
+                            int versionCode = versionResult.getVersionCode();
+                            DownloadUtil.downloadApk(
+                                    Objects.requireNonNull(context),
+                                    versionResult.getApkUrl()
 
-                builder.setCancelable(false)
-                        .show();
+                            );
+                        })
+                        .setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
+
+                builder.setCancelable(false).show();
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
-                Toast.makeText(getContext(), "更新版本失败，请联系管理员！", Toast.LENGTH_LONG).show();
-
+                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
             }
         });
-
     }
 
     void theme() {

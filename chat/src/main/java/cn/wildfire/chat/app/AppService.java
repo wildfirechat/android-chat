@@ -5,6 +5,7 @@
 package cn.wildfire.chat.app;
 
 import static cn.wildfire.chat.app.BaseApp.getContext;
+import static cn.wildfire.chat.kit.third.utils.UIUtils.getPackageName;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -79,7 +81,7 @@ public class AppService implements AppServiceProvider {
     }
 
     public interface VersionCallback {
-        void onUiSuccess(Result<Version> versionResult);
+        void onUiSuccess(Version versionResult);
 
         void onUiFailure(int code, String msg);
     }
@@ -91,26 +93,28 @@ public class AppService implements AppServiceProvider {
         try {
             PackageInfo packageInfo = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
             int versionCode = packageInfo.versionCode;
-            params.put("currentVersion", versionCode);
+            params.put("versionCode", versionCode);
+            Log.e("weiAndKe", "请求版本号"+versionCode);
+
         } catch (PackageManager.NameNotFoundException e) {
+            Log.e("weiAndKe", "获取版本号失败~"+e.getMessage());
             throw new RuntimeException(e);
         }
 
-        OKHttpHelper.post(url, params, new SimpleCallback<Result<Version>>() {
+        OKHttpHelper.post(url, params, new SimpleCallback<Version>() {
 
 
             @Override
-            public void onUiSuccess(Result<Version> versionResult) {
-                if (versionResult.getCode() == 200) {
+            public void onUiSuccess(Version versionResult) {
+                if (versionResult!=null) {
                     versionCallback.onUiSuccess(versionResult);
-                } else {
-                    versionCallback.onUiFailure(versionResult.getCode(), versionResult.getMsg());
-
                 }
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
+                Log.e("weiAndKe", "请求接口失败~"+code+msg);
+
                 versionCallback.onUiFailure(code, msg);
             }
         });
@@ -398,7 +402,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void showPCLoginActivity(String userId, String token, int platform) {
-        Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".pc.login");
+        Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".pc.login").setClassName(/* TODO: provide the application ID. For example: */ getPackageName(), "cn.wildfire.chat.app.main.PCLoginActivity");
         intent.putExtra("token", token);
         intent.putExtra("isConfirmPcLogin", true);
         intent.putExtra("platform", platform);
