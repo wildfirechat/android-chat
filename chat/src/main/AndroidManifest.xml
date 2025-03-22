@@ -143,11 +143,12 @@
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true"
-            tools:replace="android:authorities,android:resource">
+            tools:replace="android:authorities">
             <meta-data
                 android:name="androidx.core.content.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"/>
         </provider>
+
 
     </application>
 </manifest>
