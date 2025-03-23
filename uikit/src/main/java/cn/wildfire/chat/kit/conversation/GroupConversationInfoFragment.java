@@ -203,7 +203,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         markGroupLinearLayout.setVisibility(View.VISIBLE);
         markGroupSwitchButton.setOnCheckedChangeListener(this);
         progressBar.setVisibility(View.VISIBLE);
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         groupInfo = groupViewModel.getGroupInfo(conversationInfo.conversation.target, true);
         if (groupInfo != null) {
             selfGroupMember = ChatManager.Instance().getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());

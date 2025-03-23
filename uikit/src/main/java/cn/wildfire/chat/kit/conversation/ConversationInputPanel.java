@@ -56,6 +56,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.audio.AudioRecorderPanel;
 import cn.wildfire.chat.kit.audio.PttPanel;
@@ -410,7 +411,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     private void mentionGroupMember() {
         Intent intent = new Intent(activity, MentionGroupMemberActivity.class);
-        GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
+        GroupViewModel groupViewModel =  WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
         intent.putExtra("groupInfo", groupInfo);
         fragment.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);

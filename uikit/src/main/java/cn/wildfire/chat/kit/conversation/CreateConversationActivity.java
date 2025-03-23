@@ -39,7 +39,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
     @Override
     protected void afterViews() {
         super.afterViews();
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
     }
 
     @Override

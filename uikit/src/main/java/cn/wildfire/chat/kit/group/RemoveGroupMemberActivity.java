@@ -9,8 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
@@ -18,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.remote.ChatManager;
@@ -44,7 +43,7 @@ public class RemoveGroupMemberActivity extends BasePickGroupMemberActivity {
     @Override
     protected void afterViews() {
         super.afterViews();
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
         if (groupMember.type == GroupMember.GroupMemberType.Manager) {
             pickUserViewModel.addUncheckableIds(Collections.singletonList(groupInfo.owner));

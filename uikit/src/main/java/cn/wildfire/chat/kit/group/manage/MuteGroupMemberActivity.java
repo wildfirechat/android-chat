@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -18,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
@@ -62,7 +62,7 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
     }
 
     private void muteOrAllowGroupMembers() {
-        GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         List<String> memberIds = new ArrayList<>(checkedGroupMembers.size());
         for (UIUserInfo info : checkedGroupMembers) {
             memberIds.add(info.getUserInfo().uid);

@@ -116,7 +116,7 @@ public class ConversationListFragment extends ProgressFragment {
                 adapter.notifyItemRangeChanged(start, end - start + 1);
             }
         });
-        GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         groupViewModel.groupInfoUpdateLiveData().observe(this, new Observer<List<GroupInfo>>() {
             @Override
             public void onChanged(List<GroupInfo> groupInfos) {

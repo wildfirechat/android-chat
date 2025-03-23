@@ -10,9 +10,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
@@ -41,7 +41,7 @@ public class MentionGroupMemberFragment extends BaseUserListFragment {
         super.onCreate(savedInstanceState);
         showQuickIndexBar(true);
         groupInfo = getArguments().getParcelable("groupInfo");
-        groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
         groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
     }
 

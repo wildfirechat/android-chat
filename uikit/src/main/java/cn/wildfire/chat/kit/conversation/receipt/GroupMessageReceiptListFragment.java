@@ -87,7 +87,7 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
     }
 
     private void loadAndShowGroupMembers() {
-        GroupViewModel groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
         groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, false, this.message.serverTime).observe(this, userInfos -> {
             showContent();
             groupMemberListAdapter.setMembers(filterGroupMember(userInfos, unread));
