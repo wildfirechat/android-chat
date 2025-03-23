@@ -627,7 +627,7 @@ public class ConversationFragment extends Fragment implements
             adapter.setReadEntries(convReadEntities);
         });
 
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observeForever(userInfoUpdateLiveDataObserver);
 
         settingUpdateLiveDataObserver = o -> {

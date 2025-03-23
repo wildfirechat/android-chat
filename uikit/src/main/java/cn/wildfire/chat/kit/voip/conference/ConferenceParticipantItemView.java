@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.voip.VoipBaseActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -92,7 +93,7 @@ public class ConferenceParticipantItemView extends RelativeLayout {
         LifecycleOwner lifecycleOwner = ViewTreeLifecycleOwner.get(nameTextView);
         ViewModelStoreOwner viewModelStoreOwner = ViewTreeViewModelStoreOwner.get(nameTextView);
         if (viewModelStoreOwner != null && lifecycleOwner != null) {
-            UserViewModel userViewModel = new ViewModelProvider(viewModelStoreOwner).get(UserViewModel.class);
+            UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
             userViewModel.userInfoLiveData().observe(lifecycleOwner, userInfos -> {
                 for (UserInfo info : userInfos) {
                     if (info.uid.equals(profile.getUserId())) {

@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.third.utils.FileUtils;
 import cn.wildfirechat.message.MessageContentMediaType;
@@ -25,7 +26,7 @@ import cn.wildfirechat.remote.OnUserInfoUpdateListener;
 import cn.wildfirechat.remote.UploadMediaCallback;
 import cn.wildfirechat.utils.WfcUtils;
 
-public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener, OnDomainInfoUpdateListener {
+public class UserViewModel extends ViewModel implements AppScopeViewModel, OnUserInfoUpdateListener, OnDomainInfoUpdateListener {
     private MutableLiveData<List<UserInfo>> userInfoLiveData;
     private MutableLiveData<DomainInfo> domainInfoLiveData;
 
@@ -153,6 +154,31 @@ public class UserViewModel extends ViewModel implements OnUserInfoUpdateListener
         return ChatManager.Instance().getUserId();
     }
 
+    public String getFriendAlias(String userId) {
+        return ChatManager.Instance().getFriendAlias(userId);
+    }
+
+    public MutableLiveData<OperateResult<Integer>> setFriendAlias(String userId, String alias) {
+        MutableLiveData<OperateResult<Integer>> data = new MutableLiveData<>();
+        ChatManager.Instance().setFriendAlias(userId, alias, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                data.setValue(new OperateResult<>(0));
+                UserInfo userInfo = ChatManager.Instance().getUserInfo(userId, false);
+                if (userInfo != null) {
+                    List<UserInfo> userInfos = new ArrayList<>();
+                    userInfos.add(userInfo);
+                    userInfoLiveData.setValue(userInfos);
+                }
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                data.setValue(new OperateResult<>(errorCode));
+            }
+        });
+        return data;
+    }
 
     public String getUserSetting(int scope, String key) {
         return ChatManager.Instance().getUserSetting(scope, key);

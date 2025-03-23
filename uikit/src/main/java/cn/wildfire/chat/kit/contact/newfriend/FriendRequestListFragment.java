@@ -50,7 +50,7 @@ public class FriendRequestListFragment extends Fragment {
 
     private void init() {
         contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, userInfos -> {
             if (adapter != null) {
                 adapter.onUserInfosUpdate(userInfos);

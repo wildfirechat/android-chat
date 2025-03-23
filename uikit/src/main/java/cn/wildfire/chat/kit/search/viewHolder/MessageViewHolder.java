@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.message.Message;
@@ -35,7 +36,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public MessageViewHolder(Fragment fragment, View itemView) {
         super(itemView);
         this.fragment = fragment;
-        this.userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
+        this.userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         bindViews(itemView);
     }
 

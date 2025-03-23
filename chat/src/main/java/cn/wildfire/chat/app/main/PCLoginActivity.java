@@ -16,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.PCSession;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.client.Platform;
@@ -67,7 +68,7 @@ public class PCLoginActivity extends WfcBaseActivity {
     }
 
     void confirmPCLogin() {
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         confirmPCLogin(token, userViewModel.getUserId());
     }
 

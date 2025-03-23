@@ -43,7 +43,7 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
         this.adapter = adapter;
         bindViews(itemView);
         bindEvents(itemView);
-        userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
     }
 

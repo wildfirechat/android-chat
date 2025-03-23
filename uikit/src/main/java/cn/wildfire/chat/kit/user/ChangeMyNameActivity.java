@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -23,6 +22,7 @@ import java.util.Collections;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
@@ -54,7 +54,7 @@ public class ChangeMyNameActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
 
         userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         if (userInfo == null) {

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -76,7 +77,7 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(groupMemberListAdapter);
         groupMemberListAdapter.setOnMemberClickListener(this);
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, userInfos -> loadAndShowGroupMembers());
         loadAndShowGroupMembers();
     }

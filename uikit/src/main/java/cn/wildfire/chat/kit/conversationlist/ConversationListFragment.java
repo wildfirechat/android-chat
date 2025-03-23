@@ -99,7 +99,7 @@ public class ConversationListFragment extends ProgressFragment {
             }
         };
 
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, new Observer<List<UserInfo>>() {
             @Override
             public void onChanged(List<UserInfo> userInfos) {

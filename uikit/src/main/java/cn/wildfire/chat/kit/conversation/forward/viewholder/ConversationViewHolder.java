@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.Conversation;
@@ -36,7 +37,7 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
         this.fragment = fragment;
         bindViews(itemView);
 
-        userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
     }
 
