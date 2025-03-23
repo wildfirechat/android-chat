@@ -25,6 +25,7 @@ import com.bumptech.glide.request.RequestOptions;
 import org.webrtc.StatsReport;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.glide.BlurTransformation;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
@@ -259,7 +260,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
         UserInfo userInfo = ChatManager.Instance().getUserInfo(targetId, false);
         updateUserInfoViews(userInfo);
 
-        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(getViewLifecycleOwner(), userInfos -> {
             for (UserInfo info : userInfos) {
                 if (info.uid.equals(targetId)) {

@@ -286,22 +286,6 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
         return result;
     }
 
-    public MutableLiveData<OperateResult<Integer>> setFriendAlias(String userId, String alias) {
-        MutableLiveData<OperateResult<Integer>> data = new MutableLiveData<>();
-        ChatManager.Instance().setFriendAlias(userId, alias, new GeneralCallback() {
-            @Override
-            public void onSuccess() {
-                data.setValue(new OperateResult<>(0));
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-                data.setValue(new OperateResult<>(errorCode));
-            }
-        });
-        return data;
-    }
-
     public MutableLiveData<List<DomainInfo>> loadRemoteDomains() {
         MutableLiveData<List<DomainInfo>> data = new MutableLiveData<>();
         ChatManager.Instance().loadRemoteDomains(new GetRemoteDomainsCallback() {
@@ -316,10 +300,6 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
             }
         });
         return data;
-    }
-
-    public String getFriendAlias(String userId) {
-        return ChatManager.Instance().getFriendAlias(userId);
     }
 
 }

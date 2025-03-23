@@ -78,7 +78,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
         }
         organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
         contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userOnlineStateViewModel = new ViewModelProvider(this).get(UserOnlineStateViewModel.class);
     }
 

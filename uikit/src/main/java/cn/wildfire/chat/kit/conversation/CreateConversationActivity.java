@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
@@ -51,7 +52,7 @@ public class CreateConversationActivity extends PickConversationTargetActivity {
         List<String> initialCheckedIds = pickUserViewModel.getInitialCheckedIds();
         List<UserInfo> userInfos = null;
         if (initialCheckedIds != null && !initialCheckedIds.isEmpty()) {
-            UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+            UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
             userInfos = userViewModel.getUserInfos(initialCheckedIds);
         }
         userInfos = userInfos == null ? new ArrayList<>() : userInfos;

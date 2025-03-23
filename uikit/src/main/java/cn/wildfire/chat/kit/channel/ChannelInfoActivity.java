@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.ChannelInfo;
@@ -91,7 +92,7 @@ public class ChannelInfoActivity extends AppCompatActivity {
             getString(R.string.channel_empty_desc) : channelInfo.desc);
 
 
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         if (channelInfo.owner.equals(userViewModel.getUserId())) {
             followChannelButton.setVisibility(View.GONE);
             return;
