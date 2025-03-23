@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
@@ -48,7 +49,7 @@ public class DomainInfoActivity extends WfcBaseActivity {
     @Override
     protected void afterViews() {
         super.afterViews();
-        contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         this.domainInfo = getIntent().getParcelableExtra("domainInfo");
         if (this.domainInfo != null) {
 
