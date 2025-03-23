@@ -177,7 +177,7 @@ public class UserInfoFragment extends Fragment {
 
     private void init() {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
         String selfUid = userViewModel.getUserId();
         if (selfUid.equals(userInfo.uid)) {

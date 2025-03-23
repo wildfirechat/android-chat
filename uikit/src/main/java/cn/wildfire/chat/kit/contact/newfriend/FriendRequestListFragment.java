@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.FriendRequest;
@@ -48,7 +49,7 @@ public class FriendRequestListFragment extends Fragment {
     }
 
     private void init() {
-        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, userInfos -> {
             if (adapter != null) {

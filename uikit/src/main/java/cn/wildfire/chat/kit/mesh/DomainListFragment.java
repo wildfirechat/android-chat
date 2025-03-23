@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfirechat.model.DomainInfo;
@@ -39,7 +40,7 @@ public class DomainListFragment extends ProgressFragment implements DomainListAd
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-        contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         loadRemoteDomains();
     }
 

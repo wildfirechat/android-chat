@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
@@ -54,7 +55,7 @@ public class SetAliasActivity extends WfcBaseActivity {
             finish();
             return;
         }
-        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         String alias = contactViewModel.getFriendAlias(userId);
         if (!TextUtils.isEmpty(alias)) {
             aliasEditText.setHint(alias);
