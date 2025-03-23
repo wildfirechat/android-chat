@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -48,7 +47,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
         groupInfo = getArguments().getParcelable("groupInfo");
         showQuickIndexBar(false);
 
-        groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
         groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
         observerGroupMemberUpdate();
     }

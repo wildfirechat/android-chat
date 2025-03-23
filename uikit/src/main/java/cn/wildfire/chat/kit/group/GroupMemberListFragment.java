@@ -72,7 +72,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     }
 
     private void loadAndShowGroupMembers() {
-        GroupViewModel groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
         groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, false).observe(this, uiUserInfos -> {
             showContent();
             groupMemberListAdapter.setMembers(uiUserInfos);

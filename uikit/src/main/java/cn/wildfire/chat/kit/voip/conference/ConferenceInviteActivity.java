@@ -39,7 +39,7 @@ public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
         inviteMessage = getIntent().getParcelableExtra("inviteMessage");
         messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
     }
 
     @Override

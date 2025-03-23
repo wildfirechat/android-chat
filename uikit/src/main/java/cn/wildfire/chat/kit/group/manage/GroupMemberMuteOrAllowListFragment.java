@@ -52,7 +52,7 @@ public class GroupMemberMuteOrAllowListFragment extends BaseUserListFragment imp
         groupInfo = getArguments().getParcelable("groupInfo");
         showQuickIndexBar(false);
 
-        groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
         groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
         observerGroupMemberUpdate();
     }

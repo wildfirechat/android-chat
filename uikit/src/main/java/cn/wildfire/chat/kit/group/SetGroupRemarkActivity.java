@@ -12,12 +12,12 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfirechat.model.GroupInfo;
 
@@ -45,7 +45,7 @@ public class SetGroupRemarkActivity extends WfcBaseActivity {
             finish();
             return;
         }
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
 
         if (!TextUtils.isEmpty(groupInfo.remark)) {
             remarkEditText.setText(groupInfo.remark);
