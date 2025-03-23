@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.Conversation;
@@ -30,7 +31,7 @@ import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.SearchUserCallback;
 import cn.wildfirechat.remote.StringListCallback;
 
-public class ContactViewModel extends ViewModel implements OnFriendUpdateListener {
+public class ContactViewModel extends ViewModel implements AppScopeViewModel, OnFriendUpdateListener {
     private MutableLiveData<List<UIUserInfo>> contactListLiveData;
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
     private MutableLiveData<List<UIUserInfo>> favContactListLiveData;
@@ -256,6 +257,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         ChatManager.Instance().setFavUser(userId, fav, new GeneralCallback() {
             @Override
             public void onSuccess() {
+                reloadFavContact();
                 result.postValue(new OperateResult<>(0));
             }
 

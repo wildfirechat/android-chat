@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.UserInfo;
@@ -66,7 +67,7 @@ public class InviteFriendActivity extends WfcBaseActivity {
     }
 
     void invite() {
-        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.invite(userInfo.uid, introTextView.getText().toString())
             .observe(this, errorCode -> {
                 if (errorCode == 0) {

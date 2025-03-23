@@ -328,7 +328,7 @@ public class MainActivity extends WfcBaseActivity {
             }
         });
 
-        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
             if (count == null || count == 0) {
                 hideUnreadFriendRequestBadgeView();

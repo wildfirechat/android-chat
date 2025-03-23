@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.FriendRequest;
@@ -43,7 +44,7 @@ public class FriendRequestViewHolder extends RecyclerView.ViewHolder {
         bindViews(itemView);
         bindEvents(itemView);
         userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
-        contactViewModel = ViewModelProviders.of(fragment).get(ContactViewModel.class);
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
     }
 
     private void bindEvents(View itemView) {

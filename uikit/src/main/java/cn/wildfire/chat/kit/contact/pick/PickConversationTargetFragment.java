@@ -19,6 +19,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.model.GroupValue;
@@ -70,7 +71,7 @@ public class PickConversationTargetFragment extends PickUserFragment {
 
     @Override
     protected void setupPickFromUsers() {
-        ContactViewModel contactViewModel = ViewModelProviders.of(getActivity()).get(ContactViewModel.class);
+        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.contactListLiveData().observe(this, userInfos -> {
             showContent();
             pickUserViewModel.setUsers(userInfos);

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.channel.ChannelListActivity;
 import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
@@ -76,7 +77,7 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             filterUserList = bundle.getStringArrayList("filterUserList");
         }
         organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
-        contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userOnlineStateViewModel = new ViewModelProvider(this).get(UserOnlineStateViewModel.class);
     }

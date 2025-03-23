@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.newfriend.InviteFriendActivity;
 import cn.wildfire.chat.kit.user.SetAliasActivity;
@@ -53,8 +54,7 @@ public class EmployeeInfoActivity extends WfcBaseActivity {
     @Override
     protected void afterMenus(Menu menu) {
         super.afterMenus(menu);
-        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
-
+        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         MenuItem itemDelete = menu.findItem(R.id.delete);
         MenuItem itemAddFriend = menu.findItem(R.id.addFriend);
         MenuItem itemAddBlacklist = menu.findItem(R.id.addBlacklist);
@@ -136,7 +136,7 @@ public class EmployeeInfoActivity extends WfcBaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
 
         if (item.getItemId() == R.id.delete) {
             contactViewModel.deleteFriend(userInfo.uid).observe(
