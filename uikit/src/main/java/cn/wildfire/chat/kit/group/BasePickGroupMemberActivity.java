@@ -14,6 +14,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -71,7 +72,7 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
         if (unCheckableMemberIds != null && !unCheckableMemberIds.isEmpty()) {
             pickUserViewModel.setUncheckableIds(unCheckableMemberIds);
         } else {
-            UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+            UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
             List<String> list = new ArrayList<>();
             list.add(userViewModel.getUserId());
             pickUserViewModel.setUncheckableIds(list);

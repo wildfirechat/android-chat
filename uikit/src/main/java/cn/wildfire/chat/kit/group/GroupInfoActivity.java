@@ -21,6 +21,7 @@ import java.util.Collections;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.client.GroupMemberSource;
@@ -73,7 +74,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
 
         groupInfo = groupViewModel.getGroupInfo(groupId, true);
 
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userId = userViewModel.getUserId();
 
         // 本地没有相关群组信息

@@ -18,6 +18,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -54,7 +55,7 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         } else {
             categoryTextView.setVisibility(View.GONE);
         }
-        UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         nameTextView.setText(userViewModel.getUserDisplayNameEx(userInfo.getUserInfo()));
         if (!TextUtils.isEmpty(userInfo.getDesc())) {
             descTextView.setVisibility(View.VISIBLE);

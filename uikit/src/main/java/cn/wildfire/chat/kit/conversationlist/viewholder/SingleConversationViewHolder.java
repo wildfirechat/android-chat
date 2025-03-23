@@ -15,6 +15,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -31,7 +32,7 @@ public class SingleConversationViewHolder extends ConversationViewHolder {
 
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
-        UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.getUserInfoAsync(conversationInfo.conversation.target, false)
             .observe(fragment, userInfo -> {
                 CharSequence name = userViewModel.getUserDisplayNameEx(userInfo);

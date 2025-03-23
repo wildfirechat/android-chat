@@ -17,6 +17,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -47,7 +48,7 @@ public class SecretConversationViewHolder extends ConversationViewHolder {
             return;
         }
         UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(userId, false);
-        UserViewModel userViewModel = ViewModelProviders.of(fragment).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         String name = userViewModel.getUserDisplayName(userInfo);
         String portrait;
         portrait = userInfo.portrait;

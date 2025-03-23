@@ -28,6 +28,7 @@ import org.webrtc.StatsReport;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -73,7 +74,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     }
 
     private void init() {
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session == null) {
             getActivity().finish();

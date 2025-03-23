@@ -124,7 +124,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(ChatManager.Instance().getUserId(), false);
         if (userInfo != null) {
             titleEditText.setText(getString(R.string.conference_title_default, userInfo.displayName));

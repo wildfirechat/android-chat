@@ -38,7 +38,7 @@ public class InviteFriendActivity extends WfcBaseActivity {
         if (userInfo == null) {
             finish();
         }
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         UserInfo me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         introTextView.setText(getString(R.string.invite_default_message, (me == null ? "" : me.displayName)));
     }

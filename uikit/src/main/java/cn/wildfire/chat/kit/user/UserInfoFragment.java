@@ -176,7 +176,7 @@ public class UserInfoFragment extends Fragment {
     }
 
     private void init() {
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         organizationServiceViewModel = new ViewModelProvider(this).get(OrganizationServiceViewModel.class);
         String selfUid = userViewModel.getUserId();
