@@ -56,7 +56,7 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
         }
         forwardViewModel = ViewModelProviders.of(this).get(ForwardViewModel.class);
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
     }
 
     @Override

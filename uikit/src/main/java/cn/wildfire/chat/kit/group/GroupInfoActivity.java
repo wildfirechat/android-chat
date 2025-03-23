@@ -58,7 +58,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
         Intent intent = getIntent();
         groupId = intent.getStringExtra("groupId");
         from = intent.getStringExtra("from");
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
 
         groupViewModel.groupInfoUpdateLiveData().observe(this, groupInfos -> {
             for (GroupInfo info : groupInfos) {

@@ -14,13 +14,13 @@ import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProviders;
 
 import org.webrtc.StatsReport;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.group.PickGroupMemberActivity;
 import cn.wildfirechat.avenginekit.AVAudioManager;
@@ -229,7 +229,7 @@ public class MultiCallActivity extends VoipBaseActivity {
     void addParticipant(int maxNewInviteParticipantCount) {
         preventShowFloatingViewOnStop = true;
         Intent intent = new Intent(this, PickGroupMemberActivity.class);
-        GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         GroupInfo groupInfo = groupViewModel.getGroupInfo(groupId, false);
         intent.putExtra(PickGroupMemberActivity.GROUP_INFO, groupInfo);
         List<String> participants = getEngineKit().getCurrentSession().getParticipantIds();

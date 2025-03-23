@@ -8,8 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
@@ -17,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -52,7 +51,7 @@ public class AddGroupManagerActivity extends BasePickGroupMemberActivity {
     }
 
     private void setGroupManager() {
-        GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         List<String> memberIds = new ArrayList<>(checkedGroupMembers.size());
         for (UIUserInfo info : checkedGroupMembers) {
             memberIds.add(info.getUserInfo().uid);

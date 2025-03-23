@@ -7,7 +7,6 @@ package cn.wildfire.chat.kit.group.manage;
 import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -16,6 +15,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfirechat.model.GroupInfo;
 
@@ -46,7 +46,7 @@ public class GroupMuteOrAllowActivity extends WfcBaseActivity {
     }
 
     private void init() {
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         groupViewModel.groupInfoUpdateLiveData().observe(this, new Observer<List<GroupInfo>>() {
             @Override
             public void onChanged(List<GroupInfo> groupInfos) {

@@ -659,7 +659,7 @@ public class ConversationFragment extends Fragment implements
 
     private void setupConversation(Conversation conversation) {
         if (conversation.type == Conversation.ConversationType.Group) {
-            groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+            groupViewModel =  WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
             initGroupObservers();
             // refresh group members
             ChatManager.Instance().getWorkHandler().postDelayed(() -> {
