@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -87,10 +88,11 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
         ChatManager.Instance().getFavUsers(new StringListCallback() {
             @Override
             public void onSuccess(List<String> userIds) {
-                if (userIds == null || userIds.isEmpty()) {
-                    return;
-                }
                 ChatManager.Instance().getWorkHandler().post(() -> {
+                    if (userIds == null || userIds.isEmpty()) {
+                        favContactListLiveData.postValue(new ArrayList<>());
+                        return;
+                    }
                     List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(userIds, null);
                     if (userInfos != null) {
                         favContactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos, true));
