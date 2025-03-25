@@ -6,7 +6,9 @@ package cn.wildfire.chat.kit.group;
 
 import android.content.Intent;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,16 +18,19 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Collections;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.service.IMService;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.GroupInfo;
+import cn.wildfirechat.remote.GeneralCallback;
 
 public class GroupInfoActivity extends WfcBaseActivity {
     private String userId;
@@ -35,21 +40,27 @@ public class GroupInfoActivity extends WfcBaseActivity {
     private boolean isJoined;
     private GroupViewModel groupViewModel;
     TextView groupNameTextView;
+    EditText reasonEditText;
     ImageView groupPortraitImageView;
     Button actionButton;
+    Button actionButtonByApprove;
 
     private MaterialDialog dialog;
 
     protected void bindEvents() {
         super.bindEvents();
         findViewById(R.id.actionButton).setOnClickListener(v -> action());
+        findViewById(R.id.actionButtonByApprove).setOnClickListener(v -> actionByApprove());
     }
+
 
     protected void bindViews() {
         super.bindViews();
         groupNameTextView = findViewById(R.id.groupNameTextView);
+        reasonEditText = findViewById(R.id.reasonEditText);
         groupPortraitImageView = findViewById(R.id.portraitImageView);
         actionButton = findViewById(R.id.actionButton);
+        actionButtonByApprove = findViewById(R.id.actionButtonByApprove);
     }
 
     @Override
@@ -90,21 +101,25 @@ public class GroupInfoActivity extends WfcBaseActivity {
         if (groupInfo.memberDt < -1) {
             // 已退出群组
             actionButton.setText(R.string.join_group_chat);
+            actionButtonByApprove.setVisibility(View.VISIBLE);
         } else if (groupInfo.memberDt == -1) {
             // 未加入
             actionButton.setText(R.string.join_group_chat);
+            actionButtonByApprove.setVisibility(View.VISIBLE);
+
         } else {
             // 已加入群组
             this.isJoined = true;
             actionButton.setText(R.string.enter_group_chat);
+            actionButtonByApprove.setVisibility(View.GONE);
         }
     }
 
     private void showLoading() {
         if (dialog == null) {
             dialog = new MaterialDialog.Builder(this)
-                .progress(true, 100)
-                .build();
+                    .progress(true, 100)
+                    .build();
             dialog.show();
         }
     }
@@ -122,9 +137,9 @@ public class GroupInfoActivity extends WfcBaseActivity {
             return;
         }
         Glide.with(this)
-            .load(groupInfo.portrait)
-            .placeholder(R.mipmap.ic_group_chat)
-            .into(groupPortraitImageView);
+                .load(groupInfo.portrait)
+                .placeholder(R.mipmap.ic_group_chat)
+                .into(groupPortraitImageView);
         groupNameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
     }
 
@@ -153,5 +168,44 @@ public class GroupInfoActivity extends WfcBaseActivity {
                 }
             });
         }
+    }
+
+    private void actionByApprove() {
+        EditText reasonEdit = findViewById(R.id.reasonEditText);
+        String reason = reasonEdit.getText().toString();
+
+        if (TextUtils.isEmpty(reason)) {
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle("提示")
+                    .setMessage("请填写申请理由")
+                    .setPositiveButton("确定", null)
+                    .show();
+            return;
+        }
+
+        IMService.Instance().submitGroupApply(groupId, userId, reason, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> {
+                    Toast.makeText(GroupInfoActivity.this, "申请已提交，请等待审核", Toast.LENGTH_LONG).show();
+                    finish();
+                });
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                runOnUiThread(() -> {
+                    String errorMsg = "申请失败，错误码：" + errorCode;
+                    if (errorCode == 409) {
+                        errorMsg = "您已提交过申请，请勿重复提交";
+                    }
+                    new MaterialAlertDialogBuilder(GroupInfoActivity.this)
+                            .setTitle("提交失败")
+                            .setMessage(errorMsg)
+                            .setPositiveButton("确定", null)
+                            .show();
+                });
+            }
+        });
     }
 }

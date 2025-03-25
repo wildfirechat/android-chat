@@ -199,6 +199,7 @@ public class GroupViewModel extends ViewModel implements OnGroupInfoUpdateListen
 
             @Override
             public void onFail(int errorCode) {
+
                 result.setValue(false);
             }
         });

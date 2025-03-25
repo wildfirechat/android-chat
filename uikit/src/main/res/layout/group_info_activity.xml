@@ -24,6 +24,24 @@
         android:padding="10dp"
         tools:text="@string/group_name_placeholder" />
 
+    <!-- 修改后的文本框 -->
+    <EditText
+        android:id="@+id/reasonEditText"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="15dp"
+        android:background="@android:drawable/editbox_background"
+        android:gravity="top|start"
+        android:hint="请输入申请理由"
+        android:inputType="textMultiLine"
+        android:minLines="5"
+        android:padding="15dp"
+        android:scrollbars="vertical"
+        android:textColorHint="#A9A9A9"
+        android:textSize="14sp" />
+
     <Button
         android:id="@+id/actionButton"
         style="?android:attr/borderlessButtonStyle"
@@ -37,4 +55,17 @@
         android:textColor="@color/white"
         android:textSize="16sp"
         tools:text="@string/join_group_chat" />
+    <Button
+        android:id="@+id/actionButtonByApprove"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/shape_user_info_send_msg"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        tools:text="@string/join_group_chat_by_approve" />
 </LinearLayout>

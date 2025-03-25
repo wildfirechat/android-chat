@@ -12,6 +12,7 @@
     <string name="new_friend">新的朋友</string>
     <string name="group_chat">群聊</string>
     <string name="join_group_chat">加入群聊</string>
+    <string name="join_group_chat_by_approve">审批申请</string>
     <string name="enter_group_chat">进入群聊</string>
     <string name="contact_category">联系人</string>
     <string name="group_category">群组</string>

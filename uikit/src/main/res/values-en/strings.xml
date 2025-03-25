@@ -30,6 +30,7 @@
     <string name="new_friend">New Friends</string>
     <string name="group_chat">Group Chat</string>
     <string name="join_group_chat">Join Group Chat</string>
+    <string name="join_group_chat_by_approve">Join Group Chat</string>
     <string name="enter_group_chat">Enter Group Chat</string>
     <string name="contact_category">Contacts</string>
     <string name="group_category">Groups</string>
