@@ -30,7 +30,7 @@ public class ResetPasswordActivity extends WfcBaseActivity {
     EditText newPasswordEditText;
     EditText confirmPasswordEditText;
 
-    TextView requestAuthCodeButton;
+//    TextView requestAuthCodeButton;
 
     FrameLayout authCodeFrameLayout;
 
@@ -38,7 +38,7 @@ public class ResetPasswordActivity extends WfcBaseActivity {
 
     protected void bindEvents() {
         super.bindEvents();
-        requestAuthCodeButton.setOnClickListener(v -> requestAuthCode());
+//        requestAuthCodeButton.setOnClickListener(v -> requestAuthCode());
         confirmButton.setOnClickListener(v -> resetPassword());
         authCodeEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
@@ -66,7 +66,7 @@ public class ResetPasswordActivity extends WfcBaseActivity {
         authCodeEditText = findViewById(R.id.authCodeEditText);
         newPasswordEditText = findViewById(R.id.newPasswordEditText);
         confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText);
-        requestAuthCodeButton = findViewById(R.id.requestAuthCodeButton);
+//        requestAuthCodeButton = findViewById(R.id.requestAuthCodeButton);
         authCodeFrameLayout = findViewById(R.id.authCodeFrameLayout);
     }
 
@@ -110,12 +110,12 @@ public class ResetPasswordActivity extends WfcBaseActivity {
     private Handler handler = new Handler();
 
     void requestAuthCode() {
-        requestAuthCodeButton.setEnabled(false);
+//        requestAuthCodeButton.setEnabled(false);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (!isFinishing()) {
-                    requestAuthCodeButton.setEnabled(true);
+//                    requestAuthCodeButton.setEnabled(true);
                 }
             }
         }, 60 * 1000);

@@ -74,18 +74,16 @@ public class IMService {
         params.put("applicantId", userId);
         params.put("remark", reason);
 
-        OKHttpHelper.post(url, params, new SimpleCallback<BaseResponse>() {
+        OKHttpHelper.post(url, params, new SimpleCallback<StatusResult>() {
             @Override
-            public void onUiSuccess(BaseResponse response) {
-                if (response.code == 200) {
+            public void onUiSuccess(StatusResult response) {
+                Log.d("weiAndKe", "onUiSuccess: " + response.isSuccess()); // 确认 code 值
                     callback.onSuccess();
-                } else {
-                    callback.onFail(response.code);
-                }
             }
 
             @Override
             public void onUiFailure(int code, String msg) {
+                Log.e("weiAndKe", "onUiFailure - HTTP状态码: " + code + ", 错误信息: " + msg);
                 callback.onFail(code);
             }
         });

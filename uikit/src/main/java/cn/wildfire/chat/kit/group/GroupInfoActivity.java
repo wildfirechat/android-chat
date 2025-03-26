@@ -4,8 +4,11 @@
 
 package cn.wildfire.chat.kit.group;
 
+import static cn.wildfire.chat.kit.third.utils.UIUtils.getContext;
+
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -176,11 +179,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
         String reason = reasonEdit.getText().toString();
 
         if (TextUtils.isEmpty(reason)) {
-            new MaterialAlertDialogBuilder(this)
-                    .setTitle("提示")
-                    .setMessage("请填写申请理由")
-                    .setPositiveButton("确定", null)
-                    .show();
+            Toast.makeText(GroupInfoActivity.this, "请填写申请理由", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -188,6 +187,8 @@ public class GroupInfoActivity extends WfcBaseActivity {
             @Override
             public void onSuccess() {
                 runOnUiThread(() -> {
+                    Log.e("weiAndKe", "请求接口成功");
+
                     Toast.makeText(GroupInfoActivity.this, "申请已提交，请等待审核", Toast.LENGTH_LONG).show();
                     finish();
                 });
@@ -196,6 +197,8 @@ public class GroupInfoActivity extends WfcBaseActivity {
             @Override
             public void onFail(int errorCode) {
                 runOnUiThread(() -> {
+                    Log.e("weiAndKe", "请求接口失败");
+
                     String errorMsg = "申请失败，错误码：" + errorCode;
                     if (errorCode == 409) {
                         errorMsg = "您已提交过申请，请勿重复提交";

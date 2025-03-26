@@ -55,6 +55,7 @@
         android:textColor="@color/white"
         android:textSize="16sp"
         tools:text="@string/join_group_chat" />
+
     <Button
         android:id="@+id/actionButtonByApprove"
         style="?android:attr/borderlessButtonStyle"
@@ -65,6 +66,7 @@
         android:layout_marginRight="15dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/shape_user_info_send_msg"
+        android:text="@string/join_group_chat_by_approve"
         android:textColor="@color/white"
         android:textSize="16sp"
         tools:text="@string/join_group_chat_by_approve" />
