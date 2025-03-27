@@ -31,11 +31,17 @@
     <color name="gray22">#F5F6F8</color>
     <color name="gray23">#ADADAD</color>
 
+    <color name="light_gray_background">#F5F5F5</color>
+    <color name="color_primary">#2196F3</color>
+    <color name="color_secondary">#E0E0E0</color>
+    <color name="primary_text">#212121</color>
+
     <color name="red0">#F95569</color>
     <color name="red6">#D54A47</color>
     <color name="red7">#E64340</color>
     <color name="red8">#FF3E3E</color>
-
+    <color name="primary_color">#2196F3</color>
+    <color name="primary_dark_color">#1976D2</color>
     <color name="green1">#45C01A</color>
     <color name="green2">#A3DEA3</color>
     <color name="green3">#1AAD19</color>

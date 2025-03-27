@@ -42,32 +42,45 @@
         android:textColorHint="#A9A9A9"
         android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/actionButton"
-        style="?android:attr/borderlessButtonStyle"
+    <!-- 双按钮容器 -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/shape_user_info_send_msg"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        tools:text="@string/join_group_chat" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingVertical="8dp">
 
-    <Button
-        android:id="@+id/actionButtonByApprove"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/shape_user_info_send_msg"
-        android:text="@string/join_group_chat_by_approve"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        tools:text="@string/join_group_chat_by_approve" />
+        <!-- 直接加入按钮 -->
+        <Button
+            android:id="@+id/actionButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_positive_button"
+            android:text="@string/join_group_chat"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:stateListAnimator="@null"
+            android:elevation="2dp"/>
+
+        <!-- 审批加入按钮 -->
+        <Button
+            android:id="@+id/actionButtonByApprove"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/bg_neutral_button"
+            android:text="@string/join_group_chat_by_approve"
+            android:textColor="@color/primary_color"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:stateListAnimator="@null"
+            android:elevation="2dp"/>
+
+    </LinearLayout>
 </LinearLayout>

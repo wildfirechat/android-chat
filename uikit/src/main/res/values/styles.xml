@@ -13,6 +13,28 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
+    <!-- 基础按钮样式 -->
+    <style name="BaseButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="elevation">2dp</item>
+    </style>
+
+    <!-- 确认操作按钮样式 -->
+    <style name="PositiveButtonStyle" parent="BaseButtonStyle">
+        <item name="backgroundTint">@color/color_primary</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <!-- 中性操作按钮样式 -->
+    <style name="NeutralButtonStyle" parent="BaseButtonStyle">
+        <item name="backgroundTint">@color/color_secondary</item>
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
     <style name="AppTheme.LightAppbar">
         <item name="colorPrimary">@color/gray5</item>
         <item name="colorPrimaryDark">@color/gray5</item>

@@ -203,11 +203,7 @@ public class GroupInfoActivity extends WfcBaseActivity {
                     if (errorCode == 409) {
                         errorMsg = "您已提交过申请，请勿重复提交";
                     }
-                    new MaterialAlertDialogBuilder(GroupInfoActivity.this)
-                            .setTitle("提交失败")
-                            .setMessage(errorMsg)
-                            .setPositiveButton("确定", null)
-                            .show();
+                    Toast.makeText(GroupInfoActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                 });
             }
         });
