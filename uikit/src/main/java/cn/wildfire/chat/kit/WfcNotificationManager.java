@@ -71,7 +71,7 @@ public class WfcNotificationManager {
         Uri notificationRingUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.receive_msg_notification);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(wfcNotificationChannelId,
-                "悟聊 消息通知",
+                "绒讯 消息通知",
                 NotificationManager.IMPORTANCE_HIGH);
 
             channel.enableLights(true); //是否在桌面icon右上角展示小红点

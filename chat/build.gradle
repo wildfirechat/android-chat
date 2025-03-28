@@ -19,8 +19,8 @@ android {
         applicationId "com.ott333.chat.open"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 58
-        versionName '1.4.1'
+        versionCode 59
+        versionName '1.4.2'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {

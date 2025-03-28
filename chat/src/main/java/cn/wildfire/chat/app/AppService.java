@@ -592,7 +592,7 @@ public class AppService implements AppServiceProvider {
         }
 
         if (!BuildConfig.DEBUG && BuildConfig.APPLICATION_ID.startsWith("cn.wildfire")) {
-            Toast.makeText(context, "上线时，请勿直接使用悟聊的包名！！！", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "上线时，请勿直接使用绒讯的包名！！！", Toast.LENGTH_LONG).show();
         }
     }
 

@@ -14,16 +14,16 @@ android {
                 MI_APP_ID    : "2882303761517722456",
                 MI_APP_KEY   : "5731772292456",
 
-                HMS_APP_ID   : "100221325",
+                HMS_APP_ID   : "113816873",
 
                 MEIZU_APP_ID : "113616",
                 MEIZU_APP_KEY: "fcd886f51c144b45b87a67a28e2934d1",
 
-                VIVO_APP_ID  : "12918",
-                VIVO_APP_KEY : "c42feb05-de6c-427d-af55-4f902d9e0a75",
+                VIVO_APP_ID  : "105882350",
+                VIVO_APP_KEY : "bedda2b674e23f7cccc3f2dcd045a65e",
 
-                OPPO_APP_KEY  : "16c6afe503b24259928e082ef01a6bf2",
-                OPPO_APP_SECRET : "16c6afe503b24259928e082ef01a6bf2"
+                OPPO_APP_KEY  : "5de30452dcf04292a98d4fb255623075",
+                OPPO_APP_SECRET : "d8a962d5e551424cb223089874a50bdf"
         ]
     }
 

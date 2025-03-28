@@ -491,7 +491,7 @@ public class ChatManager {
     }
 
     /**
-     * 当有自己的用户账号体系，不想使用悟聊提供的用户信息托管服务时，调用此方法设置用户信息源
+     * 当有自己的用户账号体系，不想使用绒讯提供的用户信息托管服务时，调用此方法设置用户信息源
      *
      * @param userSource 用户信息源
      */
@@ -1275,7 +1275,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取clientId, 悟聊用clientId唯一表示用户设备
+     * 获取clientId, 绒讯用clientId唯一表示用户设备
      */
     public synchronized String getClientId() {
         if (this.clientId != null) {
@@ -1313,7 +1313,7 @@ public class ChatManager {
     /**
      * 创建频道
      *
-     * @param channelId       频道id，如果传null，悟聊会自动生成id；否则，使用用户提供的id，需要保证此id的唯一性
+     * @param channelId       频道id，如果传null，绒讯会自动生成id；否则，使用用户提供的id，需要保证此id的唯一性
      * @param channelName     频道名称
      * @param channelPortrait 频道头像的网络地址
      * @param desc            频道描述
@@ -1714,7 +1714,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取域列表，关于域请参考 https://docs.wildfirechat.cn/blogs/悟聊互通方案.html
+     * 获取域列表，关于域请参考 https://docs.wildfirechat.cn/blogs/绒讯互通方案.html
      *
      * @callback 回调返回域列表。
      */
@@ -8172,7 +8172,7 @@ public class ChatManager {
     }
 
     /**
-     * 获取认证码。请参考悟聊开放平台服务
+     * 获取认证码。请参考绒讯开放平台服务
      *
      * @param appId
      * @param appType
@@ -8204,7 +8204,7 @@ public class ChatManager {
     }
 
     /**
-     * config应用，请参考悟聊开放平台服务
+     * config应用，请参考绒讯开放平台服务
      *
      * @param appId
      * @param appType

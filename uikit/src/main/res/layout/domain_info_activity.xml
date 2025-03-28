@@ -11,7 +11,7 @@
         android:id="@+id/nameOptionItemView"
         style="@style/OptionItem"
         android:background="@drawable/selector_option_item"
-        app:desc="悟聊线上"
+        app:desc="绒讯线上"
         app:show_divider="true"
         app:title="@string/organization_name" />
 

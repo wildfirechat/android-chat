@@ -481,7 +481,7 @@
     <string name="modify_success">修改成功</string>
     <string name="modify_fail">修改失败</string>
     <string name="modify_alias_error">修改别名错误：%d</string>
-    <string name="wildfire_id_not_empty">悟聊ID不能为空</string>
+    <string name="wildfire_id_not_empty">绒讯ID不能为空</string>
     <string name="modify_account_error">修改账号错误：%1$d %2$s</string>
 
     <!-- Conference Additional Strings -->
@@ -677,7 +677,7 @@
     <string name="conference_details">会议详情</string>
     <string name="conference_invitation">会议邀请</string>
     <string name="conference_records">会议记录</string>
-    <string name="modify_wildfire_id">修改悟聊ID</string>
+    <string name="modify_wildfire_id">修改绒讯ID</string>
     <string name="composite_message">组合消息</string>
     <string name="my_favorites">我的收藏</string>
     <string name="user_messages">用户消息</string>
@@ -711,7 +711,7 @@
     <string name="saved_groups_hint">(保存到通讯录的群组)</string>
 
     <!-- Wildfire ID -->
-    <string name="wildfire_id">悟聊ID</string>
+    <string name="wildfire_id">绒讯ID</string>
 
     <!-- Friend Request -->
     <string name="friend_request_desc">请求添加您为好友</string>

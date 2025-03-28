@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">悟聊</string>
+    <string name="app_name">绒讯</string>
 
     <!--我-->
     <string name="my_chat_account">账号:%1$s</string>
@@ -9,18 +9,18 @@
     <string name="exit">退出登录</string>
 
     <!--关于-->
-    <string name="app_name_in_about">悟聊即时通讯</string>
+    <string name="app_name_in_about">绒讯即时通讯</string>
     <string name="function_introduction">功能介绍</string>
     <string name="complaint">投诉</string>
     <string name="check_update">检查更新</string>
     <string name="terms_of_use_and_privacy_policy">使用条款和隐私政策</string>
-    <string name="name">悟聊</string>
-    <string name="slogan">悟出真意，聊表心意。</string>
-    <string name="about_intro_title">悟聊功能介绍</string>
+    <string name="name">绒讯</string>
+    <string name="slogan">用绒讯，畅所欲言</string>
+    <string name="about_intro_title">绒讯功能介绍</string>
     <string name="about_intro_url">https://docs.wildfirechat.cn/</string>
-    <string name="about_agreement_title">悟聊用户协议</string>
+    <string name="about_agreement_title">绒讯用户协议</string>
     <string name="about_agreement_url">https://www.wildfirechat.net/wildfirechat_user_agreement.html</string>
-    <string name="about_privacy_title">悟聊个人信息保护政策</string>
+    <string name="about_privacy_title">绒讯个人信息保护政策</string>
     <string name="about_privacy_url">https://www.wildfirechat.net/wildfirechat_user_privacy.html</string>
 
     <!--Login-->
@@ -81,7 +81,7 @@
     <string name="error_selecting_file">Error selecting file</string>
 
     <!--Main Navigation-->
-    <string name="app_title_chat">悟聊</string>
+    <string name="app_title_chat">绒讯</string>
     <string name="app_title_contact">通讯录</string>
     <string name="app_title_workspace">工作台</string>
     <string name="app_title_discover">发现</string>
@@ -125,7 +125,7 @@
     <string name="audio_not_exist">音频文件不存在</string>
 
     <!--Discovery-->
-    <string name="wfc_doc_title">悟聊开发文档</string>
+    <string name="wfc_doc_title">绒讯开发文档</string>
     <string name="wfc_doc_url">https://docs.wildfirechat.cn</string>
 
     <!--Me Fragment-->
@@ -154,8 +154,8 @@
     <!-- Setting -->
     <string name="upload_log_success">上传日志 %1$s 成功</string>
     <string name="upload_log_failed">上传日志失败 %1$d %2$s</string>
-    <string name="battery_optimize_allowed">已忽略电池优化，允许悟聊后台运行，更能保证消息的实时性</string>
-    <string name="battery_optimize_tip">允许悟聊后台运行，更能保证消息的实时性</string>
+    <string name="battery_optimize_allowed">已忽略电池优化，允许绒讯后台运行，更能保证消息的实时性</string>
+    <string name="battery_optimize_tip">允许绒讯后台运行，更能保证消息的实时性</string>
     <string name="system_version_not_support">系统不支持</string>
 
     <!-- Diagnose -->

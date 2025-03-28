@@ -1,6 +1,6 @@
-## 悟聊解决方案
+## 绒讯解决方案
 
-悟聊是专业级即时通讯和实时音视频整体解决方案，由北京悟聊无限网络科技有限公司维护和支持。
+绒讯是专业级即时通讯和实时音视频整体解决方案，由北京绒讯无限网络科技有限公司维护和支持。
 
 主要特性有：私有部署安全可靠，性能强大，功能齐全，全平台支持，开源率高，部署运维简单，二次开发友好，方便与第三方系统对接或者嵌入现有系统中。详细情况请参考[在线文档](https://docs.wildfirechat.cn)。
 
@@ -9,20 +9,20 @@
 | [GitHub仓库地址(主站)](https://github.com/wildfirechat)      | [码云仓库地址(镜像)](https://gitee.com/wfchat)        | 说明                                                                                      | 备注                                           |
 | ------------------------------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | [im-server](https://github.com/wildfirechat/im-server)       | [server](https://gitee.com/wfchat/im-server)          | IM Server                                                                                 |                                                |
-| [android-chat](https://github.com/wildfirechat/android-chat) | [android-chat](https://gitee.com/wfchat/android-chat) | 悟聊 Android SDK源码和App源码                                                           | 可以很方便地进行二次开发，或集成到现有应用当中 |
-| [ios-chat](https://github.com/wildfirechat/ios-chat)         | [ios-chat](https://gitee.com/wfchat/ios-chat)         | 悟聊 iOS SDK源码和App源码                                                               | 可以很方便地进行二次开发，或集成到现有应用当中 |
+| [android-chat](https://github.com/wildfirechat/android-chat) | [android-chat](https://gitee.com/wfchat/android-chat) | 绒讯 Android SDK源码和App源码                                                           | 可以很方便地进行二次开发，或集成到现有应用当中 |
+| [ios-chat](https://github.com/wildfirechat/ios-chat)         | [ios-chat](https://gitee.com/wfchat/ios-chat)         | 绒讯 iOS SDK源码和App源码                                                               | 可以很方便地进行二次开发，或集成到现有应用当中 |
 | [pc-chat](https://github.com/wildfirechat/vue-pc-chat)       | [pc-chat](https://gitee.com/wfchat/vue-pc-chat)       | 基于[Electron](https://electronjs.org/)开发的PC 端                                        |                                                |
-| [web-chat](https://github.com/wildfirechat/vue-chat)         | [web-chat](https://gitee.com/wfchat/vue-chat)         | 悟聊 Web 端, [体验地址](http://web.wildfirechat.cn)                                     |                                                |
+| [web-chat](https://github.com/wildfirechat/vue-chat)         | [web-chat](https://gitee.com/wfchat/vue-chat)         | 绒讯 Web 端, [体验地址](http://web.wildfirechat.cn)                                     |                                                |
 | [wx-chat](https://github.com/wildfirechat/wx-chat)           | [wx-chat](https://gitee.com/wfchat/wx-chat)           | 小程序平台的Demo(支持微信、百度、阿里、字节、QQ 等小程序平台)                             |                                                |
 | [app server](https://github.com/wildfirechat/app_server)     | [app server](https://gitee.com/wfchat/app_server)     | 应用服务端                                                                                |                                                |
 | [robot_server](https://github.com/wildfirechat/robot_server) | [robot_server](https://gitee.com/wfchat/robot_server) | 机器人服务端                                                                              |                                                |
 | [push_server](https://github.com/wildfirechat/push_server)   | [push_server](https://gitee.com/wfchat/push_server)   | 推送服务器                                                                                |                                                |
-| [docs](https://github.com/wildfirechat/docs)                 | [docs](https://gitee.com/wfchat/docs)                 | 悟聊相关文档，包含设计、概念、开发、使用说明，[在线查看](https://docs.wildfirechat.cn/) |                                                |
+| [docs](https://github.com/wildfirechat/docs)                 | [docs](https://gitee.com/wfchat/docs)                 | 绒讯相关文档，包含设计、概念、开发、使用说明，[在线查看](https://docs.wildfirechat.cn/) |                                                |
 
 
 ## 说明
 
-本工程为悟聊 Android App，开发过程中，充分考虑了二次开发和集成需求，可作为SDK集成到其他应用中，或者直接进行二次开发。
+本工程为绒讯 Android App，开发过程中，充分考虑了二次开发和集成需求，可作为SDK集成到其他应用中，或者直接进行二次开发。
 
 开发一套IM系统真的很艰辛，请路过的朋友们给点个star，支持我们坚持下去🙏🙏🙏🙏🙏
 
@@ -41,7 +41,7 @@
 3. 命令行下，通过`./gradlew clean aR`或 Android Studio 里面，通过`Generate Signed App Bundle/APK...`可生成 release 版 apk，release 版 apk，一切正常
 
 ## 二次开发说明
-悟聊采用bugly作为日志手机工具，大家二次开发时，务必将```MyApp.java```中的 ```bugly id``` 替换为你们自己的，否则错误日志都跑我们这儿来了，你们收集不到错误日志，我们也会受到干扰。
+绒讯采用bugly作为日志手机工具，大家二次开发时，务必将```MyApp.java```中的 ```bugly id``` 替换为你们自己的，否则错误日志都跑我们这儿来了，你们收集不到错误日志，我们也会受到干扰。
 
 ## 混淆说明
 1. 确保所依赖的```lifecycle```版本在2.2.0或以上。
@@ -64,7 +64,7 @@
 
 ### 联系我们
 
-> 商务合作请优先采用邮箱和我们联系。技术问题请到[悟聊论坛](http://bbs.wildfirechat.cn/)发帖交流。
+> 商务合作请优先采用邮箱和我们联系。技术问题请到[绒讯论坛](http://bbs.wildfirechat.cn/)发帖交流。
 
 1. heavyrain.lee  邮箱: heavyrain.lee@wildfirechat.cn  微信：wildfirechat
 2. imndx  邮箱: imndx@wildfirechat.cn  微信：wfchat
@@ -72,17 +72,17 @@
 ### 问题交流
 
 1. 如果大家发现bug，请在GitHub提issue
-2. 其他问题，请到[悟聊论坛](http://bbs.wildfirechat.cn/)进行交流学习
+2. 其他问题，请到[绒讯论坛](http://bbs.wildfirechat.cn/)进行交流学习
 3. 微信公众号
 
 <img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 40% height = 40% />
 
-> 强烈建议关注我们的公众号。我们有新版本发布或者有重大更新会通过公众号通知大家，另外我们也会不定期的发布一些关于悟聊的技术介绍。
+> 强烈建议关注我们的公众号。我们有新版本发布或者有重大更新会通过公众号通知大家，另外我们也会不定期的发布一些关于绒讯的技术介绍。
 
 ## 体验Demo
 我们提供了体验demo，请使用微信扫码下载安装体验
 
-![悟聊](http://static.wildfirechat.cn/download_qrcode.png)
+![绒讯](http://static.wildfirechat.cn/download_qrcode.png)
 
 ## 应用截图
 [点击查看 Android Demo 视频演示](https://static.wildfirechat.cn/wf-android-demo-live.mp4)

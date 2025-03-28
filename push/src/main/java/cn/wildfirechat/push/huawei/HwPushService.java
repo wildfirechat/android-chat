@@ -25,7 +25,7 @@ public class HwPushService extends HmsMessageService {
         super.onMessageReceived(remoteMessage);
         Log.d("HMS", "receiveMessage");
         // do nothing
-        // 悟聊采用的是透传，只需将主进程拉起即可，主进程会去拉取消息，并显示通知
+        // 绒讯采用的是透传，只需将主进程拉起即可，主进程会去拉取消息，并显示通知
         // 手机设置：
         // 1. 应用权限管理里面，需要允许自启动、运行后台活动
         // 2. 通知管理，允许通知，在状态栏显示，横幅，允许打扰
