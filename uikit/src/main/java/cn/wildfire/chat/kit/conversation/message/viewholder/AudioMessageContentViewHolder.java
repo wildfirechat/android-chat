@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
@@ -134,6 +135,11 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
             @Override
             public void onUiEvent(@NonNull EventSource eventSource, @Nullable String id, @Nullable String type, @NonNull String data) {
+                FragmentActivity activity = fragment.getActivity();
+                if (activity == null || activity.isFinishing()) {
+                    eventSource.cancel();
+                    return;
+                }
                 if (TextUtils.equals(currentAudioUrl, ((SoundMessageContent) message.message.content).remoteUrl)) {
                     translationSB.append(data.replaceAll("\n", ""));
                     translateTextView.setText(translationSB.toString());
