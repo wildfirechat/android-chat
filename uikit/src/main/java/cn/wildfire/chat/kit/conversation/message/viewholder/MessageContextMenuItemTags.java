@@ -15,4 +15,5 @@ public interface MessageContextMenuItemTags {
     String TAG_FAV = "fav";
     String TAG_CANCEL_SEND = "cancelSend";
     String TAG_SAVE_FILE = "saveFile";
+    String TAG_TRANSLATE = "translate";
 }

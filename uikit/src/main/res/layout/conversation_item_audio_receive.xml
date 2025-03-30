@@ -1,38 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/audioContentLayout"
-        android:layout_width="65dp"
-        android:layout_height="50dp"
-        android:background="@drawable/img_bubble_receive"
-        android:backgroundTint="@color/white">
-
-        <ImageView
-            android:id="@+id/audioImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/audio_animation_left_list" />
-
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/durationTextView"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="6''" />
+        android:layout_gravity="start"
+        android:gravity="center_vertical">
 
-    <View
-        android:id="@+id/playStatusIndicator"
-        android:layout_width="8dp"
-        android:layout_height="8dp"
-        android:layout_marginLeft="8dp"
-        android:background="@drawable/shape_red_dot" />
+        <RelativeLayout
+            android:id="@+id/audioContentLayout"
+            android:layout_width="65dp"
+            android:layout_height="50dp"
+            android:background="@drawable/img_bubble_receive"
+            android:backgroundTint="@color/white">
 
+            <ImageView
+                android:id="@+id/audioImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/audio_animation_left_list" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/durationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6''" />
+
+        <View
+            android:id="@+id/playStatusIndicator"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginLeft="8dp"
+            android:background="@drawable/shape_red_dot" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/translationLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_message_ref_bg"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/translationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginTop="1dp"
+            android:maxWidth="250dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:visibility="visible"
+            tools:text="翻翻译结果翻译结果翻译结果翻译结果译结果" />
+
+        <ProgressBar
+            android:id="@+id/translationProgressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="5dp"
+            android:progress="40"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
 </LinearLayout>
