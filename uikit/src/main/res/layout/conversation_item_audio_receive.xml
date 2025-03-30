@@ -49,7 +49,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/shape_message_ref_bg"
         android:gravity="center_vertical"
-        android:visibility="gone">
+        android:layout_gravity="start"
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/translationTextView"
@@ -62,7 +63,7 @@
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:visibility="visible"
-            tools:text="翻翻译结果翻译结果翻译结果翻译结果译结果" />
+            tools:text="" />
 
         <ProgressBar
             android:id="@+id/translationProgressBar"
