@@ -30,6 +30,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.sse.EventSourceListener;
+import okhttp3.sse.EventSources;
 
 
 /**
@@ -134,6 +136,19 @@ public class OKHttpHelper {
 
             }
         });
+    }
+
+    public static void sse(final String url, Object param, EventSourceListener listener) {
+        RequestBody body = RequestBody.create(JSON, param == null ? "" : gson.toJson(param));
+        final Request request = new Request.Builder()
+            .url(url)
+            .post(body)
+            .header("Content-Type", "application/json")
+            .header("Accept", "*/*")
+            .build();
+
+        EventSources.createFactory(okHttpClient)
+            .newEventSource(request, listener);
     }
 
     public static <T> void put(final String url, Map<String, String> param, final Callback<T> callback) {

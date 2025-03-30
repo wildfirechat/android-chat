@@ -4,30 +4,42 @@
 
 package cn.wildfire.chat.kit.conversation.message.viewholder;
 
+import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
+import cn.wildfire.chat.kit.annotation.MessageContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
+import cn.wildfire.chat.kit.net.OKHttpHelper;
+import cn.wildfire.chat.kit.net.SimpleEventSourceListener;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
+import okhttp3.Response;
+import okhttp3.sse.EventSource;
 
 @MessageContentType(value = {SoundMessageContent.class, PTTSoundMessageContent.class})
 
@@ -38,6 +50,10 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     RelativeLayout contentLayout;
     @Nullable
     View playStatusIndicator;
+    LinearLayout translateLayout;
+    TextView translateTextView;
+    ProgressBar translateProgressBar;
+    private StringBuilder translationSB;
 
     public AudioMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -46,14 +62,17 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     }
 
     private void bindEvents(View itemView) {
-       itemView.findViewById(R.id.audioContentLayout).setOnClickListener(this::onClick);
+        itemView.findViewById(R.id.audioContentLayout).setOnClickListener(this::onClick);
     }
 
     private void bindViews(View itemView) {
-        ivAudio =itemView.findViewById(R.id.audioImageView);
-        durationTextView =itemView.findViewById(R.id.durationTextView);
-        contentLayout =itemView.findViewById(R.id.audioContentLayout);
-        playStatusIndicator =itemView.findViewById(R.id.playStatusIndicator);
+        ivAudio = itemView.findViewById(R.id.audioImageView);
+        durationTextView = itemView.findViewById(R.id.durationTextView);
+        contentLayout = itemView.findViewById(R.id.audioContentLayout);
+        playStatusIndicator = itemView.findViewById(R.id.playStatusIndicator);
+        translateLayout = itemView.findViewById(R.id.translationLinearLayout);
+        translateTextView = itemView.findViewById(R.id.translationTextView);
+        translateProgressBar = itemView.findViewById(R.id.translationProgressBar);
     }
 
     @Override
@@ -63,6 +82,8 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         int increment = UIUtils.getDisplayWidth(fragment.getContext()) / 3 / Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * voiceMessage.getDuration();
 
         durationTextView.setText(voiceMessage.getDuration() + "''");
+        translateLayout.setVisibility(View.GONE);
+        translationSB = null;
         ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
         params.width = UIUtils.dip2Px(65) + increment;
         contentLayout.setLayoutParams(params);
@@ -94,6 +115,59 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     @Override
     public void onViewRecycled() {
         // TODO 可实现语音是否持续播放、中断登录逻辑
+    }
+
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_TRANSLATE, confirm = false, priority = 13)
+    public void translate(View itemView, UiMessage message) {
+        Map<String, Object> object = new HashMap<>();
+        translateLayout.setVisibility(View.VISIBLE);
+        translateProgressBar.setVisibility(View.VISIBLE);
+        SoundMessageContent voiceMessage = (SoundMessageContent) message.message.content;
+        final String currentAudioUrl = voiceMessage.remoteUrl;
+
+        object.put("url", currentAudioUrl);
+        object.put("noReuse", true);
+        object.put("noLlm", false);
+        this.translationSB = new StringBuilder();
+
+        OKHttpHelper.sse(Config.ASR_SERVER_URL, object, new SimpleEventSourceListener() {
+
+            @Override
+            public void onUiEvent(@NonNull EventSource eventSource, @Nullable String id, @Nullable String type, @NonNull String data) {
+                if (TextUtils.equals(currentAudioUrl, ((SoundMessageContent) message.message.content).remoteUrl)) {
+                    translationSB.append(data.replaceAll("\n", ""));
+                    translateTextView.setText(translationSB.toString());
+                }
+            }
+
+            @Override
+            public void onUiFailure(@NonNull EventSource eventSource, @Nullable Throwable t, @Nullable Response response) {
+                translateLayout.setVisibility(View.GONE);
+                translationSB = null;
+            }
+
+            @Override
+            public void onUiClosed(@NonNull EventSource eventSource) {
+                translateProgressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    @Override
+    public String contextMenuTitle(Context context, String tag) {
+        if (MessageContextMenuItemTags.TAG_TRANSLATE.equals(tag)) {
+            //return context.getString(R.string.file_save_to_phone);
+            return "翻译";
+        }
+        return super.contextMenuTitle(context, tag);
+    }
+
+    @Override
+    public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
+        if (TextUtils.equals(tag, MessageContextMenuItemTags.TAG_TRANSLATE)) {
+            return TextUtils.isEmpty(Config.ASR_SERVER_URL);
+        }
+        return super.contextMenuItemFilter(uiMessage, tag);
     }
 
     public void onClick(View view) {
