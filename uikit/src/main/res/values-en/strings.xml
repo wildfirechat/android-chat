@@ -185,9 +185,17 @@
 
     <!-- Friend Request -->
     <string name="contact_request_accepted">Added</string>
+    <string name="contact_request_join_accepted">Pass</string>
     <string name="contact_request_rejected">Rejected</string>
     <string name="contact_request_accept_error">Failed to accept friend request, err = %1$d</string>
     <string name="contact_unknown">%1$s</string>
+
+    <!--    群管理-->
+    <string name="group_manager">Group Manager</string>
+    <string name="group_join_request">Group Join Request</string>
+    <string name="group_no_join_request">Group No Join Request</string>
+    <string name="group_join_approve">Group Join Approve</string>
+
 
     <!-- Friend Invite -->
     <string name="invite_default_message">I am %1$s</string>

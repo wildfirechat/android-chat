@@ -40,7 +40,12 @@
 -keepclassmembers class com.tenncent.mars.** {
   *;
 }
-
+-keep class cn.wildfire.chat.kit.domain.TGroupJoinRequests { *; }
+# 或更细粒度的控制
+-keepclassmembers class cn.wildfire.chat.kit.domain.TGroupJoinRequests {
+    public <fields>;
+    private <fields>;
+}
 #-keep class !cn.wildfire.chat.moment.**,!cn.wildfirechat.moment.**, **{ *; }
 -keep class cn.wildfirechat.moment.MomentClient {
     public void init(***);

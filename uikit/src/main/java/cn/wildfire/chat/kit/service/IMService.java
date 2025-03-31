@@ -4,45 +4,22 @@
 
 package cn.wildfire.chat.kit.service;
 
-import static cn.wildfire.chat.kit.third.utils.UIUtils.getPackageName;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.wildfire.chat.kit.AppServiceProvider;
-import cn.wildfire.chat.kit.ChatManagerHolder;
-import cn.wildfire.chat.kit.Config;
-import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.favorite.FavoriteItem;
-import cn.wildfire.chat.kit.group.GroupAnnouncement;
-import cn.wildfire.chat.kit.net.BooleanCallback;
+import cn.wildfire.chat.kit.domain.TGroupJoinRequests;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.net.base.StatusResult;
-import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
-import cn.wildfirechat.remote.GeneralCallback2;
-import okhttp3.MediaType;
+import cn.wildfirechat.remote.GeneralCallback4;
+import cn.wildfirechat.remote.GeneralCallback5;
 
 public class IMService {
     private static final IMService Instance = new IMService();
@@ -78,7 +55,7 @@ public class IMService {
             @Override
             public void onUiSuccess(StatusResult response) {
                 Log.d("weiAndKe", "onUiSuccess: " + response.isSuccess()); // 确认 code 值
-                    callback.onSuccess();
+                callback.onSuccess();
             }
 
             @Override
@@ -89,4 +66,95 @@ public class IMService {
         });
     }
 
+    public void getGroupApplyInfo(String userId, GeneralCallback4<TGroupJoinRequests> callback) {
+        String url = RY_SERVER_ADDRESS + "/api/groupJoin/getMembersByAdminId";
+        Map<String, Object> params = new HashMap<>();
+        params.put("operatorId", userId);
+
+        OKHttpHelper.post(url, params, new SimpleCallback<List<TGroupJoinRequests>>() {
+
+            @Override
+            public void onUiSuccess(List<TGroupJoinRequests> listResultWrapper) {
+              /*  for (TGroupJoinRequests req : listResultWrapper) {
+                    GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(req.getGroupId(), false);
+                    req.set
+                    Log.e("weiAndKe", "listResultWrapper" + req.toString());
+                }*/
+
+                callback.onSuccess(listResultWrapper);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                Log.e("weiAndKe", "onUiFailure11 - HTTP状态码: " + code + ", 错误信息: " + msg);
+                callback.onFail(code);
+            }
+        });
+    }
+
+    public void getGroupApplyCount(String userId, GeneralCallback5<Integer> generalCallback5) {
+        String url = RY_SERVER_ADDRESS + "/api/groupJoin/getMembersCountByAdminId";
+        Map<String, Object> params = new HashMap<>();
+        params.put("operatorId", userId);
+        OKHttpHelper.post(url, params, new SimpleCallback<Integer>() {
+            @Override
+            public void onUiSuccess(Integer result) {
+                generalCallback5.onSuccess(result);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                Log.e("weiAndKe", "onUiFailure22 - HTTP状态码: " + code + ", 错误信息: " + msg);
+                generalCallback5.onFail(code);
+            }
+        });
+    }
+
+    public void approveGroupJoinRequest(TGroupJoinRequests groupJoinRequests, GeneralCallback callback) {
+        String url;
+        if (groupJoinRequests == null) {
+            return;
+        }
+        groupJoinRequests.setApplyTime(null);
+        long status = groupJoinRequests.getStatus();
+        if (status == 1L) {
+            //同意
+            url = RY_SERVER_ADDRESS + "/api/groupJoin/justApprove";
+            String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_QRCode, "审批");
+            ChatManager.Instance().addGroupMembers(groupJoinRequests.getGroupId(), Collections.singletonList(groupJoinRequests.getApplicantId()), memberExtra, Collections.singletonList(0), null, new GeneralCallback() {
+                @Override
+                public void onSuccess() {
+                    callback.onSuccess();
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    callback.onFail(errorCode);
+                }
+            });
+            OKHttpHelper.post(url, groupJoinRequests, new SimpleCallback<String>() {
+                @Override
+                public void onUiSuccess(String v) {
+                }
+
+                @Override
+                public void onUiFailure(int code, String msg) {
+                }
+            });
+        } else if (status == 2L) {
+            //拒绝
+            url = RY_SERVER_ADDRESS + "/api/groupJoin/rejected";
+            OKHttpHelper.post(url, groupJoinRequests, new SimpleCallback<String>() {
+                @Override
+                public void onUiSuccess(String v) {
+                    callback.onSuccess();
+                }
+
+                @Override
+                public void onUiFailure(int code, String msg) {
+                    callback.onFail(code);
+                }
+            });
+        }
+    }
 }

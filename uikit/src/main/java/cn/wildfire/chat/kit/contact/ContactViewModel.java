@@ -6,6 +6,8 @@ package cn.wildfire.chat.kit.contact;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -20,12 +22,15 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
+import cn.wildfire.chat.kit.domain.TGroupJoinRequests;
+import cn.wildfire.chat.kit.service.IMService;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
+import cn.wildfirechat.remote.GeneralCallback4;
 import cn.wildfirechat.remote.GetRemoteDomainsCallback;
 import cn.wildfirechat.remote.GetUserInfoListCallback;
 import cn.wildfirechat.remote.OnFriendUpdateListener;
@@ -36,10 +41,76 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
     private MutableLiveData<List<UIUserInfo>> contactListLiveData;
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
     private MutableLiveData<List<UIUserInfo>> favContactListLiveData;
+    private MutableLiveData<List<TGroupJoinRequests>> groupRequestLiveData;
+
+    private long lastRequestTime = 0;
+
 
     public ContactViewModel() {
         super();
         ChatManager.Instance().addFriendUpdateListener(this);
+        ChatManager.Instance().addGroupMembersUpdateListener((groupId, groupMembers) -> {
+            Log.e("weiAndKe", "群成员更新监听，groupId:" + groupId + ",groupMembers：" + groupMembers.toString());
+        });
+    }
+    // 获取群请求列表
+    public MutableLiveData<List<TGroupJoinRequests>> groupRequestLiveData() {
+        if (groupRequestLiveData == null) {
+            groupRequestLiveData = new MutableLiveData<>();
+            // 移除 reloadGroupRequests() 调用
+        }
+        return groupRequestLiveData;
+    }
+    // 重新加载群请求
+    public void reloadGroupRequests() {
+
+        if (System.currentTimeMillis() - lastRequestTime < 5000) { // 5秒内不重复请求
+            return;
+        }
+        lastRequestTime = System.currentTimeMillis();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            IMService.Instance().getGroupApplyInfo(ChatManager.Instance().getUserId(), new GeneralCallback4<TGroupJoinRequests>() {
+                @Override
+                public void onSuccess(List<TGroupJoinRequests> result) {
+                    groupRequestLiveData.postValue(result);
+                    Log.e("weiAndKe", "加群列表获取成功！");
+                }
+
+                @Override
+                public void onFail(int errorCode) {
+                    Log.e("weiAndKe", "加群列表获取失败！");
+                }
+
+            });
+        });
+    }
+
+    // 处理群请求
+    public MutableLiveData<Integer> handleGroupRequest(Long requestId,String groupId, String applicantId, long accept) {
+        TGroupJoinRequests tGroupJoinRequests = new TGroupJoinRequests();
+        tGroupJoinRequests.setOperatorId(ChatManager.Instance().getUserId());
+        tGroupJoinRequests.setApplicantId(applicantId);
+        tGroupJoinRequests.setGroupId(groupId);
+        tGroupJoinRequests.setStatus(accept);
+        tGroupJoinRequests.setRequestId(requestId);
+        MutableLiveData<Integer> result = new MutableLiveData<>();
+        IMService.Instance().approveGroupJoinRequest(tGroupJoinRequests, new GeneralCallback() {
+            @Override
+            public void onSuccess() {
+                reloadGroupRequests();
+                result.setValue(0);
+            }
+
+            @Override
+            public void onFail(int errorCode) {
+                result.setValue(errorCode);
+                Toast.makeText(ChatManager.Instance().getApplicationContext(),
+                        "操作失败: " + errorCode,
+                        Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        return result;
     }
 
     @Override

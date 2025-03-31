@@ -118,6 +118,9 @@
             android:name="cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity"
             android:label="@string/friend_request" />
         <activity
+            android:name="cn.wildfire.chat.kit.contact.newfriend.JoinGroupRequestListActivity"
+            android:label="@string/group_manager" />
+        <activity
             android:name="cn.wildfire.chat.kit.contact.newfriend.SearchUserActivity"
             android:label="@string/search_user" />
         <activity

@@ -26,9 +26,11 @@ import cn.wildfire.chat.kit.contact.model.ContactCountFooterValue;
 import cn.wildfire.chat.kit.contact.model.FriendRequestValue;
 import cn.wildfire.chat.kit.contact.model.GroupValue;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
+import cn.wildfire.chat.kit.contact.model.JoinGroupRequestValue;
 import cn.wildfire.chat.kit.contact.model.OrganizationValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.newfriend.FriendRequestListActivity;
+import cn.wildfire.chat.kit.contact.newfriend.JoinGroupRequestListActivity;
 import cn.wildfire.chat.kit.contact.viewholder.footer.ContactCountViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.ChannelViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.DepartViewHolder;
@@ -36,6 +38,7 @@ import cn.wildfire.chat.kit.contact.viewholder.header.ExternalDomainViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.FriendRequestViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.GroupViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
+import cn.wildfire.chat.kit.contact.viewholder.header.JoinGroupRequestViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.OrganizationViewHolder;
 import cn.wildfire.chat.kit.group.GroupListActivity;
 import cn.wildfire.chat.kit.mesh.DomainListActivity;
@@ -151,7 +154,12 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
     @Override
     public void initHeaderViewHolders() {
         if (!pick) {
+            // 确保 FriendRequestViewHolder 只绑定 FriendRequestValue
             addHeaderViewHolder(FriendRequestViewHolder.class, R.layout.contact_header_friend, new FriendRequestValue(0));
+            
+            // 确保 JoinGroupRequestViewHolder 绑定 JoinGroupRequestValue
+            addHeaderViewHolder(JoinGroupRequestViewHolder.class, R.layout.contact_header_join_group, new JoinGroupRequestValue(0));
+            
             addHeaderViewHolder(GroupViewHolder.class, R.layout.contact_header_group, new GroupValue());
         }
         if (showChannel) {
@@ -221,6 +229,8 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             showFriendRequest();
         } else if (holder instanceof GroupViewHolder) {
             showGroupList();
+        } else if (holder instanceof JoinGroupRequestViewHolder) {
+            showJoinGroupList();
         } else if (holder instanceof ChannelViewHolder) {
             showChannelList();
         } else if (holder instanceof OrganizationViewHolder) {
@@ -247,6 +257,15 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
 
     private void showGroupList() {
         Intent intent = new Intent(getActivity(), GroupListActivity.class);
+        startActivity(intent);
+    }
+
+    private void showJoinGroupList() {
+
+        JoinGroupRequestValue value = new JoinGroupRequestValue(0);
+        userListAdapter.updateHeader(1, value);
+
+        Intent intent = new Intent(getActivity(), JoinGroupRequestListActivity.class);
         startActivity(intent);
     }
 
