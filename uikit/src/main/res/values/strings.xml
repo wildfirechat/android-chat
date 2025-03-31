@@ -777,4 +777,5 @@
     <string name="forward_leave_message">给朋友留言</string>
     <string name="official">官方</string>
     <string name="mute_group_member">群成员禁言</string>
+    <string name="translate">翻译</string>
 </resources>

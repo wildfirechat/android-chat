@@ -163,7 +163,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     public String contextMenuTitle(Context context, String tag) {
         if (MessageContextMenuItemTags.TAG_TRANSLATE.equals(tag)) {
             //return context.getString(R.string.file_save_to_phone);
-            return "翻译";
+            return context.getString(R.string.translate);
         }
         return super.contextMenuTitle(context, tag);
     }
