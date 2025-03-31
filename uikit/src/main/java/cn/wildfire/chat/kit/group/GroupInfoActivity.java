@@ -102,20 +102,29 @@ public class GroupInfoActivity extends WfcBaseActivity {
     }
 
     private void updateActionButtonStatus() {
-        if (groupInfo.memberDt < -1) {
-            // 已退出群组
-            actionButton.setText(R.string.join_group_chat);
-            actionButtonByApprove.setVisibility(View.VISIBLE);
-        } else if (groupInfo.memberDt == -1) {
-            // 未加入
-            actionButton.setText(R.string.join_group_chat);
-            actionButtonByApprove.setVisibility(View.VISIBLE);
+        // 确定用户是否已加入
+        isJoined = groupInfo.memberDt >= 0;
 
-        } else {
-            // 已加入群组
-            this.isJoined = true;
+        if (isJoined) {
+            // 已加入，显示进入按钮，隐藏其他组件
             actionButton.setText(R.string.enter_group_chat);
+            actionButton.setVisibility(View.VISIBLE);
+            reasonEditText.setVisibility(View.GONE);
             actionButtonByApprove.setVisibility(View.GONE);
+        } else {
+            // 未加入，根据joinType显示不同组件
+            /*if (groupInfo.joinType == 0) {
+                // 允许直接加入
+                actionButton.setText(R.string.join_group_chat);
+                actionButton.setVisibility(View.VISIBLE);
+                reasonEditText.setVisibility(View.GONE);
+                actionButtonByApprove.setVisibility(View.GONE);
+            } else {*/
+                // 需要审批，显示申请理由和审批按钮
+                actionButton.setVisibility(View.GONE);
+                reasonEditText.setVisibility(View.VISIBLE);
+                actionButtonByApprove.setVisibility(View.VISIBLE);
+//            }
         }
     }
 

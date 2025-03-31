@@ -75,7 +75,7 @@
             android:layout_weight="1"
             android:layout_marginStart="4dp"
             android:background="@drawable/bg_neutral_button"
-            android:text="@string/join_group_chat_by_approve"
+            android:text="@string/join_group_chat"
             android:textColor="@color/primary_color"
             android:textAllCaps="false"
             android:textSize="16sp"
