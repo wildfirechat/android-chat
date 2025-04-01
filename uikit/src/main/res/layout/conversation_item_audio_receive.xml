@@ -44,7 +44,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/translationLinearLayout"
+        android:id="@+id/speechToTextLinearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/shape_message_ref_bg"
@@ -53,7 +53,7 @@
         android:visibility="visible">
 
         <TextView
-            android:id="@+id/translationTextView"
+            android:id="@+id/speechToTextTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical"
@@ -66,7 +66,7 @@
             tools:text="" />
 
         <ProgressBar
-            android:id="@+id/translationProgressBar"
+            android:id="@+id/speechToTextProgressBar"
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="20dp"
             android:layout_height="20dp"

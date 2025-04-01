@@ -761,4 +761,5 @@
     <string name="official">Official</string>
     <string name="mute_group_member">Mute Group Member</string>
     <string name="speech_to_text">Speech To Text</string>
+    <string name="cancel_speech_to_text">Cancel Speech To Text</string>
 </resources>

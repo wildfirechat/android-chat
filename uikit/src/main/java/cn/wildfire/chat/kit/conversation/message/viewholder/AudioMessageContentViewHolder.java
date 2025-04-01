@@ -52,10 +52,11 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     RelativeLayout contentLayout;
     @Nullable
     View playStatusIndicator;
-    LinearLayout translateLayout;
-    TextView translateTextView;
-    ProgressBar translateProgressBar;
+    LinearLayout speechToTextLayout;
+    TextView speechToTextTextView;
+    ProgressBar speechToTextProgressBar;
     private StringBuilder speechToTextSB;
+    private boolean speechToTextInProgress = false;
 
     public AudioMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -72,9 +73,9 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         durationTextView = itemView.findViewById(R.id.durationTextView);
         contentLayout = itemView.findViewById(R.id.audioContentLayout);
         playStatusIndicator = itemView.findViewById(R.id.playStatusIndicator);
-        translateLayout = itemView.findViewById(R.id.translationLinearLayout);
-        translateTextView = itemView.findViewById(R.id.translationTextView);
-        translateProgressBar = itemView.findViewById(R.id.translationProgressBar);
+        speechToTextLayout = itemView.findViewById(R.id.speechToTextLinearLayout);
+        speechToTextTextView = itemView.findViewById(R.id.speechToTextTextView);
+        speechToTextProgressBar = itemView.findViewById(R.id.speechToTextProgressBar);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         int increment = UIUtils.getDisplayWidth(fragment.getContext()) / 3 / Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * voiceMessage.getDuration();
 
         durationTextView.setText(voiceMessage.getDuration() + "''");
-        translateLayout.setVisibility(View.GONE);
+        speechToTextLayout.setVisibility(View.GONE);
         speechToTextSB = null;
         ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
         params.width = UIUtils.dip2Px(65) + increment;
@@ -114,8 +115,8 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         }
 
         if (!TextUtils.isEmpty(message.audioMessageSpeechToText)) {
-            translateLayout.setVisibility(View.VISIBLE);
-            translateTextView.setText(message.audioMessageSpeechToText);
+            speechToTextLayout.setVisibility(View.VISIBLE);
+            speechToTextTextView.setText(message.audioMessageSpeechToText);
         }
     }
 
@@ -126,28 +127,37 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_SPEECH_TO_TEXT, confirm = false, priority = 13)
     public void speechToText(View itemView, UiMessage message) {
+        if (!TextUtils.isEmpty(message.audioMessageSpeechToText)) {
+            speechToTextLayout.setVisibility(View.VISIBLE);
+            speechToTextTextView.setText(message.audioMessageSpeechToText);
+            return;
+        }
         Map<String, Object> object = new HashMap<>();
-        translateLayout.setVisibility(View.VISIBLE);
-        translateProgressBar.setVisibility(View.VISIBLE);
+        speechToTextLayout.setVisibility(View.VISIBLE);
+        speechToTextProgressBar.setVisibility(View.VISIBLE);
+        speechToTextTextView.setText("");
         SoundMessageContent voiceMessage = (SoundMessageContent) message.message.content;
         final String currentAudioUrl = voiceMessage.remoteUrl;
 
         object.put("url", currentAudioUrl);
-        object.put("noReuse", true);
+        object.put("noReuse", false);
         object.put("noLlm", false);
         this.speechToTextSB = new StringBuilder();
+        this.speechToTextInProgress = true;
 
         fragment.scrollToKeepItemVisible(getAdapterPosition());
 
-        ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
-        message.message.status = MessageStatus.Played;
-        playStatusIndicator.setVisibility(View.GONE);
+        if (message.message.direction == MessageDirection.Receive) {
+            ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
+            message.message.status = MessageStatus.Played;
+            playStatusIndicator.setVisibility(View.GONE);
+        }
 
         OKHttpHelper.sse(Config.ASR_SERVER_URL, object, new SimpleEventSourceListener() {
 
             @Override
             public void onUiEvent(@NonNull EventSource eventSource, @Nullable String id, @Nullable String type, @NonNull String data) {
-                translateProgressBar.setVisibility(View.GONE);
+                speechToTextProgressBar.setVisibility(View.GONE);
                 FragmentActivity activity = fragment.getActivity();
                 if (activity == null || activity.isFinishing()) {
                     eventSource.cancel();
@@ -156,23 +166,31 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
                 if (TextUtils.equals(currentAudioUrl, ((SoundMessageContent) message.message.content).remoteUrl)) {
                     speechToTextSB.append(data.replaceAll("\n", ""));
                     String text = speechToTextSB.toString();
-                    translateTextView.setText(text);
+                    speechToTextTextView.setText(text);
                     message.audioMessageSpeechToText = text;
-                    fragment.scrollToKeepItemVisible(getAdapterPosition());
+                    itemView.post(() -> fragment.scrollToKeepItemVisible(getAdapterPosition()));
                 }
             }
 
             @Override
             public void onUiFailure(@NonNull EventSource eventSource, @Nullable Throwable t, @Nullable Response response) {
-                translateLayout.setVisibility(View.GONE);
+                speechToTextLayout.setVisibility(View.GONE);
+                speechToTextInProgress = false;
                 speechToTextSB = null;
             }
 
             @Override
             public void onUiClosed(@NonNull EventSource eventSource) {
-                translateProgressBar.setVisibility(View.GONE);
+                speechToTextProgressBar.setVisibility(View.GONE);
+                speechToTextInProgress = false;
             }
         });
+    }
+
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CANCEL_SPEECH_TO_TEXT, confirm = false, priority = 13)
+    public void cancelSpeechToText(View itemView, UiMessage message) {
+        message.audioMessageSpeechToText = null;
+        speechToTextLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -180,6 +198,9 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         if (MessageContextMenuItemTags.TAG_SPEECH_TO_TEXT.equals(tag)) {
             //return context.getString(R.string.file_save_to_phone);
             return context.getString(R.string.speech_to_text);
+        } else if (MessageContextMenuItemTags.TAG_CANCEL_SPEECH_TO_TEXT.equals(tag)) {
+            //return context.getString(R.string.file_save_to_phone);
+            return context.getString(R.string.cancel_speech_to_text);
         }
         return super.contextMenuTitle(context, tag);
     }
@@ -187,7 +208,13 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     @Override
     public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
         if (TextUtils.equals(tag, MessageContextMenuItemTags.TAG_SPEECH_TO_TEXT)) {
-            return TextUtils.isEmpty(Config.ASR_SERVER_URL) || !TextUtils.isEmpty(message.audioMessageSpeechToText);
+            if (speechToTextInProgress) {
+                return true;
+            } else {
+                return TextUtils.isEmpty(Config.ASR_SERVER_URL) || !TextUtils.isEmpty(message.audioMessageSpeechToText);
+            }
+        } else if (TextUtils.equals(tag, MessageContextMenuItemTags.TAG_CANCEL_SPEECH_TO_TEXT)) {
+            return TextUtils.isEmpty(message.audioMessageSpeechToText);
         }
         return super.contextMenuItemFilter(uiMessage, tag);
     }
