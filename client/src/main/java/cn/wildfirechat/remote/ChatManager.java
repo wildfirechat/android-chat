@@ -248,6 +248,9 @@ public class ChatManager {
     private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
 
+    //心跳间隔，单位为秒。
+    private int heartBeatInterval = -1;
+
     private Socks5ProxyInfo proxyInfo;
 
     private boolean isBackground = true;
@@ -1273,6 +1276,24 @@ public class ChatManager {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 设置自定心跳间隔。单位是秒，取值范围为10-2400。一般不建议修改，除非是特殊场景。
+     * @param second 心跳间隔的秒数
+     */
+    public void setHeartBeatInterval(int second) {
+        heartBeatInterval = second;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setHeartBeatInterval(second);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 获取clientId, 野火IM用clientId唯一表示用户设备
@@ -9799,6 +9820,9 @@ public class ChatManager {
                     }
                     if (checkSignature) {
                         mClient.checkSignature();
+                    }
+                    if (heartBeatInterval > 0) {
+                        mClient.setHeartBeatInterval(heartBeatInterval);
                     }
 
                     mClient.setBackupAddressStrategy(backupAddressStrategy);
