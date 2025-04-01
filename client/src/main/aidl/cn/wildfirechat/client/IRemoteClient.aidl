@@ -330,6 +330,8 @@ interface IRemoteClient {
     oneway void noUseFts();
     oneway void checkSignature();
 
+    oneway void setHeartBeatInterval(int second);
+
     String getProtoRevision();
 
     long getDiskSpaceAvailableSize();

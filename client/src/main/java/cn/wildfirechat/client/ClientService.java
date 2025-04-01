@@ -3671,6 +3671,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setHeartBeatInterval(int second) throws RemoteException {
+            if (second > 0) {
+                StnLogic.setHeartBeatInterval(second);
+            }
+        }
+
+        @Override
         public String getProtoRevision() throws RemoteException {
             return ProtoLogic.getProtoRevision();
         }
