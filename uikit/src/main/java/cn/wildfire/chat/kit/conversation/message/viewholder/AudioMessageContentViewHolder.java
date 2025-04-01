@@ -39,6 +39,7 @@ import cn.wildfirechat.message.PTTSoundMessageContent;
 import cn.wildfirechat.message.SoundMessageContent;
 import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessageStatus;
+import cn.wildfirechat.remote.ChatManager;
 import okhttp3.Response;
 import okhttp3.sse.EventSource;
 
@@ -54,7 +55,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     LinearLayout translateLayout;
     TextView translateTextView;
     ProgressBar translateProgressBar;
-    private StringBuilder translationSB;
+    private StringBuilder speechToTextSB;
 
     public AudioMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -84,7 +85,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
         durationTextView.setText(voiceMessage.getDuration() + "''");
         translateLayout.setVisibility(View.GONE);
-        translationSB = null;
+        speechToTextSB = null;
         ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
         params.width = UIUtils.dip2Px(65) + increment;
         contentLayout.setLayoutParams(params);
@@ -111,6 +112,11 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
                 ivAudio.setBackgroundResource(R.drawable.audio_animation_left_list);
             }
         }
+
+        if (!TextUtils.isEmpty(message.audioMessageSpeechToText)) {
+            translateLayout.setVisibility(View.VISIBLE);
+            translateTextView.setText(message.audioMessageSpeechToText);
+        }
     }
 
     @Override
@@ -129,27 +135,37 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         object.put("url", currentAudioUrl);
         object.put("noReuse", true);
         object.put("noLlm", false);
-        this.translationSB = new StringBuilder();
+        this.speechToTextSB = new StringBuilder();
+
+        fragment.scrollToKeepItemVisible(getAdapterPosition());
+
+        ChatManager.Instance().setMediaMessagePlayed(message.message.messageId);
+        message.message.status = MessageStatus.Played;
+        playStatusIndicator.setVisibility(View.GONE);
 
         OKHttpHelper.sse(Config.ASR_SERVER_URL, object, new SimpleEventSourceListener() {
 
             @Override
             public void onUiEvent(@NonNull EventSource eventSource, @Nullable String id, @Nullable String type, @NonNull String data) {
+                translateProgressBar.setVisibility(View.GONE);
                 FragmentActivity activity = fragment.getActivity();
                 if (activity == null || activity.isFinishing()) {
                     eventSource.cancel();
                     return;
                 }
                 if (TextUtils.equals(currentAudioUrl, ((SoundMessageContent) message.message.content).remoteUrl)) {
-                    translationSB.append(data.replaceAll("\n", ""));
-                    translateTextView.setText(translationSB.toString());
+                    speechToTextSB.append(data.replaceAll("\n", ""));
+                    String text = speechToTextSB.toString();
+                    translateTextView.setText(text);
+                    message.audioMessageSpeechToText = text;
+                    fragment.scrollToKeepItemVisible(getAdapterPosition());
                 }
             }
 
             @Override
             public void onUiFailure(@NonNull EventSource eventSource, @Nullable Throwable t, @Nullable Response response) {
                 translateLayout.setVisibility(View.GONE);
-                translationSB = null;
+                speechToTextSB = null;
             }
 
             @Override
@@ -171,7 +187,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     @Override
     public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
         if (TextUtils.equals(tag, MessageContextMenuItemTags.TAG_TRANSLATE)) {
-            return TextUtils.isEmpty(Config.ASR_SERVER_URL);
+            return TextUtils.isEmpty(Config.ASR_SERVER_URL) || !TextUtils.isEmpty(message.audioMessageSpeechToText);
         }
         return super.contextMenuItemFilter(uiMessage, tag);
     }

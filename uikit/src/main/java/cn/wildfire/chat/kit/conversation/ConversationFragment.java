@@ -6,15 +6,11 @@ package cn.wildfire.chat.kit.conversation;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -53,7 +49,6 @@ import java.util.Set;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.channel.ChannelInfoActivity;
 import cn.wildfire.chat.kit.channel.ChannelViewModel;
 import cn.wildfire.chat.kit.chatroom.ChatRoomViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -659,7 +654,7 @@ public class ConversationFragment extends Fragment implements
 
     private void setupConversation(Conversation conversation) {
         if (conversation.type == Conversation.ConversationType.Group) {
-            groupViewModel =  WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+            groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
             initGroupObservers();
             // refresh group members
             ChatManager.Instance().getWorkHandler().postDelayed(() -> {
@@ -1115,6 +1110,12 @@ public class ConversationFragment extends Fragment implements
         inputPanel.onKeyboardHidden();
     }
 
+    public void scrollToKeepItemVisible(int position) {
+        if (layoutManager.findLastVisibleItemPosition() == position) {
+            recyclerView.smoothScrollToPosition(position);
+        }
+    }
+
     private void reloadMessage() {
         conversationViewModel.getMessages(conversation, targetUser, true).observe(this, uiMessages -> {
             adapter.setMessages(uiMessages);
@@ -1160,7 +1161,7 @@ public class ConversationFragment extends Fragment implements
             return;
         }
         Activity activity = getActivity();
-        if (activity == null || activity.isFinishing()){
+        if (activity == null || activity.isFinishing()) {
             return;
         }
         this.checkUserTyping();
@@ -1294,7 +1295,7 @@ public class ConversationFragment extends Fragment implements
         int width = getResources().getDisplayMetrics().widthPixels;
 
         for (MultiMessageAction action : actions) {
-            if(conversation.type == Conversation.ConversationType.SecretChat && action instanceof ForwardMessageAction){
+            if (conversation.type == Conversation.ConversationType.SecretChat && action instanceof ForwardMessageAction) {
                 continue;
             }
             action.onBind(this, conversation);
