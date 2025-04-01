@@ -16,4 +16,5 @@ public interface MessageContextMenuItemTags {
     String TAG_CANCEL_SEND = "cancelSend";
     String TAG_SAVE_FILE = "saveFile";
     String TAG_SPEECH_TO_TEXT = "speechToText";
+    String TAG_CANCEL_SPEECH_TO_TEXT = "cancelSpeechToText";
 }
