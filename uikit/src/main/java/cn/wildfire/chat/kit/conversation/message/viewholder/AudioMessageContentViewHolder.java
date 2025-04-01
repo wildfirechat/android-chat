@@ -124,8 +124,8 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         // TODO 可实现语音是否持续播放、中断登录逻辑
     }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_TRANSLATE, confirm = false, priority = 13)
-    public void translate(View itemView, UiMessage message) {
+    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_SPEECH_TO_TEXT, confirm = false, priority = 13)
+    public void speechToText(View itemView, UiMessage message) {
         Map<String, Object> object = new HashMap<>();
         translateLayout.setVisibility(View.VISIBLE);
         translateProgressBar.setVisibility(View.VISIBLE);
@@ -177,7 +177,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
     @Override
     public String contextMenuTitle(Context context, String tag) {
-        if (MessageContextMenuItemTags.TAG_TRANSLATE.equals(tag)) {
+        if (MessageContextMenuItemTags.TAG_SPEECH_TO_TEXT.equals(tag)) {
             //return context.getString(R.string.file_save_to_phone);
             return context.getString(R.string.speech_to_text);
         }
@@ -186,7 +186,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 
     @Override
     public boolean contextMenuItemFilter(UiMessage uiMessage, String tag) {
-        if (TextUtils.equals(tag, MessageContextMenuItemTags.TAG_TRANSLATE)) {
+        if (TextUtils.equals(tag, MessageContextMenuItemTags.TAG_SPEECH_TO_TEXT)) {
             return TextUtils.isEmpty(Config.ASR_SERVER_URL) || !TextUtils.isEmpty(message.audioMessageSpeechToText);
         }
         return super.contextMenuItemFilter(uiMessage, tag);
