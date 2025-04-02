@@ -172,6 +172,10 @@
     <string name="channel_desc_title">Channel Description</string>
     <string name="qrcode">QR Code</string>
     <string name="search_message">Search Messages</string>
+    
+    <string name="chatroom_details">Chatroom Details</string>
+    <string name="chatroom_desc_title">Chatroom Desc</string>
+    <string name="chatroom_name_title">Chatroom Name</string>
 
     <!-- Pick Conversation -->
     <string name="pick_conversation_done">Done</string>

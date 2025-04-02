@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray5"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/portraitImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="@dimen/option_item_margin_left"
+                android:layout_marginTop="@dimen/option_item_margin_top"
+                android:src="@mipmap/avatar_def" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/option_item_margin_top"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <cn.wildfire.chat.kit.widget.OptionItemView
+                    android:id="@+id/chatroomNameOptionItemView"
+                    style="@style/OptionItem"
+                    android:background="@drawable/selector_option_item"
+                    app:desc="chatroom name"
+                    app:title="@string/chatroom_name_title" />
+
+                <View
+                    style="@style/Line"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp" />
+
+                <cn.wildfire.chat.kit.widget.OptionItemView
+                    android:id="@+id/chatroomDescOptionItemView"
+                    style="@style/OptionItem"
+                    android:background="@drawable/selector_option_item"
+                    app:desc="chatroom desc"
+                    app:title="@string/chatroom_desc_title" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
