@@ -173,6 +173,10 @@
     <string name="qrcode">QR Code</string>
     <string name="search_message">Search Messages</string>
 
+    <string name="chatroom_details">Chatroom Details</string>
+    <string name="chatroom_desc_title">Chatroom Desc</string>
+    <string name="chatroom_name_title">Chatroom Name</string>
+
     <!-- Pick Conversation -->
     <string name="pick_conversation_done">Done</string>
     <string name="pick_conversation_done_with_count">Done(%d)</string>
@@ -758,6 +762,10 @@
     <string name="set_star_friend">Star Friend</string>
     <string name="remove_star_friend">Unstar Friend</string>
     <string name="recent_chats">Recent Conversations</string>
+    <string name="official">Official</string>
+    <string name="mute_group_member">Mute Group Member</string>
+    <string name="speech_to_text">Speech To Text</string>
+    <string name="cancel_speech_to_text">Cancel Speech To Text</string>
 
     <string name="anti_fraud_tip">In order to avoid being used for fraud and other purposes, this function has been blocked.</string>
 </resources>

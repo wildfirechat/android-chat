@@ -13,13 +13,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.Collections;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfirechat.model.GroupInfo;
 
@@ -63,7 +63,7 @@ public class GroupMemberPermissionFragment extends Fragment {
     private void init() {
         privateChatSwitchButton.setChecked(groupInfo.privateChat == 0);
         privateChatSwitchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+            GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
             groupViewModel.enablePrivateChat(groupInfo.target, isChecked, null, Collections.singletonList(0)).observe(this, booleanOperateResult -> {
                 if (!booleanOperateResult.isSuccess()) {
                     privateChatSwitchButton.setChecked(!isChecked);

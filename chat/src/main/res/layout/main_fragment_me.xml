@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -105,14 +104,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@color/white"
         android:orientation="vertical">
 
 
         <cn.wildfire.chat.kit.widget.OptionItemView
             android:id="@+id/fileRecordOptionItemView"
             style="@style/OptionItem"
-            android:background="@drawable/selector_option_item"
             app:show_arrow_indicator="true"
             app:start_src="@mipmap/ic_settings_file"
             app:title="@string/file" />
@@ -129,7 +126,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/option_item_margin_top"
-        android:background="@color/white"
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView

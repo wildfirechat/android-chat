@@ -16,6 +16,8 @@ public class UiMessage {
      */
     public int progress;
     public Message message;
+    // 语音消息 speechToText
+    public String audioMessageSpeechToText;
     public Object extra;
 
     public boolean continuousPlayAudio;

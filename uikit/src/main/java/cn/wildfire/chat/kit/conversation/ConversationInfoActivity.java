@@ -4,8 +4,6 @@
 
 package cn.wildfire.chat.kit.conversation;
 
-import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 
 import cn.wildfire.chat.kit.R;
@@ -37,7 +35,7 @@ public class ConversationInfoActivity extends WfcBaseActivity {
                 fragment = GroupConversationInfoFragment.newInstance(conversationInfo);
                 break;
             case ChatRoom:
-                // TODO
+                fragment = ChatRoomConversationInfoFragment.newInstance(conversationInfo);
                 break;
             case Channel:
                 fragment = ChannelConversationInfoFragment.newInstance(conversationInfo);
@@ -49,7 +47,6 @@ public class ConversationInfoActivity extends WfcBaseActivity {
                 break;
         }
         if (fragment == null) {
-            Toast.makeText(this, "todo", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }

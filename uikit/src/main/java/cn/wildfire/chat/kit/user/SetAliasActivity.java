@@ -12,12 +12,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
-import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 
 
@@ -29,7 +28,7 @@ public class SetAliasActivity extends WfcBaseActivity {
     EditText aliasEditText;
 
     private MenuItem menuItem;
-    private ContactViewModel contactViewModel;
+    private UserViewModel userViewModel;
 
     protected void bindViews() {
         super.bindViews();
@@ -54,8 +53,8 @@ public class SetAliasActivity extends WfcBaseActivity {
             finish();
             return;
         }
-        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
-        String alias = contactViewModel.getFriendAlias(userId);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        String alias = userViewModel.getFriendAlias(userId);
         if (!TextUtils.isEmpty(alias)) {
             aliasEditText.setHint(alias);
         }
@@ -87,7 +86,7 @@ public class SetAliasActivity extends WfcBaseActivity {
 
     private void changeAlias() {
         String displayName = aliasEditText.getText().toString().trim();
-        contactViewModel.setFriendAlias(userId, displayName).observe(this, new Observer<OperateResult<Integer>>() {
+        userViewModel.setFriendAlias(userId, displayName).observe(this, new Observer<OperateResult<Integer>>() {
             @Override
             public void onChanged(OperateResult<Integer> integerOperateResult) {
                 if (integerOperateResult.isSuccess()) {

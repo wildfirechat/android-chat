@@ -31,6 +31,7 @@ import java.util.List;
 
 import cn.wildfire.chat.app.setting.AccountActivity;
 import cn.wildfire.chat.app.setting.SettingActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfire.chat.kit.conversation.file.FileRecordListActivity;
 import cn.wildfire.chat.kit.favorite.FavoriteListActivity;
@@ -145,7 +146,7 @@ public class MeFragment extends Fragment {
     }
 
     private void init() {
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.getUserInfoAsync(userViewModel.getUserId(), true)
             .observe(getViewLifecycleOwner(), info -> {
                 userInfo = info;

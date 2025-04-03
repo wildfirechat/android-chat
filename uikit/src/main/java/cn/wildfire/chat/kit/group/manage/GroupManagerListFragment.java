@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.FooterValue;
@@ -47,7 +47,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
         groupInfo = getArguments().getParcelable("groupInfo");
         showQuickIndexBar(false);
 
-        groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
         groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
         observerGroupMemberUpdate();
     }
@@ -72,7 +72,7 @@ public class GroupManagerListFragment extends BaseUserListFragment {
 
     @Override
     public void onUserClick(UIUserInfo userInfo) {
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         GroupMember me = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());
         if (me == null || me.type != GroupMember.GroupMemberType.Owner) {
             return;

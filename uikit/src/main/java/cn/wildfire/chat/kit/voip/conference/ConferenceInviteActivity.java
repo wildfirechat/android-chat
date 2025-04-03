@@ -14,6 +14,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.forward.ForwardPromptView;
 import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -37,8 +38,8 @@ public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
         super.afterViews();
         inviteMessage = getIntent().getParcelableExtra("inviteMessage");
         messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
     }
 
     @Override

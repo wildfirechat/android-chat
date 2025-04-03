@@ -27,6 +27,7 @@ import org.webrtc.StatsReport;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -73,7 +74,7 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
         if(session.isAudioOnly()) {
             acceptImageView.setImageResource(R.drawable.av_voice_answer_selector);
         }
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         UserInfo invitor = userViewModel.getUserInfo(session.initiator, false);
         invitorTextView.setText(invitor.displayName);
         Glide.with(this).load(invitor.portrait).placeholder(R.mipmap.avatar_def).into(invitorImageView);
@@ -125,7 +126,7 @@ public class MultiCallIncomingFragment extends Fragment implements AVEngineKit.C
             }
         }
         if (!exist) {
-            UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+            UserViewModel userViewModel =WfcUIKit.getAppScopeViewModel(UserViewModel.class);
             participants.add(userViewModel.getUserInfo(userId, false));
             participantRecyclerView.getAdapter().notifyDataSetChanged();
         }

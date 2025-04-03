@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.pick.PickOrCreateConversationActivity;
 import cn.wildfire.chat.kit.group.GroupViewModel;
@@ -54,8 +55,8 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
             finish();
         }
         forwardViewModel = ViewModelProviders.of(this).get(ForwardViewModel.class);
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
     }
 
     @Override

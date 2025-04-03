@@ -107,7 +107,7 @@
                         android:paddingTop="1dp"
                         android:paddingRight="2dp"
                         android:paddingBottom="1dp"
-                        tools:text="官方"
+                        android:text="@string/official"
                         android:textColor="@color/white"
                         android:textSize="10sp"
                         android:visibility="gone" />

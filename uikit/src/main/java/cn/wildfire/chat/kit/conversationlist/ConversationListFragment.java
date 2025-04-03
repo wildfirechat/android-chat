@@ -10,7 +10,6 @@ import android.view.View;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,7 +49,6 @@ public class ConversationListFragment extends ProgressFragment {
     private StatusNotificationViewModel statusNotificationViewModel;
     private LinearLayoutManager layoutManager;
     private OnClickConversationItemListener onClickConversationItemListener;
-    private RecyclerView.SmoothScroller smoothScroller;
 
     @Override
     protected int contentLayout() {
@@ -92,14 +90,7 @@ public class ConversationListFragment extends ProgressFragment {
         recyclerView.setAdapter(adapter);
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-        smoothScroller = new LinearSmoothScroller(getContext()) {
-            @Override
-            protected int getVerticalSnapPreference() {
-                return LinearSmoothScroller.SNAP_TO_START;
-            }
-        };
-
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, new Observer<List<UserInfo>>() {
             @Override
             public void onChanged(List<UserInfo> userInfos) {
@@ -116,7 +107,7 @@ public class ConversationListFragment extends ProgressFragment {
                 adapter.notifyItemRangeChanged(start, end - start + 1);
             }
         });
-        GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         groupViewModel.groupInfoUpdateLiveData().observe(this, new Observer<List<GroupInfo>>() {
             @Override
             public void onChanged(List<GroupInfo> groupInfos) {
@@ -174,7 +165,7 @@ public class ConversationListFragment extends ProgressFragment {
     }
 
     public void scrollToNextUnreadConversation() {
-        if(layoutManager == null || adapter == null){
+        if (layoutManager == null || adapter == null) {
             return;
         }
         int start = layoutManager.findFirstVisibleItemPosition();
@@ -185,6 +176,13 @@ public class ConversationListFragment extends ProgressFragment {
         }
 
         if (nextUnreadConversationPosition != -1) {
+            RecyclerView.SmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
+                @Override
+                protected int getVerticalSnapPreference() {
+                    return LinearSmoothScroller.SNAP_TO_START;
+                }
+            };
+
             smoothScroller.setTargetPosition(nextUnreadConversationPosition);
             layoutManager.startSmoothScroll(smoothScroller);
         }

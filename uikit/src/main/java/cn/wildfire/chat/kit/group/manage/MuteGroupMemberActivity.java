@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -18,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.group.BasePickGroupMemberActivity;
@@ -31,13 +31,7 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
     @Override
     protected void onGroupMemberChecked(List<UIUserInfo> checkedUserInfos) {
         this.checkedGroupMembers = checkedUserInfos;
-        if (checkedUserInfos == null || checkedUserInfos.isEmpty()) {
-            menuItem.setTitle(R.string.contact_pick_confirm);
-            menuItem.setEnabled(false);
-        } else {
-            menuItem.setTitle(getString(R.string.contact_pick_confirm_with_count, checkedUserInfos.size()));
-            menuItem.setEnabled(true);
-        }
+        this.updateMenuItemState();
     }
 
     @Override
@@ -51,10 +45,11 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
         return R.menu.group_manage_add_manager;
     }
 
+    // 有点神奇，搜索用户之后，会触发这个调用
     @Override
     protected void afterMenus(Menu menu) {
         menuItem = menu.findItem(R.id.confirm);
-        menuItem.setEnabled(false);
+        updateMenuItemState();
     }
 
     @Override
@@ -67,7 +62,7 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
     }
 
     private void muteOrAllowGroupMembers() {
-        GroupViewModel groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         List<String> memberIds = new ArrayList<>(checkedGroupMembers.size());
         for (UIUserInfo info : checkedGroupMembers) {
             memberIds.add(info.getUserInfo().uid);
@@ -93,6 +88,19 @@ public class MuteGroupMemberActivity extends BasePickGroupMemberActivity {
         } else {
             groupViewModel.muteGroupMember(groupInfo.target, true, memberIds, null, Collections.singletonList(0))
                 .observe(this, observer);
+        }
+    }
+
+    private void updateMenuItemState() {
+        if (menuItem == null) {
+            return;
+        }
+        if (checkedGroupMembers == null || checkedGroupMembers.isEmpty()) {
+            menuItem.setTitle(R.string.contact_pick_confirm);
+            menuItem.setEnabled(false);
+        } else {
+            menuItem.setTitle(getString(R.string.contact_pick_confirm_with_count, checkedGroupMembers.size()));
+            menuItem.setEnabled(true);
         }
     }
 }

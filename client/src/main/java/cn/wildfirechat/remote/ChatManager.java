@@ -248,6 +248,9 @@ public class ChatManager {
     private boolean checkSignature = false;
     private boolean defaultSilentWhenPCOnline = true;
 
+    //心跳间隔，单位为秒。
+    private int heartBeatInterval = -1;
+
     private Socks5ProxyInfo proxyInfo;
 
     private boolean isBackground = true;
@@ -288,6 +291,7 @@ public class ChatManager {
 
     private Class<? extends DefaultPortraitProvider> defaultPortraitProviderClazz;
     private Class<? extends UrlRedirector> urlRedirectorClazz;
+    private UrlRedirector urlRedirector;
 
     public enum SearchUserType {
         //模糊搜索displayName，精确搜索name或电话号码
@@ -501,7 +505,7 @@ public class ChatManager {
     /**
      * 获取当前的连接状态
      *
-     * @return 连接状态，参考{@link cn.wildfirechat.client.ConnectionStatus}
+     * @return 连接状态，参考{@link ConnectionStatus}
      */
     public int getConnectionStatus() {
         return connectionStatus;
@@ -509,7 +513,6 @@ public class ChatManager {
 
     /**
      * App在后台时，如果需要强制连上服务器并收消息，调用此方法。后台时无法保证长时间连接中。
-     *
      */
     public void forceConnect() {
         if (mClient != null) {
@@ -852,9 +855,9 @@ public class ChatManager {
      * 订阅在线状态。
      *
      * @param conversationType 订阅类型，仅支持单聊和群聊。单聊会订阅对方的在线状态，群聊时会订阅群内所有成员的在线状态。
-     * @param targets 订阅目标列表
-     * @param duration 订阅时长，单位是秒，最大不能超过
-     * @param callback 订阅回调
+     * @param targets          订阅目标列表
+     * @param duration         订阅时长，单位是秒，最大不能超过
+     * @param callback         订阅回调
      */
     public void watchOnlineState(int conversationType, String[] targets, int duration, WatchOnlineStateCallback callback) {
         if (!checkRemoteService()) {
@@ -893,8 +896,8 @@ public class ChatManager {
      * 取消订阅在线状态。
      *
      * @param conversationType 取消订阅类型，仅支持单聊和群聊。单聊会订阅对方的在线状态，群聊时会订阅群内所有成员的在线状态。
-     * @param targets 取消订阅目标列表
-     * @param callback 订阅回调
+     * @param targets          取消订阅目标列表
+     * @param callback         订阅回调
      */
     public void unWatchOnlineState(int conversationType, String[] targets, GeneralCallback callback) {
         if (!checkRemoteService()) {
@@ -1273,6 +1276,24 @@ public class ChatManager {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 设置自定心跳间隔。单位是秒，取值范围为10-2400。一般不建议修改，除非是特殊场景。
+     * @param second 心跳间隔的秒数
+     */
+    public void setHeartBeatInterval(int second) {
+        heartBeatInterval = second;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setHeartBeatInterval(second);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 获取clientId, 野火IM用clientId唯一表示用户设备
@@ -2538,6 +2559,10 @@ public class ChatManager {
                     msg.messageUid = messageUid;
                     msg.serverTime = timestamp;
                     msg.status = MessageStatus.Sent;
+                    if (msg.content instanceof MediaMessageContent && urlRedirector != null) {
+                        String remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
+                        ((MediaMessageContent) msg.content).remoteUrl = urlRedirector.urlRedirect(remoteUrl);
+                    }
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -2741,6 +2766,10 @@ public class ChatManager {
                     msg.messageUid = messageUid;
                     msg.serverTime = timestamp;
                     msg.status = MessageStatus.Sent;
+                    if (msg.content instanceof MediaMessageContent && urlRedirector != null) {
+                        String remoteUrl = ((MediaMessageContent) msg.content).remoteUrl;
+                        ((MediaMessageContent) msg.content).remoteUrl = urlRedirector.urlRedirect(remoteUrl);
+                    }
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -3103,7 +3132,7 @@ public class ChatManager {
      * @param fromIndex    消息起始id(messageId)
      * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count        获取消息条数
-     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param withUser     只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @return 由于ipc大小限制，本接口获取到的消息列表可能不完整，并且超级群里面，可能返回为完全加载的消息，请使用异步获取
      */
     @Deprecated
@@ -3124,12 +3153,12 @@ public class ChatManager {
      * 获取某类会话消息
      *
      * @param conversationTypes 会话类型列表
-     * @param lines 会话线路列表
-     * @param contentTypes 过滤消息类型，如果全部消息请为空
-     * @param fromIndex    消息起始id(messageId)
-     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
-     * @param count        获取消息条数
-     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param lines             会话线路列表
+     * @param contentTypes      过滤消息类型，如果全部消息请为空
+     * @param fromIndex         消息起始id(messageId)
+     * @param before            true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count             获取消息条数
+     * @param withUser          只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @return 由于ipc大小限制，本接口获取到的消息列表可能不完整，并且超级群里面，可能返回为完全加载的消息，请使用异步获取
      */
     @Deprecated()
@@ -3163,12 +3192,12 @@ public class ChatManager {
      * 获取某类会话消息
      *
      * @param conversationTypes 会话类型列表
-     * @param lines 会话线路列表
-     * @param messageStatus 过滤消息状态，如果全部消息请为空
-     * @param fromIndex    消息起始id(messageId)
-     * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
-     * @param count        获取消息条数
-     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param lines             会话线路列表
+     * @param messageStatus     过滤消息状态，如果全部消息请为空
+     * @param fromIndex         消息起始id(messageId)
+     * @param before            true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param count             获取消息条数
+     * @param withUser          只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @return 由于ipc大小限制，本接口获取到的消息列表可能不完整，并且超级群里面，可能返回为完全加载的消息，请使用异步获取
      */
     @Deprecated
@@ -3209,7 +3238,7 @@ public class ChatManager {
      * @param fromIndex    消息起始id(messageId)
      * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count        获取消息条数
-     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param withUser     只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
     public void getMessages(Conversation conversation, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
@@ -3291,7 +3320,7 @@ public class ChatManager {
      * @param fromIndex    消息起始id(messageId)
      * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count        获取消息条数
-     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param withUser     只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
     public void getMessages(Conversation conversation, List<Integer> contentTypes, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
@@ -3333,7 +3362,7 @@ public class ChatManager {
      * @param fromIndex     消息起始id(messageId)
      * @param before        true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count         获取消息条数
-     * @param withUser      只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param withUser      只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      */
     @Deprecated
     public List<Message> getMessagesByMessageStatus(Conversation conversation, List<Integer> messageStatus, long fromIndex, boolean before, int count, String withUser) {
@@ -3353,7 +3382,7 @@ public class ChatManager {
      * @param fromIndex     消息起始id(messageId)
      * @param before        true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count         获取消息条数
-     * @param withUser      只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param withUser      只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @param callback      消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
     public void getMessagesByMessageStatus(Conversation conversation, List<Integer> messageStatus, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
@@ -3392,7 +3421,7 @@ public class ChatManager {
      * @param fromIndex         消息起始id(messageId)
      * @param before            true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count             获取消息条数
-     * @param withUser          只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param withUser          只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
     public void getMessagesEx(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<Integer> contentTypes, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
@@ -3446,7 +3475,7 @@ public class ChatManager {
      * @param fromIndex         消息起始id(messageId)
      * @param before            true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count             获取消息条数
-     * @param withUser          只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param withUser          只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @param callback          消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
     public void getMessagesEx2(List<Conversation.ConversationType> conversationTypes, List<Integer> lines, List<MessageStatus> messageStatus, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
@@ -3503,7 +3532,7 @@ public class ChatManager {
      * @param timestamp    时间戳
      * @param before       true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param count        获取消息条数
-     * @param withUser     只有会话类型为{@link cn.wildfirechat.model.Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
+     * @param withUser     只有会话类型为{@link Conversation.ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
     public void getMessagesByTimestamp(Conversation conversation, List<Integer> contentTypes, long timestamp, boolean before, int count, String withUser, GetMessageCallback callback) {
@@ -3676,7 +3705,7 @@ public class ChatManager {
     /**
      * 获取远程被引用的消息，消息会被消息变化通知。
      *
-     * @param message  包含引用内容的文本消息
+     * @param message 包含引用内容的文本消息
      */
     public void loadRemoteQuotedMessage(Message message) {
         if (!(message.content instanceof TextMessageContent)) {
@@ -3877,7 +3906,7 @@ public class ChatManager {
     /**
      * 搜索我的远程文件记录
      *
-     * @param keyword 关键字
+     * @param keyword         关键字
      * @param beforeMessageId 起始消息的消息id
      * @param order           文件记录排序
      * @param count           获取消息的条数
@@ -3967,9 +3996,9 @@ public class ChatManager {
      * @param messageId 消息id
      *                  <p>
      *                  消息uid。消息uid和消息id的区别是，每条消息都有uid，该uid由服务端生成，全局唯一；id是本地生成，
-     *                  切和消息的存储类型{@link cn.wildfirechat.message.core.PersistFlag}相关，只有存储类型为
-     *                  {@link cn.wildfirechat.message.core.PersistFlag#Persist_And_Count}
-     *                  和{@link cn.wildfirechat.message.core.PersistFlag#Persist}的消息，有消息id
+     *                  且和消息的存储类型{@link PersistFlag}相关，只有存储类型为
+     *                  {@link PersistFlag#Persist_And_Count}
+     *                  和{@link PersistFlag#Persist}的消息，有消息id
      * @return
      */
     public Message getMessage(long messageId) {
@@ -3992,9 +4021,9 @@ public class ChatManager {
      *                   <p>
      *                   消息uid和消息id的区别是，每条消息都有uid，该uid由服务端生成，全局唯一；id是本地生成，
      *                   <p>
-     *                   切和消息的存储类型{@link cn.wildfirechat.message.core.PersistFlag}相关，只有存储类型为
-     *                   {@link cn.wildfirechat.message.core.PersistFlag#Persist_And_Count}
-     *                   和{@link cn.wildfirechat.message.core.PersistFlag#Persist}的消息，有消息id
+     *                   切和消息的存储类型{@link PersistFlag}相关，只有存储类型为
+     *                   {@link PersistFlag#Persist_And_Count}
+     *                   和{@link PersistFlag#Persist}的消息，有消息id
      * @return
      */
     public Message getMessageByUid(long messageUid) {
@@ -4124,7 +4153,7 @@ public class ChatManager {
     /**
      * 标记会话的为未读状态
      *
-     * @param conversation 会话
+     * @param conversation      会话
      * @param syncToOtherClient 是否同步到其他端
      * @discussion 仅当会话中存在接收到的消息时，才能标记。
      */
@@ -4385,7 +4414,7 @@ public class ChatManager {
      * 远程删除会话内所有消息，仅专业版IM服务支持。
      *
      * @param conversation 会话
-     * @param callback  回调
+     * @param callback     回调
      */
     public void clearRemoteConversationMessage(Conversation conversation, GeneralCallback callback) {
         if (!checkRemoteService()) {
@@ -5053,7 +5082,7 @@ public class ChatManager {
     /**
      * 删除好友请求
      *
-     * @param direction 方向，0是接收的，1是发出的
+     * @param direction  方向，0是接收的，1是发出的
      * @param beforeTime 删除某个时间之前的。如果删除所有用0.
      * @return 是否有数据被删除。
      */
@@ -5073,7 +5102,7 @@ public class ChatManager {
     /**
      * 删除某个好友请求
      *
-     * @param userId 用户ID
+     * @param userId    用户ID
      * @param direction 方向，0是接收的，1是发出的
      * @return 是否有数据被删除。
      */
@@ -5796,6 +5825,7 @@ public class ChatManager {
 
     /**
      * 异步获取用户信息
+     *
      * @param userId
      * @param refresh
      * @param callback
@@ -5806,6 +5836,7 @@ public class ChatManager {
 
     /**
      * 异步获取用户信息。
+     *
      * @param userId
      * @param groupId
      * @param refresh
@@ -5843,7 +5874,7 @@ public class ChatManager {
      * 上传媒体文件
      *
      * @param mediaPath
-     * @param mediaType 媒体类型，可选值，参考{@link cn.wildfirechat.message.MessageContentMediaType}
+     * @param mediaType 媒体类型，可选值，参考{@link MessageContentMediaType}
      * @param callback
      */
     public void uploadMediaFile(String mediaPath, int mediaType, final UploadMediaCallback callback) {
@@ -5896,7 +5927,7 @@ public class ChatManager {
      * 开始 TCP 短链接之后，该方法不可用，请使用{@link ChatManager#uploadMediaFile}
      *
      * @param data      不能超过1M，为了安全，实际只有900K
-     * @param mediaType 媒体类型，可选值参考{@link cn.wildfirechat.message.MessageContentMediaType}
+     * @param mediaType 媒体类型，可选值参考{@link MessageContentMediaType}
      * @param callback
      */
     public void uploadMedia(String fileName, byte[] data, int mediaType, final GeneralCallback2 callback) {
@@ -5923,7 +5954,7 @@ public class ChatManager {
      * 开始 TCP 短链接之后，该方法不可用，请使用{@link ChatManager#uploadMediaFile}
      *
      * @param data      不能超过1M，为了安全，实际只有900K
-     * @param mediaType 媒体类型，可选值参考{@link cn.wildfirechat.message.MessageContentMediaType}
+     * @param mediaType 媒体类型，可选值参考{@link MessageContentMediaType}
      * @param callback
      */
     public void uploadMedia2(String fileName, byte[] data, int mediaType, final UploadMediaCallback callback) {
@@ -6479,6 +6510,7 @@ public class ChatManager {
 
     /**
      * 获取签名。IM服务可以开启签名保护，只有指定签名的android客户端才可以登录
+     *
      * @return
      * @throws PackageManager.NameNotFoundException
      * @throws CertificateException
@@ -7917,6 +7949,7 @@ public class ChatManager {
 
     /**
      * 是否是收藏群组
+     *
      * @param groupId
      * @return
      */
@@ -7934,6 +7967,7 @@ public class ChatManager {
 
     /**
      * 设置收藏群组
+     *
      * @param groupId
      * @param isSet
      * @param callback
@@ -8415,6 +8449,7 @@ public class ChatManager {
 
     /**
      * IM服务群组是否开启了已读报告功能
+     *
      * @return
      */
     public boolean isGroupReceiptEnabled() {
@@ -8437,6 +8472,7 @@ public class ChatManager {
 
     /**
      * IM服务是否支持密聊
+     *
      * @return
      */
     public boolean isEnableSecretChat() {
@@ -8453,6 +8489,7 @@ public class ChatManager {
 
     /**
      * IM服务是否开启了互联功能
+     *
      * @return
      */
     public boolean isEnableMesh() {
@@ -9215,6 +9252,7 @@ public class ChatManager {
 
     /**
      * 是否支持大文件上传。只有专业版支持，当支持大文件上传时，使用getUploadUrl获取到上传链接，然后在应用层上传。
+     *
      * @return
      */
     public boolean isSupportBigFilesUpload() {
@@ -9518,6 +9556,7 @@ public class ChatManager {
 
     /**
      * 设置密聊消息焚毁时间，单位秒
+     *
      * @param targetId
      * @param burnTime
      */
@@ -9535,6 +9574,7 @@ public class ChatManager {
 
     /**
      * 获取消息焚毁信息
+     *
      * @param messageId
      * @return
      */
@@ -9637,7 +9677,7 @@ public class ChatManager {
             }
             content.extra = payload.extra;
         } catch (Exception e) {
-            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.type);
+            Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.type);
             e.printStackTrace();
             if (content == null) {
                 return null;
@@ -9675,6 +9715,11 @@ public class ChatManager {
      */
     public void setUrlRedirectorClazz(Class<? extends UrlRedirector> clazz) {
         this.urlRedirectorClazz = clazz;
+        try {
+            this.urlRedirector = clazz.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (mClient != null) {
             try {
                 mClient.setUrlRedirectorClass(clazz.getName());
@@ -9775,6 +9820,9 @@ public class ChatManager {
                     }
                     if (checkSignature) {
                         mClient.checkSignature();
+                    }
+                    if (heartBeatInterval > 0) {
+                        mClient.setHeartBeatInterval(heartBeatInterval);
                     }
 
                     mClient.setBackupAddressStrategy(backupAddressStrategy);
@@ -10061,7 +10109,7 @@ public class ChatManager {
             try {
                 return cls.newInstance();
             } catch (Exception e) {
-                android.util.Log.e(TAG, "create message content instance failed, fall back to UnknownMessageContent, the message content class must have a default constructor. " + type);
+                Log.e(TAG, "create message content instance failed, fall back to UnknownMessageContent, the message content class must have a default constructor. " + type);
                 e.printStackTrace();
             }
         }

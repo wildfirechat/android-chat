@@ -3,34 +3,73 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="right"
-    android:orientation="horizontal">
+    android:layout_gravity="end"
+    android:gravity="end"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/durationTextView"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_toLeftOf="@id/audioContentLayout"
-        android:text="6''" />
+        android:orientation="horizontal">
 
-    <RelativeLayout
-        android:id="@+id/audioContentLayout"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/img_bubble_send"
-        android:backgroundTint="@color/lightColorPrimary"
-        tools:targetApi="q">
-
-        <ImageView
-            android:id="@+id/audioImageView"
+        <TextView
+            android:id="@+id/durationTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_toLeftOf="@id/audioContentLayout"
+            tools:text="6''" />
+
+        <RelativeLayout
+            android:id="@+id/audioContentLayout"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
             android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:background="@drawable/audio_animation_right_list" />
+            android:background="@drawable/img_bubble_send"
+            android:backgroundTint="@color/lightColorPrimary"
+            tools:targetApi="q">
 
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/audioImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:background="@drawable/audio_animation_right_list" />
 
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/speechToTextLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:background="@drawable/shape_message_ref_bg"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/speechToTextTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginTop="1dp"
+            android:maxWidth="250dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            tools:text="翻译/translation"
+            android:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/speechToTextProgressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="5dp"
+            android:progress="40"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
 </LinearLayout>

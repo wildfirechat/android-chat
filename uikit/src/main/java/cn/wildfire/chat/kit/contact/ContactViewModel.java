@@ -11,11 +11,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfirechat.model.Conversation;
@@ -30,7 +32,7 @@ import cn.wildfirechat.remote.OnFriendUpdateListener;
 import cn.wildfirechat.remote.SearchUserCallback;
 import cn.wildfirechat.remote.StringListCallback;
 
-public class ContactViewModel extends ViewModel implements OnFriendUpdateListener {
+public class ContactViewModel extends ViewModel implements AppScopeViewModel, OnFriendUpdateListener {
     private MutableLiveData<List<UIUserInfo>> contactListLiveData;
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
     private MutableLiveData<List<UIUserInfo>> favContactListLiveData;
@@ -86,10 +88,11 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         ChatManager.Instance().getFavUsers(new StringListCallback() {
             @Override
             public void onSuccess(List<String> userIds) {
-                if (userIds == null || userIds.isEmpty()) {
-                    return;
-                }
                 ChatManager.Instance().getWorkHandler().post(() -> {
+                    if (userIds == null || userIds.isEmpty()) {
+                        favContactListLiveData.postValue(new ArrayList<>());
+                        return;
+                    }
                     List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(userIds, null);
                     if (userInfos != null) {
                         favContactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos, true));
@@ -256,6 +259,7 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         ChatManager.Instance().setFavUser(userId, fav, new GeneralCallback() {
             @Override
             public void onSuccess() {
+                reloadFavContact();
                 result.postValue(new OperateResult<>(0));
             }
 
@@ -284,22 +288,6 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
         return result;
     }
 
-    public MutableLiveData<OperateResult<Integer>> setFriendAlias(String userId, String alias) {
-        MutableLiveData<OperateResult<Integer>> data = new MutableLiveData<>();
-        ChatManager.Instance().setFriendAlias(userId, alias, new GeneralCallback() {
-            @Override
-            public void onSuccess() {
-                data.setValue(new OperateResult<>(0));
-            }
-
-            @Override
-            public void onFail(int errorCode) {
-                data.setValue(new OperateResult<>(errorCode));
-            }
-        });
-        return data;
-    }
-
     public MutableLiveData<List<DomainInfo>> loadRemoteDomains() {
         MutableLiveData<List<DomainInfo>> data = new MutableLiveData<>();
         ChatManager.Instance().loadRemoteDomains(new GetRemoteDomainsCallback() {
@@ -314,10 +302,6 @@ public class ContactViewModel extends ViewModel implements OnFriendUpdateListene
             }
         });
         return data;
-    }
-
-    public String getFriendAlias(String userId) {
-        return ChatManager.Instance().getFriendAlias(userId);
     }
 
 }

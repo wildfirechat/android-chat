@@ -29,6 +29,7 @@ import org.webrtc.StatsReport;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.avenginekit.AVAudioManager;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -374,7 +375,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
                 descTextView.setText(R.string.av_video_invite);
             }
         }
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(targetId, false);
         if (userInfo == null) {
             getActivity().finish();

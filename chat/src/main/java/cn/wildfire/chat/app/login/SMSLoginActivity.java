@@ -76,7 +76,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
 
     void inputPhoneNumber(Editable editable) {
         String phone = editable.toString().trim();
-        if (phone.length() == 11) {
+        if (phone.length() == 11 && countdownRunnable == null) {
             requestAuthCodeButton.setEnabled(true);
         } else {
             requestAuthCodeButton.setEnabled(false);
@@ -148,17 +148,46 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     }
 
     private Handler handler = new Handler();
+    private int countdownSeconds = 60;
+    private Runnable countdownRunnable;
 
     void requestAuthCode() {
-        requestAuthCodeButton.setEnabled(false);
-        handler.postDelayed(() -> {
-            if (!isFinishing()) {
-                requestAuthCodeButton.setEnabled(true);
-            }
-        }, 60 * 1000);
-
-        Toast.makeText(this, R.string.requesting_auth_code, Toast.LENGTH_SHORT).show();
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
+
+        // Disable button immediately
+        requestAuthCodeButton.setEnabled(false);
+
+        // Start countdown
+        countdownSeconds = 60;
+        updateCountdownText();
+
+        // Create countdown runnable if not exists
+        if (countdownRunnable == null) {
+            countdownRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (isFinishing()) return;
+
+                    countdownSeconds--;
+                    updateCountdownText();
+
+                    if (countdownSeconds > 0) {
+                        // Continue countdown
+                        handler.postDelayed(this, 1000);
+                    } else {
+                        // Reset button text and enable it
+                        requestAuthCodeButton.setText(getString(R.string.requesting_auth_code));
+                        requestAuthCodeButton.setEnabled(true);
+                    }
+                }
+            };
+        }
+
+        // Start the countdown timer
+        handler.postDelayed(countdownRunnable, 1000);
+
+        // Request the auth code
+        Toast.makeText(this, getString(R.string.requesting_auth_code), Toast.LENGTH_SHORT).show();
 
         AppService.Instance().requestAuthCode(phoneNumber, new AppService.SendCodeCallback() {
             @Override
@@ -169,6 +198,8 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
             @Override
             public void onUiFailure(int code, String msg) {
                 Toast.makeText(SMSLoginActivity.this, getString(R.string.auth_code_request_failure, code, msg), Toast.LENGTH_SHORT).show();
+                // Reset countdown on failure
+                resetCountdown();
             }
         });
     }
@@ -184,5 +215,31 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
             .cancelable(false)
             .build();
         dialog.show();
+    }
+
+    private void updateCountdownText() {
+        if (countdownSeconds > 0) {
+            requestAuthCodeButton.setText(getString(R.string.retry_after_seconds, countdownSeconds));
+        }
+    }
+
+    private void resetCountdown() {
+        // Remove callbacks
+        if (countdownRunnable != null) {
+            handler.removeCallbacks(countdownRunnable);
+        }
+        // Reset button
+        requestAuthCodeButton.setText(R.string.requesting_auth_code);
+        requestAuthCodeButton.setEnabled(true);
+        countdownSeconds = 60;
+        countdownRunnable = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (handler != null && countdownRunnable != null) {
+            handler.removeCallbacks(countdownRunnable);
+        }
     }
 }

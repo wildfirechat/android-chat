@@ -171,6 +171,10 @@
     <string name="qrcode">二维码</string>
     <string name="search_message">查找聊天记录</string>
 
+    <string name="chatroom_details">聊天室详情</string>
+    <string name="chatroom_desc_title">聊天室描述</string>
+    <string name="chatroom_name_title">聊天室名称</string>
+
     <!-- External Domain -->
     <string name="mesh_service_not_enabled">未开启服务互通功能</string>
     <string name="no_external_organization">没有外部单位</string>
@@ -767,6 +771,10 @@
     <!-- Forward Dialog -->
     <string name="forward_send_to">发送给:</string>
     <string name="forward_leave_message">给朋友留言</string>
+    <string name="official">官方</string>
+    <string name="mute_group_member">群成员禁言</string>
+    <string name="speech_to_text">转文字</string>
+    <string name="cancel_speech_to_text">取消转文字</string>
 
     <string name="anti_fraud_tip">为了避免被用于诈骗等目的，本功能已被屏蔽</string>
 </resources>

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
@@ -61,7 +62,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
         memberRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
         memberRecyclerView.setAdapter(groupMemberListAdapter);
         groupMemberListAdapter.setOnMemberClickListener(this);
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         userViewModel.userInfoLiveData().observe(this, userInfos -> loadAndShowGroupMembers());
         loadAndShowGroupMembers();
     }
@@ -71,7 +72,7 @@ public class GroupMemberListFragment extends ProgressFragment implements GroupMe
     }
 
     private void loadAndShowGroupMembers() {
-        GroupViewModel groupViewModel = ViewModelProviders.of(getActivity()).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
         groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, false).observe(this, uiUserInfos -> {
             showContent();
             groupMemberListAdapter.setMembers(uiUserInfos);

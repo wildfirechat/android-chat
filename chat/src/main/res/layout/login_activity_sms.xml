@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="122dp"
-            android:text="验证码登录"
+            android:text="@string/sms_login_title"
             android:textColor="@color/black2"
             android:textSize="26sp" />
 
@@ -34,7 +34,7 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:gravity="center_vertical"
-                android:hint="请输入手机号(仅支持中国大陆手机号)"
+                android:hint="@string/login_phone_hint"
                 android:inputType="number"
                 android:maxLines="1"
                 android:paddingLeft="87dp"
@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="手机号"
+                android:text="@string/mobile_number"
                 android:textColor="@color/black3"
                 android:textSize="17sp" />
 
@@ -67,7 +67,7 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:gravity="center_vertical"
-                android:hint="请输入验证码"
+                android:hint="@string/verify_code_hint"
                 android:inputType="number"
                 android:maxLines="1"
                 android:paddingLeft="87dp"
@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="验证码"
+                android:text="@string/verify_code"
                 android:textColor="@color/black3"
                 android:textSize="17sp" />
 
@@ -91,7 +91,7 @@
                 android:background="@drawable/request_auth_code_bg"
                 android:enabled="false"
                 android:gravity="center"
-                android:text="获取验证码"
+                android:text="@string/get_verify_code"
                 android:textColor="@color/request_auth_code_text_color"
                 android:textSize="12sp" />
         </FrameLayout>
@@ -101,7 +101,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="使用密码登录"
+            android:text="@string/login_use_password"
             android:textColor="@color/colorPrimary"
             android:textSize="15sp" />
 
@@ -111,7 +111,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="40dp"
             android:enabled="false"
-            android:text="登录"
+            android:text="@string/login_button"
             android:textSize="16sp" />
 
     </LinearLayout>

@@ -65,6 +65,11 @@ public class Config {
     public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
 
     /**
+     * 语音识别服务地址，配置之后，长按语音消息，会显示翻译按钮。如果没有部署，可以设置为null
+     */
+    public static String ASR_SERVER_URL = "https://app.wildfirechat.net/asr/api/recognize";
+
+    /**
      * 组织通讯录服务地址，如果没有部署，可以设置为null
      */
     public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://org.wildfirechat.cn";

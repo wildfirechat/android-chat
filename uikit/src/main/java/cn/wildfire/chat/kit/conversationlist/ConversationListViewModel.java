@@ -248,7 +248,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     @Override
     public void onConversationUnreadStatusClear(ConversationInfo conversationInfo) {
-        reloadConversationList();
+        reloadConversationList(true);
         reloadConversationUnreadStatus();
     }
 

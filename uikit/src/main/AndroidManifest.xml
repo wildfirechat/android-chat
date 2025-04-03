@@ -278,7 +278,9 @@
         <activity android:name="cn.wildfire.chat.moment.FeedVisibleScopeActivity" />
         <!--moment end-->
 
-        <activity android:name=".group.manage.MuteGroupMemberActivity" />
+        <activity android:name=".group.manage.MuteGroupMemberActivity"
+            android:label="@string/mute_group_member"
+            />
         <activity
             android:name=".contact.ContactListActivity"
             android:label="@string/contacts" />

@@ -260,7 +260,7 @@ public class MainActivity extends WfcBaseActivity {
             }
         });
 
-        contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.friendRequestUpdatedLiveData().observe(this, count -> {
             if (count == null || count == 0) {
                 hideUnreadFriendRequestBadgeView();
@@ -577,7 +577,7 @@ public class MainActivity extends WfcBaseActivity {
 
     private void showUser(String uid) {
 
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         UserInfo userInfo = userViewModel.getUserInfo(uid, true);
         if (userInfo == null) {
             return;
@@ -608,7 +608,7 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private boolean checkDisplayName() {
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         SharedPreferences sp = getSharedPreferences("wfc_config", Context.MODE_PRIVATE);
         UserInfo userInfo = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         if (userInfo != null && TextUtils.equals(userInfo.displayName, userInfo.mobile)) {

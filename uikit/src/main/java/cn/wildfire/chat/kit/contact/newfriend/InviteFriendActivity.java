@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.UserInfo;
@@ -37,7 +38,7 @@ public class InviteFriendActivity extends WfcBaseActivity {
         if (userInfo == null) {
             finish();
         }
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         UserInfo me = userViewModel.getUserInfo(userViewModel.getUserId(), false);
         introTextView.setText(getString(R.string.invite_default_message, (me == null ? "" : me.displayName)));
     }
@@ -66,7 +67,7 @@ public class InviteFriendActivity extends WfcBaseActivity {
     }
 
     void invite() {
-        ContactViewModel contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+        ContactViewModel contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
         contactViewModel.invite(userInfo.uid, introTextView.getText().toString())
             .observe(this, errorCode -> {
                 if (errorCode == 0) {

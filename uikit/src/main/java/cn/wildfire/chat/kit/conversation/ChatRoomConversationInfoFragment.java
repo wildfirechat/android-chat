@@ -4,8 +4,96 @@
 
 package cn.wildfire.chat.kit.conversation;
 
-import androidx.fragment.app.Fragment;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
-// TODO
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.bumptech.glide.Glide;
+
+import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.chatroom.ChatRoomViewModel;
+import cn.wildfire.chat.kit.common.OperateResult;
+import cn.wildfire.chat.kit.widget.OptionItemView;
+import cn.wildfirechat.model.ChatRoomInfo;
+import cn.wildfirechat.model.ConversationInfo;
+
 public class ChatRoomConversationInfoFragment extends Fragment {
+
+    // common
+    ImageView portraitImageView;
+
+    OptionItemView chatroomNameOptionItemView;
+    OptionItemView chatroomDescOptionItemView;
+
+    private ConversationInfo conversationInfo;
+    private ConversationViewModel conversationViewModel;
+    private ChatRoomViewModel chatroomViewModel;
+    private ChatRoomInfo chatroomInfo;
+
+    public static ChatRoomConversationInfoFragment newInstance(ConversationInfo conversationInfo) {
+        ChatRoomConversationInfoFragment fragment = new ChatRoomConversationInfoFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("conversationInfo", conversationInfo);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        assert args != null;
+        conversationInfo = args.getParcelable("conversationInfo");
+        assert conversationInfo != null;
+        getActivity().setTitle(getString(R.string.channel_details));
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.conversation_info_chatroom_fragment, container, false);
+        bindViews(view);
+        bindEvents(view);
+        init();
+        return view;
+    }
+
+    private void bindEvents(View view) {
+    }
+
+    private void bindViews(View view) {
+        portraitImageView = view.findViewById(R.id.portraitImageView);
+        chatroomNameOptionItemView = view.findViewById(R.id.chatroomNameOptionItemView);
+        chatroomDescOptionItemView = view.findViewById(R.id.chatroomDescOptionItemView);
+    }
+
+    private void init() {
+        conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
+        chatroomViewModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
+        chatroomViewModel.getChatRoomInfo(conversationInfo.conversation.target, 0)
+            .observe(getViewLifecycleOwner(), new Observer<OperateResult<ChatRoomInfo>>() {
+                @Override
+                public void onChanged(OperateResult<ChatRoomInfo> chatRoomInfoOperateResult) {
+                    ChatRoomInfo chatRoomInfo = chatRoomInfoOperateResult.getResult();
+                    if (chatroomInfo != null) {
+                        initChatroom(chatRoomInfo);
+                    }
+                }
+            });
+    }
+
+    private void initChatroom(ChatRoomInfo chatroomInfo) {
+        chatroomNameOptionItemView.setDesc(chatroomInfo.title);
+        chatroomDescOptionItemView.setDesc(chatroomInfo.desc);
+        Glide.with(this).load(chatroomInfo.portrait).into(portraitImageView);
+    }
 }

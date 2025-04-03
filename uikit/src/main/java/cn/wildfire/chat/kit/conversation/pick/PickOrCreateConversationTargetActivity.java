@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.OrganizationServiceViewModel;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickConversationTargetActivity;
@@ -84,7 +85,7 @@ public class PickOrCreateConversationTargetActivity extends PickConversationTarg
                 userMap.put(info.uid, info);
             }
 
-            GroupViewModel groupViewModel = new ViewModelProvider(this).get(GroupViewModel.class);
+            GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
             String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
             groupViewModel.createGroup(this, new ArrayList<UserInfo>(userMap.values()), null, Collections.singletonList(0), null, memberExtra).observe(this, result -> {
                 dialog.dismiss();

@@ -23,6 +23,7 @@ import java.util.List;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
 import cn.wildfirechat.client.GroupMemberSource;
@@ -68,7 +69,7 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
 
         pickUserViewModel = ViewModelProviders.of(this).get(PickUserViewModel.class);
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
-        groupViewModel = ViewModelProviders.of(this).get(GroupViewModel.class);
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.containerFrameLayout, AddGroupMemberFragment.newInstance(groupInfo))
             .commit();
