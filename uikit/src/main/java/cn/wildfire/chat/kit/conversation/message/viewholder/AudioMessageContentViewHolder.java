@@ -168,11 +168,19 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
                         return;
                     }
                     char firstChar = data.charAt(0);
-                    if (!speechToTextSB.toString().isEmpty()
+                    String curText = speechToTextSB.toString();
+                    if (!curText.isEmpty()
                         && ((firstChar >= 'a' && firstChar <= 'z') || (firstChar >= 'A' && firstChar <= 'Z'))) {
                         speechToTextSB.append(" ");
+                        speechToTextSB.append(data);
+
+                        char lastChar = curText.charAt(curText.length() - 1);
+                        if (!((lastChar >= 'a' && lastChar <= 'z') || (lastChar >= 'A' && lastChar <= 'Z'))) {
+                            speechToTextSB.append(" ");
+                        }
+                    } else {
+                        speechToTextSB.append(data);
                     }
-                    speechToTextSB.append(data);
                     String text = speechToTextSB.toString();
                     speechToTextTextView.setText(text);
                     message.audioMessageSpeechToText = text;
