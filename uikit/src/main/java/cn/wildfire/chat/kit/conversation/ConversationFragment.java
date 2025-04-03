@@ -267,7 +267,9 @@ public class ConversationFragment extends Fragment implements
                     updateTypingStatusTitle();
                 }
 
-                if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && uiMessage.message.direction == MessageDirection.Receive) {
+                if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED
+                    && uiMessage.message.direction == MessageDirection.Receive
+                    && uiMessage.message.messageId > 0) {
                     conversationViewModel.clearUnreadStatus(conversation);
                 }
             }
