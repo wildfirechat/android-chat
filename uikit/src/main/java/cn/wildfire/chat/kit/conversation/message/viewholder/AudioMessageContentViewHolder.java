@@ -140,7 +140,7 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         final String currentAudioUrl = voiceMessage.remoteUrl;
 
         object.put("url", currentAudioUrl);
-        object.put("noReuse", false);
+        object.put("noReuse", true);
         object.put("noLlm", false);
         this.speechToTextSB = new StringBuilder();
         this.speechToTextInProgress = true;
@@ -164,7 +164,23 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
                     return;
                 }
                 if (TextUtils.equals(currentAudioUrl, ((SoundMessageContent) message.message.content).remoteUrl)) {
-                    speechToTextSB.append(data.replaceAll("\n", ""));
+                    if (TextUtils.isEmpty(data)) {
+                        return;
+                    }
+                    char firstChar = data.charAt(0);
+                    String curText = speechToTextSB.toString();
+                    if (!curText.isEmpty()
+                        && ((firstChar >= 'a' && firstChar <= 'z') || (firstChar >= 'A' && firstChar <= 'Z'))) {
+                        speechToTextSB.append(" ");
+                        speechToTextSB.append(data);
+
+                        char lastChar = curText.charAt(curText.length() - 1);
+                        if (!((lastChar >= 'a' && lastChar <= 'z') || (lastChar >= 'A' && lastChar <= 'Z'))) {
+                            speechToTextSB.append(" ");
+                        }
+                    } else {
+                        speechToTextSB.append(data);
+                    }
                     String text = speechToTextSB.toString();
                     speechToTextTextView.setText(text);
                     message.audioMessageSpeechToText = text;
