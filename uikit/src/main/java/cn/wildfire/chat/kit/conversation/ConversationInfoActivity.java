@@ -35,7 +35,7 @@ public class ConversationInfoActivity extends WfcBaseActivity {
                 fragment = GroupConversationInfoFragment.newInstance(conversationInfo);
                 break;
             case ChatRoom:
-                fragment = ChatroomConversationInfoFragment.newInstance(conversationInfo);
+                fragment = ChatRoomConversationInfoFragment.newInstance(conversationInfo);
                 break;
             case Channel:
                 fragment = ChannelConversationInfoFragment.newInstance(conversationInfo);

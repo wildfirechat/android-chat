@@ -26,7 +26,7 @@ import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.ChatRoomInfo;
 import cn.wildfirechat.model.ConversationInfo;
 
-public class ChatroomConversationInfoFragment extends Fragment {
+public class ChatRoomConversationInfoFragment extends Fragment {
 
     // common
     ImageView portraitImageView;
@@ -39,8 +39,8 @@ public class ChatroomConversationInfoFragment extends Fragment {
     private ChatRoomViewModel chatroomViewModel;
     private ChatRoomInfo chatroomInfo;
 
-    public static ChatroomConversationInfoFragment newInstance(ConversationInfo conversationInfo) {
-        ChatroomConversationInfoFragment fragment = new ChatroomConversationInfoFragment();
+    public static ChatRoomConversationInfoFragment newInstance(ConversationInfo conversationInfo) {
+        ChatRoomConversationInfoFragment fragment = new ChatRoomConversationInfoFragment();
         Bundle args = new Bundle();
         args.putParcelable("conversationInfo", conversationInfo);
         fragment.setArguments(args);
