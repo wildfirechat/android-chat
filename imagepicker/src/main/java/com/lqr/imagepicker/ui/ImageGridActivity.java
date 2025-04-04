@@ -120,9 +120,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     @Override
     protected void onResume() {
         super.onResume();
-        if (!this.isFullAccessGranted) {
-            imageDataSource.refresh();
-        }
+        imageDataSource.refresh();
         mImageGridAdapter.notifyDataSetChanged();
         mImageFolderAdapter.notifyDataSetChanged();
         updatePickStatus();
