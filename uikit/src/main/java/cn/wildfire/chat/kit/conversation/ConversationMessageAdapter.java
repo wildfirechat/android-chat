@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversation;
 
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.noober.menu.HorizontalContextMenu;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +27,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -162,8 +164,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (index >= 0) {
             updateMessage(index, message);
             return;
-        }else {
-            if(!messages.isEmpty() && messages.get(0).message.serverTime > message.message.serverTime){
+        } else {
+            if (!messages.isEmpty() && messages.get(0).message.serverTime > message.message.serverTime) {
                 Log.d(TAG, "msg timestamp < the first msg's timestamp, maybe update old message content, ignore");
                 return;
             }
@@ -343,6 +345,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         try {
             View view = viewStub.inflate();
+            view.setTag("messageContentView");
             if (view instanceof ImageView) {
                 ((ImageView) view).setImageDrawable(null);
             }
@@ -491,49 +494,45 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                     return false;
                 }
 
-                Collections.sort(contextMenus, (o1, o2) -> o1.contextMenuItem.priority() - o2.contextMenuItem.priority());
+                List<Pair<Integer, String>> items = new ArrayList<>(contextMenus.size());
+                Collections.sort(contextMenus, Comparator.comparingInt(o -> o.contextMenuItem.priority()));
                 List<String> titles = new ArrayList<>(contextMenus.size());
                 for (ContextMenuItemWrapper itemWrapper : contextMenus) {
-                    titles.add(viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag()));
+                    items.add(new Pair<>(viewHolder.contextMenuIcon(fragment.getContext(), itemWrapper.contextMenuItem.tag()), viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag())));
                 }
-                new MaterialDialog.Builder(fragment.getContext()).items(titles).itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {
-                        try {
-                            ContextMenuItemWrapper menuItem = contextMenus.get(position);
-                            if (menuItem.contextMenuItem.confirm()) {
-                                String content;
-                                content = viewHolder.contextConfirmPrompt(fragment.getContext(), menuItem.contextMenuItem.tag());
-                                new MaterialDialog.Builder(fragment.getContext())
-                                    .content(content)
-                                    .negativeText(R.string.delete_message_dialog_cancel)
-                                    .positiveText(R.string.delete_message_dialog_confirm)
-                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                            try {
-                                                menuItem.method.invoke(viewHolder, itemView, message);
-                                            } catch (IllegalAccessException e) {
-                                                e.printStackTrace();
-                                            } catch (InvocationTargetException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    })
-                                    .build()
-                                    .show();
 
-                            } else {
-                                contextMenus.get(position).method.invoke(viewHolder, itemView, message);
-                            }
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
-                            e.printStackTrace();
+                new HorizontalContextMenu(fragment.getContext(), itemView.findViewWithTag("messageContentView"), items, position1 -> {
+                    try {
+                        ContextMenuItemWrapper menuItem = contextMenus.get(position1);
+                        if (menuItem.contextMenuItem.confirm()) {
+                            String content;
+                            content = viewHolder.contextConfirmPrompt(fragment.getContext(), menuItem.contextMenuItem.tag());
+                            new MaterialDialog.Builder(fragment.getContext())
+                                .content(content)
+                                .negativeText(R.string.delete_message_dialog_cancel)
+                                .positiveText(R.string.delete_message_dialog_confirm)
+                                .onPositive((dialog, which) -> {
+                                    try {
+                                        menuItem.method.invoke(viewHolder, itemView, message);
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } catch (InvocationTargetException e) {
+                                        e.printStackTrace();
+                                    }
+                                })
+                                .build()
+                                .show();
+
+                        } else {
+                            contextMenus.get(position1).method.invoke(viewHolder, itemView, message);
                         }
-
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
                     }
-                }).show();
+                }, 5, 0, 0, 0)
+                    .show();
                 return true;
             }
         };

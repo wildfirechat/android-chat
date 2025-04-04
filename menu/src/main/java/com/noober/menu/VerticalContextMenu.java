@@ -34,7 +34,7 @@ import java.util.List;
  * Created by xiaoqi on 2017/12/11.
  */
 
-public class FloatListContextMenu extends PopupWindow {
+public class VerticalContextMenu extends PopupWindow {
 
     /**
      * Menu tag name in XML.
@@ -58,7 +58,7 @@ public class FloatListContextMenu extends PopupWindow {
     private final int VERTICAL_OFFSET;
 
     private Context context;
-    private List<MenuItem> menuItemList;
+    private List<VerticalContextMenuItem> verticalContextMenuItemList;
     private View view;
     private Point screenPoint;
     private int clickX;
@@ -66,18 +66,13 @@ public class FloatListContextMenu extends PopupWindow {
     private int menuWidth;
     private int menuHeight;
     private LinearLayout menuLayout;
-    private OnItemClickListener onItemClickListener;
+    private OnMenuItemClickListener onItemClickListener;
 
-
-    public interface OnItemClickListener {
-        void onClick(View v, int position);
-    }
-
-    public FloatListContextMenu(Activity activity) {
+    public VerticalContextMenu(Activity activity) {
         this(activity, activity.findViewById(android.R.id.content));
     }
 
-    public FloatListContextMenu(Context context, View view) {
+    public VerticalContextMenu(Context context, View view) {
         super(context);
         setOutsideTouchable(true);
         setFocusable(true);
@@ -88,7 +83,7 @@ public class FloatListContextMenu extends PopupWindow {
         VERTICAL_OFFSET = Display.dip2px(context, 10);
         DEFAULT_MENU_WIDTH = Display.dip2px(context, 140);
         screenPoint = Display.getScreenMetrics(context);
-        menuItemList = new ArrayList<>();
+        verticalContextMenuItemList = new ArrayList<>();
     }
 
     public void inflate(int menuRes) {
@@ -120,42 +115,42 @@ public class FloatListContextMenu extends PopupWindow {
     }
 
     public void items(int itemWidth, String... items) {
-        menuItemList.clear();
+        verticalContextMenuItemList.clear();
         for (int i = 0; i < items.length; i++) {
-            MenuItem menuModel = new MenuItem();
+            VerticalContextMenuItem menuModel = new VerticalContextMenuItem();
             menuModel.setItem(items[i]);
-            menuItemList.add(menuModel);
+            verticalContextMenuItemList.add(menuModel);
         }
         generateLayout(itemWidth);
     }
 
-    public <T extends MenuItem> void items(List<T> itemList) {
-        menuItemList.clear();
-        menuItemList.addAll(itemList);
+    public <T extends VerticalContextMenuItem> void items(List<T> itemList) {
+        verticalContextMenuItemList.clear();
+        verticalContextMenuItemList.addAll(itemList);
         generateLayout(DEFAULT_MENU_WIDTH);
     }
 
-    public <T extends MenuItem> void items(List<T> itemList, int itemWidth) {
-        menuItemList.clear();
-        menuItemList.addAll(itemList);
+    public <T extends VerticalContextMenuItem> void items(List<T> itemList, int itemWidth) {
+        verticalContextMenuItemList.clear();
+        verticalContextMenuItemList.addAll(itemList);
         generateLayout(itemWidth);
     }
 
     private void generateLayout(int itemWidth) {
         menuLayout = new LinearLayout(context);
-        menuLayout.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.bg_shadow));
+        menuLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_shadow));
         menuLayout.setOrientation(LinearLayout.VERTICAL);
         int padding = Display.dip2px(context, 12);
-        for (int i = 0; i < menuItemList.size(); i++) {
+        for (int i = 0; i < verticalContextMenuItemList.size(); i++) {
             TextView textView = new TextView(context);
             textView.setClickable(true);
-            textView.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.selector_item));
+            textView.setBackground(ContextCompat.getDrawable(context, R.drawable.selector_item));
             textView.setPadding(padding, padding, padding, padding);
             textView.setWidth(itemWidth);
             textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
             textView.setTextSize(15);
             textView.setTextColor(Color.BLACK);
-            MenuItem menuModel = menuItemList.get(i);
+            VerticalContextMenuItem menuModel = verticalContextMenuItemList.get(i);
             if (menuModel.getItemResId() != View.NO_ID) {
                 Drawable drawable = ContextCompat.getDrawable(context, menuModel.getItemResId());
                 drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
@@ -163,9 +158,16 @@ public class FloatListContextMenu extends PopupWindow {
                 textView.setCompoundDrawables(drawable, null, null, null);
             }
             textView.setText(menuModel.getItem());
-            if (onItemClickListener != null) {
-                textView.setOnClickListener(new ItemOnClickListener(i));
-            }
+            int finalPosition = i;
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onClick(finalPosition);
+                    }
+                }
+            });
             menuLayout.addView(textView);
         }
         int width = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
@@ -248,12 +250,12 @@ public class FloatListContextMenu extends PopupWindow {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MenuItem);
         CharSequence itemTitle = a.getText(R.styleable.MenuItem_menu_title);
         int itemIconResId = a.getResourceId(R.styleable.MenuItem_icon, View.NO_ID);
-        MenuItem menu = new MenuItem();
+        VerticalContextMenuItem menu = new VerticalContextMenuItem();
         menu.setItem(String.valueOf(itemTitle));
         if (itemIconResId != View.NO_ID) {
             menu.setItemResId(itemIconResId);
         }
-        menuItemList.add(menu);
+        verticalContextMenuItemList.add(menu);
         a.recycle();
     }
 
@@ -306,14 +308,8 @@ public class FloatListContextMenu extends PopupWindow {
         super.setOnDismissListener(onDismissListener);
     }
 
-    public void setOnItemClickListener(final OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(final OnMenuItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
-        if (onItemClickListener != null) {
-            for (int i = 0; i < menuLayout.getChildCount(); i++) {
-                View view = menuLayout.getChildAt(i);
-                view.setOnClickListener(new ItemOnClickListener(i));
-            }
-        }
     }
 
     class MenuTouchListener implements View.OnTouchListener {
@@ -325,22 +321,6 @@ public class FloatListContextMenu extends PopupWindow {
                 clickY = (int) event.getRawY();
             }
             return false;
-        }
-    }
-
-    class ItemOnClickListener implements View.OnClickListener {
-        int position;
-
-        public ItemOnClickListener(int position) {
-            this.position = position;
-        }
-
-        @Override
-        public void onClick(View v) {
-            dismiss();
-            if (onItemClickListener != null) {
-                onItemClickListener.onClick(v, position);
-            }
         }
     }
 }
