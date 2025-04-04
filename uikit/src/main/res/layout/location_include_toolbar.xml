@@ -21,7 +21,7 @@
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:src="@mipmap/ic_back" />
+                android:src="@mipmap/ic_image_pick_back" />
 
             <View
                 android:id="@+id/backDividerView"

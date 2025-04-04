@@ -25,7 +25,6 @@
 
         <com.lqr.imagepicker.view.SuperCheckBox
             android:id="@+id/cb_origin"
-            style="@style/SuperCheckboxTheme"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
@@ -35,7 +34,6 @@
 
         <com.lqr.imagepicker.view.SuperCheckBox
             android:id="@+id/cb_check"
-            style="@style/SuperCheckboxTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
