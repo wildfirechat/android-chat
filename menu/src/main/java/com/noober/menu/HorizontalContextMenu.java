@@ -6,7 +6,6 @@ package com.noober.menu;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,11 +24,12 @@ public class HorizontalContextMenu {
     private final PopupWindow mWindow;
     private final Context mContext;
     private final View mTargetView;
-    private final int[] mTempCoors = new int[2];
+    private final int[] mTargetViewLocation = new int[2];
     private final int mWidth;
     private final int mHeight;
     private final HorizontalContextMenuAdapter listAdapter;
     private final RecyclerView rvContent;
+    private final View mContentView;
     private final ImageView ivArrow;
     private final ImageView ivArrowUp;
     private final int mPopSpanCount;
@@ -44,6 +44,7 @@ public class HorizontalContextMenu {
         rvContent = contentView.findViewById(R.id.rv_content);
         ivArrow = contentView.findViewById(R.id.iv_arrow);
         ivArrowUp = contentView.findViewById(R.id.iv_arrow_up);
+        mContentView = contentView;
         mPopSpanCount = popSpanCount;
         mContext = context;
         mTargetView = targetView;
@@ -90,17 +91,17 @@ public class HorizontalContextMenu {
                 size, GridLayoutManager.VERTICAL, false));
         }
 
-        mTargetView.getLocationInWindow(mTempCoors);
-        Log.d("jyj", mTempCoors[0] + " " + mTempCoors[1]);
+        mTargetView.getLocationInWindow(mTargetViewLocation);
         int posX;
-        int startX = mTempCoors[0];
+        int targetViewStartX = mTargetViewLocation[0];
+        int targetViewCenterX = targetViewStartX + mTargetView.getWidth() / 2;
         // 默认放在targetView的上面
-        int posY = mTempCoors[1] - mHeight;
+        int posY = mTargetViewLocation[1] - mHeight;
 
         ImageView arrow = ivArrow;
         // 状态栏高度
         if (posY < Display.dip2px(mContext, 60)) {
-            posY = mTempCoors[1] + mTargetView.getHeight();
+            posY = mTargetViewLocation[1] + mTargetView.getHeight();
             if (posY > deviceHeight - mHeight) {
                 posY = deviceHeight - mHeight;
             }
@@ -108,26 +109,30 @@ public class HorizontalContextMenu {
             ivArrow.setVisibility(View.GONE);
             ivArrowUp.setVisibility(View.VISIBLE);
             arrow = ivArrowUp;
+        } else {
+            ivArrow.setVisibility(View.VISIBLE);
+            ivArrowUp.setVisibility(View.GONE);
         }
 
-        posX = (startX + (mTempCoors[0] + mTargetView.getWidth())) / 2 - mWidth / 2;
+        posX = (targetViewStartX + mTargetView.getWidth() / 2) - mWidth / 2;
 
         if (posX <= 0) {
-            posX = Display.dip2px(mContext, 20);
-        } else if (posX + mWidth >= deviceWidth - Display.dip2px(mContext, 20)) {
-            posX = deviceWidth - mWidth - Display.dip2px(mContext, 20);
-        }
-
-        mWindow.showAtLocation(mTargetView, Gravity.NO_GRAVITY, posX, posY);
-
-        int targetViewCenterX = mTempCoors[0] + mTargetView.getWidth() / 2;
-        if (targetViewCenterX > posX) {
-            arrow.setTranslationX(targetViewCenterX - posX - Display.dip2px(mContext, 20));
+            posX = Display.dip2px(mContext, 10);
+            mWindow.showAtLocation(mTargetView, Gravity.LEFT | Gravity.TOP, posX, posY);
+        } else if (posX + mWidth >= deviceWidth - Display.dip2px(mContext, 10)) {
+            posX = Display.dip2px(mContext, 10);
+            mWindow.showAtLocation(mTargetView, Gravity.RIGHT | Gravity.TOP, posX, posY);
         } else {
-            // never
-            arrow.setTranslationX(posX - targetViewCenterX - arrow.getWidth());
+            mWindow.showAtLocation(mTargetView, Gravity.LEFT | Gravity.TOP, posX, posY);
         }
 
+        ImageView finalArrow = arrow;
+        mWindow.getContentView().post(() -> {
+            int[] location = new int[2];
+            mWindow.getContentView().getLocationOnScreen(location);
+            float arrowTranslationX = targetViewCenterX - location[0] - Display.dip2px(mContext, 10);
+            finalArrow.setTranslationX(arrowTranslationX);
+        });
     }
 
     public void dismiss() {
