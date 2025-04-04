@@ -60,6 +60,8 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
 
     public abstract String contextMenuTitle(Context context, String tag);
 
+    public abstract int contextMenuIcon(Context context, String tag);
+
     public abstract String contextConfirmPrompt(Context context, String tag);
 
     public void onViewRecycled() {

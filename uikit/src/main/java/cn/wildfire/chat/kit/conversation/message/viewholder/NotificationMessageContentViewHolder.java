@@ -31,4 +31,9 @@ public abstract class NotificationMessageContentViewHolder extends MessageConten
     public String contextConfirmPrompt(Context context, String tag) {
         return null;
     }
+
+    @Override
+    public int contextMenuIcon(Context context, String tag) {
+        return 0;
+    }
 }
