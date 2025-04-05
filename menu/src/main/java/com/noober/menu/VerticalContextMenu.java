@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.util.Xml;
 import android.view.Gravity;
 import android.view.InflateException;
@@ -149,7 +150,7 @@ public class VerticalContextMenu extends PopupWindow {
             textView.setPadding(padding, padding, padding, padding);
             textView.setWidth(itemWidth);
             textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
-            textView.setTextSize(15);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
             textView.setTextColor(Color.BLACK);
             VerticalContextMenuItem menuModel = verticalContextMenuItemList.get(i);
             if (menuModel.getItemResId() != View.NO_ID) {
