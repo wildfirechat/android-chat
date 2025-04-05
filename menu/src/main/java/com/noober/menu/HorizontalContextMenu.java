@@ -6,6 +6,7 @@ package com.noober.menu;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -90,6 +92,11 @@ public class HorizontalContextMenu {
             rvContent.setLayoutManager(new GridLayoutManager(mContext,
                 size, GridLayoutManager.VERTICAL, false));
         }
+
+        // 设置分割线
+        Drawable dividerDrawable = ContextCompat.getDrawable(mContext, R.drawable.divider);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(dividerDrawable);
+        rvContent.addItemDecoration(dividerItemDecoration);
 
         mTargetView.getLocationInWindow(mTargetViewLocation);
         int posX;

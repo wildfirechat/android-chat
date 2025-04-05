@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -69,7 +70,7 @@ public class HorizontalContextMenuAdapter extends RecyclerView.Adapter<Horizonta
         return mMenuItems != null ? mMenuItems.size() : 0;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         LinearLayout ll_pop_item;
         ImageView iv_pop_icon;
         TextView tv_pop_func;
