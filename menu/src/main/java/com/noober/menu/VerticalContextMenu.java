@@ -8,6 +8,7 @@ import android.content.res.XmlResourceParser;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -76,7 +77,6 @@ public class VerticalContextMenu extends PopupWindow {
         super(context);
         setOutsideTouchable(true);
         setFocusable(true);
-        setBackgroundDrawable(new BitmapDrawable());
         view.setOnTouchListener(new MenuTouchListener());
         this.context = context;
         this.view = view;
@@ -84,6 +84,8 @@ public class VerticalContextMenu extends PopupWindow {
         DEFAULT_MENU_WIDTH = Display.dip2px(context, 140);
         screenPoint = Display.getScreenMetrics(context);
         verticalContextMenuItemList = new ArrayList<>();
+        setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        setElevation(10);
     }
 
     public void inflate(int menuRes) {
@@ -138,13 +140,12 @@ public class VerticalContextMenu extends PopupWindow {
 
     private void generateLayout(int itemWidth) {
         menuLayout = new LinearLayout(context);
-        menuLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_shadow));
         menuLayout.setOrientation(LinearLayout.VERTICAL);
         int padding = Display.dip2px(context, 12);
         for (int i = 0; i < verticalContextMenuItemList.size(); i++) {
             TextView textView = new TextView(context);
             textView.setClickable(true);
-            textView.setBackground(ContextCompat.getDrawable(context, R.drawable.selector_item));
+            textView.setBackground(ContextCompat.getDrawable(context, R.drawable.vertical_context_menu_item_bg));
             textView.setPadding(padding, padding, padding, padding);
             textView.setWidth(itemWidth);
             textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
