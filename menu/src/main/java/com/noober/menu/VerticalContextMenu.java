@@ -150,7 +150,7 @@ public class VerticalContextMenu extends PopupWindow {
             textView.setPadding(padding, padding, padding, padding);
             textView.setWidth(itemWidth);
             textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
             textView.setTextColor(Color.BLACK);
             VerticalContextMenuItem menuModel = verticalContextMenuItemList.get(i);
             if (menuModel.getItemResId() != View.NO_ID) {
