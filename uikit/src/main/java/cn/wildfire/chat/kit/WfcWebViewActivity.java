@@ -139,6 +139,8 @@ public class WfcWebViewActivity extends WfcBaseActivity {
         });
         if (!TextUtils.isEmpty(htmlContent)) {
             webView.loadDataWithBaseURL("", htmlContent, "text/html", "UTF-8", "");
+            WebSettings webSettings = webView.getSettings();
+            webSettings.setTextZoom(400);
         } else {
             webView.loadUrl(url);
         }
