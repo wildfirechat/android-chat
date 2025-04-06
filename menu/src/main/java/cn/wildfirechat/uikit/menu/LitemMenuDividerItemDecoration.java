@@ -33,7 +33,7 @@ public class LitemMenuDividerItemDecoration extends RecyclerView.ItemDecoration 
             int right = child.getRight();
             int top = child.getBottom();
             int bottom = top + mDivider.getIntrinsicHeight();
-            mDivider.setBounds(left + Display.dip2px(parent.getContext(), 36)/* icon width + padding*/, top, right, bottom);
+            mDivider.setBounds(left + Display.dip2px(parent.getContext(), 48)/* icon width + padding*/, top, right, bottom);
             mDivider.draw(canvas);
         }
     }
