@@ -208,4 +208,5 @@
     <string name="language_change_tip">Language settings will take effect after restarting the app</string>
     <string name="confirm">Confirm</string>
     <string name="retry_after_seconds">%1$d seconds to retry</string>
+    <string name="e2e_not_enable">Secret chat not enable</string>
 </resources>

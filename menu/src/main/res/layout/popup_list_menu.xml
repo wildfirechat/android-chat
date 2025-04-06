@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/easy_alert_dialog_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_arrow_up"
+        android:layout_width="14dp"
+        android:layout_height="7dp"
+        android:background="@drawable/ic_cm_arrow"
+        android:rotationX="180"
+        android:visibility="gone"
+        tools:ignore="ContentDescription" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_color_4c4c4c_radius_8"
+        android:clipToOutline="true"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        tools:listitem="@layout/popup_list_menu_item" />
+
+    <ImageView
+        android:id="@+id/iv_arrow"
+        android:layout_width="14dp"
+        android:layout_height="7dp"
+        android:background="@drawable/ic_cm_arrow"
+        tools:ignore="ContentDescription" />
+
+</LinearLayout>

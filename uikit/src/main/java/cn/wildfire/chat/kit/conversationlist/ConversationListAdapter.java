@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.noober.menu.OnMenuItemClickListener;
-import com.noober.menu.VerticalContextMenu;
+import cn.wildfirechat.uikit.menu.OnMenuItemClickListener;
+import cn.wildfirechat.uikit.menu.VerticalContextMenu;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
