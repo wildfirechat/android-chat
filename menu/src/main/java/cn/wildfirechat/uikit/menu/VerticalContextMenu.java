@@ -143,7 +143,7 @@ public class VerticalContextMenu extends PopupWindow {
     private void generateLayout(int itemWidth) {
         menuLayout = new LinearLayout(context);
         menuLayout.setOrientation(LinearLayout.VERTICAL);
-        int padding = Display.dip2px(context, 12);
+        int padding = Display.dip2px(context, 14);
         for (int i = 0; i < verticalContextMenuItemList.size(); i++) {
             TextView textView = new TextView(context);
             textView.setClickable(true);
@@ -151,7 +151,7 @@ public class VerticalContextMenu extends PopupWindow {
             textView.setPadding(padding, padding, padding, padding);
             textView.setWidth(itemWidth);
             textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
             textView.setTextColor(Color.BLACK);
             VerticalContextMenuItem menuModel = verticalContextMenuItemList.get(i);
             if (menuModel.getItemResId() != View.NO_ID) {

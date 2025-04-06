@@ -13,8 +13,8 @@
 
     <ImageView
         android:id="@+id/iv_pop_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:backgroundTint="#ffffff"
         android:scaleType="centerInside"
         tools:ignore="ContentDescription" />
