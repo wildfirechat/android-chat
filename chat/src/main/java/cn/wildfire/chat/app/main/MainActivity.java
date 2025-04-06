@@ -14,6 +14,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +36,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.king.zxing.Intents;
+import cn.wildfirechat.uikit.menu.PopupMenu;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -233,8 +235,8 @@ public class MainActivity extends WfcBaseActivity {
         super.afterMenus(menu);
         boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
         if (!isEnableSecretChat) {
-            secretChatMenuItem = menu.findItem(R.id.secretChat);
-            secretChatMenuItem.setEnabled(false);
+//            secretChatMenuItem = menu.findItem(R.id.secretChat);
+//            secretChatMenuItem.setEnabled(false);
         }
     }
 
@@ -425,30 +427,60 @@ public class MainActivity extends WfcBaseActivity {
         });
     }
 
+    private void showMoreActionMenu() {
+        List<Pair<Integer, String>> menuItems = new ArrayList<>();
+        menuItems.add(new Pair<>(R.mipmap.ic_start_chat, getString(R.string.start_group_chat)));
+        menuItems.add(new Pair<>(R.mipmap.ic_start_chat, getString(R.string.start_secret_chat)));
+        menuItems.add(new Pair<>(R.mipmap.ic_add_friend, getString(R.string.add_friend)));
+        menuItems.add(new Pair<>(R.mipmap.ic_qr_code, getString(R.string.scan_qrcode)));
+        PopupMenu moreActionsMenu = new PopupMenu(this, menuItems, position -> {
+            switch (position) {
+                case 0:
+                    createConversation();
+                    break;
+                case 1:
+                    boolean isEnableSecretChat = ChatManager.Instance().isEnableSecretChat();
+                    if (isEnableSecretChat) {
+                        pickContactToCreateSecretConversation();
+                    } else {
+                        Toast.makeText(this, R.string.e2e_not_enable, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case 2:
+                    searchUser();
+                    break;
+                case 3:
+                    String[] permissions = new String[]{Manifest.permission.CAMERA};
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (!checkPermission(permissions)) {
+                            requestPermissions(permissions, 100);
+                        }
+                    }
+                    startActivityForResult(new Intent(MainActivity.this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
+                default:
+                    break;
+            }
+        });
+        View view = findViewById(R.id.more);
+        View toolbar = findViewById(R.id.toolbar);
+        int[] location = new int[2];
+        toolbar.getLocationOnScreen(location);
+        int y = location[1] + toolbar.getHeight();
+        view.getLocationOnScreen(location);
+        int yOffset = y - (location[1] + view.getHeight());
+
+        moreActionsMenu.showAsListMenu(view, 0, yOffset);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.more:
+                showMoreActionMenu();
+                return true;
             case R.id.search:
                 showSearchPortal();
                 break;
-            case R.id.chat:
-                createConversation();
-                break;
-            case R.id.secretChat:
-                pickContactToCreateSecretConversation();
-                break;
-            case R.id.add_contact:
-                searchUser();
-                break;
-            case R.id.scan_qrcode:
-                String[] permissions = new String[]{Manifest.permission.CAMERA};
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (!checkPermission(permissions)) {
-                        requestPermissions(permissions, 100);
-                        return true;
-                    }
-                }
-                startActivityForResult(new Intent(this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
             default:
                 break;
         }

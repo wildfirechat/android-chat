@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_pop_item"
+    android:layout_width="60dp"
+    android:layout_height="80dp"
+    android:background="@drawable/horizontal_context_menu_item_bg_selector"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_pop_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"
+        android:scaleType="centerInside"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/tv_pop_func"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="2"
+        android:paddingStart="2dp"
+        android:paddingEnd="2dp"
+        android:paddingTop="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        tools:text="置顶叫我阿胶吃哦就" />
+
+</LinearLayout>

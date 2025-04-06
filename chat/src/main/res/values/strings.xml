@@ -206,4 +206,5 @@
     <string name="language_change_tip">语言设置将在重启应用后生效</string>
     <string name="confirm">确认</string>
     <string name="retry_after_seconds">%1$d秒后重试</string>
+    <string name="e2e_not_enable">密聊功能未启用</string>
 </resources>

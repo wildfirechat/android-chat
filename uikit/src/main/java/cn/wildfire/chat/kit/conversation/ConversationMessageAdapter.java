@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.noober.menu.HorizontalContextMenu;
+import cn.wildfirechat.uikit.menu.PopupMenu;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -496,12 +496,11 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
                 List<Pair<Integer, String>> items = new ArrayList<>(contextMenus.size());
                 Collections.sort(contextMenus, Comparator.comparingInt(o -> o.contextMenuItem.priority()));
-                List<String> titles = new ArrayList<>(contextMenus.size());
                 for (ContextMenuItemWrapper itemWrapper : contextMenus) {
                     items.add(new Pair<>(viewHolder.contextMenuIcon(fragment.getContext(), itemWrapper.contextMenuItem.tag()), viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag())));
                 }
 
-                new HorizontalContextMenu(fragment.getContext(), itemView.findViewWithTag("messageContentView"), items, position1 -> {
+                new PopupMenu(fragment.getContext(), items, position1 -> {
                     try {
                         ContextMenuItemWrapper menuItem = contextMenus.get(position1);
                         if (menuItem.contextMenuItem.confirm()) {
@@ -531,8 +530,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                     } catch (InvocationTargetException e) {
                         e.printStackTrace();
                     }
-                }, 5, 0, 0, 0)
-                    .show();
+                })
+                    .showAsGridMenu(itemView.findViewWithTag("messageContentView"), 5);
                 return true;
             }
         };
