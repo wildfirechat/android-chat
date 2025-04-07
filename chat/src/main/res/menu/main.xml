@@ -11,36 +11,5 @@
         android:id="@+id/more"
         android:icon="@mipmap/ic_add"
         android:title="@string/more"
-        app:showAsAction="always">
-        <menu>
-            <item
-                android:id="@+id/chat"
-                android:icon="@mipmap/ic_create_group_chat"
-                android:orderInCategory="100"
-                android:title="@string/start_group_chat"
-                app:iconTint="@color/colorPrimary"
-                app:showAsAction="never" />
-
-            <item
-                android:id="@+id/secretChat"
-                android:icon="@mipmap/ic_create_group_chat"
-                android:orderInCategory="100"
-                android:title="@string/start_secret_chat"
-                app:iconTint="@color/colorPrimary"
-                app:showAsAction="never" />
-
-            <item
-                android:id="@+id/add_contact"
-                android:icon="@mipmap/ic_add"
-                android:orderInCategory="101"
-                android:title="@string/add_friend"
-                app:iconTint="@color/colorPrimary" />
-            <item
-                android:id="@+id/scan_qrcode"
-                android:icon="@mipmap/qr_code"
-                android:orderInCategory="101"
-                android:title="@string/scan_qrcode"
-                app:iconTint="@color/colorPrimary" />
-        </menu>
-    </item>
+        app:showAsAction="always" />
 </menu>

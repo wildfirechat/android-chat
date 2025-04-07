@@ -4,13 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.viewpager.widget.ViewPager;
 import android.text.format.Formatter;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.viewpager.widget.ViewPager;
 
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.R;
@@ -21,14 +22,14 @@ public class ImagePreviewActivity extends ImagePreviewBaseActivity implements Vi
 
     private SuperCheckBox mCbCheck;                //是否选中当前图片的CheckBox
     private SuperCheckBox mCbOrigin;               //原图
-    private Button mBtnOk;                         //确认图片的选择
+    private TextView mBtnOk;                         //确认图片的选择
     private View bottomBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBtnOk = (Button) topBar.findViewById(R.id.btn_ok);
+        mBtnOk = (TextView) topBar.findViewById(R.id.btn_ok);
         mBtnOk.setVisibility(View.VISIBLE);
         mBtnOk.setOnClickListener(this);
 

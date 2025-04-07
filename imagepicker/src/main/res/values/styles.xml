@@ -3,15 +3,12 @@
 
     <style name="ImagePickerTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:fitsSystemWindows">true</item>
+        <item name="colorAccent">@android:color/white</item>
+        <item name="android:textColorSecondary">#969696</item>
+        <item name="android:navigationBarColor">@color/status_bar</item>
     </style>
 
     <style name="ImagePickerThemeFullScreen" parent="ImagePickerTheme">
-        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:navigationBarColor">#969696</item>
     </style>
-
-    <!--SuperCheckbox的样式-->
-    <style name="SuperCheckboxTheme" parent="@android:style/Widget.CompoundButton.CheckBox">
-        <item name="android:button">@drawable/selector_item_checked</item>
-    </style>
-
 </resources>

@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import cn.wildfirechat.uikit.menu.OnMenuItemClickListener;
+import cn.wildfirechat.uikit.menu.VerticalContextMenu;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -202,6 +204,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         if (!viewHolderClazz.isAnnotationPresent(EnableContextMenu.class)) {
             return;
         }
+        VerticalContextMenu verticalContextMenu = new VerticalContextMenu(fragment.getActivity(), itemView);
         View.OnLongClickListener listener = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -243,9 +246,11 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 for (ContextMenuItemWrapper itemWrapper : contextMenus) {
                     titles.add(viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag()));
                 }
-                new MaterialDialog.Builder(fragment.getContext()).items(titles).itemsCallback(new MaterialDialog.ListCallback() {
+
+                verticalContextMenu.items(titles);
+                verticalContextMenu.setOnItemClickListener(new OnMenuItemClickListener() {
                     @Override
-                    public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {
+                    public void onClick(int position) {
                         try {
                             ContextMenuItemWrapper menuItem = contextMenus.get(position);
                             if (menuItem.contextMenuItem.confirm()) {
@@ -280,7 +285,8 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
                         }
 
                     }
-                }).show();
+                });
+                verticalContextMenu.show();
                 return true;
             }
         };

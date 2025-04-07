@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
+    android:layout_height="?attr/actionBarSize"
     android:background="#303135"
-    android:clickable="true">
+    android:clickable="true"
+    android:focusable="true">
 
     <ImageView
         android:id="@+id/btn_back"
@@ -12,7 +13,8 @@
         android:layout_centerVertical="true"
         android:background="@drawable/selector_back_press"
         android:padding="14dp"
-        android:src="@mipmap/ic_back" />
+        android:src="@mipmap/ic_image_pick_back"
+        android:tint="#ffffff" />
 
     <View
         android:layout_width="1px"
@@ -31,24 +33,21 @@
         android:layout_toRightOf="@id/btn_back"
         android:text="选择图片"
         android:textColor="#ffffff"
-        android:textSize="16dp" />
+        android:textSize="16sp" />
 
-    <Button
+    <TextView
         android:id="@+id/btn_ok"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:background="@drawable/selector_top_ok"
         android:enabled="false"
+        android:gravity="center_vertical"
         android:minWidth="50dp"
-        android:minHeight="30dp"
         android:padding="8dp"
         android:text="完成"
-        android:textColor="#ffffff"
-        android:textSize="14dp" />
+        android:textColor="@color/ok_btn_txt_color"
+        android:textSize="16sp" />
 
     <ImageView
         android:id="@+id/btn_del"

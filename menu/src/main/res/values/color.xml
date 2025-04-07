@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gray">#DEDEDE</color>
+    <color name="h_item_bg">#4c4c4c</color>
+    <color name="h_item_bg_pressed">#444444</color>
+</resources>

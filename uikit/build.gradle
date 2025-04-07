@@ -64,6 +64,7 @@ dependencies {
     api project(':avenginekit')
     api project(':pttclient')
     api project(':badgeview')
+    api project(':menu')
 
     implementation project(':emojilibrary')
     implementation project(':imagepicker')

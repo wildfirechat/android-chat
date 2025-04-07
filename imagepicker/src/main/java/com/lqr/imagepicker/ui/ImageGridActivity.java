@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -41,7 +42,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
 
     private GridView mGridView;  //图片展示控件
     private View mFooterBar;     //底部栏
-    private Button mBtnOk;       //确定按钮
+    private TextView mBtnOk;       //确定按钮
     private Button mBtnDir;      //文件夹切换按钮
     private Button mBtnPre;      //预览按钮
     private ImageFolderAdapter mImageFolderAdapter;    //图片文件夹的适配器
@@ -67,7 +68,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
         showCamera = intent.getBooleanExtra("showCamera", false);
 
         findViewById(R.id.btn_back).setOnClickListener(this);
-        mBtnOk = (Button) findViewById(R.id.btn_ok);
+        mBtnOk = (TextView) findViewById(R.id.btn_ok);
         mBtnOk.setOnClickListener(this);
         mBtnDir = (Button) findViewById(R.id.btn_dir);
         mBtnDir.setOnClickListener(this);
@@ -120,9 +121,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     @Override
     protected void onResume() {
         super.onResume();
-        if (!this.isFullAccessGranted) {
-            imageDataSource.refresh();
-        }
+        imageDataSource.refresh();
         mImageGridAdapter.notifyDataSetChanged();
         mImageFolderAdapter.notifyDataSetChanged();
         updatePickStatus();
