@@ -172,7 +172,7 @@
     <string name="channel_desc_title">Channel Description</string>
     <string name="qrcode">QR Code</string>
     <string name="search_message">Search Messages</string>
-    
+
     <string name="chatroom_details">Chatroom Details</string>
     <string name="chatroom_desc_title">Chatroom Desc</string>
     <string name="chatroom_name_title">Chatroom Name</string>
@@ -766,4 +766,7 @@
     <string name="mute_group_member">Mute Group Member</string>
     <string name="speech_to_text">Speech To Text</string>
     <string name="cancel_speech_to_text">Cancel Speech To Text</string>
+    <string name="file_url_invalid">The file link address is empty</string>
+    <string name="local_preview_failed_tip">"No application was found to open this file. Preview online "</string>
+    <string name="local_preview_failed">No application was found to open this file.</string>
 </resources>
