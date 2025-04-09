@@ -30,6 +30,7 @@
 1. 开发者开发具体产品时，请勿直接使用本 demo 的包名/applicationId，我们会不定期修改包名/applicationId
 2. 禁止将本产品用于非法目的，一经发现，我们将停止任何形式的技术支持
 3. 修改包名时，会导致编译失败，需同步修改`google-services.json`和`agconnect-services.json`文件中的`package_name`字段。对接推送时，需要重新生成对应的`google-services.json`和`agconnect-services.json`文件。
+4. 如果需要修改`client`、`mars-core-release`或`avenginekit.aar`等的包名，请联系我们。
 
 ## 开发调试说明
 1. JDK: 17
