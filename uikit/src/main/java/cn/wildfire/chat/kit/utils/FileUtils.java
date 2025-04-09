@@ -18,6 +18,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -997,7 +998,7 @@ public class FileUtils {
             return;
         }
         Toast.makeText(context, R.string.local_preview_failed_tip, Toast.LENGTH_SHORT).show();
-        String url = Config.ONLINE_FILE_PREVIEW_URL + fileRemoteUrl;
+        String url = Config.ONLINE_FILE_PREVIEW_URL + Base64.encodeToString(fileRemoteUrl.getBytes(), Base64.NO_WRAP);
         WfcWebViewActivity.loadUrl(context, fileName, url);
     }
 
