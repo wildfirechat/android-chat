@@ -62,8 +62,7 @@ public class Config {
      * <p>
      * 优先使用本地安装的软件打开文件进行预览，如果本地没有能够支持打开该类型的文件时，使用在线预览
      */
-//    public static String ONLINE_FILE_PREVIEW_URL = "https://app.wildfirechat.net/onlinePreview/?url=";
-    public static String ONLINE_FILE_PREVIEW_URL = null;
+    public static String ONLINE_FILE_PREVIEW_URL = "https://app.wildfirechat.net/preview/onlinePreview?url=";
 
     /**
      * 工作台页面地址
