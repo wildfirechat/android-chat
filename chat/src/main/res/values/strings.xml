@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">企信</string>
+    <string name="app_name">野火IM</string>
 
     <!--我-->
     <string name="my_chat_account">账号:%1$s</string>
