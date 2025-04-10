@@ -35,7 +35,6 @@ public class KeyboardHeightFrameLayout extends FrameLayout implements InputAware
 
     @Override
     public void show(int height, boolean immediate) {
-        // TODO
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         layoutParams.height = height;
         getChildAt(0).setVisibility(VISIBLE);

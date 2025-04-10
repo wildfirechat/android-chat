@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -39,6 +40,18 @@ import cn.wildfire.chat.kit.utils.views.Stub;
 public final class ViewUtil {
 
     private ViewUtil() {
+    }
+
+    public static int getKeyboardHeight(Activity activity) {
+        // 获取根视图
+        View rootView = activity.getWindow().getDecorView();
+        Rect rect = new Rect();
+        rootView.getWindowVisibleDisplayFrame(rect);
+
+        // 获取屏幕高度
+        int screenHeight = rootView.getRootView().getHeight();
+        // 计算软键盘高度
+        return screenHeight - rect.bottom;
     }
 
     public static void focusAndMoveCursorToEndAndOpenKeyboard(@NonNull EditText input) {
