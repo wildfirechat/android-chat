@@ -238,8 +238,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         sharedPreferences = getContext().getSharedPreferences("sticker", Context.MODE_PRIVATE);
 
         // emotion
-        emotionLayout.setEmotionAddVisiable(true);
-        emotionLayout.setEmotionSettingVisiable(true);
+        emotionLayout.setEmotionAddVisiable(false);
+        emotionLayout.setEmotionSettingVisiable(false);
 
         // audio record panel
         audioRecorderPanel = new AudioRecorderPanel(getContext());

@@ -12,7 +12,7 @@ import android.widget.RelativeLayout;
  */
 public class EmotionTab extends RelativeLayout {
 
-    private ImageView mIvIcon;
+    ImageView mIvIcon;
     private String mStickerCoverImgPath;
     private int mIconSrc = R.drawable.ic_tab_add;
 
