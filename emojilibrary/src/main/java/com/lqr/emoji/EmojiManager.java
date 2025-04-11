@@ -127,15 +127,6 @@ public class EmojiManager {
 
     private static final void load(Context context, String xmlPath) {
         new EntryLoader().load(context, xmlPath);
-
-        //补充最后一页少的表情
-        int tmp = mDefaultEntries.size() % EmotionLayout.EMOJI_PER_PAGE;
-        if (tmp != 0) {
-            int tmp2 = EmotionLayout.EMOJI_PER_PAGE - (mDefaultEntries.size() - (mDefaultEntries.size() / EmotionLayout.EMOJI_PER_PAGE) * EmotionLayout.EMOJI_PER_PAGE);
-            for (int i = 0; i < tmp2; i++) {
-                mDefaultEntries.add(new Entry("", ""));
-            }
-        }
     }
 
     private static class Entry {

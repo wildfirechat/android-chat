@@ -97,15 +97,6 @@ public class StickerCategory {
             }
         }
 
-        //补充最后一页缺少的贴图
-        int tmp = stickers.size() % EmotionLayout.STICKER_PER_PAGE;
-        if (tmp != 0) {
-            int tmp2 = EmotionLayout.STICKER_PER_PAGE - (stickers.size() - (stickers.size() / EmotionLayout.STICKER_PER_PAGE) * EmotionLayout.STICKER_PER_PAGE);
-            for (int i = 0; i < tmp2; i++) {
-                stickers.add(new StickerItem("", ""));
-            }
-        }
-
         this.setStickers(stickers);
         return stickers;
     }

@@ -1,32 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <!--内容显示区-->
-    <com.lqr.emoji.ViewPagerFixed
-        android:id="@+id/vpEmotioin"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!--页数小圆点-->
-    <LinearLayout
-        android:id="@+id/llPageNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="12dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="4dp"
-        android:gravity="center"
-        android:orientation="horizontal" />
-
-    <!--底部tab-->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/line" />
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:layout_height="match_parent"
+    tools:layout_width="match_parent"
+    tools:orientation="vertical"
+    tools:parentTag="android.widget.LinearLayout">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +29,7 @@
                 android:layout_centerInParent="true"
                 android:src="@drawable/ic_tab_add" />
         </RelativeLayout>
-        <!--表情设置Tab-->
+        <!-- 表情设置标签 -->
         <HorizontalScrollView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -65,7 +43,28 @@
                 android:orientation="horizontal" />
 
         </HorizontalScrollView>
-
-
     </LinearLayout>
-</LinearLayout>
+
+    <!-- 底部标签栏 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line" />
+
+    <!-- 表情容器，包含表情ViewPager和悬浮删除按钮 -->
+    <FrameLayout
+        android:id="@+id/emotion_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 使用ViewPager2替代RecyclerView以支持左右滑动切换分类 -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager_emotions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never" />
+
+        <!-- 删除按钮将在代码中动态添加到这个容器中 -->
+    </FrameLayout>
+
+</merge>

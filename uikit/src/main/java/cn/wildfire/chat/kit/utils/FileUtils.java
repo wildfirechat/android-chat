@@ -17,6 +17,8 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -39,7 +41,9 @@ import java.text.DecimalFormat;
 import java.util.Comparator;
 
 import cn.wildfire.chat.kit.BuildConfig;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfirechat.message.FileMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.model.Conversation;
@@ -920,7 +924,7 @@ public class FileUtils {
                         Intent intent = FileUtils.getViewIntent(context, file);
                         context.startActivity(intent);
                     } catch (Exception e) {
-                        Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+                        onlinePreview(context, name, url);
                     }
                 });
             }
@@ -947,6 +951,7 @@ public class FileUtils {
                 context.startActivity(intent);
             } catch (Exception e) {
                 Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+                onlinePreview(context, fileRecord.name, fileRecord.url);
             }
         } else {
             downloadAndOpen(context, fileRecord.url, file.getParent(), file.getName());
@@ -969,7 +974,8 @@ public class FileUtils {
             try {
                 context.startActivity(intent);
             } catch (Exception e) {
-                Toast.makeText(context, "找不到能打开此文件的应用", Toast.LENGTH_SHORT).show();
+                FileMessageContent fileMessageContent = (FileMessageContent) message.content;
+                onlinePreview(context, fileMessageContent.getName(), fileMessageContent.remoteUrl);
             }
         } else {
             String fileUrl;
@@ -980,6 +986,20 @@ public class FileUtils {
             }
             downloadAndOpen(context, fileUrl, file.getParent(), file.getName());
         }
+    }
+
+    private static void onlinePreview(Context context, String fileName, String fileRemoteUrl) {
+        if (TextUtils.isEmpty(Config.ONLINE_FILE_PREVIEW_URL)) {
+            Toast.makeText(context, R.string.local_preview_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(fileRemoteUrl)) {
+            Toast.makeText(context, R.string.file_url_invalid, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(context, R.string.local_preview_failed_tip, Toast.LENGTH_SHORT).show();
+        String url = Config.ONLINE_FILE_PREVIEW_URL + Base64.encodeToString(fileRemoteUrl.getBytes(), Base64.NO_WRAP);
+        WfcWebViewActivity.loadUrl(context, fileName, url);
     }
 
 }

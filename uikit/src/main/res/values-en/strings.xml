@@ -766,6 +766,9 @@
     <string name="mute_group_member">Mute Group Member</string>
     <string name="speech_to_text">Speech To Text</string>
     <string name="cancel_speech_to_text">Cancel Speech To Text</string>
+    <string name="file_url_invalid">The file link address is empty</string>
+    <string name="local_preview_failed_tip">"No application was found to open this file. Preview online "</string>
+    <string name="local_preview_failed">No application was found to open this file.</string>
 
     <string name="anti_fraud_tip">In order to avoid being used for fraud and other purposes, this function has been blocked.</string>
 </resources>
