@@ -1,152 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<cn.wildfire.chat.kit.widget.OverScrollDecorScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootScrollView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <!--
-    使用LightAppBar 主题时，layout_height="110dp"，paddingTop="0dp" 更协调
-    -->
     <LinearLayout
-        android:id="@+id/meLinearLayout"
+        android:id="@+id/rootLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@drawable/selector_common_item"
-        android:paddingTop="20dp"
-        android:paddingRight="3dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/portraitImageView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="@dimen/option_item_margin_right"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/avatar_def" />
-
+        <!--
+        使用LightAppBar 主题时，layout_height="110dp"，paddingTop="0dp" 更协调
+        -->
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="70dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:id="@+id/meLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@drawable/selector_common_item"
+            android:paddingTop="20dp"
+            android:paddingRight="3dp">
 
-            <TextView
-                android:id="@+id/nameTextView"
+            <ImageView
+                android:id="@+id/portraitImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="@dimen/option_item_margin_right"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/avatar_def" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/nameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="3dp"
+                    android:singleLine="true"
+                    android:text="wfc"
+                    android:textColor="@color/gray0"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/accountTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:singleLine="true"
+                    android:text="@string/my_chat_account"
+                    android:textColor="@color/gray2"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:layout_marginBottom="3dp"
-                android:singleLine="true"
-                android:text="wfc"
-                android:textColor="@color/gray0"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/accountTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:singleLine="true"
-                android:text="@string/my_chat_account"
-                android:textColor="@color/gray2"
-                android:textSize="13sp"
-                android:visibility="gone" />
+                android:layout_marginRight="20dp"
+                android:src="@mipmap/ic_right" />
 
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="20dp"
-            android:src="@mipmap/ic_right" />
-
-    </LinearLayout>
-
-
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/accountOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginTop="@dimen/option_item_margin_top"
-        app:show_arrow_indicator="true"
-        app:show_divider="false"
-        app:start_src="@mipmap/ic_account"
-        app:title="@string/account_security" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/option_item_margin_top"
-        android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/notificationOptionItemView"
+            android:id="@+id/accountOptionItemView"
             style="@style/OptionItem"
+            android:layout_marginTop="@dimen/option_item_margin_top"
             app:show_arrow_indicator="true"
             app:show_divider="false"
-            app:start_src="@mipmap/ic_notification"
-            app:title="@string/message_notification" />
+            app:start_src="@mipmap/ic_account"
+            app:title="@string/account_security" />
 
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/conversationOptionItemView"
-            style="@style/OptionItem"
-            android:visibility="gone"
-            app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_create_group_chat"
-            app:start_tint="@color/colorPrimary"
-            app:title="@string/chat_background" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/option_item_margin_top"
+            android:orientation="vertical">
 
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/notificationOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:show_divider="false"
+                app:start_src="@mipmap/ic_notification"
+                app:title="@string/message_notification" />
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/conversationOptionItemView"
+                style="@style/OptionItem"
+                android:visibility="gone"
+                app:show_arrow_indicator="true"
+                app:start_src="@mipmap/ic_create_group_chat"
+                app:start_tint="@color/colorPrimary"
+                app:title="@string/chat_background" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/option_item_margin_top"
+            android:orientation="vertical">
+
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/fileRecordOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:start_src="@mipmap/ic_settings_file"
+                app:title="@string/file" />
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/favOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:start_src="@mipmap/ic_star"
+                app:title="@string/favorites" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/option_item_margin_top"
+            android:orientation="vertical">
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/themeOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:start_src="@mipmap/ic_theme"
+                app:title="@string/theme" />
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/languageOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:start_src="@mipmap/ic_lang"
+                app:title="@string/language" />
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/settingOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:start_src="@mipmap/ic_setting"
+                app:title="@string/setting" />
+        </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/option_item_margin_top"
-        android:orientation="vertical">
-
-
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/fileRecordOptionItemView"
-            style="@style/OptionItem"
-            app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_settings_file"
-            app:title="@string/file" />
-
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/favOptionItemView"
-            style="@style/OptionItem"
-            app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_star"
-            app:title="@string/favorites" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/option_item_margin_top"
-        android:orientation="vertical">
-
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/themeOptionItemView"
-            style="@style/OptionItem"
-            app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_theme"
-            app:title="@string/theme" />
-
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/languageOptionItemView"
-            style="@style/OptionItem"
-            app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_lang"
-            app:title="@string/language" />
-
-        <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/settingOptionItemView"
-            style="@style/OptionItem"
-            app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_setting"
-            app:title="@string/setting" />
-    </LinearLayout>
-</LinearLayout>
+</cn.wildfire.chat.kit.widget.OverScrollDecorScrollView>
