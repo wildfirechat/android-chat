@@ -34,6 +34,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 public class ConversationListFragment extends ProgressFragment {
     private RecyclerView recyclerView;
@@ -86,6 +87,7 @@ public class ConversationListFragment extends ProgressFragment {
         });
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
+        OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         recyclerView.setAdapter(adapter);
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
