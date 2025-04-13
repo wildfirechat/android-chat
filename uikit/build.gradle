@@ -81,6 +81,7 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     api 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.google.code.gson:gson:2.9.0'
+    api 'io.github.everythingme:overscroll-decor-android:1.1.1'
 
     api 'com.squareup.okhttp3:okhttp-sse:4.11.0'
 

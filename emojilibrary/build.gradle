@@ -32,4 +32,5 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.viewpager2:viewpager2:1.1.0'
+    implementation 'io.github.everythingme:overscroll-decor-android:1.1.1'
 }

@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+
 /**
  * ViewPager2 的适配器，用于管理不同类别的表情内容
  */
@@ -64,6 +66,7 @@ public class EmotionViewPager2Adapter extends RecyclerView.Adapter<EmotionViewPa
         GridLayoutManager layoutManager = new GridLayoutManager(mContext,
             tabIndex == 0 ? EmotionLayout.EMOJI_COLUMNS : EmotionLayout.STICKER_COLUMNS);
         holder.recyclerView.setLayoutManager(layoutManager);
+        OverScrollDecoratorHelper.setUpOverScroll(holder.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // 创建并设置表情适配器
         EmotionRecyclerAdapter adapter = new EmotionRecyclerAdapter(mContext, mStickerVisible, mListener);
