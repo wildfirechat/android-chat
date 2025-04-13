@@ -71,7 +71,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     implementation fileTree(dir: "../push-aar-dep", include: ["*.aar"])
     compileOnly fileTree(dir: "../uikit-aar-dep", include: ["zxing-lite-1.1.1.aar"])
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation 'com.tencent.bugly:crashreport:latest.release'
     implementation 'androidx.multidex:multidex:2.0.1'
 

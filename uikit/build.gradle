@@ -54,7 +54,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 
     // wfc kit start
     implementation project(':webrtc')
@@ -72,15 +72,15 @@ dependencies {
 //    implementation 'com.lqr.adapter:library:1.0.2'
 //    implementation 'com.jaeger.statusbaruitl:library:1.3.5'
 
-    api 'androidx.appcompat:appcompat:1.7.0-alpha03'
-    api 'com.google.android.material:material:1.10.0'
+    api 'androidx.appcompat:appcompat:1.7.0'
+    api 'com.google.android.material:material:1.12.0'
 //    implementation 'cjt.library.wheel:camera:1.1.9'
     api 'com.github.bumptech.glide:glide:4.15.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
-    annotationProcessor 'androidx.annotation:annotation:1.7.0'
+    annotationProcessor 'androidx.annotation:annotation:1.9.1'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     api 'com.afollestad.material-dialogs:core:0.9.6.0'
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
     api 'io.github.everythingme:overscroll-decor-android:1.1.1'
 
     api 'com.squareup.okhttp3:okhttp-sse:4.11.0'
@@ -89,7 +89,7 @@ dependencies {
 //    api 'com.king.zxing:zxing-lite:1.1.1'
 //    api 'cn.aigestudio.wheelpicker:WheelPicker:1.1.3'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.gridlayout:gridlayout:1.0.0'
+    implementation 'androidx.gridlayout:gridlayout:1.1.0'
 //    implementation 'com.google.android:flexbox:2.0.1'
 
     implementation 'com.tencent.map.geolocation:TencentLocationSdk-openplatform:7.2.6'
