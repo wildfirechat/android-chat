@@ -104,6 +104,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         this.application = application;
         UIUtils.application = application;
         initWFClient(application);
+        initAVEngineKit(application);
         initMomentClient(application);
         initPttClient(application);
         //初始化表情控件
@@ -174,20 +175,22 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     private void initWFClient(Application application) {
         ChatManager.init(application, Config.IM_SERVER_HOST);
 //        ChatManager.Instance().setProxyInfo(new Socks5ProxyInfo("", "192.168.1.80", 1080));
+        ChatManagerHolder.gChatManager = ChatManager.Instance();
+        ChatManagerHolder.gChatManager.startLog();
+        ChatManagerHolder.gChatManager.setSendLogCommand(Config.SEND_LOG_COMMAND);
+        ChatManagerHolder.gChatManager.addOnReceiveMessageListener(this);
+        ChatManagerHolder.gChatManager.addRecallMessageListener(this);
+        ChatManagerHolder.gChatManager.addFriendUpdateListener(this);
+
+        //当PC/Web在线时手机端是否静音，默认静音。如果修改为不默认静音，需要打开下面函数。
+        //另外需要IM服务配置server.mobile_default_silent_when_pc_online为false。必须保持与服务器同步。
+        //ChatManagerHolder.gChatManager.setDefaultSilentWhenPcOnline(false);
+    }
+
+    private void initAVEngineKit(Application application) {
+        ringPlayer = new AsyncPlayer("voip-ring-player");
+
         try {
-            ChatManagerHolder.gChatManager = ChatManager.Instance();
-            ChatManagerHolder.gChatManager.startLog();
-            ChatManagerHolder.gChatManager.setSendLogCommand(Config.SEND_LOG_COMMAND);
-            ChatManagerHolder.gChatManager.addOnReceiveMessageListener(this);
-            ChatManagerHolder.gChatManager.addRecallMessageListener(this);
-            ChatManagerHolder.gChatManager.addFriendUpdateListener(this);
-
-            //当PC/Web在线时手机端是否静音，默认静音。如果修改为不默认静音，需要打开下面函数。
-            //另外需要IM服务配置server.mobile_default_silent_when_pc_online为false。必须保持与服务器同步。
-            //ChatManagerHolder.gChatManager.setDefaultSilentWhenPcOnline(false);
-
-            ringPlayer = new AsyncPlayer("voip-ring-player");
-
             // 仅高级版支持，是否禁用双流模式
             //AVEngineKit.DISABLE_DUAL_STREAM_MODE = true;
             // 多人版，最多支持4人；高级版，最多支持9人
@@ -207,6 +210,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
                     ChatManagerHolder.gAVEngine.addIceServer(server[0], server[1], server[2]);
                 }
             }
+
         } catch (NotInitializedExecption notInitializedExecption) {
             notInitializedExecption.printStackTrace();
         }
