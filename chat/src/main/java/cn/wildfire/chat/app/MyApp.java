@@ -9,15 +9,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import com.tencent.bugly.crashreport.CrashReport;
-
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
-import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.message.viewholder.MessageViewHolderManager;
 import cn.wildfire.chat.kit.third.location.viewholder.LocationMessageContentViewHolder;
+import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.push.PushService;
@@ -41,7 +39,7 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
 
         // bugly，务必替换为你自己的!!!
         if ("wildfirechat.net".equals(Config.IM_SERVER_HOST)) {
-            CrashReport.initCrashReport(getApplicationContext(), BUGLY_ID, false);
+//            CrashReport.initCrashReport(getApplicationContext(), BUGLY_ID, false);
         }
         // 只在主进程初始化，否则会导致重复收到消息
         if (getCurProcessName(this).equals(BuildConfig.APPLICATION_ID)) {
@@ -53,7 +51,6 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             wfcUIKit.setAppServiceProvider(AppService.Instance());
             PushService.init(this, BuildConfig.APPLICATION_ID);
             MessageViewHolderManager.getInstance().registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
-            setupWFCDirs();
 
             String id = null;
             String token = null;
@@ -101,13 +98,6 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
         Context context = LocaleUtils.updateResources(base, language);
         // 调用父类方法
         super.attachBaseContext(context);
-    }
-
-    private void setupWFCDirs() {
-        Config.VIDEO_SAVE_DIR = this.getDir("video", Context.MODE_PRIVATE).getAbsolutePath();
-        Config.AUDIO_SAVE_DIR = this.getDir("audio", Context.MODE_PRIVATE).getAbsolutePath();
-        Config.PHOTO_SAVE_DIR = this.getDir("photo", Context.MODE_PRIVATE).getAbsolutePath();
-        Config.FILE_SAVE_DIR = this.getDir("file", Context.MODE_PRIVATE).getAbsolutePath();
     }
 
     public static String getCurProcessName(Context context) {

@@ -107,6 +107,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
         initAVEngineKit(application);
         initMomentClient(application);
         initPttClient(application);
+        setupWFCDirs(application);
         //初始化表情控件
         LQREmotionKit.init(application, (context, path, imageView) -> Glide.with(context).load(path).apply(new RequestOptions().centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE).dontAnimate()).into(imageView));
 
@@ -249,6 +250,13 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             // PTTClient.ENABLE_GLOBAL_PTT = true;
             PTTClient.getInstance().init(application);
         }
+    }
+
+    private void setupWFCDirs(Application application) {
+        Config.VIDEO_SAVE_DIR = application.getDir("video", Context.MODE_PRIVATE).getAbsolutePath();
+        Config.AUDIO_SAVE_DIR = application.getDir("audio", Context.MODE_PRIVATE).getAbsolutePath();
+        Config.PHOTO_SAVE_DIR = application.getDir("photo", Context.MODE_PRIVATE).getAbsolutePath();
+        Config.FILE_SAVE_DIR = application.getDir("file", Context.MODE_PRIVATE).getAbsolutePath();
     }
 
     /**
