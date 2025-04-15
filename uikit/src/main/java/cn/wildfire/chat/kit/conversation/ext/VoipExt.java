@@ -14,7 +14,7 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
-import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.Conversation;
 
@@ -36,8 +36,8 @@ public class VoipExt extends ConversationExt {
                 Manifest.permission.CAMERA
             };
         }
-        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(activity, permissions);
-        RequestPermissionDialog.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, o -> {
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(activity, permissions);
+        PermissionKit.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, o -> {
             if (o) {
                 switch (conversation.type) {
                     case Single:
@@ -66,8 +66,8 @@ public class VoipExt extends ConversationExt {
                 Manifest.permission.RECORD_AUDIO
             };
         }
-        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(activity, permissions);
-        RequestPermissionDialog.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, o -> {
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(activity, permissions);
+        PermissionKit.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, o -> {
             if (o) {
                 switch (conversation.type) {
                     case Single:

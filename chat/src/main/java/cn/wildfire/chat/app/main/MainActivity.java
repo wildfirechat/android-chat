@@ -35,7 +35,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.king.zxing.Intents;
 
-import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.uikit.menu.PopupMenu;
 
 import java.util.ArrayList;
@@ -451,8 +451,8 @@ public class MainActivity extends WfcBaseActivity {
                     break;
                 case 3:
                     String[] permissions = new String[]{Manifest.permission.CAMERA};
-                    RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(this, permissions);
-                    RequestPermissionDialog.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
+                    PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+                    PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
                         startActivityForResult(new Intent(MainActivity.this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
                     });
                 default:
@@ -785,8 +785,8 @@ public class MainActivity extends WfcBaseActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             String[] permissions = new String[]{Manifest.permission.POST_NOTIFICATIONS};
-            RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(this, permissions);
-            RequestPermissionDialog.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
+            PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+            PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
                 // do nothing
             });
         }

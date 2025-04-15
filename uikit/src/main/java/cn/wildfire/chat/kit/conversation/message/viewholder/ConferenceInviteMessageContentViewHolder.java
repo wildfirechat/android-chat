@@ -22,7 +22,7 @@ import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.voip.conference.ConferenceInfoActivity;
-import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.message.ConferenceInviteMessageContent;
 import cn.wildfirechat.model.UserInfo;
@@ -74,8 +74,8 @@ public class ConferenceInviteMessageContentViewHolder extends NormalMessageConte
             return;
         }
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
-        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(fragment.getActivity(), permissions);
-        RequestPermissionDialog.checkThenRequestPermission(fragment.getActivity(), fragment.getChildFragmentManager(), tuples, o -> {
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(fragment.getActivity(), permissions);
+        PermissionKit.checkThenRequestPermission(fragment.getActivity(), fragment.getChildFragmentManager(), tuples, o -> {
             if (o) {
                 Intent intent = new Intent(fragment.getActivity(), ConferenceInfoActivity.class);
                 intent.putExtra("conferenceId", inviteMessageContent.getCallId());

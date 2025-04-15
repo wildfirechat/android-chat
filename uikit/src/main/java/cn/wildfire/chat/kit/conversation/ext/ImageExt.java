@@ -29,7 +29,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
@@ -76,8 +76,8 @@ public class ImageExt extends ConversationExt {
             TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
             messageViewModel.sendMessage(conversation, toUsers(), content);
         } else {
-            RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(activity, permissions);
-            RequestPermissionDialog.checkThenRequestPermission(activity, fragment.getChildFragmentManager(), tuples, o -> {
+            PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(activity, permissions);
+            PermissionKit.checkThenRequestPermission(activity, fragment.getChildFragmentManager(), tuples, o -> {
                 Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(activity);
                 startActivityForResult(intent, 100);
                 TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
