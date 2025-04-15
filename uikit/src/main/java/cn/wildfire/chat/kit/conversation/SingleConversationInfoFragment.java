@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.conversation;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -87,6 +89,20 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         view.findViewById(R.id.clearMessagesOptionItemView).setOnClickListener(_v -> clearMessage());
         view.findViewById(R.id.searchMessageOptionItemView).setOnClickListener(_v -> searchGroupMessage());
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(_v -> fileRecord());
+        view.findViewById(R.id.reportOptionItemView).setOnClickListener(_v -> {
+            new MaterialDialog.Builder(getActivity())
+                .title(R.string.report)
+                .content(R.string.report_tip)
+                .positiveText(R.string.report)
+                .positiveColor(Color.RED)
+                .negativeText(R.string.cancel)
+                .onPositive((dialog, which) -> {
+                    Intent intent = ConversationActivity.buildConversationIntent(getContext(), Conversation.ConversationType.Single, "uiuJuJcc", 0);
+                    startActivity(intent);
+                })
+                .build()
+                .show();
+        });
     }
 
     private void bindViews(View view) {
@@ -107,7 +123,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
 
         memberReclerView.setAdapter(conversationMemberAdapter);
         memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
-        stickTopSwitchButton.setChecked(conversationInfo.top>0);
+        stickTopSwitchButton.setChecked(conversationInfo.top > 0);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
@@ -186,8 +202,8 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         ConversationListViewModel conversationListViewModel = ViewModelProviders
             .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
-        conversationListViewModel.setConversationTop(conversationInfo, top?1:0);
-        conversationInfo.top = top?1:0;
+        conversationListViewModel.setConversationTop(conversationInfo, top ? 1 : 0);
+        conversationInfo.top = top ? 1 : 0;
     }
 
     private void silent(boolean silent) {

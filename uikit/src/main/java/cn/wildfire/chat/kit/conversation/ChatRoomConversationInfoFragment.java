@@ -4,6 +4,8 @@
 
 package cn.wildfire.chat.kit.conversation;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
 import cn.wildfire.chat.kit.R;
@@ -24,6 +27,7 @@ import cn.wildfire.chat.kit.chatroom.ChatRoomViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.model.ChatRoomInfo;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 
 public class ChatRoomConversationInfoFragment extends Fragment {
@@ -68,6 +72,20 @@ public class ChatRoomConversationInfoFragment extends Fragment {
     }
 
     private void bindEvents(View view) {
+        view.findViewById(R.id.reportOptionItemView).setOnClickListener(_v -> {
+            new MaterialDialog.Builder(getActivity())
+                .title(R.string.report)
+                .content(R.string.report_tip)
+                .positiveText(R.string.report)
+                .positiveColor(Color.RED)
+                .negativeText(R.string.cancel)
+                .onPositive((dialog, which) -> {
+                    Intent intent = ConversationActivity.buildConversationIntent(getContext(), Conversation.ConversationType.Single, "uiuJuJcc", 0);
+                    startActivity(intent);
+                })
+                .build()
+                .show();
+        });
     }
 
     private void bindViews(View view) {
