@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,7 +25,9 @@ import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.app.setting.ResetPasswordActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.chat.R;
 
@@ -32,11 +35,18 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
     Button loginButton;
     EditText accountEditText;
     EditText passwordEditText;
+    CheckBox checkBox;
 
     private void bindEvents() {
         findViewById(R.id.authCodeLoginTextView).setOnClickListener(v -> authCodeLogin());
         findViewById(R.id.registerTextView).setOnClickListener(v -> register());
-        findViewById(R.id.loginButton).setOnClickListener(v -> login());
+        findViewById(R.id.loginButton).setOnClickListener(v -> {
+            if (checkBox.isChecked()) {
+                login();
+            } else {
+                Toast.makeText(this, R.string.check_agreement_tip, Toast.LENGTH_SHORT).show();
+            }
+        });
         accountEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
@@ -49,12 +59,21 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
                 inputPassword(s);
             }
         });
+
+        findViewById(R.id.privacyAgreementTextView).setOnClickListener(v -> {
+            WfcWebViewActivity.loadUrl(this, getString(R.string.privacy_agreement), Config.PRIVACY_AGREEMENT_URL);
+
+        });
+        findViewById(R.id.userAgreementTextView).setOnClickListener(v -> {
+            WfcWebViewActivity.loadUrl(this, getString(R.string.user_agreement), Config.USER_AGREEMENT_URL);
+        });
     }
 
     private void bindViews() {
         loginButton = findViewById(R.id.loginButton);
         accountEditText = findViewById(R.id.phoneNumberEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
+        checkBox = findViewById(R.id.agreementCheckBox);
     }
 
     @Override

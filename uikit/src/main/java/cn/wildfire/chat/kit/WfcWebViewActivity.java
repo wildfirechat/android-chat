@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.DownloadListener;
 import android.webkit.WebSettings;
@@ -18,8 +19,10 @@ import androidx.annotation.Nullable;
 
 import cn.wildfire.chat.kit.conversation.forward.ForwardActivity;
 import cn.wildfire.chat.kit.workspace.JsApi;
+import cn.wildfirechat.client.ConnectionStatus;
 import cn.wildfirechat.message.LinkMessageContent;
 import cn.wildfirechat.message.Message;
+import cn.wildfirechat.remote.ChatManager;
 import wendu.dsbridge.DWebView;
 
 public class WfcWebViewActivity extends WfcBaseActivity {
@@ -55,6 +58,14 @@ public class WfcWebViewActivity extends WfcBaseActivity {
     @Override
     protected int menu() {
         return R.menu.web;
+    }
+
+    @Override
+    protected void afterMenus(Menu menu) {
+        super.afterMenus(menu);
+        if (ChatManager.Instance().getConnectionStatus() != ConnectionStatus.ConnectionStatusConnected) {
+            menu.getItem(0).setEnabled(false);
+        }
     }
 
     @Override
