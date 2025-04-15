@@ -134,6 +134,12 @@
                     app:show_arrow_indicator="true"
                     app:title="@string/group_remark" />
 
+                <cn.wildfire.chat.kit.widget.OptionItemView
+                    android:id="@+id/reportOptionItemView"
+                    style="@style/OptionItem"
+                    app:show_arrow_indicator="true"
+                    app:title="@string/report" />
+
                 <View
                     android:id="@+id/groupManageDividerLine"
                     style="@style/Line"

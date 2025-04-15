@@ -51,6 +51,13 @@
                     app:desc="chatroom desc"
                     app:title="@string/chatroom_desc_title" />
 
+                <cn.wildfire.chat.kit.widget.OptionItemView
+                    android:id="@+id/reportOptionItemView"
+                    style="@style/OptionItem"
+                    app:show_arrow_indicator="true"
+                    app:title="@string/report" />
+
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

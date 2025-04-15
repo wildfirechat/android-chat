@@ -778,4 +778,7 @@
     <string name="file_url_invalid">文件链接地址为空</string>
     <string name="local_preview_failed_tip">找不到能打开此文件的应用，在线预览</string>
     <string name="local_preview_failed">找不到能打开此文件的应用</string>
+
+    <string name="report">举报</string>
+    <string name="report_tip">如果您发现有违反法律和道德的内容，或者您的合法权益受到侵犯，请截图之后发送给我们。我们会在24小时之内处理。处理办法包括，但不限于删除内容，对作者进行警告冻结账号，甚至报警处理。</string>
 </resources>
