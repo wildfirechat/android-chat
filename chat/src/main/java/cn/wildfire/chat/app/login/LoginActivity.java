@@ -22,6 +22,7 @@ import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.login.model.LoginResult;
 import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
+import cn.wildfire.chat.app.setting.ResetPasswordActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
@@ -135,6 +136,7 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
                     return;
                 }
 
+                dialog.dismiss();
                 //需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
                 ChatManagerHolder.gChatManager.connect(loginResult.getUserId(), loginResult.getToken());
                 try {
@@ -143,10 +145,17 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-                dialog.dismiss();
+
+                // 初始密码（需要 app-server 开启，开启后，默认是手机号后 6 位）登录后，重置密码
+                if (!TextUtils.isEmpty(loginResult.getResetCode())) {
+                    Intent resetPasswordIntent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+                    resetPasswordIntent.putExtra("resetCode", loginResult.getResetCode());
+                    startActivity(resetPasswordIntent);
+                }
                 finish();
             }
 
