@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WildFireIM</string>
- <!--Me-->
+    <!--Me-->
     <string name="my_chat_account">Account:%1$s</string>
 
     <!--Me Fragment-->
@@ -209,4 +209,11 @@
     <string name="confirm">Confirm</string>
     <string name="retry_after_seconds">%1$d seconds to retry</string>
     <string name="e2e_not_enable">Secret chat not enable</string>
+    <string name="privacy_agreement_tip">
+        登录即代表同意
+    </string>
+    <string name="privacy_agreement">野火IM隐私协议</string>
+    <string name="user_agreement">野火IM用户协议</string>
+    <string name="and">和</string>
+    <string name="check_agreement_tip">请同意用户协议及隐私政策</string>
 </resources>
