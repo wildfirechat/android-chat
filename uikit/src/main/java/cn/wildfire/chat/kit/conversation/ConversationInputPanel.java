@@ -68,6 +68,7 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
+import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.message.ChannelMenuEventMessageContent;
@@ -497,8 +498,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
     public void showRecordPanel(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                fragment.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 100);
-                Toast.makeText(activity, fragment.getString(R.string.audio_permission_required), Toast.LENGTH_SHORT).show();
+                RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(activity, new String[]{Manifest.permission.RECORD_AUDIO});
+                RequestPermissionDialog.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, granted -> {
+                    // do nothing
+                });
                 return;
             }
         }

@@ -23,8 +23,6 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
-import com.noober.menu.R;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

@@ -65,6 +65,7 @@ dependencies {
     api project(':pttclient')
     api project(':badgeview')
     api project(':menu')
+    api project(':permission')
 
     implementation project(':emojilibrary')
     implementation project(':imagepicker')

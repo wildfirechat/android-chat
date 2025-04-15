@@ -9,7 +9,6 @@ import static android.app.Activity.RESULT_OK;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
@@ -17,11 +16,11 @@ import android.widget.Toast;
 import java.io.File;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.mm.TakePhotoActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
+import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 
@@ -34,16 +33,15 @@ public class ShootExt extends ConversationExt {
     @ExtContextMenuItem
     public void shoot(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!((WfcBaseActivity) activity).checkPermission(permissions)) {
-                activity.requestPermissions(permissions, 100);
-                return;
+        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(activity, permissions);
+        RequestPermissionDialog.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, granted -> {
+            if (granted) {
+                Intent intent = new Intent(activity, TakePhotoActivity.class);
+                startActivityForResult(intent, 100);
+                TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
+                messageViewModel.sendMessage(conversation, toUsers(), content);
             }
-        }
-        Intent intent = new Intent(activity, TakePhotoActivity.class);
-        startActivityForResult(intent, 100);
-        TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
-        messageViewModel.sendMessage(conversation, toUsers(), content);
+        });
     }
 
     @Override

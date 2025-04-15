@@ -9,10 +9,8 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Menu;
@@ -36,6 +34,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.king.zxing.Intents;
+
+import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
 import cn.wildfirechat.uikit.menu.PopupMenu;
 
 import java.util.ArrayList;
@@ -451,12 +451,10 @@ public class MainActivity extends WfcBaseActivity {
                     break;
                 case 3:
                     String[] permissions = new String[]{Manifest.permission.CAMERA};
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (!checkPermission(permissions)) {
-                            requestPermissions(permissions, 100);
-                        }
-                    }
-                    startActivityForResult(new Intent(MainActivity.this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
+                    RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(this, permissions);
+                    RequestPermissionDialog.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
+                        startActivityForResult(new Intent(MainActivity.this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
+                    });
                 default:
                     break;
             }
@@ -548,15 +546,6 @@ public class MainActivity extends WfcBaseActivity {
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 100 && grantResults.length > 0
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startActivityForResult(new Intent(this, ScanQRCodeActivity.class), REQUEST_CODE_SCAN_QR_CODE);
         }
     }
 
@@ -796,11 +785,10 @@ public class MainActivity extends WfcBaseActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             String[] permissions = new String[]{Manifest.permission.POST_NOTIFICATIONS};
-            if (!checkPermission(permissions)) {
-                if (!checkPermission(permissions)) {
-                    requestPermissions(permissions, 101);
-                }
-            }
+            RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(this, permissions);
+            RequestPermissionDialog.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
+                // do nothing
+            });
         }
     }
 

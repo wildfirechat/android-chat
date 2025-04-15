@@ -14,6 +14,7 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
+import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.Conversation;
 
@@ -23,7 +24,7 @@ public class VoipExt extends ConversationExt {
     @ExtContextMenuItem(tag = ConversationExtMenuTags.TAG_VOIP_VIDEO)
     public void video(View containerView, Conversation conversation) {
         String[] permissions;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissions = new String[]{
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.CAMERA,
@@ -35,29 +36,27 @@ public class VoipExt extends ConversationExt {
                 Manifest.permission.CAMERA
             };
         }
-        String[] notGrantedPermissions = checkPermissions(permissions);
-        if (notGrantedPermissions.length > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                activity.requestPermissions(notGrantedPermissions, 100);
+        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(activity, permissions);
+        RequestPermissionDialog.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, o -> {
+            if (o) {
+                switch (conversation.type) {
+                    case Single:
+                        videoChat(conversation.target);
+                        break;
+                    case Group:
+                        ((ConversationFragment) fragment).pickGroupMemberToVoipChat(false);
+                        break;
+                    default:
+                        break;
+                }
             }
-            return;
-        }
-        switch (conversation.type) {
-            case Single:
-                videoChat(conversation.target);
-                break;
-            case Group:
-                ((ConversationFragment) fragment).pickGroupMemberToVoipChat(false);
-                break;
-            default:
-                break;
-        }
+        });
     }
 
     @ExtContextMenuItem(tag = ConversationExtMenuTags.TAG_VOIP_AUDIO)
     public void audio(View containerView, Conversation conversation) {
         String[] permissions;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissions = new String[]{
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.BLUETOOTH_CONNECT
@@ -67,23 +66,21 @@ public class VoipExt extends ConversationExt {
                 Manifest.permission.RECORD_AUDIO
             };
         }
-        String[] notGrantedPermissions = checkPermissions(permissions);
-        if (notGrantedPermissions.length > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                activity.requestPermissions(notGrantedPermissions, 100);
-                return;
+        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(activity, permissions);
+        RequestPermissionDialog.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, o -> {
+            if (o) {
+                switch (conversation.type) {
+                    case Single:
+                        audioChat(conversation.target);
+                        break;
+                    case Group:
+                        ((ConversationFragment) fragment).pickGroupMemberToVoipChat(true);
+                        break;
+                    default:
+                        break;
+                }
             }
-        }
-        switch (conversation.type) {
-            case Single:
-                audioChat(conversation.target);
-                break;
-            case Group:
-                ((ConversationFragment) fragment).pickGroupMemberToVoipChat(true);
-                break;
-            default:
-                break;
-        }
+        });
     }
 
     private void audioChat(String targetId) {
