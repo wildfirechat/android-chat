@@ -20,7 +20,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.mm.TakePhotoActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
-import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 
@@ -33,8 +33,8 @@ public class ShootExt extends ConversationExt {
     @ExtContextMenuItem
     public void shoot(View containerView, Conversation conversation) {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
-        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(activity, permissions);
-        RequestPermissionDialog.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, granted -> {
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(activity, permissions);
+        PermissionKit.checkThenRequestPermission(activity, activity.getSupportFragmentManager(), tuples, granted -> {
             if (granted) {
                 Intent intent = new Intent(activity, TakePhotoActivity.class);
                 startActivityForResult(intent, 100);

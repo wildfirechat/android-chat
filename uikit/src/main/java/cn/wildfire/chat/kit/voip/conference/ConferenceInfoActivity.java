@@ -21,7 +21,7 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.BooleanCallback;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
-import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
@@ -152,8 +152,8 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
 
     void joinConference() {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
-        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(this, permissions);
-        RequestPermissionDialog.checkThenRequestPermission(this, this.getSupportFragmentManager(), tuples, o -> {
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+        PermissionKit.checkThenRequestPermission(this, this.getSupportFragmentManager(), tuples, o -> {
             if (o) {
                 ConferenceInfo info = conferenceInfo;
                 boolean audience = !audioSwitch.isChecked() && !videoSwitch.isChecked();

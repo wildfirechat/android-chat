@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Queue;
 
 
-public class RequestPermissionDialog extends DialogFragment {
+public class PermissionKit extends DialogFragment {
 
     private final PermissionReqTuple permissionReqTuple;
     private ActivityResultLauncher<String> requestPermissionLauncher;
@@ -75,28 +75,28 @@ public class RequestPermissionDialog extends DialogFragment {
         }
     }
 
-    public static RequestPermissionDialog.PermissionReqTuple[] buildRequestPermissionTuples(Context context, String[] permissions) {
+    public static PermissionReqTuple[] buildRequestPermissionTuples(Context context, String[] permissions) {
         List<PermissionReqTuple> tuples = new ArrayList<>();
         CharSequence appName = context.getApplicationInfo().loadLabel(context.getPackageManager());
         for (String permission : permissions) {
-            RequestPermissionDialog.PermissionReqTuple tuple = null;
+            PermissionReqTuple tuple = null;
             switch (permission) {
                 case Manifest.permission.RECORD_AUDIO:
-                    tuple = new RequestPermissionDialog.PermissionReqTuple(Manifest.permission.RECORD_AUDIO,
+                    tuple = new PermissionReqTuple(Manifest.permission.RECORD_AUDIO,
                         context.getString(R.string.permission_audio_title, appName),
                         context.getString(R.string.permission_audio_desc),
                         context.getString(R.string.permission_audio_denied_title),
                         context.getString(R.string.permission_audio_denied_desc, appName));
                     break;
                 case Manifest.permission.CAMERA:
-                    tuple = new RequestPermissionDialog.PermissionReqTuple(Manifest.permission.CAMERA,
+                    tuple = new PermissionReqTuple(Manifest.permission.CAMERA,
                         context.getString(R.string.permission_camera_title, appName),
                         context.getString(R.string.permission_camera_desc),
                         context.getString(R.string.permission_camera_denied_title),
                         context.getString(R.string.permission_camera_denied_desc, appName));
                     break;
                 case Manifest.permission.BLUETOOTH_CONNECT:
-                    tuple = new RequestPermissionDialog.PermissionReqTuple(Manifest.permission.BLUETOOTH_CONNECT,
+                    tuple = new PermissionReqTuple(Manifest.permission.BLUETOOTH_CONNECT,
                         context.getString(R.string.permission_bluetooth_connect_title, appName),
                         context.getString(R.string.permission_bluetooth_connect_desc),
                         context.getString(R.string.permission_bluetooth_connect_denied_title),
@@ -104,7 +104,7 @@ public class RequestPermissionDialog extends DialogFragment {
                     break;
 
                 case Manifest.permission.READ_EXTERNAL_STORAGE:
-                    tuple = new RequestPermissionDialog.PermissionReqTuple(Manifest.permission.READ_EXTERNAL_STORAGE,
+                    tuple = new PermissionReqTuple(Manifest.permission.READ_EXTERNAL_STORAGE,
                         context.getString(R.string.permission_storage_title, appName),
                         context.getString(R.string.permission_storage_desc),
                         context.getString(R.string.permission_storage_denied_title),
@@ -112,7 +112,7 @@ public class RequestPermissionDialog extends DialogFragment {
                     break;
 
                 case Manifest.permission.POST_NOTIFICATIONS:
-                    tuple = new RequestPermissionDialog.PermissionReqTuple(Manifest.permission.POST_NOTIFICATIONS,
+                    tuple = new PermissionReqTuple(Manifest.permission.POST_NOTIFICATIONS,
                         context.getString(R.string.permission_notification_title, appName),
                         context.getString(R.string.permission_notification_desc),
                         context.getString(R.string.permission_notification_denied_title),
@@ -120,14 +120,14 @@ public class RequestPermissionDialog extends DialogFragment {
                     break;
 
                 case Manifest.permission.READ_MEDIA_IMAGES:
-                    tuple = new RequestPermissionDialog.PermissionReqTuple(Manifest.permission.READ_MEDIA_IMAGES,
+                    tuple = new PermissionReqTuple(Manifest.permission.READ_MEDIA_IMAGES,
                         context.getString(R.string.permission_read_image_title, appName),
                         context.getString(R.string.permission_read_image_desc),
                         context.getString(R.string.permission_read_image_denied_title),
                         context.getString(R.string.permission_read_image_denied_desc, appName));
                     break;
                 case Manifest.permission.READ_MEDIA_VIDEO:
-                    tuple = new RequestPermissionDialog.PermissionReqTuple(Manifest.permission.READ_MEDIA_VIDEO,
+                    tuple = new PermissionReqTuple(Manifest.permission.READ_MEDIA_VIDEO,
                         context.getString(R.string.permission_read_video_title, appName),
                         context.getString(R.string.permission_read_video_desc),
                         context.getString(R.string.permission_read_video_denied_title),
@@ -135,14 +135,14 @@ public class RequestPermissionDialog extends DialogFragment {
 
                     break;
                 case Manifest.permission.ACCESS_FINE_LOCATION:
-                    tuple = new RequestPermissionDialog.PermissionReqTuple(Manifest.permission.ACCESS_FINE_LOCATION,
+                    tuple = new PermissionReqTuple(Manifest.permission.ACCESS_FINE_LOCATION,
                         context.getString(R.string.permission_location_title, appName),
                         context.getString(R.string.permission_location_desc),
                         context.getString(R.string.permission_location_denied_title),
                         context.getString(R.string.permission_location_denied_desc, appName));
                     break;
                 case Manifest.permission.ACCESS_COARSE_LOCATION:
-                    tuple = new RequestPermissionDialog.PermissionReqTuple(Manifest.permission.ACCESS_COARSE_LOCATION,
+                    tuple = new PermissionReqTuple(Manifest.permission.ACCESS_COARSE_LOCATION,
                         context.getString(R.string.permission_location_title, appName),
                         context.getString(R.string.permission_location_desc),
                         context.getString(R.string.permission_location_denied_title),
@@ -156,7 +156,7 @@ public class RequestPermissionDialog extends DialogFragment {
             }
 
         }
-        return tuples.toArray(new RequestPermissionDialog.PermissionReqTuple[0]);
+        return tuples.toArray(new PermissionReqTuple[0]);
     }
 
     private static void _requestPermission(Activity context, FragmentManager fragmentManager, PermissionReqTuple permissionReqTuple, boolean force, ActivityResultCallback<Boolean> callback) {
@@ -174,7 +174,7 @@ public class RequestPermissionDialog extends DialogFragment {
     }
 
     private static void showRequestPermissionDialog(FragmentManager fragmentManager, PermissionReqTuple tuple, ActivityResultCallback<Boolean> callback) {
-        RequestPermissionDialog requestPermissionDialog = new RequestPermissionDialog(tuple);
+        PermissionKit requestPermissionDialog = new PermissionKit(tuple);
         requestPermissionDialog.requestPermissionLauncher = requestPermissionDialog.registerForActivityResult(new ActivityResultContracts.RequestPermission(), o -> {
             requestPermissionDialog.dismiss();
             callback.onActivityResult(o);
@@ -216,7 +216,7 @@ public class RequestPermissionDialog extends DialogFragment {
             .show();
     }
 
-    private RequestPermissionDialog(PermissionReqTuple permissionReqTuple) {
+    private PermissionKit(PermissionReqTuple permissionReqTuple) {
         this.permissionReqTuple = permissionReqTuple;
     }
 

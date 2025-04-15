@@ -16,7 +16,7 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.location.data.LocationData;
 import cn.wildfire.chat.kit.third.location.ui.activity.MyLocationActivity;
-import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 
@@ -32,8 +32,8 @@ public class LocationExt extends ConversationExt {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
         };
-        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(activity, permissions);
-        RequestPermissionDialog.checkThenRequestPermission(activity, fragment.getChildFragmentManager(), tuples, o -> {
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(activity, permissions);
+        PermissionKit.checkThenRequestPermission(activity, fragment.getChildFragmentManager(), tuples, o -> {
             if (o) {
                 Intent intent = new Intent(activity, MyLocationActivity.class);
                 startActivityForResult(intent, 100);

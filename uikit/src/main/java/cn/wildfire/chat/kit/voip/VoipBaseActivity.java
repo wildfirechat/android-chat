@@ -42,7 +42,7 @@ import org.webrtc.StatsReport;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.model.UserInfo;
@@ -115,8 +115,8 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
                 Manifest.permission.CAMERA,
             };
         }
-        RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(this, permissions);
-        RequestPermissionDialog.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+        PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
             if (o) {
                 AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
                 if (session == null ||
