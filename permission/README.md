@@ -1,0 +1,1 @@
+本模块基于 [FloatMenu](https://github.com/JavaNoober/FloatMenu) 和 [SelectTextHelper](https://github.com/ITxiaoguang/SelectTextHelper) 开发

@@ -7,7 +7,6 @@ package cn.wildfire.chat.kit.mm;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,6 +41,7 @@ import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.DownloadManager;
 import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
 import cn.wildfire.chat.kit.widget.PhotoView;
+import cn.wildfirechat.uikit.permission.RequestPermissionDialog;
 import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.VideoMessageContent;
@@ -437,16 +437,14 @@ public class MMPreviewActivity extends AppCompatActivity implements PhotoView.On
     }
 
     private void saveMedia2Album(File file, boolean isImage) {
-        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
-            boolean granted = checkSelfPermission(permissions[0]) == PackageManager.PERMISSION_GRANTED;
-            if (granted) {
+            String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            RequestPermissionDialog.PermissionReqTuple[] tuples = RequestPermissionDialog.buildRequestPermissionTuples(this, permissions);
+            RequestPermissionDialog.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
                 ImageUtils.saveMedia2Album(this, file, isImage);
                 Toast.makeText(MMPreviewActivity.this, getString(R.string.image_save_success), Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(MMPreviewActivity.this, getString(R.string.storage_permission_required), Toast.LENGTH_LONG).show();
-                requestPermissions(permissions, 100);
-            }
+            });
+
         } else {
             ImageUtils.saveMedia2Album(this, file, isImage);
             Toast.makeText(MMPreviewActivity.this, getString(R.string.image_save_success), Toast.LENGTH_LONG).show();
