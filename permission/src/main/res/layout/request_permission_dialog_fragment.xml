@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:textColor="@color/white"
+        android:textColor="#ffffff"
         android:textSize="18sp"
         tools:text="野火IM 申请获取相机权限" />
 
