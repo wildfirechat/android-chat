@@ -46,7 +46,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <!-- 音视频通话时， 允许普通电话打断音视频通话 -->
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <!--    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />-->
 
     <application
         android:name="cn.wildfire.chat.app.MyApp"
