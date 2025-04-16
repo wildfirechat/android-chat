@@ -56,7 +56,7 @@
 4. 将`AndroidManifest.xml`里面的`usesCleartextTraffic`置为`false`
 
 ## 敏感权限说明
-1. `android.permission.PROCESS_OUTGOING_CALLS`，音视频通话时，允许普通电话打断音视频通话
+1. `android.permission.PROCESS_OUTGOING_CALLS`，音视频通话时，允许普通电话打断音视频通话，默认未申请
 2. `android.permission.SYSTEM_ALERT_WINDOW`，允许音视频通话窗口最小化，并悬浮在其他窗口之上
 3. `android.permission.BLUETOOTH`、`android.permission.BLUETOOTH_ADMIN`，音视频通话时，允许使用蓝牙耳机
 
