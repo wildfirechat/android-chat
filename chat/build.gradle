@@ -7,16 +7,16 @@ apply plugin: 'com.google.gms.google-services'
 android {
     signingConfigs {
         wfc {
-            keyAlias 'bizlink'
-            keyPassword '9595537923'
-            storeFile file('../../keystore/wfc_bizlink.keystore')
-            storePassword '9595537923'
+            keyAlias 'wf'
+            keyPassword 'wfc95955'
+            storeFile file('../../keystore/wfc_net.wildfirechat.demo.keystore')
+            storePassword 'wfc95955'
         }
     }
     compileSdkVersion 34
     ndkVersion '18.1.5063045'
     defaultConfig {
-        applicationId "net.wildfirechat.bizlink"
+        applicationId "net.wildfirechat.demo"
         minSdkVersion 24
         targetSdkVersion 33
         versionCode 58
