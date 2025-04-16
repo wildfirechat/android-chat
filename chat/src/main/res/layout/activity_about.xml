@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="@string/app_name_in_about"
+                android:text="@string/app_name"
                 android:textColor="@color/gray2"
                 android:textSize="18sp" />
 
