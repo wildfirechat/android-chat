@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.text.Editable;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +21,9 @@ import cn.wildfire.chat.app.main.MainActivity;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.app.setting.ResetPasswordActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.chat.R;
 
@@ -32,11 +35,17 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
     EditText phoneNumberEditText;
     EditText authCodeEditText;
     TextView requestAuthCodeButton;
-
+    CheckBox checkBox;
 
     private void bindEvents() {
         findViewById(R.id.passwordLoginTextView).setOnClickListener(v -> authCodeLogin());
-        findViewById(R.id.loginButton).setOnClickListener(v -> login());
+        findViewById(R.id.loginButton).setOnClickListener(v -> {
+            if (checkBox.isChecked()) {
+                login();
+            } else {
+                Toast.makeText(this, R.string.check_agreement_tip, Toast.LENGTH_SHORT).show();
+            }
+        });
         findViewById(R.id.requestAuthCodeButton).setOnClickListener(v -> requestAuthCode());
         phoneNumberEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
@@ -51,6 +60,14 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                 inputAuthCode(s);
             }
         });
+
+        findViewById(R.id.privacyAgreementTextView).setOnClickListener(v -> {
+            WfcWebViewActivity.loadUrl(this, getString(R.string.privacy_agreement), Config.PRIVACY_AGREEMENT_URL);
+
+        });
+        findViewById(R.id.userAgreementTextView).setOnClickListener(v -> {
+            WfcWebViewActivity.loadUrl(this, getString(R.string.user_agreement), Config.USER_AGREEMENT_URL);
+        });
     }
 
     private void bindViews() {
@@ -58,6 +75,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
         authCodeEditText = findViewById(R.id.authCodeEditText);
         requestAuthCodeButton = findViewById(R.id.requestAuthCodeButton);
+        checkBox = findViewById(R.id.agreementCheckBox);
     }
 
     @Override

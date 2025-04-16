@@ -34,7 +34,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
@@ -43,6 +42,7 @@ import org.webrtc.StatsReport;
 import java.util.List;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.client.NotInitializedExecption;
 import cn.wildfirechat.model.UserInfo;
@@ -115,36 +115,24 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
                 Manifest.permission.CAMERA,
             };
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : permissions) {
-                if (checkCallingOrSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(permissions, 100);
-                    break;
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+        PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), tuples, o -> {
+            if (o) {
+                AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
+                if (session == null ||
+                    (session.getState() == AVEngineKit.CallState.Idle && (session.getEndReason() != AVEngineKit.CallEndReason.RoomNotExist || session.getEndReason() != AVEngineKit.CallEndReason.RoomParticipantsFull))) {
+                    finishFadeout();
+                    return;
                 }
-            }
-        }
-
-        AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if (session == null ||
-            (session.getState() == AVEngineKit.CallState.Idle && (session.getEndReason() != AVEngineKit.CallEndReason.RoomNotExist || session.getEndReason() != AVEngineKit.CallEndReason.RoomParticipantsFull))) {
-            finishFadeout();
-            return;
-        }
-        session.setCallback(this);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
+                session.setCallback(this);
+            } else {
                 Toast.makeText(this, getString(R.string.voip_permission_required), Toast.LENGTH_SHORT).show();
                 if (gEngineKit.getCurrentSession() != null || gEngineKit.getCurrentSession().getState() != AVEngineKit.CallState.Idle) {
                     gEngineKit.getCurrentSession().endCall();
                 }
                 finishFadeout();
-                return;
             }
-        }
+        });
     }
 
     @Override

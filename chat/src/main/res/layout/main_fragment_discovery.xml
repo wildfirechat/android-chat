@@ -1,60 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<cn.wildfire.chat.kit.widget.OverScrollDecorScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/momentOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginBottom="10dp"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_moment"
-        app:title="@string/moment" />
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/chatRoomOptionItemView"
+            android:id="@+id/momentOptionItemView"
             style="@style/OptionItem"
+            android:layout_marginBottom="10dp"
             app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_chatroom"
-            app:title="@string/chatroom" />
+            app:start_src="@mipmap/ic_moment"
+            app:title="@string/moment" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical">
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/chatRoomOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:start_src="@mipmap/ic_chatroom"
+                app:title="@string/chatroom" />
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/robotOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:start_src="@mipmap/ic_robot"
+                app:title="@string/robot" />
+
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/channelOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:start_src="@mipmap/ic_channel"
+                app:title="@string/channel" />
+        </LinearLayout>
 
         <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/robotOptionItemView"
+            android:id="@+id/cookbookOptionItemView"
             style="@style/OptionItem"
+            android:layout_marginBottom="10dp"
             app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_robot"
-            app:title="@string/robot" />
+            app:start_src="@mipmap/ic_dev_docs"
+            app:title="@string/dev_guide" />
 
         <cn.wildfire.chat.kit.widget.OptionItemView
-            android:id="@+id/channelOptionItemView"
+            android:id="@+id/conferenceOptionItemView"
             style="@style/OptionItem"
+            android:layout_marginBottom="10dp"
             app:show_arrow_indicator="true"
-            app:start_src="@mipmap/ic_channel"
-            app:title="@string/channel" />
+            app:start_src="@mipmap/ic_conference"
+            app:title="@string/conference" />
+
     </LinearLayout>
-
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/cookbookOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginBottom="10dp"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_dev_docs"
-        app:title="@string/dev_guide" />
-
-    <cn.wildfire.chat.kit.widget.OptionItemView
-        android:id="@+id/conferenceOptionItemView"
-        style="@style/OptionItem"
-        android:layout_marginBottom="10dp"
-        app:show_arrow_indicator="true"
-        app:start_src="@mipmap/ic_conference"
-        app:title="@string/conference" />
-
-</LinearLayout>
+</cn.wildfire.chat.kit.widget.OverScrollDecorScrollView>

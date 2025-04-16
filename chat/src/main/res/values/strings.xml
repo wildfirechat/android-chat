@@ -212,4 +212,10 @@
     <string name="anti_fraud_tip_1">如果不是开发、测试目的使用本软件，那一定是诈骗</string>
     <string name="got_it">明白</string>
     <string name="exit_app">退出</string>
+
+    <string name="privacy_agreement_tip"> 登录即代表同意 </string>
+    <string name="privacy_agreement">野火IM隐私协议</string>
+    <string name="user_agreement">野火IM用户协议</string>
+    <string name="and">和</string>
+    <string name="check_agreement_tip">请同意用户协议及隐私政策</string>
 </resources>

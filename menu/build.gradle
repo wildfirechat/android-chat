@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.noober.menu'
+    namespace 'cn.wildfirechat.uikit.menu'
     compileSdk 34
 
     defaultConfig {

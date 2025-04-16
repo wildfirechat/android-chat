@@ -5,6 +5,7 @@
 package cn.wildfire.chat.kit.conversation;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +93,21 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
         view.findViewById(R.id.channelQRCodeOptionItemView).setOnClickListener(_v -> showChannelQRCode());
         view.findViewById(R.id.fileRecordOptionItemView).setOnClickListener(_v -> fileRecord());
         view.findViewById(R.id.unsubscribeButton).setOnClickListener(_v -> unsubscribe());
+
+        view.findViewById(R.id.reportOptionItemView).setOnClickListener(_v -> {
+            new MaterialDialog.Builder(getActivity())
+                .title(R.string.report)
+                .content(R.string.report_tip)
+                .positiveText(R.string.report)
+                .positiveColor(Color.RED)
+                .negativeText(R.string.cancel)
+                .onPositive((dialog, which) -> {
+                    Intent intent = ConversationActivity.buildConversationIntent(getContext(), Conversation.ConversationType.Single, "uiuJuJcc", 0);
+                    startActivity(intent);
+                })
+                .build()
+                .show();
+        });
     }
 
     private void bindViews(View view) {

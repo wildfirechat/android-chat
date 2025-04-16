@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#dc000000"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        tools:text="野火IM 申请获取相机权限" />
+
+    <TextView
+        android:id="@+id/descTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:lineSpacingExtra="2dp"
+        android:maxWidth="300dp"
+        android:textAlignment="center"
+        android:textColor="#B4B3B2"
+        android:textSize="15sp"
+        tools:text="在下方弹窗中选择允许后，你可以拍摄照片或视频以发送给朋友、使用视频通话、群直播等功能。你还可以其他场景中访问摄像头进行拍摄照片和视频。" />
+
+</LinearLayout>
+

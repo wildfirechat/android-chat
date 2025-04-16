@@ -1,0 +1,41 @@
+<resources>
+    <string name="permission_audio_title">%s 申请获取麦克风权限</string>
+    <string name="permission_audio_desc">在下方弹窗中选择允许后，你可以录制语音或拍摄视频以发送给朋友、使用音视频通话等功能。</string>
+    <string name="permission_audio_denied_title">麦克风权限未开启</string>
+    <string name="permission_audio_denied_desc">在设置-应用-%s-权限中开启麦克风权限，以正常使用语音、小视频、音视频通话等功能。</string>
+
+    <string name="permission_camera_title">%s 申请获取相机权限</string>
+    <string name="permission_camera_desc">在下方弹窗中选择允许后，你可以拍摄照片或视频以发送给朋友、使用视频通话、群直播等功能。你还可以其他场景中访问摄像头进行拍摄照片和视频。</string>
+    <string name="permission_camera_denied_title">相机权限未开启</string>
+    <string name="permission_camera_denied_desc">在设置-应用-%s-权限中开启相机权限，以正常使用拍照、小视频、 扫一扫等功能。</string>
+
+    <string name="permission_bluetooth_connect_title">%s 申请获取蓝牙权限</string>
+    <string name="permission_bluetooth_connect_desc">在下方弹窗中选择允许后，你可以使用蓝牙设备进行音视频通话。</string>
+    <string name="permission_bluetooth_connect_denied_title">蓝牙权限未开启</string>
+    <string name="permission_bluetooth_connect_denied_desc">在设置-应用-%s-权限中开启蓝牙权限，以正常使用蓝牙设备进行音视频通话。</string>
+
+    <string name="permission_read_image_title">%s 申请读取照片权限</string>
+    <string name="permission_read_image_desc">在下方弹窗中选择允许后，你可以访问相册，给朋友照片、更新头像等。</string>
+    <string name="permission_read_image_denied_title">读取照片权限未开启</string>
+    <string name="permission_read_image_denied_desc">在设置-应用-%s-权限中开启照片权限，以正常使用发送照片、更新头像等功能。</string>
+
+    <string name="permission_read_video_title">%s 申请读取视频权限</string>
+    <string name="permission_read_video_desc">在下方弹窗中选择允许后，你可以访问相册，给朋友发送视频等。</string>
+    <string name="permission_read_video_denied_title">读取视频权限未开启</string>
+    <string name="permission_read_video_denied_desc">在设置-应用-%s-权限中开启视频权限，以正常使用发送视频等功能。</string>
+
+    <string name="permission_storage_title">%s 申请读取外部存储权限</string>
+    <string name="permission_storage_desc">在下方弹窗中选择允许后，你可以访问相册，给朋友发送图片、视频，更新头像等。</string>
+    <string name="permission_storage_denied_title">读取外部存储权限未开启</string>
+    <string name="permission_storage_denied_desc">在设置-应用-%s-权限中开启外部存储访问权限，以正常使用发送图片、视频、文件，更新头像等功能。</string>
+
+    <string name="permission_notification_title">%s 申请发送通知权限</string>
+    <string name="permission_notification_desc">在下方弹窗中选择允许后，应用在后台运行，收到消息时，将能进行通知提醒</string>
+    <string name="permission_notification_denied_title">发送通知权限未开启</string>
+    <string name="permission_notification_denied_desc">在设置-应用-%s-权限中开启通知权限，以及时收到消息通知提醒。</string>
+
+    <string name="permission_location_title">%s 申请获位置权限</string>
+    <string name="permission_location_desc">在下方弹窗中选择允许后，你可以发送位置消息</string>
+    <string name="permission_location_denied_title">位置权限未开启</string>
+    <string name="permission_location_denied_desc">在设置-应用-%s-权限中开启位置权限，以发送位置消息。</string>
+</resources>

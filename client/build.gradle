@@ -54,8 +54,8 @@ android {
 dependencies {
     api project(':mars-core-release')
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    api 'com.squareup.okhttp3:okhttp:4.11.0'
-    implementation 'com.squareup.okio:okio:3.2.0'
+    api 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.squareup.okio:okio:3.10.2'
 }
 repositories {
     mavenCentral()

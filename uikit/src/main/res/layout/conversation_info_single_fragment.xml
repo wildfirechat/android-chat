@@ -110,6 +110,12 @@
                 app:show_arrow_indicator="true"
                 app:title="@string/clear_chat_log" />
 
+            <cn.wildfire.chat.kit.widget.OptionItemView
+                android:id="@+id/reportOptionItemView"
+                style="@style/OptionItem"
+                app:show_arrow_indicator="true"
+                app:title="@string/report" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

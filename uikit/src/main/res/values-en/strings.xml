@@ -771,4 +771,7 @@
     <string name="local_preview_failed">No application was found to open this file.</string>
 
     <string name="anti_fraud_tip">In order to avoid being used for fraud and other purposes, this function has been blocked.</string>
+
+    <string name="report">Report</string>
+    <string name="report_tip">If you find content that violates laws and ethics, or if your legitimate rights have been infringed, please take a screenshot and send it to us. We will process it within 24 hours. The processing methods include, but are not limited to, removing content, warning the author, freezing accounts, and even reporting to authorities.</string>
 </resources>

@@ -22,6 +22,7 @@ import cn.wildfire.chat.kit.contact.viewholder.footer.FooterViewHolder;
 import cn.wildfire.chat.kit.contact.viewholder.header.HeaderViewHolder;
 import cn.wildfire.chat.kit.widget.ProgressFragment;
 import cn.wildfire.chat.kit.widget.QuickIndexBar;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 /**
  * @author dhl
@@ -73,6 +74,7 @@ public abstract class BaseUserListFragment extends ProgressFragment implements Q
         usersRecyclerView.setAdapter(userListAdapter);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         usersRecyclerView.setLayoutManager(linearLayoutManager);
+        OverScrollDecoratorHelper.setUpOverScroll(usersRecyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         if (showQuickIndexBar) {
             quickIndexBar.setVisibility(View.VISIBLE);

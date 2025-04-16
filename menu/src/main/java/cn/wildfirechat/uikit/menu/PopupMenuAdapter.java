@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.noober.menu.R;
 
 import java.util.List;
 

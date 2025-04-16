@@ -2,7 +2,6 @@ package cn.wildfire.chat.kit.voip.conference;
 
 import android.Manifest;
 import android.content.Intent;
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -22,6 +21,7 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.net.BooleanCallback;
 import cn.wildfire.chat.kit.qrcode.QRCodeActivity;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
@@ -152,25 +152,24 @@ public class ConferenceInfoActivity extends WfcBaseActivity {
 
     void joinConference() {
         String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!checkPermission(permissions)) {
-                requestPermissions(permissions, 100);
-                return;
+        PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+        PermissionKit.checkThenRequestPermission(this, this.getSupportFragmentManager(), tuples, o -> {
+            if (o) {
+                ConferenceInfo info = conferenceInfo;
+                boolean audience = !audioSwitch.isChecked() && !videoSwitch.isChecked();
+                boolean muteVideo = audience || !videoSwitch.isChecked();
+                boolean muteAudio = audience || !audioSwitch.isChecked();
+                AVEngineKit.CallSession session = AVEngineKit.Instance().joinConference(info.getConferenceId(), false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", audience, info.isAdvance(), muteAudio, muteVideo, null);
+                if (session != null) {
+                    Intent intent = new Intent(this, ConferenceActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(this, getString(R.string.join_conf_failed), Toast.LENGTH_SHORT).show();
+                }
             }
-        }
+        });
 
-        ConferenceInfo info = conferenceInfo;
-        boolean audience = !audioSwitch.isChecked() && !videoSwitch.isChecked();
-        boolean muteVideo = audience || !videoSwitch.isChecked();
-        boolean muteAudio = audience || !audioSwitch.isChecked();
-        AVEngineKit.CallSession session = AVEngineKit.Instance().joinConference(info.getConferenceId(), false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", audience, info.isAdvance(), muteAudio, muteVideo, null);
-        if (session != null) {
-            Intent intent = new Intent(this, ConferenceActivity.class);
-            startActivity(intent);
-            finish();
-        } else {
-            Toast.makeText(this, getString(R.string.join_conf_failed), Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void setupConferenceInfo(ConferenceInfo info) {

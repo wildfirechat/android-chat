@@ -11,7 +11,13 @@ package cn.wildfire.chat.kit;
 public class Config {
 
     /**
-     * 仅仅是host，没有http开头，也不用配置端口，可以是IP，可以是域名，<strong> 底层会使用默认的80端口</strong>，不可配置为127.0.0.1 或者 192.168.0.1
+     * IM服务HOST
+     * <p>
+     * 仅仅是host，没有http开头，也不用配置端口，可以是IP，可以是域名，
+     * <strong> 底层会使用默认的80端口</strong>，
+     * 不可配置为127.0.0.1 或者 192.168.0.1
+     * <p>
+     * 2489:8a80:32c8:1ee8:782d:f0c8:2e1b:4d18; // ipv6地址，不能带[]和端口
      * <br>
      * <br>
      */
@@ -118,4 +124,10 @@ public class Config {
 
     // 是否开启水印功能
     public static boolean ENABLE_WATER_MARK = true;
+
+    // 用户协议地址
+    public final static String USER_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_agreement.html";
+
+    //  隐私协议地址
+    public final static String  PRIVACY_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_privacy.html";
 }
