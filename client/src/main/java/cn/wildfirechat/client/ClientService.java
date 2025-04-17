@@ -14,7 +14,9 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Mark_U
 import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
 
+import android.app.Application;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -1229,7 +1231,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public cn.wildfirechat.message.Message insertMessage(cn.wildfirechat.message.Message message, boolean notify) throws RemoteException {
             ProtoMessage protoMessage = convertMessage(message);
             message.messageId = ProtoLogic.insertMessage(protoMessage);
-            if(message.messageId > 0) {
+            if (message.messageId > 0) {
                 return getMessage(message.messageId);
             }
             return message;
@@ -3972,7 +3974,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         groupInfo.portrait = protoGroupInfo.getPortrait();
 
-        if(!TextUtils.isEmpty(groupInfo.portrait)) {
+        if (!TextUtils.isEmpty(groupInfo.portrait)) {
             groupInfo.portrait = ClientService.urlRedirect(groupInfo.portrait);
         }
         if (TextUtils.isEmpty(groupInfo.portrait) && defaultPortraitProvider != null) {
@@ -4880,6 +4882,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (parcelables == null || parcelables.length == 0) {
             return entry;
         }
+        if (isMainProcess()) {
+            entry.entries.addAll(Arrays.asList(parcelables));
+            entry.index = parcelables.length - 1;
+            return entry;
+        }
 
         for (int i = startIndex; i < parcelables.length; i++) {
             T parcelable = parcelables[i];
@@ -5054,6 +5061,12 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         } else {
             return _connectedToMainNetwork;
         }
+    }
+
+    public boolean isMainProcess() {
+        Context context = getApplicationContext();
+        String processName = Application.getProcessName();
+        return context.getPackageName().equals(processName);
     }
 
 }
