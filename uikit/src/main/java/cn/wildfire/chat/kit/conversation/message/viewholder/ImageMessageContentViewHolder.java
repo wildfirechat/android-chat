@@ -83,8 +83,8 @@ public class ImageMessageContentViewHolder extends MediaMessageContentViewHolder
     }
 
     @Override
-    protected void setSendStatus(Message item) {
-        super.setSendStatus(item);
+    protected void setMessageStatus(Message item) {
+        super.setMessageStatus(item);
         MessageContent msgContent = item.content;
         if (msgContent instanceof ImageMessageContent) {
             boolean isSend = item.direction == MessageDirection.Send;
