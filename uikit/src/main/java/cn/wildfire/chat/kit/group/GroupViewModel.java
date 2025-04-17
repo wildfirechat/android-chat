@@ -557,6 +557,15 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         }
     }
 
+    public CharSequence getGroupMemberDisplayNameEx(UserInfo userInfo, int spanFontSize) {
+        String displayName = ChatManager.Instance().getGroupMemberDisplayName(userInfo);
+        if (WfcUtils.isExternalTarget(userInfo.uid)) {
+            return WfcUtils.buildExternalDisplayNameSpannableString(displayName, spanFontSize);
+        } else {
+            return displayName;
+        }
+    }
+
     public MutableLiveData<OperateResult<List<GroupInfo>>> getFavGroups() {
         MutableLiveData<OperateResult<List<GroupInfo>>> result = new MutableLiveData<>();
         ChatManager.Instance().getFavGroups(new GetGroupsCallback() {

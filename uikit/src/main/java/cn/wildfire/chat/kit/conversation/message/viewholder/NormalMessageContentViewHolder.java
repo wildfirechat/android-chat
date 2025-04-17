@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import cn.wildfire.chat.kit.AppServiceProvider;
-import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
@@ -82,6 +81,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     FrameLayout groupReceiptFrameLayout;
     ProgressBar deliveryProgressBar;
     ProgressBar readProgressBar;
+    UserInfo senderUserInfo;
 
     public NormalMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
@@ -114,9 +114,12 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     public void onBind(UiMessage message, int position) {
         super.onBind(message, position);
 
-        setSenderAvatar(message.message);
-        setSenderName(message.message);
-        setSendStatus(message.message);
+        String tag = (String) itemView.getTag();
+        if (!TextUtils.equals(tag, message.message.sender)) {
+            setSenderAvatar(message.message);
+            setSenderName(message.message);
+        }
+        setMessageStatus(message.message);
         try {
             onBind(message);
         } catch (Exception e) {
@@ -451,15 +454,18 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         // TODO get user info from viewModel
         String portraitUrl = null;
         if (item.conversation.type == Conversation.ConversationType.Channel && item.direction == MessageDirection.Receive) {
-            UserInfo userInfo = ChatManager.Instance().getUserInfo(item.sender, false);
-            if (userInfo != null) {
-                portraitUrl = userInfo.portrait;
+            senderUserInfo = ChatManager.Instance().getUserInfo(item.sender, false);
+            if (senderUserInfo != null) {
+                portraitUrl = senderUserInfo.portrait;
             }
         } else {
-            UserInfo userInfo = ChatManagerHolder.gChatManager.getUserInfo(item.sender, false);
-            if (userInfo != null) {
-                portraitUrl = userInfo.portrait;
+            senderUserInfo = ChatManager.Instance().getUserInfo(item.sender, item.conversation.type == Conversation.ConversationType.Group ? item.conversation.target : null, false);
+            if (senderUserInfo != null) {
+                portraitUrl = senderUserInfo.portrait;
             }
+        }
+        if (senderUserInfo != null && senderUserInfo.updateDt > 0) {
+            itemView.setTag(message.message.sender);
         }
         if (portraitImageView != null && portraitUrl != null) {
             Glide
@@ -495,7 +501,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 //        }
         GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
 
-        nameTextView.setText(groupViewModel.getGroupMemberDisplayNameEx(conversation.target, sender, 11));
+        nameTextView.setText(groupViewModel.getGroupMemberDisplayNameEx(senderUserInfo, 11));
         nameTextView.setTag(sender);
     }
 
@@ -504,7 +510,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         return (tag != null && (tag.flag() == PersistFlag.Persist_And_Count));
     }
 
-    protected void setSendStatus(Message item) {
+    protected void setMessageStatus(Message item) {
         MessageStatus sentStatus = item.status;
         if (item.direction == MessageDirection.Receive) {
             return;
@@ -574,7 +580,14 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                     }
                 }
 
-                GroupInfo groupInfo = ChatManager.Instance().getGroupInfo(item.conversation.target, false);
+                GroupInfo groupInfo;
+                groupInfo = (GroupInfo) itemView.getTag(R.id.readProgressBar);
+                if (groupInfo == null) {
+                    groupInfo = ChatManager.Instance().getGroupInfo(item.conversation.target, false);
+                    if (groupInfo != null && groupInfo.updateDt > 0) {
+                        itemView.setTag(R.id.readProgressBar, groupInfo);
+                    }
+                }
                 if (groupInfo == null) {
                     return;
                 }
