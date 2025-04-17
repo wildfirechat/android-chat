@@ -20,12 +20,20 @@
     <application
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <service
-            android:name="cn.wildfirechat.client.ClientService"
-            android:process=":marsservice" />
-        <receiver
-            android:name="com.tencent.mars.BaseEvent$ConnectionReceiver"
-            android:process=":marsservice" />
+        <!--        clientService 可以配置运行在单独的进程，或直接运行在主进程-->
+        <!--        当 IM 功能，不是应用的主要功能时，可以考虑让 ClientService 运行在单独的进程中-->
+        <!--        当 IM 功能，是应用的主要功能时，ClientService 运行在主进程，性能会更好-->
+
+        <!--        <service-->
+        <!--            android:name="cn.wildfirechat.client.ClientService"-->
+        <!--            android:process=":marsservice" />-->
+        <!--        <receiver-->
+        <!--            android:name="com.tencent.mars.BaseEvent$ConnectionReceiver"-->
+        <!--            android:process=":marsservice" />-->
+
+        <!--        clientService 默认运行在主进程-->
+        <service android:name="cn.wildfirechat.client.ClientService" />
+        <receiver android:name="com.tencent.mars.BaseEvent$ConnectionReceiver" />
 
         <!--must run in th main process-->
         <receiver android:name="cn.wildfirechat.remote.RecoverReceiver" />
