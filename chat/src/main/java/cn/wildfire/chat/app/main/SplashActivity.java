@@ -9,6 +9,7 @@ import static cn.wildfire.chat.app.BaseApp.getContext;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import androidx.core.content.ContextCompat;
 
 import cn.wildfire.chat.app.login.LoginActivity;
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.utils.LocaleUtils;
 import cn.wildfirechat.chat.R;
 
@@ -39,6 +41,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         hideSystemUI();
         setStatusBarColor(R.color.gray5);
+
 
         try {
             id = KeyStoreUtil.getData(this, "wf_userId");
@@ -62,7 +65,12 @@ public class SplashActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(token)) {
             showMain();
         } else {
-            showLogin();
+            SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
+            if (sp.getBoolean("hasReadUserAgreement", false)) {
+                showLogin();
+            } else {
+                showAgreement();
+            }
         }
     }
 
@@ -79,6 +87,15 @@ public class SplashActivity extends AppCompatActivity {
         Intent intent;
         intent = new Intent(this, LoginActivity.class);
         intent.putExtra("isKickedOff", getIntent().getBooleanExtra("isKickedOff", false));
+        Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
+            android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
+        startActivity(intent, bundle);
+        finish();
+    }
+
+    private void showAgreement() {
+        Intent intent;
+        intent = new Intent(this, AgreementActivity.class);
         Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
             android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
         startActivity(intent, bundle);

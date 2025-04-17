@@ -80,6 +80,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="cn.wildfire.chat.app.main.AgreementActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="cn.wildfire.chat.app.login.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
