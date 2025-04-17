@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import cn.wildfirechat.uikit.menu.OnMenuItemClickListener;
-import cn.wildfirechat.uikit.menu.VerticalContextMenu;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -32,9 +30,13 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolderManager;
+import cn.wildfire.chat.kit.conversationlist.viewholder.GroupConversationViewHolder;
+import cn.wildfire.chat.kit.conversationlist.viewholder.SingleConversationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.viewholder.StatusNotificationContainerViewHolder;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
+import cn.wildfirechat.uikit.menu.OnMenuItemClickListener;
+import cn.wildfirechat.uikit.menu.VerticalContextMenu;
 
 public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Fragment fragment;
@@ -172,6 +174,15 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        if (holder instanceof SingleConversationViewHolder) {
+            ((SingleConversationViewHolder) holder).removeLiveDataObserver();
+        } else if (holder instanceof GroupConversationViewHolder) {
+            ((GroupConversationViewHolder) holder).removeLiveDataObserver();
+        }
     }
 
     private void processConversationClick(ConversationViewHolder viewHolder, View itemView) {
