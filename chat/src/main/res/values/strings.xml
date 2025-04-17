@@ -212,4 +212,11 @@
     <string name="user_agreement">野火IM用户协议</string>
     <string name="and">和</string>
     <string name="check_agreement_tip">请同意用户协议及隐私政策</string>
+
+    <!-- Agreement Activity -->
+    <string name="agreement_welcome">欢迎使用野火IM</string>
+    <string name="agreement_demo_notice">野火IM 是针对野火IM开发者的演示应用，请勿日常使用。</string>
+    <string name="agreement_description">野火IM 为即时通讯类应用，其基本功能为收发文本、图片、视频、位置等消息，以及进行音视频通话。为实现其基本功能，需要使用自启动、通知、麦克风、相机等权限，但在您同意之前，我们不会获取任何权限。在使用之前，请仔细阅读下面的隐私政策和用户协议。</string>
+    <string name="agreement_agree">同意并继续</string>
+    <string name="agreement_disagree">不同意</string>
 </resources>

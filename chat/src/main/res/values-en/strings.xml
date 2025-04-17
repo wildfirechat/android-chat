@@ -209,11 +209,16 @@
     <string name="confirm">Confirm</string>
     <string name="retry_after_seconds">%1$d seconds to retry</string>
     <string name="e2e_not_enable">Secret chat not enable</string>
-    <string name="privacy_agreement_tip">
-        登录即代表同意
-    </string>
-    <string name="privacy_agreement">野火IM隐私政策</string>
-    <string name="user_agreement">野火IM用户协议</string>
-    <string name="and">和</string>
-    <string name="check_agreement_tip">请同意用户协议及隐私政策</string>
+    <string name="privacy_agreement_tip">Logging in means agreeing to</string>
+    <string name="privacy_agreement">WildFire IM Privacy Policy</string>
+    <string name="user_agreement">WildFire IM User Agreement</string>
+    <string name="and">and</string>
+    <string name="check_agreement_tip">Please agree to the User Agreement and Privacy Policy</string>
+
+    <!-- Agreement Activity -->
+    <string name="agreement_welcome">Welcome to WildFireIM </string>
+    <string name="agreement_demo_notice">WildFireIM is a demo application for WildFireIM developers, please do not use it for daily purposes.</string>
+    <string name="agreement_description">WildFireIM is an instant messaging application whose basic functions include sending and receiving text, images, videos, locations and other messages, as well as making audio and video calls.To implement its basic functions, it needs to use permissions such as auto-start, notifications, microphone, camera, etc., but we will not obtain any permission before you agree. Before using, please carefully read the privacy policy and user agreement below.</string>
+    <string name="agreement_agree">Agree and Continue</string>
+    <string name="agreement_disagree">Disagree</string>
 </resources>
