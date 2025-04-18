@@ -30,8 +30,6 @@ import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.conversationlist.notification.StatusNotification;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.viewholder.ConversationViewHolderManager;
-import cn.wildfire.chat.kit.conversationlist.viewholder.GroupConversationViewHolder;
-import cn.wildfire.chat.kit.conversationlist.viewholder.SingleConversationViewHolder;
 import cn.wildfire.chat.kit.conversationlist.viewholder.StatusNotificationContainerViewHolder;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -178,10 +176,8 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
-        if (holder instanceof SingleConversationViewHolder) {
-            ((SingleConversationViewHolder) holder).removeLiveDataObserver();
-        } else if (holder instanceof GroupConversationViewHolder) {
-            ((GroupConversationViewHolder) holder).removeLiveDataObserver();
+        if (holder instanceof ConversationViewHolder) {
+            ((ConversationViewHolder) holder).removeLiveDataObserver();
         }
     }
 

@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -37,7 +37,7 @@ public class ConversationViewHolder extends ResultItemViewHolder<ConversationSea
         bindViews(itemView);
 
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
+        groupViewModel =new ViewModelProvider(fragment).get(GroupViewModel.class);
     }
 
     private void bindViews(View itemView) {

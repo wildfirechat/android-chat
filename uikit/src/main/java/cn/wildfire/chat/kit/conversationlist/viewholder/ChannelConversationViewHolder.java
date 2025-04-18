@@ -11,14 +11,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ConversationContextMenuItem;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
-import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.model.ChannelInfo;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
@@ -49,7 +46,7 @@ public class ChannelConversationViewHolder extends ConversationViewHolder {
             .with(fragment)
             .load(portrait)
             .placeholder(R.mipmap.ic_channel)
-            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(4)))
+            .transform(centerCropTransformation, roundedCornerTransformation)
             .into(portraitImageView);
     }
 
