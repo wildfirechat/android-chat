@@ -11,7 +11,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.NullGroupInfo;
@@ -20,6 +22,8 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.DefaultPortraitProvider;
 
 public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
+    private final Map<String, String> groupPortraitMap = new HashMap<>();
+
     @Override
     public String userDefaultPortrait(UserInfo userInfo) {
         if (!TextUtils.isEmpty(userInfo.portrait)) {
@@ -31,13 +35,21 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
 
     @Override
     public String groupDefaultPortrait(GroupInfo groupInfo, List<UserInfo> userInfos) {
-        if (groupInfo instanceof NullGroupInfo || !TextUtils.isEmpty(groupInfo.portrait)) {
+        if (groupInfo instanceof NullGroupInfo || !TextUtils.isEmpty(groupInfo.portrait) || userInfos == null || userInfos.isEmpty()) {
             return groupInfo.portrait;
         }
+        String portrait = groupPortraitMap.get(groupInfo.target);
+        if (portrait != null) {
+            return portrait;
+        }
+
         boolean pending = false;
         JSONObject request = new JSONObject();
         try {
             JSONArray reqMembers = new JSONArray();
+            if (userInfos.size() > 9) {
+                userInfos = userInfos.subList(0, 9);
+            }
             for (UserInfo userInfo : userInfos) {
                 if (userInfo instanceof NullUserInfo) {
                     pending = true;
@@ -57,6 +69,8 @@ public class WfcDefaultPortraitProvider implements DefaultPortraitProvider {
         if (pending) {
             return null;
         }
-        return AppService.APP_SERVER_ADDRESS + "/avatar/group?request=" + Uri.encode(request.toString());
+        portrait = AppService.APP_SERVER_ADDRESS + "/avatar/group?request=" + Uri.encode(request.toString());
+        groupPortraitMap.put(groupInfo.target, portrait);
+        return portrait;
     }
 }
