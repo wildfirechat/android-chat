@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -37,7 +37,7 @@ public class ConferenceInviteActivity extends PickOrCreateConversationActivity {
     protected void afterViews() {
         super.afterViews();
         inviteMessage = getIntent().getParcelableExtra("inviteMessage");
-        messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
+        messageViewModel =new ViewModelProvider(this).get(MessageViewModel.class);
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
     }

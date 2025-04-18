@@ -215,6 +215,7 @@ public class ChatManager {
     private String userId;
     private String token;
     private Handler mainHandler;
+    private Handler internalWorkHandler;
     private Handler workHandler;
     private String deviceToken;
     private String clientId;
@@ -451,9 +452,12 @@ public class ChatManager {
         INST.userInfoCache = new LruCache<>(1024);
         INST.groupMemberCache = new LruCache<>(1024);
         INST.userOnlineStateMap = new ConcurrentHashMap<>();
-        HandlerThread thread = new HandlerThread("workHandler");
-        thread.start();
-        INST.workHandler = new Handler(thread.getLooper());
+        HandlerThread internalHandlerthread = new HandlerThread("internalWorkHandler");
+        internalHandlerthread.start();
+        HandlerThread workHandlerThread = new HandlerThread("workHandler");
+        workHandlerThread.start();
+        INST.internalWorkHandler = new Handler(internalHandlerthread.getLooper());
+        INST.workHandler = new Handler(workHandlerThread.getLooper());
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new LifecycleObserver() {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             public void onForeground() {
@@ -1279,6 +1283,7 @@ public class ChatManager {
 
     /**
      * 设置自定心跳间隔。单位是秒，取值范围为10-2400。一般不建议修改，除非是特殊场景。
+     *
      * @param second 心跳间隔的秒数
      */
     public void setHeartBeatInterval(int second) {
@@ -2960,7 +2965,6 @@ public class ChatManager {
         return workHandler;
     }
 
-
     /**
      * 获取主线程handler
      *
@@ -3057,28 +3061,30 @@ public class ChatManager {
             inlines[j] = lines.get(j);
         }
 
-        try {
-            List<ConversationInfo> convs = new ArrayList<>();
-            mClient.getConversationListAsync(intypes, inlines, new IGetConversationListCallback.Stub() {
-                @Override
-                public void onSuccess(List<ConversationInfo> infos, boolean hasMore) throws RemoteException {
-                    convs.addAll(infos);
-                    if (!hasMore) {
-                        mainHandler.post(() -> {
-                            callback.onSuccess(convs);
-                        });
+        internalWorkHandler.post(() -> {
+            try {
+                List<ConversationInfo> convs = new ArrayList<>();
+                mClient.getConversationListAsync(intypes, inlines, new IGetConversationListCallback.Stub() {
+                    @Override
+                    public void onSuccess(List<ConversationInfo> infos, boolean hasMore) throws RemoteException {
+                        convs.addAll(infos);
+                        if (!hasMore) {
+                            mainHandler.post(() -> {
+                                callback.onSuccess(convs);
+                            });
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    mainHandler.post(() -> callback.onFail(errorCode));
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            callback.onFail(-1);
-        }
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+                        mainHandler.post(() -> callback.onFail(errorCode));
+                    }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                callback.onFail(-1);
+            }
+        });
     }
 
     /**
@@ -4945,33 +4951,35 @@ public class ChatManager {
             }
             return;
         }
-        try {
-            List<UserInfo> userInfos = new ArrayList<>();
-            mClient.getFriendUserInfoListAsync(refresh, new IGetUserInfoListCallback.Stub() {
-                @Override
-                public void onSuccess(List<UserInfo> infos, boolean hasMore) throws RemoteException {
-                    if (callback == null) {
-                        return;
+        internalWorkHandler.post(() -> {
+            try {
+                List<UserInfo> userInfos = new ArrayList<>();
+                mClient.getFriendUserInfoListAsync(refresh, new IGetUserInfoListCallback.Stub() {
+                    @Override
+                    public void onSuccess(List<UserInfo> infos, boolean hasMore) throws RemoteException {
+                        if (callback == null) {
+                            return;
+                        }
+                        userInfos.addAll(infos);
+                        if (!hasMore) {
+                            mainHandler.post(() -> callback.onSuccess(userInfos));
+                        }
                     }
-                    userInfos.addAll(infos);
-                    if (!hasMore) {
-                        mainHandler.post(() -> callback.onSuccess(userInfos));
-                    }
-                }
 
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    if (callback != null) {
-                        mainHandler.post(() -> callback.onFail(errorCode));
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+                        if (callback != null) {
+                            mainHandler.post(() -> callback.onFail(errorCode));
+                        }
                     }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                if (callback != null) {
+                    mainHandler.post(() -> callback.onFail(-1));
                 }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            if (callback != null) {
-                mainHandler.post(() -> callback.onFail(-1));
             }
-        }
+        });
     }
 
     /**
@@ -5798,29 +5806,31 @@ public class ChatManager {
             return;
         }
 
-        try {
-            List<UserInfo> userInfos = new ArrayList<>();
-            mClient.getUserInfosAsync(userIds, groupId, new IGetUserInfoListCallback.Stub() {
+        internalWorkHandler.post(() -> {
+            try {
+                List<UserInfo> userInfos = new ArrayList<>();
+                mClient.getUserInfosAsync(userIds, groupId, new IGetUserInfoListCallback.Stub() {
 
-                @Override
-                public void onSuccess(List<UserInfo> infos, boolean hasMore) throws RemoteException {
-                    userInfos.addAll(infos);
-                    if (callback != null && !hasMore) {
-                        mainHandler.post(() -> callback.onSuccess(userInfos));
+                    @Override
+                    public void onSuccess(List<UserInfo> infos, boolean hasMore) throws RemoteException {
+                        userInfos.addAll(infos);
+                        if (callback != null && !hasMore) {
+                            mainHandler.post(() -> callback.onSuccess(userInfos));
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    if (callback != null) {
-                        mainHandler.post(() -> callback.onFail(errorCode));
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+                        if (callback != null) {
+                            mainHandler.post(() -> callback.onFail(errorCode));
+                        }
                     }
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            callback.onFail(-1);
-        }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                callback.onFail(-1);
+            }
+        });
     }
 
     /**
@@ -7335,7 +7345,7 @@ public class ChatManager {
             return;
         }
 
-        workHandler.post(() -> {
+        internalWorkHandler.post(() -> {
             try {
                 List<GroupMember> groupMemberList = new ArrayList<>();
                 mClient.getGroupMembersEx(groupId, forceUpdate, new IGetGroupMemberCallback.Stub() {
@@ -7380,33 +7390,35 @@ public class ChatManager {
             }
             return;
         }
-        try {
-            List<UserInfo> userInfos = new ArrayList<>();
-            mClient.getGroupMemberUserInfosAsync(groupId, refresh, new IGetUserInfoListCallback.Stub() {
-                @Override
-                public void onSuccess(List<UserInfo> infos, boolean hasMore) throws RemoteException {
-                    if (callback == null) {
-                        return;
+        internalWorkHandler.post(() -> {
+            try {
+                List<UserInfo> userInfos = new ArrayList<>();
+                mClient.getGroupMemberUserInfosAsync(groupId, refresh, new IGetUserInfoListCallback.Stub() {
+                    @Override
+                    public void onSuccess(List<UserInfo> infos, boolean hasMore) throws RemoteException {
+                        if (callback == null) {
+                            return;
+                        }
+                        userInfos.addAll(infos);
+                        if (!hasMore) {
+                            mainHandler.post(() -> callback.onSuccess(userInfos));
+                        }
                     }
-                    userInfos.addAll(infos);
-                    if (!hasMore) {
-                        mainHandler.post(() -> callback.onSuccess(userInfos));
-                    }
-                }
 
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    if (callback != null) {
-                        mainHandler.post(() -> callback.onFail(errorCode));
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+                        if (callback != null) {
+                            mainHandler.post(() -> callback.onFail(errorCode));
+                        }
                     }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                if (callback != null) {
+                    mainHandler.post(() -> callback.onFail(-1));
                 }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            if (callback != null) {
-                mainHandler.post(() -> callback.onFail(-1));
             }
-        }
+        });
     }
 
     private String groupMemberCacheKey(String groupId, String memberId) {
@@ -7930,7 +7942,7 @@ public class ChatManager {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
-        workHandler.post(() -> {
+        internalWorkHandler.post(() -> {
             Map<String, String> groupIdMap = getUserSettings(UserSettingScope.FavoriteGroup);
             List<GroupInfo> groups = new ArrayList<>();
             if (groupIdMap != null && !groupIdMap.isEmpty()) {
@@ -7996,7 +8008,7 @@ public class ChatManager {
             callback.onFail(ErrorCode.SERVICE_DIED);
             return;
         }
-        workHandler.post(() -> {
+        internalWorkHandler.post(() -> {
             Map<String, String> userIdMap = getUserSettings(UserSettingScope.FavoriteUser);
             List<String> userIds = new ArrayList<>();
             if (userIdMap != null && !userIdMap.isEmpty()) {
@@ -9522,36 +9534,38 @@ public class ChatManager {
         if (!checkRemoteService()) {
             return;
         }
-        try {
-            AshmenWrapper ashmenWrapper = AshmenWrapper.create(targetId, mediaData.length);
-            ashmenWrapper.writeBytes(mediaData, 0, mediaData.length);
-            AshmenWrapper finalAshmenHolder = ashmenWrapper;
-            mClient.decodeSecretChatDataAsync(targetId, ashmenWrapper, mediaData.length, new IGeneralCallbackInt.Stub() {
-                @Override
-                public void onSuccess(int length) throws RemoteException {
-                    if (callback != null) {
-                        // TODO ByteArrayOutputStream
-                        byte[] data = new byte[length];
-                        try {
-                            finalAshmenHolder.readBytes(data, 0, length);
-                            callback.onSuccess(data);
-                        } finally {
-                            finalAshmenHolder.close();
+        internalWorkHandler.post(() -> {
+            try {
+                AshmenWrapper ashmenWrapper = AshmenWrapper.create(targetId, mediaData.length);
+                ashmenWrapper.writeBytes(mediaData, 0, mediaData.length);
+                AshmenWrapper finalAshmenHolder = ashmenWrapper;
+                mClient.decodeSecretChatDataAsync(targetId, ashmenWrapper, mediaData.length, new IGeneralCallbackInt.Stub() {
+                    @Override
+                    public void onSuccess(int length) throws RemoteException {
+                        if (callback != null) {
+                            // TODO ByteArrayOutputStream
+                            byte[] data = new byte[length];
+                            try {
+                                finalAshmenHolder.readBytes(data, 0, length);
+                                callback.onSuccess(data);
+                            } finally {
+                                finalAshmenHolder.close();
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onFailure(int errorCode) throws RemoteException {
-                    if (callback != null) {
-                        callback.onFail(errorCode);
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+                        if (callback != null) {
+                            callback.onFail(errorCode);
+                        }
+                        finalAshmenHolder.close();
                     }
-                    finalAshmenHolder.close();
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -9801,7 +9815,7 @@ public class ChatManager {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "marsClientService connected");
             mClient = IRemoteClient.Stub.asInterface(iBinder);
-            workHandler.post(() -> {
+            internalWorkHandler.post(() -> {
                 try {
                     if (useSM4) {
                         mClient.useSM4();

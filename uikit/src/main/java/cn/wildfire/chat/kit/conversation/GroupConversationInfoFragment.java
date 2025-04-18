@@ -25,7 +25,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProviders;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -616,8 +617,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     private void stickTop(boolean top) {
-        ConversationListViewModel conversationListViewModel = ViewModelProviders
-            .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
+        ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
         conversationListViewModel.setConversationTop(conversationInfo, top ? 1 : 0);
         conversationInfo.top = top ? 1 : 0;

@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,7 +55,7 @@ public class BlacklistListFragment extends Fragment implements BlacklistListAdap
     }
 
     private void init() {
-        blacklistViewModel = ViewModelProviders.of(getActivity()).get(BlacklistViewModel.class);
+        blacklistViewModel = new ViewModelProvider(getActivity()).get(BlacklistViewModel.class);
 
         blacklistListAdapter = new BlacklistListAdapter();
         blacklistListAdapter.setOnBlacklistItemClickListener(this);

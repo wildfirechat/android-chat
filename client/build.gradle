@@ -53,7 +53,9 @@ android {
 
 dependencies {
     api project(':mars-core-release')
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    api "androidx.lifecycle:lifecycle-viewmodel:2.8.7"
+    api "androidx.lifecycle:lifecycle-livedata:2.8.7"
+    api "androidx.lifecycle:lifecycle-process:2.8.7"
     api 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.squareup.okio:okio:3.10.2'
 }

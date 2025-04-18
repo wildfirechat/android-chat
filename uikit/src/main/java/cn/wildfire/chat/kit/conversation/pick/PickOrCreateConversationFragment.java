@@ -14,7 +14,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,8 +57,7 @@ public class PickOrCreateConversationFragment extends Fragment implements PickOr
 
 
     private void init() {
-        ConversationListViewModel conversationListViewModel = ViewModelProviders
-            .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
+        ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
         PickOrCreateConversationAdapter adapter = new PickOrCreateConversationAdapter(this);
         recyclerView.setAdapter(adapter);

@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 

@@ -8,18 +8,17 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
+import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -28,7 +27,8 @@ import cn.wildfirechat.utils.WfcUtils;
 
 @ConversationInfoType(type = Conversation.ConversationType.Group, line = 0)
 @EnableContextMenu
-public class GroupConversationViewHolder extends ConversationViewHolder {
+public class GroupConversationViewHolder extends ConversationViewHolder implements Observer<GroupInfo> {
+    private LiveData<GroupInfo> groupLiveData = null;
 
     TextView organizationGroupIndicator;
 
@@ -41,41 +41,55 @@ public class GroupConversationViewHolder extends ConversationViewHolder {
         organizationGroupIndicator = itemView.findViewById(R.id.organizationGroupIndicator);
     }
 
+    public void removeLiveDataObserver() {
+        super.removeLiveDataObserver();
+        if (groupLiveData != null) {
+            groupLiveData.removeObserver(this);
+        }
+    }
+
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
-        GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
-        groupViewModel.getGroupInfoAsync(conversationInfo.conversation.target, false)
-            .observe(fragment, groupInfo -> {
-                CharSequence name;
-                String portrait;
-                if (groupInfo != null) {
-                    String tmpName = ChatManager.Instance().getGroupDisplayName(groupInfo);
-                    portrait = groupInfo.portrait;
-                    if (groupInfo.type == GroupInfo.GroupType.Organization) {
-                        organizationGroupIndicator.setVisibility(View.VISIBLE);
-                    } else {
-                        organizationGroupIndicator.setVisibility(View.GONE);
-                    }
-                    if (WfcUtils.isExternalTarget(groupInfo.target)) {
-                        name = WfcUtils.buildExternalDisplayNameSpannableString(tmpName, 14);
-                    } else {
-                        name = tmpName;
-                    }
-
-                } else {
-                    name = fragment.getString(R.string.group_chat);
-                    portrait = null;
-                }
-
-                Glide
-                    .with(fragment)
-                    .load(portrait)
-                    .placeholder(R.mipmap.ic_group_chat)
-                    .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
-                    .into(portraitImageView);
-                nameTextView.setText(name);
-            });
+        if (groupViewModel == null) {
+            groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+        }
+        if (groupLiveData != null) {
+            groupLiveData.removeObserver(this);
+        }
+        groupLiveData = groupViewModel.getGroupInfoAsync(conversationInfo.conversation.target, false);
+        groupLiveData.observe(fragment, this);
 
     }
 
+    @Override
+    public void onChanged(GroupInfo groupInfo) {
+        CharSequence name;
+        String portrait;
+        if (groupInfo != null) {
+            String tmpName = ChatManager.Instance().getGroupDisplayName(groupInfo);
+            portrait = groupInfo.portrait;
+            if (groupInfo.type == GroupInfo.GroupType.Organization) {
+                organizationGroupIndicator.setVisibility(View.VISIBLE);
+            } else {
+                organizationGroupIndicator.setVisibility(View.GONE);
+            }
+            if (WfcUtils.isExternalTarget(groupInfo.target)) {
+                name = WfcUtils.buildExternalDisplayNameSpannableString(tmpName, 14);
+            } else {
+                name = tmpName;
+            }
+
+        } else {
+            name = fragment.getString(R.string.group_chat);
+            portrait = null;
+        }
+
+        Glide
+            .with(fragment)
+            .load(portrait)
+            .placeholder(R.mipmap.ic_group_chat)
+            .transform(centerCropTransformation, roundedCornerTransformation)
+            .into(portraitImageView);
+        nameTextView.setText(name);
+    }
 }

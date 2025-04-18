@@ -29,7 +29,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -608,7 +609,7 @@ public class ConversationFragment extends Fragment implements
                 }
             }
         });
-        messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
+        messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
 
         messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
@@ -638,10 +639,10 @@ public class ConversationFragment extends Fragment implements
             }
         };
 
-        settingViewModel = ViewModelProviders.of(this).get(SettingViewModel.class);
+        settingViewModel = new ViewModelProvider(this).get(SettingViewModel.class);
         settingViewModel.settingUpdatedLiveData().observeForever(settingUpdateLiveDataObserver);
 
-        userOnlineStateViewModel = ViewModelProviders.of(this).get(UserOnlineStateViewModel.class);
+        userOnlineStateViewModel = new ViewModelProvider(this).get(UserOnlineStateViewModel.class);
         userOnlineStateViewModel.getUserOnlineStateLiveData().observe(getViewLifecycleOwner(), userOnlineStateLiveDataObserver);
 
 
@@ -679,7 +680,7 @@ public class ConversationFragment extends Fragment implements
             loadMessage(initialFocusedMessageId);
         }
         if (conversation.type == Conversation.ConversationType.ChatRoom) {
-            chatRoomViewModel = ViewModelProviders.of(this).get(ChatRoomViewModel.class);
+            chatRoomViewModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
             if (!isPreJoinedChatRoom) {
                 joinChatRoom();
             } else {
@@ -893,7 +894,7 @@ public class ConversationFragment extends Fragment implements
                 }
             }
         } else if (conversation.type == Conversation.ConversationType.Channel) {
-            ChannelViewModel channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
+            ChannelViewModel channelViewModel =new ViewModelProvider(this).get(ChannelViewModel.class);
             ChannelInfo channelInfo = channelViewModel.getChannelInfo(conversation.target, false);
             if (channelInfo != null) {
                 conversationTitle = channelInfo.name;

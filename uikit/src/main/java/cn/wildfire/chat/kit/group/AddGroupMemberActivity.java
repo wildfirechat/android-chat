@@ -13,7 +13,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
+
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -67,7 +68,7 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
             return;
         }
 
-        pickUserViewModel = ViewModelProviders.of(this).get(PickUserViewModel.class);
+        pickUserViewModel = new ViewModelProvider(this).get(PickUserViewModel.class);
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(contactCheckStatusUpdateLiveDataObserver);
         groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
         getSupportFragmentManager().beginTransaction()

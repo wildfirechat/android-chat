@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
 import java.util.List;

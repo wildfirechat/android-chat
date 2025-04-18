@@ -12,10 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.lqr.emoji.MoonUtils;
 
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.third.utils.TimeUtils;
+import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfire.chat.kit.utils.WfcTextUtils;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageDirection;
@@ -61,6 +65,13 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected ImageView statusImageView;
 
     protected ImageView secretChatIndicator;
+    protected GroupViewModel groupViewModel;
+
+    protected final CenterCrop centerCropTransformation = new CenterCrop();
+    protected RoundedCorners roundedCornerTransformation = null;
+
+    private LiveData<String> groupMemberDisplayNameLiveData;
+    private Observer<String> groupMemberDisplayNameObserver;
 
     public ConversationViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(itemView);
@@ -68,9 +79,9 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         this.itemView = itemView;
         this.adapter = adapter;
         bindViews(itemView);
-        conversationListViewModel = new ViewModelProvider(fragment.getActivity(), new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.SecretChat, Conversation.ConversationType.ChatRoom), Arrays.asList(0)))
+        conversationListViewModel = new ViewModelProvider(fragment, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.SecretChat, Conversation.ConversationType.ChatRoom), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
-        conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
+        conversationViewModel = new ViewModelProvider(fragment).get(ConversationViewModel.class);
     }
 
     private void bindViews(View itemView) {
@@ -105,6 +116,10 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         timeTextView.setText(TimeUtils.getMsgFormatTime(conversationInfo.timestamp));
         silentImageView.setVisibility(conversationInfo.isSilent ? View.VISIBLE : View.GONE);
         statusImageView.setVisibility(View.GONE);
+
+        if (roundedCornerTransformation == null) {
+            roundedCornerTransformation = new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4));
+        }
 
         itemView.setBackgroundResource(conversationInfo.top > 0 ? R.drawable.selector_stick_top_item : R.drawable.selector_common_item);
         redDotView.setVisibility(View.GONE);
@@ -141,24 +156,30 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             }
             setViewVisibility(R.id.contentTextView, View.VISIBLE);
             if (conversationInfo.lastMessage != null && conversationInfo.lastMessage.content != null) {
-                String content = "";
                 Message lastMessage = conversationInfo.lastMessage;
                 // the message maybe invalid
                 try {
                     if (conversationInfo.conversation.type == Conversation.ConversationType.Group
                         && lastMessage.direction == MessageDirection.Receive
                         && !(lastMessage.content instanceof NotificationMessageContent)) {
-                        GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
-                        String senderDisplayName = groupViewModel.getGroupMemberDisplayName(conversationInfo.conversation.target, conversationInfo.lastMessage.sender);
-                        content = senderDisplayName + ":" + lastMessage.digest();
+                        if (groupViewModel == null) {
+                            groupViewModel = new ViewModelProvider(fragment).get(GroupViewModel.class);
+                        }
+                        groupMemberDisplayNameLiveData = groupViewModel.getGroupMemberDisplayNameAsync(conversationInfo.conversation.target, conversationInfo.lastMessage.sender);
+                        groupMemberDisplayNameObserver = senderDisplayName -> {
+                            String content = senderDisplayName + ":" + lastMessage.digest();
+                            content = WfcTextUtils.htmlToText(content);
+                            MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
+                        };
+                        groupMemberDisplayNameLiveData.observe(fragment, groupMemberDisplayNameObserver);
                     } else {
-                        content = lastMessage.digest();
+                        String content = lastMessage.digest();
+                        content = WfcTextUtils.htmlToText(content);
+                        MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                content = WfcTextUtils.htmlToText(content);
-                MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
 
                 switch (lastMessage.status) {
                     case Sending:
@@ -178,6 +199,13 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             } else {
                 contentTextView.setText("");
             }
+        }
+    }
+
+    public void removeLiveDataObserver() {
+        if (groupMemberDisplayNameLiveData != null && groupMemberDisplayNameObserver != null) {
+            groupMemberDisplayNameLiveData.removeObserver(groupMemberDisplayNameObserver);
+            groupMemberDisplayNameObserver = null;
         }
     }
 

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;

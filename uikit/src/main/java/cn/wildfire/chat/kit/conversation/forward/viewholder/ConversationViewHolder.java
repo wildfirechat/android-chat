@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -38,7 +38,7 @@ public class ConversationViewHolder extends RecyclerView.ViewHolder {
         bindViews(itemView);
 
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
+        groupViewModel = new ViewModelProvider(fragment).get(GroupViewModel.class);
     }
 
     private void bindViews(View itemView) {

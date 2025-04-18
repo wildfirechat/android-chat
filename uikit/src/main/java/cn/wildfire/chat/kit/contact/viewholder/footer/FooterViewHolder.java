@@ -7,7 +7,6 @@ package cn.wildfire.chat.kit.contact.viewholder.footer;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import cn.wildfire.chat.kit.WfcUIKit;
