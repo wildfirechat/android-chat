@@ -13,15 +13,12 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
 import cn.wildfire.chat.kit.group.GroupViewModel;
-import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -31,7 +28,6 @@ import cn.wildfirechat.utils.WfcUtils;
 @ConversationInfoType(type = Conversation.ConversationType.Group, line = 0)
 @EnableContextMenu
 public class GroupConversationViewHolder extends ConversationViewHolder implements Observer<GroupInfo> {
-    private GroupViewModel groupViewModel;
     private LiveData<GroupInfo> groupLiveData = null;
 
     TextView organizationGroupIndicator;
@@ -46,6 +42,7 @@ public class GroupConversationViewHolder extends ConversationViewHolder implemen
     }
 
     public void removeLiveDataObserver() {
+        super.removeLiveDataObserver();
         if (groupLiveData != null) {
             groupLiveData.removeObserver(this);
         }
@@ -91,7 +88,7 @@ public class GroupConversationViewHolder extends ConversationViewHolder implemen
             .with(fragment)
             .load(portrait)
             .placeholder(R.mipmap.ic_group_chat)
-            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
+            .transform(centerCropTransformation, roundedCornerTransformation)
             .into(portraitImageView);
         nameTextView.setText(name);
     }

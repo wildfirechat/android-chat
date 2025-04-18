@@ -10,13 +10,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.ConversationInfoType;
 import cn.wildfire.chat.kit.annotation.EnableContextMenu;
-import cn.wildfire.chat.kit.third.utils.UIUtils;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 
@@ -30,13 +27,13 @@ public class UnknownConversationViewHolder extends ConversationViewHolder {
     @Override
     protected void onBindConversationInfo(ConversationInfo conversationInfo) {
         Glide
-                .with(fragment)
-                .load(R.mipmap.avatar_def)
-                .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(4)))
-                .into(portraitImageView);
+            .with(fragment)
+            .load(R.mipmap.avatar_def)
+            .transform(centerCropTransformation, roundedCornerTransformation)
+            .into(portraitImageView);
         nameTextView.setText(fragment.getString(R.string.unknown_conversation_type,
-                             conversationInfo.conversation.type.getValue(),
-                             conversationInfo.conversation.line));
+            conversationInfo.conversation.type.getValue(),
+            conversationInfo.conversation.line));
     }
 
 }

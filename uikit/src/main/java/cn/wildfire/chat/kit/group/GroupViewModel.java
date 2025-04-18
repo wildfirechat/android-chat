@@ -544,8 +544,13 @@ public class GroupViewModel extends ViewModel implements AppScopeViewModel, OnGr
         return ChatManager.Instance().getGroupMember(groupId, memberId);
     }
 
-    public String getGroupMemberDisplayName(String groupId, String memberId) {
-        return ChatManager.Instance().getGroupMemberDisplayName(groupId, memberId);
+    public LiveData<String> getGroupMemberDisplayNameAsync(String groupId, String memberId) {
+        MutableLiveData<String> liveData = new MutableLiveData<>();
+        ChatManager.Instance().getWorkHandler().post(() -> {
+            String name = ChatManager.Instance().getGroupMemberDisplayName(groupId, memberId);
+            liveData.postValue(name);
+        });
+        return liveData;
     }
 
     public CharSequence getGroupMemberDisplayNameEx(String groupId, String memberId, int spanFontSize) {
