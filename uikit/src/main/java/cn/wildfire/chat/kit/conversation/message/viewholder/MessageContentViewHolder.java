@@ -9,7 +9,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProviders;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import cn.wildfire.chat.kit.*;
@@ -37,7 +38,7 @@ public abstract class MessageContentViewHolder extends RecyclerView.ViewHolder {
         this.fragment = fragment;
         this.itemView = itemView;
         this.adapter = adapter;
-        messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
+        messageViewModel = new ViewModelProvider(fragment).get(MessageViewModel.class);
         bindViews(itemView);
     }
 

@@ -10,7 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -54,7 +54,7 @@ public class ForwardActivity extends PickOrCreateConversationActivity {
         if (messages == null || messages.isEmpty()) {
             finish();
         }
-        forwardViewModel = ViewModelProviders.of(this).get(ForwardViewModel.class);
+        forwardViewModel =new ViewModelProvider(this).get(ForwardViewModel.class);
         userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
         groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
     }

@@ -12,12 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
 
-import cn.wildfire.chat.kit.*;
 import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
@@ -61,7 +61,7 @@ public class FavAudioContentViewHolder extends FavContentViewHolder {
         Message message = favoriteItem.toMessage();
         uiMessage = new UiMessage(message);
 
-        MessageViewModel messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
+        MessageViewModel messageViewModel =new ViewModelProvider(fragment).get(MessageViewModel.class);
         File file = DownloadManager.mediaMessageContentFile(message);
         if (file == null) {
             return;

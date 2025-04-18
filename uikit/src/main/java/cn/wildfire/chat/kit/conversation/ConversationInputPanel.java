@@ -41,7 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.lqr.emoji.EmotionLayout;
 import com.lqr.emoji.IEmotionExtClickListener;
@@ -68,7 +68,6 @@ import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.InputAwareLayout;
 import cn.wildfire.chat.kit.widget.KeyboardHeightFrameLayout;
-import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfire.chat.kit.widget.ViewPagerFixed;
 import cn.wildfirechat.message.ChannelMenuEventMessageContent;
@@ -83,6 +82,7 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.QuoteInfo;
 import cn.wildfirechat.ptt.PTTClient;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.uikit.permission.PermissionKit;
 
 public class ConversationInputPanel extends FrameLayout implements IEmotionSelectedListener {
 
@@ -282,8 +282,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             }
         });
 
-        messageViewModel = ViewModelProviders.of(fragment).get(MessageViewModel.class);
-        conversationViewModel = ViewModelProviders.of(fragment).get(ConversationViewModel.class);
+        messageViewModel =new ViewModelProvider(fragment).get(MessageViewModel.class);
+        conversationViewModel =new ViewModelProvider(fragment).get(ConversationViewModel.class);
 
         if (conversation != null) {
             if (conversation.type == Conversation.ConversationType.Channel) {

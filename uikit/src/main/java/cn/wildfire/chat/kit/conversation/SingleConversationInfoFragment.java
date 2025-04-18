@@ -15,7 +15,8 @@ import android.widget.CompoundButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -199,8 +200,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     }
 
     private void stickTop(boolean top) {
-        ConversationListViewModel conversationListViewModel = ViewModelProviders
-            .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
+        ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
         conversationListViewModel.setConversationTop(conversationInfo, top ? 1 : 0);
         conversationInfo.top = top ? 1 : 0;

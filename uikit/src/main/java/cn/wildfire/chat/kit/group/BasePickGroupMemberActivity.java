@@ -7,7 +7,7 @@ package cn.wildfire.chat.kit.group;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public abstract class BasePickGroupMemberActivity extends WfcBaseActivity {
             return;
         }
 
-        pickUserViewModel = ViewModelProviders.of(this).get(PickUserViewModel.class);
+        pickUserViewModel = new ViewModelProvider(this).get(PickUserViewModel.class);
         pickUserViewModel.userCheckStatusUpdateLiveData().observeForever(userCheckStatusUpdateLiveDataObserver);
         if (checkedMemberIds != null && !checkedMemberIds.isEmpty()) {
             pickUserViewModel.setInitialCheckedIds(checkedMemberIds);

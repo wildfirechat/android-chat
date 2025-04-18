@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProviders;
+
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.switchmaterial.SwitchMaterial;

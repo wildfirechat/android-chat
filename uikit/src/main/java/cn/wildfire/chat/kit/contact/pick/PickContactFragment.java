@@ -4,7 +4,6 @@
 
 package cn.wildfire.chat.kit.contact.pick;
 
-import androidx.lifecycle.ViewModelProviders;
 
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.ContactViewModel;

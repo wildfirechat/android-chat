@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -103,7 +103,7 @@ public class CreateChannelActivity extends WfcBaseActivity {
     }
 
     void createChannel() {
-        ChannelViewModel channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
+        ChannelViewModel channelViewModel =new ViewModelProvider(this).get(ChannelViewModel.class);
         String channelName = nameInputEditText.getEditableText().toString().trim();
         String desc = descInputEditText.getEditableText().toString().trim();
         if (TextUtils.isEmpty(portraitPath)) {
