@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -104,7 +104,7 @@ public class DiscoveryFragment extends Fragment {
             momentOptionItemView.setVisibility(View.GONE);
             return;
         }
-        MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
+        MessageViewModel messageViewModel =new ViewModelProvider(this).get(MessageViewModel.class);
         messageViewModel.messageLiveData().observe(getViewLifecycleOwner(), uiMessage -> updateMomentBadgeView());
         messageViewModel.clearMessageLiveData().observe(getViewLifecycleOwner(), o -> updateMomentBadgeView());
     }

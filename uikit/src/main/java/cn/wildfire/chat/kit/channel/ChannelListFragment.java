@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -63,7 +63,7 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
     }
 
     private void init() {
-        channelViewModel = ViewModelProviders.of(getActivity()).get(ChannelViewModel.class);
+        channelViewModel =new ViewModelProvider(getActivity()).get(ChannelViewModel.class);
 
         channelListAdapter = new ChannelListAdapter();
         channelListAdapter.setOnChannelClickListener(this);

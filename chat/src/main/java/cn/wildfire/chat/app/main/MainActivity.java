@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
+
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -155,9 +155,9 @@ public class MainActivity extends WfcBaseActivity {
         if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
             bottomNavigationView.getMenu().removeItem(R.id.workspace);
         }
-        IMServiceStatusViewModel imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
+        IMServiceStatusViewModel imServiceStatusViewModel =new ViewModelProvider(this).get(IMServiceStatusViewModel.class);
         imServiceStatusViewModel.imServiceStatusLiveData().observe(this, imStatusLiveDataObserver);
-        IMConnectionStatusViewModel connectionStatusViewModel = ViewModelProviders.of(this).get(IMConnectionStatusViewModel.class);
+        IMConnectionStatusViewModel connectionStatusViewModel =new ViewModelProvider(this).get(IMConnectionStatusViewModel.class);
         connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
             if (status == ConnectionStatus.ConnectionStatusTokenIncorrect
                 || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch
@@ -186,7 +186,7 @@ public class MainActivity extends WfcBaseActivity {
                 }
             }
         });
-        MessageViewModel messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
+        MessageViewModel messageViewModel =new ViewModelProvider(this).get(MessageViewModel.class);
         messageViewModel.messageLiveData().observe(this, uiMessages -> {
             for (UiMessage uiMessage : uiMessages) {
                 if (uiMessage.message.messageId > 0 && (uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
@@ -496,7 +496,7 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private void createSecretChat(String userId) {
-        ConversationViewModel conversationViewModel = ViewModelProviders.of(this).get(ConversationViewModel.class);
+        ConversationViewModel conversationViewModel =new ViewModelProvider(this).get(ConversationViewModel.class);
         conversationViewModel.createSecretChat(userId).observeForever(stringOperateResult -> {
             if (stringOperateResult.isSuccess()) {
                 Conversation conversation = new Conversation(Conversation.ConversationType.SecretChat, stringOperateResult.getResult().first, stringOperateResult.getResult().second);

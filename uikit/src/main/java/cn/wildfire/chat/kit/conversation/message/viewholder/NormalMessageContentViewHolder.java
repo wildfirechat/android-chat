@@ -19,7 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.widget.ImageViewCompat;
-import androidx.lifecycle.ViewModelProviders;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -357,7 +358,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 return true;
             }
             if (message.conversation.type == Conversation.ConversationType.Group) {
-                GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
+                GroupViewModel groupViewModel = new ViewModelProvider(fragment).get(GroupViewModel.class);
                 GroupMember groupMember = groupViewModel.getGroupMember(message.conversation.target, ChatManager.Instance().getUserId());
                 GroupMember fromMember = groupViewModel.getGroupMember(message.conversation.target, message.sender);
                 if (groupMember == null || fromMember == null) {
@@ -499,7 +500,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
 //        if (Conversation.equals(nameTextView.getTag(), sender)) {
 //            return;
 //        }
-        GroupViewModel groupViewModel = ViewModelProviders.of(fragment).get(GroupViewModel.class);
+        GroupViewModel groupViewModel = new ViewModelProvider(fragment).get(GroupViewModel.class);
 
         nameTextView.setText(groupViewModel.getGroupMemberDisplayNameEx(senderUserInfo, 11));
         nameTextView.setTag(sender);

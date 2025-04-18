@@ -17,8 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -26,7 +25,6 @@ import com.bumptech.glide.request.RequestOptions;
 
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
-import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.model.ChannelInfo;
 
@@ -72,7 +70,7 @@ public class ChannelInfoActivity extends AppCompatActivity {
     private void init() {
         Intent intent = getIntent();
         channelInfo = intent.getParcelableExtra("channelInfo");
-        channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
+        channelViewModel =new ViewModelProvider(this).get(ChannelViewModel.class);
 
         if (channelInfo == null) {
             String channelId = intent.getStringExtra("channelId");

@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -121,7 +121,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
 
     private void init() {
         conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
-        channelViewModel = ViewModelProviders.of(this).get(ChannelViewModel.class);
+        channelViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
         channelInfo = channelViewModel.getChannelInfo(conversationInfo.conversation.target, true);
 
         if (channelInfo != null) {
@@ -139,7 +139,7 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
 
         });
 
-        stickTopSwitchButton.setChecked(conversationInfo.top>0);
+        stickTopSwitchButton.setChecked(conversationInfo.top > 0);
         silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
@@ -215,11 +215,10 @@ public class ChannelConversationInfoFragment extends Fragment implements Compoun
     }
 
     private void stickTop(boolean top) {
-        ConversationListViewModel conversationListViewModel = ViewModelProviders
-            .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
+        ConversationListViewModel conversationListViewModel = new ViewModelProvider(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
             .get(ConversationListViewModel.class);
-        conversationListViewModel.setConversationTop(conversationInfo, top?1:0);
-        conversationInfo.top = top?1:0;
+        conversationListViewModel.setConversationTop(conversationInfo, top ? 1 : 0);
+        conversationInfo.top = top ? 1 : 0;
     }
 
     private void silent(boolean silent) {

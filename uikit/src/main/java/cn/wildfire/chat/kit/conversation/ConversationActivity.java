@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import cn.wildfire.chat.kit.IMServiceStatusViewModel;
 import cn.wildfire.chat.kit.R;
@@ -35,7 +35,7 @@ public class ConversationActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
-        IMServiceStatusViewModel imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
+        IMServiceStatusViewModel imServiceStatusViewModel =new ViewModelProvider(this).get(IMServiceStatusViewModel.class);
         imServiceStatusViewModel.imServiceStatusLiveData().observe(this, aBoolean -> {
             if (!isInitialized && aBoolean) {
                 init();
