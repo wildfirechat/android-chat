@@ -4856,6 +4856,7 @@ public class ChatManager {
             mClient.setFriendAlias(userId, alias, new IGeneralCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
+                    userInfoCache.remove(userId);
                     if (callback != null) {
                         mainHandler.post(callback::onSuccess);
                     }
