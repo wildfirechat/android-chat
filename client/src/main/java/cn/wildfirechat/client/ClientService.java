@@ -14,7 +14,7 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Mark_U
 import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
 
-import android.app.Application;
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -4882,7 +4882,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (parcelables == null || parcelables.length == 0) {
             return entry;
         }
-        if (isMainProcess()) {
+        if (isMainProcess(getApplicationContext())) {
             entry.entries.addAll(Arrays.asList(parcelables));
             entry.index = parcelables.length - 1;
             return entry;
@@ -5063,10 +5063,17 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
     }
 
-    public boolean isMainProcess() {
-        Context context = getApplicationContext();
-        String processName = Application.getProcessName();
-        return context.getPackageName().equals(processName);
-    }
+    public boolean isMainProcess(Context context) {
+        int pid = android.os.Process.myPid();
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
+        if (activityManager != null) {
+            for (ActivityManager.RunningAppProcessInfo processInfo : activityManager.getRunningAppProcesses()) {
+                if (processInfo.pid == pid) {
+                    return context.getPackageName().equals(processInfo.processName);
+                }
+            }
+        }
+        return false;
+    }
 }
