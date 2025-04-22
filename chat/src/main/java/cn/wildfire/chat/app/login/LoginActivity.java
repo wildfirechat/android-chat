@@ -94,7 +94,6 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
                 .build()
                 .show();
         }
-        checkBox.setChecked(getIntent().getBooleanExtra("agreeUserAgreement", false));
     }
 
     void inputAccount(Editable editable) {
