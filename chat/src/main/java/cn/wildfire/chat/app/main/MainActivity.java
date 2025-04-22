@@ -155,9 +155,9 @@ public class MainActivity extends WfcBaseActivity {
         if (TextUtils.isEmpty(Config.WORKSPACE_URL)) {
             bottomNavigationView.getMenu().removeItem(R.id.workspace);
         }
-        IMServiceStatusViewModel imServiceStatusViewModel =new ViewModelProvider(this).get(IMServiceStatusViewModel.class);
+        IMServiceStatusViewModel imServiceStatusViewModel = new ViewModelProvider(this).get(IMServiceStatusViewModel.class);
         imServiceStatusViewModel.imServiceStatusLiveData().observe(this, imStatusLiveDataObserver);
-        IMConnectionStatusViewModel connectionStatusViewModel =new ViewModelProvider(this).get(IMConnectionStatusViewModel.class);
+        IMConnectionStatusViewModel connectionStatusViewModel = new ViewModelProvider(this).get(IMConnectionStatusViewModel.class);
         connectionStatusViewModel.connectionStatusLiveData().observe(this, status -> {
             if (status == ConnectionStatus.ConnectionStatusTokenIncorrect
                 || status == ConnectionStatus.ConnectionStatusSecretKeyMismatch
@@ -165,7 +165,10 @@ public class MainActivity extends WfcBaseActivity {
                 || status == ConnectionStatus.ConnectionStatusLogout
                 || status == ConnectionStatus.ConnectionStatusKickedoff) {
                 SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
-                sp.edit().clear().apply();
+                sp.edit()
+                    .clear()
+                    .putBoolean("hasReadUserAgreement", true)
+                    .apply();
                 OKHttpHelper.clearCookies();
                 if (status == ConnectionStatus.ConnectionStatusLogout) {
                     reLogin(false);
@@ -186,7 +189,7 @@ public class MainActivity extends WfcBaseActivity {
                 }
             }
         });
-        MessageViewModel messageViewModel =new ViewModelProvider(this).get(MessageViewModel.class);
+        MessageViewModel messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
         messageViewModel.messageLiveData().observe(this, uiMessages -> {
             for (UiMessage uiMessage : uiMessages) {
                 if (uiMessage.message.messageId > 0 && (uiMessage.message.content.getMessageContentType() == MessageContentType.MESSAGE_CONTENT_TYPE_FEED
@@ -241,6 +244,9 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private void reLogin(boolean isKickedOff) {
+        if (isFinishing()) {
+            return;
+        }
         Intent intent = new Intent(this, SplashActivity.class);
         intent.putExtra("isKickedOff", isKickedOff);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -496,7 +502,7 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private void createSecretChat(String userId) {
-        ConversationViewModel conversationViewModel =new ViewModelProvider(this).get(ConversationViewModel.class);
+        ConversationViewModel conversationViewModel = new ViewModelProvider(this).get(ConversationViewModel.class);
         conversationViewModel.createSecretChat(userId).observeForever(stringOperateResult -> {
             if (stringOperateResult.isSuccess()) {
                 Conversation conversation = new Conversation(Conversation.ConversationType.SecretChat, stringOperateResult.getResult().first, stringOperateResult.getResult().second);
