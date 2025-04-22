@@ -3,7 +3,7 @@
 
     <style name="ImagePickerTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:fitsSystemWindows">true</item>
-        <item name="colorAccent">@android:color/white</item>
+        <item name="colorAccent">#3B62E0</item>
         <item name="android:textColorSecondary">#969696</item>
         <item name="android:navigationBarColor">@color/status_bar</item>
     </style>

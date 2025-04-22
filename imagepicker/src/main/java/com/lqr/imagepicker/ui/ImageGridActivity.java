@@ -4,17 +4,19 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.lqr.imagepicker.ImageDataSource;
@@ -29,6 +31,8 @@ import com.lqr.imagepicker.bean.ImageItem;
 import com.lqr.imagepicker.view.FolderPopUpWindow;
 
 import java.util.List;
+
+import cn.wildfirechat.uikit.permission.PermissionKit;
 
 public class ImageGridActivity extends ImageBaseActivity implements ImageDataSource.OnImageLoadListener, ImageGridAdapter.OnImageItemClickListener, View.OnClickListener {
 
@@ -45,6 +49,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     private TextView mBtnOk;       //确定按钮
     private Button mBtnDir;      //文件夹切换按钮
     private Button mBtnPre;      //预览按钮
+    private LinearLayout partialAccessLayout;
     private ImageFolderAdapter mImageFolderAdapter;    //图片文件夹的适配器
     private FolderPopUpWindow mFolderPopupWindow;  //ImageSet的PopupWindow
     private List<ImageFolder> mImageFolders;   //所有的图片文件夹
@@ -52,6 +57,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
 
     private String takePhotoOutputPath;
     private ImageDataSource imageDataSource;
+    private boolean isPartialAccessGranted = false;
     private boolean isFullAccessGranted = false;
 
     @Override
@@ -83,6 +89,13 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
             mBtnOk.setVisibility(View.GONE);
             mBtnPre.setVisibility(View.GONE);
         }
+        partialAccessLayout = findViewById(R.id.partialAccessLinearLayout);
+        partialAccessLayout.setOnClickListener(v -> {
+            Intent settingIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            settingIntent.setData(uri);
+            startActivity(settingIntent);
+        });
 
         mImageGridAdapter = new ImageGridAdapter(this, showCamera, multiMode, limit);
         mImageFolderAdapter = new ImageFolderAdapter(this, null);
@@ -95,6 +108,10 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
             || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED)) {
             // Full access on Android 13 (API level 33) or higher
             isFullAccessGranted = true;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED) {
+            // Partial access on Android 14 (API level 34) or higher
+            isPartialAccessGranted = true;
         } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             // Full access up to Android 12 (API level 32)
             isFullAccessGranted = true;
@@ -111,10 +128,14 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
                 };
             }
         }
-        if (!isFullAccessGranted) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                this.requestPermissions(permissions, 100);
-            }
+
+        partialAccessLayout.setVisibility(!isFullAccessGranted && isPartialAccessGranted ? View.VISIBLE : View.GONE);
+
+        if (!isFullAccessGranted && !isPartialAccessGranted) {
+            PermissionKit.PermissionReqTuple[] permissionReqTuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+            PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), permissionReqTuples, allGranted -> {
+                // do nothing
+            });
         }
     }
 
@@ -125,31 +146,31 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
         mImageGridAdapter.notifyDataSetChanged();
         mImageFolderAdapter.notifyDataSetChanged();
         updatePickStatus();
+        checkPartialAccessPermission();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_CAMERA) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Utils.takePhoto(this, takePhotoOutputPath, ImagePicker.REQUEST_CODE_TAKE);
+    private void checkPartialAccessPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && !isFullAccessGranted && isPartialAccessGranted) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED) {
+                partialAccessLayout.setVisibility(View.GONE);
             } else {
-                showToast("权限被禁止，无法打开相机");
+                partialAccessLayout.setVisibility(View.VISIBLE);
             }
         }
     }
 
     public void takePhoto() {
         takePhotoOutputPath = Utils.genTakePhotoOutputPath(this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!checkPermission(Manifest.permission.CAMERA)) {
-                requestPermissions(new String[]{Manifest.permission.CAMERA}, ImageGridActivity.REQUEST_PERMISSION_CAMERA);
-            } else {
+        String[] permissions = new String[]{Manifest.permission.CAMERA};
+        PermissionKit.PermissionReqTuple[] permissionReqTuples = PermissionKit.buildRequestPermissionTuples(this, permissions);
+        PermissionKit.checkThenRequestPermission(this, getSupportFragmentManager(), permissionReqTuples, allGranted -> {
+            if (allGranted) {
                 Utils.takePhoto(this, takePhotoOutputPath, ImagePicker.REQUEST_CODE_TAKE);
+            } else {
+                showToast("权限被禁止，无法打开相机");
             }
-        } else {
-            Utils.takePhoto(this, takePhotoOutputPath, ImagePicker.REQUEST_CODE_TAKE);
-        }
+        });
     }
 
     @Override
