@@ -78,7 +78,11 @@ public class Config {
     public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
 
     /**
-     * 语音识别服务地址，配置之后，长按语音消息，会显示转文字按钮。如果没有部署，可以设置为null
+     * 语音识别服务地址，配置之后，长按语音消息，会显示转文字按钮。
+     * <p>
+     * 语音转文字服务地址。关于语音转文字信息请参考：https://gitee.com/wfchat/asr-api 。
+     * <p>
+     * 野火提供的测试服务会记录语音文件和转换后的文字，上线会有可能泄密风险。因此请确保务必上线时购买部署自己的语音转文字服务，或者设置为null
      */
     public static String ASR_SERVER_URL = "https://app.wildfirechat.net/asr/api/recognize";
 
