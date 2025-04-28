@@ -67,8 +67,10 @@ dependencies {
     api project(':menu')
     api project(':permission')
 
+
     implementation project(':emojilibrary')
     implementation project(':imagepicker')
+    implementation project(':cameraview')
 
     api 'androidx.appcompat:appcompat:1.7.0'
     api 'com.google.android.material:material:1.12.0'

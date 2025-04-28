@@ -1,5 +1,5 @@
 configurations.maybeCreate("default")
-artifacts.add("default", file('com.cjt2325.cameralibrary-library-1.1.9.aar'))
+//artifacts.add("default", file('com.cjt2325.cameralibrary-library-1.1.9.aar'))
 artifacts.add("default", file('flexbox-2.0.1.aar'))
 artifacts.add("default", file('com.lqr.adapter-library-1.0.2.aar'))
 artifacts.add("default", file('statusbarutil-library-1.3.5.aar'))
