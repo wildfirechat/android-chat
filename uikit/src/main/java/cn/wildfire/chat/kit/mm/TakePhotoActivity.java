@@ -77,6 +77,13 @@ public class TakePhotoActivity extends AppCompatActivity {
                 setResult(RESULT_OK, data);
                 finish();
             }
+
+            @Override
+            public void quit() {
+                //点击返回按钮
+                setResult(RESULT_CANCELED);
+                finish();
+            }
         });
     }
 

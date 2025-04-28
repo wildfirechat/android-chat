@@ -364,5 +364,9 @@ public class CaptureButton extends View {
     //设置状态
     public void resetState() {
         state = STATE_IDLE;
+        button_outside_radius = button_radius;
+        button_inside_radius = button_radius * 0.75f;
+        progress = 0;
+        timer.cancel();
     }
 }

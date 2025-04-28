@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -20,8 +19,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
-
-import androidx.annotation.RequiresApi;
 
 import com.cjt2325.cameralibrary.listener.CaptureListener;
 import com.cjt2325.cameralibrary.listener.ClickListener;
@@ -46,8 +43,8 @@ import java.io.IOException;
  * =====================================
  */
 public class JCameraView extends FrameLayout implements CameraInterface.CameraOpenOverCallback, SurfaceHolder
-        .Callback, CameraView {
-//    private static final String TAG = "JCameraView";
+    .Callback, CameraView {
+    private static final String TAG = "JCameraView";
 
     //Camera状态机
     private CameraMachine machine;
@@ -129,9 +126,9 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         //get AttributeSet
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.JCameraView, defStyleAttr, 0);
         iconSize = a.getDimensionPixelSize(R.styleable.JCameraView_iconSize, (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, 35, getResources().getDisplayMetrics()));
+            TypedValue.COMPLEX_UNIT_SP, 35, getResources().getDisplayMetrics()));
         iconMargin = a.getDimensionPixelSize(R.styleable.JCameraView_iconMargin, (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, 15, getResources().getDisplayMetrics()));
+            TypedValue.COMPLEX_UNIT_SP, 15, getResources().getDisplayMetrics()));
         iconSrc = a.getResourceId(R.styleable.JCameraView_iconSrc, R.drawable.ic_camera);
         iconLeft = a.getResourceId(R.styleable.JCameraView_iconLeft, 0);
         iconRight = a.getResourceId(R.styleable.JCameraView_iconRight, 0);
@@ -250,8 +247,8 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         mCaptureLayout.setLeftClickListener(new ClickListener() {
             @Override
             public void onClick() {
-                if (leftClickListener != null) {
-                    leftClickListener.onClick();
+                if (jCameraLisenter != null) {
+                    jCameraLisenter.quit();
                 }
             }
         });
@@ -294,6 +291,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         LogUtil.i("JCameraView onPause");
         stopVideo();
         resetState(TYPE_PICTURE);
+        CameraInterface.getInstance().stopRecord(true, null);
         CameraInterface.getInstance().isPreview(false);
         CameraInterface.getInstance().unregisterSensorManager(mContext);
     }
@@ -346,7 +344,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                     float point_2_Y = event.getY(1);
 
                     float result = (float) Math.sqrt(Math.pow(point_1_X - point_2_X, 2) + Math.pow(point_1_Y -
-                            point_2_Y, 2));
+                        point_2_Y, 2));
 
                     if (firstTouch) {
                         firstTouchLength = result;
@@ -486,10 +484,13 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         videoUrl = url;
         JCameraView.this.firstFrame = firstFrame;
         new Thread(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void run() {
                 try {
+                    if (!mVideoView.getHolder().getSurface().isValid()) {
+                        LogUtil.e(TAG, "Surface is not valid");
+                        return;
+                    }
                     if (mMediaPlayer == null) {
                         mMediaPlayer = new MediaPlayer();
                     } else {
@@ -500,18 +501,25 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                     mMediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
                     mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     mMediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer
-                            .OnVideoSizeChangedListener() {
+                        .OnVideoSizeChangedListener() {
                         @Override
                         public void
                         onVideoSizeChanged(MediaPlayer mp, int width, int height) {
                             updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer
-                                    .getVideoHeight());
+                                .getVideoHeight());
                         }
                     });
                     mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mp) {
                             mMediaPlayer.start();
+                        }
+                    });
+                    mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer mp, int what, int extra) {
+                            LogUtil.e(TAG, "onError: " + what + ", " + extra);
+                            return false;
                         }
                     });
                     mMediaPlayer.setLooping(true);
