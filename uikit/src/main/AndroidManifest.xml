@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -328,6 +329,6 @@
 
         <service
             android:name="cn.wildfire.chat.kit.voip.VoipCallService"
-            android:foregroundServiceType="mediaProjection" />
+            android:foregroundServiceType="microphone|mediaProjection" />
     </application>
 </manifest>
