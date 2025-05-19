@@ -74,7 +74,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         ChatManager.Instance().addOnReceiveMessageListener(this);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session), ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
         } else {
             startForeground(NOTIFICATION_ID, buildNotification(session));
@@ -119,12 +119,12 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             stopSelf();
             return START_NOT_STICKY;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+        boolean screenShare = intent.getBooleanExtra("screenShare", false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session), screenShare ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION : ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
         } else {
             startForeground(NOTIFICATION_ID, buildNotification(session));
         }
-        boolean screenShare = intent.getBooleanExtra("screenShare", false);
         if (screenShare) {
             Intent data = intent.getParcelableExtra("data");
             session.startScreenShare(data);
