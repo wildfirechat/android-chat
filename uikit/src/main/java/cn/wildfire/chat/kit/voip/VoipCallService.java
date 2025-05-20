@@ -71,6 +71,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d("VoipService", "onCreate");
         ChatManager.Instance().addOnReceiveMessageListener(this);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();

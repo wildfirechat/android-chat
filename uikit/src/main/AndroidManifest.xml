@@ -92,7 +92,6 @@
         <activity
             android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
             android:exported="false"
-            android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="${packageName}.kit.voip.single" />
@@ -221,7 +220,6 @@
             android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity"
             android:excludeFromRecents="true"
             android:label="@string/conference"
-            android:launchMode="singleTask"
             android:taskAffinity=".conference"
             android:windowSoftInputMode="adjustPan" />
 
@@ -246,7 +244,6 @@
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
             android:exported="false"
-            android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="${packageName}.kit.voip.multi" />
