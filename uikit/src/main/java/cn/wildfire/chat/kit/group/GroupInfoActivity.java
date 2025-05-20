@@ -13,16 +13,17 @@ import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
 
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
 import java.util.Collections;
 
+import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
+import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.Conversation;
@@ -122,10 +123,30 @@ public class GroupInfoActivity extends WfcBaseActivity {
         if (groupInfo == null) {
             return;
         }
-        Glide.with(this)
-            .load(groupInfo.portrait)
-            .placeholder(R.mipmap.ic_group_chat)
-            .into(groupPortraitImageView);
+        if (TextUtils.isEmpty(groupInfo.portrait)) {
+            AppServiceProvider appServiceProvider = WfcUIKit.getWfcUIKit().getAppServiceProvider();
+            appServiceProvider.getGroupPortrait(groupId, new SimpleCallback<String>() {
+                @Override
+                public void onUiSuccess(String portrait) {
+                    if (!isFinishing()) {
+                        Glide.with(GroupInfoActivity.this)
+                            .load(portrait)
+                            .placeholder(R.mipmap.ic_group_chat)
+                            .into(groupPortraitImageView);
+                    }
+                }
+
+                @Override
+                public void onUiFailure(int code, String msg) {
+
+                }
+            });
+        } else {
+            Glide.with(this)
+                .load(groupInfo.portrait)
+                .placeholder(R.mipmap.ic_group_chat)
+                .into(groupPortraitImageView);
+        }
         groupNameTextView.setText(!TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name);
     }
 

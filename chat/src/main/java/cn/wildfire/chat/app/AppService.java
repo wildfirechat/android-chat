@@ -7,9 +7,12 @@ package cn.wildfire.chat.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
+
+import androidx.core.util.Pair;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +40,7 @@ import cn.wildfire.chat.kit.net.base.StatusResult;
 import cn.wildfire.chat.kit.voip.conference.model.ConferenceInfo;
 import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.model.Conversation;
+import cn.wildfirechat.model.UserIdNamePortrait;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GeneralCallback;
 import cn.wildfirechat.remote.GeneralCallback2;
@@ -329,7 +333,6 @@ public class AppService implements AppServiceProvider {
             }
         });
     }
-
 
     @Override
     public void updateGroupAnnouncement(String groupId, String announcement, AppServiceProvider.UpdateGroupAnnouncementCallback callback) {
@@ -810,4 +813,73 @@ public class AppService implements AppServiceProvider {
             }
         });
     }
+
+    @Override
+    public void getGroupPortrait(String groupId, SimpleCallback<String> callback) {
+        if (callback == null) {
+            return;
+        }
+        getGroupMembersForPortrait(groupId, new GetGroupMemberForPotraitCallback() {
+            @Override
+            public void onUiSuccess(List<UserIdNamePortrait> first9Members) {
+                if (first9Members.size() > 9) {
+                    first9Members = first9Members.subList(0, 9);
+                }
+                List<Pair<String, String>> namePortraitPairs = new ArrayList<>();
+                for (UserIdNamePortrait userInfo : first9Members) {
+                    namePortraitPairs.add(new Pair<>(userInfo.name, userInfo.portrait));
+                }
+                String portrait = _groupDefaultPortrait(groupId, namePortraitPairs);
+                callback.onUiSuccess(portrait);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
+    }
+
+
+    private String _groupDefaultPortrait(String groupId, List<Pair<String, String>> namePortraitPairs) {
+        JSONObject request = new JSONObject();
+        try {
+            JSONArray reqMembers = new JSONArray();
+            if (namePortraitPairs.size() > 9) {
+                namePortraitPairs = namePortraitPairs.subList(0, 9);
+            }
+            for (Pair<String, String> userInfo : namePortraitPairs) {
+                JSONObject obj = new JSONObject();
+                if (TextUtils.isEmpty(userInfo.first) || userInfo.first.startsWith(AppService.APP_SERVER_ADDRESS)) {
+                    obj.put("name", userInfo.first);
+                } else {
+                    obj.put("avatarUrl", userInfo.second);
+                }
+                reqMembers.put(obj);
+            }
+            request.put("members", reqMembers);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return AppService.APP_SERVER_ADDRESS + "/avatar/group?request=" + Uri.encode(request.toString());
+    }
+
+    private void getGroupMembersForPortrait(String groupId, GetGroupMemberForPotraitCallback callback) {
+        String url = APP_SERVER_ADDRESS + "/group/members_for_portrait";
+
+        Map<String, Object> params = new HashMap<>(2);
+        params.put("groupId", groupId);
+        OKHttpHelper.post(url, params, new SimpleCallback<List<UserIdNamePortrait>>() {
+            @Override
+            public void onUiSuccess(List<UserIdNamePortrait> userIdNamePortraits) {
+                callback.onUiSuccess(userIdNamePortraits);
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
+    }
+
 }
