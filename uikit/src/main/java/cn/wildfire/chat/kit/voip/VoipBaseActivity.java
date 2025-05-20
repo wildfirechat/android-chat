@@ -154,6 +154,9 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     protected void onStop() {
         super.onStop();
+        if (isFinishing()) {
+            return;
+        }
         if (preventShowFloatingViewOnStop) {
             return;
         }
@@ -173,6 +176,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         if (wakeLock != null) {
             wakeLock.release();
         }
+        Log.d("voip", "onDestroy");
     }
 
     public AVEngineKit getEngineKit() {
