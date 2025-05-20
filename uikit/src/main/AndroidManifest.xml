@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -92,6 +92,7 @@
         <activity
             android:name="cn.wildfire.chat.kit.voip.SingleCallActivity"
             android:exported="false"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="${packageName}.kit.voip.single" />
@@ -218,6 +219,7 @@
             android:label="@string/start_conference" />
         <activity
             android:name="cn.wildfire.chat.kit.voip.conference.ConferenceActivity"
+            android:launchMode="singleTask"
             android:excludeFromRecents="true"
             android:label="@string/conference"
             android:taskAffinity=".conference"
@@ -244,6 +246,7 @@
         <activity
             android:name="cn.wildfire.chat.kit.voip.MultiCallActivity"
             android:exported="false"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="${packageName}.kit.voip.multi" />
