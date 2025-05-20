@@ -14,12 +14,10 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Mark_U
 import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
 
-import android.annotation.SuppressLint;
-import android.app.Application;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -28,6 +26,7 @@ import android.os.LocaleList;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.Process;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -54,7 +53,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -4884,7 +4882,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (parcelables == null || parcelables.length == 0) {
             return entry;
         }
-        if (isMainProcess(getApplicationContext())) {
+        if (isMainProcess()) {
             entry.entries.addAll(Arrays.asList(parcelables));
             entry.index = parcelables.length - 1;
             return entry;
@@ -5065,30 +5063,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
     }
 
-    public boolean isMainProcess(Context context) {
-        return context.getPackageName().equals(getProcessName());
-    }
-
-    private static String getProcessName() {
-        if (Build.VERSION.SDK_INT >= 28)
-            return Application.getProcessName();
-
-        // Using the same technique as Application.getProcessName() for older devices
-        // Using reflection since ActivityThread is an internal API
-
-        try {
-            @SuppressLint("PrivateApi")
-            Class<?> activityThread = Class.forName("android.app.ActivityThread");
-
-            // Before API 18, the method was incorrectly named "currentPackageName", but it still returned the process name
-            // See https://github.com/aosp-mirror/platform_frameworks_base/commit/b57a50bd16ce25db441da5c1b63d48721bb90687
-            String methodName = Build.VERSION.SDK_INT >= 18 ? "currentProcessName" : "currentPackageName";
-
-            Method getProcessName = activityThread.getDeclaredMethod(methodName);
-            return (String) getProcessName.invoke(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    // 判断是否是单进程模式，单进程时，一次性回调所有内容
+    public boolean isMainProcess() {
+        return Binder.getCallingPid() == Process.myPid();
     }
 }

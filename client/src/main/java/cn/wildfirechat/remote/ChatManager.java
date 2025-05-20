@@ -294,6 +294,8 @@ public class ChatManager {
     private Class<? extends UrlRedirector> urlRedirectorClazz;
     private UrlRedirector urlRedirector;
 
+    private boolean isClientServiceInMainProcess = false;
+
     public enum SearchUserType {
         //模糊搜索displayName，精确搜索name或电话号码
         General(0),
@@ -4912,7 +4914,7 @@ public class ChatManager {
             List<String> userIds = mClient.getMyFriendList(refresh);
             if (userIds != null && !userIds.isEmpty()) {
                 List<UserInfo> userInfos = new ArrayList<>();
-                int step = 400;
+                int step = isClientServiceInMainProcess ? Integer.MAX_VALUE : 400;
                 int startIndex, endIndex;
                 for (int i = 0; i <= userIds.size() / step; i++) {
                     startIndex = i * step;
@@ -5756,7 +5758,7 @@ public class ChatManager {
 
         try {
             List<UserInfo> userInfos = new ArrayList<>();
-            int step = 400;
+            int step = isClientServiceInMainProcess ? Integer.MAX_VALUE : 400;
             int startIndex, endIndex;
             for (int i = 0; i <= userIds.size() / step; i++) {
                 startIndex = i * step;
@@ -9815,6 +9817,12 @@ public class ChatManager {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "marsClientService connected");
+            if (iBinder instanceof android.os.Binder) {
+                isClientServiceInMainProcess = true;
+            } else {
+                // BinderProxy
+                isClientServiceInMainProcess = false;
+            }
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             internalWorkHandler.post(() -> {
                 try {
