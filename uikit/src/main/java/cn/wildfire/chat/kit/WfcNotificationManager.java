@@ -44,6 +44,9 @@ import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GetUserInfoCallback;
 
+// 关于桌面角标
+// 使用的系统原生方案，未针对各个厂商进行适配，在原生系统上展示的红点，不是具体的数字；但小米等手机上，能展示具体的数字
+// 具体请参考：https://developer.android.com/develop/ui/views/notifications/badges#java
 public class WfcNotificationManager {
     private WfcNotificationManager() {
 
