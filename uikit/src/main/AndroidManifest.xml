@@ -329,6 +329,6 @@
 
         <service
             android:name="cn.wildfire.chat.kit.voip.VoipCallService"
-            android:foregroundServiceType="microphone|mediaProjection" />
+            android:foregroundServiceType="mediaPlayback|mediaProjection" />
     </application>
 </manifest>
