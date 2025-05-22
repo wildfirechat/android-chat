@@ -154,9 +154,6 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
     @Override
     protected void onStop() {
         super.onStop();
-        if (isFinishing()) {
-            return;
-        }
         if (preventShowFloatingViewOnStop) {
             return;
         }
@@ -352,7 +349,9 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             intent.putExtra("focusTargetId", focusTargetId);
         }
         VoipCallService.start(this, intent);
-        finishFadeout();
+        if(!isFinishing()){
+            finishFadeout();
+        }
     }
 
     public void hideFloatingView() {
