@@ -122,7 +122,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         }
         boolean screenShare = intent.getBooleanExtra("screenShare", false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session), screenShare ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION : ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session), screenShare || session.isScreenSharing() ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION : ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
         } else {
             startForeground(NOTIFICATION_ID, buildNotification(session));
         }
