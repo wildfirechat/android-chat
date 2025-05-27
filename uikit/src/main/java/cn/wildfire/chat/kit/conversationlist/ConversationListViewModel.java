@@ -172,20 +172,24 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
 
     @Override
     public void onSendSuccess(Message message) {
-        reloadConversationList();
+        tryReloadConversationWhenSendMessage(message, true);
     }
 
     @Override
     public void onSendFail(Message message, int errorCode) {
-        reloadConversationList();
+        tryReloadConversationWhenSendMessage(message, true);
     }
 
     @Override
     public void onSendPrepare(Message message, long savedTime) {
+        tryReloadConversationWhenSendMessage(message, false);
+    }
+
+    private void tryReloadConversationWhenSendMessage(Message message, boolean force){
         Conversation conversation = message.conversation;
         if (types.contains(conversation.type) && lines.contains(conversation.line)) {
             if (message.messageId > 0) {
-                reloadConversationList();
+                reloadConversationList(force);
             }
         }
     }
