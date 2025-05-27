@@ -350,7 +350,9 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             if (!session.isScreenSharing()) {
                 Toast.makeText(getContext(), getString(R.string.conf_screen_share_hint), Toast.LENGTH_LONG).show();
                 session.muteAudio(false);
-                session.muteVideo(true);
+                if(AVEngineKit.SCREEN_SHARING_REPLACE_MODE){
+                    session.muteVideo(true);
+                }
 
                 ((VoipBaseActivity) getContext()).startScreenShare();
                 if (session.isAudience()) {
