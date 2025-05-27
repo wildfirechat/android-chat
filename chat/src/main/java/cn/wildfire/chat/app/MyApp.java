@@ -4,10 +4,14 @@
 
 package cn.wildfire.chat.app;
 
-import android.app.ActivityManager;
+import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.text.TextUtils;
+
+import java.lang.reflect.Method;
 
 import cn.wildfire.chat.app.misc.KeyStoreUtil;
 import cn.wildfire.chat.kit.ChatManagerHolder;
@@ -101,18 +105,24 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
     }
 
     public static String getCurProcessName(Context context) {
+        if (Build.VERSION.SDK_INT >= 28)
+            return Application.getProcessName();
 
-        int pid = android.os.Process.myPid();
+        // Using the same technique as Application.getProcessName() for older devices
+        // Using reflection since ActivityThread is an internal API
 
-        ActivityManager activityManager = (ActivityManager) context
-            .getSystemService(Context.ACTIVITY_SERVICE);
+        try {
+            @SuppressLint("PrivateApi")
+            Class<?> activityThread = Class.forName("android.app.ActivityThread");
 
-        for (ActivityManager.RunningAppProcessInfo appProcess : activityManager
-            .getRunningAppProcesses()) {
+            // Before API 18, the method was incorrectly named "currentPackageName", but it still returned the process name
+            // See https://github.com/aosp-mirror/platform_frameworks_base/commit/b57a50bd16ce25db441da5c1b63d48721bb90687
+            String methodName = Build.VERSION.SDK_INT >= 18 ? "currentProcessName" : "currentPackageName";
 
-            if (appProcess.pid == pid) {
-                return appProcess.processName;
-            }
+            Method getProcessName = activityThread.getDeclaredMethod(methodName);
+            return (String) getProcessName.invoke(null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

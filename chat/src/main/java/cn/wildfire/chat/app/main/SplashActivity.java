@@ -4,8 +4,6 @@
 
 package cn.wildfire.chat.app.main;
 
-import static cn.wildfire.chat.app.BaseApp.getContext;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +17,6 @@ import android.view.Window;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 
 import cn.wildfire.chat.app.login.LoginActivity;
@@ -76,10 +73,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void showMain() {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
-            android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
-        startActivity(intent, bundle);
+        startActivity(intent);
         finish();
     }
 
@@ -87,18 +81,14 @@ public class SplashActivity extends AppCompatActivity {
         Intent intent;
         intent = new Intent(this, LoginActivity.class);
         intent.putExtra("isKickedOff", getIntent().getBooleanExtra("isKickedOff", false));
-        Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
-            android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
-        startActivity(intent, bundle);
+        startActivity(intent);
         finish();
     }
 
     private void showAgreement() {
         Intent intent;
         intent = new Intent(this, AgreementActivity.class);
-        Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
-            android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
-        startActivity(intent, bundle);
+        startActivity(intent);
         finish();
     }
 

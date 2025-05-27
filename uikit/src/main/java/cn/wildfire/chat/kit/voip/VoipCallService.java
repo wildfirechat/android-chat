@@ -13,6 +13,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Build;
@@ -34,6 +35,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.ServiceCompat;
 
 import com.bumptech.glide.Glide;
 
@@ -69,10 +71,15 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d("VoipService", "onCreate");
         ChatManager.Instance().addOnReceiveMessageListener(this);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        startForeground(NOTIFICATION_ID, buildNotification(session));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+        } else {
+            startForeground(NOTIFICATION_ID, buildNotification(session));
+        }
     }
 
     @Nullable
@@ -113,8 +120,12 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             stopSelf();
             return START_NOT_STICKY;
         }
-        startForeground(NOTIFICATION_ID, buildNotification(session));
         boolean screenShare = intent.getBooleanExtra("screenShare", false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session), screenShare || session.isScreenSharing() ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION : ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+        } else {
+            startForeground(NOTIFICATION_ID, buildNotification(session));
+        }
         if (screenShare) {
             Intent data = intent.getParcelableExtra("data");
             session.startScreenShare(data);

@@ -78,12 +78,17 @@ public class Config {
     public static String WORKSPACE_URL = "https://open.wildfirechat.cn/work.html";
 
     /**
-     * 语音识别服务地址，配置之后，长按语音消息，会显示翻译按钮。如果没有部署，可以设置为null
+     * 语音识别服务地址，配置之后，长按语音消息，会显示转文字按钮。
+     * <p>
+     * 语音转文字服务地址。关于语音转文字信息请参考：https://gitee.com/wfchat/asr-api 。
+     * <p>
+     * 野火提供的测试服务会记录语音文件和转换后的文字，上线会有可能泄密风险。因此请确保务必上线时购买部署自己的语音转文字服务，或者设置为null
      */
     public static String ASR_SERVER_URL = "https://app.wildfirechat.net/asr/api/recognize";
 
     /**
-     * 组织通讯录服务地址，如果没有部署，可以设置为null
+     * 组织通讯录服务地址，如果需要组织通讯录功能，请部署组织通讯录服务，然后这里填上组织通讯录服务地址；如果不需要组织通讯录功能，请置为 null
+     * 请注意，不能写应用服务地址
      */
     public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://org.wildfirechat.cn";
 
@@ -129,5 +134,5 @@ public class Config {
     public final static String USER_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_agreement.html";
 
     //  隐私协议地址
-    public final static String  PRIVACY_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_privacy.html";
+    public final static String PRIVACY_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_privacy.html";
 }

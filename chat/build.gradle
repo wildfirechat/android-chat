@@ -18,9 +18,9 @@ android {
     defaultConfig {
         applicationId "net.wildfirechat.demo"
         minSdkVersion 24
-        targetSdkVersion 33
-        versionCode 58
-        versionName '1.3.3'
+        targetSdkVersion 34
+        versionCode 59
+        versionName '1.3.4'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {

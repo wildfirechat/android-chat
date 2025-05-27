@@ -67,11 +67,10 @@ dependencies {
     api project(':menu')
     api project(':permission')
 
+
     implementation project(':emojilibrary')
     implementation project(':imagepicker')
-
-//    implementation 'com.lqr.adapter:library:1.0.2'
-//    implementation 'com.jaeger.statusbaruitl:library:1.3.5'
+    implementation project(':cameraview')
 
     api 'androidx.appcompat:appcompat:1.7.0'
     api 'com.google.android.material:material:1.12.0'
@@ -94,15 +93,12 @@ dependencies {
 
     implementation 'com.tencent.map.geolocation:TencentLocationSdk-openplatform:7.2.6'
     compileOnly 'io.kvh:amr:1.1.1'
-//    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
 
 
     // kit wfc end
 
     // moment start
     implementation project(':momentclient')
-    //over scroller helper
-    //api 'me.everything:overscroll-decor-android:1.0.4'
     // moment end
 
     // kit wfc end

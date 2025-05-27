@@ -8,6 +8,7 @@ import android.app.Application;
 
 import java.util.List;
 
+import cn.wildfirechat.model.UserIdNamePortrait;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupAnnouncement;
 import cn.wildfire.chat.kit.net.BooleanCallback;
@@ -18,14 +19,20 @@ import cn.wildfirechat.remote.GeneralCallback2;
 
 
 public interface AppServiceProvider {
-    public interface UpdateGroupAnnouncementCallback {
+    interface UpdateGroupAnnouncementCallback {
         void onUiSuccess(GroupAnnouncement announcement);
 
         void onUiFailure(int code, String msg);
     }
 
-    public interface GetGroupAnnouncementCallback {
+    interface GetGroupAnnouncementCallback {
         void onUiSuccess(GroupAnnouncement announcement);
+
+        void onUiFailure(int code, String msg);
+    }
+
+    interface GetGroupMemberForPotraitCallback {
+        void onUiSuccess(List<UserIdNamePortrait> userIdNamePortraits);
 
         void onUiFailure(int code, String msg);
     }
@@ -36,9 +43,13 @@ public interface AppServiceProvider {
         void onUiFailure(int code, String msg);
     }
 
-    public void getGroupAnnouncement(String groupId, GetGroupAnnouncementCallback callback);
+    void getGroupAnnouncement(String groupId, GetGroupAnnouncementCallback callback);
 
-    public void updateGroupAnnouncement(String groupId, String announcement, UpdateGroupAnnouncementCallback callback);
+    void updateGroupAnnouncement(String groupId, String announcement, UpdateGroupAnnouncementCallback callback);
+
+    default void getGroupPortrait(String groupId, SimpleCallback<String> callback) {
+
+    }
 
     void showPCLoginActivity(String userId, String token, int platform);
 

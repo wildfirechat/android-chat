@@ -14,11 +14,10 @@ import static cn.wildfirechat.message.core.MessageContentType.ContentType_Mark_U
 import static cn.wildfirechat.remote.UserSettingScope.ConversationSilent;
 import static cn.wildfirechat.remote.UserSettingScope.ConversationTop;
 
-import android.app.ActivityManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -27,6 +26,7 @@ import android.os.LocaleList;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.Process;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -4882,7 +4882,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (parcelables == null || parcelables.length == 0) {
             return entry;
         }
-        if (isMainProcess(getApplicationContext())) {
+        if (isMainProcess()) {
             entry.entries.addAll(Arrays.asList(parcelables));
             entry.index = parcelables.length - 1;
             return entry;
@@ -5063,17 +5063,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
     }
 
-    public boolean isMainProcess(Context context) {
-        int pid = android.os.Process.myPid();
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-
-        if (activityManager != null) {
-            for (ActivityManager.RunningAppProcessInfo processInfo : activityManager.getRunningAppProcesses()) {
-                if (processInfo.pid == pid) {
-                    return context.getPackageName().equals(processInfo.processName);
-                }
-            }
-        }
-        return false;
+    // 判断是否是单进程模式，单进程时，一次性回调所有内容
+    public boolean isMainProcess() {
+        return Binder.getCallingPid() == Process.myPid();
     }
 }

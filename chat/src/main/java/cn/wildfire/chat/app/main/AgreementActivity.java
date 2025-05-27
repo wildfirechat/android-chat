@@ -60,7 +60,6 @@ public class AgreementActivity extends WfcBaseNoToolbarActivity {
         Intent intent;
         intent = new Intent(this, LoginActivity.class);
         intent.putExtra("isKickedOff", getIntent().getBooleanExtra("isKickedOff", false));
-        intent.putExtra("agreeUserAgreement", true);
         Bundle bundle = ActivityOptionsCompat.makeCustomAnimation(getContext(),
             android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
         startActivity(intent, bundle);

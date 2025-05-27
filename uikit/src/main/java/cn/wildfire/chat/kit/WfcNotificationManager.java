@@ -7,6 +7,8 @@ package cn.wildfire.chat.kit;
 import static androidx.core.app.NotificationCompat.CATEGORY_MESSAGE;
 import static androidx.core.app.NotificationCompat.DEFAULT_ALL;
 import static cn.wildfirechat.message.core.PersistFlag.Persist_And_Count;
+import static cn.wildfirechat.model.Conversation.ConversationType.Channel;
+import static cn.wildfirechat.model.Conversation.ConversationType.Group;
 import static cn.wildfirechat.model.Conversation.ConversationType.Single;
 
 import android.app.NotificationChannel;
@@ -37,10 +39,14 @@ import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.PCOnlineInfo;
+import cn.wildfirechat.model.UnreadCount;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.remote.GetUserInfoCallback;
 
+// 关于桌面角标
+// 使用的系统原生方案，未针对各个厂商进行适配，在原生系统上展示的红点，不是具体的数字；但小米等手机上，能展示具体的数字
+// 具体请参考：https://developer.android.com/develop/ui/views/notifications/badges#java
 public class WfcNotificationManager {
     private WfcNotificationManager() {
 
@@ -52,6 +58,7 @@ public class WfcNotificationManager {
 
     private final List<Long> notificationMessages = new ArrayList<>();
     private int friendRequestNotificationId = 10000;
+    private int lastBadgeNumber = 0;
 
     public synchronized static WfcNotificationManager getInstance() {
         if (notificationManager == null) {
@@ -64,6 +71,7 @@ public class WfcNotificationManager {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         notificationMessages.clear();
+        lastBadgeNumber = 0;
     }
 
     private void showNotification(Context context, String tag, int id, String title, String content, PendingIntent pendingIntent) {
@@ -88,10 +96,16 @@ public class WfcNotificationManager {
             notificationManager.createNotificationChannel(channel);
         }
 
+        int number = 1;
+        if (lastBadgeNumber == 0) {
+            lastBadgeNumber = totalUnreadCount();
+            number = lastBadgeNumber;
+        }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, wfcNotificationChannelId)
             .setSmallIcon(R.mipmap.ic_launcher_notification)
             .setAutoCancel(true)
+            .setNumber(number)
             .setCategory(CATEGORY_MESSAGE)
             .setSound(notificationRingUri)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -149,7 +163,6 @@ public class WfcNotificationManager {
             if (conversationInfo != null && conversationInfo.isSilent) {
                 continue;
             }
-
             String pushContent = hiddenNotificationDetail ? "新消息" : message.content.pushContent;
             if (TextUtils.isEmpty(pushContent)) {
                 pushContent = message.content.digest(message);
@@ -219,7 +232,6 @@ public class WfcNotificationManager {
         PendingIntent pendingIntent = PendingIntent.getActivities(context, friendRequestNotificationId, new Intent[]{mainIntent, friendRequestListIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
         String tag = "wfc friendRequest notification tag";
         showNotification(context, tag, friendRequestNotificationId, title, text, pendingIntent);
-
     }
 
     private int notificationId(long messageUid) {
@@ -227,5 +239,11 @@ public class WfcNotificationManager {
             notificationMessages.add(messageUid);
         }
         return notificationMessages.indexOf(messageUid);
+    }
+
+    private int totalUnreadCount() {
+        UnreadCount totalUnreadCount = ChatManager.Instance().getUnreadCountEx(List.of(Single, Group, Channel), List.of(0));
+        int unreadFriendRequest = ChatManager.Instance().getUnreadFriendRequestStatus();
+        return totalUnreadCount.unread + unreadFriendRequest;
     }
 }

@@ -4,16 +4,11 @@
 
 package cn.wildfire.chat.kit.conversation.ext;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
 import android.view.View;
-
-import androidx.core.content.ContextCompat;
 
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
@@ -29,7 +24,6 @@ import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.third.utils.UIUtils;
-import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.message.TypingMessageContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.remote.ChatManager;
@@ -42,48 +36,10 @@ public class ImageExt extends ConversationExt {
      */
     @ExtContextMenuItem
     public void pickImage(View containerView, Conversation conversation) {
-        String[] permissions = null;
-        boolean isAccessFullOrPartialGranted = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-            && (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
-            || ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED)) {
-            // Full access on Android 13 (API level 33) or higher
-            isAccessFullOrPartialGranted = true;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-            ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED) {
-            // Partial access on Android 14 (API level 34) or higher
-            isAccessFullOrPartialGranted = true;
-        } else if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            // Full access up to Android 12 (API level 32)
-            isAccessFullOrPartialGranted = true;
-        } else {
-            // Access denied
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                permissions = new String[]{
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO,
-                };
-            } else {
-                permissions = new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                };
-            }
-        }
-
-        if (isAccessFullOrPartialGranted) {
-            Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(activity);
-            startActivityForResult(intent, 100);
-            TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
-            messageViewModel.sendMessage(conversation, toUsers(), content);
-        } else {
-            PermissionKit.PermissionReqTuple[] tuples = PermissionKit.buildRequestPermissionTuples(activity, permissions);
-            PermissionKit.checkThenRequestPermission(activity, fragment.getChildFragmentManager(), tuples, o -> {
-                Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(activity);
-                startActivityForResult(intent, 100);
-                TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
-                messageViewModel.sendMessage(conversation, toUsers(), content);
-            });
-        }
+        Intent intent = ImagePicker.picker().showCamera(true).enableMultiMode(9).buildPickIntent(activity);
+        startActivityForResult(intent, 100);
+        TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_CAMERA);
+        messageViewModel.sendMessage(conversation, toUsers(), content);
     }
 
     private boolean isGifFile(String file) {

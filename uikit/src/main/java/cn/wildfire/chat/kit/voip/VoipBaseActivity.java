@@ -173,6 +173,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         if (wakeLock != null) {
             wakeLock.release();
         }
+        Log.d("voip", "onDestroy");
     }
 
     public AVEngineKit getEngineKit() {
@@ -348,7 +349,9 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             intent.putExtra("focusTargetId", focusTargetId);
         }
         VoipCallService.start(this, intent);
-        finishFadeout();
+        if(!isFinishing()){
+            finishFadeout();
+        }
     }
 
     public void hideFloatingView() {
