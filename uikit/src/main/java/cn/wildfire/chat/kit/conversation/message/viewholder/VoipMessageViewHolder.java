@@ -56,42 +56,39 @@ public class VoipMessageViewHolder extends NormalMessageContentViewHolder {
             textView.setText(text);
         } else {
             String text = fragment.getString(R.string.call_unknown);
-            if (message.message.content instanceof CallStartMessageContent) {
-                CallStartMessageContent startMessageContent = (CallStartMessageContent) message.message.content;
-                AVEngineKit.CallEndReason reason = AVEngineKit.CallEndReason.reason(startMessageContent.getStatus());
-                if (reason == AVEngineKit.CallEndReason.UnKnown) {
-                    text = fragment.getString(R.string.call_unknown);
-                } else if (reason == AVEngineKit.CallEndReason.Busy) {
-                    text = fragment.getString(R.string.call_busy);
-                } else if (reason == AVEngineKit.CallEndReason.SignalError) {
-                    text = fragment.getString(R.string.call_error);
-                } else if (reason == AVEngineKit.CallEndReason.Hangup) {
-                    text = fragment.getString(R.string.call_hangup);
-                } else if (reason == AVEngineKit.CallEndReason.MediaError) {
-                    text = fragment.getString(R.string.call_error);
-                } else if (reason == AVEngineKit.CallEndReason.RemoteHangup) {
-                    text = fragment.getString(R.string.call_remote_hangup);
-                } else if (reason == AVEngineKit.CallEndReason.OpenCameraFailure) {
-                    text = fragment.getString(R.string.call_error);
-                } else if (reason == AVEngineKit.CallEndReason.Timeout) {
-                    text = fragment.getString(R.string.call_no_answer);
-                } else if (reason == AVEngineKit.CallEndReason.AcceptByOtherClient) {
-                    text = fragment.getString(R.string.call_accept_other);
-                } else if (reason == AVEngineKit.CallEndReason.AllLeft) {
-                    text = fragment.getString(R.string.call_ended);
-                } else if (reason == AVEngineKit.CallEndReason.RemoteBusy) {
-                    text = fragment.getString(R.string.call_remote_hangup);
-                } else if (reason == AVEngineKit.CallEndReason.RemoteTimeout) {
-                    text = fragment.getString(R.string.call_remote_no_answer);
-                } else if (reason == AVEngineKit.CallEndReason.RemoteNetworkError) {
-                    text = fragment.getString(R.string.call_remote_error);
-                } else if (reason == AVEngineKit.CallEndReason.RoomDestroyed) {
-                    text = fragment.getString(R.string.call_ended);
-                } else if (reason == AVEngineKit.CallEndReason.RoomNotExist) {
-                    text = fragment.getString(R.string.call_ended);
-                } else if (reason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
-                    text = fragment.getString(R.string.call_full);
-                }
+            AVEngineKit.CallEndReason reason = AVEngineKit.CallEndReason.reason(content.getStatus());
+            if (reason == AVEngineKit.CallEndReason.UnKnown) {
+                text = fragment.getString(content.isAudioOnly() ? R.string.call_audio : R.string.call_video);
+            } else if (reason == AVEngineKit.CallEndReason.Busy) {
+                text = fragment.getString(R.string.call_busy);
+            } else if (reason == AVEngineKit.CallEndReason.SignalError) {
+                text = fragment.getString(R.string.call_error);
+            } else if (reason == AVEngineKit.CallEndReason.Hangup) {
+                text = fragment.getString(R.string.call_hangup);
+            } else if (reason == AVEngineKit.CallEndReason.MediaError) {
+                text = fragment.getString(R.string.call_error);
+            } else if (reason == AVEngineKit.CallEndReason.RemoteHangup) {
+                text = fragment.getString(R.string.call_remote_hangup);
+            } else if (reason == AVEngineKit.CallEndReason.OpenCameraFailure) {
+                text = fragment.getString(R.string.call_error);
+            } else if (reason == AVEngineKit.CallEndReason.Timeout) {
+                text = fragment.getString(R.string.call_no_answer);
+            } else if (reason == AVEngineKit.CallEndReason.AcceptByOtherClient) {
+                text = fragment.getString(R.string.call_accept_other);
+            } else if (reason == AVEngineKit.CallEndReason.AllLeft) {
+                text = fragment.getString(R.string.call_ended);
+            } else if (reason == AVEngineKit.CallEndReason.RemoteBusy) {
+                text = fragment.getString(R.string.call_remote_hangup);
+            } else if (reason == AVEngineKit.CallEndReason.RemoteTimeout) {
+                text = fragment.getString(R.string.call_remote_no_answer);
+            } else if (reason == AVEngineKit.CallEndReason.RemoteNetworkError) {
+                text = fragment.getString(R.string.call_remote_error);
+            } else if (reason == AVEngineKit.CallEndReason.RoomDestroyed) {
+                text = fragment.getString(R.string.call_ended);
+            } else if (reason == AVEngineKit.CallEndReason.RoomNotExist) {
+                text = fragment.getString(R.string.call_ended);
+            } else if (reason == AVEngineKit.CallEndReason.RoomParticipantsFull) {
+                text = fragment.getString(R.string.call_full);
             }
             textView.setText(text);
         }
