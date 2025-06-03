@@ -238,6 +238,8 @@
 
     <!-- Voip Message -->
     <string name="call_unknown">未接通</string>
+    <string name="call_audio">语音通话</string>
+    <string name="call_video">视频通话</string>
     <string name="call_busy">线路忙</string>
     <string name="call_error">网络错误</string>
     <string name="call_hangup">已取消</string>
