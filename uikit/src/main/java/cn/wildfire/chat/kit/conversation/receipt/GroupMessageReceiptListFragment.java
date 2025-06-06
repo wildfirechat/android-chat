@@ -33,6 +33,7 @@ import cn.wildfirechat.remote.ChatManager;
 public class GroupMessageReceiptListFragment extends ProgressFragment implements GroupMessageReceiptAdapter.OnMemberClickListener {
     private GroupInfo groupInfo;
     private GroupMessageReceiptAdapter groupMemberListAdapter;
+    private GroupViewModel groupViewModel;
 
     private boolean unread;
     private Message message;
@@ -78,17 +79,22 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         recyclerView.setAdapter(groupMemberListAdapter);
         groupMemberListAdapter.setOnMemberClickListener(this);
         UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        userViewModel.userInfoLiveData().observe(this, userInfos -> loadAndShowGroupMembers());
-        loadAndShowGroupMembers();
+        userViewModel.userInfoLiveData().observe(this, userInfos -> loadAndShowGroupMembers(false));
+
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+        loadAndShowGroupMembers(true);
+
+        groupViewModel.groupMembersUpdateLiveData().observe(this, groupMembers -> {
+            loadAndShowGroupMembers(false);
+        });
     }
 
     private void bindViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
     }
 
-    private void loadAndShowGroupMembers() {
-        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
-        groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, false, this.message.serverTime).observe(this, userInfos -> {
+    private void loadAndShowGroupMembers(boolean refresh) {
+        groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, refresh, this.message.serverTime).observe(this, userInfos -> {
             showContent();
             groupMemberListAdapter.setMembers(filterGroupMember(userInfos, unread));
             groupMemberListAdapter.notifyDataSetChanged();
