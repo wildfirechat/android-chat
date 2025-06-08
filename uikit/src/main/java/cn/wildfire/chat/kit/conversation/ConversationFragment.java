@@ -140,6 +140,7 @@ public class ConversationFragment extends Fragment implements
     private boolean moveToBottom = true;
     private ConversationViewModel conversationViewModel;
     private SettingViewModel settingViewModel;
+    private boolean isEnableUserOnlineState;
     private UserOnlineStateViewModel userOnlineStateViewModel;
     private MessageViewModel messageViewModel;
     private UserViewModel userViewModel;
@@ -532,18 +533,23 @@ public class ConversationFragment extends Fragment implements
 
     public void setupConversation(Conversation conversation, String title, long focusMessageId, String target, boolean isJoinedChatRoom) {
         if (this.conversation != null) {
-            if ((this.conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(this.conversation.target))
-                || this.conversation.type == Conversation.ConversationType.Group) {
-                userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
+            if (isEnableUserOnlineState) {
+                if (this.conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(this.conversation.target)) {
+                    userOnlineStateViewModel.unwatchOnlineState(this.conversation.type.getValue(), new String[]{this.conversation.target});
+                }
             }
             this.adapter = new ConversationMessageAdapter(this);
             this.recyclerView.setAdapter(this.adapter);
         }
 
-        // TODO 要支持在线状态是才监听
-        if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
-            || conversation.type == Conversation.ConversationType.Group) {
-            userOnlineStateViewModel.watchUserOnlineState(conversation.type.getValue(), new String[]{conversation.target});
+        if (isEnableUserOnlineState) {
+            if (conversation.type == Conversation.ConversationType.Single || conversation.type == Conversation.ConversationType.SecretChat) {
+                if (!ChatManager.Instance().isMyFriend(conversation.target)) {
+                    userOnlineStateViewModel.watchUserOnlineState(conversation.type.getValue(), new String[]{conversation.target});
+                }
+            } else if (conversation.type == Conversation.ConversationType.Group) {
+                //当群超级大时，订阅群成员在线状态非常消耗资源。因此进入会话时不能订阅状态，只有在展示列表时订阅。
+            }
         }
 
         this.conversation = conversation;
@@ -642,8 +648,11 @@ public class ConversationFragment extends Fragment implements
         settingViewModel = new ViewModelProvider(this).get(SettingViewModel.class);
         settingViewModel.settingUpdatedLiveData().observeForever(settingUpdateLiveDataObserver);
 
-        userOnlineStateViewModel = new ViewModelProvider(this).get(UserOnlineStateViewModel.class);
-        userOnlineStateViewModel.getUserOnlineStateLiveData().observe(getViewLifecycleOwner(), userOnlineStateLiveDataObserver);
+        isEnableUserOnlineState = ChatManager.Instance().isEnableUserOnlineState();
+        if (isEnableUserOnlineState) {
+            userOnlineStateViewModel = new ViewModelProvider(this).get(UserOnlineStateViewModel.class);
+            userOnlineStateViewModel.getUserOnlineStateLiveData().observe(getViewLifecycleOwner(), userOnlineStateLiveDataObserver);
+        }
 
 
         if (backgroundImageUri != null) {
@@ -739,7 +748,7 @@ public class ConversationFragment extends Fragment implements
         // load message
         swipeRefreshLayout.setRefreshing(true);
         adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
-        messages.observe(this, uiMessages -> {
+        messages.observe(getViewLifecycleOwner(), uiMessages -> {
             swipeRefreshLayout.setRefreshing(false);
             adapter.setMessages(uiMessages);
             adapter.notifyDataSetChanged();
@@ -894,7 +903,7 @@ public class ConversationFragment extends Fragment implements
                 }
             }
         } else if (conversation.type == Conversation.ConversationType.Channel) {
-            ChannelViewModel channelViewModel =new ViewModelProvider(this).get(ChannelViewModel.class);
+            ChannelViewModel channelViewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
             ChannelInfo channelInfo = channelViewModel.getChannelInfo(conversation.target, false);
             if (channelInfo != null) {
                 conversationTitle = channelInfo.name;
@@ -1048,9 +1057,14 @@ public class ConversationFragment extends Fragment implements
             return;
         }
 
-        if ((conversation.type == Conversation.ConversationType.Single && !ChatManager.Instance().isMyFriend(conversation.target))
-            || conversation.type == Conversation.ConversationType.Group) {
-            userOnlineStateViewModel.unwatchOnlineState(conversation.type.getValue(), new String[]{conversation.target});
+        if (isEnableUserOnlineState) {
+            if (conversation.type == Conversation.ConversationType.Single || conversation.type == Conversation.ConversationType.SecretChat) {
+                if (!ChatManager.Instance().isMyFriend(conversation.target)) {
+                    userOnlineStateViewModel.unwatchOnlineState(conversation.type.getValue(), new String[]{conversation.target});
+                }
+            } else if (conversation.type == Conversation.ConversationType.Group) {
+                //当群超级大时，订阅群成员在线状态非常消耗资源。因此进入会话时不能订阅状态，只有在展示列表时订阅。
+            }
         }
 
         if (conversation.type == Conversation.ConversationType.ChatRoom) {
