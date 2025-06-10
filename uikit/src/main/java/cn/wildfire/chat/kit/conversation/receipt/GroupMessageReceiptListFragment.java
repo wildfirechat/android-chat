@@ -94,7 +94,9 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
     }
 
     private void loadAndShowGroupMembers(boolean refresh) {
-        groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, refresh, this.message.serverTime).observe(this, userInfos -> {
+        // 消息回执里面，显示该消息发送后新加入的群成员
+        // 如果需要补显示该消息发送后新加入的群成员，joinBeforeDt=this.message.serverTime
+        groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, refresh, Long.MAX_VALUE).observe(this, userInfos -> {
             showContent();
             groupMemberListAdapter.setMembers(filterGroupMember(userInfos, unread));
             groupMemberListAdapter.notifyDataSetChanged();
