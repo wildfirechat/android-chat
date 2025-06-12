@@ -228,6 +228,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     private ConcurrentHashMap<Long, Call> uploadingMap;
 
     private DefaultPortraitProvider defaultPortraitProvider;
+    private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private class ClientServiceStub extends IRemoteClient.Stub {
@@ -417,6 +418,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void addHttpHeader(String header, String value) throws RemoteException {
             ProtoLogic.addHttpHeader(header, value);
+            protoHttpHeaderMap.put(header, value);
         }
 
         @Override
@@ -4963,7 +4965,15 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
         RequestBody fileBody = new UploadFileRequestBody(requestBody, callback::onProgress);
 
-        Request request = new Request.Builder().url(uploadUrl).put(fileBody).build();
+        Request.Builder builder = new Request.Builder();
+        builder.url(uploadUrl);
+        builder.put(fileBody);
+        if (!protoHttpHeaderMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : protoHttpHeaderMap.entrySet()) {
+                builder.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
+        Request request = builder.build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
@@ -5020,9 +5030,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         mb.addFormDataPart("file", "fileName", fileBody);
         mb.setType(MediaType.parse("multipart/form-data"));
         RequestBody body = mb.build();
-        Request.Builder requestBuilder = new Request.Builder().url(uploadUrl).post(body);
 
-        Call call = okHttpClient.newCall(requestBuilder.build());
+        Request.Builder builder = new Request.Builder();
+        builder.url(uploadUrl);
+        builder.post(body);
+        if (!protoHttpHeaderMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : protoHttpHeaderMap.entrySet()) {
+                builder.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
+        Call call = okHttpClient.newCall(builder.build());
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
