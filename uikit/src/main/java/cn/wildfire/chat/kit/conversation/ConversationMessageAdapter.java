@@ -157,7 +157,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     public void addNewMessage(UiMessage message) {
-        if (message == null || message.message.messageId == 0) {
+        if (message == null) {
             return;
         }
         int index = contains(message);
