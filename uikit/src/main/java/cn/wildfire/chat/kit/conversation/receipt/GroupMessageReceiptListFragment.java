@@ -33,6 +33,7 @@ import cn.wildfirechat.remote.ChatManager;
 public class GroupMessageReceiptListFragment extends ProgressFragment implements GroupMessageReceiptAdapter.OnMemberClickListener {
     private GroupInfo groupInfo;
     private GroupMessageReceiptAdapter groupMemberListAdapter;
+    private GroupViewModel groupViewModel;
 
     private boolean unread;
     private Message message;
@@ -78,17 +79,24 @@ public class GroupMessageReceiptListFragment extends ProgressFragment implements
         recyclerView.setAdapter(groupMemberListAdapter);
         groupMemberListAdapter.setOnMemberClickListener(this);
         UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        userViewModel.userInfoLiveData().observe(this, userInfos -> loadAndShowGroupMembers());
-        loadAndShowGroupMembers();
+        userViewModel.userInfoLiveData().observe(this, userInfos -> loadAndShowGroupMembers(false));
+
+        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+        loadAndShowGroupMembers(true);
+
+        groupViewModel.groupMembersUpdateLiveData().observe(this, groupMembers -> {
+            loadAndShowGroupMembers(false);
+        });
     }
 
     private void bindViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
     }
 
-    private void loadAndShowGroupMembers() {
-        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
-        groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, false, this.message.serverTime).observe(this, userInfos -> {
+    private void loadAndShowGroupMembers(boolean refresh) {
+        // 消息回执里面，显示该消息发送后新加入的群成员
+        // 如果需要补显示该消息发送后新加入的群成员，joinBeforeDt=this.message.serverTime
+        groupViewModel.getGroupMemberUserInfosLiveData(groupInfo.target, refresh, Long.MAX_VALUE).observe(this, userInfos -> {
             showContent();
             groupMemberListAdapter.setMembers(filterGroupMember(userInfos, unread));
             groupMemberListAdapter.notifyDataSetChanged();

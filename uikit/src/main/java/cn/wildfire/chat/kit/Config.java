@@ -47,7 +47,8 @@ public class Config {
         {"turn:turn.wildfirechat.net:3478", "wfchat", "wfchat123"}
     };
 
-    //文件传输助手用户ID，服务器有个默认文件助手的机器人，如果修改它的ID，需要客户端和服务器数据库同步修改
+    // 文件传输助手用户ID，服务器有个默认文件助手的机器人，如果修改它的ID，需要客户端和服务器数据库同步修改
+    // 如果不需要文件传输助手功能，可以设置为null
     public static String FILE_TRANSFER_ID = "wfc_file_transfer";
 
     // 允许主动加入多人音视频通话

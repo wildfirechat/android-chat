@@ -80,6 +80,59 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         } else {
             startForeground(NOTIFICATION_ID, buildNotification(session));
         }
+
+        // 对音频进行变声处理的示例代码，需要高级版音视频 SDK 才支持对音频流进行处理
+        // 建议使用 soundTouch 来进行处理
+//        session.setAudioProcessor(new AudioProcessor() {
+//            @Override
+//            public byte[] onAudioRecorded(JavaAudioDeviceModule.AudioSamples audioSamples) {
+//                byte[] inputAudioBytes = audioSamples.getData();
+//
+//                if (inputAudioBytes == null || inputAudioBytes.length == 0) {
+//                    // 如果原始音频数据为空，则直接返回，或者调用父类方法
+//                    return AudioProcessor.super.onAudioRecorded(audioSamples);
+//                }
+//
+//                int channelCount = audioSamples.getChannelCount();
+//                // WebRTC 通常使用 16-bit PCM 编码，所以每个采样点2字节
+//                int bytesPerSample = 2;
+//                int bytesPerFrame = channelCount * bytesPerSample;
+//
+//                if (bytesPerFrame <= 0) {
+//                    // 无效的帧大小，返回原始数据
+//                    return inputAudioBytes;
+//                }
+//
+//                int inputFrameCount = inputAudioBytes.length / bytesPerFrame;
+//                if (inputFrameCount == 0) {
+//                    // 没有足够的帧进行处理，返回原始数据
+//                    return inputAudioBytes;
+//                }
+//
+//                // 调整变声效果：进一步提高音调。
+//                // 实现方式：每2帧中，保留第1帧，丢弃第2帧。
+//                // 新的长度约为原来的一半，播放速度（音调）变为原来的两倍。
+//                int outputFrameCount = inputFrameCount / 2;
+//
+//                if (outputFrameCount == 0) {
+//                    // 处理后的帧数为0（例如输入只有1帧时），返回原始音频，避免产生空音频。
+//                    return inputAudioBytes;
+//                }
+//
+//                byte[] outputAudioBytes = new byte[outputFrameCount * bytesPerFrame];
+//
+//                int outputFrameIndex = 0;
+//                for (int inputFrameIndex = 0; inputFrameIndex < inputFrameCount && outputFrameIndex < outputFrameCount; inputFrameIndex++) {
+//                    if (inputFrameIndex % 3 != 2) {
+//                        int srcPos = inputFrameIndex * bytesPerFrame;
+//                        int destPos = outputFrameIndex * bytesPerFrame;
+//                        System.arraycopy(inputAudioBytes, srcPos, outputAudioBytes, destPos, bytesPerFrame);
+//                        outputFrameIndex++;
+//                    }
+//                }
+//                return outputAudioBytes;
+//            }
+//        });
     }
 
     @Nullable

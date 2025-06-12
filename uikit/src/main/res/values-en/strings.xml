@@ -237,7 +237,9 @@
     <string name="voip_ext_audio">Voice Call</string>
 
     <!-- Voip Message -->
-    <string name="call_unknown">Call Failed</string>
+    <string name="call_unknown">Voip Call</string>
+    <string name="call_audio">Audio Call</string>
+    <string name="call_video">Video Call</string>
     <string name="call_busy">Line Busy</string>
     <string name="call_error">Network Error</string>
     <string name="call_hangup">Cancelled</string>

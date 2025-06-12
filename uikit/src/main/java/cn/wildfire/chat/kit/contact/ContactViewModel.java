@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.contact;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -123,15 +124,17 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
             @Override
             public void onSuccess(List<UserInfo> userInfos) {
                 if (contactListLiveData != null && userInfos != null) {
-                    SharedPreferences sp = WfcUIKit.getWfcUIKit().getApplication().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
-                    boolean pcLogined = sp.getBoolean("wfc_uikit_had_pc_session", false);
-                    UserInfo fileHelpUserInfo = null;
-                    if (pcLogined) {
-                        fileHelpUserInfo = ChatManager.Instance().getUserInfo(Config.FILE_TRANSFER_ID, true);
-                    }
+                    if (!TextUtils.isEmpty(Config.FILE_TRANSFER_ID)) {
+                        SharedPreferences sp = WfcUIKit.getWfcUIKit().getApplication().getSharedPreferences("wfc_kit_config", Context.MODE_PRIVATE);
+                        boolean pcLogined = sp.getBoolean("wfc_uikit_had_pc_session", false);
+                        UserInfo fileHelpUserInfo = null;
+                        if (pcLogined) {
+                            fileHelpUserInfo = ChatManager.Instance().getUserInfo(Config.FILE_TRANSFER_ID, true);
+                        }
 
-                    if (fileHelpUserInfo != null) {
-                        userInfos.add(fileHelpUserInfo);
+                        if (fileHelpUserInfo != null) {
+                            userInfos.add(fileHelpUserInfo);
+                        }
                     }
                     contactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos));
                 }
