@@ -229,6 +229,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     private DefaultPortraitProvider defaultPortraitProvider;
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
+    private String protoUserAgent;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private class ClientServiceStub extends IRemoteClient.Stub {
@@ -413,6 +414,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public void setProtoUserAgent(String userAgent) throws RemoteException {
             ProtoLogic.setUserAgent(userAgent);
+            protoUserAgent = userAgent;
         }
 
         @Override
@@ -4973,6 +4975,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 builder.addHeader(entry.getKey(), entry.getValue());
             }
         }
+        if (!TextUtils.isEmpty(protoUserAgent)) {
+            builder.removeHeader("User-Agent").addHeader("User-Agent", protoUserAgent);
+        }
         Request request = builder.build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
@@ -5038,6 +5043,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (Map.Entry<String, String> entry : protoHttpHeaderMap.entrySet()) {
                 builder.addHeader(entry.getKey(), entry.getValue());
             }
+        }
+        if (!TextUtils.isEmpty(protoUserAgent)) {
+            builder.removeHeader("User-Agent").addHeader("User-Agent", protoUserAgent);
         }
         Call call = okHttpClient.newCall(builder.build());
         call.enqueue(new Callback() {
