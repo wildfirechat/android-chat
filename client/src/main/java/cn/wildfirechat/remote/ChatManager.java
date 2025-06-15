@@ -2235,7 +2235,7 @@ public class ChatManager {
     }
 
     /**
-     * 更新消息内容
+     * 更新消息内容。不支持聊天室，聊天室消息本地不存储，所有无法更新。
      *
      * @param messageId     消息id
      * @param newMsgContent 新的消息体，未更新部分，不可置空！
