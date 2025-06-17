@@ -99,6 +99,7 @@ import cn.wildfirechat.model.GroupSearchResult;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
 import cn.wildfirechat.model.NullGroupMember;
 import cn.wildfirechat.model.NullUserInfo;
+import cn.wildfirechat.model.ProtoAddressItem;
 import cn.wildfirechat.model.ProtoBurnMessageInfo;
 import cn.wildfirechat.model.ProtoChannelInfo;
 import cn.wildfirechat.model.ProtoChannelMenu;
@@ -165,7 +166,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     ProtoLogic.ISecretMessageBurnStateCallback,
     ProtoLogic.IChannelInfoUpdateCallback,
     ProtoLogic.IDomainInfoUpdateCallback,
-    ProtoLogic.IGroupMembersUpdateCallback {
+    ProtoLogic.IGroupMembersUpdateCallback,
+    ProtoLogic.ISortAddressCallback {
     private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
 
     private int mConnectionStatus;
@@ -4251,6 +4253,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         ProtoLogic.setSecretChatStateCallback(ClientService.this);
         ProtoLogic.setSecretMessageBurnStateCallback(ClientService.this);
         ProtoLogic.setDomainInfoUpdateCallback(ClientService.this);
+        ProtoLogic.setSortAddressCallback(ClientService.this);
         Log.i(TAG, "Proto connect:" + userName);
         ProtoLogic.setAuthInfo(userName, userPwd);
         return ProtoLogic.connect(mHost);
@@ -4830,6 +4833,23 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             onDomainInfoUpdatedCallbackList.finishBroadcast();
         });
     }
+
+    @Override
+    public boolean onSortAddress(boolean longlink, ProtoAddressItem[] protoAddressItems) {
+        boolean changed = false;
+// 当有多个可连网络时，这里可以进行排序。只能排序和删除，不能添加。
+//        for (int i = 1; i < protoAddressItems.length; i++) {
+//            if(protoAddressItems[i].getPort() == 1886) {
+//                ProtoAddressItem temp = protoAddressItems[0];
+//                protoAddressItems[0] = protoAddressItems[i];
+//                protoAddressItems[i] = temp;
+//                changed = true;
+//                break;
+//            }
+//        }
+        return changed;
+    }
+
 //    // 只是大概大小
 //    private int getMessageLength(ProtoMessage message) {
 //        int length = 0;
