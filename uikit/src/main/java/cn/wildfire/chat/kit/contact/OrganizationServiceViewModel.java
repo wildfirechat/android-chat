@@ -136,14 +136,13 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
         ChatManager.Instance().getWorkHandler().post(new Runnable() {
             @Override
             public void run() {
-                CountDownLatch latch = new CountDownLatch(organizationIds.size());
-                for (Integer orgId : organizationIds) {
-                    organizationServiceProvider.getOrganizationEx(orgId, new SimpleCallback<OrganizationEx>() {
+                CountDownLatch latch;
+                if (includeSubOrganization) {
+                    latch = new CountDownLatch(1);
+                    organizationServiceProvider.getOrganizationEmployees(organizationIds, new SimpleCallback<List<Employee>>() {
                         @Override
-                        public void onUiSuccess(OrganizationEx organizationEx) {
-                            if (organizationEx != null && organizationEx.employees != null) {
-                                employees.addAll(organizationEx.employees);
-                            }
+                        public void onUiSuccess(List<Employee> es) {
+                            employees.addAll(es);
                             latch.countDown();
                         }
 
@@ -152,6 +151,26 @@ public class OrganizationServiceViewModel extends ViewModel implements OnConnect
                             latch.countDown();
                         }
                     });
+
+
+                } else {
+                    latch = new CountDownLatch(organizationIds.size());
+                    for (Integer orgId : organizationIds) {
+                        organizationServiceProvider.getOrganizationEx(orgId, new SimpleCallback<OrganizationEx>() {
+                            @Override
+                            public void onUiSuccess(OrganizationEx organizationEx) {
+                                if (organizationEx != null && organizationEx.employees != null) {
+                                    employees.addAll(organizationEx.employees);
+                                }
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onUiFailure(int code, String msg) {
+                                latch.countDown();
+                            }
+                        });
+                    }
                 }
                 try {
                     latch.await();
