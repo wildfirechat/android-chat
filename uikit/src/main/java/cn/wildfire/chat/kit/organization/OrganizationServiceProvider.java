@@ -27,11 +27,15 @@ public interface OrganizationServiceProvider {
 
     void getOrganizations(List<Integer> orgIds, SimpleCallback<List<Organization>> callback);
 
+    void getOrganizationEmployees(List<Integer> orgIds, SimpleCallback<List<Employee>> callback);
+
     void getOrgEmployees(List<Integer> orgIds, SimpleCallback<List<String>> callback);
 
     void getOrgEmployees(int orgId, SimpleCallback<List<String>> callback);
 
     void getEmployee(String employeeId, SimpleCallback<Employee> callback);
+
+    void getEmployees(List<String> employeeIds, SimpleCallback<List<Employee>> callback);
 
     void getEmployeeEx(String employeeId, SimpleCallback<EmployeeEx> callback);
 

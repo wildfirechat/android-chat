@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +140,30 @@ public class OrganizationService implements OrganizationServiceProvider {
     }
 
     @Override
+    public void getOrganizationEmployees(List<Integer> orgIds, SimpleCallback<List<Employee>> callback) {
+        if (!isServiceAvailable) {
+            callback.onUiFailure(-1, "未登录，或服务不可用");
+            return;
+        }
+        getOrgEmployees(orgIds, new SimpleCallback<List<String>>() {
+            @Override
+            public void onUiSuccess(List<String> employeeIds) {
+                if (employeeIds != null && !employeeIds.isEmpty()) {
+                    getEmployees(employeeIds, callback);
+                } else {
+                    callback.onUiSuccess(new ArrayList<>());
+                }
+            }
+
+            @Override
+            public void onUiFailure(int code, String msg) {
+                callback.onUiFailure(code, msg);
+            }
+        });
+    }
+
+
+    @Override
     public void getOrgEmployees(List<Integer> orgIds, SimpleCallback<List<String>> callback) {
         if (!isServiceAvailable) {
             callback.onUiFailure(-1, "未登录，或服务不可用");
@@ -171,6 +196,18 @@ public class OrganizationService implements OrganizationServiceProvider {
         Map<String, Object> params = new HashMap<>(1);
         params.put("employeeId", employeeId);
         String url = ORG_SERVER_ADDRESS + "/api/employee/query";
+        OKHttpHelper.post(url, params, callback);
+    }
+
+    @Override
+    public void getEmployees(List<String> employeeIds, SimpleCallback<List<Employee>> callback) {
+        if (!isServiceAvailable) {
+            callback.onUiFailure(-1, "未登录，或服务不可用");
+            return;
+        }
+        Map<String, Object> params = new HashMap<>(1);
+        params.put("employeeIds", employeeIds);
+        String url = ORG_SERVER_ADDRESS + "/api/employee/query_list";
         OKHttpHelper.post(url, params, callback);
     }
 
