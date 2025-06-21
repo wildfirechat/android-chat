@@ -1,0 +1,292 @@
+diff --git a/api/crypto/frame_decryptor_interface.h b/api/crypto/frame_decryptor_interface.h
+index f4123008e3..bb46a35378 100644
+--- a/api/crypto/frame_decryptor_interface.h
++++ b/api/crypto/frame_decryptor_interface.h
+@@ -17,6 +17,19 @@
+ #include "api/media_types.h"
+ #include "rtc_base/ref_count.h"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++typedef int (*WFFrameDecryptor_Decrypt)(int media_type,
++                                        const uint32_t *csrcs, size_t csrcs_len,
++                                        const uint8_t *additional_data, size_t additional_data_len,
++                                        const uint8_t *encrypted_frame, size_t encrypted_frame_len,
++                                        uint8_t *frame, size_t frame_len);
++typedef size_t (*WFFrameDecryptor_GetMaxPlaintextByteSize)(int media_type, size_t encrypted_frame_size);
++#ifdef __cplusplus
++}
++#endif
++
+ namespace webrtc {
+ 
+ // FrameDecryptorInterface allows users to provide a custom decryption
+@@ -71,6 +84,45 @@ class FrameDecryptorInterface : public RefCountInterface {
+                                          size_t encrypted_frame_size) = 0;
+ };
+ 
++class WFFrameDecryptorImpl : public FrameDecryptorInterface {
++private:
++    WFFrameDecryptor_Decrypt decrypt_fun;
++    WFFrameDecryptor_GetMaxPlaintextByteSize size_fun;
++    
++public:
++    WFFrameDecryptorImpl(WFFrameDecryptor_Decrypt decrypt, WFFrameDecryptor_GetMaxPlaintextByteSize sizef) : decrypt_fun(decrypt), size_fun(sizef) {}
++    
++    Result Decrypt(cricket::MediaType media_type,
++                           const std::vector<uint32_t>& csrcs,
++                           rtc::ArrayView<const uint8_t> additional_data,
++                           rtc::ArrayView<const uint8_t> encrypted_frame,
++                           rtc::ArrayView<uint8_t> frame) override {
++        const uint32_t* pcsrcs = csrcs.data();
++        const uint8_t* padditional_data = additional_data.data();
++        const uint8_t* pencrypted_frame = encrypted_frame.data();
++        uint8_t* pframe = frame.data();
++
++        int ret = decrypt_fun(
++            static_cast<int>(media_type),
++            pcsrcs, csrcs.size(),
++            padditional_data, additional_data.size(),
++            pencrypted_frame, encrypted_frame.size(),
++            pframe, frame.size());
++
++        if (ret == 0) {
++            return Result(FrameDecryptorInterface::Status::kOk, frame.size());
++        } else {
++            return Result(FrameDecryptorInterface::Status::kFailedToDecrypt, 0);
++        }
++    }
++
++    size_t GetMaxPlaintextByteSize(cricket::MediaType media_type,
++                                   size_t encrypted_frame_size) override {
++        // 修正方法调用语法
++        return size_fun(static_cast<int>(media_type), encrypted_frame_size);
++    }
++};
++
+ }  // namespace webrtc
+ 
+ #endif  // API_CRYPTO_FRAME_DECRYPTOR_INTERFACE_H_
+diff --git a/api/crypto/frame_encryptor_interface.h b/api/crypto/frame_encryptor_interface.h
+index 99148bd84f..004f713c3c 100644
+--- a/api/crypto/frame_encryptor_interface.h
++++ b/api/crypto/frame_encryptor_interface.h
+@@ -15,6 +15,19 @@
+ #include "api/media_types.h"
+ #include "rtc_base/ref_count.h"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++typedef int (*WFFrameEncryptor_Encrypt)(int media_type, uint32_t ssrc,
++                                        const uint8_t *additional_data, size_t additional_data_len,
++                                        const uint8_t *frame, size_t frame_len,
++                                        uint8_t *encrypted_frame, size_t encrypted_frame_len,
++                                        size_t* bytes_written);
++typedef size_t (*WFFrameEncryptor_GetMaxCiphertextByteSize)(int media_type, size_t frame_size);
++#ifdef __cplusplus
++}
++#endif
++
+ namespace webrtc {
+ 
+ // FrameEncryptorInterface allows users to provide a custom encryption
+@@ -49,6 +62,38 @@ class FrameEncryptorInterface : public RefCountInterface {
+                                           size_t frame_size) = 0;
+ };
+ 
++class WFFrameEncryptorImpl : public FrameEncryptorInterface {
++private:
++    WFFrameEncryptor_Encrypt encrypt_fun;
++    WFFrameEncryptor_GetMaxCiphertextByteSize sizeFun;
++
++public:
++    WFFrameEncryptorImpl(WFFrameEncryptor_Encrypt encrypt, WFFrameEncryptor_GetMaxCiphertextByteSize sizef) : encrypt_fun(encrypt), sizeFun(sizef) {}
++
++    int Encrypt(cricket::MediaType media_type,
++                   uint32_t ssrc,
++                   rtc::ArrayView<const uint8_t> additional_data,
++                   rtc::ArrayView<const uint8_t> frame,
++                   rtc::ArrayView<uint8_t> encrypted_frame,
++                   size_t* bytes_written) override {
++        const uint8_t* padditional_data = additional_data.data();
++        const uint8_t* pframe = frame.data();
++        uint8_t* pencrypted_frame = encrypted_frame.data();
++
++        return encrypt_fun(static_cast<int>(media_type), ssrc,
++            padditional_data, additional_data.size(),
++            pframe, frame.size(),
++            pencrypted_frame, encrypted_frame.size(),
++            bytes_written);
++    }
++
++    size_t GetMaxCiphertextByteSize(cricket::MediaType media_type,
++                                   size_t frame_size) override {
++        // 修正方法调用语法
++        return sizeFun(static_cast<int>(media_type), frame_size);
++    }
++};
++
+ }  // namespace webrtc
+ 
+ #endif  // API_CRYPTO_FRAME_ENCRYPTOR_INTERFACE_H_
+diff --git a/sdk/android/api/org/webrtc/FrameDecryptor.java b/sdk/android/api/org/webrtc/FrameDecryptor.java
+index 2932f3d94a..a20d3f9966 100644
+--- a/sdk/android/api/org/webrtc/FrameDecryptor.java
++++ b/sdk/android/api/org/webrtc/FrameDecryptor.java
+@@ -20,7 +20,12 @@ package org.webrtc;
+  */
+ public interface FrameDecryptor {
+   /**
+-   * @return A FrameDecryptorInterface pointer.
++   * @return A FrameDecryptorInterface decrypt pointer.
+    */
+   long getNativeFrameDecryptor();
++
++  /**
++   * @return A FrameDecryptorInterface size pointer.
++   */
++  long getNativeFrameDecryptSize();
+ }
+diff --git a/sdk/android/api/org/webrtc/FrameEncryptor.java b/sdk/android/api/org/webrtc/FrameEncryptor.java
+index bc81223f21..c9050e6020 100644
+--- a/sdk/android/api/org/webrtc/FrameEncryptor.java
++++ b/sdk/android/api/org/webrtc/FrameEncryptor.java
+@@ -20,7 +20,12 @@ package org.webrtc;
+  */
+ public interface FrameEncryptor {
+   /**
+-   * @return A FrameEncryptorInterface pointer.
++   * @return A FrameEncryptorInterface encrypt pointer.
+    */
+   long getNativeFrameEncryptor();
++
++  /**
++   * @return A FrameEncryptorInterface size pointer.
++   */
++  long getNativeFrameEncryptSize();
+ }
+diff --git a/sdk/android/api/org/webrtc/RtpReceiver.java b/sdk/android/api/org/webrtc/RtpReceiver.java
+index b545ab6ebf..20ddad4f32 100644
+--- a/sdk/android/api/org/webrtc/RtpReceiver.java
++++ b/sdk/android/api/org/webrtc/RtpReceiver.java
+@@ -78,7 +78,7 @@ public class RtpReceiver {
+ 
+   public void setFrameDecryptor(FrameDecryptor frameDecryptor) {
+     checkRtpReceiverExists();
+-    nativeSetFrameDecryptor(nativeRtpReceiver, frameDecryptor.getNativeFrameDecryptor());
++    nativeSetFrameDecryptor(nativeRtpReceiver, frameDecryptor.getNativeFrameDecryptor(), frameDecryptor.getNativeFrameDecryptSize());
+   }
+ 
+   private void checkRtpReceiverExists() {
+@@ -94,5 +94,5 @@ public class RtpReceiver {
+   private static native String nativeGetId(long rtpReceiver);
+   private static native long nativeSetObserver(long rtpReceiver, Observer observer);
+   private static native void nativeUnsetObserver(long rtpReceiver, long nativeObserver);
+-  private static native void nativeSetFrameDecryptor(long rtpReceiver, long nativeFrameDecryptor);
++  private static native void nativeSetFrameDecryptor(long rtpReceiver, long nativeFrameDecryptor, long nativeFrameDecryptSize);
+ }
+diff --git a/sdk/android/api/org/webrtc/RtpSender.java b/sdk/android/api/org/webrtc/RtpSender.java
+index de0781e2e7..5c5b130249 100644
+--- a/sdk/android/api/org/webrtc/RtpSender.java
++++ b/sdk/android/api/org/webrtc/RtpSender.java
+@@ -100,7 +100,7 @@ public class RtpSender {
+ 
+   public void setFrameEncryptor(FrameEncryptor frameEncryptor) {
+     checkRtpSenderExists();
+-    nativeSetFrameEncryptor(nativeRtpSender, frameEncryptor.getNativeFrameEncryptor());
++    nativeSetFrameEncryptor(nativeRtpSender, frameEncryptor.getNativeFrameEncryptor(), frameEncryptor.getNativeFrameEncryptSize());
+   }
+ 
+   public void dispose() {
+@@ -147,7 +147,7 @@ public class RtpSender {
+ 
+   private static native String nativeGetId(long rtpSender);
+ 
+-  private static native void nativeSetFrameEncryptor(long rtpSender, long nativeFrameEncryptor);
++  private static native void nativeSetFrameEncryptor(long rtpSender, long nativeFrameEncryptor, long nativeFrameiEncryptSize);
+ 
+   private static native String nativeGetMediaType(long rtpSender);
+ }
+diff --git a/sdk/android/src/jni/pc/rtp_receiver.cc b/sdk/android/src/jni/pc/rtp_receiver.cc
+index 681d757146..a20b014798 100644
+--- a/sdk/android/src/jni/pc/rtp_receiver.cc
++++ b/sdk/android/src/jni/pc/rtp_receiver.cc
+@@ -17,6 +17,19 @@
+ #include "sdk/android/src/jni/pc/rtp_parameters.h"
+ #include "third_party/jni_zero/jni_zero.h"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++typedef int (*WFFrameDecryptor_Decrypt)(int media_type,
++                                        const uint32_t *csrcs, size_t csrcs_len,
++                                        const uint8_t *additional_data, size_t additional_data_len,
++                                        const uint8_t *encrypted_frame, size_t encrypted_frame_len,
++                                        uint8_t *frame, size_t frame_len);
++typedef size_t (*WFFrameDecryptor_GetMaxPlaintextByteSize)(int media_type, size_t encrypted_frame_size);
++#ifdef __cplusplus
++}
++#endif
++
+ namespace webrtc {
+ namespace jni {
+ 
+@@ -118,11 +131,10 @@ static void JNI_RtpReceiver_UnsetObserver(JNIEnv* jni,
+ 
+ static void JNI_RtpReceiver_SetFrameDecryptor(JNIEnv* jni,
+                                               jlong j_rtp_sender_pointer,
+-                                              jlong j_frame_decryptor_pointer) {
+-  reinterpret_cast<RtpReceiverInterface*>(j_rtp_sender_pointer)
+-      ->SetFrameDecryptor(rtc::scoped_refptr<FrameDecryptorInterface>(
+-          reinterpret_cast<FrameDecryptorInterface*>(
+-              j_frame_decryptor_pointer)));
++                                              jlong j_frame_decrypt_pointer,
++                                              jlong j_frame_size_pointer) {
++    rtc::scoped_refptr<FrameDecryptorInterface> ptr = rtc::scoped_refptr<FrameDecryptorInterface>(new rtc::RefCountedObject<WFFrameDecryptorImpl>(reinterpret_cast<WFFrameDecryptor_Decrypt>(j_frame_decrypt_pointer), reinterpret_cast<WFFrameDecryptor_GetMaxPlaintextByteSize>(j_frame_size_pointer)));
++  reinterpret_cast<RtpReceiverInterface*>(j_rtp_sender_pointer)->SetFrameDecryptor(ptr);
+ }
+ 
+ }  // namespace jni
+diff --git a/sdk/android/src/jni/pc/rtp_sender.cc b/sdk/android/src/jni/pc/rtp_sender.cc
+index 2096f3bff4..67c2dd0121 100644
+--- a/sdk/android/src/jni/pc/rtp_sender.cc
++++ b/sdk/android/src/jni/pc/rtp_sender.cc
+@@ -16,6 +16,20 @@
+ #include "sdk/android/src/jni/pc/rtp_parameters.h"
+ #include "third_party/jni_zero/jni_zero.h"
+ 
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++typedef int (*WFFrameEncryptor_Encrypt)(int media_type, uint32_t ssrc,
++                                        const uint8_t *additional_data, size_t additional_data_len,
++                                        const uint8_t *frame, size_t frame_len,
++                                        uint8_t *encrypted_frame, size_t encrypted_frame_len,
++                                        size_t* bytes_written);
++typedef size_t (*WFFrameEncryptor_GetMaxCiphertextByteSize)(int media_type, size_t frame_size);
++#ifdef __cplusplus
++}
++#endif
++
+ namespace webrtc {
+ namespace jni {
+ 
+@@ -102,11 +116,10 @@ ScopedJavaLocalRef<jstring> JNI_RtpSender_GetId(JNIEnv* jni,
+ 
+ static void JNI_RtpSender_SetFrameEncryptor(JNIEnv* jni,
+                                             jlong j_rtp_sender_pointer,
+-                                            jlong j_frame_encryptor_pointer) {
+-  reinterpret_cast<RtpSenderInterface*>(j_rtp_sender_pointer)
+-      ->SetFrameEncryptor(rtc::scoped_refptr<FrameEncryptorInterface>(
+-          reinterpret_cast<FrameEncryptorInterface*>(
+-              j_frame_encryptor_pointer)));
++                                            jlong j_frame_encrypt_pointer,
++                                            jlong j_frame_size_pointer) {
++    rtc::scoped_refptr<FrameEncryptorInterface> ptr = rtc::scoped_refptr<FrameEncryptorInterface>(new rtc::RefCountedObject<WFFrameEncryptorImpl>(reinterpret_cast<WFFrameEncryptor_Encrypt>(j_frame_encrypt_pointer), reinterpret_cast<WFFrameEncryptor_GetMaxCiphertextByteSize>(j_frame_size_pointer)));
++  reinterpret_cast<RtpSenderInterface*>(j_rtp_sender_pointer)->SetFrameEncryptor(ptr);
+ }
+ 
+ static jni_zero::ScopedJavaLocalRef<jstring> JNI_RtpSender_GetMediaType(

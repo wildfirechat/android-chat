@@ -34,6 +34,7 @@ import androidx.lifecycle.ViewModelStore;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+//import com.example.webrtcencryptor.CryptNativeLib;
 import com.lqr.emoji.LQREmotionKit;
 
 import java.lang.ref.WeakReference;
@@ -200,6 +201,8 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             //AVEngineKit.MAX_AUDIO_PARTICIPANT_COUNT= 16;
             AVEngineKit.init(application, this);
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP360P, false);
+//            CryptNativeLib cryptNativeLib = new CryptNativeLib();
+//            AVEngineKit.Instance().setCryptor(cryptNativeLib, cryptNativeLib);
             // 屏幕共享，使用替换模式
             AVEngineKit.SCREEN_SHARING_REPLACE_MODE = true;
 

@@ -1,2 +1,4 @@
-libwebrtc.aar download from
+libwebrtc.aar是标准WebRTC做了加密的修改，tag是```branch-heads/6978```，修改的文件在[webrtc_patch](../webrtcEncryptor/webrtc_patch)目录下。
+
+libwebrtc_3.aar是标准的WebRTC库，从下面地址下载。如果不使用加密功能，可以使用此标准WebRTC库。
 https://github.com/webrtc-sdk/android/releases/tag/v125.6422.04

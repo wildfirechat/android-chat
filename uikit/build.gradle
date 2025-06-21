@@ -58,6 +58,7 @@ dependencies {
 
     // wfc kit start
     implementation project(':webrtc')
+    //implementation project(':webrtcEncryptor')
     implementation project(':uikit-aar-dep')
 
     api project(':client')
