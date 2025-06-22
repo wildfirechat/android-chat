@@ -1451,6 +1451,35 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void searchUserEx2(String domainId, String keyword, int searchType, int userType, int page, ISearchUserCallback callback) throws RemoteException {
+            ProtoLogic.searchUserEx2(domainId, keyword, searchType, userType, page, new ProtoLogic.ISearchUserCallback() {
+                @Override
+                public void onSuccess(ProtoUserInfo[] userInfos) {
+                    List<UserInfo> out = new ArrayList<>();
+                    if (userInfos != null) {
+                        for (ProtoUserInfo protoUserInfo : userInfos) {
+                            out.add(convertProtoUserInfo(protoUserInfo));
+                        }
+                    }
+                    try {
+                        callback.onSuccess(out);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) {
+                    try {
+                        callback.onFailure(errorCode);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @Override
         public boolean isMyFriend(String userId) throws RemoteException {
             return ProtoLogic.isMyFriend(userId);
         }

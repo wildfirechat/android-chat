@@ -174,6 +174,7 @@ interface IRemoteClient {
     Map getMessageDelivery(in int conversationType, in String target);
     oneway void searchUser(in String keyword, in int searchType, in int page, in ISearchUserCallback callback);
     oneway void searchUserEx(in String domainId, in String keyword, in int searchType, in int page, in ISearchUserCallback callback);
+    oneway void searchUserEx2(in String domainId, in String keyword, in int searchType, in int userType, in int page, in ISearchUserCallback callback);
 
     boolean isMyFriend(in String userId);
     List<String> getMyFriendList(in boolean refresh);

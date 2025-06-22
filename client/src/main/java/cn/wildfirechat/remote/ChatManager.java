@@ -346,6 +346,38 @@ public class ChatManager {
         }
     }
 
+    public enum UserSearchUserType {
+        //搜索所有，包括普通用户和机器人。
+        All(0),
+
+        //只搜索普通用户
+        OnlyUser(1),
+
+        //只搜索机器人
+        OnlyRobot(2);
+
+        UserSearchUserType(int value) {
+        }
+
+        public static UserSearchUserType type(int type) {
+            UserSearchUserType userSearchUserType = null;
+            switch (type) {
+                case 0:
+                    userSearchUserType = All;
+                    break;
+                case 1:
+                    userSearchUserType = OnlyUser;
+                    break;
+                case 2:
+                    userSearchUserType = OnlyRobot;
+                    break;
+                default:
+                    throw new IllegalArgumentException("type " + userSearchUserType + " is invalid");
+            }
+            return userSearchUserType;
+        }
+    }
+
     /**
      * 禁止搜索当前用户的掩码。
      * <p>
@@ -4691,6 +4723,58 @@ public class ChatManager {
         }
     }
 
+    /**
+     * 搜索用户
+     *
+     * @param domainId
+     * @param keyword
+     * @param searchUserType
+     * @param page
+     * @param callback
+     */
+    public void searchUserEx2(String domainId, String keyword, SearchUserType searchUserType, UserSearchUserType userType, int page, final SearchUserCallback callback) {
+        if (userSource != null) {
+            userSource.searchUser(keyword, callback);
+            return;
+        }
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.searchUserEx2(domainId, keyword, searchUserType.ordinal(), userType.ordinal(), page, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
+                @Override
+                public void onSuccess(final List<UserInfo> userInfos) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(userInfos);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
     /**
      * 判断是否是好友关系
      *
