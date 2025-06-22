@@ -19,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.widget.ImageViewCompat;
-
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,7 +44,6 @@ import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.favorite.FavoriteItem;
 import cn.wildfire.chat.kit.group.GroupViewModel;
 import cn.wildfire.chat.kit.net.SimpleCallback;
-import cn.wildfire.chat.kit.user.UserViewModel;
 import cn.wildfirechat.message.ArticlesMessageContent;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CompositeMessageContent;
@@ -66,7 +64,6 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
-import cn.wildfirechat.remote.UserSettingScope;
 
 /**
  * 普通消息
@@ -118,8 +115,8 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
         String tag = (String) itemView.getTag();
         if (!TextUtils.equals(tag, message.message.sender)) {
             setSenderAvatar(message.message);
-            setSenderName(message.message);
         }
+        setSenderName(message.message);
         setMessageStatus(message.message);
         try {
             onBind(message);
@@ -489,9 +486,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     }
 
     private void showGroupMemberAlias(Conversation conversation, Message message, String sender) {
-        UserViewModel userViewModel = WfcUIKit.getAppScopeViewModel(UserViewModel.class);
-        String hideGroupNickName = userViewModel.getUserSetting(UserSettingScope.GroupHideNickname, conversation.target);
-        if ((!TextUtils.isEmpty(hideGroupNickName) && "1".equals(hideGroupNickName)) || message.direction == MessageDirection.Send) {
+        if (!fragment.isShowGroupMemberName() || message.direction == MessageDirection.Send) {
             nameTextView.setVisibility(View.GONE);
             return;
         }
