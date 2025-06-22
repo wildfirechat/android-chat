@@ -1392,6 +1392,10 @@ public class ConversationFragment extends Fragment implements
         startActivity(intent);
     }
 
+    public boolean isShowGroupMemberName() {
+        return this.showGroupMemberName;
+    }
+
     private void cleanExpiredOngoingCalls() {
         for (Iterator<Map.Entry<String, Message>> it = ongoingCalls.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, Message> entry = it.next();
