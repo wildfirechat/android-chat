@@ -3835,7 +3835,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 ashmenHolder.readBytes(data, 0, length);
                 data = ProtoLogic.decodeSecretChatData(targetId, data);
                 ashmenHolder.writeBytes(data, 0, data.length);
-                ashmenHolder.close();
+                if(!isMainProcess()){
+                    ashmenHolder.close();
+                }
                 if (callback != null) {
                     callback.onSuccess(data.length);
                 }
