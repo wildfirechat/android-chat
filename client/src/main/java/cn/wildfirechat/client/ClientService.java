@@ -619,7 +619,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
                 if (isSupportBigFilesUpload() && TextUtils.isEmpty(remoteUrl)) {
-                    if (ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024) {
+                    if (tcpShortLink || ProtoLogic.forcePresignedUrlUpload() || file.length() > 100 * 1024 * 1024) {
                         uploadThenSend = true;
                     }
                 }
@@ -2191,15 +2191,24 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     return;
                 }
 
+                boolean largeMedia = false;
                 if (tcpShortLink) {
                     if (!isSupportBigFilesUpload()) {
                         android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
                         callback.onFailure(-1);
                         return;
+                    } else {
+                        largeMedia = true;
+                    }
+                } else if(isSupportBigFilesUpload()) {
+                    if(ProtoLogic.forcePresignedUrlUpload()) {
+                        largeMedia = true;
+                    } else {
+                        largeMedia = file.length() > 100 * 1024 * 1024;
                     }
                 }
 
-                if (tcpShortLink || ProtoLogic.forcePresignedUrlUpload() || (file.length() > 100 * 1024 * 1024 && isSupportBigFilesUpload())) {
+                if (largeMedia) {
                     uploadBigFile(-1, file.getName(), mediaPath, null, mediaType, null, new UploadMediaCallback() {
                         @Override
                         public void onSuccess(String result) {
