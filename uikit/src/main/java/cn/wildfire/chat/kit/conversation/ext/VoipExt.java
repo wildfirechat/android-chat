@@ -14,6 +14,8 @@ import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.annotation.ExtContextMenuItem;
 import cn.wildfire.chat.kit.conversation.ConversationFragment;
 import cn.wildfire.chat.kit.conversation.ext.core.ConversationExt;
+import cn.wildfirechat.model.SecretChatInfo;
+import cn.wildfirechat.remote.ChatManager;
 import cn.wildfirechat.uikit.permission.PermissionKit;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.model.Conversation;
@@ -42,6 +44,10 @@ public class VoipExt extends ConversationExt {
                 switch (conversation.type) {
                     case Single:
                         videoChat(conversation.target);
+                        break;
+                    case SecretChat:
+                        SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversation.target);
+                        videoChat(secretChatInfo.getUserId());
                         break;
                     case Group:
                         ((ConversationFragment) fragment).pickGroupMemberToVoipChat(false);
@@ -73,6 +79,10 @@ public class VoipExt extends ConversationExt {
                     case Single:
                         audioChat(conversation.target);
                         break;
+                    case SecretChat:
+                        SecretChatInfo secretChatInfo = ChatManager.Instance().getSecretChatInfo(conversation.target);
+                        audioChat(secretChatInfo.getUserId());
+                        break;
                     case Group:
                         ((ConversationFragment) fragment).pickGroupMemberToVoipChat(true);
                         break;
@@ -84,7 +94,7 @@ public class VoipExt extends ConversationExt {
     }
 
     private void audioChat(String targetId) {
-        WfcUIKit.singleCall(activity, targetId, true);
+        WfcUIKit.singleCall(activity, conversation, targetId, true);
         // 下面是开始录制系统音频的示例代码
 //        this.targetId = targetId;
 //        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) fragment.getActivity().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
@@ -100,7 +110,7 @@ public class VoipExt extends ConversationExt {
 //    }
 
     private void videoChat(String targetId) {
-        WfcUIKit.singleCall(activity, targetId, false);
+        WfcUIKit.singleCall(activity, conversation, targetId, false);
     }
 
     @Override
@@ -125,6 +135,9 @@ public class VoipExt extends ConversationExt {
 //            if (userInfo.type == 1) {
 //                return true;
 //            }
+            return false;
+        }
+        if (conversation.type == Conversation.ConversationType.SecretChat) {
             return false;
         }
         return true;

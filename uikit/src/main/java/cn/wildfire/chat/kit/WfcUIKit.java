@@ -352,6 +352,10 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
     // pls refer to https://stackoverflow.com/questions/11124119/android-starting-new-activity-from-application-class
     public static void singleCall(Context context, String targetId, boolean isAudioOnly) {
         Conversation conversation = new Conversation(Conversation.ConversationType.Single, targetId);
+        singleCall(context, conversation, targetId, isAudioOnly);
+
+    }
+    public static void singleCall(Context context, Conversation conversation, String targetId, boolean isAudioOnly) {
         AVEngineKit.CallSession session = AVEngineKit.Instance().startCall(conversation, Collections.singletonList(targetId), isAudioOnly, null);
         if (session != null) {
 //        session.setVideoCapturer(new UVCCameraCapturer());
