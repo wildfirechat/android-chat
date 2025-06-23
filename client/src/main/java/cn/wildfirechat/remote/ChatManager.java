@@ -5177,7 +5177,7 @@ public class ChatManager {
     /**
      * 删除好友请求
      *
-     * @param direction  方向，0是接收的，1是发出的
+     * @param direction  方向，true 是接收的，false 是发出的
      * @param beforeTime 删除某个时间之前的。如果删除所有用0.
      * @return 是否有数据被删除。
      */
@@ -9625,7 +9625,6 @@ public class ChatManager {
             try {
                 AshmenWrapper ashmenWrapper = AshmenWrapper.create(targetId, mediaData.length);
                 ashmenWrapper.writeBytes(mediaData, 0, mediaData.length);
-                AshmenWrapper finalAshmenHolder = ashmenWrapper;
                 mClient.decodeSecretChatDataAsync(targetId, ashmenWrapper, mediaData.length, new IGeneralCallbackInt.Stub() {
                     @Override
                     public void onSuccess(int length) throws RemoteException {
@@ -9633,10 +9632,10 @@ public class ChatManager {
                             // TODO ByteArrayOutputStream
                             byte[] data = new byte[length];
                             try {
-                                finalAshmenHolder.readBytes(data, 0, length);
+                                ashmenWrapper.readBytes(data, 0, length);
                                 callback.onSuccess(data);
                             } finally {
-                                finalAshmenHolder.close();
+                                ashmenWrapper.close();
                             }
                         }
                     }
@@ -9646,7 +9645,7 @@ public class ChatManager {
                         if (callback != null) {
                             callback.onFail(errorCode);
                         }
-                        finalAshmenHolder.close();
+                        ashmenWrapper.close();
                     }
                 });
             } catch (RemoteException e) {
