@@ -75,11 +75,6 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         ChatManager.Instance().addOnReceiveMessageListener(this);
 
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-        } else {
-            startForeground(NOTIFICATION_ID, buildNotification(session));
-        }
 
         // 对音频进行变声处理的示例代码，需要高级版音视频 SDK 才支持对音频流进行处理
         // 建议使用 soundTouch 来进行处理
@@ -141,10 +136,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         return null;
     }
 
-    // 可以多次调用
+    // 仅在WfcUIKit 里面，发起、收到音视频通话时调用
     public static void start(Context context, boolean showFloatingView) {
         Intent intent = new Intent(context, VoipCallService.class);
         intent.putExtra("showFloatingView", showFloatingView);
+        intent.putExtra("playback", true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
         } else {
@@ -174,8 +170,11 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
             return START_NOT_STICKY;
         }
         boolean screenShare = intent.getBooleanExtra("screenShare", false);
+        boolean playback = intent.getBooleanExtra("playback", false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session), screenShare || session.isScreenSharing() ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION : ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(session),
+                screenShare || session.isScreenSharing() ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION :
+                    (playback ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK : ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE));
         } else {
             startForeground(NOTIFICATION_ID, buildNotification(session));
         }
