@@ -169,6 +169,8 @@ public class MainActivity extends WfcBaseActivity {
                     .clear()
                     .putBoolean("hasReadUserAgreement", true)
                     .apply();
+                sp = getSharedPreferences("moment", Context.MODE_PRIVATE);
+                sp.edit().clear().apply();
                 OKHttpHelper.clearCookies();
                 if (status == ConnectionStatus.ConnectionStatusLogout) {
                     reLogin(false);
