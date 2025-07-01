@@ -53,7 +53,8 @@
 1. 为`app-server`配置`HTTPS`支持，并将`APP_SERVER_ADDRESS`配置为`HTTPS`地址
 2. 如果支持开放平台的话，为开发平台配置`HTTPS`支持，并将`WORKSPACE_URL`配置为`HTTPS`地址
 3. 如果支持组织结构的话，为组织结构服务配置`HTTPS`支持，并将`ORG_SERVER_ADDRESS`配置为`HTTPS`地址
-4. 将`AndroidManifest.xml`里面的`usesCleartextTraffic`置为`false`
+4. 将`AndroidManifest.xml`里面的`usesCleartextTraffic`置为`true`，因为 IM 会有 http 请求，但数据是加密的，没有安全问题。
+5. 更多安全说明，请参考[野火安全吗](https://docs.wildfirechat.cn/blogs/%E9%87%8E%E7%81%AB%E5%AE%89%E5%85%A8%E5%90%97.html)
 
 ## 敏感权限说明
 1. `android.permission.PROCESS_OUTGOING_CALLS`，音视频通话时，允许普通电话打断音视频通话，默认未申请
