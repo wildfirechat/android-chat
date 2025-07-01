@@ -4775,6 +4775,7 @@ public class ChatManager {
                 mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
+
     /**
      * 判断是否是好友关系
      *
@@ -7941,13 +7942,12 @@ public class ChatManager {
         }
         internalWorkHandler.post(() -> {
             try {
-                AshmenWrapper ashmenWrapper = AshmenWrapper.create(path, mediaData.length);
+                AshmenWrapper ashmenWrapper = AshmenWrapper.create(path, 1024 * 1024);
                 ashmenWrapper.writeBytes(mediaData, 0, mediaData.length);
                 mClient.sendMomentsRequest(path, ashmenWrapper, mediaData.length, new IGeneralCallbackInt.Stub() {
                     @Override
                     public void onSuccess(int length) throws RemoteException {
                         if (callback != null) {
-                            // TODO ByteArrayOutputStream
                             byte[] data = new byte[length];
                             try {
                                 ashmenWrapper.readBytes(data, 0, length);
