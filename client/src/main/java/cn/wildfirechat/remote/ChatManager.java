@@ -7935,6 +7935,43 @@ public class ChatManager {
         }
     }
 
+    public void sendMomentsRequest(String path, byte[] mediaData, GeneralCallbackBytes callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        internalWorkHandler.post(() -> {
+            try {
+                AshmenWrapper ashmenWrapper = AshmenWrapper.create(path, mediaData.length);
+                ashmenWrapper.writeBytes(mediaData, 0, mediaData.length);
+                mClient.sendMomentsRequest(path, ashmenWrapper, mediaData.length, new IGeneralCallbackInt.Stub() {
+                    @Override
+                    public void onSuccess(int length) throws RemoteException {
+                        if (callback != null) {
+                            // TODO ByteArrayOutputStream
+                            byte[] data = new byte[length];
+                            try {
+                                ashmenWrapper.readBytes(data, 0, length);
+                                callback.onSuccess(data);
+                            } finally {
+                                ashmenWrapper.close();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+                        if (callback != null) {
+                            callback.onFail(errorCode);
+                        }
+                        ashmenWrapper.close();
+                    }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     // connect host
     public String getHost() {
         if (!checkRemoteService()) {
