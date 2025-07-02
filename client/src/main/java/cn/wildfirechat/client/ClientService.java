@@ -3858,6 +3858,46 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
         }
 
+        @Override
+        public void sendMomentsRequest(String targetId, AshmenWrapper ashmenHolder, int length, IGeneralCallbackInt callback) throws RemoteException {
+            try {
+                byte[] data = new byte[length];
+                ashmenHolder.readBytes(data, 0, length);
+                ProtoLogic.sendMomentsRequest(targetId, data, new ProtoLogic.IGeneralCallback4() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        ashmenHolder.writeBytes(bytes, 0, bytes.length);
+                        if(!isMainProcess()){
+                            ashmenHolder.close();
+                        }
+                        if (callback != null) {
+                            try {
+                                callback.onSuccess(bytes.length);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int i) {
+                        if (callback != null) {
+                            try {
+                                callback.onFailure(i);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (callback != null) {
+                    callback.onFailure(-1);
+                }
+            }
+        }
+
         public void setDefaultPortraitProviderClass(String clazzName) {
             try {
                 Class cls = Class.forName(clazzName);
