@@ -25,7 +25,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
-
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,6 +49,7 @@ import cn.wildfire.chat.kit.WfcScheme;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.file.FileRecordActivity;
+import cn.wildfire.chat.kit.conversation.message.model.UiMessage;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModel;
 import cn.wildfire.chat.kit.conversationlist.ConversationListViewModelFactory;
 import cn.wildfire.chat.kit.group.AddGroupMemberActivity;
@@ -66,8 +66,10 @@ import cn.wildfire.chat.kit.search.SearchMessageActivity;
 import cn.wildfire.chat.kit.third.utils.ImageUtils;
 import cn.wildfire.chat.kit.user.UserInfoActivity;
 import cn.wildfire.chat.kit.user.UserViewModel;
+import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.client.GroupMemberSource;
+import cn.wildfirechat.message.notification.GroupRejectJoinNotificationContent;
 import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.ConversationInfo;
 import cn.wildfirechat.model.GroupInfo;
@@ -247,6 +249,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
         observerFavGroupsUpdate();
         observerGroupInfoUpdate();
         observerGroupMembersUpdate();
+        observerGroupRejectionNotification();
 
         if (ChatManager.Instance().isCommercialServer()) {
             fileRecordOptionItem.setVisibility(View.VISIBLE);
@@ -275,7 +278,7 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
     }
 
     private void observerGroupInfoUpdate() {
-        groupViewModel.groupInfoUpdateLiveData().observe(this, groupInfos -> {
+        groupViewModel.groupInfoUpdateLiveData().observe(getViewLifecycleOwner(), groupInfos -> {
             for (GroupInfo groupInfo : groupInfos) {
                 if (groupInfo.target.equals(this.groupInfo.target)) {
                     this.groupInfo = groupInfo;
@@ -289,6 +292,20 @@ public class GroupConversationInfoFragment extends Fragment implements Conversat
                     Glide.with(this).load(groupInfo.portrait).placeholder(R.mipmap.ic_group_chat).into(groupPortraitOptionItemView.getEndImageView());
                     loadAndShowGroupMembers(false);
                     break;
+                }
+            }
+        });
+    }
+
+    private void observerGroupRejectionNotification() {
+        MessageViewModel messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
+        messageViewModel.messageLiveData().observe(getViewLifecycleOwner(), uiMsgs -> {
+            for (UiMessage uiMsg : uiMsgs) {
+                if (uiMsg.message.conversation.equals(this.conversationInfo.conversation) && uiMsg.message.content instanceof GroupRejectJoinNotificationContent) {
+                    GroupRejectJoinNotificationContent content = (GroupRejectJoinNotificationContent) uiMsg.message.content;
+                    if (TextUtils.equals(content.operator, ChatManager.Instance().getUserId())) {
+                        Toast.makeText(getActivity(), content.formatNotification(uiMsg.message), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
