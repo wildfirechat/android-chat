@@ -27,6 +27,7 @@ import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteMemberNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
 import cn.wildfirechat.message.notification.GroupPrivateChatNotificationContent;
+import cn.wildfirechat.message.notification.GroupRejectJoinNotificationContent;
 import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberVisibleNotificationContent;
@@ -60,6 +61,7 @@ import cn.wildfirechat.message.notification.TransferGroupOwnerNotificationConten
     FriendGreetingMessageContent.class,
     GroupMuteNotificationContent.class,
     GroupPrivateChatNotificationContent.class,
+    GroupRejectJoinNotificationContent.class,
     GroupJoinTypeNotificationContent.class,
     GroupSetManagerNotificationContent.class,
     GroupMuteMemberNotificationContent.class,

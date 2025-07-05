@@ -148,6 +148,7 @@ import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteMemberNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
 import cn.wildfirechat.message.notification.GroupPrivateChatNotificationContent;
+import cn.wildfirechat.message.notification.GroupRejectJoinNotificationContent;
 import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberVisibleNotificationContent;
@@ -10223,6 +10224,7 @@ public class ChatManager {
         registerMessageContent(GroupMuteNotificationContent.class);
         registerMessageContent(GroupJoinTypeNotificationContent.class);
         registerMessageContent(GroupPrivateChatNotificationContent.class);
+        registerMessageContent(GroupRejectJoinNotificationContent.class);
         registerMessageContent(GroupSetManagerNotificationContent.class);
         registerMessageContent(GroupMuteMemberNotificationContent.class);
         registerMessageContent(GroupAllowMemberNotificationContent.class);
