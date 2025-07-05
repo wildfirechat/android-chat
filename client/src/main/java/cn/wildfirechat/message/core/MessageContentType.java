@@ -103,6 +103,7 @@ public interface MessageContentType {
     int ContentType_MODIFY_GROUP_EXTRA = 122;
     int ContentType_MODIFY_GROUP_MEMBER_EXTRA = 123;
     int ContentType_MODIFY_GROUP_SETTINGS = 124;
+    int ContentType_REJECT_JOIN_GROUP = 125;
 
 
     int ContentType_Call_Start = 400;
