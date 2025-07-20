@@ -107,6 +107,7 @@ import cn.wildfirechat.model.ProtoChatRoomInfo;
 import cn.wildfirechat.model.ProtoChatRoomMembersInfo;
 import cn.wildfirechat.model.ProtoConversationInfo;
 import cn.wildfirechat.model.ProtoConversationSearchresult;
+import cn.wildfirechat.model.ProtoDayCounts;
 import cn.wildfirechat.model.ProtoDomainInfo;
 import cn.wildfirechat.model.ProtoFileRecord;
 import cn.wildfirechat.model.ProtoFriend;
@@ -998,6 +999,16 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     }
                 }
             });
+        }
+
+        @Override
+        public Map<String, Integer> getMessageCountByDay(Conversation conversation, int[] messageStatus, long fromTime, long endTime) throws RemoteException {
+            ProtoDayCounts protoDayCounts = ProtoLogic.getMessageCountByDay(conversation.type.getValue(), conversation.target, conversation.line, messageStatus, fromTime, endTime);
+            Map<String, Integer> map = new HashMap<>();
+            for (ProtoDayCounts.ProtoDayCount protoDC : protoDayCounts.dayCounts) {
+                map.put(protoDC.day, protoDC.count);
+            }
+            return map;
         }
 
         @Override

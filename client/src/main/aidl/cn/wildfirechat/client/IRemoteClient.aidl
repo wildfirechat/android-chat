@@ -131,6 +131,8 @@ interface IRemoteClient {
     oneway void getUserMessages(in String userId, in Conversation conversation, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
     oneway void getUserMessagesEx(in String userId, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
 
+    Map getMessageCountByDay(in Conversation conversation, in int[] messageStatus, in long fromTime, in long endTime);
+
     oneway void getRemoteMessages(in Conversation conversation, in int[] contentTypes, in long beforeMessageUid, in int count, in IGetRemoteMessagesCallback callback);
     oneway void getRemoteMessage(in long messageUid, in IGetRemoteMessagesCallback callback);
     oneway void getConversationFileRecords(in Conversation conversation, in String fromUser, in long beforeMessageUid, in int order, in int count, in IGetFileRecordCallback callback);

@@ -3283,6 +3283,7 @@ public class ChatManager {
      * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
     public void getMessages(Conversation conversation, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
+
         if (callback == null) {
             return;
         }
@@ -3691,6 +3692,39 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
+     * 获取每天的消息数量。一般用于日历查看消息，在日历上显示每天是否有消息。
+     * 后续如果查看某天的消息内容，可以计算出这天的开始和结束时间，然后使用根据时间获取消息的接口来加载消息。
+     *
+     * 使用示例：
+     * YearMonth yearMonth = YearMonth.of(2025, 7);
+     * long startTime = LocalDateTime.of(yearMonth.atDay(1), LocalTime.MIN).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+     * long endTime = LocalDateTime.of(yearMonth.atEndOfMonth(), LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+     * Map<String, Integer> dayCouts = getMessageCountByDay(conversation, null, startTime, endTime);
+     * Log.d("ddd", dayCouts.toString());
+     *
+     * 如果获取某天的消息，可以用 getMessages 方法，其中from可以用当天时间的毫秒数（也可用消息ID）。如果获取这天的消息，以降序排列，from就是这天的最后一秒毫秒数，然后count为正值。如果以升序排列，from为这一天的第一秒，count值为负值。
+     *
+     * @param conversation 会话
+     * @param contentTypes      消息类型
+     * @param startTime    开始时间，单位秒
+     * @param endTime      结束时间，单位秒
+     *
+     * @return 每天的消息数量。
+     */
+    public Map<String, Integer> getMessageCountByDay(Conversation conversation, List<Integer> contentTypes, long startTime, long endTime) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getMessageCountByDay(conversation, convertIntegers(contentTypes), startTime, endTime);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
