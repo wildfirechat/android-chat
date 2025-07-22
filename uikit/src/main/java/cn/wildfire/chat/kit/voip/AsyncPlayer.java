@@ -52,7 +52,7 @@ public class AsyncPlayer {
             player.setLooping(cmd.looping);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 player.setAudioAttributes(new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_REQUEST)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build()
                 );
@@ -93,7 +93,7 @@ public class AsyncPlayer {
                 switch (cmd.code) {
                     case PLAY:
                         savedAudioMode = audioManager.getMode();
-                        audioManager.setMode(AudioManager.MODE_NORMAL);
+                        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                         startSound(cmd);
                         break;
                     case STOP:
