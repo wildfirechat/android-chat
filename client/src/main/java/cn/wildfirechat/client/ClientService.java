@@ -4222,6 +4222,9 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         MessageContent content = contentOfType(payload.type);
+        if(payload.notLoaded > 0){
+            return content;
+        }
         try {
             if (content instanceof CompositeMessageContent) {
                 ((CompositeMessageContent) content).decode(payload, this);
