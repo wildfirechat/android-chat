@@ -3735,6 +3735,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public void setTimeOffset(int timeOffset) throws RemoteException {
+            ProtoLogic.setTimeOffset(timeOffset);
+        }
+
+        @Override
         public String getProtoRevision() throws RemoteException {
             return ProtoLogic.getProtoRevision();
         }
