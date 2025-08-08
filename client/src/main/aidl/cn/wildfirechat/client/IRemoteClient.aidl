@@ -335,6 +335,8 @@ interface IRemoteClient {
 
     oneway void setHeartBeatInterval(int second);
 
+    oneway void setTimeOffset(int timeOffset);
+
     String getProtoRevision();
 
     long getDiskSpaceAvailableSize();

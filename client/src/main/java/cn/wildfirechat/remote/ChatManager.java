@@ -244,7 +244,7 @@ public class ChatManager {
 
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
-
+    private int timeOffset = 0;
     private boolean rawMsg = false;
     private boolean noUseFts = false;
     private boolean checkSignature = false;
@@ -1295,6 +1295,22 @@ public class ChatManager {
 
         try {
             mClient.noUseFts();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 设置时间偏移。一般用于时间不正确的设备，可以设置时间偏移确保能够设备能够正常使用。时间是服务器时间-设备时间
+     */
+    public void setTimeOffset(int timeOffset) {
+        this.timeOffset = timeOffset;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setTimeOffset(this.timeOffset);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -10000,6 +10016,9 @@ public class ChatManager {
                     }
                     if (heartBeatInterval > 0) {
                         mClient.setHeartBeatInterval(heartBeatInterval);
+                    }
+                    if(timeOffset > 0) {
+                        mClient.setTimeOffset(timeOffset);
                     }
 
                     mClient.setBackupAddressStrategy(backupAddressStrategy);
