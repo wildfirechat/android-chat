@@ -4571,6 +4571,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onUserReceivedMessage(Map<String, Long> map) {
+        if(map == null || map.isEmpty()) return;
         handler.post(() -> {
             int receiverCount = onReceiveMessageListeners.beginBroadcast();
             IOnReceiveMessageListener listener;
@@ -4589,6 +4590,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onUserReadedMessage(List<ProtoReadEntry> list) {
+        if(list == null || list.isEmpty()) return;
         handler.post(() -> {
             List<ReadEntry> l = new ArrayList<>();
             for (ProtoReadEntry entry : list) {
