@@ -8460,6 +8460,15 @@ public class ChatManager {
     }
 
     /**
+     * @return 服务器时间 - 本地时间
+     */
+    public long getServerTimestamp() {
+        long now = System.currentTimeMillis();
+        long delta = this.getServerDeltaTime();
+        return now + delta;
+    }
+
+    /**
      * 当前服务是否连接到了主网络
      */
     public boolean isConnectedToMainNetwork() {

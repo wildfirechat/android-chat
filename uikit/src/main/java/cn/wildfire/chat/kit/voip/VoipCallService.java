@@ -418,7 +418,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         view.findViewById(R.id.screenSharingTextView).setVisibility(View.VISIBLE);
         TextView durationTextView = view.findViewById(R.id.durationTextView);
         durationTextView.setVisibility(View.VISIBLE);
-        long duration = (System.currentTimeMillis() - session.getConnectedTime()) / 1000;
+        long duration = (ChatManager.Instance().getServerTimestamp() - session.getConnectedTime()) / 1000;
         if (duration >= 3600) {
             durationTextView.setText(String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60)));
         } else {
@@ -442,7 +442,7 @@ public class VoipCallService extends Service implements OnReceiveMessageListener
         ImageView mediaIconV = view.findViewById(R.id.av_media_type);
         mediaIconV.setImageResource(R.drawable.av_float_audio);
 
-        long duration = (System.currentTimeMillis() - session.getConnectedTime()) / 1000;
+        long duration = (ChatManager.Instance().getServerTimestamp() - session.getConnectedTime()) / 1000;
         if (duration >= 3600) {
             timeView.setText(String.format("%d:%02d:%02d", duration / 3600, (duration % 3600) / 60, (duration % 60)));
         } else {

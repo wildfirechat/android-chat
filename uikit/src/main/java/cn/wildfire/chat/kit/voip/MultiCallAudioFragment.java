@@ -308,7 +308,7 @@ public class MultiCallAudioFragment extends Fragment implements AVEngineKit.Call
     private void updateCallDuration() {
         AVEngineKit.CallSession session = AVEngineKit.Instance().getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            long s = System.currentTimeMillis() - session.getConnectedTime();
+            long s = ChatManager.Instance().getServerTimestamp() - session.getConnectedTime();
             s = s / 1000;
             String text;
             if (s > 3600) {
