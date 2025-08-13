@@ -7,6 +7,11 @@ package cn.wildfirechat.remote;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
+import static cn.wildfirechat.model.Conversation.ConversationType.Channel;
+import static cn.wildfirechat.model.Conversation.ConversationType.Group;
+import static cn.wildfirechat.model.Conversation.ConversationType.SecretChat;
+import static cn.wildfirechat.model.Conversation.ConversationType.Single;
+
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -516,6 +521,7 @@ public class ChatManager {
                 }
                 try {
                     mClient.setForeground(0);
+                    INST.reportBadgeNumber();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -3714,21 +3720,20 @@ public class ChatManager {
     /**
      * 获取每天的消息数量。一般用于日历查看消息，在日历上显示每天是否有消息。
      * 后续如果查看某天的消息内容，可以计算出这天的开始和结束时间，然后使用根据时间获取消息的接口来加载消息。
-     *
+     * <p>
      * 使用示例：
      * YearMonth yearMonth = YearMonth.of(2025, 7);
      * long startTime = LocalDateTime.of(yearMonth.atDay(1), LocalTime.MIN).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
      * long endTime = LocalDateTime.of(yearMonth.atEndOfMonth(), LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
      * Map<String, Integer> dayCouts = getMessageCountByDay(conversation, null, startTime, endTime);
      * Log.d("ddd", dayCouts.toString());
-     *
+     * <p>
      * 如果获取某天的消息，可以用 getMessages 方法，其中from可以用当天时间的毫秒数（也可用消息ID）。如果获取这天的消息，以降序排列，from就是这天的最后一秒毫秒数，然后count为正值。如果以升序排列，from为这一天的第一秒，count值为负值。
      *
      * @param conversation 会话
-     * @param contentTypes      消息类型
+     * @param contentTypes 消息类型
      * @param startTime    开始时间，单位秒
      * @param endTime      结束时间，单位秒
-     *
      * @return 每天的消息数量。
      */
     public Map<String, Integer> getMessageCountByDay(Conversation conversation, List<Integer> contentTypes, long startTime, long endTime) {
@@ -4826,6 +4831,7 @@ public class ChatManager {
                 mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
         }
     }
+
     /**
      * 判断是否是好友关系
      *
@@ -9957,6 +9963,17 @@ public class ChatManager {
         return 0;
     }
 
+    public void uploadBadgeNumber(int number) {
+        this.setUserSetting(UserSettingScope.Sync_Badge, "", String.valueOf(number), null);
+    }
+
+    private void reportBadgeNumber() {
+        UnreadCount totalUnreadCount = ChatManager.Instance().getUnreadCountEx(List.of(Single, Group, Channel, SecretChat), List.of(0));
+        int unreadFriendRequest = ChatManager.Instance().getUnreadFriendRequestStatus();
+        int count = totalUnreadCount.unread + unreadFriendRequest;
+        uploadBadgeNumber(count);
+    }
+
     private boolean checkRemoteService() {
         if (INST != null) {
             if (mClient != null) {
@@ -10026,7 +10043,7 @@ public class ChatManager {
                     if (heartBeatInterval > 0) {
                         mClient.setHeartBeatInterval(heartBeatInterval);
                     }
-                    if(timeOffset > 0) {
+                    if (timeOffset > 0) {
                         mClient.setTimeOffset(timeOffset);
                     }
 
