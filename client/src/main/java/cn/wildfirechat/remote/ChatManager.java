@@ -9963,6 +9963,12 @@ public class ChatManager {
         return 0;
     }
 
+    /**
+     * 上传用户本地角标数字到IM服务，当IM服务推送时，会把此数字发送到推送服务，从而让推送角标显示准确
+     *
+     * @param number 角标数
+     */
+
     public void uploadBadgeNumber(int number) {
         this.setUserSetting(UserSettingScope.Sync_Badge, "", String.valueOf(number), null);
     }
