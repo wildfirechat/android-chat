@@ -6,7 +6,6 @@ package cn.wildfirechat.remote;
 
 
 import static android.content.Context.BIND_AUTO_CREATE;
-
 import static cn.wildfirechat.model.Conversation.ConversationType.Channel;
 import static cn.wildfirechat.model.Conversation.ConversationType.Group;
 import static cn.wildfirechat.model.Conversation.ConversationType.SecretChat;
@@ -17,6 +16,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -26,7 +26,6 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
@@ -47,8 +46,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -1366,27 +1363,41 @@ public class ChatManager {
         }
 
         String imei = null;
+        SharedPreferences sp = gContext.getSharedPreferences("wfc_client_id", Context.MODE_PRIVATE);
+        String spKey = "client_id";
         try (
-            RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsoluteFile() + "/.wfcClientId", "rw");
-            FileChannel chan = fw.getChannel();
+            RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsolutePath() + "/.wfcClientId", "rw");
         ) {
-            FileLock lock = chan.lock();
+            fw.seek(0);
             imei = fw.readLine();
             if (TextUtils.isEmpty(imei)) {
-                //  迁移旧的clientId
-                imei = PreferenceManager.getDefaultSharedPreferences(gContext).getString("mars_core_uid", "");
-                if (TextUtils.isEmpty(imei)) {
-                    if (TextUtils.isEmpty(imei)) {
-                        imei = UUID.randomUUID().toString();
-                    }
+                imei = sp.getString(spKey, null);
+                if(TextUtils.isEmpty(imei)) {
+                    imei = UUID.randomUUID().toString();
                     imei += System.currentTimeMillis();
+                    sp.edit().putString(spKey, imei).apply();
                 }
+                fw.setLength(0);
+                fw.seek(0);
                 fw.writeBytes(imei);
+            } else {
+                String spimei = sp.getString(spKey, null);
+                if(!imei.equals(spimei)) {
+                    sp.edit().putString(spKey, imei).apply();
+                }
             }
-            lock.release();
         } catch (Exception ex) {
             ex.printStackTrace();
-            Log.e("getClientError", "" + ex.getMessage());
+            Log.e("getClientError", ex.getMessage());
+        } finally {
+            if (TextUtils.isEmpty(imei)) {
+                imei = sp.getString(spKey, null);
+                if(TextUtils.isEmpty(imei)) {
+                    imei = UUID.randomUUID().toString();
+                    imei += System.currentTimeMillis();
+                    sp.edit().putString(spKey, imei).apply();
+                }
+            }
         }
         this.clientId = imei;
         Log.d(TAG, "clientId " + this.clientId);
