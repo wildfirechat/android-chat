@@ -2881,7 +2881,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             for (int i = 0; i < protoGroupMembers.length; i++) {
                 memberIds[i] = protoGroupMembers[i].getMemberId();
             }
-            ProtoUserInfo[] protoUserInfos = ProtoLogic.getUserInfos(memberIds, "");
+            ProtoUserInfo[] protoUserInfos = ProtoLogic.getUserInfos(memberIds, groupId);
 
             UserInfo[] userInfos = new UserInfo[protoUserInfos.length];
             for (int i = 0; i < userInfos.length; i++) {
