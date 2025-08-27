@@ -5172,6 +5172,26 @@ public class ChatManager {
     }
 
     /**
+     * 获取好友请求列表
+     *
+     * @param status 请求状态 RequestStatus_Sent/RequestStatus_Accepted/RequestStatus_Reject
+     * @param incoming true，只包含收到的好友请求；false，所有好友请求
+     * @return
+     */
+    public List<FriendRequest> getFriendRequestByStatus(int status, boolean incoming) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getFriendRequestByStatus(status, incoming);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 获取全部好友请求列表
      *
      * @return
@@ -5206,6 +5226,26 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * 获取好友请求数量
+     *
+     * @param status 请求状态 RequestStatus_Sent/RequestStatus_Accepted/RequestStatus_Reject
+     * @param incoming true，只包含收到的好友请求；false，所有好友请求
+     * @return
+     */
+    public int getFriendRequestCountByStatus(int status, boolean incoming) {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+
+        try {
+            return mClient.getFriendRequestCountByStatus(status, incoming);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 

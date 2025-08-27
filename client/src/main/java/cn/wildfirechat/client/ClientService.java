@@ -56,6 +56,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -1685,6 +1686,18 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<FriendRequest> getFriendRequestByStatus(int status, boolean incomming) throws RemoteException {
+            List<FriendRequest> out = new ArrayList<>();
+            ProtoFriendRequest[] requests = ProtoLogic.getFriendRequestByStatus(status, incomming);
+            if (requests != null) {
+                for (ProtoFriendRequest protoFriendRequest : requests) {
+                    out.add(convertProtoFriendRequest(protoFriendRequest));
+                }
+            }
+            return out;
+        }
+
+        @Override
         public List<FriendRequest> getAllFriendRequest() throws RemoteException {
             List<FriendRequest> out = new ArrayList<>();
             ProtoFriendRequest[] requests = ProtoLogic.getAllFriendRequest();
@@ -1700,6 +1713,11 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public FriendRequest getOneFriendRequest(String userId, boolean incomming) throws RemoteException {
             ProtoFriendRequest request = ProtoLogic.getOneFriendRequest(userId, incomming);
             return convertProtoFriendRequest(request);
+        }
+
+        @Override
+        public int getFriendRequestCountByStatus(int status, boolean incomming) throws RemoteException {
+            return ProtoLogic.getFriendRequestCountByStatus(status, incomming);
         }
 
         @Override
