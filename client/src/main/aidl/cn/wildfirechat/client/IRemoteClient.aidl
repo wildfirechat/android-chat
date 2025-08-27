@@ -192,8 +192,10 @@ interface IRemoteClient {
     oneway void setDeviceToken(in String token, in int pushType);
 
     List<FriendRequest> getFriendRequest(in boolean incomming);
+    List<FriendRequest> getFriendRequestByStatus(in int status, in boolean incomming);
     List<FriendRequest> getAllFriendRequest();
     FriendRequest getOneFriendRequest(in String userId, in boolean incomming);
+    int getFriendRequestCountByStatus(in int status, in boolean incomming);
     boolean clearFriendRequest(in boolean direction, in long beforeTime);
     boolean deleteFriendRequest(in String userId, in boolean direction);
     String getFriendAlias(in String userId);
