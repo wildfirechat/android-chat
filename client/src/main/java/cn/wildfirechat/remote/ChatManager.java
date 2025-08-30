@@ -101,6 +101,7 @@ import cn.wildfirechat.client.IRemoteClient;
 import cn.wildfirechat.client.IUploadMediaCallback;
 import cn.wildfirechat.client.IWatchUserOnlineStateCallback;
 import cn.wildfirechat.client.NotInitializedExecption;
+import cn.wildfirechat.client.Platform;
 import cn.wildfirechat.message.ArticlesMessageContent;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CardMessageContent;
@@ -243,7 +244,7 @@ public class ChatManager {
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
-
+    private boolean isPad = false;
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
     private int timeOffset = 0;
@@ -1213,6 +1214,29 @@ public class ChatManager {
         onTrafficDataListeners.remove(listener);
     }
 
+    /**
+     * 设置平台是否是Pad平台。
+     */
+    public void setPlatform(boolean isPad) {
+        this.isPad = isPad;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setPlatform(isPad);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Platform getPlatform() {
+        if(isPad) {
+            return Platform.PlatformType_APad;
+        } else {
+            return Platform.PlatformType_Android;
+        }
+    }
 
     /**
      * 启用国密加密，需要在connect之前调用，需要IM服务开启国密才可以使用。
@@ -10079,6 +10103,9 @@ public class ChatManager {
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             internalWorkHandler.post(() -> {
                 try {
+                    if(isPad) {
+                        mClient.setPlatform(isPad);
+                    }
                     if (useSM4) {
                         mClient.useSM4();
                     }

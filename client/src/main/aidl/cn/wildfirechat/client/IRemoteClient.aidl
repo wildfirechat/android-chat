@@ -328,6 +328,7 @@ interface IRemoteClient {
     boolean isEnableMesh();
 
     oneway void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
+    oneway void setPlatform(in boolean isPad);
     oneway void useSM4();
     oneway void useAES256();
     oneway void useTcpShortLink();

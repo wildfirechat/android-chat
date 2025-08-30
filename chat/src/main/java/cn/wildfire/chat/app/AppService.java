@@ -86,11 +86,8 @@ public class AppService implements AppServiceProvider {
         params.put("mobile", mobile);
         params.put("password", password);
 
-        //如果是android pad设备，需要改这里，另外需要在ClientService对象中修改设备类型，请在ClientService代码中搜索"android pad"
-        //if（当前设备是android pad)
-        //  params.put("platform", new Integer(9));
-        //else
-        params.put("platform", new Integer(2));
+        //如果是android pad，需要设置为pad类型 ChatManager.Instance().setPlatform(true);
+        params.put("platform", ChatManager.Instance().getPlatform().value());
 
         try {
             params.put("clientId", ChatManagerHolder.gChatManager.getClientId());
