@@ -1078,6 +1078,40 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             });
         }
 
+        @Override
+        public void getRemoteMessagesEx(Conversation conversation, int[] contentTypes, long beforeMessageUid, int count, boolean before, boolean saveToDb, IGetRemoteMessagesCallback callback) throws RemoteException {
+            if (contentTypes == null) {
+                contentTypes = new int[0];
+            }
+
+            ProtoLogic.getRemoteMessagesEx(conversation.type.ordinal(), conversation.target, conversation.line, beforeMessageUid, count, contentTypes, before, saveToDb, new ProtoLogic.ILoadRemoteMessagesCallback() {
+                @Override
+                public void onSuccess(ProtoMessage[] list) {
+                    Message[] messages = convertProtoMessages(list);
+                    try {
+                        SafeIPCEntry<Message> entry;
+                        int startIndex = 0;
+                        do {
+                            entry = buildSafeIPCEntry(messages, startIndex);
+                            callback.onSuccess(entry.entries, entry.entries.size() > 0 && entry.index > 0 && entry.index < messages.length - 1);
+                            startIndex = entry.index + 1;
+                        } while (entry.index > 0 && entry.index < messages.length - 1);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int i) {
+                    try {
+                        callback.onFailure(i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
         private List<FileRecord> convertProtoFileRecord(ProtoFileRecord[] protoFileRecords) {
             List<FileRecord> records = new ArrayList<>();
             for (ProtoFileRecord pfr : protoFileRecords) {
