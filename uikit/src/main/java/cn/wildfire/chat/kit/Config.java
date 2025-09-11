@@ -131,6 +131,9 @@ public class Config {
     // 是否开启水印功能
     public static boolean ENABLE_WATER_MARK = true;
 
+    // AI机器人ID
+    public static String AI_ROBOT = "FireRobot";
+
     // 用户协议地址
     public final static String USER_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_agreement.html";
 

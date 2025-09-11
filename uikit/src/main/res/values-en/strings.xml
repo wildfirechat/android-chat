@@ -624,6 +624,7 @@
     <string name="external_domain">External Organization</string>
     <string name="fav_friends">Fav Friends</string>
 
+    <string name="ai_robot">ai robot</string>
     <string name="search_tip">Enter keywords to start searching</string>
     <string name="search_no_result">No search results</string>
     <string name="mute_mobile">Mute Mobile</string>

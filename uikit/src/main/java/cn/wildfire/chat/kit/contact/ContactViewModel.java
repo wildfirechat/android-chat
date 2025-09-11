@@ -13,10 +13,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.wildfire.chat.kit.Config;
+import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.common.AppScopeViewModel;
 import cn.wildfire.chat.kit.common.OperateResult;
@@ -37,6 +39,7 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
     private MutableLiveData<List<UIUserInfo>> contactListLiveData;
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
     private MutableLiveData<List<UIUserInfo>> favContactListLiveData;
+    private MutableLiveData<List<UIUserInfo>> aiRobotListLiveData;
 
     public ContactViewModel() {
         super();
@@ -74,6 +77,36 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
         }
         reloadFavContact();
         return favContactListLiveData;
+    }
+
+    public MutableLiveData<List<UIUserInfo>> aiRobotUserInfosLiveData() {
+        if (aiRobotListLiveData == null) {
+            aiRobotListLiveData = new MutableLiveData<>();
+        }
+        reloadAIRobot();
+        return aiRobotListLiveData;
+    }
+
+    public void reloadAIRobot() {
+        if (aiRobotListLiveData != null) {
+            if (!TextUtils.isEmpty(Config.AI_ROBOT)) {
+                ChatManager.Instance().getWorkHandler().post(() -> {
+                    List<String> userIds = Collections.singletonList(Config.AI_ROBOT);
+                    List<UserInfo> userInfos = ChatManager.Instance().getUserInfos(userIds, null);
+                    if (userInfos != null && !userInfos.isEmpty()) {
+                        List<UIUserInfo> uiUserInfos = new ArrayList<>();
+                        for (UserInfo userInfo : userInfos) {
+                            uiUserInfos.add(UIUserInfo.fromUserInfo(userInfo));
+                        }
+                        UIUserInfo firstUIUserInfo = uiUserInfos.get(0);
+                        firstUIUserInfo.setCategory(WfcUIKit.getWfcUIKit().getApplication().getString(R.string.ai_robot));
+                        firstUIUserInfo.setShowCategory(true);
+                        Collections.sort(uiUserInfos, (o1, o2) -> o1.getSortName().compareToIgnoreCase(o2.getSortName()));
+                        aiRobotListLiveData.postValue(uiUserInfos);
+                    }
+                });
+            }
+        }
     }
 
     public void reloadFriendRequestStatus() {
@@ -133,7 +166,7 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
                         }
 
                         if (fileHelpUserInfo != null) {
-                            if(!userInfos.contains(fileHelpUserInfo)){
+                            if (!userInfos.contains(fileHelpUserInfo)) {
                                 userInfos.add(fileHelpUserInfo);
                             }
                         }

@@ -631,6 +631,7 @@
     <string name="delete_friend_error">删除好友失败</string>
     <string name="external_domain">外部单位</string>
     <string name="fav_friends">星标朋友</string>
+    <string name="ai_robot">人工智能助手</string>
 
     <string name="search_tip">输入关键词开始搜索</string>
     <string name="search_no_result">没有搜索结果</string>

@@ -1016,7 +1016,7 @@ public class ConversationFragment extends Fragment implements
                     spannableString = mentionAllSpannable();
                 } else {
                     String userId = data.getStringExtra("userId");
-                    UserInfo userInfo = userViewModel.getUserInfo(userId, this.groupInfo.target, false);
+                    UserInfo userInfo = userViewModel.getUserInfo(userId, this.groupInfo != null ? this.groupInfo.target : "", false);
                     spannableString = mentionSpannable(userInfo);
                 }
                 int position = inputPanel.editText.getSelectionEnd();
