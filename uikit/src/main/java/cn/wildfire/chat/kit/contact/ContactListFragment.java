@@ -112,9 +112,14 @@ public class ContactListFragment extends BaseUserListFragment implements QuickIn
             userListAdapter.setFavUsers(uiUserInfos);
         });
 
+        contactViewModel.aiRobotUserInfosLiveData().observe(this, uiUserInfos -> {
+            userListAdapter.setAIRobotUsers(uiUserInfos);
+        });
+
         userViewModel.userInfoLiveData().observe(this, userInfos -> {
             contactViewModel.reloadContact();
             contactViewModel.reloadFavContact();
+            contactViewModel.reloadAIRobot();
         });
 
         userOnlineStateViewModel.getUserOnlineStateLiveData().observe(this, new Observer<Map<String, UserOnlineState>>() {

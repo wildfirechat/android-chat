@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.BaseUserListFragment;
+import cn.wildfire.chat.kit.contact.ContactViewModel;
 import cn.wildfire.chat.kit.contact.UserListAdapter;
 import cn.wildfire.chat.kit.contact.model.HeaderValue;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
@@ -23,10 +24,13 @@ import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.remote.ChatManager;
 
+// ATTENTION
+// 现在单聊也支持@机器人，但为方便客户合并代码，本类的类名保持原样，不进行重构
 public class MentionGroupMemberFragment extends BaseUserListFragment {
     private GroupInfo groupInfo;
     private GroupMember groupMember;
     private GroupViewModel groupViewModel;
+    private ContactViewModel contactViewModel;
 
     public static MentionGroupMemberFragment newInstance(GroupInfo groupInfo) {
         Bundle args = new Bundle();
@@ -41,16 +45,26 @@ public class MentionGroupMemberFragment extends BaseUserListFragment {
         super.onCreate(savedInstanceState);
         showQuickIndexBar(true);
         groupInfo = getArguments().getParcelable("groupInfo");
-        groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);;
-        groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
+        contactViewModel = WfcUIKit.getAppScopeViewModel(ContactViewModel.class);
+        if (groupInfo != null) {
+            groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+            groupMember = groupViewModel.getGroupMember(groupInfo.target, ChatManager.Instance().getUserId());
+        }
     }
 
     @Override
     protected void afterViews(View view) {
         super.afterViews(view);
-        groupViewModel.getGroupMemberUIUserInfosLiveData(groupInfo.target, false).observe(this, uiUserInfos -> {
+        if (groupInfo != null) {
+            groupViewModel.getGroupMemberUIUserInfosLiveData(groupInfo.target, false).observe(this, uiUserInfos -> {
+                showContent();
+                userListAdapter.setUsers(uiUserInfos);
+            });
+        }
+
+        contactViewModel.aiRobotUserInfosLiveData().observe(this, uiUserInfos -> {
             showContent();
-            userListAdapter.setUsers(uiUserInfos);
+            userListAdapter.setAIRobotUsers(uiUserInfos);
         });
     }
 

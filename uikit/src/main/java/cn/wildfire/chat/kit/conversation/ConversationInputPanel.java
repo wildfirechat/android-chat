@@ -282,8 +282,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             }
         });
 
-        messageViewModel =new ViewModelProvider(fragment).get(MessageViewModel.class);
-        conversationViewModel =new ViewModelProvider(fragment).get(ConversationViewModel.class);
+        messageViewModel = new ViewModelProvider(fragment).get(MessageViewModel.class);
+        conversationViewModel = new ViewModelProvider(fragment).get(ConversationViewModel.class);
 
         if (conversation != null) {
             if (conversation.type == Conversation.ConversationType.Channel) {
@@ -369,7 +369,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     void onInputTextChanged(CharSequence s, int start, int before, int count) {
         if (activity.getCurrentFocus() == editText) {
-            if (conversation.type == Conversation.ConversationType.Group) {
+            if (conversation.type == Conversation.ConversationType.Group || conversation.type == Conversation.ConversationType.Single) {
                 if (before == 0 && count == 1 && s.charAt(start) == '@') {
 //                    if (start == 0 || s.charAt(start - 1) == ' ') {
                     mentionGroupMember();
@@ -412,9 +412,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     private void mentionGroupMember() {
         Intent intent = new Intent(activity, MentionGroupMemberActivity.class);
-        GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
-        GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
-        intent.putExtra("groupInfo", groupInfo);
+        if (conversation.type == Conversation.ConversationType.Group) {
+            GroupViewModel groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+            GroupInfo groupInfo = groupViewModel.getGroupInfo(conversation.target, false);
+            intent.putExtra("groupInfo", groupInfo);
+        }
         fragment.startActivityForResult(intent, REQUEST_PICK_MENTION_CONTACT);
     }
 
@@ -554,7 +556,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         }
         clearQuoteMessage();
 
-        if (conversation.type == Conversation.ConversationType.Group) {
+        if (conversation.type == Conversation.ConversationType.Group || conversation.type == Conversation.ConversationType.Single) {
             MentionSpan[] mentions = content.getSpans(0, content.length(), MentionSpan.class);
             if (mentions != null && mentions.length > 0) {
                 txtContent.mentionedType = 1;
