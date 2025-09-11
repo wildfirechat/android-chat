@@ -133,7 +133,9 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
                         }
 
                         if (fileHelpUserInfo != null) {
-                            userInfos.add(fileHelpUserInfo);
+                            if(!userInfos.contains(fileHelpUserInfo)){
+                                userInfos.add(fileHelpUserInfo);
+                            }
                         }
                     }
                     contactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos));
