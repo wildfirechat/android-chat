@@ -3903,6 +3903,57 @@ public class ChatManager {
     }
 
     /**
+     * 获取服务器消息，可以获取对应messageUid之前或者之后的消息。**如果消息是不连续的，saveToDb要为false，避免存储在本地，需要特别注意这一点。**
+     *
+     * @param conversation     会话
+     * @param conversation 会话
+     * @param messageUid 起始消息的ID
+     * @param count 总数
+     * @param before 是获取对应messageUid之前或者时候的消息
+     * @param saveToDb 是否保存到本地DB中，如果是不连续的消息，千万要为false。
+     * @param contentTypes 指定获取的类型。
+     * @discussion 获取得到的消息数目有可能少于指定的count数，如果count不为0就意味着还有更多的消息可以获取，只有获取到的消息数为0才表示没有更多的消息了。
+     */
+    public void getRemoteMessages(Conversation conversation, List<Integer> contentTypes, long messageUid, int count, boolean before, boolean saveToDb, GetRemoteMessageCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            int[] intypes = null;
+            if (contentTypes != null && !contentTypes.isEmpty()) {
+                intypes = new int[contentTypes.size()];
+                for (int i = 0; i < contentTypes.size(); i++) {
+                    intypes[i] = contentTypes.get(i);
+                }
+            }
+            List<Message> outMsgs = new ArrayList<>();
+            mClient.getRemoteMessagesEx(conversation, intypes, messageUid, count, before, saveToDb, new IGetRemoteMessagesCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    if (callback != null) {
+                        outMsgs.addAll(messages);
+                        if (!hasMore) {
+                            mainHandler.post(() -> callback.onSuccess(outMsgs));
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 获取远程文件记录
      *
      * @param conversation    会话，如果为空则获取当前用户所有收到和发出的文件记录
