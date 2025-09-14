@@ -5038,7 +5038,7 @@ public class ChatManager {
         String name = !TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name;
         if (WfcUtils.isExternalTarget(groupInfo.target)) {
             String domainId = WfcUtils.getExternalDomainId(groupInfo.target);
-            DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, true);
+            DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, false);
             if (domainInfo != null) {
                 name += " @" + domainInfo.name;
             }
