@@ -7,12 +7,14 @@ package cn.wildfire.chat.app.setting;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -65,14 +67,26 @@ public class AboutActivity extends WfcBaseActivity {
     }
 
     public void intro() {
-        WfcWebViewActivity.loadUrl(this, getString(R.string.about_intro_title), getString(R.string.about_intro_url));
+        if (BuildConfig.APPLICATION_ID.startsWith("cn.wildfirechat.")) {
+            WfcWebViewActivity.loadUrl(this, getString(R.string.about_intro_title), getString(R.string.about_intro_url));
+        } else {
+            Toast.makeText(this, "野火IM 功能介绍对第三方应用不适用", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void agreement() {
-        WfcWebViewActivity.loadUrl(this, getString(R.string.about_agreement_title), getString(R.string.about_agreement_url));
+        if (BuildConfig.APPLICATION_ID.startsWith("cn.wildfirechat.")) {
+            WfcWebViewActivity.loadUrl(this, getString(R.string.about_agreement_title), getString(R.string.about_agreement_url));
+        } else {
+            Toast.makeText(this, "野火IM 用户协议对第三方应用不适用", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void privacy() {
-        WfcWebViewActivity.loadUrl(this, getString(R.string.about_privacy_title), getString(R.string.about_privacy_url));
+        if (BuildConfig.APPLICATION_ID.startsWith("cn.wildfirechat.")) {
+            WfcWebViewActivity.loadUrl(this, getString(R.string.about_privacy_title), getString(R.string.about_privacy_url));
+        } else {
+            Toast.makeText(this, "野火IM 隐私政策对第三方应用不适用", Toast.LENGTH_SHORT).show();
+        }
     }
 }

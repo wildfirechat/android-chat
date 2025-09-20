@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +30,7 @@ import cn.wildfire.chat.kit.viewmodel.MessageViewModel;
 import cn.wildfire.chat.kit.voip.conference.ConferencePortalActivity;
 import cn.wildfire.chat.kit.widget.OptionItemView;
 import cn.wildfirechat.avenginekit.AVEngineKit;
+import cn.wildfirechat.chat.BuildConfig;
 import cn.wildfirechat.chat.R;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessageStatus;
@@ -96,7 +98,11 @@ public class DiscoveryFragment extends Fragment {
     }
 
     void cookbook() {
+        if (BuildConfig.APPLICATION_ID.startsWith("cn.wildfirechat.")) {
         WfcWebViewActivity.loadUrl(getContext(), getString(R.string.wfc_doc_title), getString(R.string.wfc_doc_url));
+        } else {
+            Toast.makeText(getContext(), "野火IM 开发文档对第三方应用不适用", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initMoment() {
