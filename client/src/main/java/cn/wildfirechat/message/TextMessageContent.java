@@ -77,8 +77,10 @@ public class TextMessageContent extends MessageContent {
         if (payload.binaryContent != null && payload.binaryContent.length > 0) {
             try {
                 JSONObject object = new JSONObject(new String(payload.binaryContent));
-                quoteInfo = new QuoteInfo();
-                quoteInfo.decode(object.optJSONObject("quote"));
+                if(object.has("quote")) {
+                    quoteInfo = new QuoteInfo();
+                    quoteInfo.decode(object.getJSONObject("quote"));
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
