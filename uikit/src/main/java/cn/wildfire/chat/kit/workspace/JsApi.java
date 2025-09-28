@@ -96,7 +96,7 @@ public class JsApi {
             e.printStackTrace();
         }
         // 开发调试时，将 host 固定写是为开发平台上该应用的回调地址对应的 host
-        Log.d(TAG, "getAuthCode appUrl" + this.appUrl + " appId:" + appId + " type:" + type + " host:" + host);
+        Log.d(TAG, "getAuthCode appUrl " + this.appUrl + " appId:" + appId + " type:" + type + " host:" + host);
         ChatManager.Instance().getAuthCode(appId, type, host, new GeneralCallback2() {
             @Override
             public void onSuccess(String result) {
@@ -104,6 +104,7 @@ public class JsApi {
                 try {
                     resultObj.put("code", 0);
                     resultObj.put("data", result);
+                    Log.d(TAG, "getAuthCode success, appUrl: " + appUrl + " success: " + result);
                     handler.complete(resultObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -115,8 +116,8 @@ public class JsApi {
                 JSONObject resultObj = new JSONObject();
                 try {
                     resultObj.put("code", errorCode);
-                    Log.d(TAG, "getAuthCode appUrl: " + appUrl + " fail: " + errorCode);
-                    Log.d(TAG, "getAuthCode appUrl: " + appUrl + " fail 请确认应用 url 对应的 host和应用回调地址的 host 是否一致");
+                    Log.d(TAG, "getAuthCode fail, appUrl: " + appUrl + " errorCode: " + errorCode);
+                    Log.d(TAG, "getAuthCode fail, appUrl: " + appUrl + " ,请确认应用 url 对应的 host和应用回调地址的 host 是否一致");
                     handler.complete(resultObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -142,6 +143,7 @@ public class JsApi {
             @Override
             public void onSuccess() {
                 JsApi.this.ready = true;
+                Log.d(TAG, "config success, appUrl: " +  appUrl);
                 webView.callHandler("ready", (Object[]) null);
             }
 
