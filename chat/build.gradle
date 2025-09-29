@@ -29,7 +29,8 @@ android {
         }
 
         ndk {
-            abiFilters 'armeabi-v7a', 'x86', 'x86_64', 'arm64-v8a' // ，'armeabi', 'arm64-v8a', 'x86', 'x86_64'
+            //noinspection ChromeOsAbiSupport
+            abiFilters 'armeabi-v7a', 'arm64-v8a' // ，'armeabi', 'arm64-v8a', 'x86', 'x86_64'
         }
     }
     buildTypes {
