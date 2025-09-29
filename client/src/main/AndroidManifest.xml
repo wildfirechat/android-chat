@@ -18,7 +18,6 @@
         android:maxSdkVersion="32" />
 
     <application
-        android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <!--        clientService 可以配置运行在单独的进程，或直接运行在主进程-->
         <!--        当 IM 功能，不是应用的主要功能时，可以考虑让 ClientService 运行在单独的进程中-->
