@@ -47,7 +47,6 @@
         android:hardwareAccelerated="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
 
         <meta-data
