@@ -59,6 +59,3 @@ dependencies {
     api 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.squareup.okio:okio:3.10.2'
 }
-repositories {
-    mavenCentral()
-}
