@@ -4,9 +4,14 @@ buildscript {
    // ext.kotlin_version = '1.4.30-M1'
 
     repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+
+        maven {url 'https://developer.huawei.com/repo/'}
+
         google()
         mavenCentral()
-        maven {url 'https://developer.huawei.com/repo/'}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.2'
@@ -21,14 +26,16 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'https://jitpack.io' }
+
+        maven { url "https://developer.huawei.com/repo/"}
+
         google()
         mavenCentral()
-        maven {
-            url "https://developer.huawei.com/repo/"
-        }
-
-        maven { url 'https://jitpack.io' }
-        maven { url 'https://dl.bintray.com/jenly/maven' }
     }
     configurations {
         all {
