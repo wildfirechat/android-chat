@@ -6836,7 +6836,7 @@ public class ChatManager {
     }
 
     /**
-     * 搜索好友
+     * 搜索好友，目前不支持拼音搜索，可以参考 {@link cn.wildfire.chat.kit.search.module.ContactSearchModule#search} 实现支持拼音搜索
      *
      * @param keyword
      * @return
