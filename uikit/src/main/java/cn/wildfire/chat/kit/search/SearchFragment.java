@@ -92,6 +92,10 @@ public class SearchFragment extends Fragment {
         if (adapter != null) {
             adapter.reset();
         }
+        if(TextUtils.isEmpty(keyword)){
+            return;
+        }
+        keyword = keyword.trim();
         descLinearLayout.setVisibility(View.GONE);
         searchViewModel.search(keyword, searchableModules);
     }

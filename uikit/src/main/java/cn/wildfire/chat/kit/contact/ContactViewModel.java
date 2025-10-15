@@ -40,6 +40,7 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
     private MutableLiveData<Integer> friendRequestUpdatedLiveData;
     private MutableLiveData<List<UIUserInfo>> favContactListLiveData;
     private MutableLiveData<List<UIUserInfo>> aiRobotListLiveData;
+    private List<UIUserInfo> contactList = new ArrayList<>();
 
     public ContactViewModel() {
         super();
@@ -171,7 +172,9 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
                             }
                         }
                     }
-                    contactListLiveData.postValue(UIUserInfo.fromUserInfos(userInfos));
+                    contactList = UIUserInfo.fromUserInfos(userInfos);
+
+                    contactListLiveData.postValue(contactList);
                 }
                 loadingCount.decrementAndGet();
             }
@@ -183,8 +186,12 @@ public class ContactViewModel extends ViewModel implements AppScopeViewModel, On
         });
     }
 
+    @Deprecated
     public List<UserInfo> getContacts(boolean refresh) {
         return ChatManager.Instance().getMyFriendListInfo(refresh);
+    }
+    public List<UIUserInfo> getContacts() {
+        return this.contactList;
     }
 
     public int getUnreadFriendRequestCount() {
