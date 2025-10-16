@@ -332,6 +332,11 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
             } else {
                 session.leaveConference(false);
             }
+        } else {
+            Activity activity = getActivity();
+            if(activity != null && !activity.isFinishing()){
+                activity.finish();
+            }
         }
     }
 
