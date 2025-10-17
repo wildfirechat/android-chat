@@ -6,12 +6,17 @@ package cn.wildfirechat.remote;
 
 
 import static android.content.Context.BIND_AUTO_CREATE;
+import static cn.wildfirechat.model.Conversation.ConversationType.Channel;
+import static cn.wildfirechat.model.Conversation.ConversationType.Group;
+import static cn.wildfirechat.model.Conversation.ConversationType.SecretChat;
+import static cn.wildfirechat.model.Conversation.ConversationType.Single;
 
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -21,7 +26,6 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
@@ -42,8 +46,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -99,6 +101,7 @@ import cn.wildfirechat.client.IRemoteClient;
 import cn.wildfirechat.client.IUploadMediaCallback;
 import cn.wildfirechat.client.IWatchUserOnlineStateCallback;
 import cn.wildfirechat.client.NotInitializedExecption;
+import cn.wildfirechat.client.Platform;
 import cn.wildfirechat.message.ArticlesMessageContent;
 import cn.wildfirechat.message.CallStartMessageContent;
 import cn.wildfirechat.message.CardMessageContent;
@@ -148,6 +151,7 @@ import cn.wildfirechat.message.notification.GroupJoinTypeNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteMemberNotificationContent;
 import cn.wildfirechat.message.notification.GroupMuteNotificationContent;
 import cn.wildfirechat.message.notification.GroupPrivateChatNotificationContent;
+import cn.wildfirechat.message.notification.GroupRejectJoinNotificationContent;
 import cn.wildfirechat.message.notification.GroupSetManagerNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberNotificationContent;
 import cn.wildfirechat.message.notification.KickoffGroupMemberVisibleNotificationContent;
@@ -240,10 +244,10 @@ public class ChatManager {
     private final Map<String, String> protoHttpHeaderMap = new ConcurrentHashMap<>();
 
     private boolean useSM4 = false;
-
+    private boolean isPad = false;
     private boolean useAES256 = false;
     private boolean tcpShortLink = false;
-
+    private int timeOffset = 0;
     private boolean rawMsg = false;
     private boolean noUseFts = false;
     private boolean checkSignature = false;
@@ -343,6 +347,38 @@ public class ChatManager {
                     throw new IllegalArgumentException("type " + searchUserType + " is invalid");
             }
             return searchUserType;
+        }
+    }
+
+    public enum UserSearchUserType {
+        //搜索所有，包括普通用户和机器人。
+        All(0),
+
+        //只搜索普通用户
+        OnlyUser(1),
+
+        //只搜索机器人
+        OnlyRobot(2);
+
+        UserSearchUserType(int value) {
+        }
+
+        public static UserSearchUserType type(int type) {
+            UserSearchUserType userSearchUserType = null;
+            switch (type) {
+                case 0:
+                    userSearchUserType = All;
+                    break;
+                case 1:
+                    userSearchUserType = OnlyUser;
+                    break;
+                case 2:
+                    userSearchUserType = OnlyRobot;
+                    break;
+                default:
+                    throw new IllegalArgumentException("type " + userSearchUserType + " is invalid");
+            }
+            return userSearchUserType;
         }
     }
 
@@ -483,6 +519,7 @@ public class ChatManager {
                 }
                 try {
                     mClient.setForeground(0);
+                    INST.reportBadgeNumber();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -1177,6 +1214,29 @@ public class ChatManager {
         onTrafficDataListeners.remove(listener);
     }
 
+    /**
+     * 设置平台是否是Pad平台。
+     */
+    public void setPlatform(boolean isPad) {
+        this.isPad = isPad;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setPlatform(isPad);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Platform getPlatform() {
+        if(isPad) {
+            return Platform.PlatformType_APad;
+        } else {
+            return Platform.PlatformType_Android;
+        }
+    }
 
     /**
      * 启用国密加密，需要在connect之前调用，需要IM服务开启国密才可以使用。
@@ -1268,6 +1328,22 @@ public class ChatManager {
     }
 
     /**
+     * 设置时间偏移。一般用于时间不正确的设备，可以设置时间偏移确保能够设备能够正常使用。时间是服务器时间-设备时间
+     */
+    public void setTimeOffset(int timeOffset) {
+        this.timeOffset = timeOffset;
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.setTimeOffset(this.timeOffset);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 启用签名验证，需要在connect之前调用，需要服务开启对应功能，详情请参考：https://docs.wildfirechat.cn/blogs/签名验证.html
      */
     public void checkSignature() {
@@ -1311,27 +1387,41 @@ public class ChatManager {
         }
 
         String imei = null;
+        SharedPreferences sp = gContext.getSharedPreferences("wfc_client_id", Context.MODE_PRIVATE);
+        String spKey = "client_id";
         try (
-            RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsoluteFile() + "/.wfcClientId", "rw");
-            FileChannel chan = fw.getChannel();
+            RandomAccessFile fw = new RandomAccessFile(gContext.getFilesDir().getAbsolutePath() + "/.wfcClientId", "rw");
         ) {
-            FileLock lock = chan.lock();
+            fw.seek(0);
             imei = fw.readLine();
             if (TextUtils.isEmpty(imei)) {
-                //  迁移旧的clientId
-                imei = PreferenceManager.getDefaultSharedPreferences(gContext).getString("mars_core_uid", "");
-                if (TextUtils.isEmpty(imei)) {
-                    if (TextUtils.isEmpty(imei)) {
-                        imei = UUID.randomUUID().toString();
-                    }
+                imei = sp.getString(spKey, null);
+                if(TextUtils.isEmpty(imei)) {
+                    imei = UUID.randomUUID().toString();
                     imei += System.currentTimeMillis();
+                    sp.edit().putString(spKey, imei).apply();
                 }
+                fw.setLength(0);
+                fw.seek(0);
                 fw.writeBytes(imei);
+            } else {
+                String spimei = sp.getString(spKey, null);
+                if(!imei.equals(spimei)) {
+                    sp.edit().putString(spKey, imei).apply();
+                }
             }
-            lock.release();
         } catch (Exception ex) {
             ex.printStackTrace();
-            Log.e("getClientError", "" + ex.getMessage());
+            Log.e("getClientError", ex.getMessage());
+        } finally {
+            if (TextUtils.isEmpty(imei)) {
+                imei = sp.getString(spKey, null);
+                if(TextUtils.isEmpty(imei)) {
+                    imei = UUID.randomUUID().toString();
+                    imei += System.currentTimeMillis();
+                    sp.edit().putString(spKey, imei).apply();
+                }
+            }
         }
         this.clientId = imei;
         Log.d(TAG, "clientId " + this.clientId);
@@ -2235,7 +2325,7 @@ public class ChatManager {
     }
 
     /**
-     * 更新消息内容
+     * 更新消息内容。不支持聊天室，聊天室消息本地不存储，所有无法更新。
      *
      * @param messageId     消息id
      * @param newMsgContent 新的消息体，未更新部分，不可置空！
@@ -3250,6 +3340,7 @@ public class ChatManager {
      * @param callback     消息回调，当消息比较多，或者消息体比较大时，可能会回调多次
      */
     public void getMessages(Conversation conversation, long fromIndex, boolean before, int count, String withUser, GetMessageCallback callback) {
+
         if (callback == null) {
             return;
         }
@@ -3662,6 +3753,38 @@ public class ChatManager {
     }
 
     /**
+     * 获取每天的消息数量。一般用于日历查看消息，在日历上显示每天是否有消息。
+     * 后续如果查看某天的消息内容，可以计算出这天的开始和结束时间，然后使用根据时间获取消息的接口来加载消息。
+     * <p>
+     * 使用示例：
+     * YearMonth yearMonth = YearMonth.of(2025, 7);
+     * long startTime = LocalDateTime.of(yearMonth.atDay(1), LocalTime.MIN).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+     * long endTime = LocalDateTime.of(yearMonth.atEndOfMonth(), LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+     * Map<String, Integer> dayCouts = getMessageCountByDay(conversation, null, startTime, endTime);
+     * Log.d("ddd", dayCouts.toString());
+     * <p>
+     * 如果获取某天的消息，可以用 getMessages 方法，其中from可以用当天时间的毫秒数（也可用消息ID）。如果获取这天的消息，以降序排列，from就是这天的最后一秒毫秒数，然后count为正值。如果以升序排列，from为这一天的第一秒，count值为负值。
+     *
+     * @param conversation 会话
+     * @param contentTypes 消息类型
+     * @param startTime    开始时间，单位秒
+     * @param endTime      结束时间，单位秒
+     * @return 每天的消息数量。
+     */
+    public Map<String, Integer> getMessageCountByDay(Conversation conversation, List<Integer> contentTypes, long startTime, long endTime) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getMessageCountByDay(conversation, convertIntegers(contentTypes), startTime, endTime);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 获取远程历史消息
      *
      * @param conversation     会话
@@ -3761,6 +3884,57 @@ public class ChatManager {
                             mainHandler.post(() -> {
                                 callback.onSuccess(messages.get(0));
                             });
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(() -> {
+                            callback.onFail(errorCode);
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取服务器消息，可以获取对应messageUid之前或者之后的消息。**如果消息是不连续的，saveToDb要为false，避免存储在本地，需要特别注意这一点。**
+     *
+     * @param conversation     会话
+     * @param conversation 会话
+     * @param messageUid 起始消息的ID
+     * @param count 总数
+     * @param before 是获取对应messageUid之前或者时候的消息
+     * @param saveToDb 是否保存到本地DB中，如果是不连续的消息，千万要为false。
+     * @param contentTypes 指定获取的类型。
+     * @discussion 获取得到的消息数目有可能少于指定的count数，如果count不为0就意味着还有更多的消息可以获取，只有获取到的消息数为0才表示没有更多的消息了。
+     */
+    public void getRemoteMessages(Conversation conversation, List<Integer> contentTypes, long messageUid, int count, boolean before, boolean saveToDb, GetRemoteMessageCallback callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            int[] intypes = null;
+            if (contentTypes != null && !contentTypes.isEmpty()) {
+                intypes = new int[contentTypes.size()];
+                for (int i = 0; i < contentTypes.size(); i++) {
+                    intypes[i] = contentTypes.get(i);
+                }
+            }
+            List<Message> outMsgs = new ArrayList<>();
+            mClient.getRemoteMessagesEx(conversation, intypes, messageUid, count, before, saveToDb, new IGetRemoteMessagesCallback.Stub() {
+                @Override
+                public void onSuccess(List<Message> messages, boolean hasMore) throws RemoteException {
+                    if (callback != null) {
+                        outMsgs.addAll(messages);
+                        if (!hasMore) {
+                            mainHandler.post(() -> callback.onSuccess(outMsgs));
                         }
                     }
                 }
@@ -4692,6 +4866,59 @@ public class ChatManager {
     }
 
     /**
+     * 搜索用户
+     *
+     * @param domainId
+     * @param keyword
+     * @param searchUserType
+     * @param page
+     * @param callback
+     */
+    public void searchUserEx2(String domainId, String keyword, SearchUserType searchUserType, UserSearchUserType userType, int page, final SearchUserCallback callback) {
+        if (userSource != null) {
+            userSource.searchUser(keyword, callback);
+            return;
+        }
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.searchUserEx2(domainId, keyword, searchUserType.ordinal(), userType.ordinal(), page, new cn.wildfirechat.client.ISearchUserCallback.Stub() {
+                @Override
+                public void onSuccess(final List<UserInfo> userInfos) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(userInfos);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
      * 判断是否是好友关系
      *
      * @param userId
@@ -4811,7 +5038,7 @@ public class ChatManager {
         String name = !TextUtils.isEmpty(groupInfo.remark) ? groupInfo.remark : groupInfo.name;
         if (WfcUtils.isExternalTarget(groupInfo.target)) {
             String domainId = WfcUtils.getExternalDomainId(groupInfo.target);
-            DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, true);
+            DomainInfo domainInfo = ChatManager.Instance().getDomainInfo(domainId, false);
             if (domainInfo != null) {
                 name += " @" + domainInfo.name;
             }
@@ -5020,6 +5247,26 @@ public class ChatManager {
     }
 
     /**
+     * 获取好友请求列表
+     *
+     * @param status 请求状态 RequestStatus_Sent/RequestStatus_Accepted/RequestStatus_Reject
+     * @param incoming true，只包含收到的好友请求；false，所有好友请求
+     * @return
+     */
+    public List<FriendRequest> getFriendRequestByStatus(int status, boolean incoming) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getFriendRequestByStatus(status, incoming);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 获取全部好友请求列表
      *
      * @return
@@ -5054,6 +5301,26 @@ public class ChatManager {
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * 获取好友请求数量
+     *
+     * @param status 请求状态 RequestStatus_Sent/RequestStatus_Accepted/RequestStatus_Reject
+     * @param incoming true，只包含收到的好友请求；false，所有好友请求
+     * @return
+     */
+    public int getFriendRequestCountByStatus(int status, boolean incoming) {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+
+        try {
+            return mClient.getFriendRequestCountByStatus(status, incoming);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 
@@ -5093,7 +5360,7 @@ public class ChatManager {
     /**
      * 删除好友请求
      *
-     * @param direction  方向，0是接收的，1是发出的
+     * @param direction  方向，true 是接收的，false 是发出的
      * @param beforeTime 删除某个时间之前的。如果删除所有用0.
      * @return 是否有数据被删除。
      */
@@ -6569,7 +6836,7 @@ public class ChatManager {
     }
 
     /**
-     * 搜索好友
+     * 搜索好友，目前不支持拼音搜索，可以参考 {@link cn.wildfire.chat.kit.search.module.ContactSearchModule#search} 实现支持拼音搜索
      *
      * @param keyword
      * @return
@@ -7851,6 +8118,42 @@ public class ChatManager {
         }
     }
 
+    public void sendMomentsRequest(String path, byte[] mediaData, GeneralCallbackBytes callback) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        internalWorkHandler.post(() -> {
+            try {
+                AshmenWrapper ashmenWrapper = AshmenWrapper.create(path, 1024 * 1024);
+                ashmenWrapper.writeBytes(mediaData, 0, mediaData.length);
+                mClient.sendMomentsRequest(path, ashmenWrapper, mediaData.length, new IGeneralCallbackInt.Stub() {
+                    @Override
+                    public void onSuccess(int length) throws RemoteException {
+                        if (callback != null) {
+                            byte[] data = new byte[length];
+                            try {
+                                ashmenWrapper.readBytes(data, 0, length);
+                                callback.onSuccess(data);
+                            } finally {
+                                ashmenWrapper.close();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int errorCode) throws RemoteException {
+                        if (callback != null) {
+                            callback.onFail(errorCode);
+                        }
+                        ashmenWrapper.close();
+                    }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     // connect host
     public String getHost() {
         if (!checkRemoteService()) {
@@ -8286,6 +8589,15 @@ public class ChatManager {
             e.printStackTrace();
             return 0L;
         }
+    }
+
+    /**
+     * @return 服务器时间 - 本地时间
+     */
+    public long getServerTimestamp() {
+        long now = System.currentTimeMillis();
+        long delta = this.getServerDeltaTime();
+        return now + delta;
     }
 
     /**
@@ -9541,7 +9853,6 @@ public class ChatManager {
             try {
                 AshmenWrapper ashmenWrapper = AshmenWrapper.create(targetId, mediaData.length);
                 ashmenWrapper.writeBytes(mediaData, 0, mediaData.length);
-                AshmenWrapper finalAshmenHolder = ashmenWrapper;
                 mClient.decodeSecretChatDataAsync(targetId, ashmenWrapper, mediaData.length, new IGeneralCallbackInt.Stub() {
                     @Override
                     public void onSuccess(int length) throws RemoteException {
@@ -9549,10 +9860,10 @@ public class ChatManager {
                             // TODO ByteArrayOutputStream
                             byte[] data = new byte[length];
                             try {
-                                finalAshmenHolder.readBytes(data, 0, length);
+                                ashmenWrapper.readBytes(data, 0, length);
                                 callback.onSuccess(data);
                             } finally {
-                                finalAshmenHolder.close();
+                                ashmenWrapper.close();
                             }
                         }
                     }
@@ -9562,7 +9873,7 @@ public class ChatManager {
                         if (callback != null) {
                             callback.onFail(errorCode);
                         }
-                        finalAshmenHolder.close();
+                        ashmenWrapper.close();
                     }
                 });
             } catch (RemoteException e) {
@@ -9778,6 +10089,23 @@ public class ChatManager {
         return 0;
     }
 
+    /**
+     * 上传用户本地角标数字到IM服务，当IM服务推送时，会把此数字发送到推送服务，从而让推送角标显示准确
+     *
+     * @param number 角标数
+     */
+
+    public void uploadBadgeNumber(int number) {
+        this.setUserSetting(UserSettingScope.Sync_Badge, "", String.valueOf(number), null);
+    }
+
+    private void reportBadgeNumber() {
+        UnreadCount totalUnreadCount = ChatManager.Instance().getUnreadCountEx(List.of(Single, Group, Channel, SecretChat), List.of(0));
+        int unreadFriendRequest = ChatManager.Instance().getUnreadFriendRequestStatus();
+        int count = totalUnreadCount.unread + unreadFriendRequest;
+        uploadBadgeNumber(count);
+    }
+
     private boolean checkRemoteService() {
         if (INST != null) {
             if (mClient != null) {
@@ -9826,6 +10154,9 @@ public class ChatManager {
             mClient = IRemoteClient.Stub.asInterface(iBinder);
             internalWorkHandler.post(() -> {
                 try {
+                    if(isPad) {
+                        mClient.setPlatform(isPad);
+                    }
                     if (useSM4) {
                         mClient.useSM4();
                     }
@@ -9846,6 +10177,9 @@ public class ChatManager {
                     }
                     if (heartBeatInterval > 0) {
                         mClient.setHeartBeatInterval(heartBeatInterval);
+                    }
+                    if (timeOffset > 0) {
+                        mClient.setTimeOffset(timeOffset);
                     }
 
                     mClient.setBackupAddressStrategy(backupAddressStrategy);
@@ -10104,6 +10438,7 @@ public class ChatManager {
         registerMessageContent(GroupMuteNotificationContent.class);
         registerMessageContent(GroupJoinTypeNotificationContent.class);
         registerMessageContent(GroupPrivateChatNotificationContent.class);
+        registerMessageContent(GroupRejectJoinNotificationContent.class);
         registerMessageContent(GroupSetManagerNotificationContent.class);
         registerMessageContent(GroupMuteMemberNotificationContent.class);
         registerMessageContent(GroupAllowMemberNotificationContent.class);

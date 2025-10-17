@@ -2,6 +2,7 @@ package cn.wildfire.chat.app.misc;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 
@@ -62,11 +63,16 @@ public class KeyStoreUtil {
         if (!keyStore.containsAlias(PP_KEYSTORE_ALIAS)) {
             return generateKey().getPublic();
         }
-        KeyStore.Entry entry = keyStore.getEntry(PP_KEYSTORE_ALIAS, null);
-        if (!(entry instanceof KeyStore.PrivateKeyEntry)) {
-            return null;
+
+        // FYI https://stackoverflow.com/questions/52024752/android-9-keystore-exception-android-os-servicespecificexception
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return keyStore.getCertificate(PP_KEYSTORE_ALIAS).getPublicKey();
+        } else {
+            KeyStore.Entry kentry = keyStore.getEntry(PP_KEYSTORE_ALIAS, null);
+            return kentry instanceof KeyStore.PrivateKeyEntry
+                ? ((KeyStore.PrivateKeyEntry) kentry).getCertificate().getPublicKey()
+                : null;
         }
-        return ((KeyStore.PrivateKeyEntry) entry).getCertificate().getPublicKey();
     }
 
     /**
@@ -81,11 +87,16 @@ public class KeyStoreUtil {
         if (!keyStore.containsAlias(PP_KEYSTORE_ALIAS)) {
             return generateKey().getPrivate();
         }
-        KeyStore.Entry entry = keyStore.getEntry(PP_KEYSTORE_ALIAS, null);
-        if (!(entry instanceof KeyStore.PrivateKeyEntry)) {
-            return null;
+
+        // FYI https://stackoverflow.com/questions/52024752/android-9-keystore-exception-android-os-servicespecificexception
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return (PrivateKey) keyStore.getKey(PP_KEYSTORE_ALIAS, null);
+        } else {
+            KeyStore.Entry entry = keyStore.getEntry(PP_KEYSTORE_ALIAS, null);
+            return entry instanceof KeyStore.PrivateKeyEntry
+                ? ((KeyStore.PrivateKeyEntry) entry).getPrivateKey()
+                : null;
         }
-        return ((KeyStore.PrivateKeyEntry) entry).getPrivateKey();
     }
 
     /**

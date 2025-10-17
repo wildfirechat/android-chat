@@ -35,7 +35,9 @@ public class MentionGroupMemberActivity extends SearchActivity {
 
     @Override
     protected void initSearchModule(List<SearchableModule> modules) {
-        modules.add(new GroupMemberSearchModule(groupInfo.target));
+        if(groupInfo != null){
+            modules.add(new GroupMemberSearchModule(groupInfo.target));
+        }
     }
 
     @Override

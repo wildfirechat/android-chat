@@ -54,6 +54,9 @@ public interface UserSettingScope {
     // 不能直接使用，协议栈内部会使用此致
     int AddFriend_NoVerify = 28;
 
+    //不能直接使用，协议栈内会使用此值
+    int Sync_Badge = 29;
+
     //自定义用户设置，请使用1000以上的key
     int kUserSettingCustomBegin = 1000;
 }

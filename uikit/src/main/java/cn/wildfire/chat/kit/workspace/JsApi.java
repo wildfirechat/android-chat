@@ -7,6 +7,7 @@ package cn.wildfire.chat.kit.workspace;
 import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
@@ -82,6 +83,7 @@ public class JsApi {
         }
     }
 
+    // web 从 native 获取授权码，并进行登录
     @JavascriptInterface
     public void getAuthCode(Object obj, CompletionHandler handler) {
         JSONObject jsonObject = (JSONObject) obj;
@@ -94,6 +96,7 @@ public class JsApi {
             e.printStackTrace();
         }
         // 开发调试时，将 host 固定写是为开发平台上该应用的回调地址对应的 host
+        Log.d(TAG, "getAuthCode appUrl " + this.appUrl + " appId:" + appId + " type:" + type + " host:" + host);
         ChatManager.Instance().getAuthCode(appId, type, host, new GeneralCallback2() {
             @Override
             public void onSuccess(String result) {
@@ -101,6 +104,7 @@ public class JsApi {
                 try {
                     resultObj.put("code", 0);
                     resultObj.put("data", result);
+                    Log.d(TAG, "getAuthCode success, appUrl: " + appUrl + " success: " + result);
                     handler.complete(resultObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -112,6 +116,8 @@ public class JsApi {
                 JSONObject resultObj = new JSONObject();
                 try {
                     resultObj.put("code", errorCode);
+                    Log.d(TAG, "getAuthCode fail, appUrl: " + appUrl + " errorCode: " + errorCode);
+                    Log.d(TAG, "getAuthCode fail, appUrl: " + appUrl + " ,请确认应用 url 对应的 host和应用回调地址的 host 是否一致");
                     handler.complete(resultObj);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -120,6 +126,8 @@ public class JsApi {
         });
     }
 
+    // native 认证 web
+    // 大概流程是 web应用端从对应 web 应用服务端获取应用验证信息，调用该接口去 im-server 进行认证
     @JavascriptInterface
     public void config(Object obj) {
         JSONObject jsonObject = (JSONObject) obj;
@@ -127,16 +135,21 @@ public class JsApi {
         int type = jsonObject.optInt("appType");
         long timestamp = jsonObject.optLong("timestamp");
         String nonce = jsonObject.optString("nonceStr");
+        // signature 是 web 应用服务端使用 nonce | appId | timestamp | appSecret 进行 sha1 加密得到的字符串
+        // im-server 根据 appId 拿到 appSecret，然后用相同的算法生成 signature 进行对比
         String signature = jsonObject.optString("signature");
+        Log.d(TAG, "config appUrl: "+ this.appUrl + " appId:" + appId + " type:" + type + " timestamp:" + timestamp + " nonce:" + nonce + " signature:" + signature);
         ChatManager.Instance().configApplication(appId, type, timestamp, nonce, signature, new GeneralCallback() {
             @Override
             public void onSuccess() {
                 JsApi.this.ready = true;
+                Log.d(TAG, "config success, appUrl: " +  appUrl);
                 webView.callHandler("ready", (Object[]) null);
             }
 
             @Override
             public void onFail(int errorCode) {
+                Log.d(TAG, "config appUrl: " +  appUrl + " fail:" + errorCode);
                 webView.callHandler("error", new String[]{"" + errorCode});
             }
         });

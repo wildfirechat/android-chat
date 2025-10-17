@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import cn.wildfirechat.uikit.menu.PopupMenu;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -46,8 +45,10 @@ import cn.wildfire.chat.kit.conversation.message.viewholder.NotificationMessageC
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.StreamingTextGeneratedMessageContent;
 import cn.wildfirechat.message.StreamingTextGeneratingMessageContent;
+import cn.wildfirechat.message.core.MessageContentType;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
+import cn.wildfirechat.uikit.menu.PopupMenu;
 
 public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "ConvMsgAdapter";
@@ -588,7 +589,12 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             return R.layout.conversation_item_loading;
         }
         Message msg = getItem(position).message;
-        return msg.direction.value() << 24 | msg.content.getMessageContentType();
+        int contentType = msg.content.getMessageContentType();
+        // 正在生成的流式文本消息和已经生成完毕的流式文本消息使用同一个ViewHolder
+        if(contentType == MessageContentType.ContentType_Streaming_Text_Generated){
+            contentType = MessageContentType.ContentType_Streaming_Text_Generating;
+        }
+        return msg.direction.value() << 24 | contentType;
     }
 
     @Override

@@ -435,7 +435,7 @@ public class MultiCallVideoFragment extends Fragment implements AVEngineKit.Call
         public void run() {
             AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
             if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-                long s = System.currentTimeMillis() - session.getConnectedTime();
+                long s = ChatManager.Instance().getServerTimestamp() - session.getConnectedTime();
                 s = s / 1000;
                 String text;
                 if (s > 3600) {

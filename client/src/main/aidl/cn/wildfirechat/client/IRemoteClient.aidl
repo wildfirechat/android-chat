@@ -131,8 +131,11 @@ interface IRemoteClient {
     oneway void getUserMessages(in String userId, in Conversation conversation, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
     oneway void getUserMessagesEx(in String userId, in int[] conversationTypes, in int[] lines, in int[] contentTypes, in long fromIndex, in boolean before, in int count, in IGetMessageCallback callback);
 
+    Map getMessageCountByDay(in Conversation conversation, in int[] messageStatus, in long fromTime, in long endTime);
+
     oneway void getRemoteMessages(in Conversation conversation, in int[] contentTypes, in long beforeMessageUid, in int count, in IGetRemoteMessagesCallback callback);
     oneway void getRemoteMessage(in long messageUid, in IGetRemoteMessagesCallback callback);
+    oneway void getRemoteMessagesEx(in Conversation conversation, in int[] contentTypes, in long beforeMessageUid, in int count, in boolean before, in boolean saveToDb, in IGetRemoteMessagesCallback callback);
     oneway void getConversationFileRecords(in Conversation conversation, in String fromUser, in long beforeMessageUid, in int order, in int count, in IGetFileRecordCallback callback);
     oneway void getMyFileRecords(in long beforeMessageUid, in int order, in int count, in IGetFileRecordCallback callback);
     oneway void deleteFileRecord(in long messageUid, in IGeneralCallback callback);
@@ -174,6 +177,7 @@ interface IRemoteClient {
     Map getMessageDelivery(in int conversationType, in String target);
     oneway void searchUser(in String keyword, in int searchType, in int page, in ISearchUserCallback callback);
     oneway void searchUserEx(in String domainId, in String keyword, in int searchType, in int page, in ISearchUserCallback callback);
+    oneway void searchUserEx2(in String domainId, in String keyword, in int searchType, in int userType, in int page, in ISearchUserCallback callback);
 
     boolean isMyFriend(in String userId);
     List<String> getMyFriendList(in boolean refresh);
@@ -189,8 +193,10 @@ interface IRemoteClient {
     oneway void setDeviceToken(in String token, in int pushType);
 
     List<FriendRequest> getFriendRequest(in boolean incomming);
+    List<FriendRequest> getFriendRequestByStatus(in int status, in boolean incomming);
     List<FriendRequest> getAllFriendRequest();
     FriendRequest getOneFriendRequest(in String userId, in boolean incomming);
+    int getFriendRequestCountByStatus(in int status, in boolean incomming);
     boolean clearFriendRequest(in boolean direction, in long beforeTime);
     boolean deleteFriendRequest(in String userId, in boolean direction);
     String getFriendAlias(in String userId);
@@ -323,6 +329,7 @@ interface IRemoteClient {
     boolean isEnableMesh();
 
     oneway void sendConferenceRequest(in long sessionId, in String roomId, in String request, in boolean advanced, in String data, in IGeneralCallback2 callback);
+    oneway void setPlatform(in boolean isPad);
     oneway void useSM4();
     oneway void useAES256();
     oneway void useTcpShortLink();
@@ -331,6 +338,8 @@ interface IRemoteClient {
     oneway void checkSignature();
 
     oneway void setHeartBeatInterval(int second);
+
+    oneway void setTimeOffset(int timeOffset);
 
     String getProtoRevision();
 
@@ -348,6 +357,7 @@ interface IRemoteClient {
     byte[] decodeSecretChatData(in String targetid, in byte[] mediaData);
 
     oneway void decodeSecretChatDataAsync(in String targetId, in AshmenWrapper ashmenWrapper, in int length, in IGeneralCallbackInt callback);
+    oneway void sendMomentsRequest(in String path, in AshmenWrapper ashmenWrapper, in int length, in IGeneralCallbackInt callback);
 
     oneway void setDefaultPortraitProviderClass(in String clazz);
     oneway void setUrlRedirectorClass(in String clazz);

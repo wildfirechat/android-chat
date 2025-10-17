@@ -29,6 +29,7 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final int TYPE_FOOTER_START_INDEX = 2048;
     protected List<UIUserInfo> users;
     protected List<UIUserInfo> favUsers;
+    protected List<UIUserInfo> aiRobotUsers;
     protected Fragment fragment;
     private List<HeaderValueWrapper> headerValues;
     private List<FooterValueWrapper> footerValues;
@@ -61,6 +62,11 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setFavUsers(List<UIUserInfo> favUsers) {
         this.favUsers = favUsers;
+        notifyDataSetChanged();
+    }
+
+    public void setAIRobotUsers(List<UIUserInfo> aiRobotUsers) {
+        this.aiRobotUsers = aiRobotUsers;
         notifyDataSetChanged();
     }
 
@@ -117,7 +123,7 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
             itemView.setOnClickListener(v -> {
                 if (onFooterClickListener != null) {
-                    onFooterClickListener.onFooterClick(viewHolder.getAdapterPosition() - headerCount() - userCount() - favUserCount());
+                    onFooterClickListener.onFooterClick(viewHolder.getAdapterPosition() - headerCount() - userCount() - favUserCount() - aiRobotUserCount());
                 }
             });
 
@@ -134,8 +140,10 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 int position = viewHolder.getAdapterPosition();
                 if (favUserCount() > 0 && position - headerCount() < favUserCount()) {
                     onUserClickListener.onUserClick(favUsers.get(position - headerCount()));
+                } else if (aiRobotUserCount() > 0 && position - headerCount() - favUserCount() < aiRobotUserCount()) {
+                    onUserClickListener.onUserClick(aiRobotUsers.get(position - favUserCount() - headerCount()));
                 } else {
-                    onUserClickListener.onUserClick(users.get(position - headerCount() - favUserCount()));
+                    onUserClickListener.onUserClick(users.get(position - headerCount() - favUserCount() - aiRobotUserCount()));
                 }
             }
         });
@@ -146,8 +154,10 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             int position = viewHolder.getAdapterPosition();
             if (favUserCount() > 0 && position - headerCount() < favUserCount()) {
                 onUserLongClickListener.onUserLongClick(favUsers.get(position - headerCount()));
+            } else if (aiRobotUserCount() > 0 && position - headerCount() - favUserCount() < aiRobotUserCount()) {
+                onUserLongClickListener.onUserLongClick(aiRobotUsers.get(position - favUserCount() - headerCount()));
             } else {
-                onUserLongClickListener.onUserLongClick(users.get(position - headerCount() - favUserCount()));
+                onUserLongClickListener.onUserLongClick(users.get(position - headerCount() - favUserCount() - aiRobotUserCount()));
             }
             return true;
         });
@@ -163,14 +173,16 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (holder instanceof UserViewHolder) {
             if (favUserCount() > 0 && position - headerCount() < favUserCount()) {
                 ((UserViewHolder) holder).onBind(favUsers.get(position - headerCount()));
+            } else if (aiRobotUserCount() > 0 && position - headerCount() - favUserCount() < aiRobotUserCount()) {
+                ((UserViewHolder) holder).onBind(aiRobotUsers.get(position - favUserCount() - headerCount()));
             } else {
-                ((UserViewHolder) holder).onBind(users.get(position - headerCount() - favUserCount()));
+                ((UserViewHolder) holder).onBind(users.get(position - headerCount() - favUserCount() - aiRobotUserCount()));
             }
         } else if (holder instanceof HeaderViewHolder) {
             HeaderValueWrapper wrapper = headerValues.get(position);
             ((HeaderViewHolder) holder).onBind(wrapper.headerValue);
         } else if (holder instanceof FooterViewHolder) {
-            FooterValueWrapper wrapper = footerValues.get(position - headerCount() - userCount() - favUserCount());
+            FooterValueWrapper wrapper = footerValues.get(position - headerCount() - userCount() - favUserCount() - aiRobotUserCount());
             ((FooterViewHolder<FooterValue>) holder).onBind(wrapper.footerValue);
         }
     }
@@ -179,16 +191,16 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public int getItemViewType(int position) {
         if (position < headerCount()) {
             return position;
-        } else if (position < headerCount() + userCount() + favUserCount()) {
+        } else if (position < headerCount() + userCount() + favUserCount() + aiRobotUserCount()) {
             return TYPE_CONTACT;
         } else {
-            return TYPE_FOOTER_START_INDEX + (position - headerCount() - userCount() - favUserCount());
+            return TYPE_FOOTER_START_INDEX + (position - headerCount() - userCount() - favUserCount() - aiRobotUserCount());
         }
     }
 
     @Override
     public int getItemCount() {
-        return headerCount() + footerCount() + userCount() + favUserCount();
+        return headerCount() + footerCount() + userCount() + favUserCount() + aiRobotUserCount();
     }
 
     public void addHeaderViewHolder(Class<? extends HeaderViewHolder> clazz, int layoutResId, HeaderValue value) {
@@ -217,13 +229,13 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
         int footerCount = footerCount();
         footerValues.add(new FooterValueWrapper(clazz, layoutResId, value));
-        notifyItemInserted(headerCount() + userCount() + favUserCount() + footerCount);
+        notifyItemInserted(headerCount() + userCount() + favUserCount() + aiRobotUserCount() + footerCount);
     }
 
     public void updateFooter(int index, FooterValue value) {
         FooterValueWrapper wrapper = footerValues.get(index);
         footerValues.set(index, new FooterValueWrapper(wrapper.footerViewHolderClazz, wrapper.layoutResId, value));
-        notifyItemChanged(headerCount() + userCount() + favUserCount() + index);
+        notifyItemChanged(headerCount() + userCount() + favUserCount() + aiRobotUserCount() + index);
     }
 
     public int headerCount() {
@@ -236,6 +248,10 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private int favUserCount() {
         return favUsers == null ? 0 : favUsers.size();
+    }
+
+    private int aiRobotUserCount() {
+        return aiRobotUsers == null ? 0 : aiRobotUsers.size();
     }
 
     public int footerCount() {

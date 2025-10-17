@@ -13,7 +13,6 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
@@ -50,13 +49,11 @@ public class AsyncPlayer {
             player.setAudioStreamType(cmd.stream);
             player.setDataSource(cmd.context, cmd.uri);
             player.setLooping(cmd.looping);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                player.setAudioAttributes(new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_REQUEST)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build()
-                );
-            }
+            player.setAudioAttributes(new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION_SIGNALLING)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                .build()
+            );
             player.setOnErrorListener((mediaPlayer, i, i1) -> {
                 Log.e(mTag, "play ring error " + i + " " + i1);
                 return false;
@@ -93,7 +90,7 @@ public class AsyncPlayer {
                 switch (cmd.code) {
                     case PLAY:
                         savedAudioMode = audioManager.getMode();
-                        audioManager.setMode(AudioManager.MODE_NORMAL);
+                        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                         startSound(cmd);
                         break;
                     case STOP:

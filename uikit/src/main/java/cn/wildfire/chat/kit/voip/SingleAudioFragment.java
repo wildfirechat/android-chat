@@ -16,7 +16,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -300,7 +299,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
     private void updateCallDuration() {
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
         if (session != null && session.getState() == AVEngineKit.CallState.Connected) {
-            long s = System.currentTimeMillis() - session.getConnectedTime();
+            long s = ChatManager.Instance().getServerTimestamp() - session.getConnectedTime();
             s = s / 1000;
             String text;
             if (s > 3600) {

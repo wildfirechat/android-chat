@@ -314,14 +314,14 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                     .negativeText(R.string.conf_leave_conference)
                     .onNegative((dialogInterface, i) -> {
 
-                        conferenceManager.addHistory(conferenceInfo, System.currentTimeMillis() - session.getStartTime());
+                        conferenceManager.addHistory(conferenceInfo, ChatManager.Instance().getServerTimestamp() - session.getStartTime());
                         conferenceManager.setCurrentConferenceInfo(null);
                         if (session.getState() != AVEngineKit.CallState.Idle)
                             session.leaveConference(false);
                     })
                     .positiveText(R.string.conf_end_conference)
                     .onPositive((dialogInterface, i) -> {
-                        conferenceManager.addHistory(conferenceInfo, System.currentTimeMillis() - session.getStartTime());
+                        conferenceManager.addHistory(conferenceInfo, ChatManager.Instance().getServerTimestamp() - session.getStartTime());
                         conferenceManager.destroyConference(session.getCallId(), null);
                         conferenceManager.setCurrentConferenceInfo(null);
                         if (session.getState() != AVEngineKit.CallState.Idle)
@@ -331,6 +331,11 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                     .show();
             } else {
                 session.leaveConference(false);
+            }
+        } else {
+            Activity activity = getActivity();
+            if(activity != null && !activity.isFinishing()){
+                activity.finish();
             }
         }
     }
@@ -630,7 +635,7 @@ public class ConferenceFragment extends BaseConferenceFragment implements AVEngi
                 if (session.getConnectedTime() == 0) {
                     text = "会议连接中";
                 } else {
-                    long s = System.currentTimeMillis() - session.getConnectedTime();
+                    long s = ChatManager.Instance().getServerTimestamp() - session.getConnectedTime();
                     s = s / 1000;
                     if (s > 3600) {
                         text = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));

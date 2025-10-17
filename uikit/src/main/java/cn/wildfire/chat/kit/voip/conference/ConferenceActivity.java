@@ -66,6 +66,10 @@ public class ConferenceActivity extends VoipBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        AVEngineKit.CallSession session = getEngineKit().getCurrentSession();
+        if(session == null || session.getState() == AVEngineKit.CallState.Idle){
+            finish();
+        }
     }
 
     private void init() {
