@@ -7732,6 +7732,119 @@ public class ChatManager {
     }
 
     /**
+     分批获取群成员信息
+
+     @param groupId 群ID
+     @param types 群成员类型，nil为所有
+     @param offset offset
+     @param count 群成员类型个数
+     @return 群成员信息列表
+     */
+    public List<GroupMember> getGroupMembers(String groupId, List<GroupMember.GroupMemberType> types, int offset, int count) {
+        if (!checkRemoteService()) {
+            return new ArrayList<>();
+        }
+        if (TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "group id is null");
+            return new ArrayList<>();
+        }
+
+        if(types == null) types = new ArrayList<>();
+        int[] intypes = new int[types.size()];
+        for (int i = 0; i < types.size(); i++) {
+            intypes[i] = types.get(i).ordinal();
+        }
+
+        try {
+            return mClient.getGroupMembersEx2(groupId, intypes, offset, count);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     获取群成员数量
+
+     @param groupId 群ID
+     @param types 群成员类型，nil为所有
+     @return 群成员的数量
+     */
+    public int getGroupMembersCount(String groupId, List<GroupMember.GroupMemberType> types) {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+        if (TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "group id is null");
+            return 0;
+        }
+        if(types == null) types = new ArrayList<>();
+        int[] intypes = new int[types.size()];
+        for (int i = 0; i < types.size(); i++) {
+            intypes[i] = types.get(i).ordinal();
+        }
+
+        try {
+            return mClient.getGroupMembersCount(groupId, intypes);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+
+    /**
+     获取群成员ID
+
+     @param groupId 群ID
+     @param types 群成员类型，nil为所有
+     @return 群成员ID列表
+     */
+    public List<String> getGroupMemberIds(String groupId, List<GroupMember.GroupMemberType> types) {
+        if (!checkRemoteService()) {
+            return new ArrayList<>();
+        }
+        if (TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "group id is null");
+            return new ArrayList<>();
+        }
+        if(types == null) types = new ArrayList<>();
+        int[] intypes = new int[types.size()];
+        for (int i = 0; i < types.size(); i++) {
+            intypes[i] = types.get(i).ordinal();
+        }
+
+        try {
+            return mClient.getGroupMemberIds(groupId, intypes);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     从远程服务同步群组成员
+
+     @param groupId 群ID
+     */
+    public void loadGroupMemberFromRemote(String groupId) {
+        if (!checkRemoteService()) {
+            return;
+        }
+        if (TextUtils.isEmpty(groupId)) {
+            Log.e(TAG, "group id is null");
+            return;
+        }
+
+        try {
+            return mClient.loadGroupMemberFromRemote(groupId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
      * 转让群组
      *
      * @param groupId
