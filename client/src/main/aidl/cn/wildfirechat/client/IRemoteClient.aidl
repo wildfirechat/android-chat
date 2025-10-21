@@ -266,6 +266,10 @@ interface IRemoteClient {
     oneway void getGroupMemberUserInfosAsync(in String groupId, in boolean forceUpdate, in IGetUserInfoListCallback callback);
     GroupMember getGroupMember(in String groupId, in String memberId);
     oneway void getGroupMembersEx(in String groupId, in boolean forceUpdate, in IGetGroupMemberCallback callback);
+    List<GroupMember> getGroupMembersEx2(in String groupId, in int[] types, int offset, int count);
+    int getGroupMembersCount(in String groupId, in int[] types);
+    List<String> getGroupMemberIds(in String groupId, in int[] types);
+    oneway void loadGroupMemberFromRemote(in String groupId);
     oneway void transferGroup(in String groupId, in String newOwner, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void setGroupManager(in String groupId, in boolean isSet, in List<String> memberIds, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
     oneway void muteOrAllowGroupMember(in String groupId, in boolean isSet, in List<String> memberIds, in boolean isAllow, in int[] notifyLines, in MessagePayload notifyMsg, in IGeneralCallback callback);
