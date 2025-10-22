@@ -7837,7 +7837,7 @@ public class ChatManager {
         }
 
         try {
-            return mClient.loadGroupMemberFromRemote(groupId);
+            mClient.loadGroupMemberFromRemote(groupId);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
