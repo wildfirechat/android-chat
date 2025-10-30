@@ -76,23 +76,30 @@ public class ConferenceParticipantItemVideoView extends ConferenceParticipantIte
 
     @Override
     public void setup(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile profile) {
+        if (this.profile != null && this.profile.equals(profile)) {
+            return;
+        }
         super.setup(session, profile);
         if (!profile.isVideoMuted()) {
-        videoContainer.setVisibility(VISIBLE);
+            videoContainer.setVisibility(VISIBLE);
             portraitImageView.setVisibility(GONE);
             nameTextView.setVisibility(GONE);
+            //statusTextView.setText(R.string.connecting);
+            setupVideoView(session, profile);
+        } else {
+            videoContainer.setVisibility(GONE);
+            portraitImageView.setVisibility(VISIBLE);
+            nameTextView.setVisibility(VISIBLE);
+        }
+    }
+
+    public void setupVideoView(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile profile){
         if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
             session.setupLocalVideoView(videoContainer, scalingType);
         } else {
             session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, scalingType);
             // 用下面这种效果更好
             //session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, RendererCommon.ScalingType.SCALE_ASPECT_FILL, scalingType);
-        }
-        //statusTextView.setText(R.string.connecting);
-        } else {
-            videoContainer.setVisibility(GONE);
-            portraitImageView.setVisibility(VISIBLE);
-            nameTextView.setVisibility(VISIBLE);
         }
     }
 

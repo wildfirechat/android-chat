@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.lifecycle.ViewTreeLifecycleOwner;
 import androidx.lifecycle.ViewTreeViewModelStoreOwner;
@@ -38,6 +37,7 @@ public class ConferenceParticipantItemView extends RelativeLayout {
     protected MicImageView micImageView;
     protected ImageView videoStateImageView;
     protected TextView nameTextView;
+    protected AVEngineKit.ParticipantProfile profile;
 
     private UserViewModel userViewModel;
 
@@ -85,6 +85,10 @@ public class ConferenceParticipantItemView extends RelativeLayout {
     }
 
     public void setup(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile profile) {
+        if(this.profile != null && this.profile.equals(profile)){
+            return;
+        }
+        this.profile = profile;
         String participantKey = VoipBaseActivity.participantKey(profile.getUserId(), profile.isScreenSharing());
         UserInfo userInfo = ChatManager.Instance().getUserInfo(profile.getUserId(), false);
         this.setTag(participantKey);
