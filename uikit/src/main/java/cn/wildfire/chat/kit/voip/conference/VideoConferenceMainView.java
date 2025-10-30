@@ -71,15 +71,10 @@ class VideoConferenceMainView extends RelativeLayout {
 
     public void setupProfiles(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile myProfile, AVEngineKit.ParticipantProfile focusProfile) {
         this.callSession = session;
-        this.myProfile = myProfile;
 
-        if (this.focusProfile != null && focusProfile != null && !this.focusProfile.isVideoMuted() && !this.focusProfile.getUserId().equals(focusProfile.getUserId())) {
-            session.setParticipantVideoType(this.focusProfile.getUserId(), this.focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
-        }
-        this.focusProfile = focusProfile;
         // 不 post 一下，可能视频流界面黑屏，原因未知
         ChatManager.Instance().getMainHandler().post(() -> {
-            setupConferenceMainView();
+            setupConferenceMainView(myProfile, focusProfile);
         });
     }
 
@@ -87,16 +82,14 @@ class VideoConferenceMainView extends RelativeLayout {
         if (this.myProfile == null) {
             // myProfile 和 focusProfile 换位置
         }
-        this.myProfile = myProfile;
-        setupConferenceMainView();
+        setupConferenceMainView(myProfile, this.focusProfile);
     }
 
     public void updateFocusProfile(AVEngineKit.ParticipantProfile focusProfile) {
         if (this.focusProfile == null) {
             // myProfile 和 focusProfile 换位置
         }
-        this.focusProfile = focusProfile;
-        setupConferenceMainView();
+        setupConferenceMainView(this.myProfile, focusProfile);
     }
 
     public void updateParticipantVolume(String userId, int volume) {
@@ -124,7 +117,14 @@ class VideoConferenceMainView extends RelativeLayout {
     public static final String TAG = "ConferenceVideoFragment";
 
 
-    private void setupConferenceMainView() {
+    private void setupConferenceMainView(AVEngineKit.ParticipantProfile myProfile, AVEngineKit.ParticipantProfile focusProfile) {
+
+        if ((this.myProfile != null && this.myProfile.equals(myProfile) && (this.focusProfile != null && this.focusProfile.equals(focusProfile)))) {
+            return;
+        }
+
+        this.myProfile = myProfile;
+        this.focusProfile = focusProfile;
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int height = Math.max(dm.heightPixels, dm.widthPixels);
@@ -184,10 +184,12 @@ class VideoConferenceMainView extends RelativeLayout {
         }
     }
 
+
     public void onPageUnselected(boolean keepSubscribeFocusVideo) {
         if (focusProfile != null && !keepSubscribeFocusVideo) {
             callSession.setParticipantVideoType(focusProfile.getUserId(), focusProfile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
         }
+        this.focusProfile = null;
     }
 
 }
