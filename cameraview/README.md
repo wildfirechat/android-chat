@@ -1,5 +1,5 @@
-本项目原始代码，拷贝自[CameraView](https://github.com/CJT2325/CameraView)
+The original code of this project is copied from [CameraView](https://github.com/CJT2325/CameraView)
 
-相对原始代码的修改，可以通过提交日志查阅
+Modifications relative to the original code can be viewed through the commit log
 
-感谢原作者
+Thanks to the original author

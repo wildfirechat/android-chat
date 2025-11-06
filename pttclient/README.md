@@ -1,1 +1,1 @@
-语音对讲功能默认关闭，如果有需求，请联系官方
+Push-to-talk (PTT) functionality is disabled by default. If you need it, please contact us.

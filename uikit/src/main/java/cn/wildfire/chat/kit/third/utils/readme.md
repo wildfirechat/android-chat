@@ -1,1 +1,1 @@
-这个包的代码，拷贝自：[LQRWeChat](https://github.com/GitLqr/LQRWeChat)
+The code in this package is copied from: [LQRWeChat](https://github.com/GitLqr/LQRWeChat)

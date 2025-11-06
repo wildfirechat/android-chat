@@ -23,20 +23,20 @@ import com.cjt2325.cameralibrary.listener.TypeListener;
 
 /**
  * =====================================
- * 作    者: 陈嘉桐 445263848@qq.com
- * 版    本：1.0.4
- * 创建日期：2017/4/26
- * 描    述：集成各个控件的布局
+ * Author: Chen Jiatong 445263848@qq.com
+ * Version: 1.0.4
+ * Created: 2017/4/26
+ * Description: Layout integrating various controls
  * =====================================
  */
 
 public class CaptureLayout extends FrameLayout {
 
-    private CaptureListener captureLisenter;    //拍照按钮监听
-    private TypeListener typeLisenter;          //拍照或录制后接结果按钮监听
-    private ReturnListener returnListener;      //退出按钮监听
-    private ClickListener leftClickListener;    //左边按钮监听
-    private ClickListener rightClickListener;   //右边按钮监听
+    private CaptureListener captureLisenter;    // Capture button listener
+    private TypeListener typeLisenter;          // Result button listener after photo/video capture
+    private ReturnListener returnListener;      // Exit button listener
+    private ClickListener leftClickListener;    // Left button listener
+    private ClickListener rightClickListener;   // Right button listener
 
     public void setTypeLisenter(TypeListener typeLisenter) {
         this.typeLisenter = typeLisenter;
@@ -50,13 +50,13 @@ public class CaptureLayout extends FrameLayout {
         this.returnListener = returnListener;
     }
 
-    private CaptureButton btn_capture;      //拍照按钮
-    private TypeButton btn_confirm;         //确认按钮
-    private TypeButton btn_cancel;          //取消按钮
-    private ReturnButton btn_return;        //返回按钮
-    private ImageView iv_custom_left;            //左边自定义按钮
-    private ImageView iv_custom_right;            //右边自定义按钮
-    private TextView txt_tip;               //提示文本
+    private CaptureButton btn_capture;      // Capture button
+    private TypeButton btn_confirm;         // Confirm button
+    private TypeButton btn_cancel;          // Cancel button
+    private ReturnButton btn_return;        // Return button
+    private ImageView iv_custom_left;       // Left custom button
+    private ImageView iv_custom_right;      // Right custom button
+    private TextView txt_tip;               // Tip text
 
     private int layout_width;
     private int layout_height;

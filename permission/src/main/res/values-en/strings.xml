@@ -1,0 +1,41 @@
+<resources>
+    <string name="permission_audio_title">%s requests microphone permission</string>
+    <string name="permission_audio_desc">After selecting Allow in the dialog below, you can record voice messages or shoot videos to send to friends, use audio/video calls, and more.</string>
+    <string name="permission_audio_denied_title">Microphone permission is not enabled</string>
+    <string name="permission_audio_denied_desc">Enable microphone permission in Settings - Apps - %s - Permissions to use voice messages, short videos, audio/video calls, and other features normally.</string>
+
+    <string name="permission_camera_title">%s requests camera permission</string>
+    <string name="permission_camera_desc">After selecting Allow in the dialog below, you can take photos or videos to send to friends, use video calls, group live broadcasts, and more. You can also access the camera in other scenarios to take photos and videos.</string>
+    <string name="permission_camera_denied_title">Camera permission is not enabled</string>
+    <string name="permission_camera_denied_desc">Enable camera permission in Settings - Apps - %s - Permissions to use photo taking, short videos, QR code scanning, and other features normally.</string>
+
+    <string name="permission_bluetooth_connect_title">%s requests Bluetooth permission</string>
+    <string name="permission_bluetooth_connect_desc">After selecting Allow in the dialog below, you can use Bluetooth devices for audio/video calls.</string>
+    <string name="permission_bluetooth_connect_denied_title">Bluetooth permission is not enabled</string>
+    <string name="permission_bluetooth_connect_denied_desc">Enable Bluetooth permission in Settings - Apps - %s - Permissions to use Bluetooth devices for audio/video calls normally.</string>
+
+    <string name="permission_read_image_title">%s requests photo access permission</string>
+    <string name="permission_read_image_desc">After selecting Allow in the dialog below, you can access your photo album, send photos to friends, update your avatar, and more.</string>
+    <string name="permission_read_image_denied_title">Photo access permission is not enabled</string>
+    <string name="permission_read_image_denied_desc">Enable photo permission in Settings - Apps - %s - Permissions to send photos, update your avatar, and use other features normally.</string>
+
+    <string name="permission_read_video_title">%s requests video access permission</string>
+    <string name="permission_read_video_desc">After selecting Allow in the dialog below, you can access your photo album and send videos to friends.</string>
+    <string name="permission_read_video_denied_title">Video access permission is not enabled</string>
+    <string name="permission_read_video_denied_desc">Enable video permission in Settings - Apps - %s - Permissions to send videos and use other features normally.</string>
+
+    <string name="permission_storage_title">%s requests external storage access permission</string>
+    <string name="permission_storage_desc">After selecting Allow in the dialog below, you can access your photo album, send images and videos to friends, update your avatar, and more.</string>
+    <string name="permission_storage_denied_title">External storage access permission is not enabled</string>
+    <string name="permission_storage_denied_desc">Enable external storage access permission in Settings - Apps - %s - Permissions to send images, videos, files, update your avatar, and use other features normally.</string>
+
+    <string name="permission_notification_title">%s requests notification permission</string>
+    <string name="permission_notification_desc">After selecting Allow in the dialog below, when the app is running in the background and receives messages, you will be notified</string>
+    <string name="permission_notification_denied_title">Notification permission is not enabled</string>
+    <string name="permission_notification_denied_desc">Enable notification permission in Settings - Apps - %s - Permissions to receive message notifications in time.</string>
+
+    <string name="permission_location_title">%s requests location permission</string>
+    <string name="permission_location_desc">After selecting Allow in the dialog below, you can send location messages</string>
+    <string name="permission_location_denied_title">Location permission is not enabled</string>
+    <string name="permission_location_denied_desc">Enable location permission in Settings - Apps - %s - Permissions to send location messages.</string>
+</resources>

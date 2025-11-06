@@ -1,17 +1,17 @@
-## 提issue小提示
-为了尽快定位问题，需要提供足够的信息，请按照我们的要求格式来提问。***如果您不按照格式提问，我们将无法回复您的问题***
+## Tips for Submitting Issues
+To help us locate problems quickly, we need sufficient information. Please follow our required format when submitting questions. ***If you do not follow the format, we will not be able to respond to your issue***
 
-#### 操作说明
-详细说明操作那个界面，每一步骤都要说得详细，如果是SDK或者api使用问题，需要详细说明调用的那个函数，参数都是什么。
+#### Operation Instructions
+Provide detailed descriptions of which interface you're operating on, and every step needs to be detailed. If it's an SDK or API usage issue, you need to specify which function was called and what parameters were used.
 
-#### 表现现象
-描述一下什么现象，比如说函数返回error，errorcode是多少，或者界面上是什么状态，比如发送消息显示发送失败的红点。不要笼统的说功能有问题，不起作用。
+#### Observed Behavior
+Describe what phenomenon occurred. For example, if a function returns an error, what is the error code? Or what is the status on the interface, such as a red dot indicating message send failure. Don't just say the feature "has a problem" or "doesn't work" in general terms.
 
-#### 预期结果
-你认为正确的表现应该是什么样的。
+#### Expected Result
+What do you think the correct behavior should be?
 
-#### 补充条件
-是否是必现的，还是偶现的？是否只有在特殊的网络/设备/平台上出现，还是所有的都出现。还有您用的版本是什么时候的，是不是最新版
+#### Additional Information
+Is it reproducible every time or occasionally? Does it only occur on specific networks/devices/platforms, or does it happen on all of them? Also, what version are you using? Is it the latest version?
 
-#### demo对比结果
-请用demo对比测试，demo上是什么状态。
+#### Demo Comparison Results
+Please test with the demo and report what the status is in the demo.

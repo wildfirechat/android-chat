@@ -1,0 +1,11 @@
+<resources>
+    <string name="all_images">All Images</string>
+    <string name="folder_image_count">Total %1$d</string>
+    <string name="preview_image_count">%1$d/%2$d</string>
+    <string name="select_limit">Select up to %1$d images</string>
+    <string name="complete">Done</string>
+    <string name="select_complete">Done(%1$d/%2$d)</string>
+    <string name="preview_count">Preview(%1$d)</string>
+    <string name="origin">Original</string>
+    <string name="origin_size">Original(%1$s)</string>
+</resources>

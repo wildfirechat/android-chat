@@ -1,24 +1,23 @@
-#推送说明
-1. 目前集成了小米、华为、魅族推送，开发者可以自行集成其他推送。小米、华为、魅族手机上，分别走各家自己的推送；其他手机走小米推送。
-2. 项目中的key等，只供测试使用，开发者需要自行申请相关key等。
+# Push Notification Instructions
+1. Currently integrated with Xiaomi, Huawei, and Meizu push services. Developers can integrate other push services on their own. On Xiaomi, Huawei, and Meizu phones, each uses their own push service; other phones use Xiaomi push.
+2. The keys in the project are for testing purposes only. Developers need to apply for their own keys.
 
-##小米推送
-1. 小米支持透传和通知栏推送，目前voip相关消息，走透传推送，其他消息，走通知栏推送。透传和通知栏的差别如下表：
+## Xiaomi Push
+1. Xiaomi supports pass-through push and notification bar push. Currently, VoIP-related messages use pass-through push, and other messages use notification bar push. The differences between pass-through and notification bar push are as follows:
 
-  |            | 透传推送                       | 通知栏推送                   |
+  |            | Pass-through Push                       | Notification Bar Push                   |
   | ---------- | ------------------------------ | ---------------------------- |
-  | 允许自启动 | 通知栏不弹出通知，但拉活应用   | 通知栏弹出通知，并拉活应用   |
-  | 禁止自启动 | 通知栏不弹出通知，也不拉活应用 | 通知栏弹出通知，但不拉活应用 |
+  | Allow Auto-start | No notification in notification bar, but wakes up app   | Notification appears in notification bar and wakes up app   |
+  | Prohibit Auto-start | No notification in notification bar, and doesn't wake up app | Notification appears in notification bar, but doesn't wake up app |
 
-2. 当允许自启动，并采用通知栏推送时，通知栏会重复
+2. When auto-start is allowed and notification bar push is used, notifications may appear duplicated in the notification bar
 
-## 华为推送
-
-todo
-
-## 魅族推送
+## Huawei Push
 
 todo
 
+## Meizu Push
+
+todo
 
 

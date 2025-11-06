@@ -1,2 +1,2 @@
-这是一个参考，代码风格和其他的也不一样，仅供参考
-代码是基于，[LQRWeChat](https://github.com/GitLqr/LQRWeChat)
+This is a reference. The code style is different from the others, for reference only.
+The code is based on [LQRWeChat](https://github.com/GitLqr/LQRWeChat)

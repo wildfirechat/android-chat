@@ -1,1 +1,1 @@
-本模块基于 [FloatMenu](https://github.com/JavaNoober/FloatMenu) 和 [SelectTextHelper](https://github.com/ITxiaoguang/SelectTextHelper) 开发
+This module is developed based on [FloatMenu](https://github.com/JavaNoober/FloatMenu) and [SelectTextHelper](https://github.com/ITxiaoguang/SelectTextHelper)
