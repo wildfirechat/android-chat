@@ -50,20 +50,20 @@ public class AppService implements AppServiceProvider {
     private static final AppService Instance = new AppService();
 
     /**
-     * App Server默认使用的是8888端口，替换为自己部署的服务时需要注意端口别填错了
+     * App Server uses port 8888 by default. When replacing with your own deployed service, be careful not to get the port wrong
      * <br>
-     * 这是个 http 地址，http 前缀不能省略，否则会提示配置错误，然后直接退出
+     * This is an http address, the http prefix cannot be omitted, otherwise it will prompt configuration error and then exit directly
      * <br>
-     * 正式商用时，建议用https，确保token安全
+     * For official commercial use, it is recommended to use https to ensure token security
      * <br>
      * <br>
      */
 
     // ipv6
-    // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "http://[2409:8a00:32c0:1ee8:782d:fBc8:2e1b:4d10]:8888";
+    // public static String APP_SERVER_ADDRESS/* Please read the above comment carefully */ = "http://[2409:8a00:32c0:1ee8:782d:fBc8:2e1b:4d10]:8888";
     // ipv4
-    // public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释，http 前缀不能省略*/ = "http://wildfirechat.net:8888";
-    public static String APP_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = "https://app.wildfirechat.net";
+    // public static String APP_SERVER_ADDRESS/* Please read the above comment carefully, http prefix cannot be omitted */ = "http://wildfirechat.net:8888";
+    public static String APP_SERVER_ADDRESS/* Please read the above comment carefully */ = "https://app.wildfirechat.net";
 
     private AppService() {
 
@@ -86,7 +86,7 @@ public class AppService implements AppServiceProvider {
         params.put("mobile", mobile);
         params.put("password", password);
 
-        //如果是android pad，需要设置为pad类型 ChatManager.Instance().setPlatform(true);
+        // If it's an Android pad, need to set to pad type: ChatManager.Instance().setPlatform(true);
         params.put("platform", ChatManager.Instance().getPlatform().value());
 
         try {
@@ -128,10 +128,10 @@ public class AppService implements AppServiceProvider {
         //Platform_iPad = 8,
         //Platform_APad = 9,
 
-        //如果是android pad设备，需要改这里，另外需要在ClientService对象中修改设备类型，请在ClientService代码中搜索"android pad"
-        //if（当前设备是android pad)
+        // If it's an Android pad device, need to change here. Also need to modify device type in ClientService object. Search for "android pad" in ClientService code
+        // if (current device is android pad)
         //  params.put("platform", new Integer(9));
-        //else
+        // else
         params.put("platform", new Integer(2));
 
         try {
@@ -313,7 +313,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void getGroupAnnouncement(String groupId, AppServiceProvider.GetGroupAnnouncementCallback callback) {
-        //从SP中获取到历史数据callback回去，然后再从网络刷新
+        // Get historical data from SharedPreferences and callback, then refresh from network
         String url = APP_SERVER_ADDRESS + "/get_group_announcement";
 
         Map<String, Object> params = new HashMap<>(2);
@@ -333,7 +333,7 @@ public class AppService implements AppServiceProvider {
 
     @Override
     public void updateGroupAnnouncement(String groupId, String announcement, AppServiceProvider.UpdateGroupAnnouncementCallback callback) {
-        //更新到应用服务，再保存到本地SP中
+        // Update to application service, then save to local SharedPreferences
         String url = APP_SERVER_ADDRESS + "/put_group_announcement";
 
         Map<String, Object> params = new HashMap<>(2);
@@ -391,7 +391,7 @@ public class AppService implements AppServiceProvider {
             if (!file.exists()) {
                 continue;
             }
-            // 重复上传最后一个日志文件，因为上传之后，还会追加内容
+            // Re-upload the last log file because content will be appended after upload
             if (!sp.contains(path) || i == filePaths.size() - 1) {
                 toUploadCount++;
                 OKHttpHelper.upload(url, null, file, MediaType.get("application/octet-stream"), new SimpleCallback<Void>() {

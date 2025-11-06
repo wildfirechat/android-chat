@@ -28,7 +28,7 @@ import cn.wildfirechat.remote.OnConnectToServerListener;
 
 public class MyApp extends BaseApp implements OnConnectToServerListener {
 
-    // 一定记得替换为你们自己的，ID请从BUGLY官网申请。关于BUGLY，可以从BUGLY官网了解，或者百度。
+    // Be sure to replace this with your own. ID should be obtained from the BUGLY official website. For information about BUGLY, you can check the BUGLY official website or search online.
     public static String BUGLY_ID = "15dfd5f6d1";
 
     public static String routeHost;
@@ -41,13 +41,13 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
         super.onCreate();
         AppService.validateConfig(this);
 
-        // bugly，务必替换为你自己的!!!
+        // bugly, must replace with your own!!!
         if ("wildfirechat.net".equals(Config.IM_SERVER_HOST)) {
 //            CrashReport.initCrashReport(getApplicationContext(), BUGLY_ID, false);
         }
-        // 只在主进程初始化，否则会导致重复收到消息
+        // Only initialize in the main process, otherwise it will cause duplicate message reception
         if (getCurProcessName(this).equals(BuildConfig.APPLICATION_ID)) {
-            // 如果uikit是以aar的方式引入 ，那么需要在此对Config里面的属性进行配置，如：
+            // If uikit is included as an aar, then you need to configure the properties in Config here, such as:
             // Config.IM_SERVER_HOST = "im.example.com";
             WfcUIKit wfcUIKit = WfcUIKit.getWfcUIKit();
             wfcUIKit.init(this);
@@ -76,8 +76,8 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
             }
 
             if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(token)) {
-                //需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
-                //另外不能多次connect，如果需要切换用户请先disconnect，然后3秒钟之后再connect（如果是用户手动登录可以不用等，因为用户操作很难3秒完成，如果程序自动切换请等3秒）
+                // Note that token is strongly dependent on clientId. You must call getClientId to get the clientId, and then use this clientId to get the token. Only then can connect succeed. If you randomly use a clientId to get a token, the connection will fail.
+                // Also, do not connect multiple times. If you need to switch users, disconnect first, then wait 3 seconds before connecting again (if it's a user manual login, you don't need to wait, because user operations are unlikely to complete in 3 seconds; if the program switches automatically, wait 3 seconds)
                 ChatManagerHolder.gChatManager.connect(id, token);
             }
 
@@ -96,11 +96,11 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
 
     @Override
     protected void attachBaseContext(Context base) {
-        // 获取用户语言偏好
+        // Get user language preference
         String language = LocaleUtils.getLanguage(base);
-        // 应用用户语言设置
+        // Apply user language setting
         Context context = LocaleUtils.updateResources(base, language);
-        // 调用父类方法
+        // Call parent method
         super.attachBaseContext(context);
     }
 

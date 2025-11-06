@@ -6,7 +6,7 @@ package cn.wildfire.chat.app.login.model;
 
 
 /**
- * 真-model，code啊，message之类的，放到了status里面去了
+ * True model - code, message, etc. are placed in status
  */
 public class LoginResult {
     private String userId;

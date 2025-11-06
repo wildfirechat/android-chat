@@ -19,32 +19,32 @@ import javax.crypto.Cipher;
 import cn.wildfire.chat.kit.Config;
 
 public class KeyStoreUtil {
-    // 密钥库类型
+    // KeyStore type
     private static final String PP_KEYSTORE_TYPE = "AndroidKeyStore";
-    // 密钥库别名
+    // KeyStore alias
     private static final String PP_KEYSTORE_ALIAS = "pp_keystore_alias";
-    // 加密算法标准算法名称
+    // Encryption algorithm standard name
     private static final String PP_TRANSFORMATION = "RSA/ECB/PKCS1Padding";
 
     /**
-     * 触发生成密钥对.
+     * Trigger key pair generation.
      * <p>
-     * 生成RSA 密钥对，包括公钥和私钥
+     * Generate RSA key pair, including public key and private key
      *
-     * @return KeyPair 密钥对，包含公钥和私钥
+     * @return KeyPair key pair, containing public key and private key
      */
     private static KeyPair generateKey() throws Exception {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            // 创建密钥生成器
+            // Create key pair generator
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, PP_KEYSTORE_TYPE);
-            // 配置密钥生成器参数
+            // Configure key pair generator parameters
             KeyGenParameterSpec builder = new KeyGenParameterSpec.Builder(PP_KEYSTORE_ALIAS, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
                 .setDigests(KeyProperties.DIGEST_SHA256)
                 .build();
 
             keyPairGenerator.initialize(builder);
-            // 生成密钥对
+            // Generate key pair
             return keyPairGenerator.generateKeyPair();
         } else {
             return null;
@@ -52,14 +52,14 @@ public class KeyStoreUtil {
     }
 
     /**
-     * 获取公钥.
+     * Get public key.
      *
-     * @return 公钥
+     * @return public key
      */
     private static PublicKey getPublicKey() throws Exception {
         KeyStore keyStore = KeyStore.getInstance(PP_KEYSTORE_TYPE);
         keyStore.load(null);
-        // 判断密钥是否存在
+        // Check if key exists
         if (!keyStore.containsAlias(PP_KEYSTORE_ALIAS)) {
             return generateKey().getPublic();
         }
@@ -76,14 +76,14 @@ public class KeyStoreUtil {
     }
 
     /**
-     * 获取私钥.
+     * Get private key.
      *
-     * @return 密钥
+     * @return private key
      */
     private static PrivateKey getPrivateKey() throws Exception {
         KeyStore keyStore = KeyStore.getInstance(PP_KEYSTORE_TYPE);
         keyStore.load(null);
-        // 判断密钥是否存在
+        // Check if key exists
         if (!keyStore.containsAlias(PP_KEYSTORE_ALIAS)) {
             return generateKey().getPrivate();
         }
@@ -100,11 +100,11 @@ public class KeyStoreUtil {
     }
 
     /**
-     * 加密保存数据
+     * Encrypt and save data
      *
-     * @param context 上下文
-     * @param key     数据的Key
-     * @param data    数据
+     * @param context context
+     * @param key     data key
+     * @param data    data
      */
     public static void saveData(Context context, String key, String data) throws Exception {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -120,11 +120,11 @@ public class KeyStoreUtil {
     }
 
     /**
-     * 获取保密数据
+     * Get confidential data
      *
-     * @param context 上下文
-     * @param key     数据的Key
-     * @return 解密后的数据
+     * @param context context
+     * @param key     data key
+     * @return decrypted data
      */
     public static String getData(Context context, String key) throws Exception {
         SharedPreferences sharedPreferences = context.getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);

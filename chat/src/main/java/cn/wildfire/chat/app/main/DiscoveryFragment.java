@@ -117,7 +117,7 @@ public class DiscoveryFragment extends Fragment {
 
     void moment() {
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
-        // 具体项目中，如果不能隐式启动，可改为下面这种显示启动朋友圈页面
+        // In specific projects, if implicit start doesn't work, change to explicit start like below to launch Moments page
 //        Intent intent = new Intent(getActivity(), FeedListActivity.class);
         startActivity(intent);
     }

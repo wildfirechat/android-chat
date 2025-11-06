@@ -11,16 +11,16 @@ import androidx.multidex.MultiDexApplication;
 
 public class BaseApp extends MultiDexApplication {
 
-    //以下属性应用于整个应用程序，合理利用资源，减少资源浪费
-    private static Context mContext;//上下文
-    private static long mMainThreadId;//主线程id
-    private static Handler mHandler;//主线程Handler
+    // The following properties apply to the entire application, to make reasonable use of resources and reduce resource waste
+    private static Context mContext; // Context
+    private static long mMainThreadId; // Main thread ID
+    private static Handler mHandler; // Main thread Handler
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        //对全局属性赋值
+        // Assign values to global properties
         mContext = getApplicationContext();
         mMainThreadId = android.os.Process.myTid();
         mHandler = new Handler();

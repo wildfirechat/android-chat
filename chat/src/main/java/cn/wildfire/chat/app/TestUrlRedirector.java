@@ -7,26 +7,26 @@ package cn.wildfire.chat.app;
 import cn.wildfirechat.remote.UrlRedirector;
 
 /**
- * 网络地址转换参考实现
+ * Network address redirection reference implementation
  */
 public class TestUrlRedirector implements UrlRedirector {
     /**
-     * 双网时，需要根据网络类型进行地址转换
+     * For dual network, address redirection needs to be performed based on network type
      *
-     * @param originalUrl 原始 url
-     * @return 根据网络环境转换之后的 url
+     * @param originalUrl original url
+     * @return url after redirection based on network environment
      */
     @Override
     public String urlRedirect(String originalUrl) {
-        // 未部署双网环境，故直接返回
+        // No dual network environment deployed, so return directly
         return originalUrl;
 
-        // 双网环境时，请参考下面的参考实现
+        // For dual network environment, please refer to the reference implementation below
 //        if (ChatManager.Instance().isConnectedToMainNetwork()) {
-//            // 当前连接的是主网络
+//            // Currently connected to main network
 //            originalUrl = originalUrl.replace("192.168.2.19", "oss.xxxx.com");
 //        } else {
-//            // 当前连接的是备选网络
+//            // Currently connected to backup network
 //            originalUrl = originalUrl.replace("oss.xxxx.com", "192.168.2.19");
 //        }
 //        return originalUrl;

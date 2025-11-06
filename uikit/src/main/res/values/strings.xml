@@ -1,787 +1,787 @@
 <resources>
-    <string name="complete">完成</string>
-    <string name="complete_with_count">完成(%d)</string>
+    <string name="complete">Complete</string>
+    <string name="complete_with_count">Complete(%d)</string>
 
-    <string name="draft">[草稿]</string>
-    <string name="video">视频</string>
-    <string name="set_conversation_to_top">置顶聊天</string>
-    <string name="scan_qrcode">扫一扫</string>
+    <string name="draft">[Draft]</string>
+    <string name="video">Video</string>
+    <string name="set_conversation_to_top">Pin Chat</string>
+    <string name="scan_qrcode">Scan QR Code</string>
 
-    <!--联系人-->
-    <string name="contacts">联系人</string>
-    <string name="new_friend">新的朋友</string>
-    <string name="group_chat">群聊</string>
-    <string name="join_group_chat">加入群聊</string>
-    <string name="enter_group_chat">进入群聊</string>
-    <string name="contact_category">联系人</string>
-    <string name="group_category">群组</string>
+    <!--Contacts-->
+    <string name="contacts">Contacts</string>
+    <string name="new_friend">New Friends</string>
+    <string name="group_chat">Group Chat</string>
+    <string name="join_group_chat">Join Group Chat</string>
+    <string name="enter_group_chat">Enter Group Chat</string>
+    <string name="contact_category">Contacts</string>
+    <string name="group_category">Groups</string>
 
     <!--Voip-->
-    <string name="voip_audio_chat">语音聊天</string>
-    <string name="voip_video_chat">视频聊天</string>
-    <string name="voip_switch_camera">切换摄像头</string>
-    <string name="voip_hangup">挂断</string>
-    <string name="voip_accept">接听</string>
-    <string name="voip_connecting">连接中...</string>
-    <string name="voip_call_duration">通话时长: %1$s</string>
+    <string name="voip_audio_chat">Voice Chat</string>
+    <string name="voip_video_chat">Video Chat</string>
+    <string name="voip_switch_camera">Switch Camera</string>
+    <string name="voip_hangup">Hang Up</string>
+    <string name="voip_accept">Answer</string>
+    <string name="voip_connecting">Connecting...</string>
+    <string name="voip_call_duration">Call Duration: %1$s</string>
 
 
     <!--Conference-->
-    <string name="conference_create">发起会议</string>
-    <string name="conference_join">加入会议</string>
-    <string name="conference_title">会议主题</string>
-    <string name="conference_id">会议ID</string>
-    <string name="conference_join_hint">请输入会议ID</string>
-    <string name="conference_participants">参会人</string>
+    <string name="conference_create">Start Conference</string>
+    <string name="conference_join">Join Conference</string>
+    <string name="conference_title">Conference Topic</string>
+    <string name="conference_id">Conference ID</string>
+    <string name="conference_join_hint">Enter Conference ID</string>
+    <string name="conference_participants">Participants</string>
 
-    <!--新的朋友-->
-    <string name="add_friend">添加朋友</string>
-    <string name="no_recommend_friend">还没有推荐的朋友</string>
+    <!--New Friends-->
+    <string name="add_friend">Add Friend</string>
+    <string name="no_recommend_friend">No recommended friends yet</string>
 
-    <!--搜索用户-->
-    <string name="user_no_found">该用户不存在</string>
-    <string name="search">搜索</string>
+    <!--Search User-->
+    <string name="user_no_found">User does not exist</string>
+    <string name="search">Search</string>
     <!-- Search User -->
-    <string name="search_user_tip_local">在本单位搜索用户\n输入关键词开始搜索</string>
-    <string name="search_user_tip_domain">在 %1$s 搜索用户\n输入关键词开始搜索</string>
+    <string name="search_user_tip_local">Search users in this organization\nEnter keywords to start searching</string>
+    <string name="search_user_tip_domain">Search users in %1$s\nEnter keywords to start searching</string>
     <!-- Search User Category -->
-    <string name="search_user_category_local">在本单位搜索用户</string>
-    <string name="search_user_category_domain">在 %1$s 搜索用户</string>
+    <string name="search_user_category_local">Search users in this organization</string>
+    <string name="search_user_category_domain">Search users in %1$s</string>
 
-    <!--用户信息-->
-    <string name="nickname_colon">昵称:%1$s</string>
-    <string name="set_alias_and_tag">设置备注和标签</string>
-    <string name="send_message">发消息</string>
-    <string name="video_chat">视频聊天</string>
-    <string name="add_to_contact">添加到通讯录</string>
-    <string name="change_my_name_tip">好名字可以让你的朋友 更容易记住你。</string>
+    <!--User Info-->
+    <string name="nickname_colon">Nickname:%1$s</string>
+    <string name="set_alias_and_tag">Set Remark and Tags</string>
+    <string name="send_message">Send Message</string>
+    <string name="video_chat">Video Chat</string>
+    <string name="add_to_contact">Add to Contacts</string>
+    <string name="change_my_name_tip">A good name can make it easier for friends to remember you.</string>
 
-    <!--修改备注-->
-    <string name="alias">备注名</string>
-    <string name="alias_no_empty">备注名不能为空</string>
+    <!--Modify Remark-->
+    <string name="alias">Remark Name</string>
+    <string name="alias_no_empty">Remark name cannot be empty</string>
 
-    <!--附言界面-->
-    <string name="postscript_tip">你需要发送验证申请，等对方通过</string>
-    <string name="send">发送</string>
+    <!--Postscript Interface-->
+    <string name="postscript_tip">You need to send a verification request and wait for approval</string>
+    <string name="send">Send</string>
 
-    <!--会话界面-->
-    <string name="please_to_talk">按住 说话</string>
-    <string name="shot">拍摄</string>
-    <string name="location">位置</string>
-    <string name="file">文件</string>
+    <!--Conversation Interface-->
+    <string name="please_to_talk">Hold to Talk</string>
+    <string name="shot">Capture</string>
+    <string name="location">Location</string>
+    <string name="file">File</string>
 
-    <!--创建群-->
-    <string name="create_group_success">创建群成功</string>
-    <string name="create_group_fail">创建群失败</string>
-    <string name="no_group_now">暂无群聊</string>
+    <!--Create Group-->
+    <string name="create_group_success">Group created successfully</string>
+    <string name="create_group_fail">Failed to create group</string>
+    <string name="no_group_now">No group chats yet</string>
 
-    <!--群信息-->
-    <string name="group_name">群聊名称</string>
-    <string name="group_portrait">群头像</string>
-    <string name="untitled">未命名</string>
-    <string name="group_announcement">群公告</string>
-    <string name="group_announcement_max_length">群公告最多允许 2000 个字符</string>
-    <string name="message_free">消息免打扰</string>
-    <string name="my_nickname_in_this_group">我在本群的昵称</string>
-    <string name="show_group_member_name">显示群成员昵称</string>
-    <string name="clear_chat_log">清空聊天记录</string>
-    <string name="delete_and_exit">删除并退出</string>
-    <string name="delete_and_dismiss">解散并删除</string>
-    <string name="add_member_success">添加群成员成功</string>
-    <string name="add_member_fail">添加群成员失败</string>
-    <string name="del_member_success">删除群成员成功</string>
-    <string name="del_member_fail">删除群成员失败</string>
-    <string name="modify_group_join_type_failed">修改加群方式失败</string>
-    <string name="modify_group_search_type_failed">修改群搜索方式失败</string>
-    <string name="modify_group_history_failed">修改群历史消息失败</string>
-    <string name="set_group_permission_error">设置群成员权限失败 %d</string>
-    <string name="set_group_announcement_success">设置群公告成功</string>
-    <string name="set_group_announcement_failed">设置群公告失败: %1$d %2$s</string>
-    <string name="modify_group_name_success">修改群名称成功</string>
-    <string name="modify_group_name_failed">修改群名称失败: %d</string>
-    <string name="modify_group_remark_success">修改群备注成功</string>
-    <string name="modify_group_remark_failed">修改群备注失败: %d</string>
-    <string name="group_name_contains">群名称包含: %s</string>
-    <string name="group_remark_contains">群备注包含: %s</string>
-    <string name="group_member_name_contains">群成员名包含: %s</string>
-    <string name="group_member_alias_contains">群成员备注包含: %s</string>
-    <string name="join_by_qrcode">通过扫描%s分享的二维码加入</string>
-    <string name="join_by_card">通过%s分享的群名片加入</string>
-    <string name="invited_by">%s邀请加入</string>
-    <string name="join_by_search">搜索群聊加入</string>
-    <string name="unknown">未知</string>
-    <string name="group_owner">群主</string>
+    <!--Group Info-->
+    <string name="group_name">Group Chat Name</string>
+    <string name="group_portrait">Group Avatar</string>
+    <string name="untitled">Untitled</string>
+    <string name="group_announcement">Group Announcement</string>
+    <string name="group_announcement_max_length">Group announcement allows up to 2000 characters</string>
+    <string name="message_free">Do Not Disturb</string>
+    <string name="my_nickname_in_this_group">My Nickname in This Group</string>
+    <string name="show_group_member_name">Show Group Member Nicknames</string>
+    <string name="clear_chat_log">Clear Chat History</string>
+    <string name="delete_and_exit">Delete and Exit</string>
+    <string name="delete_and_dismiss">Dismiss and Delete</string>
+    <string name="add_member_success">Member added successfully</string>
+    <string name="add_member_fail">Failed to add member</string>
+    <string name="del_member_success">Member removed successfully</string>
+    <string name="del_member_fail">Failed to remove member</string>
+    <string name="modify_group_join_type_failed">Failed to modify group join type</string>
+    <string name="modify_group_search_type_failed">Failed to modify group search type</string>
+    <string name="modify_group_history_failed">Failed to modify group history messages</string>
+    <string name="set_group_permission_error">Failed to set group member permissions %d</string>
+    <string name="set_group_announcement_success">Group announcement set successfully</string>
+    <string name="set_group_announcement_failed">Failed to set group announcement: %1$d %2$s</string>
+    <string name="modify_group_name_success">Group name modified successfully</string>
+    <string name="modify_group_name_failed">Failed to modify group name: %d</string>
+    <string name="modify_group_remark_success">Group remark modified successfully</string>
+    <string name="modify_group_remark_failed">Failed to modify group remark: %d</string>
+    <string name="group_name_contains">Group name contains: %s</string>
+    <string name="group_remark_contains">Group remark contains: %s</string>
+    <string name="group_member_name_contains">Group member name contains: %s</string>
+    <string name="group_member_alias_contains">Group member remark contains: %s</string>
+    <string name="join_by_qrcode">Joined by scanning QR code shared by %s</string>
+    <string name="join_by_card">Joined through group card shared by %s</string>
+    <string name="invited_by">Invited by %s</string>
+    <string name="join_by_search">Joined by searching group</string>
+    <string name="unknown">Unknown</string>
+    <string name="group_owner">Owner</string>
 
-    <string name="unsubscribe">取消订阅</string>
-    <string name="unsubscribe_failed">取消订阅失败 %d</string>
-    <string name="channel_unsubscribe_confirm">确认取消订阅频道?</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="unsubscribe_failed">Failed to unsubscribe %d</string>
+    <string name="channel_unsubscribe_confirm">Confirm unsubscribe from channel?</string>
 
-    <string name="close">关闭</string>
-    <string name="confirm">确认</string>
+    <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
 
     <!-- Audio -->
-    <string name="audio_volume_increase_error">音量增大失败</string>
-    <string name="audio_record_init_error">录音初始化失败</string>
-    <string name="audio_record_stop_error">录音停止失败</string>
-    <string name="audio_record_loss_error">录音焦点丢失</string>
+    <string name="audio_volume_increase_error">Failed to increase volume</string>
+    <string name="audio_record_init_error">Failed to initialize recording</string>
+    <string name="audio_record_stop_error">Failed to stop recording</string>
+    <string name="audio_record_loss_error">Lost recording focus</string>
 
     <!-- Audio Recorder -->
-    <string name="voice_rec">按住说话</string>
-    <string name="voice_cancel">松开取消</string>
-    <string name="voice_short">说话时间太短</string>
+    <string name="voice_rec">Hold to Talk</string>
+    <string name="voice_cancel">Release to Cancel</string>
+    <string name="voice_short">Recording too short</string>
 
     <!-- PTT -->
-    <string name="ptt_hold_to_talk">按住 对讲</string>
-    <string name="ptt_release_to_end">松手结束对讲</string>
-    <string name="ptt_request_failed">请求对讲失败 %1$d</string>
+    <string name="ptt_hold_to_talk">Hold to Talk</string>
+    <string name="ptt_release_to_end">Release to End</string>
+    <string name="ptt_request_failed">PTT request failed %1$d</string>
 
     <!-- Channel -->
-    <string name="channel">频道</string>
-    <string name="channel_subscribe">订阅</string>
-    <string name="channel_subscribe_failed">订阅失败: %1$d %2$s</string>
-    <string name="channel_subscribe_success">订阅成功</string>
-    <string name="channel_not_exist">频道不存在或已被销毁</string>
-    <string name="channel_name">名称: %1$s</string>
-    <string name="channel_desc">描述: %1$s</string>
-    <string name="channel_owner">创建者: %1$s</string>
-    <string name="channel_subscription_count">订阅数: %1$d</string>
-    <string name="channel_empty_desc">频道主什么也没写</string>
-    <string name="channel_following">取消收听</string>
-    <string name="channel_not_following">收听频道</string>
-    <string name="channel_following_status">正在%1$s</string>
-    <string name="channel_following_success">%1$s成功</string>
-    <string name="channel_following_failed">%1$s失败</string>
-    <string name="channel_menu_title">频道</string>
-    <string name="channel_create_title">创建频道</string>
-    <string name="channel_create_processing">创建频道中...</string>
-    <string name="channel_create_success">创建频道成功</string>
-    <string name="channel_create_failed">创建频道失败</string>
-    <string name="channel_set_portrait">请设置头像</string>
-    <string name="channel_details">频道详情</string>
-    <string name="channel_qr_code_title">频道二维码</string>
-    <string name="max_emoji_per_message">最多允许输入%d个表情符号</string>
-    <string name="channel_no_menu">频道暂未配置菜单</string>
-    <string name="audio_permission_required">需要录音权限</string>
-    <string name="show_channel_info">显示频道信息</string>
-    <string name="channel_category">频道</string>
-    <string name="click_to_expand_more">点击展开剩余%d项</string>
-    <string name="click_to_expand">点击查看更</string>
-    <string name="channel_name_title">频道名称</string>
-    <string name="channel_desc_title">频道描述</string>
-    <string name="qrcode">二维码</string>
-    <string name="search_message">查找聊天记录</string>
+    <string name="channel">Channel</string>
+    <string name="channel_subscribe">Subscribe</string>
+    <string name="channel_subscribe_failed">Subscribe failed: %1$d %2$s</string>
+    <string name="channel_subscribe_success">Subscribed successfully</string>
+    <string name="channel_not_exist">Channel does not exist or has been destroyed</string>
+    <string name="channel_name">Name: %1$s</string>
+    <string name="channel_desc">Description: %1$s</string>
+    <string name="channel_owner">Creator: %1$s</string>
+    <string name="channel_subscription_count">Subscribers: %1$d</string>
+    <string name="channel_empty_desc">Channel owner hasn\'t written anything</string>
+    <string name="channel_following">Unfollow</string>
+    <string name="channel_not_following">Follow Channel</string>
+    <string name="channel_following_status">%1$s in progress</string>
+    <string name="channel_following_success">%1$s successful</string>
+    <string name="channel_following_failed">%1$s failed</string>
+    <string name="channel_menu_title">Channel</string>
+    <string name="channel_create_title">Create Channel</string>
+    <string name="channel_create_processing">Creating channel...</string>
+    <string name="channel_create_success">Channel created successfully</string>
+    <string name="channel_create_failed">Failed to create channel</string>
+    <string name="channel_set_portrait">Please set avatar</string>
+    <string name="channel_details">Channel Details</string>
+    <string name="channel_qr_code_title">Channel QR Code</string>
+    <string name="max_emoji_per_message">Maximum %d emoji allowed per message</string>
+    <string name="channel_no_menu">Channel menu not configured yet</string>
+    <string name="audio_permission_required">Audio recording permission required</string>
+    <string name="show_channel_info">Show Channel Info</string>
+    <string name="channel_category">Channels</string>
+    <string name="click_to_expand_more">Click to expand remaining %d items</string>
+    <string name="click_to_expand">Click to view more</string>
+    <string name="channel_name_title">Channel Name</string>
+    <string name="channel_desc_title">Channel Description</string>
+    <string name="qrcode">QR Code</string>
+    <string name="search_message">Search Chat History</string>
 
-    <string name="chatroom_details">聊天室详情</string>
-    <string name="chatroom_desc_title">聊天室描述</string>
-    <string name="chatroom_name_title">聊天室名称</string>
+    <string name="chatroom_details">Chatroom Details</string>
+    <string name="chatroom_desc_title">Chatroom Description</string>
+    <string name="chatroom_name_title">Chatroom Name</string>
 
     <!-- External Domain -->
-    <string name="mesh_service_not_enabled">未开启服务互通功能</string>
-    <string name="no_external_organization">没有外部单位</string>
+    <string name="mesh_service_not_enabled">Mesh service not enabled</string>
+    <string name="no_external_organization">No external organizations</string>
 
     <!-- Friend Request -->
-    <string name="contact_request_accepted">已添加</string>
-    <string name="contact_request_rejected">已拒绝</string>
-    <string name="contact_request_accept_error">接受好友请求失败, err = %1$d</string>
+    <string name="contact_request_accepted">Added</string>
+    <string name="contact_request_rejected">Rejected</string>
+    <string name="contact_request_accept_error">Failed to accept friend request, err = %1$d</string>
     <string name="contact_unknown">%1$s</string>
 
     <!-- Friend Invite -->
-    <string name="invite_default_message">我是 %1$s</string>
-    <string name="invite_sent">好友邀请已发送</string>
-    <string name="invite_error">添加好友失败，errorCode = %1$d</string>
+    <string name="invite_default_message">I am %1$s</string>
+    <string name="invite_sent">Friend request sent</string>
+    <string name="invite_error">Failed to add friend, errorCode = %1$d</string>
 
     <!-- Contact Pick -->
-    <string name="contact_pick_confirm">确定</string>
-    <string name="contact_pick_confirm_with_count">确定(%d)</string>
+    <string name="contact_pick_confirm">OK</string>
+    <string name="contact_pick_confirm_with_count">OK(%d)</string>
 
     <!-- Pick Conversation -->
-    <string name="pick_conversation_done">完成</string>
-    <string name="pick_conversation_done_with_count">完成(%d)</string>
+    <string name="pick_conversation_done">Done</string>
+    <string name="pick_conversation_done_with_count">Done(%d)</string>
 
     <!-- Pick User -->
-    <string name="pick_user_limit_exceeded">选人超限</string>
-    <string name="pick_user_empty_hint">请选择用户</string>
-    <string name="pick_user_search_hint">搜索</string>
+    <string name="pick_user_limit_exceeded">Selection limit exceeded</string>
+    <string name="pick_user_empty_hint">Please select users</string>
+    <string name="pick_user_search_hint">Search</string>
 
     <!-- Contact Count -->
-    <string name="contact_count_empty">没有联系人</string>
-    <string name="contact_count_format">%d位联系人</string>
+    <string name="contact_count_empty">No contacts</string>
+    <string name="contact_count_format">%d contacts</string>
 
     <!-- File Extension -->
     <string name="file_type_any">*/*</string>
-    <string name="file_select_error">选择文件错误</string>
-    <string name="file_ext_title">文件</string>
+    <string name="file_select_error">File selection error</string>
+    <string name="file_ext_title">File</string>
 
     <!-- Image Extension -->
-    <string name="image_ext_title">照片</string>
+    <string name="image_ext_title">Photo</string>
 
     <!-- Location Extension -->
-    <string name="location_ext_title">位置</string>
+    <string name="location_ext_title">Location</string>
 
     <!-- Shoot Extension -->
-    <string name="shoot_ext_title">拍摄</string>
-    <string name="shoot_error_feedback">拍照错误, 请向我们反馈</string>
+    <string name="shoot_ext_title">Capture</string>
+    <string name="shoot_error_feedback">Camera error, please report to us</string>
 
     <!-- User Card Extension -->
-    <string name="user_card_personal">[个人名片]</string>
-    <string name="user_card_group">[群组]</string>
-    <string name="user_card_chatroom">[聊天室]</string>
-    <string name="user_card_channel">[频道]</string>
-    <string name="user_card_cancel">取消</string>
-    <string name="user_card_send">发送</string>
-    <string name="user_card_title">名片</string>
+    <string name="user_card_personal">[Personal Card]</string>
+    <string name="user_card_group">[Group]</string>
+    <string name="user_card_chatroom">[Chatroom]</string>
+    <string name="user_card_channel">[Channel]</string>
+    <string name="user_card_cancel">Cancel</string>
+    <string name="user_card_send">Send</string>
+    <string name="user_card_title">Card</string>
 
     <!-- Voip Extension -->
-    <string name="voip_ext_video">视频通话</string>
-    <string name="voip_ext_audio">语音通话</string>
-    <string name="network_call">[网络电话]</string>
+    <string name="voip_ext_video">Video Call</string>
+    <string name="voip_ext_audio">Voice Call</string>
+    <string name="network_call">[Network Call]</string>
 
     <!-- Voip Message -->
-    <string name="call_unknown">未接通</string>
-    <string name="call_audio">语音通话</string>
-    <string name="call_video">视频通话</string>
-    <string name="call_busy">线路忙</string>
-    <string name="call_error">网络错误</string>
-    <string name="call_hangup">已取消</string>
-    <string name="call_remote_hangup">对方已取消</string>
-    <string name="call_no_answer">未接听</string>
-    <string name="call_remote_no_answer">对方未接听</string>
-    <string name="call_accept_other">已在其他端接听</string>
-    <string name="call_ended">通话已结束</string>
-    <string name="call_remote_error">对方网络错误</string>
-    <string name="call_full">已达到最大通话人数</string>
-    <string name="call_duration_hours" formatted="false">通话时长 %d:%02d:%02d</string>
-    <string name="call_duration_minutes" formatted="false">通话时长 %02d:%02d</string>
+    <string name="call_unknown">Not Connected</string>
+    <string name="call_audio">Voice Call</string>
+    <string name="call_video">Video Call</string>
+    <string name="call_busy">Line Busy</string>
+    <string name="call_error">Network Error</string>
+    <string name="call_hangup">Cancelled</string>
+    <string name="call_remote_hangup">Remote Cancelled</string>
+    <string name="call_no_answer">No Answer</string>
+    <string name="call_remote_no_answer">Remote No Answer</string>
+    <string name="call_accept_other">Answered on other device</string>
+    <string name="call_ended">Call Ended</string>
+    <string name="call_remote_error">Remote Network Error</string>
+    <string name="call_full">Maximum participants reached</string>
+    <string name="call_duration_hours" formatted="false">Call Duration %d:%02d:%02d</string>
+    <string name="call_duration_minutes" formatted="false">Call Duration %02d:%02d</string>
 
     <!-- VoIP Call Service -->
-    <string name="call_waiting_for_answer">等待对方接听...</string>
-    <string name="call_invitation">邀请您进行通话...</string>
-    <string name="call_connecting">接听中...</string>
-    <string name="call_in_progress">通话中...</string>
+    <string name="call_waiting_for_answer">Waiting for answer...</string>
+    <string name="call_invitation">Inviting you to call...</string>
+    <string name="call_connecting">Connecting...</string>
+    <string name="call_in_progress">Call in progress...</string>
 
     <!-- File Record -->
-    <string name="file_record_from">来自 %s</string>
-    <string name="all_files">所有文件</string>
-    <string name="my_files">我的文件</string>
-    <string name="conversation_files">会话文件</string>
-    <string name="user_files">用户文件</string>
+    <string name="file_record_from">From %s</string>
+    <string name="all_files">All Files</string>
+    <string name="my_files">My Files</string>
+    <string name="conversation_files">Conversation Files</string>
+    <string name="user_files">User Files</string>
 
     <!-- Forward -->
-    <string name="forward_chat_record">[聊天记录]: %s</string>
-    <string name="forward_batch_messages">[逐条转发]共%d条消息</string>
-    <string name="forward_cancel">取消</string>
-    <string name="forward_send">发送</string>
-    <string name="forward_success">转发成功</string>
-    <string name="forward_failed">转发失败: %d</string>
-    <string name="forward_one_by_one">逐条转发</string>
-    <string name="forward_merge">合并转发</string>
-    <string name="forward_chat_record_title">聊天记录</string>
-    <string name="forward_chat_with">%1$s和%2$s的聊天记录</string>
-    <string name="forward_group_chat">群的聊天记录</string>
-    <string name="chat_records_category">聊天记录</string>
+    <string name="forward_chat_record">[Chat History]: %s</string>
+    <string name="forward_batch_messages">[Forward One-by-One] %d messages total</string>
+    <string name="forward_cancel">Cancel</string>
+    <string name="forward_send">Send</string>
+    <string name="forward_success">Forwarded successfully</string>
+    <string name="forward_failed">Forward failed: %d</string>
+    <string name="forward_one_by_one">Forward One-by-One</string>
+    <string name="forward_merge">Merge Forward</string>
+    <string name="forward_chat_record_title">Chat History</string>
+    <string name="forward_chat_with">Chat history between %1$s and %2$s</string>
+    <string name="forward_group_chat">Group chat history</string>
+    <string name="chat_records_category">Chat History</string>
 
     <!-- Conference -->
-    <string name="conference_not_supported">本版本不支持会议功能</string>
-    <string name="host_invite_speak">主持人邀请你发言</string>
-    <string name="host_invite_camera">主持人邀请你打开摄像头</string>
-    <string name="reject">拒绝</string>
-    <string name="accept">接受</string>
-    <string name="rejected_speak_invite">你拒绝了发言邀请</string>
-    <string name="rejected_camera_invite">你拒绝了打开摄像头邀请</string>
-    <string name="accepted_speak_invite">你接受了发言邀请</string>
-    <string name="accepted_camera_invite">你接受了打开摄像头邀请</string>
-    <string name="host_closed_your_speech">主持人关闭了你的发言</string>
-    <string name="host_unmuted_all_mic">主持人关闭了全员静音，是否要打开麦克风</string>
-    <string name="host_unmuted_all_camera">管理员取消了全体成员关闭摄像头，是否打开摄像头</string>
-    <string name="ignore">忽略</string>
-    <string name="open">打开</string>
-    <string name="host_muted_all">主持人关闭了全员静音</string>
-    <string name="conf_ended_restart_prompt">会议已结束，是否重新开启会议</string>
-    <string name="no">否</string>
-    <string name="yes">是</string>
-    <string name="create_conf_failed">创建会议失败</string>
-    <string name="contact_host_start_conf">请联系主持人开启会议</string>
-    <string name="join_as_audience_prompt">互动者已满，是否已观众模式加入会议</string>
-    <string name="join_conf_failed">加入会议失败</string>
-    <string name="speaking_requests">发言申请</string>
+    <string name="conference_not_supported">Conference feature is not supported in this version</string>
+    <string name="host_invite_speak">Host invites you to speak</string>
+    <string name="host_invite_camera">Host invites you to turn on camera</string>
+    <string name="reject">Reject</string>
+    <string name="accept">Accept</string>
+    <string name="rejected_speak_invite">You rejected the speaking invitation</string>
+    <string name="rejected_camera_invite">You rejected the camera invitation</string>
+    <string name="accepted_speak_invite">You accepted the speaking invitation</string>
+    <string name="accepted_camera_invite">You accepted the camera invitation</string>
+    <string name="host_closed_your_speech">Host closed your speech</string>
+    <string name="host_unmuted_all_mic">Host unmuted all, do you want to turn on microphone</string>
+    <string name="host_unmuted_all_camera">Administrator allowed all members to turn on camera, do you want to turn on camera</string>
+    <string name="ignore">Ignore</string>
+    <string name="open">Open</string>
+    <string name="host_muted_all">Host muted all members</string>
+    <string name="conf_ended_restart_prompt">Conference has ended, do you want to restart the conference</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="create_conf_failed">Failed to create conference</string>
+    <string name="contact_host_start_conf">Please contact the host to start the conference</string>
+    <string name="join_as_audience_prompt">Participants are full, do you want to join as audience</string>
+    <string name="join_conf_failed">Failed to join conference</string>
+    <string name="speaking_requests">Speaking Requests</string>
 
     <!-- Conference End Dialog -->
-    <string name="conf_leave_allow_continue_prompt">如果你想让与会人员继续开会，请选择退出会议</string>
-    <string name="conf_leave_conference">退出会议</string>
-    <string name="conf_end_conference">结束会议</string>
+    <string name="conf_leave_allow_continue_prompt">If you want participants to continue the meeting, please choose to leave the conference</string>
+    <string name="conf_leave_conference">Leave Conference</string>
+    <string name="conf_end_conference">End Conference</string>
 
     <!-- Message Context Menu -->
-    <string name="message_delete_local">删除本地消息</string>
-    <string name="message_delete_remote">删除远程消息</string>
-    <string name="message_delete_both">删除自己及对方消息</string>
-    <string name="message_forward">转发</string>
-    <string name="message_multi_select">多选</string>
-    <string name="message_favorite">收藏</string>
-    <string name="message_delete">删除</string>
-    <string name="message_favorite_success">收藏成功</string>
-    <string name="message_favorite_error">收藏失败: %d</string>
-    <string name="message_delete_confirm">确认删除此消息</string>
-    <string name="message_unknown_option">未设置</string>
-    <string name="favorite_content">收藏内容</string>
-    <string name="load_favorite_failed">加载收藏失败 %d</string>
-    <string name="delete_favorite_success">删除收藏成功</string>
-    <string name="delete_favorite_failed">删除收藏失败: %d</string>
+    <string name="message_delete_local">Delete Local Message</string>
+    <string name="message_delete_remote">Delete Remote Message</string>
+    <string name="message_delete_both">Delete Both Sides</string>
+    <string name="message_forward">Forward</string>
+    <string name="message_multi_select">Multi-Select</string>
+    <string name="message_favorite">Favorite</string>
+    <string name="message_delete">Delete</string>
+    <string name="message_favorite_success">Favorited successfully</string>
+    <string name="message_favorite_error">Failed to favorite: %d</string>
+    <string name="message_delete_confirm">Confirm to delete this message</string>
+    <string name="message_unknown_option">Not Set</string>
+    <string name="favorite_content">Favorite Content</string>
+    <string name="load_favorite_failed">Failed to load favorites %d</string>
+    <string name="delete_favorite_success">Favorite deleted successfully</string>
+    <string name="delete_favorite_failed">Failed to delete favorite: %d</string>
 
     <!-- Delete Message Action -->
-    <string name="message_action_delete">删除</string>
-    <string name="message_delete_confirm_prompt">确认删除?</string>
-    <string name="message_action_forward">转发</string>
+    <string name="message_action_delete">Delete</string>
+    <string name="message_delete_confirm_prompt">Confirm deletion?</string>
+    <string name="message_action_forward">Forward</string>
 
     <!-- File Message -->
-    <string name="file_save_success">文件保存成功</string>
-    <string name="file_save_failed">文件保存失败</string>
-    <string name="file_need_download">请先点击下载文件</string>
-    <string name="file_save_to_phone">存储到手机</string>
+    <string name="file_save_success">File saved successfully</string>
+    <string name="file_save_failed">Failed to save file</string>
+    <string name="file_need_download">Please download the file first</string>
+    <string name="file_save_to_phone">Save to Phone</string>
 
     <!-- Media Message -->
-    <string name="media_cancel_send">取消发送</string>
-    <string name="media_cancel_failed">取消失败</string>
+    <string name="media_cancel_send">Cancel Sending</string>
+    <string name="media_cancel_failed">Failed to cancel</string>
 
     <!-- Normal Message -->
-    <string name="message_resend">重发</string>
-    <string name="message_resend_title">重新发送?</string>
-    <string name="message_recall">撤回</string>
-    <string name="message_quote">引用</string>
-    <string name="message_private_chat">私聊</string>
+    <string name="message_resend">Resend</string>
+    <string name="message_resend_title">Resend?</string>
+    <string name="message_recall">Recall</string>
+    <string name="message_quote">Quote</string>
+    <string name="message_private_chat">Private Chat</string>
 
     <!-- Notification Message -->
-    <string name="message_invalid">消息无效</string>
+    <string name="message_invalid">Message Invalid</string>
 
     <!-- Streaming Message -->
-    <string name="message_copy">复制</string>
-    <string name="message_detail_title">消息内容</string>
+    <string name="message_copy">Copy</string>
+    <string name="message_detail_title">Message Content</string>
 
     <!-- Text Message -->
-    <string name="message_recalled">消息已被撤回</string>
-    <string name="message_not_available">消息不可用，可能被删除或者过期</string>
+    <string name="message_recalled">Message has been recalled</string>
+    <string name="message_not_available">Message unavailable, may be deleted or expired</string>
 
     <!-- Unknown Message -->
-    <string name="message_unsupported">暂不支持此消息，请升级最新版本!</string>
+    <string name="message_unsupported">This message is not supported yet, please upgrade to the latest version!</string>
 
     <!-- Composite Message -->
-    <string name="message_loading">消息加载中，请稍后</string>
-    <string name="message_load_failed">加载消息失败</string>
-    <string name="date_pattern">yyyy年MM月dd日</string>
-    <string name="date_range_format">%1$s 至 %2$s</string>
-    <string name="creating">创建中...</string>
-    <string name="create_conversation_multi_contact_hint">选择多位联系人时，才会发起群聊</string>
-    <string name="creating_conversation">创建中...</string>
+    <string name="message_loading">Loading messages, please wait</string>
+    <string name="message_load_failed">Failed to load messages</string>
+    <string name="date_pattern">yyyy-MM-dd</string>
+    <string name="date_range_format">%1$s to %2$s</string>
+    <string name="creating">Creating...</string>
+    <string name="create_conversation_multi_contact_hint">Select multiple contacts to create a group chat</string>
+    <string name="creating_conversation">Creating...</string>
 
-    <string name="message_receipt_unread">未读(%d)</string>
-    <string name="message_receipt_read">已读(%d)</string>
-    <string name="message_receipt_unread_tab">未读</string>
-    <string name="message_receipt_read_tab">已读</string>
-    <string name="get_conversation_info_failed">获取会话信息失败</string>
+    <string name="message_receipt_unread">Unread(%d)</string>
+    <string name="message_receipt_read">Read(%d)</string>
+    <string name="message_receipt_unread_tab">Unread</string>
+    <string name="message_receipt_read_tab">Read</string>
+    <string name="get_conversation_info_failed">Failed to get conversation info</string>
 
     <!-- Typing Status -->
-    <string name="typing_someone">有人</string>
-    <string name="typing_text">正在输入</string>
-    <string name="typing_voice">正在录音</string>
-    <string name="typing_camera">正在拍照</string>
-    <string name="typing_file">正在发送文件</string>
-    <string name="typing_location">正在发送位置</string>
+    <string name="typing_someone">Someone</string>
+    <string name="typing_text">is typing</string>
+    <string name="typing_voice">is recording</string>
+    <string name="typing_camera">is taking photo</string>
+    <string name="typing_file">is sending file</string>
+    <string name="typing_location">is sending location</string>
     <string name="typing_unknown">unknown</string>
-    <string name="typing_people_count">%d人正在输入</string>
-    <string name="typing_remote_text">对方正在输入</string>
-    <string name="typing_remote_voice">对方正在录音</string>
-    <string name="typing_remote_camera">对方正在拍照</string>
-    <string name="typing_remote_file">对方正在发送文件</string>
-    <string name="typing_remote_location">对方正在发送位置</string>
-    <string name="all_group_member_muted">全员禁言中</string>
-    <string name="you_are_muted">你已被禁言</string>
-    <string name="group_dismissed">群组已被解散</string>
-    <string name="secret_chat_establishing">密聊发起中，或已取消</string>
-    <string name="welcome_join_chatroom">欢迎 %s 加入聊天室</string>
-    <string name="leave_chatroom">%s 离开了聊天室</string>
-    <string name="join_chatroom_error">加入聊天室失败</string>
-    <string name="group_member_disable_chat">禁止群成员私聊</string>
-    <string name="mute_operation_failed">禁言失败 %d</string>
+    <string name="typing_people_count">%d people are typing</string>
+    <string name="typing_remote_text">The other side is typing</string>
+    <string name="typing_remote_voice">The other side is recording</string>
+    <string name="typing_remote_camera">The other side is taking photo</string>
+    <string name="typing_remote_file">The other side is sending file</string>
+    <string name="typing_remote_location">The other side is sending location</string>
+    <string name="all_group_member_muted">All members muted</string>
+    <string name="you_are_muted">You have been muted</string>
+    <string name="group_dismissed">Group has been dismissed</string>
+    <string name="secret_chat_establishing">Secret chat is being established or has been cancelled</string>
+    <string name="welcome_join_chatroom">Welcome %s to the chat room</string>
+    <string name="leave_chatroom">%s left the chat room</string>
+    <string name="join_chatroom_error">Failed to join chat room</string>
+    <string name="group_member_disable_chat">Group members are not allowed to private chat</string>
+    <string name="mute_operation_failed">Failed to mute %d</string>
 
     <!-- Action -->
-    <string name="action_cancel">取消</string>
-    <string name="action_confirm">确认</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_confirm">Confirm</string>
 
     <!-- Conversation -->
-    <string name="clear_local_conversation">清空本地会话</string>
-    <string name="clear_remote_conversation">清空远程会话</string>
-    <string name="message_unread_count">%d条消息</string>
-    <string name="message_mention_count">%d条@消息</string>
-    <string name="mention_you">[有人@我]</string>
-    <string name="secret_chat_postfix">(密聊)</string>
-    <string name="delete_message_dialog_cancel">取消</string>
-    <string name="delete_message_dialog_confirm">确认</string>
-    <string name="group_dismissed_toast">群组已被解散</string>
-    <string name="group_not_member_error">你不在群组或发生错误, 请稍后再试</string>
-    <string name="update_portrait_success">更新头像成功</string>
-    <string name="update_portrait_failed">更新头像失败: %d</string>
-    <string name="install_webview_prompt">请安装: Android System WebView</string>
-    <string name="my_group_nickname_dialog_title">请输入你的群昵称</string>
-    <string name="dismiss_group_title">解散群组</string>
-    <string name="dismiss_group_confirm_message">确定解散群组？</string>
-    <string name="quit_group_title">退出群组</string>
-    <string name="quit_group_confirm_message">确定退出群组？</string>
-    <string name="dismiss_group_failed">解散群组失败</string>
-    <string name="quit_group_failed">退出群组失败</string>
-    <string name="modify_group_alias_failed">修改群昵称失败:%d</string>
-    <string name="clear_local_chat">清空本地会话</string>
-    <string name="clear_remote_chat">清空远程会话</string>
-    <string name="group_qrcode">群二维码</string>
-    <string name="clear_conversation">清空会话</string>
-    <string name="pc_online">PC 在线</string>
-    <string name="web_online">Web 在线</string>
-    <string name="wx_online">微信小程序 在线</string>
-    <string name="pad_online">Pad 在线</string>
-    <string name="notification_muted_when_pc_online">，手机通知已关闭</string>
-    <string name="delete_conversation">删除会话</string>
-    <string name="stick_on_top">置顶</string>
-    <string name="cancel_stick_on_top">取消置顶</string>
-    <string name="mark_as_read">设为已读</string>
-    <string name="mark_as_unread">标记未读</string>
-    <string name="delete_conversation_confirm">确认删除会话?</string>
-    <string name="unknown_conversation_type">未知会话类型(%1$d)或线路(%2$d)</string>
-    <string name="connecting">正在连接...</string>
-    <string name="syncing">正在同步...</string>
-    <string name="connection_failed">连接失败</string>
-    <string name="preview_not_supported">暂不支持预览</string>
-    <string name="version_not_supported">当前版本不支持，请升级查看</string>
-    <string name="adding">添加中...</string>
-    <string name="set_group_manager_error">设置管理员错误 %d</string>
-    <string name="remove_group_manager">移除群管理</string>
-    <string name="adding_whitelist">加入白名单中...</string>
-    <string name="muting_group_member">禁言中...</string>
-    <string name="add_whitelist_error">添加白名单错误 %d</string>
-    <string name="set_mute_error">设置禁言错误 %d</string>
-    <string name="remove_whitelist">移除白名单</string>
-    <string name="unmute_member">取消禁言</string>
-    <string name="operation_failed">操作失败</string>
-    <string name="whitelist">发言白名单</string>
-    <string name="group_member_mute">群成员禁言</string>
-    <string name="delete">删除</string>
-    <string name="delete_with_count">删除(%d)</string>
-    <string name="deleting">删除中...</string>
-    <string name="processing">请稍后...</string>
-    <string name="saving_image">图片保存中</string>
-    <string name="image_save_failed_null_file">图片保存失败 file == null</string>
-    <string name="image_save_success">图片保存成功</string>
-    <string name="storage_permission_required">请授权访问外部存储设备权限</string>
-    <string name="set_success">设置成功</string>
-    <string name="blacklist_add_error">添加黑名单错误: %d</string>
-    <string name="blacklist_remove_error">移除黑名单错误: %d</string>
-    <string name="blacklist_remove_failed">删除失败</string>
-    <string name="fav_set_error">设置收藏错误: %d</string>
-    <string name="fav_remove_error">移除收藏错误: %d</string>
-    <string name="cancel">取消</string>
-    <string name="pc_online_status_logged_in">已登录</string>
-    <string name="pc_session_logout_button">退出 %s 登录</string>
-    <string name="pc_kicked_offline">已踢下线</string>
-    <string name="operation_success">操作成功</string>
-    <string name="qr_code_recognition_failed">识别二维码失败</string>
-    <string name="matched_records_count">%d条记录</string>
-    <string name="network_error">网络错误</string>
-    <string name="modify_success">修改成功</string>
-    <string name="modify_fail">修改失败</string>
-    <string name="modify_alias_error">修改别名错误：%d</string>
-    <string name="wildfire_id_not_empty">野火ID不能为空</string>
-    <string name="modify_account_error">修改账号错误：%1$d %2$s</string>
+    <string name="clear_local_conversation">Clear Local Conversation</string>
+    <string name="clear_remote_conversation">Clear Remote Conversation</string>
+    <string name="message_unread_count">%d messages</string>
+    <string name="message_mention_count">%d @ messages</string>
+    <string name="mention_you">[Someone @ Me]</string>
+    <string name="secret_chat_postfix">(Secret)</string>
+    <string name="delete_message_dialog_cancel">Cancel</string>
+    <string name="delete_message_dialog_confirm">Confirm</string>
+    <string name="group_dismissed_toast">Group has been dismissed</string>
+    <string name="group_not_member_error">You are not in the group or an error occurred, please try again later</string>
+    <string name="update_portrait_success">Avatar updated successfully</string>
+    <string name="update_portrait_failed">Failed to update avatar: %d</string>
+    <string name="install_webview_prompt">Please install: Android System WebView</string>
+    <string name="my_group_nickname_dialog_title">Please enter your group nickname</string>
+    <string name="dismiss_group_title">Dismiss Group</string>
+    <string name="dismiss_group_confirm_message">Are you sure to dismiss the group?</string>
+    <string name="quit_group_title">Quit Group</string>
+    <string name="quit_group_confirm_message">Are you sure to quit the group?</string>
+    <string name="dismiss_group_failed">Failed to dismiss group</string>
+    <string name="quit_group_failed">Failed to quit group</string>
+    <string name="modify_group_alias_failed">Failed to modify group nickname: %d</string>
+    <string name="clear_local_chat">Clear Local Conversation</string>
+    <string name="clear_remote_chat">Clear Remote Conversation</string>
+    <string name="group_qrcode">Group QR Code</string>
+    <string name="clear_conversation">Clear Conversation</string>
+    <string name="pc_online">PC Online</string>
+    <string name="web_online">Web Online</string>
+    <string name="wx_online">WeChat Mini Program Online</string>
+    <string name="pad_online">Pad Online</string>
+    <string name="notification_muted_when_pc_online">, mobile notifications are off</string>
+    <string name="delete_conversation">Delete Conversation</string>
+    <string name="stick_on_top">Pin to Top</string>
+    <string name="cancel_stick_on_top">Unpin</string>
+    <string name="mark_as_read">Mark as Read</string>
+    <string name="mark_as_unread">Mark as Unread</string>
+    <string name="delete_conversation_confirm">Confirm to delete conversation?</string>
+    <string name="unknown_conversation_type">Unknown conversation type(%1$d) or line(%2$d)</string>
+    <string name="connecting">Connecting...</string>
+    <string name="syncing">Syncing...</string>
+    <string name="connection_failed">Connection failed</string>
+    <string name="preview_not_supported">Preview not supported yet</string>
+    <string name="version_not_supported">Not supported in current version, please upgrade</string>
+    <string name="adding">Adding...</string>
+    <string name="set_group_manager_error">Failed to set group manager %d</string>
+    <string name="remove_group_manager">Remove Group Manager</string>
+    <string name="adding_whitelist">Adding to whitelist...</string>
+    <string name="muting_group_member">Muting...</string>
+    <string name="add_whitelist_error">Failed to add whitelist %d</string>
+    <string name="set_mute_error">Failed to set mute %d</string>
+    <string name="remove_whitelist">Remove from Whitelist</string>
+    <string name="unmute_member">Unmute Member</string>
+    <string name="operation_failed">Operation failed</string>
+    <string name="whitelist">Whitelist</string>
+    <string name="group_member_mute">Group Member Mute</string>
+    <string name="delete">Delete</string>
+    <string name="delete_with_count">Delete(%d)</string>
+    <string name="deleting">Deleting...</string>
+    <string name="processing">Please wait...</string>
+    <string name="saving_image">Saving image</string>
+    <string name="image_save_failed_null_file">Failed to save image, file == null</string>
+    <string name="image_save_success">Image saved successfully</string>
+    <string name="storage_permission_required">Please grant external storage permission</string>
+    <string name="set_success">Set successfully</string>
+    <string name="blacklist_add_error">Failed to add to blacklist: %d</string>
+    <string name="blacklist_remove_error">Failed to remove from blacklist: %d</string>
+    <string name="blacklist_remove_failed">Failed to delete</string>
+    <string name="fav_set_error">Failed to set favorite: %d</string>
+    <string name="fav_remove_error">Failed to remove favorite: %d</string>
+    <string name="cancel">Cancel</string>
+    <string name="pc_online_status_logged_in">Logged In</string>
+    <string name="pc_session_logout_button">Log Out of %s</string>
+    <string name="pc_kicked_offline">Kicked Offline</string>
+    <string name="operation_success">Operation successful</string>
+    <string name="qr_code_recognition_failed">Failed to recognize QR code</string>
+    <string name="matched_records_count">%d records</string>
+    <string name="network_error">Network error</string>
+    <string name="modify_success">Modified successfully</string>
+    <string name="modify_fail">Failed to modify</string>
+    <string name="modify_alias_error">Failed to modify remark: %d</string>
+    <string name="wildfire_id_not_empty">Wildfire ID cannot be empty</string>
+    <string name="modify_account_error">Failed to modify account: %1$d %2$s</string>
 
     <!-- Conference Additional Strings -->
-    <string name="conf_audio_no_camera">音频会议不支持开启摄像头</string>
-    <string name="conf_audio_no_screen_share">音频会议不支持屏幕共享</string>
-    <string name="conf_screen_share_hint">开启屏幕共享时，将关闭摄像头，并打开麦克风</string>
-    <string name="copied_to_clipboard">已复制到剪贴板</string>
-    <string name="conf_hand_up">举手</string>
-    <string name="conf_hand_down">放下</string>
-    <string name="conf_recording_start_owner">请联系主持人开启录制</string>
-    <string name="conf_recording_stop_owner">请联系主持人关闭录制</string>
-    <string name="conf_unmute_request_in_progress_audio">主持人不允许解除静音，您已经申请解除静音，正在等待主持人操作</string>
-    <string name="conf_unmute_request_in_progress_video">主持人不允许打开摄像头，您已经申请解除静音，正在等待主持人操作</string>
-    <string name="conf_cancel_request">取消申请</string>
-    <string name="conf_continue_request">继续申请</string>
-    <string name="conf_request_cancelled">已取消申请</string>
-    <string name="conf_request_resent">已重新发送申请，请耐心等待主持人操作</string>
-    <string name="conf_unmute_not_allowed_audio">主持人不允许解除静音，您可以向主持人申请解除静音</string>
-    <string name="conf_unmute_not_allowed_video">主持人不允许打开摄像头，您可以向主持人申请解除静音</string>
-    <string name="conf_request_unmute_audio">申请解除静音</string>
-    <string name="conf_request_unmute_video">申请打开摄像头</string>
+    <string name="conf_audio_no_camera">Audio conference does not support turning on camera</string>
+    <string name="conf_audio_no_screen_share">Audio conference does not support screen sharing</string>
+    <string name="conf_screen_share_hint">When screen sharing is enabled, camera will be turned off and microphone will be turned on</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="conf_hand_up">Raise Hand</string>
+    <string name="conf_hand_down">Lower Hand</string>
+    <string name="conf_recording_start_owner">Please contact the host to start recording</string>
+    <string name="conf_recording_stop_owner">Please contact the host to stop recording</string>
+    <string name="conf_unmute_request_in_progress_audio">Host does not allow unmuting, you have requested to unmute, waiting for host to respond</string>
+    <string name="conf_unmute_request_in_progress_video">Host does not allow turning on camera, you have requested to unmute, waiting for host to respond</string>
+    <string name="conf_cancel_request">Cancel Request</string>
+    <string name="conf_continue_request">Continue Request</string>
+    <string name="conf_request_cancelled">Request cancelled</string>
+    <string name="conf_request_resent">Request resent, please wait for host to respond</string>
+    <string name="conf_unmute_not_allowed_audio">Host does not allow unmuting, you can request to unmute from host</string>
+    <string name="conf_unmute_not_allowed_video">Host does not allow turning on camera, you can request to unmute from host</string>
+    <string name="conf_request_unmute_audio">Request to Unmute</string>
+    <string name="conf_request_unmute_video">Request to Turn On Camera</string>
 
     <!-- Conference History -->
-    <string name="conf_history_desc_format" formatted="false">时间: %s 发起人: %s 时长: %s</string>
+    <string name="conf_history_desc_format" formatted="false">Time: %s Initiator: %s Duration: %s</string>
 
     <!-- Conference Info Activity -->
-    <string name="conf_get_info_failed">获取会议详情失败</string>
-    <string name="conf_destroy_success">销毁会议成功</string>
-    <string name="conf_destroy_failed">销毁会议失败 %d</string>
-    <string name="conf_qrcode_title">会议二维码</string>
-    <string name="conf_start_time_now">现在</string>
-    <string name="conf_not_started">会议未开始</string>
-    <string name="conf_join">加入会议</string>
+    <string name="conf_get_info_failed">Failed to get conference details</string>
+    <string name="conf_destroy_success">Conference destroyed successfully</string>
+    <string name="conf_destroy_failed">Failed to destroy conference %d</string>
+    <string name="conf_qrcode_title">Conference QR Code</string>
+    <string name="conf_start_time_now">Now</string>
+    <string name="conf_not_started">Conference has not started</string>
+    <string name="conf_join">Join Conference</string>
 
     <!-- Conference Invite -->
-    <string name="conf_invite_title">会议邀请</string>
-    <string name="conf_invite_success">邀请成功</string>
-    <string name="conf_invite_failed">邀请失败 %d</string>
+    <string name="conf_invite_title">Conference Invitation</string>
+    <string name="conf_invite_success">Invitation sent successfully</string>
+    <string name="conf_invite_failed">Failed to send invitation %d</string>
 
     <!-- Conference Command Responses -->
-    <string name="conf_reject_unmute_audio">主持人拒绝了你的发言请求</string>
-    <string name="conf_reject_unmute_video">主持人拒绝了你的打开摄像头请求</string>
-    <string name="conf_request_speak">%s 请求发言</string>
-    <string name="conf_request_camera">%s 请求打开摄像头</string>
-    <string name="conf_approve_speak">主持人同意了你的发言请求</string>
-    <string name="conf_approve_camera">主持人同意了你的打开摄像头请求</string>
-    <string name="conf_somebody_hand_up">%s 举手</string>
-    <string name="conf_somebody_hand_down">%s 放下举手</string>
-    <string name="conf_host_put_your_hand_down">主持人放下你的举手</string>
-    <string name="conf_host_start_recording">主持人开始录制</string>
-    <string name="conf_host_stop_recording">主持人结束录制</string>
-    <string name="conf_host_focus_user">主持人锁定焦点用户</string>
-    <string name="conf_host_cancel_focus">主持人取消锁定焦点用户</string>
+    <string name="conf_reject_unmute_audio">Host rejected your speaking request</string>
+    <string name="conf_reject_unmute_video">Host rejected your camera request</string>
+    <string name="conf_request_speak">%s requests to speak</string>
+    <string name="conf_request_camera">%s requests to turn on camera</string>
+    <string name="conf_approve_speak">Host approved your speaking request</string>
+    <string name="conf_approve_camera">Host approved your camera request</string>
+    <string name="conf_somebody_hand_up">%s raised hand</string>
+    <string name="conf_somebody_hand_down">%s lowered hand</string>
+    <string name="conf_host_put_your_hand_down">Host lowered your hand</string>
+    <string name="conf_host_start_recording">Host started recording</string>
+    <string name="conf_host_stop_recording">Host stopped recording</string>
+    <string name="conf_host_focus_user">Host set focus user</string>
+    <string name="conf_host_cancel_focus">Host cancelled focus user</string>
 
     <!-- Conference Hand Up/Down -->
-    <string name="conf_hand_up_waiting">已举手，等待管理员处理</string>
-    <string name="conf_hand_down_message">已放下举手</string>
+    <string name="conf_hand_up_waiting">Hand raised, waiting for admin to respond</string>
+    <string name="conf_hand_down_message">Hand lowered</string>
 
     <!-- Conference Mute/Unmute -->
-    <string name="conf_max_participants_reached">发言人数已满，无法切换到发言人！</string>
-    <string name="conf_host_muted_all_audio">主持人开启了全员静音</string>
-    <string name="conf_host_muted_all_video">主持人关闭了所有人的摄像头</string>
+    <string name="conf_max_participants_reached">Maximum speakers reached, unable to switch to speaker!</string>
+    <string name="conf_host_muted_all_audio">Host muted all members</string>
+    <string name="conf_host_muted_all_video">Host turned off everyone\'s camera</string>
 
     <!-- Conference Recording -->
-    <string name="conf_start_recording">开始录制</string>
-    <string name="conf_stop_recording">结束录制</string>
+    <string name="conf_start_recording">Start Recording</string>
+    <string name="conf_stop_recording">Stop Recording</string>
 
     <!-- Conference Participant List -->
-    <string name="conf_mute_all_audio_title">所有成员将被静音</string>
-    <string name="conf_mute_all_video_title">所有成员将关闭摄像头</string>
-    <string name="conf_allow_unmute_audio">允许成员自主解除静音</string>
-    <string name="conf_allow_unmute_video">允许成员自主打开摄像头</string>
-    <string name="conf_unmute_all_audio_title">允许全体成员开麦</string>
-    <string name="conf_unmute_all_video_title">允许成员打开摄像头</string>
-    <string name="conf_require_unmute_audio">是否要求成员开麦</string>
-    <string name="conf_require_unmute_video">是否要求成员打开摄像头</string>
+    <string name="conf_mute_all_audio_title">All members will be muted</string>
+    <string name="conf_mute_all_video_title">All members will turn off camera</string>
+    <string name="conf_allow_unmute_audio">Allow members to unmute themselves</string>
+    <string name="conf_allow_unmute_video">Allow members to turn on camera themselves</string>
+    <string name="conf_unmute_all_audio_title">Allow all members to unmute</string>
+    <string name="conf_unmute_all_video_title">Allow members to turn on camera</string>
+    <string name="conf_require_unmute_audio">Require members to unmute</string>
+    <string name="conf_require_unmute_video">Require members to turn on camera</string>
 
     <!-- Conference Participant List Text -->
-    <string name="conf_etc"> 等</string>
-    <string name="conf_requesting_unmute_audio">正在申请解除静音</string>
-    <string name="conf_requesting_unmute_video">正在申请打开摄像头</string>
-    <string name="conf_hand_raising">正在举手</string>
-    <string name="conf_view_user_info">查看用户信息</string>
-    <string name="conf_enable_audio">开启音频</string>
-    <string name="conf_disable_audio">关闭音频</string>
-    <string name="conf_enable_video">开启视频</string>
-    <string name="conf_disable_video">关闭视频</string>
-    <string name="conf_enable_audio_video">开启音视频</string>
-    <string name="conf_invite_to_speak">邀请发言</string>
-    <string name="conf_cancel_speak">取消发言</string>
-    <string name="conf_invite_turn_on_camera">邀请打开摄像头</string>
-    <string name="conf_turn_off_camera">关闭摄像头</string>
-    <string name="conf_remove_member">移除成员</string>
-    <string name="conf_cancel_focus_user">取消焦点用户</string>
-    <string name="conf_set_as_focus_user">设置为焦点用户</string>
-    <string name="conf_host_me">主持人，我</string>
-    <string name="conf_me">我</string>
-    <string name="conf_host">主持人</string>
-    <string name="conf_screen_sharing_suffix">，屏幕共享</string>
-    <string name="conf_screen_sharing">屏幕共享</string>
+    <string name="conf_etc"> etc.</string>
+    <string name="conf_requesting_unmute_audio">Requesting to unmute</string>
+    <string name="conf_requesting_unmute_video">Requesting to turn on camera</string>
+    <string name="conf_hand_raising">Raising hand</string>
+    <string name="conf_view_user_info">View User Info</string>
+    <string name="conf_enable_audio">Enable Audio</string>
+    <string name="conf_disable_audio">Disable Audio</string>
+    <string name="conf_enable_video">Enable Video</string>
+    <string name="conf_disable_video">Disable Video</string>
+    <string name="conf_enable_audio_video">Enable Audio and Video</string>
+    <string name="conf_invite_to_speak">Invite to Speak</string>
+    <string name="conf_cancel_speak">Cancel Speaking</string>
+    <string name="conf_invite_turn_on_camera">Invite to Turn On Camera</string>
+    <string name="conf_turn_off_camera">Turn Off Camera</string>
+    <string name="conf_remove_member">Remove Member</string>
+    <string name="conf_cancel_focus_user">Cancel Focus User</string>
+    <string name="conf_set_as_focus_user">Set as Focus User</string>
+    <string name="conf_host_me">Host, Me</string>
+    <string name="conf_me">Me</string>
+    <string name="conf_host">Host</string>
+    <string name="conf_screen_sharing_suffix">, Screen Sharing</string>
+    <string name="conf_screen_sharing">Screen Sharing</string>
 
     <!-- Conference Portal -->
-    <string name="conf_ended">会议已结束</string>
-    <string name="conf_started_join_prompt">会议已开始，请尽快加入</string>
-    <string name="conf_today">今天</string>
-    <string name="conf_date_format">MM月dd日</string>
-    <string name="conf_start_meeting">开始会议</string>
+    <string name="conf_ended">Conference has ended</string>
+    <string name="conf_started_join_prompt">Conference has started, please join as soon as possible</string>
+    <string name="conf_today">Today</string>
+    <string name="conf_date_format">MM-dd</string>
+    <string name="conf_start_meeting">Start Conference</string>
 
     <!-- Conference Create Activity -->
-    <string name="conference_title_default">%s的会议</string>
-    <string name="conference_title_unnamed">会议</string>
-    <string name="conference_enter_password">请输入密码</string>
-    <string name="conference_password_hint">请输入6位数字</string>
-    <string name="conference_end_time_invalid">结束时间不能早于当前时间</string>
-    <string name="conference_creating">创建会议中...</string>
-    <string name="conference_create_failed">创建会议失败</string>
-    <string name="conference_create_failed_code">创建会议失败: %d</string>
+    <string name="conference_title_default">%s\'s Conference</string>
+    <string name="conference_title_unnamed">Conference</string>
+    <string name="conference_enter_password">Please enter password</string>
+    <string name="conference_password_hint">Please enter 6-digit number</string>
+    <string name="conference_end_time_invalid">End time cannot be earlier than current time</string>
+    <string name="conference_creating">Creating conference...</string>
+    <string name="conference_create_failed">Failed to create conference</string>
+    <string name="conference_create_failed_code">Failed to create conference: %d</string>
 
     <!-- Order Conference -->
-    <string name="conference_start_time_invalid">开始时间不能早于当前时间</string>
-    <string name="conference_time_required">请选择开始、结束时间</string>
-    <string name="conference_end_before_start_error">结束时间不能早于开始时间</string>
-    <string name="conference_order_success">预定会议成功</string>
-    <string name="conference_order_failed">预定会议失败: %d</string>
+    <string name="conference_start_time_invalid">Start time cannot be earlier than current time</string>
+    <string name="conference_time_required">Please select start and end time</string>
+    <string name="conference_end_before_start_error">End time cannot be earlier than start time</string>
+    <string name="conference_order_success">Conference scheduled successfully</string>
+    <string name="conference_order_failed">Failed to schedule conference: %d</string>
 
     <!-- Multi Call -->
-    <string name="participant_left_call">用户%s离开了通话</string>
-    <string name="speaking">正在说话</string>
+    <string name="participant_left_call">User %s left the call</string>
+    <string name="speaking">Speaking</string>
 
     <!-- Video Call -->
-    <string name="camera_off">关闭摄像头</string>
-    <string name="stop_screen_sharing">结束屏幕共享</string>
-    <string name="start_screen_sharing">开始屏幕共享</string>
+    <string name="camera_off">Camera Off</string>
+    <string name="stop_screen_sharing">Stop Screen Sharing</string>
+    <string name="start_screen_sharing">Start Screen Sharing</string>
     <!-- VoIP -->
-    <string name="voip_permission_required">需要录音、摄像头等权限，才能进行音视频通话</string>
-    <string name="screen_share_not_supported">系统不支持屏幕共享</string>
-    <string name="screen_share_permission_denied">屏幕共享授权失败</string>
-    <string name="your_network_poor">您的网络不好</string>
-    <string name="user_network_poor">%s 的网络不好</string>
-    <string name="floating_window_permission_required">需要悬浮窗权限</string>
-    <string name="screen_sharing_in_progress_warning">屏幕共享中，不支持返回通话界面，请先停止屏幕共享</string>
-    <string name="delete_friend_error">删除好友失败</string>
-    <string name="external_domain">外部单位</string>
-    <string name="fav_friends">星标朋友</string>
-    <string name="ai_robot">人工智能助手</string>
+    <string name="voip_permission_required">Audio, camera and other permissions are required for audio and video calls</string>
+    <string name="screen_share_not_supported">System does not support screen sharing</string>
+    <string name="screen_share_permission_denied">Screen sharing permission denied</string>
+    <string name="your_network_poor">Your network is poor</string>
+    <string name="user_network_poor">%s\'s network is poor</string>
+    <string name="floating_window_permission_required">Floating window permission required</string>
+    <string name="screen_sharing_in_progress_warning">Screen sharing in progress, cannot return to call interface, please stop screen sharing first</string>
+    <string name="delete_friend_error">Failed to delete friend</string>
+    <string name="external_domain">External Organization</string>
+    <string name="fav_friends">Favorite Friends</string>
+    <string name="ai_robot">AI Assistant</string>
 
-    <string name="search_tip">输入关键词开始搜索</string>
-    <string name="search_no_result">没有搜索结果</string>
-    <string name="mute_mobile">手机静音</string>
-    <string name="send_file">传文件</string>
-    <string name="logout_pc">退出电脑登录</string>
-    <string name="create_conversation">创建会话</string>
-    <string name="create_new_conversation">创建新会话</string>
+    <string name="search_tip">Enter keywords to start searching</string>
+    <string name="search_no_result">No search results</string>
+    <string name="mute_mobile">Mute Mobile</string>
+    <string name="send_file">Send File</string>
+    <string name="logout_pc">Log Out of PC</string>
+    <string name="create_conversation">Create Conversation</string>
+    <string name="create_new_conversation">Create New Conversation</string>
 
     <!-- AndroidManifest Activity Labels -->
-    <string name="set_user_alias">设置用户备注</string>
-    <string name="modify_nickname">修改昵称</string>
-    <string name="modify_group_name">修改群名称</string>
-    <string name="modify_group_remark">修改群备注</string>
-    <string name="modify_group_announcement">修改群公告</string>
-    <string name="group_list">群列表</string>
-    <string name="friend_request">好友请求</string>
-    <string name="search_user">搜索用户</string>
-    <string name="invite_friend">邀请好友</string>
-    <string name="user_info">用户信息</string>
-    <string name="privacy_setting">隐私设置</string>
-    <string name="blacklist">黑名单</string>
-    <string name="message_notification">消息与通知</string>
-    <string name="conversation_info">会话详情</string>
-    <string name="chatroom_list">聊天室列表</string>
-    <string name="search_portal">搜索中心</string>
-    <string name="add_new_member">添加新成员</string>
-    <string name="remove_group_member">删除群成员</string>
-    <string name="select_group_member">选择群成员</string>
-    <string name="create_channel">创建频道</string>
-    <string name="channel_info">频道信息</string>
-    <string name="group_manage">群管理</string>
-    <string name="manager_list">管理员列表</string>
-    <string name="add_manager">添加管理员</string>
-    <string name="group_mute">群禁言</string>
-    <string name="group_member_permission">群成员权限</string>
-    <string name="group_member_list">群成员列表</string>
-    <string name="contact_selection">联系人选择</string>
-    <string name="file_record">文件记录</string>
-    <string name="select_a_chat">选择一个聊天</string>
-    <string name="select_contact">选择联系人</string>
-    <string name="select_conversation">选择会话</string>
-    <string name="message_read_status">消息阅读状态</string>
-    <string name="channel_list">频道列表</string>
-    <string name="group_info">群信息</string>
-    <string name="start_conference">发起会议</string>
-    <string name="conference">会议</string>
-    <string name="schedule_conference">预定会议</string>
-    <string name="conference_details">会议详情</string>
-    <string name="conference_invitation">会议邀请</string>
-    <string name="conference_records">会议记录</string>
-    <string name="modify_wildfire_id">修改野火ID</string>
-    <string name="composite_message">组合消息</string>
-    <string name="my_favorites">我的收藏</string>
-    <string name="user_messages">用户消息</string>
-    <string name="organization_directory">组织通讯录</string>
-    <string name="employee_info">员工信息</string>
-    <string name="select_organization_member">选取组织成员</string>
-    <string name="external_domain_list">外部单位列表</string>
-    <string name="external_domain_details">外部单位详情</string>
+    <string name="set_user_alias">Set User Remark</string>
+    <string name="modify_nickname">Modify Nickname</string>
+    <string name="modify_group_name">Modify Group Name</string>
+    <string name="modify_group_remark">Modify Group Remark</string>
+    <string name="modify_group_announcement">Modify Group Announcement</string>
+    <string name="group_list">Group List</string>
+    <string name="friend_request">Friend Request</string>
+    <string name="search_user">Search User</string>
+    <string name="invite_friend">Invite Friend</string>
+    <string name="user_info">User Info</string>
+    <string name="privacy_setting">Privacy Settings</string>
+    <string name="blacklist">Blacklist</string>
+    <string name="message_notification">Messages & Notifications</string>
+    <string name="conversation_info">Conversation Info</string>
+    <string name="chatroom_list">Chat Room List</string>
+    <string name="search_portal">Search Portal</string>
+    <string name="add_new_member">Add New Member</string>
+    <string name="remove_group_member">Remove Group Member</string>
+    <string name="select_group_member">Select Group Member</string>
+    <string name="create_channel">Create Channel</string>
+    <string name="channel_info">Channel Info</string>
+    <string name="group_manage">Group Management</string>
+    <string name="manager_list">Manager List</string>
+    <string name="add_manager">Add Manager</string>
+    <string name="group_mute">Group Mute</string>
+    <string name="group_member_permission">Group Member Permission</string>
+    <string name="group_member_list">Group Member List</string>
+    <string name="contact_selection">Contact Selection</string>
+    <string name="file_record">File Record</string>
+    <string name="select_a_chat">Select a Chat</string>
+    <string name="select_contact">Select Contact</string>
+    <string name="select_conversation">Select Conversation</string>
+    <string name="message_read_status">Message Read Status</string>
+    <string name="channel_list">Channel List</string>
+    <string name="group_info">Group Info</string>
+    <string name="start_conference">Start Conference</string>
+    <string name="conference">Conference</string>
+    <string name="schedule_conference">Schedule Conference</string>
+    <string name="conference_details">Conference Details</string>
+    <string name="conference_invitation">Conference Invitation</string>
+    <string name="conference_records">Conference Records</string>
+    <string name="modify_wildfire_id">Modify Wildfire ID</string>
+    <string name="composite_message">Composite Message</string>
+    <string name="my_favorites">My Favorites</string>
+    <string name="user_messages">User Messages</string>
+    <string name="organization_directory">Organization Directory</string>
+    <string name="employee_info">Employee Info</string>
+    <string name="select_organization_member">Select Organization Member</string>
+    <string name="external_domain_list">External Organization List</string>
+    <string name="external_domain_details">External Organization Details</string>
 
-    <!-- 消息通知设置 -->
-    <string name="receive_new_msg_notification">接收新消息通知</string>
-    <string name="receive_voip_notification">接收语音或视频来电通知</string>
-    <string name="notification_show_msg_detail">通知显示消息详情</string>
-    <string name="message_receipt">消息回执</string>
-    <string name="draft_sync">草稿同步</string>
-    <string name="enable_ptt">开启对讲功能</string>
-    <string name="audio_msg_volume_amplification">语音消息音量增强</string>
+    <!-- Message Notification Settings -->
+    <string name="receive_new_msg_notification">Receive New Message Notifications</string>
+    <string name="receive_voip_notification">Receive Voice or Video Call Notifications</string>
+    <string name="notification_show_msg_detail">Show Message Details in Notifications</string>
+    <string name="message_receipt">Message Receipt</string>
+    <string name="draft_sync">Draft Sync</string>
+    <string name="enable_ptt">Enable Push-to-Talk</string>
+    <string name="audio_msg_volume_amplification">Audio Message Volume Amplification</string>
 
-    <!-- 主体布局中的各种标签和按钮 -->
-    <string name="find_me_ways_header">可以通过以下方式找到我</string>
-    <string name="nickname">昵称</string>
-    <string name="account">账号</string>
-    <string name="organization_name">组织名称</string>
-    <string name="subordinate">下级</string>
-    <string name="group_name_placeholder">群名称</string>
+    <!-- Main Layout Labels and Buttons -->
+    <string name="find_me_ways_header">You can find me through the following ways</string>
+    <string name="nickname">Nickname</string>
+    <string name="account">Account</string>
+    <string name="organization_name">Organization Name</string>
+    <string name="subordinate">Subordinate</string>
+    <string name="group_name_placeholder">Group Name</string>
     <string name="contact_count_placeholder">hello world</string>
 
     <!-- Organization and Department Headers -->
-    <string name="organization_name_placeholder">XX公司</string>
-    <string name="department_name_placeholder">XX部门</string>
-    <string name="saved_groups_hint">(保存到通讯录的群组)</string>
+    <string name="organization_name_placeholder">XX Company</string>
+    <string name="department_name_placeholder">XX Department</string>
+    <string name="saved_groups_hint">(Groups saved to contacts)</string>
 
     <!-- Wildfire ID -->
-    <string name="wildfire_id">野火ID</string>
+    <string name="wildfire_id">Wildfire ID</string>
 
     <!-- Friend Request -->
-    <string name="friend_request_desc">请求添加您为好友</string>
+    <string name="friend_request_desc">Requests to add you as a friend</string>
 
-    <string name="show_all_members">查看全部成员</string>
-    <string name="group_remark">群备注</string>
-    <string name="save_to_contact">保存到通讯录</string>
-    <string name="not_destroy">不销毁</string>
-    <string name="set_secret_chat_burn_time">设置密聊焚毁时间</string>
-    <string name="destroy_secret_chat">销毁私密聊天</string>
+    <string name="show_all_members">View All Members</string>
+    <string name="group_remark">Group Remark</string>
+    <string name="save_to_contact">Save to Contacts</string>
+    <string name="not_destroy">Do Not Destroy</string>
+    <string name="set_secret_chat_burn_time">Set Secret Chat Burn Time</string>
+    <string name="destroy_secret_chat">Destroy Secret Chat</string>
     <string name="title_placeholder">title</string>
     <string name="content_placeholder">content</string>
-    <string name="link_title_placeholder">link title 链接标题</string>
-    <string name="conference_topic_placeholder">会议主题</string>
-    <string name="conference_desc_placeholder">会议描述</string>
-    <string name="email">邮箱</string>
-    <string name="phone">电话</string>
-    <string name="address">地址</string>
-    <string name="description">描述</string>
-    <string name="search_user_in_organization">在本单位中查找用户</string>
+    <string name="link_title_placeholder">link title</string>
+    <string name="conference_topic_placeholder">Conference Topic</string>
+    <string name="conference_desc_placeholder">Conference Description</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone</string>
+    <string name="address">Address</string>
+    <string name="description">Description</string>
+    <string name="search_user_in_organization">Search users in this organization</string>
     <string name="description_placeholder">wfc desc</string>
-    <string name="group_member_management">成员管理</string>
-    <string name="group_managers">管理员</string>
-    <string name="set_group_mute">设置禁言</string>
-    <string name="group_basic_settings">群基本设置</string>
-    <string name="group_join_type">加群方式</string>
-    <string name="group_join_type_no_limit">不限制加入</string>
-    <string name="group_search_type">查找方式</string>
-    <string name="group_search_type_not_allowed">不允许查找</string>
-    <string name="group_history_message">群历史消息</string>
-    <string name="group_history_message_not_allowed">不允许新成员查看历史消息</string>
-    <string name="allow_member_init_temp_chat">允许普通成员发起临时会话</string>
-    <string name="all_group_mute">全员禁言</string>
-    <string name="mobile_number">手机号</string>
-    <string name="moments">朋友圈</string>
+    <string name="group_member_management">Member Management</string>
+    <string name="group_managers">Managers</string>
+    <string name="set_group_mute">Set Mute</string>
+    <string name="group_basic_settings">Group Basic Settings</string>
+    <string name="group_join_type">Group Join Type</string>
+    <string name="group_join_type_no_limit">No Restrictions</string>
+    <string name="group_search_type">Group Search Type</string>
+    <string name="group_search_type_not_allowed">Not Searchable</string>
+    <string name="group_history_message">Group History Messages</string>
+    <string name="group_history_message_not_allowed">New members cannot view history messages</string>
+    <string name="allow_member_init_temp_chat">Allow regular members to initiate temporary conversations</string>
+    <string name="all_group_mute">All Members Mute</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="moments">Moments</string>
 
-    <string name="find_me_ways">找到我的方式</string>
-    <string name="add_friend_verify">加我为好友时，需要验证</string>
-    <string name="department">部门</string>
-    <string name="scan_qrcode_join_group">扫码进群</string>
-    <string name="join_group_method">进群方式</string>
-    <string name="view_user_messages">查看他（她）的消息</string>
-    <string name="my_subscribed_channels">我订阅的频道</string>
+    <string name="find_me_ways">Ways to Find Me</string>
+    <string name="add_friend_verify">Require verification to add me as friend</string>
+    <string name="department">Department</string>
+    <string name="scan_qrcode_join_group">Scan QR Code to Join Group</string>
+    <string name="join_group_method">Join Group Method</string>
+    <string name="view_user_messages">View User Messages</string>
+    <string name="my_subscribed_channels">My Subscribed Channels</string>
 
     <!-- User Info Menu -->
-    <string name="delete_friend">删除好友</string>
-    <string name="add_to_blacklist">加入黑名单</string>
-    <string name="remove_from_blacklist">移出黑名单</string>
-    <string name="set_alias">设置备注名</string>
-    <string name="set_star_friend">设为星标好友</string>
-    <string name="remove_star_friend">取消星标好友</string>
-    <string name="recent_chats">最近聊天</string>
+    <string name="delete_friend">Delete Friend</string>
+    <string name="add_to_blacklist">Add to Blacklist</string>
+    <string name="remove_from_blacklist">Remove from Blacklist</string>
+    <string name="set_alias">Set Remark Name</string>
+    <string name="set_star_friend">Set as Favorite Friend</string>
+    <string name="remove_star_friend">Remove Favorite Friend</string>
+    <string name="recent_chats">Recent Chats</string>
 
     <!-- Forward Dialog -->
-    <string name="forward_send_to">发送给:</string>
-    <string name="forward_leave_message">给朋友留言</string>
-    <string name="official">官方</string>
-    <string name="mute_group_member">群成员禁言</string>
-    <string name="speech_to_text">转文字</string>
-    <string name="cancel_speech_to_text">取消转文字</string>
-    <string name="file_url_invalid">文件链接地址为空</string>
-    <string name="local_preview_failed_tip">找不到能打开此文件的应用，在线预览</string>
-    <string name="local_preview_failed">找不到能打开此文件的应用</string>
+    <string name="forward_send_to">Send to:</string>
+    <string name="forward_leave_message">Leave a message</string>
+    <string name="official">Official</string>
+    <string name="mute_group_member">Mute Group Member</string>
+    <string name="speech_to_text">Convert to Text</string>
+    <string name="cancel_speech_to_text">Cancel Convert to Text</string>
+    <string name="file_url_invalid">File URL is empty</string>
+    <string name="local_preview_failed_tip">Cannot find app to open this file, preview online</string>
+    <string name="local_preview_failed">Cannot find app to open this file</string>
 
-    <string name="report">举报</string>
-    <string name="report_tip">如果您发现有违反法律和道德的内容，或者您的合法权益受到侵犯，请截图之后发送给我们。我们会在24小时之内处理。处理办法包括，但不限于删除内容，对作者进行警告冻结账号，甚至报警处理。</string>
+    <string name="report">Report</string>
+    <string name="report_tip">If you find content that violates laws and ethics, or if your legal rights are infringed, please take a screenshot and send it to us. We will handle it within 24 hours. Handling methods include, but are not limited to, deleting content, warning the author, freezing the account, or even reporting to the police.</string>
 </resources>

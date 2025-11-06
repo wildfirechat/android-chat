@@ -216,12 +216,12 @@ public class MeFragment extends Fragment {
             @Override
             public void onSelection(MaterialDialog dialog, View v, int position, CharSequence text) {
                 if (position == 0 && !isChinese) {
-                    // 选择中文
+                    // Select Chinese
                     changeLanguage(LocaleUtils.LANGUAGE_CHINESE);
                     return;
                 }
                 if (position == 1 && isChinese) {
-                    // 选择英文
+                    // Select English
                     changeLanguage(LocaleUtils.LANGUAGE_ENGLISH);
                 }
             }
@@ -230,7 +230,7 @@ public class MeFragment extends Fragment {
 
     private void changeLanguage(String languageCode) {
         LocaleUtils.setLocale(getContext(), languageCode);
-        // 重启应用以应用语言更改
+        // Restart app to apply language change
         restart();
     }
 
@@ -246,15 +246,15 @@ public class MeFragment extends Fragment {
 
     void conversationSetting() {
         // TODO
-        // 设置背景等
+        // Set background, etc.
     }
 
     private void restart() {
-        // 创建一个指向主活动的新意图，并清除任务栈
+        // Create a new intent to the main activity and clear the task stack
         Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        // 结束当前活动
+        // Finish current activity
         if (getActivity() != null) {
             getActivity().finish();
         }

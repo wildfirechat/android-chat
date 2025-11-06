@@ -133,7 +133,7 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
                     return;
                 }
                 dialog.dismiss();
-                //需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
+                // Note that token is strongly dependent on clientId. You must call getClientId to get the clientId, and then use this clientId to get the token. Only then can connect succeed. If you randomly use a clientId to get a token, the connection will fail.
                 ChatManagerHolder.gChatManager.connect(loginResult.getUserId(), loginResult.getToken());
                 try {
                     KeyStoreUtil.saveData(SMSLoginActivity.this, "wf_userId", loginResult.getUserId());

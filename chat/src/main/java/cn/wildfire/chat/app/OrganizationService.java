@@ -28,8 +28,8 @@ public class OrganizationService implements OrganizationServiceProvider {
 
     private static final OrganizationService Instance = new OrganizationService();
 
-    //组织通讯录服务地址，如果没有部署，可以设置为null
-    public static String ORG_SERVER_ADDRESS/*请仔细阅读上面的注释*/ = Config.ORG_SERVER_ADDRESS;
+    // Organization contact service address, can be set to null if not deployed
+    public static String ORG_SERVER_ADDRESS/* Please read the above comment carefully */ = Config.ORG_SERVER_ADDRESS;
 
     private OrganizationService() {
 

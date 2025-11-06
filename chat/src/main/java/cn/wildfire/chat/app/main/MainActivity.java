@@ -360,7 +360,7 @@ public class MainActivity extends WfcBaseActivity {
         startingTextView.setVisibility(View.GONE);
         contentLinearLayout.setVisibility(View.VISIBLE);
 
-        //设置ViewPager的最大缓存页面
+        // Set the maximum cached pages for ViewPager
         contentViewPager.setOffscreenPageLimit(4);
 
         conversationListFragment = new ConversationListFragment();
@@ -513,11 +513,11 @@ public class MainActivity extends WfcBaseActivity {
                 startActivity(intent);
             } else {
                 if (stringOperateResult.getErrorCode() == 86) {
-                    //自己关闭了密聊功能
+                    // User has disabled secret chat feature
                 } else if (stringOperateResult.getErrorCode() == 87) {
-                    //对方关闭了密聊功能
+                    // The other party has disabled secret chat feature
                 } else {
-                    //提示网络错误
+                    // Network error
                 }
             }
         });
@@ -665,7 +665,7 @@ public class MainActivity extends WfcBaseActivity {
         dialog.show();
     }
 
-    // 分享
+    // Share
     private void handleSendText(Intent intent) {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (!TextUtils.isEmpty(sharedText)) {
@@ -692,7 +692,7 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     private void handleSendMultiple(Intent intent) {
-        // TODO 暂不支持一次分享多个文件，分享页面不支持，没有相关 UI
+        // TODO Currently does not support sharing multiple files at once, share page does not support it, no related UI
 //        ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 //        if (imageUris != null) {
 //            for (Uri uri : imageUris) {
@@ -744,7 +744,7 @@ public class MainActivity extends WfcBaseActivity {
         startActivity(intent);
     }
 
-    // 小米浏览器 我分享了【xxxx】, 快来看吧！@小米浏览器 | https://xxx
+    // Xiaomi Browser - I shared【xxxx】, come check it out!@Xiaomi Browser | https://xxx
     private boolean isMiShare(String text) {
         if (TextUtils.isEmpty(text)) {
             return false;
@@ -843,7 +843,7 @@ public class MainActivity extends WfcBaseActivity {
         @Override
         public void onPageScrollStateChanged(int state) {
             if (state != ViewPager.SCROLL_STATE_IDLE) {
-                //滚动过程中隐藏快速导航条
+                // Hide quick index bar during scrolling
                 contactListFragment.showQuickIndexBar(false);
             } else {
                 contactListFragment.showQuickIndexBar(true);

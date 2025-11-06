@@ -1,93 +1,93 @@
-## 野火IM解决方案
+## WildFire IM Solution
 
-野火IM是专业级即时通讯和实时音视频整体解决方案，由北京野火无限网络科技有限公司维护和支持。
+WildFire IM is a professional-grade instant messaging and real-time audio/video complete solution, maintained and supported by Beijing WildFire Unlimited Network Technology Co., Ltd.
 
-主要特性有：私有部署安全可靠，性能强大，功能齐全，全平台支持，开源率高，部署运维简单，二次开发友好，方便与第三方系统对接或者嵌入现有系统中。详细情况请参考[在线文档](https://docs.wildfirechat.cn)。
+Main features include: secure and reliable private deployment, powerful performance, comprehensive functionality, full platform support, high open-source rate, simple deployment and maintenance, friendly for secondary development, and easy integration with third-party systems or embedding into existing systems. For detailed information, please refer to the [online documentation](https://docs.wildfirechat.cn).
 
-主要包括一下项目：
+Main projects include:
 
-| [GitHub仓库地址(主站)](https://github.com/wildfirechat)      | [码云仓库地址(镜像)](https://gitee.com/wfchat)        | 说明                                                                                      | 备注                                           |
+| [GitHub Repository (Main Site)](https://github.com/wildfirechat)      | [Gitee Repository (Mirror)](https://gitee.com/wfchat)        | Description                                                                                      | Notes                                           |
 | ------------------------------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | [im-server](https://github.com/wildfirechat/im-server)       | [server](https://gitee.com/wfchat/im-server)          | IM Server                                                                                 |                                                |
-| [android-chat](https://github.com/wildfirechat/android-chat) | [android-chat](https://gitee.com/wfchat/android-chat) | 野火IM Android SDK源码和App源码                                                           | 可以很方便地进行二次开发，或集成到现有应用当中 |
-| [ios-chat](https://github.com/wildfirechat/ios-chat)         | [ios-chat](https://gitee.com/wfchat/ios-chat)         | 野火IM iOS SDK源码和App源码                                                               | 可以很方便地进行二次开发，或集成到现有应用当中 |
-| [pc-chat](https://github.com/wildfirechat/vue-pc-chat)       | [pc-chat](https://gitee.com/wfchat/vue-pc-chat)       | 基于[Electron](https://electronjs.org/)开发的PC 端                                        |                                                |
-| [web-chat](https://github.com/wildfirechat/vue-chat)         | [web-chat](https://gitee.com/wfchat/vue-chat)         | 野火IM Web 端, [体验地址](http://web.wildfirechat.cn)                                     |                                                |
-| [wx-chat](https://github.com/wildfirechat/wx-chat)           | [wx-chat](https://gitee.com/wfchat/wx-chat)           | 小程序平台的Demo(支持微信、百度、阿里、字节、QQ 等小程序平台)                             |                                                |
-| [app server](https://github.com/wildfirechat/app_server)     | [app server](https://gitee.com/wfchat/app_server)     | 应用服务端                                                                                |                                                |
-| [robot_server](https://github.com/wildfirechat/robot_server) | [robot_server](https://gitee.com/wfchat/robot_server) | 机器人服务端                                                                              |                                                |
-| [push_server](https://github.com/wildfirechat/push_server)   | [push_server](https://gitee.com/wfchat/push_server)   | 推送服务器                                                                                |                                                |
-| [docs](https://github.com/wildfirechat/docs)                 | [docs](https://gitee.com/wfchat/docs)                 | 野火IM相关文档，包含设计、概念、开发、使用说明，[在线查看](https://docs.wildfirechat.cn/) |                                                |
+| [android-chat](https://github.com/wildfirechat/android-chat) | [android-chat](https://gitee.com/wfchat/android-chat) | WildFire IM Android SDK source code and App source code                                                           | Easy for secondary development or integration into existing applications |
+| [ios-chat](https://github.com/wildfirechat/ios-chat)         | [ios-chat](https://gitee.com/wfchat/ios-chat)         | WildFire IM iOS SDK source code and App source code                                                               | Easy for secondary development or integration into existing applications |
+| [pc-chat](https://github.com/wildfirechat/vue-pc-chat)       | [pc-chat](https://gitee.com/wfchat/vue-pc-chat)       | PC client based on [Electron](https://electronjs.org/)                                        |                                                |
+| [web-chat](https://github.com/wildfirechat/vue-chat)         | [web-chat](https://gitee.com/wfchat/vue-chat)         | WildFire IM Web client, [Demo URL](http://web.wildfirechat.cn)                                     |                                                |
+| [wx-chat](https://github.com/wildfirechat/wx-chat)           | [wx-chat](https://gitee.com/wfchat/wx-chat)           | Mini program platform demo (supports WeChat, Baidu, Alipay, ByteDance, QQ and other mini program platforms)                             |                                                |
+| [app server](https://github.com/wildfirechat/app_server)     | [app server](https://gitee.com/wfchat/app_server)     | Application server                                                                                |                                                |
+| [robot_server](https://github.com/wildfirechat/robot_server) | [robot_server](https://gitee.com/wfchat/robot_server) | Robot server                                                                              |                                                |
+| [push_server](https://github.com/wildfirechat/push_server)   | [push_server](https://gitee.com/wfchat/push_server)   | Push server                                                                                |                                                |
+| [docs](https://github.com/wildfirechat/docs)                 | [docs](https://gitee.com/wfchat/docs)                 | WildFire IM related documentation, including design, concepts, development, and usage instructions, [View online](https://docs.wildfirechat.cn/) |                                                |
 
 
-## 说明
+## Overview
 
-本工程为野火IM Android App，开发过程中，充分考虑了二次开发和集成需求，可作为SDK集成到其他应用中，或者直接进行二次开发。
+This project is the WildFire IM Android App. During development, we fully considered secondary development and integration requirements. It can be integrated as an SDK into other applications or used directly for secondary development.
 
-开发一套IM系统真的很艰辛，请路过的朋友们给点个star，支持我们坚持下去🙏🙏🙏🙏🙏
+Developing an IM system is truly challenging. Please give us a star to support us in continuing this journey!
 
-## 关于包名/applicationId
-1. 开发者开发具体产品时，请勿直接使用本 demo 的包名/applicationId，我们会不定期修改包名/applicationId
-2. 禁止将本产品用于非法目的，一经发现，我们将停止任何形式的技术支持
-3. 修改包名时，会导致编译失败，需同步修改`google-services.json`和`agconnect-services.json`文件中的`package_name`字段。对接推送时，需要重新生成对应的`google-services.json`和`agconnect-services.json`文件。
-4. 如果需要修改`client`、`mars-core-release`或`avenginekit.aar`等的包名，请联系我们。
+## About Package Name/ApplicationId
+1. Developers should not directly use the package name/applicationId of this demo when developing specific products. We may modify the package name/applicationId from time to time.
+2. It is prohibited to use this product for illegal purposes. If discovered, we will stop all forms of technical support.
+3. When modifying the package name, compilation will fail. You need to synchronously modify the `package_name` field in both `google-services.json` and `agconnect-services.json` files. When integrating push notifications, you need to regenerate the corresponding `google-services.json` and `agconnect-services.json` files.
+4. If you need to modify the package name of `client`, `mars-core-release`, or `avenginekit.aar`, please contact us.
 
-## 开发调试说明
+## Development and Debugging Instructions
 1. JDK: 17
-2. 我们采用最新稳定版Android Studio及对应的gradle进行开发，对于旧版本的IDE，我们没有测试，编译之类问题，需自行解决。
+2. We use the latest stable version of Android Studio and corresponding Gradle for development. For older versions of the IDE, we have not tested them, and compilation issues need to be resolved on your own.
 
-##  关于 minSdkVersion 设置为 21 时， debug 版 apk 可能不能进行音视频通话的特殊说明
-1. 关闭混淆时，命令行下，通过`./gradlew clean aDebug` 或 Android Studio 里面，通过 `Build App Bundle(s)/APK(s) -> Build APK(s)` 生成的 debug 版本 apk，不支持音视频通话，具体原因请参考[useFullClasspathForDexingTransform](https://issuetracker.google.com/issues/333107832)
-2. 开启混淆，debug 版 apk 一切正常，将`chat/build.gradle#buildTypes#debug#minifyEnabled`置为 true，即为 debug 版也开启混淆
-3. 命令行下，通过`./gradlew clean aR`或 Android Studio 里面，通过`Generate Signed App Bundle/APK...`可生成 release 版 apk，release 版 apk，一切正常
+## Special Notes About Audio/Video Calling When minSdkVersion is Set to 21 for Debug APK
+1. When obfuscation is disabled, the debug version APK generated via command line using `./gradlew clean aDebug` or through Android Studio using `Build App Bundle(s)/APK(s) -> Build APK(s)` does not support audio/video calls. For specific reasons, please refer to [useFullClasspathForDexingTransform](https://issuetracker.google.com/issues/333107832)
+2. When obfuscation is enabled, debug version APK works normally. Set `chat/build.gradle#buildTypes#debug#minifyEnabled` to true to enable obfuscation for debug version as well.
+3. Release version APK generated via command line using `./gradlew clean aR` or through Android Studio using `Generate Signed App Bundle/APK...` works normally.
 
-## 二次开发说明
-野火IM采用bugly作为日志手机工具，大家二次开发时，务必将```MyApp.java```中的 ```bugly id``` 替换为你们自己的，否则错误日志都跑我们这儿来了，你们收集不到错误日志，我们也会受到干扰。
+## Secondary Development Instructions
+WildFire IM uses Bugly as a log collection tool. When doing secondary development, you must replace the `bugly id` in `MyApp.java` with your own. Otherwise, error logs will come to us, you won't be able to collect error logs, and we will be interfered with.
 
-## 混淆说明
-1. 确保所依赖的```lifecycle```版本在2.2.0或以上。
-2. 参考```chat/proguard-rules.pro```进行配置。
+## Obfuscation Instructions
+1. Ensure that the `lifecycle` dependency version is 2.2.0 or above.
+2. Configure according to `chat/proguard-rules.pro`.
 
-## 安全说明
-为了方便开发者部署、测试，默认允许`HTTP`进行网络请求，为了提高安全性，上线之前，请进行以下操作：
-1. 为`app-server`配置`HTTPS`支持，并将`APP_SERVER_ADDRESS`配置为`HTTPS`地址
-2. 如果支持开放平台的话，为开发平台配置`HTTPS`支持，并将`WORKSPACE_URL`配置为`HTTPS`地址
-3. 如果支持组织结构的话，为组织结构服务配置`HTTPS`支持，并将`ORG_SERVER_ADDRESS`配置为`HTTPS`地址
-4. 将`chat/src/main/AndroidManifest.xml`中的`android:usesCleartextTraffic`置为`false`
-5. 更多安全说明，请参考[野火安全吗](https://docs.wildfirechat.cn/blogs/%E9%87%8E%E7%81%AB%E5%AE%89%E5%85%A8%E5%90%97.html)
+## Security Instructions
+To facilitate developer deployment and testing, `HTTP` network requests are allowed by default. To improve security, please perform the following operations before going live:
+1. Configure `HTTPS` support for `app-server` and set `APP_SERVER_ADDRESS` to an `HTTPS` address
+2. If supporting an open platform, configure `HTTPS` support for the development platform and set `WORKSPACE_URL` to an `HTTPS` address
+3. If supporting organizational structure, configure `HTTPS` support for the organizational structure service and set `ORG_SERVER_ADDRESS` to an `HTTPS` address
+4. Set `android:usesCleartextTraffic` to `false` in `chat/src/main/AndroidManifest.xml`
+5. For more security information, please refer to [Is WildFire Secure?](https://docs.wildfirechat.cn/blogs/%E9%87%8E%E7%81%AB%E5%AE%89%E5%85%A8%E5%90%97.html)
 
-## 敏感权限说明
-1. `android.permission.PROCESS_OUTGOING_CALLS`，音视频通话时，允许普通电话打断音视频通话，默认未申请
-2. `android.permission.SYSTEM_ALERT_WINDOW`，允许音视频通话窗口最小化，并悬浮在其他窗口之上
-3. `android.permission.BLUETOOTH`、`android.permission.BLUETOOTH_ADMIN`，音视频通话时，允许使用蓝牙耳机
+## Sensitive Permissions Instructions
+1. `android.permission.PROCESS_OUTGOING_CALLS`, allows regular phone calls to interrupt audio/video calls, not requested by default
+2. `android.permission.SYSTEM_ALERT_WINDOW`, allows audio/video call window to minimize and float above other windows
+3. `android.permission.BLUETOOTH`, `android.permission.BLUETOOTH_ADMIN`, allows using Bluetooth headsets during audio/video calls
 
-## Android 4.x 说明
-请使用[api-19](https://github.com/wildfirechat/android-chat/tree/api-19)分支，如果编译失败等，可能是4.x版本的协议栈版本没有及时更新所导致，请微信联系 `wfchat` 进行更新。
+## Android 4.x Instructions
+Please use the [api-19](https://github.com/wildfirechat/android-chat/tree/api-19) branch. If compilation fails, it may be due to the 4.x version protocol stack not being updated in time. Please contact `wfchat` via WeChat for updates.
 
-### 联系我们
+### Contact Us
 
-> 商务合作请优先采用邮箱和我们联系。技术问题请到[野火IM论坛](http://bbs.wildfirechat.cn/)发帖交流。
+> For business cooperation, please contact us via email first. For technical issues, please post on the [WildFire IM Forum](http://bbs.wildfirechat.cn/).
 
-1. heavyrain.lee  邮箱: heavyrain.lee@wildfirechat.cn  微信：wildfirechat
-2. imndx  邮箱: imndx@wildfirechat.cn  微信：wfchat
+1. heavyrain.lee  Email: heavyrain.lee@wildfirechat.cn  WeChat: wildfirechat
+2. imndx  Email: imndx@wildfirechat.cn  WeChat: wfchat
 
-### 问题交流
+### Issue Discussion
 
-1. 如果大家发现bug，请在GitHub提issue
-2. 其他问题，请到[野火IM论坛](http://bbs.wildfirechat.cn/)进行交流学习
-3. 微信公众号
+1. If you find bugs, please submit an issue on GitHub
+2. For other questions, please discuss and learn on the [WildFire IM Forum](http://bbs.wildfirechat.cn/)
+3. WeChat Official Account
 
 <img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 40% height = 40% />
 
-> 强烈建议关注我们的公众号。我们有新版本发布或者有重大更新会通过公众号通知大家，另外我们也会不定期的发布一些关于野火IM的技术介绍。
+> We strongly recommend following our official account. We will notify everyone through the official account when we release new versions or have major updates. We will also periodically publish technical introductions about WildFire IM.
 
-## 体验Demo
-我们提供了体验demo，请使用微信扫码下载安装体验
+## Demo Experience
+We provide a demo for experience. Please scan the QR code with WeChat to download and install.
 
-![野火IM](http://static.wildfirechat.cn/download_qrcode.png)
+![WildFire IM](http://static.wildfirechat.cn/download_qrcode.png)
 
-## 应用截图
-[点击查看 Android Demo 视频演示](https://static.wildfirechat.cn/wf-android-demo-live.mp4)
+## Application Screenshots
+[Click to view Android Demo video](https://static.wildfirechat.cn/wf-android-demo-live.mp4)
 
 <img src="https://static.wildfirechat.cn/wf-android-demo-1.jpg" width = 40% height = 40% />
 
@@ -128,25 +128,25 @@
 <img src="https://static.wildfirechat.cn/wf-android-demo-19.jpg" width = 40% height = 40% />
 
 
-## 集成
-1. client部分，自行下载代码，并将client module引入你们自己的项目。
-2. uikit部分，自行下载代码，并将uikit module引入你们自己的项目。
-3. push部分，自行下载代码，将push module引入你们自己的项目。
+## Integration
+1. For the client module, download the code yourself and import the client module into your own project.
+2. For the uikit module, download the code yourself and import the uikit module into your own project.
+3. For the push module, download the code yourself and import the push module into your own project.
 
-## 推送
-当应用在后台后，不同手机厂家有着不同的后台策略，可能很快或者最终会被冻结和杀掉，此时收到消息需要厂商的推送通知服务。请部署推送服务，推送服务代码可以在[Github](https://github.com/wildfirechat/push_server)和[码云](https://gitee.com/wfchat/push_server)下载。具体使用方式，请参考推送服务项目上的说明。
+## Push Notifications
+When the application is in the background, different phone manufacturers have different background policies, and the app may be quickly or eventually frozen and killed. To receive messages in this case, vendor push notification services are required. Please deploy the push service. The push service code can be downloaded from [Github](https://github.com/wildfirechat/push_server) and [Gitee](https://gitee.com/wfchat/push_server). For specific usage, please refer to the instructions in the push service project.
 
-## 贡献
-欢迎提交pull request，一起打造一个更好的开源IM。
+## Contribution
+Pull requests are welcome. Let's build a better open-source IM together.
 
-## 鸣谢
-1. [LQRWeChat](https://github.com/GitLqr/LQRWeChat) 本项目中图片选择器、表情基于此开发
+## Acknowledgments
+1. [LQRWeChat](https://github.com/GitLqr/LQRWeChat) The image selector and emoticons in this project are developed based on this
 2. [butterKnife](https://github.com/JakeWharton/butterknife)
-3. OKHttp等一些其他优秀的开源项目
-4. 本工程使用的Icon全部来源于[icons8](https://icons8.com)，对他们表示感谢。
-5. Gif动态图来源于网络，对网友的制作表示感谢。
+3. OKHttp and other excellent open-source projects
+4. All icons used in this project are from [icons8](https://icons8.com), thanks to them.
+5. Animated GIFs are from the internet, thanks to the creators.
 
-如果有什么地方侵犯了您的权益，请联系我们删除🙏🙏🙏
+If anything infringes on your rights, please contact us for removal.
 
 ## License
 

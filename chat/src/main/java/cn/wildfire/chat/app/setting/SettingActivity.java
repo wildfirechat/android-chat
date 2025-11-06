@@ -70,7 +70,7 @@ public class SettingActivity extends WfcBaseActivity {
     }
 
     void exit() {
-        //不要清除session，这样再次登录时能够保留历史记录。如果需要清除掉本地历史记录和服务器信息这里使用true
+        // Do not clear session, so that history can be retained on re-login. Use true here if you need to clear local history and server information.
         ChatManagerHolder.gChatManager.disconnect(true, false);
         SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
         sp.edit()
