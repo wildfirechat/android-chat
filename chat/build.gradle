@@ -19,8 +19,8 @@ android {
         applicationId "cn.wildfirechat.chat.open"
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 60
-        versionName '1.3.5'
+        versionCode 61
+        versionName '1.3.6'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
