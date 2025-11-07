@@ -221,4 +221,6 @@
     <string name="agreement_description">WildFireIM is an instant messaging application whose basic functions include sending and receiving text, images, videos, locations and other messages, as well as making audio and video calls.To implement its basic functions, it needs to use permissions such as auto-start, notifications, microphone, camera, etc., but we will not obtain any permission before you agree. Before using, please carefully read the privacy policy and user agreement below.</string>
     <string name="agreement_agree">Agree and Continue</string>
     <string name="agreement_disagree">Disagree</string>
+    <string name="no_privacy_agreement_url_tip">Please configure user agreement</string>
+    <string name="no_user_agreement_url_tip">Please configure your privacy policy</string>
 </resources>

@@ -7,6 +7,7 @@ package cn.wildfire.chat.app.login;
 import android.content.Intent;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -62,10 +63,18 @@ public class SMSLoginActivity extends WfcBaseNoToolbarActivity {
         });
 
         findViewById(R.id.privacyAgreementTextView).setOnClickListener(v -> {
+            if (TextUtils.isEmpty(Config.PRIVACY_AGREEMENT_URL) || Config.PRIVACY_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
+                Toast.makeText(this, R.string.no_privacy_agreement_url_tip, Toast.LENGTH_SHORT).show();
+                return;
+            }
             WfcWebViewActivity.loadUrl(this, getString(R.string.privacy_agreement), Config.PRIVACY_AGREEMENT_URL);
 
         });
         findViewById(R.id.userAgreementTextView).setOnClickListener(v -> {
+            if (TextUtils.isEmpty(Config.USER_AGREEMENT_URL) || Config.USER_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
+                Toast.makeText(this, R.string.no_user_agreement_url_tip, Toast.LENGTH_SHORT).show();
+                return;
+            }
             WfcWebViewActivity.loadUrl(this, getString(R.string.user_agreement), Config.USER_AGREEMENT_URL);
         });
     }

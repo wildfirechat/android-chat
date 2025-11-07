@@ -6,6 +6,7 @@ package cn.wildfire.chat.app.setting;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,18 +76,18 @@ public class AboutActivity extends WfcBaseActivity {
     }
 
     public void agreement() {
-        if (BuildConfig.APPLICATION_ID.startsWith("cn.wildfirechat.")) {
-            WfcWebViewActivity.loadUrl(this, getString(R.string.about_agreement_title), getString(R.string.about_agreement_url));
-        } else {
-            Toast.makeText(this, "野火IM 用户协议对第三方应用不适用", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(Config.USER_AGREEMENT_URL) || Config.USER_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
+            Toast.makeText(this, R.string.no_user_agreement_url_tip, Toast.LENGTH_SHORT).show();
+            return;
         }
+        WfcWebViewActivity.loadUrl(this, getString(R.string.user_agreement), Config.USER_AGREEMENT_URL);
     }
 
     public void privacy() {
-        if (BuildConfig.APPLICATION_ID.startsWith("cn.wildfirechat.")) {
-            WfcWebViewActivity.loadUrl(this, getString(R.string.about_privacy_title), getString(R.string.about_privacy_url));
-        } else {
-            Toast.makeText(this, "野火IM 隐私政策对第三方应用不适用", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(Config.PRIVACY_AGREEMENT_URL) || Config.PRIVACY_AGREEMENT_URL.indexOf("https://example.com") >= 0) {
+            Toast.makeText(this, R.string.no_privacy_agreement_url_tip, Toast.LENGTH_SHORT).show();
+            return;
         }
+        WfcWebViewActivity.loadUrl(this, getString(R.string.privacy_agreement), Config.PRIVACY_AGREEMENT_URL);
     }
 }
