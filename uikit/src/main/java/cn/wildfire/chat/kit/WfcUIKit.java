@@ -202,6 +202,7 @@ public class WfcUIKit implements AVEngineKit.AVEngineCallback, OnReceiveMessageL
             AVEngineKit.Instance().setVideoProfile(VideoProfile.VP360P, false);
             // 屏幕共享，使用替换模式
             AVEngineKit.SCREEN_SHARING_REPLACE_MODE = true;
+            AVEngineKit.ENABLE_PROXIMITY_SENSOR_ADJUST_AUDIO_OUTPUT_DEVICE = false;
 
             ChatManager.Instance().registerMessageContent(ConferenceChangeModeContent.class);
             ChatManager.Instance().registerMessageContent(ConferenceCommandContent.class);
