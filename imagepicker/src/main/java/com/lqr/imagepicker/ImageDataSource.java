@@ -29,23 +29,25 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
         MediaStore.Files.FileColumns.HEIGHT,         //图片的高度，int型  1080
         MediaStore.Files.FileColumns.MIME_TYPE,      //图片的类型     image/jpeg
         MediaStore.Files.FileColumns.DATE_ADDED,
-        MediaStore.Files.FileColumns.DURATION
+        MediaStore.Files.FileColumns.DURATION       //视频持续时间
     };    //图片被添加的时间，long型  1450518608
 
-    private FragmentActivity activity;
-    private OnImageLoadListener loadedListener;                     //图片加载完成的回调接口
-    private ArrayList<ImageFolder> imageFolders = new ArrayList<>();   //所有的图片文件夹
+    private final FragmentActivity activity;
+    private final OnImageLoadListener loadedListener;                     //图片加载完成的回调接口
+    private final ArrayList<ImageFolder> imageFolders = new ArrayList<>();   //所有的图片文件夹
 
-    private int loaderId;
-    private Bundle loaderArgs;
+    private boolean enableVideo;
+    private final int loaderId;
+    private final Bundle loaderArgs;
 
     /**
      * @param activity       用于初始化LoaderManager，需要兼容到2.3
      * @param path           指定扫描的文件夹目录，可以为 null，表示扫描所有图片
      * @param loadedListener 图片加载完成的监听
      */
-    public ImageDataSource(FragmentActivity activity, String path, OnImageLoadListener loadedListener) {
+    public ImageDataSource(FragmentActivity activity, String path, boolean enableVideo, OnImageLoadListener loadedListener) {
         this.activity = activity;
+        this.enableVideo = enableVideo;
         this.loadedListener = loadedListener;
 
         LoaderManager loaderManager = LoaderManager.getInstance(activity);
@@ -70,31 +72,29 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        CursorLoader cursorLoader = null;
+        CursorLoader cursorLoader;
         //扫描所有图片
-        String selection = "";
-        String[] selectionArgs = null;
+        String selection;
+        String[] selectionArgs;
         Uri uri = MediaStore.Files.getContentUri("external");
         String sortOrder = MediaStore.Files.FileColumns.DATE_ADDED + " DESC";
         if (id == LOADER_ALL) {
-            selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?"
-                + " OR "
-                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+            selection = !enableVideo ? MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" :
+                MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" + " OR " + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+        } else {
+            //扫描某个图片文件夹
+            selection = !enableVideo ? MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" :
+                "( " + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" + " OR " + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" + " )";
+            selection += " AND " + MediaStore.Files.FileColumns.DATA + " like %?%";
+        }
+        if (enableVideo) {
             selectionArgs = new String[]{
                 String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
                 String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO)
             };
-        }
-        //扫描某个图片文件夹
-        if (id == LOADER_CATEGORY) {
-            selection = "( "
-                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" + " OR " + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?"
-                + " )"
-                + " AND "
-                + MediaStore.Files.FileColumns.DATA + " like %?%";
+        } else {
             selectionArgs = new String[]{
                 String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
-                String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO)
             };
         }
         cursorLoader = new CursorLoader(activity, uri, IMAGE_PROJECTION, selection, selectionArgs, sortOrder);

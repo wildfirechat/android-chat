@@ -3,6 +3,7 @@ package com.lqr.imagepicker;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+
 import androidx.fragment.app.Fragment;
 
 import com.lqr.imagepicker.ui.ImageGridActivity;
@@ -24,6 +25,7 @@ public class ImagePicker implements Serializable {
     private boolean multiMode = false;    //图片选择模式
     private int limit = 9;         //最大选择图片数量
     private boolean showCamera = false;   //显示相机
+    private boolean showVideo = false;   //显示视频
 
     private ImagePicker() {
     }
@@ -42,6 +44,10 @@ public class ImagePicker implements Serializable {
         this.showCamera = show;
         return this;
     }
+    public ImagePicker showVideo(boolean show) {
+        this.showVideo = show;
+        return this;
+    }
 
     public void pick(Activity activity, int requestCode) {
         activity.startActivityForResult(buildPickIntent(activity), requestCode);
@@ -55,6 +61,7 @@ public class ImagePicker implements Serializable {
         Intent intent = new Intent(context, ImageGridActivity.class);
         intent.putExtra("multiMode", multiMode);
         intent.putExtra("limit", limit);
+        intent.putExtra("showVideo", showVideo);
         intent.putExtra("showCamera", showCamera);
         return intent;
     }
