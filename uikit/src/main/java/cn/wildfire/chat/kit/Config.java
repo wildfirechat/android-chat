@@ -135,8 +135,8 @@ public class Config {
     public static String AI_ROBOT = "FireRobot";
 
     // 用户协议地址
-    public final static String USER_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_agreement.html";
+    public final static String USER_AGREEMENT_URL = "https://example.com/user_agreement.html";
 
     //  隐私协议地址
-    public final static String PRIVACY_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_privacy.html";
+    public final static String PRIVACY_AGREEMENT_URL = "https://example.com/user_privacy.html";
 }
