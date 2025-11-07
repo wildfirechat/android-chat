@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -149,6 +150,14 @@ public class ImageGridAdapter extends BaseAdapter {
             }
             //imagePicker.getImageLoader().displayImage(mActivity, imageItem.path, holder.ivThumb, mImageSize, mImageSize); //显示图片
             Glide.with(mActivity).load(Uri.parse("file://" + imageItem.path).toString()).into(holder.ivThumb);
+
+            if (imageItem.mimeType.startsWith("video")) {
+                holder.videoDurationTextView.setVisibility(View.VISIBLE);
+                holder.videoDurationTextView.setText(formatDuration(imageItem.duration / 1000));
+            } else {
+                holder.videoDurationTextView.setVisibility(View.GONE);
+            }
+
         }
         return convertView;
     }
@@ -156,14 +165,16 @@ public class ImageGridAdapter extends BaseAdapter {
     private class ViewHolder {
         public View rootView;
         public ImageView ivThumb;
+        public TextView videoDurationTextView;
         public View mask;
         public SuperCheckBox cbCheck;
 
         public ViewHolder(View view) {
             rootView = view;
-            ivThumb = (ImageView) view.findViewById(R.id.iv_thumb);
+            ivThumb = view.findViewById(R.id.iv_thumb);
             mask = view.findViewById(R.id.mask);
-            cbCheck = (SuperCheckBox) view.findViewById(R.id.cb_check);
+            cbCheck = view.findViewById(R.id.cb_check);
+            videoDurationTextView = view.findViewById(R.id.videoDurationTextView);
         }
     }
 
@@ -173,5 +184,19 @@ public class ImageGridAdapter extends BaseAdapter {
 
     public interface OnImageItemClickListener {
         void onImageItemClick(View view, ImageItem imageItem, int position);
+    }
+
+    private static String formatDuration(long second) {
+        String DateTimes;
+        long hours = (second % (60 * 60 * 24)) / (60 * 60);
+        long minutes = (second % (60 * 60)) / 60;
+        long seconds = second % 60;
+
+        if (hours > 0) {
+            DateTimes = String.format("%02d:%d:%d", hours, minutes, seconds);
+        } else {
+            DateTimes = String.format("%d:%d", minutes, seconds);
+        }
+        return DateTimes;
     }
 }

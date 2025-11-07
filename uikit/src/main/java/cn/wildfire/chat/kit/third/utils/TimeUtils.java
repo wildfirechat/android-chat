@@ -71,4 +71,18 @@ public class TimeUtils {
     private static String getTime(DateTime msgTime) {
         return msgTime.toString("HH:mm");
     }
+
+    public static String formatDuration(long mss) {
+        String DateTimes = null;
+        long hours = (mss % (60 * 60 * 24)) / (60 * 60);
+        long minutes = (mss % (60 * 60)) / 60;
+        long seconds = mss % 60;
+
+        if (hours > 0) {
+            DateTimes = String.format("%02d:%d:%d", hours, minutes, seconds);
+        } else {
+            DateTimes = String.format("%d:%d", minutes, seconds);
+        }
+        return DateTimes;
+    }
 }

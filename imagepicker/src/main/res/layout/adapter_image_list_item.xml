@@ -25,4 +25,14 @@
         android:layout_gravity="top|right"
         android:paddingRight="10dp"
         android:paddingTop="20dp"/>
+
+    <TextView
+        android:id="@+id/videoDurationTextView"
+        android:text=""
+        android:textColor="#D9D9D9"
+        android:layout_gravity="bottom|left"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 </FrameLayout>

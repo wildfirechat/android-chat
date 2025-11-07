@@ -72,34 +72,33 @@ public class ImageExt extends ConversationExt {
                     //是否发送原图
                     boolean compress = data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
                     ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+                    if (images == null) {
+                        return;
+                    }
                     for (ImageItem imageItem : images) {
                         boolean isGif = isGifFile(imageItem.path);
                         if (isGif) {
                             UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, toUsers(), imageItem.path, null));
                             continue;
                         }
+                        // 视频
+                        if (imageItem.mimeType.startsWith("video")) {
+                            File videoFile = new File(imageItem.path);
+                            UIUtils.postTaskSafely(() -> messageViewModel.sendVideoMsg(conversation, toUsers(), videoFile));
+                            continue;
+                        }
+
                         File imageFileThumb;
                         File imageFileSource = null;
-                        // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
                         if (compress) {
                             imageFileSource = ImageUtils.compressImage(imageItem.path);
                         }
                         imageFileSource = imageFileSource == null ? new File(imageItem.path) : imageFileSource;
-//                    if (isOrig) {
-//                    imageFileSource = new File(imageItem.path);
                         imageFileThumb = ImageUtils.genThumbImgFile(imageItem.path);
                         if (imageFileThumb == null) {
                             Log.e("ImageExt", "gen image thumb fail");
                             return;
                         }
-//                    } else {
-//                        //压缩图片
-//                        // TODO  压缩的有问题
-//                        imageFileSource = ImageUtils.genThumbImgFileEx(imageItem.path);
-//                        //imageFileThumb = ImageUtils.genThumbImgFile(imageFileSource.getAbsolutePath());
-//                        imageFileThumb = imageFileSource;
-//                    }
-//                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
                         File finalImageFileSource = imageFileSource;
                         UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, toUsers(), imageFileThumb, finalImageFileSource));
 

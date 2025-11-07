@@ -12,6 +12,7 @@ public class ImageItem implements Serializable {
     public String mimeType;
     public long createTime;
     public boolean original;
+    public long duration;
 
     /**
      * 图片的路径和创建时间相同就认为是同一张图片
