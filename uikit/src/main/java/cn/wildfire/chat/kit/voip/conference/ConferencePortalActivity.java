@@ -117,6 +117,7 @@ public class ConferencePortalActivity extends WfcBaseActivity {
                 } else {
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyLinearLayout.setVisibility(View.GONE);
+                    infos = infos.stream().filter(info -> info.getStartTime() > 0 && info.getEndTime() > 0).toList();
                     favConferenceList = infos;
                     adapter.notifyDataSetChanged();
                 }
