@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -111,6 +112,14 @@ public class PermissionKit extends DialogFragment {
                         context.getString(R.string.permission_storage_denied_desc, appName));
                     break;
 
+                case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                    tuple = new PermissionReqTuple(Manifest.permission.READ_EXTERNAL_STORAGE,
+                        context.getString(R.string.permission_write_storage_title, appName),
+                        context.getString(R.string.permission_write_storage_desc),
+                        context.getString(R.string.permission_write_storage_denied_title),
+                        context.getString(R.string.permission_write_storage_denied_desc, appName));
+                    break;
+
                 case Manifest.permission.POST_NOTIFICATIONS:
                     tuple = new PermissionReqTuple(Manifest.permission.POST_NOTIFICATIONS,
                         context.getString(R.string.permission_notification_title, appName),
@@ -149,6 +158,7 @@ public class PermissionKit extends DialogFragment {
                         context.getString(R.string.permission_location_denied_desc, appName));
                     break;
                 default:
+                    Toast.makeText(context, "暂不支持申请该权限 " + permission, Toast.LENGTH_SHORT).show();
                     break;
             }
             if (tuple != null) {
