@@ -34,6 +34,9 @@ import cn.wildfirechat.message.ImageMessageContent;
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.VideoMessageContent;
+import cn.wildfirechat.message.core.MessageDirection;
+import cn.wildfirechat.model.ChannelInfo;
+import cn.wildfirechat.model.Conversation;
 import cn.wildfirechat.model.UserInfo;
 import cn.wildfirechat.remote.ChatManager;
 
@@ -236,8 +239,16 @@ public class CompositeMessageContentAdapter extends RecyclerView.Adapter<Recycle
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < messages.size() && i < 4; i++) {
                     Message m = messages.get(i);
-                    UserInfo u = ChatManager.Instance().getUserInfo(m.sender, false);
-                    sb.append(u.displayName + ": " + m.content.digest(m));
+                    String senderName;
+                    if(m.conversation.type == Conversation.ConversationType.Channel && m.direction == MessageDirection.Receive) {
+                        ChannelInfo channelInfo = ChatManager.Instance().getChannelInfo(m.conversation.target, false);
+                        senderName = channelInfo.name;
+                    } else {
+                        UserInfo u = ChatManager.Instance().getUserInfo(m.sender, false);
+                        senderName = u.displayName;
+                    }
+
+                    sb.append(senderName + ": " + m.content.digest(m));
                     sb.append("\n");
                 }
                 compositeContentTextView.setText(sb.toString());
