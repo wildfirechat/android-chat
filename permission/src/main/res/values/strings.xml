@@ -43,4 +43,9 @@
     <string name="permission_location_desc">在下方弹窗中选择允许后，你可以发送位置消息</string>
     <string name="permission_location_denied_title">位置权限未开启</string>
     <string name="permission_location_denied_desc">在设置-应用-%s-权限中开启位置权限，以发送位置消息。</string>
+
+    <string name="permission_general_title">%s 申请 %s 权限</string>
+    <string name="permission_general_desc">允许后，可实现相关功能</string>
+    <string name="permission_general_denied_title">%s 权限未授权</string>
+    <string name="permission_general_denied_desc">在设置-应用-%s-权限中开启权限，以实现相关功能。</string>
 </resources>
