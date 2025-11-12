@@ -193,7 +193,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-        Log.d(TAG, "voip audio " + userId + " " + volume);
+//        Log.d(TAG, "voip audio " + userId + " " + volume);
     }
 
     @Override

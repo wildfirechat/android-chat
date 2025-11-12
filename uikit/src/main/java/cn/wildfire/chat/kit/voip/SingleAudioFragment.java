@@ -6,7 +6,6 @@ package cn.wildfire.chat.kit.voip;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -162,7 +161,7 @@ public class SingleAudioFragment extends Fragment implements AVEngineKit.CallSes
 
     @Override
     public void didReportAudioVolume(String userId, int volume) {
-        Log.d(TAG, "voip audio " + userId + " " + volume);
+//        Log.d(TAG, "voip audio " + userId + " " + volume);
 
     }
 
