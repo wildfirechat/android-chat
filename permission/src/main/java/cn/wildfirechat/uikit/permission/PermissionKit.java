@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -158,12 +157,15 @@ public class PermissionKit extends DialogFragment {
                         context.getString(R.string.permission_location_denied_desc, appName));
                     break;
                 default:
-                    Toast.makeText(context, "暂不支持申请该权限 " + permission, Toast.LENGTH_SHORT).show();
+                    tuple = new PermissionReqTuple(permission,
+                        context.getString(R.string.permission_general_title, appName, permission),
+                        context.getString(R.string.permission_general_desc),
+                        context.getString(R.string.permission_general_denied_title, permission),
+                        context.getString(R.string.permission_general_denied_desc, appName)
+                    );
                     break;
             }
-            if (tuple != null) {
-                tuples.add(tuple);
-            }
+            tuples.add(tuple);
 
         }
         return tuples.toArray(new PermissionReqTuple[0]);
