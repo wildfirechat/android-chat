@@ -28,6 +28,7 @@ import cn.wildfire.chat.kit.ChatManagerHolder;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseNoToolbarActivity;
 import cn.wildfire.chat.kit.WfcWebViewActivity;
+import cn.wildfire.chat.kit.utils.ViewUtil;
 import cn.wildfire.chat.kit.widget.SimpleTextWatcher;
 import cn.wildfirechat.chat.R;
 
@@ -44,6 +45,7 @@ public class LoginActivity extends WfcBaseNoToolbarActivity {
             if (checkBox.isChecked()) {
                 login();
             } else {
+                ViewUtil.hideKeyboard(this, passwordEditText);
                 Toast.makeText(this, R.string.check_agreement_tip, Toast.LENGTH_SHORT).show();
             }
         });
