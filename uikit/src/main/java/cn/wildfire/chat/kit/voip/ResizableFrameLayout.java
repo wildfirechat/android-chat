@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 
 /**
  * 支持缩放改变子 view 大小的FrameLayout
+ * 仅支持包含一个子 view
  * <p>
  */
 public class ResizableFrameLayout extends FrameLayout implements ScaleGestureDetector.OnScaleGestureListener {
@@ -34,7 +35,7 @@ public class ResizableFrameLayout extends FrameLayout implements ScaleGestureDet
     private static final float MIN_ZOOM = 1.0f;
     private static final float MAX_ZOOM = 4.0f;
 
-    private boolean enableZoom = true;
+    private boolean enableZoom = false;
     private boolean enableDrag = true;
     private Mode mode = Mode.NONE;
     private float scale = 1.0f;
@@ -71,18 +72,15 @@ public class ResizableFrameLayout extends FrameLayout implements ScaleGestureDet
 
     private void init(Context context) {
         final ScaleGestureDetector scaleDetector = new ScaleGestureDetector(context, this);
-        Log.d(TAG, "init");
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Log.d(TAG, "onTouch 000");
                 if (child() == null) {
                     return false;
                 }
-                if (!enableZoom && !enableDrag) {
+                if (!enableZoom) {
                     return false;
                 }
-                Log.d(TAG, "onTouch");
                 int y = (int) motionEvent.getY();
                 int x = (int) motionEvent.getX();
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
@@ -145,7 +143,6 @@ public class ResizableFrameLayout extends FrameLayout implements ScaleGestureDet
                 return true;
             }
         });
-        Log.d(TAG, "init end");
     }
 
     // ScaleGestureDetector
@@ -223,12 +220,13 @@ public class ResizableFrameLayout extends FrameLayout implements ScaleGestureDet
         int newWidth = (int) (originalWidth * scale);
         int newHeight = (int) (originalHeight * scale);
 
-        // 先对原始 view 进行缩放
-//        view.setScaleX(scale);
-//        view.setScaleY(scale);
-
         // 设置 view 大小，会触发surfaceView 重新 layout，及 video frame重新渲染
         if (lp.width != newWidth || lp.height != newHeight) {
+//
+//            // 先对原始 view 进行缩放
+//            view.setScaleX(scale);
+//            view.setScaleY(scale);
+//
             lp.width = newWidth;
             lp.height = newHeight;
             view.setLayoutParams(lp);
@@ -259,9 +257,9 @@ public class ResizableFrameLayout extends FrameLayout implements ScaleGestureDet
         this.enableZoom = enable;
     }
 
-    public void setEnableDrag(boolean enable) {
-        this.enableDrag = enable;
-    }
+//    public void setEnableDrag(boolean enable) {
+//        this.enableDrag = enable;
+//    }
 
     public void reset() {
         View view = child();

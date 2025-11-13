@@ -14,7 +14,7 @@
         android:scaleType="fitXY"
         android:src="@mipmap/avatar_def" />
 
-    <cn.wildfire.chat.kit.voip.ZoomableFrameLayout
+    <cn.wildfire.chat.kit.voip.ResizableFrameLayout
         android:id="@+id/videoContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         android:visibility="gone"
         app:layout_gravity="center">
 
-    </cn.wildfire.chat.kit.voip.ZoomableFrameLayout>
+    </cn.wildfire.chat.kit.voip.ResizableFrameLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

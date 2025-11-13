@@ -16,12 +16,12 @@ import androidx.annotation.RequiresApi;
 import org.webrtc.RendererCommon;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
+import cn.wildfire.chat.kit.voip.ResizableFrameLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceParticipantItemVideoView extends ConferenceParticipantItemView {
-    public ZoomableFrameLayout videoContainer;
+    public ResizableFrameLayout videoContainer;
     private boolean enableVideoZoom = false;
 
     private static final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
