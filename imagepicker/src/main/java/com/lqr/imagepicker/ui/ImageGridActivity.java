@@ -43,6 +43,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
     private boolean multiMode = false;
     private int limit;
     private boolean showCamera;
+    private boolean showVideo;
 
     private GridView mGridView;  //图片展示控件
     private View mFooterBar;     //底部栏
@@ -72,6 +73,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
         multiMode = intent.getBooleanExtra("multiMode", false);
         limit = intent.getIntExtra("limit", 9);
         showCamera = intent.getBooleanExtra("showCamera", false);
+        showVideo = intent.getBooleanExtra("showVideo", false);
 
         findViewById(R.id.btn_back).setOnClickListener(this);
         mBtnOk = (TextView) findViewById(R.id.btn_ok);
@@ -132,7 +134,7 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
         checkAccessPermission();
         if (isFullAccessGranted || isPartialAccessGranted) {
             if (imageDataSource == null) {
-                imageDataSource = new ImageDataSource(this, null, this);
+                imageDataSource = new ImageDataSource(this, null, showVideo, this);
             }
             imageDataSource.refresh();
             mImageGridAdapter.notifyDataSetChanged();

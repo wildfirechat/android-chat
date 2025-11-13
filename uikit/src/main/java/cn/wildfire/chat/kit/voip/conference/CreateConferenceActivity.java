@@ -71,7 +71,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         findViewById(R.id.joinConferenceBtn).setOnClickListener(v -> onClickJoinBtn());
         audienceSwitch.setOnCheckedChangeListener(this::audienceChecked);
         passwordSwitch.setOnCheckedChangeListener(this::passwordChecked);
-        titleEditText.addTextChangedListener(new SimpleTextWatcher(){
+        titleEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 conferenceTitle(s);
@@ -83,7 +83,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
         super.bindViews();
         titleEditText = findViewById(R.id.conferenceTitleTextInputEditText);
         audienceSwitch = findViewById((R.id.audienceSwitch));
-        passwordSwitch  = findViewById(R.id.passwordSwitch);
+        passwordSwitch = findViewById(R.id.passwordSwitch);
         modeSwitch = findViewById((R.id.modeSwitch));
         advancedSwitch = findViewById((R.id.advanceSwitch));
         userCallIdSwitch = findViewById(R.id.userCallIdSwitch);
@@ -238,7 +238,7 @@ public class CreateConferenceActivity extends WfcBaseActivity {
             public void onSuccess(String conferenceId) {
                 info.setConferenceId(conferenceId);
                 if (join) {
-                    AVEngineKit.CallSession session = AVEngineKit.Instance().startConference(conferenceId, false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", info.isAudience(), info.isAdvance(), false, !enableAudio, !enableVideo, info.getMaxParticipants(), null);
+                    AVEngineKit.CallSession session = AVEngineKit.Instance().joinConference(conferenceId, false, info.getPin(), info.getOwner(), info.getConferenceTitle(), "", info.isAudience(), info.isAdvance(), !enableAudio, !enableVideo, false, null);
                     if (session != null) {
                         Intent intent = new Intent(CreateConferenceActivity.this, ConferenceActivity.class);
                         startActivity(intent);

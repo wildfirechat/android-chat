@@ -29,6 +29,11 @@
     <string name="permission_storage_denied_title">读取外部存储权限未开启</string>
     <string name="permission_storage_denied_desc">在设置-应用-%s-权限中开启外部存储访问权限，以正常使用发送图片、视频、文件，更新头像等功能。</string>
 
+    <string name="permission_write_storage_title">%s 申请写入外部存储权限</string>
+    <string name="permission_write_storage_desc">在下方弹窗中选择允许后，你可以保存照片等到 SDCard。</string>
+    <string name="permission_write_storage_denied_title"> 写入外部存储权限未开启</string>
+    <string name="permission_write_storage_denied_desc">在设置-应用-%s-权限中开启外部存储访问权限，以正常使用保存图片到 SDCard 等功能。</string>
+
     <string name="permission_notification_title">%s 申请发送通知权限</string>
     <string name="permission_notification_desc">在下方弹窗中选择允许后，应用在后台运行，收到消息时，将能进行通知提醒</string>
     <string name="permission_notification_denied_title">发送通知权限未开启</string>
@@ -38,4 +43,9 @@
     <string name="permission_location_desc">在下方弹窗中选择允许后，你可以发送位置消息</string>
     <string name="permission_location_denied_title">位置权限未开启</string>
     <string name="permission_location_denied_desc">在设置-应用-%s-权限中开启位置权限，以发送位置消息。</string>
+
+    <string name="permission_general_title">%s 申请 %s 权限</string>
+    <string name="permission_general_desc">允许后，可实现相关功能</string>
+    <string name="permission_general_denied_title">%s 权限未授权</string>
+    <string name="permission_general_denied_desc">在设置-应用-%s-权限中开启权限，以实现相关功能。</string>
 </resources>

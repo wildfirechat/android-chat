@@ -54,6 +54,7 @@ public class ImagePreviewActivity extends ImagePreviewBaseActivity implements Vi
             @Override
             public void onPageSelected(int position) {
                 mCurrentPosition = position;
+                mAdapter.updateCurrentPagePosition(position);
                 ImageItem item = mImageItems.get(mCurrentPosition);
                 boolean isSelected = store.isSelect(item);
                 mCbCheck.setChecked(isSelected);

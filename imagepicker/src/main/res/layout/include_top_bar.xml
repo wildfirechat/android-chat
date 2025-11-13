@@ -31,7 +31,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="8dp"
         android:layout_toRightOf="@id/btn_back"
-        android:text="选择图片"
+        android:text="选择图片或视频"
         android:textColor="#ffffff"
         android:textSize="16sp" />
 

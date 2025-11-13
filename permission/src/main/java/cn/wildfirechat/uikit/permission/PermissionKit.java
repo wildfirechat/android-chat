@@ -111,6 +111,14 @@ public class PermissionKit extends DialogFragment {
                         context.getString(R.string.permission_storage_denied_desc, appName));
                     break;
 
+                case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                    tuple = new PermissionReqTuple(Manifest.permission.READ_EXTERNAL_STORAGE,
+                        context.getString(R.string.permission_write_storage_title, appName),
+                        context.getString(R.string.permission_write_storage_desc),
+                        context.getString(R.string.permission_write_storage_denied_title),
+                        context.getString(R.string.permission_write_storage_denied_desc, appName));
+                    break;
+
                 case Manifest.permission.POST_NOTIFICATIONS:
                     tuple = new PermissionReqTuple(Manifest.permission.POST_NOTIFICATIONS,
                         context.getString(R.string.permission_notification_title, appName),
@@ -149,11 +157,15 @@ public class PermissionKit extends DialogFragment {
                         context.getString(R.string.permission_location_denied_desc, appName));
                     break;
                 default:
+                    tuple = new PermissionReqTuple(permission,
+                        context.getString(R.string.permission_general_title, appName, permission),
+                        context.getString(R.string.permission_general_desc),
+                        context.getString(R.string.permission_general_denied_title, permission),
+                        context.getString(R.string.permission_general_denied_desc, appName)
+                    );
                     break;
             }
-            if (tuple != null) {
-                tuples.add(tuple);
-            }
+            tuples.add(tuple);
 
         }
         return tuples.toArray(new PermissionReqTuple[0]);

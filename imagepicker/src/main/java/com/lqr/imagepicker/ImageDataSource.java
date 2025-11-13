@@ -1,6 +1,7 @@
 package com.lqr.imagepicker;
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
@@ -21,28 +22,32 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final int LOADER_ALL = 0;         //加载所有图片
     public static final int LOADER_CATEGORY = 1;    //分类加载图片
     private final String[] IMAGE_PROJECTION = {     //查询图片需要的数据列
-        MediaStore.Images.Media.DISPLAY_NAME,   //图片的显示名称  aaa.jpg
-        MediaStore.Images.Media.DATA,           //图片的真实路径  /storage/emulated/0/pp/downloader/wallpaper/aaa.jpg
-        MediaStore.Images.Media.SIZE,           //图片的大小，long型  132492
-        MediaStore.Images.Media.WIDTH,          //图片的宽度，int型  1920
-        MediaStore.Images.Media.HEIGHT,         //图片的高度，int型  1080
-        MediaStore.Images.Media.MIME_TYPE,      //图片的类型     image/jpeg
-        MediaStore.Images.Media.DATE_ADDED};    //图片被添加的时间，long型  1450518608
+        MediaStore.Files.FileColumns.DISPLAY_NAME,   //图片的显示名称  aaa.jpg
+        MediaStore.Files.FileColumns.DATA,           //图片的真实路径  /storage/emulated/0/pp/downloader/wallpaper/aaa.jpg
+        MediaStore.Files.FileColumns.SIZE,           //图片的大小，long型  132492
+        MediaStore.Files.FileColumns.WIDTH,          //图片的宽度，int型  1920
+        MediaStore.Files.FileColumns.HEIGHT,         //图片的高度，int型  1080
+        MediaStore.Files.FileColumns.MIME_TYPE,      //图片的类型     image/jpeg
+        MediaStore.Files.FileColumns.DATE_ADDED,
+        MediaStore.Files.FileColumns.DURATION       //视频持续时间
+    };    //图片被添加的时间，long型  1450518608
 
-    private FragmentActivity activity;
-    private OnImageLoadListener loadedListener;                     //图片加载完成的回调接口
-    private ArrayList<ImageFolder> imageFolders = new ArrayList<>();   //所有的图片文件夹
+    private final FragmentActivity activity;
+    private final OnImageLoadListener loadedListener;                     //图片加载完成的回调接口
+    private final ArrayList<ImageFolder> imageFolders = new ArrayList<>();   //所有的图片文件夹
 
-    private int loaderId;
-    private Bundle loaderArgs;
+    private boolean enableVideo;
+    private final int loaderId;
+    private final Bundle loaderArgs;
 
     /**
      * @param activity       用于初始化LoaderManager，需要兼容到2.3
      * @param path           指定扫描的文件夹目录，可以为 null，表示扫描所有图片
      * @param loadedListener 图片加载完成的监听
      */
-    public ImageDataSource(FragmentActivity activity, String path, OnImageLoadListener loadedListener) {
+    public ImageDataSource(FragmentActivity activity, String path, boolean enableVideo, OnImageLoadListener loadedListener) {
         this.activity = activity;
+        this.enableVideo = enableVideo;
         this.loadedListener = loadedListener;
 
         LoaderManager loaderManager = LoaderManager.getInstance(activity);
@@ -67,15 +72,32 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        CursorLoader cursorLoader = null;
+        CursorLoader cursorLoader;
         //扫描所有图片
+        String selection;
+        String[] selectionArgs;
+        Uri uri = MediaStore.Files.getContentUri("external");
+        String sortOrder = MediaStore.Files.FileColumns.DATE_ADDED + " DESC";
         if (id == LOADER_ALL) {
-            cursorLoader = new CursorLoader(activity, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION, null, null, IMAGE_PROJECTION[6] + " DESC");
+            selection = !enableVideo ? MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" :
+                MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" + " OR " + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+        } else {
+            //扫描某个图片文件夹
+            selection = !enableVideo ? MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" :
+                "( " + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" + " OR " + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?" + " )";
+            selection += " AND " + MediaStore.Files.FileColumns.DATA + " like %?%";
         }
-        //扫描某个图片文件夹
-        if (id == LOADER_CATEGORY) {
-            cursorLoader = new CursorLoader(activity, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION, IMAGE_PROJECTION[1] + " like '%" + args.getString("path") + "%'", null, IMAGE_PROJECTION[6] + " DESC");
+        if (enableVideo) {
+            selectionArgs = new String[]{
+                String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
+                String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO)
+            };
+        } else {
+            selectionArgs = new String[]{
+                String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
+            };
         }
+        cursorLoader = new CursorLoader(activity, uri, IMAGE_PROJECTION, selection, selectionArgs, sortOrder);
 
         return cursorLoader;
     }
@@ -94,6 +116,7 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
                 int imageHeight = data.getInt(data.getColumnIndexOrThrow(IMAGE_PROJECTION[4]));
                 String imageMimeType = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[5]));
                 long imageAddTime = data.getLong(data.getColumnIndexOrThrow(IMAGE_PROJECTION[6]));
+                long duration = data.getLong(data.getColumnIndexOrThrow(IMAGE_PROJECTION[7]));
                 //封装实体
                 ImageItem imageItem = new ImageItem();
                 imageItem.name = imageName;
@@ -103,6 +126,7 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
                 imageItem.height = imageHeight;
                 imageItem.mimeType = imageMimeType;
                 imageItem.createTime = imageAddTime;
+                imageItem.duration = duration;
                 allImages.add(imageItem);
                 //根据父路径分类存放图片
                 File imageFile = new File(imagePath);

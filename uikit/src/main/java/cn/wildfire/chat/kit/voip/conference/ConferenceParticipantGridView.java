@@ -82,12 +82,14 @@ class ConferenceParticipantGridView extends RelativeLayout {
             if (!rp.getUserId().equals(ChatManager.Instance().getUserId()) && !rp.isAudience() && !rp.isVideoMuted()) {
                 callSession.setParticipantVideoType(rp.getUserId(), rp.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_NONE);
             }
+            ConferenceParticipantItemView toRemoveItem = this.participantGridView.findViewWithTag(VoipBaseActivity.participantKey(rp.getUserId(), rp.isScreenSharing()));
+            if (toRemoveItem != null) {
+                this.participantGridView.removeView(toRemoveItem);
+            }
         }
 
         this.profiles = profiles;
 
-        // TODO diff，全删，然后重新添加，UI 会稍微闪一下
-        this.participantGridView.removeAllViews();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int size = Math.min(dm.widthPixels, dm.heightPixels);
         int width = dm.widthPixels;
@@ -101,6 +103,23 @@ class ConferenceParticipantGridView extends RelativeLayout {
             itemHeight = height / 2;
         }
         for (AVEngineKit.ParticipantProfile profile : profiles) {
+            ConferenceParticipantItemView oldItem = this.participantGridView.findViewWithTag(VoipBaseActivity.participantKey(profile.getUserId(), profile.isScreenSharing()));
+            if (oldItem != null) {
+                // TODO
+                // 仅 audioMute 变化时，也可以复用 ConferenceParticipantItemVideoView
+                if (oldItem.profile != null && oldItem.profile.equals(profile)) {
+                    if (oldItem instanceof ConferenceParticipantItemVideoView) {
+                        if (!profile.isAudience() && !profile.isVideoMuted()) {
+                            ((ConferenceParticipantItemVideoView) oldItem).setupVideoView(callSession, profile);
+                            session.setParticipantVideoType(profile.getUserId(), profile.isScreenSharing(), AVEngineKit.VideoType.VIDEO_TYPE_SMALL_STREAM);
+                        }
+                    }
+                    continue;
+                } else {
+                    this.participantGridView.removeView(oldItem);
+                }
+            }
+
             if (profile.isAudience() || profile.isVideoMuted()) {
                 ConferenceParticipantItemView conferenceItem = new ConferenceParticipantItemView(getContext());
                 conferenceItem.setLayoutParams(new ViewGroup.LayoutParams(itemWidth, itemHeight));

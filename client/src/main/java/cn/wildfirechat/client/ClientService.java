@@ -2927,6 +2927,41 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         @Override
+        public List<GroupMember> getGroupMembersEx2(String groupId, int[] types, int offset, int count) throws RemoteException {
+            ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembersEx(groupId, types, offset, count);
+            List<GroupMember> out = new ArrayList<>();
+            for (ProtoGroupMember protoMember : protoGroupMembers) {
+                if (protoMember != null && !TextUtils.isEmpty(protoMember.getMemberId())) {
+                    GroupMember member = covertProtoGroupMember(protoMember);
+                    out.add(member);
+                }
+            }
+            return out;
+        }
+
+        @Override
+        public int getGroupMembersCount(String groupId, int[] types) throws RemoteException {
+            return ProtoLogic.getGroupMembersCount(groupId, types);
+        }
+
+        @Override
+        public List<String> getGroupMemberIds(String groupId, int[] types) throws RemoteException {
+            List<String> out = new ArrayList<>();
+            String[] memberIds = ProtoLogic.getGroupMemberIds(groupId, types);
+            if (memberIds != null) {
+                for (String friend : memberIds) {
+                    out.add(friend);
+                }
+            }
+            return out;
+        }
+
+        @Override
+        public void loadGroupMemberFromRemote(String groupId) throws RemoteException {
+            ProtoLogic.reloadRemoteGroupMembers(groupId);
+        }
+
+        @Override
         public void getGroupMemberUserInfosAsync(String groupId, boolean forceUpdate, IGetUserInfoListCallback callback) throws RemoteException {
             ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembers(groupId, forceUpdate);
             String[] memberIds = new String[protoGroupMembers.length];

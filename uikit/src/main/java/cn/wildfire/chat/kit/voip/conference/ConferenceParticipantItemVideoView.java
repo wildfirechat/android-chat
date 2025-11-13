@@ -16,12 +16,12 @@ import androidx.annotation.RequiresApi;
 import org.webrtc.RendererCommon;
 
 import cn.wildfire.chat.kit.R;
-import cn.wildfire.chat.kit.voip.ZoomableFrameLayout;
+import cn.wildfire.chat.kit.voip.ResizableFrameLayout;
 import cn.wildfirechat.avenginekit.AVEngineKit;
 import cn.wildfirechat.remote.ChatManager;
 
 public class ConferenceParticipantItemVideoView extends ConferenceParticipantItemView {
-    public ZoomableFrameLayout videoContainer;
+    public ResizableFrameLayout videoContainer;
     private boolean enableVideoZoom = false;
 
     private static final RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
@@ -76,23 +76,30 @@ public class ConferenceParticipantItemVideoView extends ConferenceParticipantIte
 
     @Override
     public void setup(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile profile) {
+        if (this.profile != null && this.profile.equals(profile)) {
+            return;
+        }
         super.setup(session, profile);
         if (!profile.isVideoMuted()) {
-        videoContainer.setVisibility(VISIBLE);
+            videoContainer.setVisibility(VISIBLE);
             portraitImageView.setVisibility(GONE);
             nameTextView.setVisibility(GONE);
+            //statusTextView.setText(R.string.connecting);
+            setupVideoView(session, profile);
+        } else {
+            videoContainer.setVisibility(GONE);
+            portraitImageView.setVisibility(VISIBLE);
+            nameTextView.setVisibility(VISIBLE);
+        }
+    }
+
+    public void setupVideoView(AVEngineKit.CallSession session, AVEngineKit.ParticipantProfile profile){
         if (profile.getUserId().equals(ChatManager.Instance().getUserId())) {
             session.setupLocalVideoView(videoContainer, scalingType);
         } else {
             session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, scalingType);
             // 用下面这种效果更好
             //session.setupRemoteVideoView(profile.getUserId(), profile.isScreenSharing(), videoContainer, RendererCommon.ScalingType.SCALE_ASPECT_FILL, scalingType);
-        }
-        //statusTextView.setText(R.string.connecting);
-        } else {
-            videoContainer.setVisibility(GONE);
-            portraitImageView.setVisibility(VISIBLE);
-            nameTextView.setVisibility(VISIBLE);
         }
     }
 
