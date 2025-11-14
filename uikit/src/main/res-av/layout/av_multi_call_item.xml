@@ -21,7 +21,7 @@
         android:text="接通中"
         android:textColor="@color/red6" />
 
-    <cn.wildfire.chat.kit.voip.ZoomableFrameLayout
+    <cn.wildfire.chat.kit.voip.ResizableFrameLayout
         android:id="@+id/videoContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
         android:orientation="horizontal"
         app:layout_gravity="center">
 
-    </cn.wildfire.chat.kit.voip.ZoomableFrameLayout>
+    </cn.wildfire.chat.kit.voip.ResizableFrameLayout>
 
     <TextView
         android:layout_width="wrap_content"

@@ -21,7 +21,7 @@ import cn.wildfire.chat.kit.R;
 public class VoipCallItem extends FrameLayout {
     public ImageView portraitImageView;
     public TextView statusTextView;
-    public ZoomableFrameLayout videoContainer;
+    public ResizableFrameLayout videoContainer;
     private boolean enableVideoZoom = true;
 
     public VoipCallItem(@NonNull Context context) {

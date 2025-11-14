@@ -107,7 +107,7 @@ public class ZoomableFrameLayout extends FrameLayout implements ScaleGestureDete
                                 dy = motionEvent.getY() - startY;
                             } else if (mode == Mode.DRAG) {
                                 float tmp = y - lastY;
-                                setY(tmp);
+                                child().setTranslationY(tmp);
                                 if (dragListener != null) {
                                     dragListener.onDragOffset(tmp, getViewHeight() / 6);
                                 }
