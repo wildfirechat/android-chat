@@ -142,24 +142,10 @@ public class ImagePreviewActivity extends ImagePreviewBaseActivity implements Vi
      */
     @Override
     public void onImageSingleTap() {
-        if (topBar.getVisibility() == View.VISIBLE) {
-            topBar.setAnimation(AnimationUtils.loadAnimation(this, R.anim.top_out));
-            bottomBar.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
-            topBar.setVisibility(View.GONE);
-            bottomBar.setVisibility(View.GONE);
-            tintManager.setStatusBarTintResource(R.color.transparent);//通知栏所需颜色
-            //给最外层布局加上这个属性表示，Activity全屏显示，且状态栏被隐藏覆盖掉。
-            if (Build.VERSION.SDK_INT >= 16)
-                content.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        if (isBarShowing) {
+            hideBars(topBar, bottomBar);
         } else {
-            topBar.setAnimation(AnimationUtils.loadAnimation(this, R.anim.top_in));
-            bottomBar.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-            topBar.setVisibility(View.VISIBLE);
-            bottomBar.setVisibility(View.VISIBLE);
-            tintManager.setStatusBarTintResource(R.color.status_bar);//通知栏所需颜色
-            //Activity全屏显示，但状态栏不会被隐藏覆盖，状态栏依然可见，Activity顶端布局部分会被状态遮住
-            if (Build.VERSION.SDK_INT >= 16)
-                content.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            showBars(topBar, bottomBar);
         }
     }
 }

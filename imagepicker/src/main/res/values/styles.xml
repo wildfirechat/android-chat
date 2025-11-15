@@ -8,7 +8,19 @@
         <item name="android:navigationBarColor">@color/status_bar</item>
     </style>
 
-    <style name="ImagePickerThemeFullScreen" parent="ImagePickerTheme">
+    <style name="ImagePickerThemeFullScreen" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:navigationBarColor">#969696</item>
+        <item name="android:fitsSystemWindows">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="colorAccent">#3B62E0</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+
     </style>
 </resources>
