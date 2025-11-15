@@ -4,6 +4,11 @@
 
 package cn.wildfire.chat.kit.audio;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -15,6 +20,8 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -47,10 +54,15 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     private TextView stateTextView;
     private ImageView stateImageView;
     private PopupWindow recordingWindow;
+    private View recordingContentView;
 
     private Vibrator vibrator;
     private SoundPool soundPool;
     private int sendAudioMessageSuccessSoundId;
+
+    private ValueAnimator volumeAnimator;
+    private ValueAnimator countDownAnimator;
+    private int currentVolumeLevel = 0;
 
     public AudioRecorderPanel(Context context) {
         this.context = context;
@@ -112,6 +124,12 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_pressed);
+                // 添加按钮按下的缩放动画
+                button.animate()
+                    .scaleX(0.95f)
+                    .scaleY(0.95f)
+                    .setDuration(100)
+                    .start();
                 startRecord();
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -129,6 +147,12 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_normal);
+                // 恢复按钮缩放
+                button.animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .setDuration(100)
+                    .start();
                 if (isToCancel) {
                     cancelRecord();
                 } else if (isRecording) {
@@ -227,6 +251,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
     private void showRecording() {
         if (recordingWindow == null) {
             View view = View.inflate(context, R.layout.audio_popup_wi_vo, null);
+            recordingContentView = view.findViewById(R.id.recording_content_view);
             stateImageView = view.findViewById(R.id.rc_audio_state_image);
             stateTextView = view.findViewById(R.id.rc_audio_state_text);
             countDownTextView = view.findViewById(R.id.rc_audio_timer);
@@ -234,9 +259,16 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             recordingWindow.setFocusable(false);
             recordingWindow.setOutsideTouchable(false);
             recordingWindow.setTouchable(true);
+            // 让 PopupWindow 延伸到状态栏
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                recordingWindow.setClippingEnabled(false);
+            }
         }
 
-        recordingWindow.showAtLocation(rootView, Gravity.CENTER, 0, 0);
+        recordingWindow.showAtLocation(rootView, Gravity.TOP | Gravity.START, 0, 0);
+
+        // 开始入场动画
+        animateShowRecording();
 
         if (isCountDown) {
             countDownTextView.setVisibility(View.VISIBLE);
@@ -255,36 +287,76 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         if (recordingWindow == null) {
             return;
         }
-        recordingWindow.dismiss();
-        recordingWindow = null;
-        stateImageView = null;
-        stateTextView = null;
-        countDownTextView = null;
-        isCountDown = false;
-        isToCancel = false;
+
+        // 取消所有动画
+        cancelAllAnimations();
+
+        // 添加退出动画
+        animateHideRecording(() -> {
+            // 在动画结束后再次检查，避免被其他地方置空
+            if (recordingWindow != null) {
+                recordingWindow.dismiss();
+                recordingWindow = null;
+            }
+            recordingContentView = null;
+            stateImageView = null;
+            stateTextView = null;
+            countDownTextView = null;
+            isCountDown = false;
+            isToCancel = false;
+        });
     }
 
     private void showTooShortTip() {
         stateImageView.setImageResource(R.mipmap.ic_volume_wraning);
         stateTextView.setText(R.string.voice_short);
+
+        // 添加抖动动画表示警告
+        animateShake(stateImageView);
+        animateShake(stateTextView);
     }
 
     private void showCancelTip() {
         if (recordingWindow == null) {
             return;
         }
+
+        // 停止音量动画
+        if (volumeAnimator != null && volumeAnimator.isRunning()) {
+            volumeAnimator.cancel();
+        }
+
         countDownTextView.setVisibility(View.GONE);
         stateImageView.setVisibility(View.VISIBLE);
         stateImageView.setImageResource(R.mipmap.ic_volume_cancel);
         stateTextView.setVisibility(View.VISIBLE);
         stateTextView.setText(R.string.voice_cancel);
-        stateTextView.setBackgroundResource(R.drawable.corner_voice_style);
+        stateTextView.setBackgroundResource(R.drawable.bg_voice_cancel);
+
+        // 给整个容器添加缩放动画
+        if (recordingContentView != null) {
+            recordingContentView.animate()
+                .scaleX(1.05f)
+                .scaleY(1.05f)
+                .setDuration(150)
+                .start();
+        }
     }
 
     private void hideCancelTip() {
         if (!isToCancel) {
             return;
         }
+
+        // 恢复容器缩放
+        if (recordingContentView != null) {
+            recordingContentView.animate()
+                .scaleX(1.0f)
+                .scaleY(1.0f)
+                .setDuration(150)
+                .start();
+        }
+
         showRecording();
     }
 
@@ -301,6 +373,9 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
         countDownTextView.setText(String.format("%s", seconds));
         countDownTextView.setVisibility(View.VISIBLE);
+
+        // 添加倒计时脉冲动画
+        animateCountDown(countDownTextView);
     }
 
     private void timeout() {
@@ -339,32 +414,78 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         } else {
             db = 8 * recorder.getMaxAmplitude() / 32768;
         }
-        switch (db) {
-            case 0:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_1);
-                break;
-            case 1:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_2);
-                break;
-            case 2:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_3);
-                break;
-            case 3:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_4);
-                break;
-            case 4:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_5);
-                break;
-            case 5:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_6);
-                break;
-            case 6:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_7);
-                break;
-            default:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_8);
+
+        // 使用动画平滑过渡音量变化
+        animateVolumeChange(db);
+    }
+
+    private void animateVolumeChange(int targetLevel) {
+        if (targetLevel == currentVolumeLevel) {
+            return;
         }
 
+        if (volumeAnimator != null && volumeAnimator.isRunning()) {
+            volumeAnimator.cancel();
+        }
+
+        volumeAnimator = ValueAnimator.ofInt(currentVolumeLevel, targetLevel);
+        volumeAnimator.setDuration(150);
+        volumeAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        volumeAnimator.addUpdateListener(animation -> {
+            int level = (int) animation.getAnimatedValue();
+            updateVolumeIcon(level);
+        });
+        volumeAnimator.start();
+
+        currentVolumeLevel = targetLevel;
+    }
+
+    private void updateVolumeIcon(int db) {
+        int iconRes;
+        switch (db) {
+            case 0:
+                iconRes = R.mipmap.ic_volume_1;
+                break;
+            case 1:
+                iconRes = R.mipmap.ic_volume_2;
+                break;
+            case 2:
+                iconRes = R.mipmap.ic_volume_3;
+                break;
+            case 3:
+                iconRes = R.mipmap.ic_volume_4;
+                break;
+            case 4:
+                iconRes = R.mipmap.ic_volume_5;
+                break;
+            case 5:
+                iconRes = R.mipmap.ic_volume_6;
+                break;
+            case 6:
+                iconRes = R.mipmap.ic_volume_7;
+                break;
+            default:
+                iconRes = R.mipmap.ic_volume_8;
+        }
+
+        if (stateImageView != null) {
+            stateImageView.setImageResource(iconRes);
+            // 添加轻微的缩放动画
+            stateImageView.animate()
+                .scaleX(1.1f)
+                .scaleY(1.1f)
+                .setDuration(100)
+                .withEndAction(() -> {
+                    if (stateImageView != null) {
+                        stateImageView.animate()
+                            .scaleX(1.0f)
+                            .scaleY(1.0f)
+                            .setDuration(100)
+                            .start();
+                    }
+                })
+                .start();
+        }
     }
 
     private String genAudioFile() {
@@ -405,5 +526,124 @@ public class AudioRecorderPanel implements View.OnTouchListener {
         TO_CANCEL,
         // 最长录音时间快到
         TO_TIMEOUT,
+    }
+
+    // ============= 动画方法 =============
+
+    /**
+     * 显示录音窗口的入场动画
+     */
+    private void animateShowRecording() {
+        if (recordingContentView == null) {
+            return;
+        }
+
+        // 设置初始状态
+        recordingContentView.setAlpha(0f);
+        recordingContentView.setScaleX(0.5f);
+        recordingContentView.setScaleY(0.5f);
+
+        // 创建动画集合
+        AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(recordingContentView, "alpha", 0f, 1f);
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleX", 0.5f, 1f);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleY", 0.5f, 1f);
+
+        animatorSet.playTogether(alphaAnimator, scaleXAnimator, scaleYAnimator);
+        animatorSet.setDuration(250);
+        animatorSet.setInterpolator(new OvershootInterpolator(1.5f));
+        animatorSet.start();
+    }
+
+    /**
+     * 隐藏录音窗口的退出动画
+     */
+    private void animateHideRecording(Runnable onAnimationEnd) {
+        if (recordingContentView == null) {
+            if (onAnimationEnd != null) {
+                onAnimationEnd.run();
+            }
+            return;
+        }
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(recordingContentView, "alpha", 1f, 0f);
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleX", 1f, 0.5f);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(recordingContentView, "scaleY", 1f, 0.5f);
+
+        animatorSet.playTogether(alphaAnimator, scaleXAnimator, scaleYAnimator);
+        animatorSet.setDuration(200);
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (onAnimationEnd != null) {
+                    onAnimationEnd.run();
+                }
+            }
+        });
+        animatorSet.start();
+    }
+
+    /**
+     * 抖动动画，用于取消提示
+     */
+    private void animateShake(View view) {
+        if (view == null) {
+            return;
+        }
+
+        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "translationX", 0, -15, 15, -10, 10, -5, 5, 0);
+        animator.setDuration(400);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.start();
+    }
+
+    /**
+     * 倒计时脉冲动画
+     */
+    private void animateCountDown(TextView textView) {
+        if (textView == null) {
+            return;
+        }
+
+        if (countDownAnimator != null && countDownAnimator.isRunning()) {
+            countDownAnimator.cancel();
+        }
+
+        countDownAnimator = ValueAnimator.ofFloat(1.0f, 1.3f, 1.0f);
+        countDownAnimator.setDuration(600);
+        countDownAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        countDownAnimator.addUpdateListener(animation -> {
+            float scale = (float) animation.getAnimatedValue();
+            if (textView != null) {
+                textView.setScaleX(scale);
+                textView.setScaleY(scale);
+            }
+        });
+        countDownAnimator.start();
+    }
+
+    /**
+     * 取消所有动画
+     */
+    private void cancelAllAnimations() {
+        if (volumeAnimator != null && volumeAnimator.isRunning()) {
+            volumeAnimator.cancel();
+            volumeAnimator = null;
+        }
+
+        if (countDownAnimator != null && countDownAnimator.isRunning()) {
+            countDownAnimator.cancel();
+            countDownAnimator = null;
+        }
+
+        if (stateImageView != null) {
+            stateImageView.clearAnimation();
+        }
+
+        if (recordingContentView != null) {
+            recordingContentView.clearAnimation();
+        }
     }
 }

@@ -2,54 +2,76 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
+    android:background="#66000000"
     android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="186dp"
-        android:layout_height="186dp"
+        android:id="@+id/ptt_content_view"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_gravity="center"
         android:background="@drawable/bg_voice_popup"
         android:gravity="center"
-        android:orientation="vertical">
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <ImageView
-            android:id="@+id/rc_ptt_state_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <!-- 音量指示器容器 -->
+        <FrameLayout
+            android:id="@+id/volume_container"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="11dp"
-            android:layout_marginLeft="41dp"
-            android:layout_marginRight="41dp"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
 
+            <ImageView
+                android:id="@+id/rc_ptt_state_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/ptt_hold_to_talk" />
+
+        </FrameLayout>
+
+        <!-- 倒计时文本 -->
         <TextView
             android:id="@+id/rc_ptt_timer"
-            android:layout_width="105dp"
-            android:layout_height="105dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="11dp"
-            android:layout_marginLeft="41dp"
-            android:layout_marginRight="41dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="70sp"
-            android:visibility="gone" />
+            android:textColor="#FFFF4444"
+            android:textSize="68sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:visibility="gone"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="4" />
 
+        <!-- 状态文本 -->
         <TextView
             android:id="@+id/rc_ptt_state_text"
-            android:layout_width="160dp"
-            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_gravity="center"
-            android:layout_marginBottom="11dp"
-            android:layout_marginLeft="14dp"
-            android:layout_marginRight="14dp"
-            android:layout_marginTop="11dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:background="@drawable/bg_voice_popup"
             android:gravity="center"
             android:textColor="@android:color/white"
-            android:textSize="15sp" />
+            android:textSize="14sp"
+            android:fontFamily="sans-serif"
+            android:letterSpacing="0.05"
+            android:maxLines="1"
+            android:ellipsize="end" />
     </RelativeLayout>
 </FrameLayout>

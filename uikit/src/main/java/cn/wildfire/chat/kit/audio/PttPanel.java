@@ -4,14 +4,22 @@
 
 package cn.wildfire.chat.kit.audio;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -42,10 +50,15 @@ public class PttPanel implements View.OnTouchListener {
     private TextView stateTextView;
     private ImageView stateImageView;
     private PopupWindow talkingWindow;
+    private View talkingContentView;
 
     private SoundPool soundPool;
     private int startSoundId;
     private int stopSoundId;
+    
+    private ValueAnimator volumeAnimator;
+    private ValueAnimator countDownAnimator;
+    private int currentVolumeLevel = 0;
 
     public PttPanel(Context context) {
         this.context = context;
@@ -93,11 +106,23 @@ public class PttPanel implements View.OnTouchListener {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_pressed);
+                // 添加按钮按下的缩放动画
+                button.animate()
+                    .scaleX(0.95f)
+                    .scaleY(0.95f)
+                    .setDuration(100)
+                    .start();
                 requestTalk();
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 button.setBackgroundResource(R.drawable.shape_session_btn_voice_normal);
+                // 恢复按钮缩放
+                button.animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .setDuration(100)
+                    .start();
                 stopTalk();
                 break;
             default:
@@ -168,6 +193,7 @@ public class PttPanel implements View.OnTouchListener {
     private void showTalking() {
         if (talkingWindow == null) {
             View view = View.inflate(context, R.layout.ptt_popup_wi_vo, null);
+            talkingContentView = view.findViewById(R.id.ptt_content_view);
             stateImageView = view.findViewById(R.id.rc_ptt_state_image);
             stateTextView = view.findViewById(R.id.rc_ptt_state_text);
             countDownTextView = view.findViewById(R.id.rc_ptt_timer);
@@ -175,9 +201,16 @@ public class PttPanel implements View.OnTouchListener {
             talkingWindow.setFocusable(false);
             talkingWindow.setOutsideTouchable(false);
             talkingWindow.setTouchable(true);
+            // 让 PopupWindow 延伸到状态栏
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                talkingWindow.setClippingEnabled(false);
+            }
         }
 
-        talkingWindow.showAtLocation(rootView, Gravity.CENTER, 0, 0);
+        talkingWindow.showAtLocation(rootView, Gravity.TOP | Gravity.START, 0, 0);
+        
+        // 开始入场动画
+        animateShowTalking();
 
         if (isCountDown) {
             countDownTextView.setVisibility(View.VISIBLE);
@@ -196,12 +229,23 @@ public class PttPanel implements View.OnTouchListener {
         if (talkingWindow == null) {
             return;
         }
-        talkingWindow.dismiss();
-        talkingWindow = null;
-        stateImageView = null;
-        stateTextView = null;
-        countDownTextView = null;
-        isCountDown = false;
+        
+        // 取消所有动画
+        cancelAllAnimations();
+        
+        // 添加退出动画
+        animateHideTalking(() -> {
+            // 在动画结束后再次检查，避免被其他地方置空
+            if (talkingWindow != null) {
+                talkingWindow.dismiss();
+                talkingWindow = null;
+            }
+            talkingContentView = null;
+            stateImageView = null;
+            stateTextView = null;
+            countDownTextView = null;
+            isCountDown = false;
+        });
     }
 
     /**
@@ -214,6 +258,9 @@ public class PttPanel implements View.OnTouchListener {
         stateTextView.setBackgroundResource(R.drawable.bg_voice_popup);
         countDownTextView.setText(String.format("%s", seconds));
         countDownTextView.setVisibility(View.VISIBLE);
+        
+        // 添加倒计时脉冲动画
+        animateCountDown(countDownTextView);
     }
 
     private void tick() {
@@ -237,31 +284,182 @@ public class PttPanel implements View.OnTouchListener {
             return;
         }
         int db = (averageAmplitude / 1000) % 8;
+        
+        // 使用动画平滑过渡音量变化
+        animateVolumeChange(db);
+    }
+    
+    private void animateVolumeChange(int targetLevel) {
+        if (targetLevel == currentVolumeLevel) {
+            return;
+        }
+        
+        if (volumeAnimator != null && volumeAnimator.isRunning()) {
+            volumeAnimator.cancel();
+        }
+        
+        volumeAnimator = ValueAnimator.ofInt(currentVolumeLevel, targetLevel);
+        volumeAnimator.setDuration(150);
+        volumeAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        volumeAnimator.addUpdateListener(animation -> {
+            int level = (int) animation.getAnimatedValue();
+            updateVolumeIcon(level);
+        });
+        volumeAnimator.start();
+        
+        currentVolumeLevel = targetLevel;
+    }
+    
+    private void updateVolumeIcon(int db) {
+        int iconRes;
         switch (db) {
             case 0:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_1);
+                iconRes = R.mipmap.ic_volume_1;
                 break;
             case 1:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_2);
+                iconRes = R.mipmap.ic_volume_2;
                 break;
             case 2:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_3);
+                iconRes = R.mipmap.ic_volume_3;
                 break;
             case 3:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_4);
+                iconRes = R.mipmap.ic_volume_4;
                 break;
             case 4:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_5);
+                iconRes = R.mipmap.ic_volume_5;
                 break;
             case 5:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_6);
+                iconRes = R.mipmap.ic_volume_6;
                 break;
             case 6:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_7);
+                iconRes = R.mipmap.ic_volume_7;
                 break;
             default:
-                this.stateImageView.setImageResource(R.mipmap.ic_volume_8);
+                iconRes = R.mipmap.ic_volume_8;
         }
-
+        
+        if (stateImageView != null) {
+            stateImageView.setImageResource(iconRes);
+            // 添加轻微的缩放动画
+            stateImageView.animate()
+                .scaleX(1.1f)
+                .scaleY(1.1f)
+                .setDuration(100)
+                .withEndAction(() -> {
+                    if (stateImageView != null) {
+                        stateImageView.animate()
+                            .scaleX(1.0f)
+                            .scaleY(1.0f)
+                            .setDuration(100)
+                            .start();
+                    }
+                })
+                .start();
+        }
+    }
+    
+    // ============= 动画方法 =============
+    
+    /**
+     * 显示对讲窗口的入场动画
+     */
+    private void animateShowTalking() {
+        if (talkingContentView == null) {
+            return;
+        }
+        
+        // 设置初始状态
+        talkingContentView.setAlpha(0f);
+        talkingContentView.setScaleX(0.5f);
+        talkingContentView.setScaleY(0.5f);
+        
+        // 创建动画集合
+        AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(talkingContentView, "alpha", 0f, 1f);
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(talkingContentView, "scaleX", 0.5f, 1f);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(talkingContentView, "scaleY", 0.5f, 1f);
+        
+        animatorSet.playTogether(alphaAnimator, scaleXAnimator, scaleYAnimator);
+        animatorSet.setDuration(250);
+        animatorSet.setInterpolator(new OvershootInterpolator(1.5f));
+        animatorSet.start();
+    }
+    
+    /**
+     * 隐藏对讲窗口的退出动画
+     */
+    private void animateHideTalking(Runnable onAnimationEnd) {
+        if (talkingContentView == null) {
+            if (onAnimationEnd != null) {
+                onAnimationEnd.run();
+            }
+            return;
+        }
+        
+        AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(talkingContentView, "alpha", 1f, 0f);
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(talkingContentView, "scaleX", 1f, 0.5f);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(talkingContentView, "scaleY", 1f, 0.5f);
+        
+        animatorSet.playTogether(alphaAnimator, scaleXAnimator, scaleYAnimator);
+        animatorSet.setDuration(200);
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (onAnimationEnd != null) {
+                    onAnimationEnd.run();
+                }
+            }
+        });
+        animatorSet.start();
+    }
+    
+    /**
+     * 倒计时脉冲动画
+     */
+    private void animateCountDown(TextView textView) {
+        if (textView == null) {
+            return;
+        }
+        
+        if (countDownAnimator != null && countDownAnimator.isRunning()) {
+            countDownAnimator.cancel();
+        }
+        
+        countDownAnimator = ValueAnimator.ofFloat(1.0f, 1.3f, 1.0f);
+        countDownAnimator.setDuration(600);
+        countDownAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        countDownAnimator.addUpdateListener(animation -> {
+            float scale = (float) animation.getAnimatedValue();
+            if (textView != null) {
+                textView.setScaleX(scale);
+                textView.setScaleY(scale);
+            }
+        });
+        countDownAnimator.start();
+    }
+    
+    /**
+     * 取消所有动画
+     */
+    private void cancelAllAnimations() {
+        if (volumeAnimator != null && volumeAnimator.isRunning()) {
+            volumeAnimator.cancel();
+            volumeAnimator = null;
+        }
+        
+        if (countDownAnimator != null && countDownAnimator.isRunning()) {
+            countDownAnimator.cancel();
+            countDownAnimator = null;
+        }
+        
+        if (stateImageView != null) {
+            stateImageView.clearAnimation();
+        }
+        
+        if (talkingContentView != null) {
+            talkingContentView.clearAnimation();
+        }
     }
 }
