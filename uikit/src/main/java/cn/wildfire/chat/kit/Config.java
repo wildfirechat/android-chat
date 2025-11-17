@@ -44,7 +44,7 @@ public class Config {
         // 如果是高级版，请删除掉下面的配置项目，保持ICE_SERVERS为空数组就行。
         // 数组元素定义
         /*{"turn server uri", "userName", "password"}*/
-        {"turn:turn.wildfirechat.net:3478", "wfchat", "wfchat123"}
+        {"turn:turn.wildfirechat.net:3478", "wfchat", "wfchatpwd"}
     };
 
     // 文件传输助手用户ID，服务器有个默认文件助手的机器人，如果修改它的ID，需要客户端和服务器数据库同步修改
@@ -135,8 +135,8 @@ public class Config {
     public static String AI_ROBOT = "FireRobot";
 
     // 用户协议地址
-    public final static String USER_AGREEMENT_URL = "https://example.com/user_agreement.html";
+    public final static String USER_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_agreement.html";
 
     //  隐私协议地址
-    public final static String PRIVACY_AGREEMENT_URL = "https://example.com/user_privacy.html";
+    public final static String PRIVACY_AGREEMENT_URL = "https://www.wildfirechat.net/wildfirechat_user_privacy.html";
 }
