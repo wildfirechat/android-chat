@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import cn.wildfire.chat.app.AppService;
+import cn.wildfire.chat.app.OrganizationService;
 import cn.wildfire.chat.app.main.SplashActivity;
 import cn.wildfire.chat.app.misc.DiagnoseActivity;
 import cn.wildfire.chat.kit.ChatManagerHolder;
@@ -87,6 +88,7 @@ public class SettingActivity extends WfcBaseActivity {
         CookieManager.getInstance().removeAllCookies(null);
         CookieManager.getInstance().flush();
 
+        OrganizationService.Instance().reset();
         Intent intent = new Intent(this, SplashActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

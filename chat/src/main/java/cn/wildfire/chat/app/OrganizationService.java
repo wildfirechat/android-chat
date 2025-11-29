@@ -82,6 +82,10 @@ public class OrganizationService implements OrganizationServiceProvider {
 
     }
 
+    public void reset() {
+        this.isServiceAvailable = false;
+    }
+
     public void clearOrgServiceAuthInfos() {
 
     }
