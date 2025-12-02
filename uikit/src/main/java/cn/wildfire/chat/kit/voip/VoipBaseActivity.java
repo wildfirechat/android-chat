@@ -148,7 +148,7 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
             return;
         }
         session.setCallback(this);
-        hideFloatingView();
+        hideFloatingView(session);
     }
 
     @Override
@@ -349,17 +349,21 @@ public abstract class VoipBaseActivity extends FragmentActivity implements AVEng
         }
         VoipCallService.start(this, intent);
         AVEngineKit.CallSession session = gEngineKit.getCurrentSession();
-        if(session != null && session.getState() != AVEngineKit.CallState.Idle) {
+        if (session != null && session.getState() != AVEngineKit.CallState.Idle) {
             session.setCallback(null);
         }
-        if(!isFinishing()){
+        if (!isFinishing()) {
             finishFadeout();
         }
     }
 
-    public void hideFloatingView() {
+    public void hideFloatingView(AVEngineKit.CallSession session) {
         Intent intent = new Intent(this, VoipCallService.class);
         intent.putExtra("showFloatingView", false);
+        if (!(session.state == AVEngineKit.CallState.Connected
+            || session.state == AVEngineKit.CallState.Outgoing)) {
+            intent.putExtra("playback", true);
+        }
         VoipCallService.start(this, intent);
     }
 
