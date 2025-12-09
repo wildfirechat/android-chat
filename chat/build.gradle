@@ -80,7 +80,8 @@ dependencies {
 
     implementation 'com.github.tiann:FreeReflection:3.1.0'
 
-    implementation project(':uvccamera')
+    // 仅高级版音视频 SDK 才支持 uvc 功能，默认关闭，如果需要，请取消注释下面的依赖
+//    implementation project(':uvccamera')
 
     // 采用 library module 的方式依赖 uikit，如果需要采用 aar 方式集成，请仔细下面的注释
     implementation project(':uikit')

@@ -91,7 +91,7 @@ dependencies {
 //    implementation 'com.google.android:flexbox:2.0.1'
 
     implementation 'com.tencent.map.geolocation:TencentLocationSdk-openplatform:8.7.5.1'
-    compileOnly 'io.kvh:amr:1.1.1'
+//    compileOnly 'io.kvh:amr:1.1.1'
 
     // moment start
     // implementation project(':momentclient')
