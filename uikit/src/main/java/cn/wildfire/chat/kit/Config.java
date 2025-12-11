@@ -139,4 +139,7 @@ public class Config {
 
     //  隐私协议地址
     public final static String PRIVACY_AGREEMENT_URL = "https://example.com/user_privacy.html";
+
+    // 是否显示调试信息
+    public final static boolean SHOW_DEBUG_INFO = true;
 }

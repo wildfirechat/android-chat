@@ -28,6 +28,7 @@ import org.webrtc.StatsReport;
 
 import java.util.List;
 
+import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -50,6 +51,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
     TextView descTextView;
     TextView durationTextView;
     TextView shareScreenTextView;
+    TextView sdkTipTextView;
 
     private String focusUserId;
     private String targetId;
@@ -106,6 +108,7 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         descTextView = view.findViewById(R.id.descTextView);
         durationTextView = view.findViewById(R.id.durationTextView);
         shareScreenTextView = view.findViewById(R.id.shareScreenTextView);
+        sdkTipTextView = view.findViewById(R.id.sdkTipTextView);
     }
 
     @Override
@@ -392,6 +395,13 @@ public class SingleVideoFragment extends Fragment implements AVEngineKit.CallSes
         updateTargetUserInfoViews(userInfo);
 
         updateCallDuration();
+
+        if(Config.SHOW_DEBUG_INFO && sdkTipTextView != null){
+            StringBuilder sb = new StringBuilder();
+            String tip = AVEngineKit.isSupportConference() ? "当前使用高级版音视频 SDK": "当前使用多人版音视频 SDK";
+            sb.append(tip);
+            sdkTipTextView.setText(sb.toString());
+        }
     }
 
     private void updateTargetUserInfoViews(UserInfo userInfo) {

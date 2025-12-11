@@ -105,4 +105,12 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:padding="10dp"
+        android:id="@+id/sdkTipTextView"
+        tools:text=""
+        android:textColor="@color/red0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 </FrameLayout>
