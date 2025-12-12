@@ -31,6 +31,7 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
@@ -42,7 +43,6 @@ import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.proto.ProtoLogic;
 import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
-import com.tencent.mars.xlog.Log;
 import com.tencent.mars.xlog.Xlog;
 
 import org.json.JSONArray;
@@ -56,7 +56,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -609,13 +608,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             if (!TextUtils.isEmpty(localPath) && TextUtils.isEmpty(remoteUrl)) {
                 file = new File(localPath);
                 if (!file.exists() && TextUtils.isEmpty(remoteUrl)) {
-                    android.util.Log.e(TAG, "mediaMessage invalid, file not exist");
+                    Log.e(TAG, "mediaMessage invalid, file not exist");
                     callback.onFailure(-1);
                     return;
                 }
                 if (tcpShortLink) {
                     if (!isSupportBigFilesUpload()) {
-                        android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                        Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
                         callback.onFailure(-1);
                         return;
                     }
@@ -628,7 +627,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             } else if (msg.content instanceof MediaMessageContent
                 && !(msg.content instanceof CompositeMessageContent)
                 && TextUtils.isEmpty(remoteUrl)) {
-                android.util.Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
+                Log.e(TAG, "mediaMessage invalid, remoteUrl is empty");
                 callback.onFailure(-1);
                 return;
             }
@@ -793,7 +792,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             Message[] messages = convertProtoMessages(protoMessages);
             SafeIPCEntry<Message> entry = buildSafeIPCEntry(messages, 0);
             if (entry.entries.size() != protoMessages.length) {
-                android.util.Log.e(TAG, "getMessages, drop messages " + (protoMessages.length - entry.entries.size()));
+                Log.e(TAG, "getMessages, drop messages " + (protoMessages.length - entry.entries.size()));
             }
             return entry.entries;
         }
@@ -804,7 +803,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             Message[] messages = convertProtoMessages(protoMessages);
             SafeIPCEntry<Message> entry = buildSafeIPCEntry(messages, 0);
             if (entry.entries.size() != protoMessages.length) {
-                android.util.Log.e(TAG, "getMessagesEx, drop messages " + (protoMessages.length - entry.entries.size()));
+                Log.e(TAG, "getMessagesEx, drop messages " + (protoMessages.length - entry.entries.size()));
             }
             return entry.entries;
         }
@@ -815,7 +814,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             Message[] messages = convertProtoMessages(protoMessages);
             SafeIPCEntry<Message> entry = buildSafeIPCEntry(messages, 0);
             if (entry.entries.size() != protoMessages.length) {
-                android.util.Log.e(TAG, "getMessagesEx2, drop messages " + (protoMessages.length - entry.entries.size()));
+                Log.e(TAG, "getMessagesEx2, drop messages " + (protoMessages.length - entry.entries.size()));
             }
             return entry.entries;
         }
@@ -826,7 +825,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             Message[] messages = convertProtoMessages(protoMessages);
             SafeIPCEntry<Message> entry = buildSafeIPCEntry(messages, 0);
             if (entry.entries.size() != protoMessages.length) {
-                android.util.Log.e(TAG, "getMessagesEx2, drop messages " + (protoMessages.length - entry.entries.size()));
+                Log.e(TAG, "getMessagesEx2, drop messages " + (protoMessages.length - entry.entries.size()));
             }
             return entry.entries;
         }
@@ -1658,7 +1657,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void startLog() throws RemoteException {
-            android.util.Log.d(TAG, "stargLog");
+            Log.d(TAG, "stargLog");
             Xlog.setConsoleLogOpen(true);
             String path = getLogPath();
             // FYI: https://github.com/Tencent/mars/issues/363
@@ -1673,7 +1672,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
         @Override
         public void stopLog() throws RemoteException {
-            android.util.Log.d(TAG, "stopLog");
+            Log.d(TAG, "stopLog");
             Xlog.setConsoleLogOpen(false);
         }
 
@@ -2029,7 +2028,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public GroupInfo getGroupInfo(String groupId, boolean refresh) throws RemoteException {
             if (TextUtils.isEmpty(groupId)) {
-                android.util.Log.d(TAG, "get group info error, group id is empty");
+                Log.d(TAG, "get group info error, group id is empty");
                 return null;
             }
 
@@ -2040,7 +2039,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         @Override
         public List<GroupInfo> getGroupInfos(List<String> groupIds, boolean refresh) throws RemoteException {
             if (groupIds == null || groupIds.isEmpty()) {
-                android.util.Log.d(TAG, "get groupInfos error, groupIds is empty");
+                Log.d(TAG, "get groupInfos error, groupIds is empty");
                 return null;
             }
 
@@ -2171,20 +2170,20 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         public void uploadMedia(String fileName, byte[] data, int mediaType, final IUploadMediaCallback callback) throws RemoteException {
             if (tcpShortLink) {
                 if (callback != null) {
-                    android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                    Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
                     callback.onFailure(-1);
                 }
                 return;
             }
-            android.util.Log.d(TAG, "uploadMedia " + fileName + " " + data.length + " " + mediaType);
+            Log.d(TAG, "uploadMedia " + fileName + " " + data.length + " " + mediaType);
             if (ProtoLogic.forcePresignedUrlUpload() || isSupportBigFilesUpload()) {
-                android.util.Log.d(TAG, "uploadMedia");
+                Log.d(TAG, "uploadMedia");
                 String extension = MimeTypeMap.getFileExtensionFromUrl(fileName);
                 String contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
                 uploadBigFile(-1, fileName, null, data, mediaType, contentType, new UploadMediaCallback() {
                     @Override
                     public void onSuccess(String result) {
-                        android.util.Log.d(TAG, "uploadMedia success " + result);
+                        Log.d(TAG, "uploadMedia success " + result);
                         if (callback != null) {
                             try {
                                 callback.onSuccess(result);
@@ -2196,7 +2195,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
                     @Override
                     public void onProgress(long uploaded, long total) {
-                        android.util.Log.d(TAG, "uploadMedia progress " + uploaded + " " + total);
+                        Log.d(TAG, "uploadMedia progress " + uploaded + " " + total);
                         try {
                             if (callback != null)
                                 callback.onProgress(uploaded, total);
@@ -2207,7 +2206,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
                     @Override
                     public void onFail(int errorCode) {
-                        android.util.Log.d(TAG, "uploadMedia fail " + errorCode);
+                        Log.d(TAG, "uploadMedia fail " + errorCode);
                         try {
                             if (callback != null)
                                 callback.onFailure(errorCode);
@@ -2249,7 +2248,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             try {
                 File file = new File(mediaPath);
                 if (!file.exists()) {
-                    android.util.Log.e(TAG, "file not exist");
+                    Log.e(TAG, "file not exist");
                     callback.onFailure(-1);
                     return;
                 }
@@ -2257,7 +2256,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 boolean largeMedia = false;
                 if (tcpShortLink) {
                     if (!isSupportBigFilesUpload()) {
-                        android.util.Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
+                        Log.e(TAG, "TCP短连接不支持内置对象存储，请把对象存储切换到其他类型");
                         callback.onFailure(-1);
                         return;
                     } else {
@@ -4280,7 +4279,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             try {
                 return cls.newInstance();
             } catch (Exception e) {
-                android.util.Log.e(TAG, "create message content instance failed, fall back to UnknownMessageContent, the message content class must have a default constructor. " + type);
+                Log.e(TAG, "create message content instance failed, fall back to UnknownMessageContent, the message content class must have a default constructor. " + type);
                 e.printStackTrace();
             }
         }
@@ -4340,7 +4339,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             }
             content.extra = payload.extra;
         } catch (Exception e) {
-            android.util.Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.type);
+            Log.e(TAG, "decode message error, fallback to unknownMessageContent. " + payload.type);
             e.printStackTrace();
             if (content.getPersistFlag() == PersistFlag.Persist || content.getPersistFlag() == PersistFlag.Persist_And_Count) {
                 content = new UnknownMessageContent();
@@ -4404,14 +4403,13 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             // do nothing
         }
 
-        android.util.Log.d(TAG, "onnCreate");
+        Log.d(TAG, "onnCreate");
         uploadingMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "ClientService onDestroy");
-        Log.appenderClose();
         super.onDestroy();
         resetProto();
         if (mConnectionReceiver != null) {
@@ -4543,7 +4541,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onConnectionStatusChanged(int status) {
-        android.util.Log.d(TAG, "status changed :" + status);
+        Log.d(TAG, "status changed :" + status);
 
         if (!logined) {
             return;
@@ -4583,7 +4581,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onConnectToServer(String host, String ip, int port) {
-        android.util.Log.d(TAG, "onConnectToServer:" + host);
+        Log.d(TAG, "onConnectToServer:" + host);
 
         handler.post(() -> {
             int i = onConnectToServerListenes.beginBroadcast();
@@ -4603,7 +4601,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onConnected(String host, String ip, int port, boolean isMainNw) {
-        android.util.Log.d(TAG, "onConnected:" + host);
+        Log.d(TAG, "onConnected:" + host);
         this._connectedToMainNetwork = isMainNw;
     }
 
@@ -5113,7 +5111,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             parcel.recycle();
 
             if (objLen > MAX_IPC_SIZE) {
-                android.util.Log.e("ClientService", "drop obj, too large: " + parcelable.getClass() + " " + objLen);
+                Log.e("ClientService", "drop obj, too large: " + parcelable.getClass() + " " + objLen);
                 continue;
             }
             totalLength += objLen;
@@ -5196,7 +5194,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                android.util.Log.d(TAG, "uploadFile fail " + e.getMessage());
+                Log.d(TAG, "uploadFile fail " + e.getMessage());
                 e.printStackTrace();
                 callback.onFail(4);
                 uploadingMap.remove(messageId);
@@ -5210,7 +5208,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     if (body != null) {
                         respStr = body.string();
                     }
-                    android.util.Log.e(TAG, "uploadFile " + response.code() + " " + respStr);
+                    Log.e(TAG, "uploadFile " + response.code() + " " + respStr);
                     callback.onFail(response.code());
                 } else {
                     callback.onSuccess(remoteUrl);
@@ -5277,7 +5275,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     if (body != null) {
                         respStr = body.string();
                     }
-                    android.util.Log.e(TAG, "uploadFile " + response.code() + " " + respStr);
+                    Log.e(TAG, "uploadFile " + response.code() + " " + respStr);
                     callback.onFail(response.code());
                 } else {
                     callback.onSuccess(remoteUrl);
