@@ -8,6 +8,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class ReadEntry implements Parcelable {
+    public String userId;
+    public Conversation conversation;
+    public long readDt;
+
     public ReadEntry() {
     }
 
@@ -45,8 +49,4 @@ public class ReadEntry implements Parcelable {
             return new ReadEntry[size];
         }
     };
-
-    public String userId;
-    public Conversation conversation;
-    public long readDt;
 }
