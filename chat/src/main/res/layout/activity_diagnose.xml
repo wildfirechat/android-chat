@@ -11,14 +11,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="开始webrtc诊断" />
+        android:text="开始 WEBRTC 测试" />
 
     <Button
         android:id="@+id/startDiagnoseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="开始IM诊断" />
+        android:text="开始 IM 诊断" />
 
     <TextView
         android:layout_width="wrap_content"

@@ -31,8 +31,8 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
     // 一定记得替换为你们自己的，ID请从BUGLY官网申请。关于BUGLY，可以从BUGLY官网了解，或者百度。
     public static String BUGLY_ID = "15dfd5f6d1";
 
-    public static String routeHost;
-    public static int routePort;
+    public static String routeHost = Config.IM_SERVER_HOST;
+    public static int routePort = 80;
 
     public static String longLinkHost;
 
@@ -75,11 +75,7 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
                 e.printStackTrace();
             }
 
-            if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(token)) {
-                //需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
-                //另外不能多次connect，如果需要切换用户请先disconnect，然后3秒钟之后再connect（如果是用户手动登录可以不用等，因为用户操作很难3秒完成，如果程序自动切换请等3秒）
-                ChatManagerHolder.gChatManager.connect(id, token);
-            }
+            ChatManager.Instance().addConnectToServerListener(this);
 
             if (!TextUtils.isEmpty(Config.ORG_SERVER_ADDRESS)) {
                 OrganizationService organizationService = OrganizationService.Instance();
@@ -88,9 +84,14 @@ public class MyApp extends BaseApp implements OnConnectToServerListener {
 
             ChatManager.Instance().setDefaultPortraitProviderClazz(WfcDefaultPortraitProvider.class);
             ChatManager.Instance().setUrlRedirectorClazz(TestUrlRedirector.class);
-            ChatManager.Instance().addConnectToServerListener(this);
             SharedPreferences sp = getSharedPreferences(Config.SP_CONFIG_FILE_NAME, Context.MODE_PRIVATE);
             Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION = sp.getBoolean("audioMessageAmplificationEnabled", Config.ENABLE_AUDIO_MESSAGE_AMPLIFICATION);
+
+            if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(token)) {
+                //需要注意token跟clientId是强依赖的，一定要调用getClientId获取到clientId，然后用这个clientId获取token，这样connect才能成功，如果随便使用一个clientId获取到的token将无法链接成功。
+                //另外不能多次connect，如果需要切换用户请先disconnect，然后3秒钟之后再connect（如果是用户手动登录可以不用等，因为用户操作很难3秒完成，如果程序自动切换请等3秒）
+                ChatManagerHolder.gChatManager.connect(id, token);
+            }
         }
     }
 
