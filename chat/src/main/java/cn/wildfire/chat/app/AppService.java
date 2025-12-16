@@ -847,7 +847,7 @@ public class AppService implements AppServiceProvider {
             }
             for (Pair<String, String> userInfo : namePortraitPairs) {
                 JSONObject obj = new JSONObject();
-                if (TextUtils.isEmpty(userInfo.first) || userInfo.first.startsWith(AppService.APP_SERVER_ADDRESS)) {
+                if (TextUtils.isEmpty(userInfo.second) || userInfo.second.startsWith(AppService.APP_SERVER_ADDRESS)) {
                     obj.put("name", userInfo.first);
                 } else {
                     obj.put("avatarUrl", userInfo.second);
