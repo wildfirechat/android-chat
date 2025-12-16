@@ -19,6 +19,7 @@ import cn.wildfire.chat.app.AppService;
 import cn.wildfire.chat.app.MyApp;
 import cn.wildfire.chat.kit.Config;
 import cn.wildfire.chat.kit.WfcBaseActivity;
+import cn.wildfire.chat.kit.WfcWebViewActivity;
 import cn.wildfire.chat.kit.net.OKHttpHelper;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfirechat.avenginekit.AVEngineKit;
@@ -40,6 +41,7 @@ public class DiagnoseActivity extends WfcBaseActivity {
     protected void bindEvents() {
         super.bindEvents();
         findViewById(R.id.startDiagnoseButton).setOnClickListener(v -> diagnose());
+        findViewById(R.id.startTurnDiagnoseButton).setOnClickListener(v -> webrtcDiagnose());
     }
 
     protected void bindViews() {
@@ -60,6 +62,16 @@ public class DiagnoseActivity extends WfcBaseActivity {
         checkAppServer();
         checkApiVersion();
         tcping();
+    }
+
+    private void webrtcDiagnose() {
+        String url = "https://static.wildfirechat.cn/webrtc/index.html";
+        if(Config.ICE_SERVERS.length > 0 && Config.ICE_SERVERS[0].length > 0){
+            url += "?host=" + Config.ICE_SERVERS[0][0].replace("turn:", "");
+            url += "&username=" + Config.ICE_SERVERS[0][1];
+            url += "&secret=" + Config.ICE_SERVERS[0][2];
+        }
+        WfcWebViewActivity.loadUrl(this, "Webrt测试", url);
     }
 
     private void updateConfigInfo() {
