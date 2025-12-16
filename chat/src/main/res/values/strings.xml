@@ -160,9 +160,9 @@
     <string name="diagnose_current_time">当前时间：%1$s</string>
     <string name="diagnose_app_server">APP-Server: %1$s</string>
     <string name="diagnose_route_host">Route-Host: %1$s</string>
-    <string name="diagnose_route_port">Route-Port: %1$s</string>
+    <string name="diagnose_route_port">Route-Port: %1$d</string>
     <string name="diagnose_longlink_host">Long-Link-Host: %1$s</string>
-    <string name="diagnose_longlink_port">Long-Link-Port: %1$s</string>
+    <string name="diagnose_longlink_port">Long-Link-Port: %1$d</string>
     <string name="diagnose_av_sdk">音视频 SDK: %1$s</string>
     <string name="diagnose_av_sdk_pro">高级版</string>
     <string name="diagnose_av_sdk_basic">多人版</string>

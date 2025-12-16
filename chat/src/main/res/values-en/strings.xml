@@ -160,9 +160,9 @@
     <string name="diagnose_current_time">Current Time: %1$s</string>
     <string name="diagnose_app_server">APP-Server: %1$s</string>
     <string name="diagnose_route_host">Route-Host: %1$s</string>
-    <string name="diagnose_route_port">Route-Port: %1$s</string>
+    <string name="diagnose_route_port">Route-Port: %1$d</string>
     <string name="diagnose_longlink_host">Long-Link-Host: %1$s</string>
-    <string name="diagnose_longlink_port">Long-Link-Port: %1$s</string>
+    <string name="diagnose_longlink_port">Long-Link-Port: %1$d</string>
     <string name="diagnose_av_sdk">AV SDK: %1$s</string>
     <string name="diagnose_av_sdk_pro">Pro Version</string>
     <string name="diagnose_av_sdk_basic">Basic Version</string>
