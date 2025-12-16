@@ -7,11 +7,18 @@
     <include layout="@layout/toolbar" />
 
     <Button
+        android:id="@+id/startTurnDiagnoseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="开始webrtc诊断" />
+
+    <Button
         android:id="@+id/startDiagnoseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="开始诊断" />
+        android:text="开始IM诊断" />
 
     <TextView
         android:layout_width="wrap_content"

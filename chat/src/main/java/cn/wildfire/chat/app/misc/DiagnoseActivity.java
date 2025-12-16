@@ -70,8 +70,10 @@ public class DiagnoseActivity extends WfcBaseActivity {
             url += "?host=" + Config.ICE_SERVERS[0][0].replace("turn:", "");
             url += "&username=" + Config.ICE_SERVERS[0][1];
             url += "&secret=" + Config.ICE_SERVERS[0][2];
+            WfcWebViewActivity.loadUrl(this, "WEBRTC 测试", url);
+        }else {
+            Toast.makeText(this, "本功能用于测试 TURN Server，但项目未配置", Toast.LENGTH_SHORT).show();
         }
-        WfcWebViewActivity.loadUrl(this, "Webrt测试", url);
     }
 
     private void updateConfigInfo() {
