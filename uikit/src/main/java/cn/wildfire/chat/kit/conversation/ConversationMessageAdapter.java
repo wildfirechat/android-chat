@@ -322,7 +322,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
         int direction = viewType >> 24;
         int messageType = viewType & 0x7FFFFF;
-        Class<? extends MessageContentViewHolder> viewHolderClazz = MessageViewHolderManager.getInstance().getMessageContentViewHolder(messageType);
+        Class<? extends MessageContentViewHolder> viewHolderClazz = MessageViewHolderManager.getInstance().getMessageContentViewHolder(messageType, direction);
 
         int sendResId = MessageViewHolderManager.getInstance().sendLayoutResId(messageType);
         int receiveResId = MessageViewHolderManager.getInstance().receiveLayoutResId(messageType);

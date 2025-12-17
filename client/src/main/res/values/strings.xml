@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">WildFireChatClient</string>
     <string name="join_group_by_qrcode">%1$s 扫描 %2$s 分享的二维码加入了群聊</string>
-    <string name="join_group_by_card">%1$s 通过 %1$s 分享的群名片加入了群聊</string>
+    <string name="join_group_by_card">%1$s 通过 %2$s 分享的群名片加入了群聊</string>
 </resources>

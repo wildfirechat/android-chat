@@ -4,15 +4,16 @@
 
 package cn.wildfirechat.message.notification;
 
+import static cn.wildfirechat.message.core.MessageContentType.ContentType_Friend_Added;
+
 import android.os.Parcel;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.ContentTag;
+import cn.wildfirechat.message.core.MessageDirection;
 import cn.wildfirechat.message.core.MessagePayload;
 import cn.wildfirechat.message.core.PersistFlag;
-
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Friend_Added;
-import static cn.wildfirechat.message.core.MessageContentType.ContentType_Friend_Greeting;
+import cn.wildfirechat.remote.ChatManager;
 
 /**
  * Created by heavyrainlee on 20/12/2017.
@@ -26,7 +27,12 @@ public class FriendAddedMessageContent extends NotificationMessageContent {
 
     @Override
     public String formatNotification(Message message) {
-        return "你们已经是好友了，可以开始聊天了。";
+        String name = ChatManager.Instance().getUserDisplayName(message.sender);
+        if (message.direction == MessageDirection.Receive) {
+            return "我通过了你的朋友验证请求，现在我们可以开始聊天了";
+        } else {
+            return "你已添加了" + name + "，现在可以开始聊天了。";
+        }
     }
 
     @Override

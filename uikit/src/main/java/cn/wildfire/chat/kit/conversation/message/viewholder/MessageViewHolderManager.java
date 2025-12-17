@@ -11,6 +11,7 @@ import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.annotation.MessageContentType;
 import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.message.core.ContentTag;
+import cn.wildfirechat.message.core.MessageDirection;
 
 public class MessageViewHolderManager {
     private static final String TAG = "MsgViewHolderManager";
@@ -30,6 +31,7 @@ public class MessageViewHolderManager {
         registerMessageViewHolder(ImageMessageContentViewHolder.class, R.layout.conversation_item_image_send, R.layout.conversation_item_image_receive);
         registerMessageViewHolder(StickerMessageContentViewHolder.class, R.layout.conversation_item_sticker_send, R.layout.conversation_item_sticker_receive);
         registerMessageViewHolder(TextMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
+        registerMessageViewHolder(FriendAddedContentViewHolder.class, R.layout.conversation_item_notification, R.layout.conversation_item_friend_added_receive);
         registerMessageViewHolder(VideoMessageContentViewHolder.class, R.layout.conversation_item_video_send, R.layout.conversation_item_video_send);
         registerMessageViewHolder(VoipMessageViewHolder.class, R.layout.conversation_item_voip_send, R.layout.conversation_item_voip_receive);
         registerMessageViewHolder(SimpleNotificationMessageContentViewHolder.class, R.layout.conversation_item_notification, R.layout.conversation_item_notification);
@@ -80,6 +82,14 @@ public class MessageViewHolderManager {
     int receiveLayoutResId(int messageType) {
         Integer receiveLayoutResId = messageReceiveLayoutRes.get(messageType);
         return receiveLayoutResId == null ? R.layout.conversation_item_unknown_receive : receiveLayoutResId;
+    }
+
+    public Class<? extends MessageContentViewHolder> getMessageContentViewHolder(int messageType, int direction) {
+        if (messageType == cn.wildfirechat.message.core.MessageContentType.ContentType_Friend_Added) {
+            return direction == MessageDirection.Receive.value() ? FriendAddedContentViewHolder.class : SimpleNotificationMessageContentViewHolder.class;
+        }
+
+        return getMessageContentViewHolder(messageType);
     }
 
     public Class<? extends MessageContentViewHolder> getMessageContentViewHolder(int messageType) {
