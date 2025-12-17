@@ -12,6 +12,10 @@ import android.os.Parcelable;
  */
 
 public class FriendRequest implements Parcelable {
+    /**
+     * RequestDirection_Send = 0,
+     * RequestDirection_Receive = 1
+     */
     public int direction;
     public String target;
     public String reason;
