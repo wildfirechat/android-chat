@@ -5230,7 +5230,7 @@ public class ChatManager {
     /**
      * 获取好友请求列表
      *
-     * @param incoming true，只包含收到的好友请求；false，所有好友请求
+     * @param incoming true，收到的好友请求；false，发出的好友请求
      * @return
      */
     public List<FriendRequest> getFriendRequest(boolean incoming) {
