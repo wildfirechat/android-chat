@@ -1,0 +1,57 @@
+apply plugin: 'com.android.library'
+android {
+    compileSdkVersion 34
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 34
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    namespace 'cn.wildfirechat.push'
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    compileOnly fileTree(dir: '../push-aar-dep', include: ['*.aar'])
+
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation project(':client')
+
+    implementation 'com.getui:gtsdk:3.3.13.0'  //个推SDK
+    implementation 'com.getui:gtc:3.3.1.0'  //个推核心组件
+
+    // 厂商通道
+    implementation 'com.getui.opt:hwp:3.1.2'   // 华为
+    implementation 'com.huawei.hms:push:6.12.0.300' // 不添加这个依赖，编译失败
+    implementation 'com.getui.opt:xmp:3.3.3'   // 小米
+    implementation 'com.assist-v3:oppo:3.5.0'  // oppo
+    implementation 'com.assist-v3:vivo:3.2.0'  // vivo
+    implementation 'com.getui.opt:mzp:3.3.0'   // 魅族
+//    implementation 'com.getui.opt:ups:3.0.3'   // ups，ups目前支持坚果，索尼，海信手机
+    implementation 'com.getui.opt:honor:3.6.0' // 荣耀
+
+    // 华为
+    implementation 'com.huawei.hms:push:6.12.0.300'
+    // 荣耀推送
+    implementation 'com.hihonor.mcs:push:7.0.61.303'
+    // OPPO 推送相关
+    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'commons-codec:commons-codec:1.20.0'
+    implementation 'com.android.support:support-annotations:28.0.0'
+
+    def lifecycle_version = '2.2.0'
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+}

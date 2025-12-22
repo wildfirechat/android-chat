@@ -49,10 +49,10 @@
         <!--xiaomi-->
         <meta-data
             android:name="MIPUSH_APPID"
-            android:value="string/${MI_APP_ID}" />
+            android:value="string/${XIAOMI_APP_ID}" />
         <meta-data
             android:name="MIPUSH_APPKEY"
-            android:value="string/${MI_APP_KEY}" />
+            android:value="string/${XIAOMI_APP_KEY}" />
 
         <service
             android:name="com.xiaomi.push.service.XMJobService"

@@ -1,0 +1,36 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application>
+
+        <!--个推SDK的appid 重要！必须补充-->
+        <meta-data
+            android:name="PUSH_APPID"
+            android:value="个推SDK的appid" />
+
+        <service
+            android:name=".getui.GetuiPushService"
+            android:exported="false"
+            android:label="PushService"
+            android:process=":pushservice"/>
+
+        <service
+            android:name=".getui.GetuiIntentService" />
+
+    </application>
+
+
+    <queries>
+        <intent>
+            <action android:name="com.getui.sdk.action" />
+        </intent>
+    </queries>
+
+</manifest>

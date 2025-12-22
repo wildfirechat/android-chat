@@ -15,7 +15,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.2'
-        classpath 'com.huawei.agconnect:agcp:1.9.1.300'
+        classpath 'com.huawei.agconnect:agcp:1.9.1.301'
        // classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -33,6 +33,8 @@ allprojects {
         maven { url 'https://jitpack.io' }
 
         maven { url "https://developer.huawei.com/repo/"}
+        maven { url "https://mvn.getui.com/nexus/content/repositories/releases/" }
+        maven { url 'https://developer.hihonor.com/repo/' }
 
         google()
         mavenCentral()
