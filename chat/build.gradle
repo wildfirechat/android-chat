@@ -4,7 +4,9 @@ apply plugin: 'com.huawei.agconnect'
 // 荣耀推送，mcs-services.json 文件也得在在application module的根目录，这是 chat 目录
 apply plugin: 'com.hihonor.mcs.asplugin'
 
-apply plugin: 'com.google.gms.google-services'
+// 需要支持谷歌推送时，才需要
+// 谷歌推送 google-services.json 文件也得在在application module的根目录，这是 chat 目录
+//apply plugin: 'com.google.gms.google-services'
 
 android {
     signingConfigs {
