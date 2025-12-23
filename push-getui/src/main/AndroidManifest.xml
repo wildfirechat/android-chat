@@ -13,7 +13,7 @@
         <!--个推SDK的appid 重要！必须补充-->
         <meta-data
             android:name="PUSH_APPID"
-            android:value="个推SDK的appid" />
+            android:value="${GETUI_APPID}" />
 
         <service
             android:name=".getui.GetuiPushService"

@@ -16,7 +16,7 @@ import cn.wildfirechat.push.PushService;
 import cn.wildfirechat.remote.ChatManager;
 
 public class GetuiIntentService extends GTIntentService {
-    private static final String TAG = "Getui";
+    private static final String TAG = "PushService";
 
     @Override
     public void onReceiveServicePid(Context context, int pid) {
