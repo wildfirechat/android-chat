@@ -42,7 +42,7 @@ public class GetuiIntentService extends GTIntentService {
     @Override
     public void onReceiveClientId(Context context, String clientid) {
         Log.e(TAG, "onReceiveClientId -> " + "clientid = " + clientid);
-        ChatManager.Instance().setDeviceToken(clientid, PushService.PushServiceType.Getui.ordinal());
+        ChatManager.Instance().setDeviceToken(clientid, PushService.PushServiceType.GeTui);
     }
 
     // cid 离线上线通知

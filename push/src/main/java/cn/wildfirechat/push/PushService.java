@@ -181,8 +181,8 @@ public class PushService {
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
             if (appInfo.metaData != null) {
-                String appid = appInfo.metaData.getString("MIPUSH_APPID").substring(7);
-                String appkey = appInfo.metaData.getString("MIPUSH_APPKEY").substring(7);
+                String appid = appInfo.metaData.getString("MIPUSH_APPID");
+                String appkey = appInfo.metaData.getString("MIPUSH_APPKEY");
                 if (!TextUtils.isEmpty(appid) && !TextUtils.isEmpty(appkey)) {
                     if (shouldInitXiaomi(context)) {
                         MiPushClient.registerPush(context, appid, appkey);
@@ -201,8 +201,8 @@ public class PushService {
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
             if (appInfo.metaData != null) {
-                String appid = appInfo.metaData.getString("MIPUSH_APPID").substring(7);
-                String appkey = appInfo.metaData.getString("MIPUSH_APPKEY").substring(7);
+                String appid = appInfo.metaData.getString("MIPUSH_APPID");
+                String appkey = appInfo.metaData.getString("MIPUSH_APPKEY");
                 return !TextUtils.isEmpty(appid) && !TextUtils.isEmpty(appkey);
             }
         } catch (Exception e) {

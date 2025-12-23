@@ -38,7 +38,7 @@ public class PushService {
     }
 
     public static void init(Application gContext, String applicationId) {
-        INST.pushServiceType = PushServiceType.Getui;
+        INST.pushServiceType = PushServiceType.GeTui;
         INST.initGetui(gContext);
 
 //        try {

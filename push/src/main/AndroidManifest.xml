@@ -6,16 +6,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <!-- the following 2 com.xiaomi.mipushdemo should be changed to your package name -->
-    <permission
-        android:name="${applicationId}.permission.MIPUSH_RECEIVE"
-        android:protectionLevel="signatureOrSystem" />
-
-    <uses-permission android:name="${applicationId}.permission.MIPUSH_RECEIVE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-
 
     <!-- 兼容flyme5.0以下版本，魅族内部集成pushSDK必填，不然无法收到消息-->
     <uses-permission android:name="com.meizu.flyme.push.permission.RECEIVE"></uses-permission>
@@ -49,30 +39,10 @@
         <!--xiaomi-->
         <meta-data
             android:name="MIPUSH_APPID"
-            android:value="string/${XIAOMI_APP_ID}" />
+            android:value="${XIAOMI_APP_ID}" />
         <meta-data
             android:name="MIPUSH_APPKEY"
-            android:value="string/${XIAOMI_APP_KEY}" />
-
-        <service
-            android:name="com.xiaomi.push.service.XMJobService"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:process=":pushservice" />
-
-        <service
-            android:name="com.xiaomi.push.service.XMPushService"
-            android:enabled="true"
-            android:process=":pushservice" />
-
-        <service
-            android:name="com.xiaomi.mipush.sdk.PushMessageHandler"
-            android:enabled="true"
-            android:exported="true" />
-        <service
-            android:name="com.xiaomi.mipush.sdk.MessageHandleService"
-            android:enabled="true" />
+            android:value="${XIAOMI_APP_KEY}" />
 
         <receiver
             android:name="cn.wildfirechat.push.xiaomi.MiMessageReceiver"
@@ -87,26 +57,12 @@
                 <action android:name="com.xiaomi.mipush.ERROR" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.xiaomi.push.service.receivers.PingReceiver"
-            android:exported="true"
-            android:process=":pushservice">
-            <intent-filter>
-                <action android:name="com.xiaomi.push.PING_TIMER" />
-            </intent-filter>
-        </receiver>
+        <!--        xiaomi end-->
 
         <!--meizu-->
-        <receiver android:name=".meizu.MeizuPushReceiver"
+        <receiver
+            android:name=".meizu.MeizuPushReceiver"
             android:exported="true">
             <intent-filter>
                 <!-- 接收push消息 -->
@@ -141,7 +97,8 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!-- push应用定义消息receiver声明 -->
-        <receiver android:name="cn.wildfirechat.push.vivo.PushMessageReceiverImpl"
+        <receiver
+            android:name="cn.wildfirechat.push.vivo.PushMessageReceiverImpl"
             android:exported="true">
             <intent-filter>
                 <!-- 接收push消息 -->
@@ -160,8 +117,8 @@
         <!--        Oppo push-->
         <service
             android:name="com.heytap.mcssdk.PushService"
-            android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE">
             <intent-filter>
                 <action android:name="com.coloros.mcs.action.RECEIVE_MCS_MESSAGE" />
             </intent-filter>
@@ -169,8 +126,8 @@
 
         <service
             android:name="com.heytap.mcssdk.AppPushService"
-            android:permission="com.heytap.mcs.permission.SEND_MCS_MESSAGE"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.heytap.mcs.permission.SEND_MCS_MESSAGE">
             <intent-filter>
                 <action android:name="com.heytap.mcs.action.RECEIVE_MCS_MESSAGE" />
             </intent-filter>
@@ -192,6 +149,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"
             android:value="false" />

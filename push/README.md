@@ -20,5 +20,8 @@ todo
 
 todo
 
+## 文档
+1. 小米：https://dev.mi.com/xiaomihyperos/documentation/detail?pId=1541
+2.
 
 
