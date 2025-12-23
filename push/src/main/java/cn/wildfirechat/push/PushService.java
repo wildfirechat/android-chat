@@ -75,6 +75,7 @@ public class PushService {
         int OPPO = 5;
         int Google = 6;
         int GeTui = 7;
+        int JPush = 8;
     }
 
     public static void init(Application gContext, String applicationId) {

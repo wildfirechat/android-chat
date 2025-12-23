@@ -13,7 +13,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
-import com.igexin.sdk.IUserLoggerInterface;
+import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by heavyrain.lee on 2018/2/26.
@@ -38,8 +38,8 @@ public class PushService {
     }
 
     public static void init(Application gContext, String applicationId) {
-        INST.pushServiceType = PushServiceType.Getui;
-        INST.initGetui(gContext);
+        INST.pushServiceType = PushServiceType.JPush;
+        INST.initJPush(gContext);
 
 //        try {
 //            com.igexin.sdk.PushManager.getInstance().checkManifest(gContext);
@@ -65,14 +65,11 @@ public class PushService {
         // TODO
     }
 
-    private void initGetui(Context context) {
-        com.igexin.sdk.PushManager.getInstance().initialize(context);
-        com.igexin.sdk.PushManager.getInstance().setDebugLogger(context, new IUserLoggerInterface() {
-            @Override
-            public void log(String s) {
-                Log.i(TAG, s);
-            }
-        });
+    private void initJPush(Context context) {
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(context);
+        String registerId = JPushInterface.getRegistrationID(context);
+        Log.d(TAG, "JPush registerId: " + registerId);
     }
 
     public static int getPushServiceType() {

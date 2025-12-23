@@ -1,0 +1,55 @@
+apply plugin: 'com.android.library'
+android {
+    compileSdkVersion 34
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 34
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    namespace 'cn.wildfirechat.push'
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    compileOnly fileTree(dir: '../push-aar-dep', include: ['*.aar'])
+
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation project(':client')
+
+    implementation 'cn.jiguang.sdk:jpush:5.9.2'  // 此处以JPush 5.5.3 版本为例, 基础库JCore SDK将自动引用最新
+    // 接入华为厂商
+    implementation 'com.huawei.hms:push:6.13.0.300'
+    implementation 'cn.jiguang.sdk.plugin:huawei:5.9.2'// 极光厂商插件版本与接入 JPush 版本保持一致，下同
+    // 接入 FCM 厂商
+    implementation 'com.google.firebase:firebase-messaging:25.0.1'
+    implementation 'cn.jiguang.sdk.plugin:fcm:5.9.2'
+    // 接入魅族厂商
+    implementation 'cn.jiguang.sdk.plugin:meizu:5.9.2'
+    // 接入 VIVO 厂商
+    implementation 'cn.jiguang.sdk.plugin:vivo:5.9.2'
+    // 接入 OPPO 厂商
+    implementation 'cn.jiguang.sdk.plugin:oppo:5.9.2'
+    // 接入小米厂商
+    implementation 'cn.jiguang.sdk.plugin:xiaomi:5.9.2'
+
+    // 接入荣耀厂商
+    implementation 'cn.jiguang.sdk.plugin:honor:5.9.2'
+
+
+    def lifecycle_version = '2.2.0'
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+}

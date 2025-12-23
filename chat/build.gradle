@@ -35,32 +35,55 @@ android {
 
 
         manifestPlaceholders = [
-            // 个推
-            GETUI_APPID       : "your appid",
+            // 个推，未使用个推推送时，不用配置
+            GETUI_APPID    : "",
 
+            // 极光，未使用极光推送时，不用配置
+            JPUSH_PKGNAME  : applicationId,
+            JPUSH_APPKEY   : "0549efd1f1d434c70aa440d1",
+            JPUSH_CHANNEL  : "developer-default",
+
+            // 厂商相关参数
             // 华为 相关应用参数
             HUAWEI_APP_ID  : "",
-            // 为了兼容，直接集成时，使用的是这个
-            HMS_APP_ID : "",
+            // 为了兼容，个推集成时，使用的是这个，值要和 HUAWEI_APP_ID 相同
+            HMS_APP_ID     : "",
 
             // 小米相关应用参数
             XIAOMI_APP_ID  : "",
             XIAOMI_APP_KEY : "",
+            // for jpush
+            XIAOMI_APPID   : "MI-小米的APPID",
+            XIAOMI_APPKEY  : "MI-小米的APPKEY",
 
             // OPPO 相关应用参数
             OPPO_APP_KEY   : "",
             OPPO_APP_SECRET: "",
+            // for jpush，OPPO 的参数需要添加前缀 “OP-”。
+            OPPO_APPKEY    : "OP-您的应用对应的OPPO的APPKEY",
+            OPPO_APPID     : "OP-您的应用对应的OPPO的APPID",
+            OPPO_APPSECRET : "OP-您的应用对应的OPPO的APPSECRET",
 
             // VIVO 相关应用参数
             VIVO_APP_ID    : "",
             VIVO_APP_KEY   : "",
+            // for jpush
+            VIVO_APPKEY    : "vivo的APPKEY",
+            VIVO_APPID     : "vivo的APPID",
+
 
             // 魅族相关应用参数
             MEIZU_APP_ID   : "",
             MEIZU_APP_KEY  : "",
+            // for jpush，有 MZ- 前缀
+            MEIZU_APPID    : "MZ-您的应用对应的魅族的APPKEY",
+            MEIZU_APPKEY   : "MZ-您的应用对应的魅族的APPID",
+
 
             // 荣耀相关应用参数
             HONOR_APP_ID   : "",
+            // for jpush
+            HONOR_APPID    : "Honor的APP ID",
         ]
 
     }
@@ -113,6 +136,9 @@ dependencies {
 
     // 对接个推，需要在个推后台配置厂商通道相关信息
 //    implementation project(':push-getui')
+
+    // 对接极光，需要在个推后台配置厂商通道相关信息
+//    implementation project(':push-jpush')
 
     implementation 'com.github.tiann:FreeReflection:3.1.0'
 
