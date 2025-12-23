@@ -13,17 +13,19 @@ import cn.wildfirechat.push.PushService;
 import cn.wildfirechat.remote.ChatManager;
 
 public class HwPushService extends HmsMessageService {
+    private static final String TAG = "PushService";
+
     @Override
     public void onNewToken(String s) {
         super.onNewToken(s);
-        Log.d("HMS", "onNewToken: " + s);
+        Log.d(TAG, "HMS onNewToken: " + s);
         ChatManager.Instance().setDeviceToken(s, PushService.PushServiceType.HMS);
     }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Log.d("HMS", "receiveMessage");
+        Log.d(TAG, "HMS receiveMessage");
         // do nothing
         // 野火IM采用的是透传，只需将主进程拉起即可，主进程会去拉取消息，并显示通知
         // 手机设置：

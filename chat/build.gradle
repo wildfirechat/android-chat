@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
-// 华为推送，agconnect-services.json 文件也得在在application module的根目录
+// 华为推送，agconnect-services.json 文件也得在在application module的根目录，这是 chat 目录
 apply plugin: 'com.huawei.agconnect'
+// 荣耀推送，mcs-services.json 文件也得在在application module的根目录，这是 chat 目录
+apply plugin: 'com.hihonor.mcs.asplugin'
 
 apply plugin: 'com.google.gms.google-services'
 

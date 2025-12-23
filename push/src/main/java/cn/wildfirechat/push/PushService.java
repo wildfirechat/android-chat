@@ -33,6 +33,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.heytap.mcssdk.PushManager;
 import com.heytap.mcssdk.callback.PushCallback;
 import com.heytap.mcssdk.mode.SubscribeResult;
+import com.hihonor.push.sdk.HonorPushClient;
 import com.huawei.agconnect.config.AGConnectServicesConfig;
 import com.huawei.hms.aaid.HmsInstanceId;
 import com.huawei.hms.api.HuaweiApiClient;
@@ -76,6 +77,7 @@ public class PushService {
         int Google = 6;
         int GeTui = 7;
         int JPush = 8;
+        int Honor = 9;
     }
 
     public static void init(Application gContext, String applicationId) {
@@ -84,6 +86,9 @@ public class PushService {
         if (SYS_EMUI.equals(sys)) {
             INST.pushServiceType = PushServiceType.HMS;
             INST.initHMS(gContext);
+        } else if (Build.MANUFACTURER.equals("HONOR") && HonorPushClient.getInstance().checkSupportHonorPush(gContext)) {
+            INST.pushServiceType = PushServiceType.Honor;
+            INST.initHonor(gContext);
         } else if (/*SYS_FLYME.equals(sys) && INST.isMZConfigured(gContext)*/MzSystemUtils.isBrandMeizu()) {
             INST.pushServiceType = PushServiceType.MeiZu;
             INST.initMZ(gContext);
@@ -239,6 +244,10 @@ public class PushService {
                 }
             }
         });
+    }
+
+    private void initHonor(final Context context) {
+        HonorPushClient.getInstance().init(context, true);
     }
 
     private boolean isMZConfigured(Context context) {
@@ -410,6 +419,7 @@ public class PushService {
     }
 
 
+    public static final String SYS_MAGICUI = "sys_emui";
     public static final String SYS_EMUI = "sys_emui";
     public static final String SYS_MIUI = "sys_miui";
     public static final String SYS_FLYME = "sys_flyme";
