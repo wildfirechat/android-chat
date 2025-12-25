@@ -17,7 +17,11 @@ public enum MessageContentMediaType {
     PORTRAIT(5),
     FAVORITE(6),
     STICKER(7),
-    MOMENTS(8);
+    MOMENTS(8),
+    //为客户扩展预留的类型
+    CUSTOM1(9),
+    CUSTOM2(10),
+    CUSTOM3(11);
 
     private int value;
 
