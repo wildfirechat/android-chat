@@ -34,11 +34,10 @@ public enum MessageContentMediaType {
     }
 
     public static MessageContentMediaType mediaType(int mediaType) {
-        MessageContentMediaType type = null;
         if (mediaType >= 0 && mediaType < MessageContentMediaType.values().length) {
             return MessageContentMediaType.values()[mediaType];
         }
-        return null;
+        return MessageContentMediaType.GENERAL;
         //throw new IllegalArgumentException("mediaType " + mediaType + " is invalid");
     }
 }
