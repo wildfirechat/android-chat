@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -36,22 +35,17 @@ import com.heytap.mcssdk.mode.SubscribeResult;
 import com.hihonor.push.sdk.HonorPushClient;
 import com.huawei.agconnect.config.AGConnectServicesConfig;
 import com.huawei.hms.aaid.HmsInstanceId;
+import com.huawei.hms.adapter.internal.AvailableCode;
 import com.huawei.hms.api.HuaweiApiClient;
+import com.huawei.hms.api.HuaweiMobileServicesUtil;
 import com.huawei.hms.common.ApiException;
 import com.meizu.cloud.pushsdk.util.MzSystemUtils;
 import com.vivo.push.IPushActionListener;
 import com.vivo.push.PushClient;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.TimeZone;
 
 import cn.wildfirechat.remote.ChatManager;
@@ -62,7 +56,6 @@ import cn.wildfirechat.remote.ChatManager;
 
 public class PushService {
     private HuaweiApiClient HMSClient;
-    private boolean hasHMSToken;
     private int pushServiceType;
     private static PushService INST = new PushService();
     private static String applicationId;
@@ -82,23 +75,22 @@ public class PushService {
 
     public static void init(Application gContext, String applicationId) {
         PushService.applicationId = applicationId;
-        String sys = getSystem();
-        if (SYS_EMUI.equals(sys)) {
+        if (isHuawei(gContext)) {
             INST.pushServiceType = PushServiceType.HMS;
             INST.initHMS(gContext);
-        } else if (Build.MANUFACTURER.equals("HONOR") && HonorPushClient.getInstance().checkSupportHonorPush(gContext)) {
+        } else if (isHonor(gContext)) {
             INST.pushServiceType = PushServiceType.Honor;
             INST.initHonor(gContext);
-        } else if (/*SYS_FLYME.equals(sys) && INST.isMZConfigured(gContext)*/MzSystemUtils.isBrandMeizu()) {
+        } else if (isMEIZU(gContext)) {
             INST.pushServiceType = PushServiceType.MeiZu;
             INST.initMZ(gContext);
-        } else if (SYS_VIVO.equalsIgnoreCase(sys)) {
+        } else if (isVIVO(gContext)) {
             INST.pushServiceType = PushServiceType.VIVO;
             INST.initVIVO(gContext);
-        } else if (PushManager.isSupportPush(gContext)) {
+        } else if (isOPPO(gContext)) {
             INST.pushServiceType = PushServiceType.OPPO;
             INST.initOPPO(gContext);
-        } else if (SYS_MIUI.equals(sys) && INST.isXiaomiConfigured(gContext)) {
+        } else if (isXiaomi(gContext)) {
             INST.pushServiceType = PushServiceType.Xiaomi;
             INST.initXiaomi(gContext);
         } else if (useGoogleFCM(gContext)) {
@@ -248,21 +240,6 @@ public class PushService {
 
     private void initHonor(final Context context) {
         HonorPushClient.getInstance().init(context, true);
-    }
-
-    private boolean isMZConfigured(Context context) {
-        String packageName = context.getPackageName();
-        try {
-            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-            if (appInfo.metaData != null) {
-                String appid = appInfo.metaData.getString("MEIZU_APP_ID");
-                String appkey = appInfo.metaData.getString("MEIZU_APP_KEY");
-                return !TextUtils.isEmpty(appid) && !TextUtils.isEmpty(appkey);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     private boolean initMZ(Context context) {
@@ -418,95 +395,43 @@ public class PushService {
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
     }
 
-
-    public static final String SYS_MAGICUI = "sys_emui";
-    public static final String SYS_EMUI = "sys_emui";
-    public static final String SYS_MIUI = "sys_miui";
-    public static final String SYS_FLYME = "sys_flyme";
-    public static final String SYS_VIVO = "sys_vivo";
-    private static final String KEY_MIUI_VERSION_CODE = "ro.miui.ui.version.code";
-    private static final String KEY_MIUI_VERSION_NAME = "ro.miui.ui.version.name";
-    private static final String KEY_MIUI_INTERNAL_STORAGE = "ro.miui.internal.storage";
-    private static final String KEY_EMUI_API_LEVEL = "ro.build.hw_emui_api_level";
-    private static final String KEY_EMUI_VERSION = "ro.build.version.emui";
-    private static final String KEY_EMUI_CONFIG_HW_SYS_VERSION = "ro.confg.hw_systemversion";
-    private static final String KEY_VERSION_VIVO = "ro.vivo.os.version";
-
-    public static String getSystem() {
-        String SYS = null;
-        try {
-            Properties prop = new Properties();
-
-            prop.load(new FileInputStream(new File(Environment.getRootDirectory(), "build.prop")));
-            if (prop.getProperty(KEY_MIUI_VERSION_CODE, null) != null
-                || prop.getProperty(KEY_MIUI_VERSION_NAME, null) != null
-                || prop.getProperty(KEY_MIUI_INTERNAL_STORAGE, null) != null) {
-                SYS = SYS_MIUI;//小米
-            } else if (prop.getProperty(KEY_EMUI_API_LEVEL, null) != null
-                || prop.getProperty(KEY_EMUI_VERSION, null) != null
-                || prop.getProperty(KEY_EMUI_CONFIG_HW_SYS_VERSION, null) != null) {
-                SYS = SYS_EMUI;//华为
-            } else if (getMeizuFlymeOSFlag().toLowerCase().contains("flyme")) {
-                SYS = SYS_FLYME;//魅族
-            } else if (!TextUtils.isEmpty(getProp(KEY_VERSION_VIVO))) {
-                SYS = SYS_VIVO;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            if (Build.MANUFACTURER.equalsIgnoreCase("HUAWEI")) {
-                SYS = SYS_EMUI;
-            } else if (Build.MANUFACTURER.equalsIgnoreCase("xiaomi")) {
-                SYS = SYS_MIUI;
-            } else if (Build.MANUFACTURER.equalsIgnoreCase("meizu")) {
-                SYS = SYS_FLYME;
-            } else if (Build.MANUFACTURER.equalsIgnoreCase("vivo")) {
-                SYS = SYS_VIVO;
-            }
-
-            return SYS;
-        }
-        return SYS;
-    }
-
-    public static String getMeizuFlymeOSFlag() {
-        return getSystemProperty("ro.build.display.id", "");
-    }
-
-    private static String getSystemProperty(String key, String defaultValue) {
-        try {
-            Class<?> clz = Class.forName("android.os.SystemProperties");
-            Method get = clz.getMethod("get", String.class, String.class);
-            return (String) get.invoke(clz, key, defaultValue);
-        } catch (Exception e) {
-        }
-        return defaultValue;
-    }
-
-    public static String getProp(String name) {
-        String line = null;
-        BufferedReader input = null;
-        try {
-            Process p = Runtime.getRuntime().exec("getprop " + name);
-            input = new BufferedReader(new InputStreamReader(p.getInputStream()), 1024);
-            line = input.readLine();
-            input.close();
-        } catch (IOException ex) {
-            Log.e("getProp", "Unable to read prop " + name, ex);
-            return null;
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return line;
-    }
-
     public static int getPushServiceType() {
         return INST.pushServiceType;
     }
+
+    private static boolean isOPPO(Context context) {
+        return PushManager.isSupportPush(context);
+    }
+
+    private static boolean isVIVO(Context context) {
+        String brand = Build.BRAND.toLowerCase();
+        String manufacturer = Build.MANUFACTURER.toLowerCase();
+        if (manufacturer.equalsIgnoreCase("vivo") || brand.equalsIgnoreCase("vivo") || brand.equalsIgnoreCase("iqoo")) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean isMEIZU(Context context) {
+        return MzSystemUtils.isBrandMeizu();
+    }
+
+    private static boolean isHuawei(Context context) {
+        String manufacturer = Build.MANUFACTURER.toLowerCase();
+        if (!manufacturer.equalsIgnoreCase("huawei")) {
+            return false;
+        }
+        int available = HuaweiMobileServicesUtil.isHuaweiMobileServicesAvailable(context);
+        return available == AvailableCode.SUCCESS;
+    }
+
+    private static boolean isHonor(Context context) {
+        return HonorPushClient.getInstance().checkSupportHonorPush(context);
+    }
+
+    private static boolean isXiaomi(Context context) {
+        String manufacturer = Build.MANUFACTURER.toLowerCase();
+        return manufacturer.equalsIgnoreCase("xiaomi");
+    }
+
 }
