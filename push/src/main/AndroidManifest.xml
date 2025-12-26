@@ -8,11 +8,11 @@
 
 
     <!-- 兼容flyme5.0以下版本，魅族内部集成pushSDK必填，不然无法收到消息-->
-    <uses-permission android:name="com.meizu.flyme.push.permission.RECEIVE"></uses-permission>
+    <uses-permission android:name="com.meizu.flyme.push.permission.RECEIVE" />
     <permission
         android:name="${applicationId}.push.permission.MESSAGE"
         android:protectionLevel="signature" />
-    <uses-permission android:name="${applicationId}.push.permission.MESSAGE"></uses-permission>
+    <uses-permission android:name="${applicationId}.push.permission.MESSAGE" />
 
     <!--  兼容flyme3.0配置权限-->
     <uses-permission android:name="com.meizu.c2dm.permission.RECEIVE" />
@@ -24,6 +24,14 @@
     <!--    Oppo push-->
     <uses-permission android:name="com.coloros.mcs.permission.RECIEVE_MCS_MESSAGE" />
     <uses-permission android:name="com.heytap.mcs.permission.RECIEVE_MCS_MESSAGE" />
+
+    <!--    honor-->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <queries>
+        <intent>
+            <action android:name="com.hihonor.push.action.BIND_PUSH_SERVICE" />
+        </intent>
+    </queries>
 
     <application>
 
@@ -139,6 +147,18 @@
         <meta-data
             android:name="OPPO_APP_PUSH_SECRET"
             android:value="${OPPO_APP_SECRET}" />
+
+        <!--honor-->
+        <meta-data
+            android:name="com.hihonor.push.app_id"
+            android:value="${HONOR_APP_ID}" />
+        <service
+            android:name="cn.wildfirechat.push.honor.HonorPushService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.hihonor.push.action.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
 
         <!--        Google  -->
