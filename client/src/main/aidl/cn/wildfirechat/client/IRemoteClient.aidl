@@ -44,6 +44,7 @@ import cn.wildfirechat.client.IOnUserOnlineEventListener;
 import cn.wildfirechat.client.IOnTrafficDataListener;
 import cn.wildfirechat.client.IOnSecretChatStateListener;
 import cn.wildfirechat.client.IOnSecretMessageBurnStateListener;
+import cn.wildfirechat.client.IOnJoinGroupRequestUpdateListener;
 
 import cn.wildfirechat.message.Message;
 import cn.wildfirechat.message.core.MessagePayload;
@@ -64,6 +65,7 @@ import cn.wildfirechat.model.DomainInfo;
 import cn.wildfirechat.model.SecretChatInfo;
 import cn.wildfirechat.model.BurnMessageInfo;
 import cn.wildfirechat.model.Socks5ProxyInfo;
+import cn.wildfirechat.model.JoinGroupRequest;
 
 
 import java.util.List;
@@ -99,8 +101,8 @@ interface IRemoteClient {
     oneway void setOnSettingUpdateListener(in IOnSettingUpdateListener listener);
     oneway void setOnChannelInfoUpdateListener(in IOnChannelInfoUpdateListener listener);
     oneway void setOnConferenceEventListener(in IOnConferenceEventListener listener);
-
     oneway void setOnTrafficDataListener(in IOnTrafficDataListener listener);
+    oneway void setOnJoinGroupRequestUpdateListener(in IOnJoinGroupRequestUpdateListener listener);
 
     oneway void registerMessageContent(in String msgContentCls);
     oneway void registerMessageFlag(in int type, in int flag);
@@ -212,6 +214,15 @@ interface IRemoteClient {
     boolean isBlackListed(in String userId);
     List<String> getBlackList(in boolean refresh);
     oneway void setBlackList(in String userId, in boolean isBlacked, in IGeneralCallback callback);
+
+    oneway void sendJoinGroupRequest(in String groupId, in List<String> memberIds, in String reason, in String extra, in IGeneralCallback callback);
+    oneway void handleJoinGroupRequest(in String groupId, in String memberId, in String inviter, in int status, in String memberExtra, in int[] notifyLines, in IGeneralCallback callback);
+    List<JoinGroupRequest> getJoinGroupRequests(in String groupId, in String memberId, in int status);
+    boolean clearJoinGroupRequest(in String groupId, in String memberId, in String inviter);
+    int getAllJoinGroupRequestUnread();
+    int getJoinGroupRequestUnread(in String groupId);
+    oneway void clearJoinGroupRequestUnread(in String groupId);
+    oneway void clearRemoteJoinGroupRequest(in IGeneralCallback callback);
 
     oneway void joinChatRoom(in String chatRoomId, in IGeneralCallback callback);
     oneway void quitChatRoom(in String chatRoomId, in IGeneralCallback callback);

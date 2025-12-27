@@ -90,6 +90,7 @@ import cn.wildfirechat.client.IOnDomainInfoUpdateListener;
 import cn.wildfirechat.client.IOnFriendUpdateListener;
 import cn.wildfirechat.client.IOnGroupInfoUpdateListener;
 import cn.wildfirechat.client.IOnGroupMembersUpdateListener;
+import cn.wildfirechat.client.IOnJoinGroupRequestUpdateListener;
 import cn.wildfirechat.client.IOnReceiveMessageListener;
 import cn.wildfirechat.client.IOnSecretChatStateListener;
 import cn.wildfirechat.client.IOnSecretMessageBurnStateListener;
@@ -183,6 +184,7 @@ import cn.wildfirechat.model.FriendRequest;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.model.GroupMember;
 import cn.wildfirechat.model.GroupSearchResult;
+import cn.wildfirechat.model.JoinGroupRequest;
 import cn.wildfirechat.model.ModifyChannelInfoType;
 import cn.wildfirechat.model.ModifyGroupInfoType;
 import cn.wildfirechat.model.ModifyMyInfoEntry;
@@ -268,6 +270,7 @@ public class ChatManager {
     private List<OnGroupMembersUpdateListener> groupMembersUpdateListeners = new ArrayList<>();
     private List<OnUserInfoUpdateListener> userInfoUpdateListeners = new ArrayList<>();
     private List<OnSettingUpdateListener> settingUpdateListeners = new ArrayList<>();
+    private List<OnJoinGroupRequestUpdateListener> joinGroupRequestUpdateListeners = new ArrayList<>();
     private List<OnFriendUpdateListener> friendUpdateListeners = new ArrayList<>();
     private List<OnConversationInfoUpdateListener> conversationInfoUpdateListeners = new ArrayList<>();
     private List<OnRecallMessageListener> recallMessageListeners = new ArrayList<>();
@@ -802,6 +805,14 @@ public class ChatManager {
         mainHandler.post(() -> {
             for (OnSettingUpdateListener listener : settingUpdateListeners) {
                 listener.onSettingUpdate();
+            }
+        });
+    }
+
+    private void onJoinGroupRequestUpdated() {
+        mainHandler.post(() -> {
+            for (OnJoinGroupRequestUpdateListener listener : joinGroupRequestUpdateListeners) {
+                listener.onJoinGroupRequestUpdate();
             }
         });
     }
@@ -5672,6 +5683,244 @@ public class ChatManager {
 
 
     /**
+     * 发送加群申请
+     *
+     * @param groupId
+     * @param memberIds
+     * @param reason
+     * @param extra
+     * @param callback
+     */
+    public void sendJoinGroupRequest(String groupId, List<String> memberIds, String reason, String extra, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.sendJoinGroupRequest(groupId, memberIds, reason, extra, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
+     * 处理好友请求
+     *
+     * @param groupId
+     * @param memberId
+     * @param inviter
+     * @param status  1是同意加群；2是拒绝加群。只有这2个值可选。
+     * @param memberExtra  当接受好友请求时，extra会更新到好友的extra中，建议用json格式，为以后继续扩展保留空间
+     * @param notifyLines 当同意加群时，通过指定line来通知。
+     * @param callback
+     */
+    public void handleJoinGroupRequest(String groupId, String memberId, String inviter, int status, String memberExtra, List<Integer> notifyLines, final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            int[] inlines = new int[notifyLines.size()];
+            for (int j = 0; j < notifyLines.size(); j++) {
+                inlines[j] = notifyLines.get(j);
+            }
+
+            mClient.handleJoinGroupRequest(groupId, memberId, inviter, status, memberExtra, inlines, new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
+     * 获取加群请求列表
+     *
+     * @param groupId 群组ID
+     * @param memberId 被邀请人用户ID，可以为空。
+     * @param status 0是未处理；1是同意的；2是拒绝的；-1是获取所有的。
+     * @return 加群请求列表
+     */
+    public List<JoinGroupRequest> getJoinGroupRequests(String groupId, String memberId, int status) {
+        if (!checkRemoteService()) {
+            return null;
+        }
+
+        try {
+            return mClient.getJoinGroupRequests(groupId, memberId, status);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 清除加群请求未读状态
+     * @param groupId 群组ID
+     * @param memberId 被邀请成员ID，可以为空
+     * @param inviter 邀请者ID，可以为空
+     */
+    public boolean clearJoinGroupRequest(String groupId, String memberId, String inviter) {
+        if (!checkRemoteService()) {
+            return false;
+        }
+
+        try {
+            return mClient.clearJoinGroupRequest(groupId, memberId, inviter);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 获取所有加群请求未读状态
+     */
+    public int getAllJoinGroupRequestUnread() {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+
+        try {
+            return mClient.getAllJoinGroupRequestUnread();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * 获取加群请求未读状态
+     * @param groupId 群组ID
+     */
+    public int getJoinGroupRequestUnread(String groupId) {
+        if (!checkRemoteService()) {
+            return 0;
+        }
+
+        try {
+            return mClient.getJoinGroupRequestUnread(groupId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * 获取加群请求未读状态
+     * @param groupId 群组ID，不能为空.
+     */
+    public void clearJoinGroupRequestUnread(String groupId) {
+        if (!checkRemoteService()) {
+            return;
+        }
+
+        try {
+            mClient.clearJoinGroupRequestUnread(groupId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 清除当前用户服务端的加群请求，不删除本地。如果要删除本地还需要多调用一次。
+     * @param callback
+     */
+    public void clearRemoteJoinGroupRequest(final GeneralCallback callback) {
+        if (!checkRemoteService()) {
+            if (callback != null)
+                callback.onFail(ErrorCode.SERVICE_DIED);
+            return;
+        }
+
+        try {
+            mClient.clearRemoteJoinGroupRequest(new cn.wildfirechat.client.IGeneralCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(final int errorCode) throws RemoteException {
+                    if (callback != null) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFail(errorCode);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            if (callback != null)
+                mainHandler.post(() -> callback.onFail(ErrorCode.SERVICE_EXCEPTION));
+        }
+    }
+
+    /**
      * 获取群信息
      *
      * @param groupId
@@ -10394,6 +10643,12 @@ public class ChatManager {
                         @Override
                         public void onSettingUpdated() throws RemoteException {
                             ChatManager.this.onSettingUpdated();
+                        }
+                    });
+                    mClient.setOnJoinGroupRequestUpdateListener(new IOnJoinGroupRequestUpdateListener.Stub() {
+                        @Override
+                        public void onJoinGroupRequestUpdated() throws RemoteException {
+                            ChatManager.this.onJoinGroupRequestUpdated();
                         }
                     });
                     mClient.setOnChannelInfoUpdateListener(new IOnChannelInfoUpdateListener.Stub() {
