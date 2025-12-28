@@ -22,6 +22,7 @@ import cn.wildfire.chat.kit.AppServiceProvider;
 import cn.wildfire.chat.kit.R;
 import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
+import cn.wildfire.chat.kit.common.OperateResult;
 import cn.wildfire.chat.kit.conversation.ConversationActivity;
 import cn.wildfire.chat.kit.net.SimpleCallback;
 import cn.wildfire.chat.kit.user.UserViewModel;
@@ -162,18 +163,41 @@ public class GroupInfoActivity extends WfcBaseActivity {
             finish();
         } else {
             String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_QRCode, this.from);
-            groupViewModel.addGroupMember(groupInfo, Collections.singletonList(userId), null, Collections.singletonList(0), memberExtra).observe(this, new Observer<Boolean>() {
-                @Override
-                public void onChanged(Boolean aBoolean) {
-                    if (aBoolean) {
-                        Intent intent = ConversationActivity.buildConversationIntent(GroupInfoActivity.this, Conversation.ConversationType.Group, groupId, 0);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(GroupInfoActivity.this, R.string.add_member_fail, Toast.LENGTH_SHORT).show();
+            if (groupInfo.joinType == 2) {
+                Toast.makeText(this, "Only admin can invite", Toast.LENGTH_SHORT).show();
+            } else if (groupInfo.joinType == 3) {
+                sendJoinGroupRequest();
+            } else {
+                groupViewModel.addGroupMemberEx(groupInfo, Collections.singletonList(userId), null, Collections.singletonList(0), memberExtra).observe(this, new Observer<OperateResult<Boolean>>() {
+                    @Override
+                    public void onChanged(OperateResult<Boolean> booleanOperateResult) {
+                        if (booleanOperateResult.isSuccess()) {
+                            Intent intent = ConversationActivity.buildConversationIntent(GroupInfoActivity.this, Conversation.ConversationType.Group, groupId, 0);
+                            startActivity(intent);
+                            finish();
+                        } else if (booleanOperateResult.getErrorCode() == 9) {
+                            sendJoinGroupRequest();
+                        } else {
+                            Toast.makeText(GroupInfoActivity.this, R.string.add_member_fail, Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
                     }
-                }
-            });
+                });
+            }
         }
+    }
+
+    private void sendJoinGroupRequest() {
+        new MaterialDialog.Builder(this)
+            .title(R.string.join_group_need_verify)
+            .input(getString(R.string.join_group_reason_hint), "", (dialog, input) -> groupViewModel.sendJoinGroupRequest(groupId, Collections.singletonList(userId), input.toString(), "").observe(this, result -> {
+                dialog.dismiss();
+                finish();
+                if (result.isSuccess()) {
+                    Toast.makeText(this, R.string.request_sent, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, getString(R.string.request_failed, result.getErrorCode()), Toast.LENGTH_SHORT).show();
+                }
+            })).show();
     }
 }

@@ -33,6 +33,7 @@ import cn.wildfirechat.remote.ChatManager;
 public class AddGroupMemberNotificationContent extends GroupNotificationMessageContent {
     public String invitor;
     public List<String> invitees;
+    public String approver;
 
     public AddGroupMemberNotificationContent() {
     }
@@ -47,6 +48,11 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
             return context.getString(R.string.join_group_by_qrcode, getGroupMemberDisplayName(this.invitees.get(0)), getGroupMemberDisplayName(source.targetId));
         } else if (source.type == GroupMemberSource.Type_Card && this.invitees.size() == 1) {
             return context.getString(R.string.join_group_by_card, getGroupMemberDisplayName(this.invitees.get(0)), getGroupMemberDisplayName(source.targetId));
+        }
+
+        if (!TextUtils.isEmpty(approver)) {
+            sb.append(getGroupMemberDisplayName(approver));
+            sb.append(" 批准了 ");
         }
 
         if (invitees.size() == 1 && invitees.get(0).equals(invitor)) {
@@ -78,6 +84,7 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
             JSONObject objWrite = new JSONObject();
             objWrite.put("g", groupId);
             objWrite.put("o", invitor);
+            objWrite.put("n", approver);
             JSONArray objArray = new JSONArray();
             for (int i = 0; i < invitees.size(); i++) {
                 objArray.put(i, invitees.get(i));
@@ -101,6 +108,7 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
                 JSONObject jsonObject = new JSONObject(new String(payload.binaryContent));
                 invitor = jsonObject.optString("o");
                 groupId = jsonObject.optString("g");
+                approver = jsonObject.optString("n");
                 JSONArray jsonArray = jsonObject.optJSONArray("ms");
                 invitees = new ArrayList<>();
                 if (jsonArray != null) {
@@ -132,12 +140,14 @@ public class AddGroupMemberNotificationContent extends GroupNotificationMessageC
         super.writeToParcel(dest, flags);
         dest.writeString(this.invitor);
         dest.writeStringList(this.invitees);
+        dest.writeString(this.approver);
     }
 
     protected AddGroupMemberNotificationContent(Parcel in) {
         super(in);
         this.invitor = in.readString();
         this.invitees = in.createStringArrayList();
+        this.approver = in.readString();
     }
 
     public static final Creator<AddGroupMemberNotificationContent> CREATOR = new Creator<AddGroupMemberNotificationContent>() {

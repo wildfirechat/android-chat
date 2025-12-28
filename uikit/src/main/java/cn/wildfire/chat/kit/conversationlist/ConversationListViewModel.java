@@ -23,6 +23,7 @@ import cn.wildfirechat.remote.OnClearMessageListener;
 import cn.wildfirechat.remote.OnConnectionStatusChangeListener;
 import cn.wildfirechat.remote.OnConversationInfoUpdateListener;
 import cn.wildfirechat.remote.OnDeleteMessageListener;
+import cn.wildfirechat.remote.OnJoinGroupRequestUpdateListener;
 import cn.wildfirechat.remote.OnRecallMessageListener;
 import cn.wildfirechat.remote.OnReceiveMessageListener;
 import cn.wildfirechat.remote.OnRemoveConversationListener;
@@ -44,6 +45,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     OnRemoveConversationListener,
     OnConnectionStatusChangeListener,
     OnClearMessageListener,
+    OnJoinGroupRequestUpdateListener,
     OnSettingUpdateListener, SecretMessageBurnStateListener {
     private MutableLiveData<List<ConversationInfo>> conversationListLiveData;
     private MutableLiveData<UnreadCount> unreadCountLiveData;
@@ -66,6 +68,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().addRemoveConversationListener(this);
         ChatManager.Instance().addSettingUpdateListener(this);
         ChatManager.Instance().addSecretMessageBurnStateListener(this);
+        ChatManager.Instance().addJoinGroupRequestUpdateListener(this);
     }
 
     @Override
@@ -81,6 +84,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         ChatManager.Instance().removeRemoveConversationListener(this);
         ChatManager.Instance().removeSettingUpdateListener(this);
         ChatManager.Instance().removeSecretMessageBurnStateListener(this);
+        ChatManager.Instance().removeJoinGroupRequestUpdateListener(this);
     }
 
     private AtomicInteger loadingCount = new AtomicInteger(0);
@@ -185,7 +189,7 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
         tryReloadConversationWhenSendMessage(message, false);
     }
 
-    private void tryReloadConversationWhenSendMessage(Message message, boolean force){
+    private void tryReloadConversationWhenSendMessage(Message message, boolean force) {
         Conversation conversation = message.conversation;
         if (types.contains(conversation.type) && lines.contains(conversation.line)) {
             if (message.messageId > 0) {
@@ -287,5 +291,10 @@ public class ConversationListViewModel extends ViewModel implements OnReceiveMes
     @Override
     public void onSecretMessageBurned(List<Long> messageIds) {
         reloadConversationList();
+    }
+
+    @Override
+    public void onJoinGroupRequestUpdate() {
+        reloadConversationList(true);
     }
 }

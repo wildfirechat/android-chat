@@ -32,6 +32,7 @@ public class ErrorCode {
     //Group error
     public static final int GROUP_ALREADY_EXIST = 11;  //"group aleady exist");
 
+    public static final int JOIN_GROUP_FAILED_NEED_VERIFY = 13;
 
     //user error
     public static final int PASSWORD_INCORRECT = 15;  //"password incorrect");

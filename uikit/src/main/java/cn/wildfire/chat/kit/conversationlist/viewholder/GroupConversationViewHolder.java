@@ -4,6 +4,7 @@
 
 package cn.wildfire.chat.kit.conversationlist.viewholder;
 
+import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,8 +28,8 @@ import cn.wildfirechat.utils.WfcUtils;
 
 @ConversationInfoType(type = Conversation.ConversationType.Group, line = 0)
 @EnableContextMenu
-public class GroupConversationViewHolder extends ConversationViewHolder implements Observer<GroupInfo> {
-    private LiveData<GroupInfo> groupLiveData = null;
+public class GroupConversationViewHolder extends ConversationViewHolder implements Observer<Pair<GroupInfo, Integer>> {
+    private LiveData<Pair<GroupInfo, Integer>> groupLiveData = null;
 
     TextView organizationGroupIndicator;
 
@@ -56,15 +57,18 @@ public class GroupConversationViewHolder extends ConversationViewHolder implemen
         if (groupLiveData != null) {
             groupLiveData.removeObserver(this);
         }
-        groupLiveData = groupViewModel.getGroupInfoAsync(conversationInfo.conversation.target, false);
+        groupLiveData = groupViewModel.getConversationGroupInfoAsync(conversationInfo.conversation.target, false);
         groupLiveData.observe(fragment, this);
+
+//        int unreadGroupJoinRequestCount = groupViewModel.getJoinGroupRequestUnread(conversationInfo.conversation.target);
 
     }
 
     @Override
-    public void onChanged(GroupInfo groupInfo) {
+    public void onChanged(Pair<GroupInfo, Integer> conversationGroupInfo) {
         CharSequence name;
         String portrait;
+        GroupInfo groupInfo = conversationGroupInfo.first;
         if (groupInfo != null) {
             String tmpName = ChatManager.Instance().getGroupDisplayName(groupInfo);
             portrait = groupInfo.portrait;
@@ -82,6 +86,11 @@ public class GroupConversationViewHolder extends ConversationViewHolder implemen
         } else {
             name = fragment.getString(R.string.group_chat);
             portrait = null;
+        }
+        if (conversationGroupInfo.second > 0) {
+            String lastPromptText = conversationPromptText;
+            conversationPromptText = fragment.getString(R.string.join_group_request_tip, conversationGroupInfo.second) + lastPromptText;
+            updatePromptText(conversationPromptText);
         }
 
         Glide

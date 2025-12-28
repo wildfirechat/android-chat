@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cn.wildfire.chat.kit.widget.InputAwareLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootLinearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -95,5 +96,28 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/conversationStickyHeaderContainerLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:paddingBottom="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/joinGroupRequestHeaderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/round_bg_30_white"
+                android:paddingLeft="80dp"
+                android:paddingTop="10dp"
+                android:paddingRight="80dp"
+                android:paddingBottom="10dp"
+                android:textColor="@color/red0"
+                android:visibility="gone" />
+        </LinearLayout>
     </FrameLayout>
 </cn.wildfire.chat.kit.widget.InputAwareLayout>

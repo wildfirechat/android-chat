@@ -27,6 +27,7 @@ import cn.wildfire.chat.kit.WfcBaseActivity;
 import cn.wildfire.chat.kit.WfcUIKit;
 import cn.wildfire.chat.kit.contact.model.UIUserInfo;
 import cn.wildfire.chat.kit.contact.pick.PickUserViewModel;
+import cn.wildfirechat.ErrorCode;
 import cn.wildfirechat.client.GroupMemberSource;
 import cn.wildfirechat.model.GroupInfo;
 import cn.wildfirechat.remote.ChatManager;
@@ -126,18 +127,34 @@ public class AddGroupMemberActivity extends WfcBaseActivity {
                 checkedIds.add(user.getUserInfo().uid);
             }
             String memberExtra = GroupMemberSource.buildGroupMemberSourceExtra(GroupMemberSource.Type_Invite, ChatManager.Instance().getUserId());
-            groupViewModel.addGroupMember(groupInfo, checkedIds, null, Collections.singletonList(0), memberExtra).observe(this, result -> {
+            groupViewModel.addGroupMemberEx(groupInfo, checkedIds, null, Collections.singletonList(0), memberExtra).observe(this, result -> {
                 dialog.dismiss();
                 Intent intent = new Intent();
-                if (result) {
+                if (result.isSuccess()) {
                     intent.putStringArrayListExtra("memberIds", checkedIds);
                     setResult(RESULT_ADD_SUCCESS, intent);
                     Toast.makeText(this, getString(R.string.add_member_success), Toast.LENGTH_SHORT).show();
+                    finish();
+                } else if (result.getErrorCode() == ErrorCode.JOIN_GROUP_FAILED_NEED_VERIFY) {
+                    new MaterialDialog.Builder(this)
+                        .title(R.string.join_group_need_verify)
+                        .input(getString(R.string.join_group_reason_hint), "", (dialog1, input) -> {
+                            groupViewModel.sendJoinGroupRequest(groupInfo.target, checkedIds, input.toString(), memberExtra).observe(this, rst -> {
+                                if (rst.isSuccess()) {
+                                    Toast.makeText(this, R.string.request_sent, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(this, getString(R.string.request_failed, result.getErrorCode()), Toast.LENGTH_SHORT).show();
+                                }
+                                dialog1.dismiss();
+                                setResult(RESULT_ADD_FAIL);
+                                finish();
+                            });
+                        }).show();
                 } else {
                     Toast.makeText(this, getString(R.string.add_member_fail), Toast.LENGTH_SHORT).show();
                     setResult(RESULT_ADD_FAIL);
+                    finish();
                 }
-                finish();
             });
         }
     }

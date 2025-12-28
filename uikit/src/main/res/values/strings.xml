@@ -12,6 +12,7 @@
     <string name="new_friend">新的朋友</string>
     <string name="group_chat">群聊</string>
     <string name="join_group_chat">加入群聊</string>
+    <string name="join_group_need_verify">已开启入群验证，请输入理由，等待群主或管理员审批</string>
     <string name="enter_group_chat">进入群聊</string>
     <string name="contact_category">联系人</string>
     <string name="group_category">群组</string>
@@ -667,8 +668,14 @@
     <string name="manager_list">管理员列表</string>
     <string name="add_manager">添加管理员</string>
     <string name="group_mute">群禁言</string>
+    <string name="join_group_request">加群请求</string>
+    <string name="join_group_reason_hint">请输入加群理由</string>
+    <string name="send_request">发送请求</string>
+    <string name="request_sent">请求已发送</string>
+    <string name="request_failed">请求失败 %d</string>
     <string name="group_member_permission">群成员权限</string>
     <string name="group_member_list">群成员列表</string>
+    <string name="join_group_request_list">加群申请列表</string>
     <string name="contact_selection">联系人选择</string>
     <string name="file_record">文件记录</string>
     <string name="select_a_chat">选择一个聊天</string>
@@ -785,4 +792,5 @@
     <string name="report">举报</string>
     <string name="report_tip">如果您发现有违反法律和道德的内容，或者您的合法权益受到侵犯，请截图之后发送给我们。我们会在24小时之内处理。处理办法包括，但不限于删除内容，对作者进行警告冻结账号，甚至报警处理。</string>
     <string name="aigc_tip">本内容由 AI 生成</string>
+    <string name="join_group_request_tip">[%s条加群申请]</string>
 </resources>
