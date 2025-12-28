@@ -4,6 +4,7 @@
         <item>不限制加入</item>
         <item>群成员可以拉人</item>
         <item>只能群管理拉人</item>
+        <item>加群需要验证</item>
     </string-array>
 
     <string-array name="group_history_message">

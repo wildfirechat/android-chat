@@ -42,6 +42,9 @@ public class GroupJoinTypeNotificationContent extends GroupNotificationMessageCo
             case 2:
                 sb.append("只关闭了加入群组功能");
                 break;
+            case 3:
+                sb.append("开启了加群验证功能");
+                break;
             default:
                 break;
         }

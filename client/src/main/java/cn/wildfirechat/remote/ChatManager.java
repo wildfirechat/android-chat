@@ -1179,6 +1179,26 @@ public class ChatManager {
     }
 
     /**
+     * 添加加入群请求更新监听，仅专业版 im-server 支持
+     *
+     * @param listener
+     */
+    public void addJoinGroupRequestUpdateListener(OnJoinGroupRequestUpdateListener listener) {
+        if (!joinGroupRequestUpdateListeners.contains(listener)) {
+            joinGroupRequestUpdateListeners.add(listener);
+        }
+    }
+
+    /**
+     * 删除加入群请求更新监听，仅专业版 im-server 支持
+     *
+     * @param listener
+     */
+    public void removeJoinGroupRequestUpdateListener(OnJoinGroupRequestUpdateListener listener) {
+        joinGroupRequestUpdateListeners.remove(listener);
+    }
+
+    /**
      * 添加设置状态更新监听
      *
      * @param listener
@@ -5871,6 +5891,7 @@ public class ChatManager {
 
         try {
             mClient.clearJoinGroupRequestUnread(groupId);
+            onJoinGroupRequestUpdated();
         } catch (RemoteException e) {
             e.printStackTrace();
         }

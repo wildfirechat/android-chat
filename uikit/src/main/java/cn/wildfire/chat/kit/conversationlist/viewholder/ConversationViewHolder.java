@@ -6,6 +6,7 @@ package cn.wildfire.chat.kit.conversationlist.viewholder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.ImageView;
@@ -60,6 +61,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
     protected TextView unreadCountTextView;
     protected View redDotView;
     protected TextView contentTextView;
+    protected String conversationPromptText;
     protected TextView promptTextView;
 
     protected ImageView statusImageView;
@@ -116,6 +118,7 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
         timeTextView.setText(TimeUtils.getMsgFormatTime(conversationInfo.timestamp));
         silentImageView.setVisibility(conversationInfo.isSilent ? View.VISIBLE : View.GONE);
         statusImageView.setVisibility(View.GONE);
+        conversationPromptText = "";
 
         if (roundedCornerTransformation == null) {
             roundedCornerTransformation = new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4));
@@ -140,65 +143,68 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
             }
         }
 
+        if (conversationInfo.unreadCount.unreadMentionAll > 0 || conversationInfo.unreadCount.unreadMention > 0) {
+            conversationPromptText += fragment.getString(R.string.mention_you);
+        }
+        if (conversationInfo.lastMessage != null && conversationInfo.lastMessage.content != null) {
+            Message lastMessage = conversationInfo.lastMessage;
+            // the message maybe invalid
+            try {
+                if (conversationInfo.conversation.type == Conversation.ConversationType.Group
+                    && lastMessage.direction == MessageDirection.Receive
+                    && !(lastMessage.content instanceof NotificationMessageContent)) {
+                    if (groupViewModel == null) {
+                        groupViewModel = new ViewModelProvider(fragment).get(GroupViewModel.class);
+                    }
+                    groupMemberDisplayNameLiveData = groupViewModel.getGroupMemberDisplayNameAsync(conversationInfo.conversation.target, conversationInfo.lastMessage.sender);
+                    groupMemberDisplayNameObserver = senderDisplayName -> {
+                        String content = senderDisplayName + ":" + lastMessage.digest();
+                        content = WfcTextUtils.htmlToText(content);
+                        MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
+                    };
+                    groupMemberDisplayNameLiveData.observe(fragment, groupMemberDisplayNameObserver);
+                } else {
+                    String content = lastMessage.digest();
+                    content = WfcTextUtils.htmlToText(content);
+                    MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            switch (lastMessage.status) {
+                case Sending:
+                    statusImageView.setVisibility(View.VISIBLE);
+                    // TODO update sending image resource
+                    statusImageView.setImageResource(R.mipmap.ic_sending);
+                    break;
+                case Send_Failure:
+                    statusImageView.setVisibility(View.VISIBLE);
+                    statusImageView.setImageResource(R.mipmap.img_error);
+                    break;
+                default:
+                    statusImageView.setVisibility(View.GONE);
+                    break;
+            }
+
+        } else {
+            contentTextView.setText("");
+        }
 
         Draft draft = Draft.fromDraftJson(conversationInfo.draft);
         if (draft != null) {
-            String draftString = draft.getContent() != null ? draft.getContent() : fragment.getString(R.string.draft);
+            conversationPromptText += fragment.getString(R.string.draft);
             MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, draft.getContent(), ImageSpan.ALIGN_BOTTOM);
-            setViewVisibility(R.id.promptTextView, View.VISIBLE);
-            setViewVisibility(R.id.contentTextView, View.VISIBLE);
+        }
+        updatePromptText(conversationPromptText);
+    }
+
+    protected void updatePromptText(String text) {
+        if (!TextUtils.isEmpty(text)) {
+            promptTextView.setVisibility(View.VISIBLE);
+            promptTextView.setText(text);
         } else {
-            if (conversationInfo.unreadCount.unreadMentionAll > 0 || conversationInfo.unreadCount.unreadMention > 0) {
-                promptTextView.setText(fragment.getString(R.string.mention_you));
-                promptTextView.setVisibility(View.VISIBLE);
-            } else {
-                promptTextView.setVisibility(View.GONE);
-            }
-            setViewVisibility(R.id.contentTextView, View.VISIBLE);
-            if (conversationInfo.lastMessage != null && conversationInfo.lastMessage.content != null) {
-                Message lastMessage = conversationInfo.lastMessage;
-                // the message maybe invalid
-                try {
-                    if (conversationInfo.conversation.type == Conversation.ConversationType.Group
-                        && lastMessage.direction == MessageDirection.Receive
-                        && !(lastMessage.content instanceof NotificationMessageContent)) {
-                        if (groupViewModel == null) {
-                            groupViewModel = new ViewModelProvider(fragment).get(GroupViewModel.class);
-                        }
-                        groupMemberDisplayNameLiveData = groupViewModel.getGroupMemberDisplayNameAsync(conversationInfo.conversation.target, conversationInfo.lastMessage.sender);
-                        groupMemberDisplayNameObserver = senderDisplayName -> {
-                            String content = senderDisplayName + ":" + lastMessage.digest();
-                            content = WfcTextUtils.htmlToText(content);
-                            MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
-                        };
-                        groupMemberDisplayNameLiveData.observe(fragment, groupMemberDisplayNameObserver);
-                    } else {
-                        String content = lastMessage.digest();
-                        content = WfcTextUtils.htmlToText(content);
-                        MoonUtils.identifyFaceExpression(fragment.getActivity(), contentTextView, content, ImageSpan.ALIGN_BOTTOM);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                switch (lastMessage.status) {
-                    case Sending:
-                        statusImageView.setVisibility(View.VISIBLE);
-                        // TODO update sending image resource
-                        statusImageView.setImageResource(R.mipmap.ic_sending);
-                        break;
-                    case Send_Failure:
-                        statusImageView.setVisibility(View.VISIBLE);
-                        statusImageView.setImageResource(R.mipmap.img_error);
-                        break;
-                    default:
-                        statusImageView.setVisibility(View.GONE);
-                        break;
-                }
-
-            } else {
-                contentTextView.setText("");
-            }
+            promptTextView.setVisibility(View.GONE);
         }
     }
 

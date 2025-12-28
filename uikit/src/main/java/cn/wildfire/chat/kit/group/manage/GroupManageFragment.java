@@ -33,6 +33,7 @@ public class GroupManageFragment extends Fragment {
     OptionItemView joinOptionItemView;
     OptionItemView searchOptionItemView;
     OptionItemView historyOptionItemView;
+    OptionItemView joinRequestOptionItemView;
 
     private GroupViewModel groupViewModel;
 
@@ -50,6 +51,14 @@ public class GroupManageFragment extends Fragment {
         groupInfo = getArguments().getParcelable("groupInfo");
         if (groupInfo == null) {
             getActivity().finish();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (groupInfo != null && groupInfo.joinType == 3) {
+            setupGroupOptionsView(groupInfo);
         }
     }
 
@@ -72,12 +81,14 @@ public class GroupManageFragment extends Fragment {
         view.findViewById(R.id.joinOptionItemView).setOnClickListener(_v -> showJoinTypeSetting());
         view.findViewById(R.id.searchOptionItemView).setOnClickListener(_v -> showSearchSetting());
         view.findViewById(R.id.historyMessageOptionItemView).setOnClickListener(_v -> showHistoryMessageSetting());
+        view.findViewById(R.id.joinRequestOptionItemView).setOnClickListener(_v -> showJoinGroupRequests());
     }
 
     private void bindViews(View view) {
         joinOptionItemView = view.findViewById(R.id.joinOptionItemView);
         searchOptionItemView = view.findViewById(R.id.searchOptionItemView);
         historyOptionItemView = view.findViewById(R.id.historyMessageOptionItemView);
+        joinRequestOptionItemView = view.findViewById(R.id.joinRequestOptionItemView);
     }
 
     private void setupGroupOptionsView(GroupInfo groupInfo) {
@@ -90,11 +101,21 @@ public class GroupManageFragment extends Fragment {
         types = getResources().getStringArray(R.array.group_history_message);
         historyOptionItemView.setDesc(types[groupInfo.historyMessage]);
 
+        if (groupInfo.joinType == 3) {
+            joinRequestOptionItemView.setVisibility(View.VISIBLE);
+            if (groupViewModel != null) {
+                int unread = groupViewModel.getJoinGroupRequestUnread(groupInfo.target);
+                joinRequestOptionItemView.setBadgeCount(unread);
+            }
+        } else {
+            joinRequestOptionItemView.setVisibility(View.GONE);
+        }
     }
 
     private void init() {
-        setupGroupOptionsView(groupInfo);
         groupViewModel = WfcUIKit.getAppScopeViewModel(GroupViewModel.class);
+        setupGroupOptionsView(groupInfo);
+
         groupViewModel.groupInfoUpdateLiveData().observe(getActivity(), new Observer<List<GroupInfo>>() {
             @Override
             public void onChanged(List<GroupInfo> groupInfos) {
@@ -107,6 +128,10 @@ public class GroupManageFragment extends Fragment {
                 }
 
             }
+        });
+
+        groupViewModel.joinGroupRequestUpdateLiveData().observe(getActivity(), o -> {
+            setupGroupOptionsView(groupInfo);
         });
     }
 
@@ -178,5 +203,10 @@ public class GroupManageFragment extends Fragment {
                     });
             })
             .show();
+    }
+    void showJoinGroupRequests() {
+        Intent intent = new Intent(getActivity(), JoinGroupRequestListActivity.class);
+        intent.putExtra("groupId", groupInfo.target);
+        startActivity(intent);
     }
 }
