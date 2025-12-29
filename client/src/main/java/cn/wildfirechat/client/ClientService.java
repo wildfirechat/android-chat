@@ -2048,7 +2048,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             List<GroupInfo> groupInfos = new ArrayList<>();
             if (protoGroupInfos != null) {
                 for (ProtoGroupInfo pgi : protoGroupInfos) {
-                    groupInfos.add(convertProtoGroupInfo(pgi));
+                    groupInfos.add(convertProtoGroupInfo(pgi, false));
                 }
             }
 
@@ -2262,8 +2262,8 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     } else {
                         largeMedia = true;
                     }
-                } else if(isSupportBigFilesUpload()) {
-                    if(ProtoLogic.forcePresignedUrlUpload()) {
+                } else if (isSupportBigFilesUpload()) {
+                    if (ProtoLogic.forcePresignedUrlUpload()) {
                         largeMedia = true;
                     } else {
                         largeMedia = file.length() > 100 * 1024 * 1024;
@@ -3951,7 +3951,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                 ashmenHolder.readBytes(data, 0, length);
                 data = ProtoLogic.decodeSecretChatData(targetId, data);
                 ashmenHolder.writeBytes(data, 0, data.length);
-                if(!isMainProcess()){
+                if (!isMainProcess()) {
                     ashmenHolder.close();
                 }
                 if (callback != null) {
@@ -3974,7 +3974,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
                     @Override
                     public void onSuccess(byte[] bytes) {
                         ashmenHolder.writeBytes(bytes, 0, bytes.length);
-                        if(!isMainProcess()){
+                        if (!isMainProcess()) {
                             ashmenHolder.close();
                         }
                         if (callback != null) {
@@ -4143,6 +4143,10 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
     }
 
     private GroupInfo convertProtoGroupInfo(ProtoGroupInfo protoGroupInfo) {
+        return convertProtoGroupInfo(protoGroupInfo, true);
+    }
+
+    private GroupInfo convertProtoGroupInfo(ProtoGroupInfo protoGroupInfo, boolean generateDefaultPortrait) {
         if (protoGroupInfo == null) {
             return null;
         }
@@ -4170,7 +4174,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         if (!TextUtils.isEmpty(groupInfo.portrait)) {
             groupInfo.portrait = ClientService.urlRedirect(groupInfo.portrait);
         }
-        if (TextUtils.isEmpty(groupInfo.portrait) && defaultPortraitProvider != null) {
+        if (generateDefaultPortrait && TextUtils.isEmpty(groupInfo.portrait) && defaultPortraitProvider != null) {
             ProtoGroupMember[] protoGroupMembers = ProtoLogic.getGroupMembersByCount(protoGroupInfo.getTarget(), 9);
             String[] memberIds = new String[protoGroupMembers.length];
             for (int i = 0; i < protoGroupMembers.length; i++) {
@@ -4318,7 +4322,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
         }
 
         MessageContent content = contentOfType(payload.type);
-        if(payload.notLoaded > 0){
+        if (payload.notLoaded > 0) {
             return content;
         }
         try {
@@ -4520,7 +4524,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
             info.deviceversion = Build.VERSION.RELEASE;
             info.phonename = Build.MODEL;
             //如果是android pad设备，需要改这里，另外需要在gettoken时也使用pad类型，请在AppService代码中搜索"android pad"
-            if(isPad) {
+            if (isPad) {
                 info.platform = 9;
             } else { //当前设备是android手机
                 info.platform = 2;
@@ -4661,7 +4665,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onUserReceivedMessage(Map<String, Long> map) {
-        if(map == null || map.isEmpty()) return;
+        if (map == null || map.isEmpty()) return;
         handler.post(() -> {
             int receiverCount = onReceiveMessageListeners.beginBroadcast();
             IOnReceiveMessageListener listener;
@@ -4680,7 +4684,7 @@ public class ClientService extends Service implements SdtLogic.ICallBack,
 
     @Override
     public void onUserReadedMessage(List<ProtoReadEntry> list) {
-        if(list == null || list.isEmpty()) return;
+        if (list == null || list.isEmpty()) return;
         handler.post(() -> {
             List<ReadEntry> l = new ArrayList<>();
             for (ProtoReadEntry entry : list) {

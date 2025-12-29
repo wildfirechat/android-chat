@@ -5738,7 +5738,7 @@ public class ChatManager {
     }
 
     /**
-     * 批量获取群信息
+     * 批量获取群信息，返回的 GroupInfo 如果没有头像，不会生成默认头像
      *
      * @param groupIds
      * @param refresh
