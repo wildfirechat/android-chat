@@ -6,6 +6,7 @@ package cn.wildfire.chat.app.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,7 @@ public class DiscoveryFragment extends Fragment {
         bindViews(view);
         bindEvents(view);
         initMoment();
-        if (!AVEngineKit.isSupportConference()) {
+        if (!BuildConfig.DEBUG && !AVEngineKit.isSupportConference()) {
             conferenceOptionItemView.setVisibility(View.GONE);
         }
         return view;
@@ -99,23 +100,28 @@ public class DiscoveryFragment extends Fragment {
 
     void cookbook() {
         if (BuildConfig.APPLICATION_ID.startsWith("cn.wildfirechat.")) {
-        WfcWebViewActivity.loadUrl(getContext(), getString(R.string.wfc_doc_title), getString(R.string.wfc_doc_url));
+            WfcWebViewActivity.loadUrl(getContext(), getString(R.string.wfc_doc_title), getString(R.string.wfc_doc_url));
         } else {
             Toast.makeText(getContext(), "野火IM 开发文档对第三方应用不适用", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void initMoment() {
-        if (!WfcUIKit.getWfcUIKit().isSupportMoment()) {
+        if (!BuildConfig.DEBUG && !WfcUIKit.getWfcUIKit().isSupportMoment()) {
             momentOptionItemView.setVisibility(View.GONE);
             return;
         }
-        MessageViewModel messageViewModel =new ViewModelProvider(this).get(MessageViewModel.class);
+        MessageViewModel messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
         messageViewModel.messageLiveData().observe(getViewLifecycleOwner(), uiMessage -> updateMomentBadgeView());
         messageViewModel.clearMessageLiveData().observe(getViewLifecycleOwner(), o -> updateMomentBadgeView());
     }
 
     void moment() {
+        if ( !WfcUIKit.getWfcUIKit().isSupportMoment()) {
+            Toast.makeText(getActivity(), "需要专业版 IM-Server + 朋友圈 SDK 才支持朋友圈功能", Toast.LENGTH_LONG).show();
+            Log.d("Discovery", "需要专业版 IM-Server + 朋友圈 SDK 才支持朋友圈功能, 可参考这儿申请试用：https://docs.wildfirechat.cn/trial/");
+            return;
+        }
         Intent intent = new Intent(WfcIntent.ACTION_MOMENT);
         // 具体项目中，如果不能隐式启动，可改为下面这种显示启动朋友圈页面
 //        Intent intent = new Intent(getActivity(), FeedListActivity.class);
@@ -123,6 +129,11 @@ public class DiscoveryFragment extends Fragment {
     }
 
     void conference() {
+        if (!AVEngineKit.isSupportConference()) {
+            Toast.makeText(getActivity(), "需要专业版 IM-Server + 高级版音视频 SDK 才支持会议功能", Toast.LENGTH_LONG).show();
+            Log.d("Discovery", "需要专业版 IM-Server + 高级版音视频 SDK 才支持会议功能, 可参考这儿申请试用：https://docs.wildfirechat.cn/trial/");
+            return;
+        }
         Intent intent = new Intent(getActivity(), ConferencePortalActivity.class);
         startActivity(intent);
     }
